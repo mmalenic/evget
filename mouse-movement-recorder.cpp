@@ -3,12 +3,24 @@
 #include <csignal>
 #include <chrono>
 #include <boost/program_options.hpp>
+#include <boost/circular_buffer.hpp>
 
 namespace po = boost::program_options;
 using namespace std;
 
+constexpr auto ELEMENTS_TO_AVERAGE = 100;
+
 HHOOK handle;
 auto interval = std::chrono::system_clock::now();
+boost::circular_buffer<double> intervals(ELEMENTS_TO_AVERAGE);
+
+double average() {
+	double sum = 0;
+	for (auto interval : intervals) {
+		sum += interval;
+	}
+	return sum / intervals.size() * 1000;
+}
 
 LRESULT CALLBACK lowLevelMouseProc(
 	_In_ int    nCode,
@@ -19,8 +31,11 @@ LRESULT CALLBACK lowLevelMouseProc(
 	
 	auto *lp = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
 	if (wParam == WM_MOUSEMOVE) {
+		intervals.push_back(difference.count());
 		std::cout << "Point at (" << lp->pt.x << ", " << lp->pt.y;
 		std::cout << ") with interval from previous event: " << difference.count() * 1000 << "ms\n";
+		std::cout << "Estimated polling rate as average: " << average() << "ms\r";
+		std::cout.flush();
 	}
 	
 	interval = std::chrono::system_clock::now();
@@ -66,8 +81,8 @@ int main(int argc, char *argv[]) {
 	try {
 		po::options_description desc("Allowed options");
 		desc.add_options()
-			("help", "produce help message")
-			("low-level-api,l", "use lowLevelMouseProc to track mouse movements")
+			("help", "produce help message.")
+			("record-mouse,l", "use lowLevelMouseProc to track mouse movements.")
 			;
 
 		po::variables_map vm;
@@ -94,6 +109,5 @@ int main(int argc, char *argv[]) {
 		cerr << "Exception of unknown type!\n";
 		exit(-1);
 	}
-
-	return cleanup();
 }
+
