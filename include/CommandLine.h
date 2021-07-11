@@ -30,21 +30,13 @@ static const std::string HELP_MESSAGE =
  * The CommandLine class controls command line options.
  */
 class CommandLine {
-private:
-    const std::string platform_information;
-    const std::string version_message;
-
-    std::string file;
-
-    po::options_description desc;
-    po::variables_map vm;
-
 public:
     /**
      * Create a CommandLine object.
      *
      * @param argc from main
      * @param argv from main
+     * @param file default file location
      */
     CommandLine(int argc, char *argv[], const std::string& file);
 
@@ -59,6 +51,27 @@ public:
      * or version information.
      */
     void executeSimple();
+
+    /**
+    * Perform the actual command line parsing.
+    * @return
+    */
+    void parseCommandLine(int argc, char *const *argv);
+
+    /**
+    * Perform the actual command line parsing.
+    * @return
+    */
+    virtual void addAdditionalOptions() = 0;
+
+private:
+    const std::string platformInformation;
+    const std::string versionMessage;
+
+    std::string file;
+
+    po::options_description desc;
+    po::variables_map vm;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

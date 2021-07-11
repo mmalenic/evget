@@ -38,6 +38,6 @@ find_package(Boost 1.71.0 COMPONENTS program_options)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    add_executable(input-event-recorder ${INCLUDES} ${SOURCES})
+    add_executable(input-event-recorder ${INCLUDES} ${SOURCES} src/linux/CommandLineLinux.cpp include/linux/CommandLineLinux.h)
     target_link_libraries(input-event-recorder ${Boost_LIBRARIES})
 endif()

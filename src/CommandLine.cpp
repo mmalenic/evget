@@ -20,15 +20,15 @@
 using namespace std;
 
 CommandLine::CommandLine(int argc, char **argv, const string& default_file) :
-    platform_information { "unknown" },
-    version_message {
-        "input-event-recorder (" + platform_information + ") " + VERSION + ".\n\n"
+        platformInformation {"unknown" },
+        versionMessage {
+                "input-event-recorder (" + platformInformation + ") " + VERSION + ".\n\n"
         "Copyright (C) 2021 Marko Malenic.\n"
         "This program comes with ABSOLUTELY NO WARRANTY.\n"
         "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
         "Written by Marko Malenic 2021.\n"
     },
-    desc { HELP_MESSAGE } {
+        desc { HELP_MESSAGE } {
     desc.add_options()
         ("help,h", "produce help message.")
         ("version,v", "version information.")
@@ -36,6 +36,10 @@ CommandLine::CommandLine(int argc, char **argv, const string& default_file) :
                 "file to store events, defaults to current directory.")
         ;
 
+    parseCommandLine(argc, argv);
+}
+
+void CommandLine::parseCommandLine(int argc, char *const *argv) {
     store(parse_command_line(argc, argv, desc), vm);
     notify(vm);
 }
@@ -50,7 +54,7 @@ void CommandLine::executeSimple() {
         exit(EXIT_SUCCESS);
     }
     if (vm.count("version")) {
-        cout << version_message;
+        cout << versionMessage;
         exit(EXIT_SUCCESS);
     }
 }
