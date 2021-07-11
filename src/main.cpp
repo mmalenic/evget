@@ -1,36 +1,22 @@
-/**
- * @author Marko Malenic
- * @date 6/7/21
- */
-#include <boost/program_options.hpp>
-#include <iostream>
+// Copyright (C) Marko Malenic 2021.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace po = boost::program_options;
-
-using namespace std;
+#include "../include/CommandLine.h"
 
 int main(int argc, char *argv[]) {
-    po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help", "produce help message.")
-        ("directory,d", "directory to store events.")
-        ("mouse-event-device,d", "directory to store events.")
-        ;
-
-    po::variables_map vm;
-    store(parse_command_line(argc, argv, desc), vm);
-    notify(vm);
-
-    if (vm.count("help")) {
-        cout << desc << "\n";
-        return 1;
-    }
-
-    if (vm.count("directory")) {
-        cout << "Compression level was set to "
-             << vm["compression"].as<string>() << ".\n";
-    } else {
-        cout << "Compression level was not set.\n";
-    }
-
+    CommandLine cmd {argc, argv, ""};
+    cmd.executeSimple();
+    return 1;
 }
