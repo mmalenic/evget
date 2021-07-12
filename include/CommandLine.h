@@ -55,6 +55,19 @@ public:
     fs::path defaultFile();
 
     /**
+    * Get the file.
+    * @return the file
+    */
+    const fs::path &getFile() const;
+
+    /**
+     * Get the platform information from the system.
+     * @return platform information
+     */
+    virtual std::string platformInformation() = 0;
+
+protected:
+    /**
      * Get description.
      * @return description
      */
@@ -66,26 +79,19 @@ public:
      */
     const po::variables_map &getVm() const;
 
-    /**
-     * Get the platform information from the system.
-     * @return platform information
-     */
-    virtual std::string platformInformation() = 0;
-
-    /**
-     * Get the file.
-     * @return the file
-     */
-    virtual const fs::path &getFile() const = 0;
-
-protected:
+private:
     po::options_description desc;
     po::variables_map vm;
 
-private:
     const std::string versionNumber;
     const std::string versionMessage;
     const std::string filename;
+
+    std::tuple<std::string, std::string, std::string> fileOption;
+    std::tuple<std::string, std::string, std::string> printOption;
+
+    fs::path file;
+    bool print;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

@@ -50,18 +50,14 @@ public:
 
     std::string platformInformation() override;
 
-    const fs::path &getFile() const override;
-
     bool isListEventDevices() const;
 
 private:
-    std::pair<std::string, std::string> fileOption;
-    std::pair<std::string, std::string> mouseDeviceOption;
-    std::pair<std::string, std::string> keyDeviceOption;
-    std::pair<std::string, std::string> touchDeviceOption;
-    std::pair<std::string, std::string> listEventDevicesOption;
+    std::tuple<std::string, std::string, std::string> mouseDeviceOption;
+    std::tuple<std::string, std::string, std::string> keyDeviceOption;
+    std::tuple<std::string, std::string, std::string> touchDeviceOption;
+    std::tuple<std::string, std::string, std::string> listEventDevicesOption;
 
-    fs::path file;
     fs::path mouseDevice;
     fs::path keyDevice;
     fs::path touchDevice;

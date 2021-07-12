@@ -23,6 +23,7 @@ CommandLine::CommandLine(const string& platformInformation) :
     desc { "Records events from input devices and stores them in a SQLite file.\n"
            "Written by Marko Malenic 2021.\n\n"
            "Options" },
+    vm {},
     versionNumber { "1.0" },
     versionMessage {
         "input-event-recorder (" + platformInformation + ") " + versionNumber + ".\n\n"
@@ -31,10 +32,20 @@ CommandLine::CommandLine(const string& platformInformation) :
         "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
         "Written by Marko Malenic 2021.\n"
     },
-    filename { "events.sqlite" } {
+    filename { "events.sqlite" },
+    fileOption { "file", "f", "file to store events, defaults to current directory." },
+    printOption { "print", "p", "only print instead of storing events." },
+    print { false } {
+
     desc.add_options()
         ("help,h", "produce help message.")
         ("version,v", "version information.")
+        ((get<0>(fileOption) + "," + get<1>(fileOption)).c_str(),
+            po::value<fs::path>(&this->file)->default_value(defaultFile()),
+            get<2>(fileOption).c_str())
+        ((get<0>(printOption) + "," + get<0>(printOption)).c_str(),
+            po::value<bool>(&this->print)->default_value(false),
+            get<0>(printOption).c_str())
         ;
 }
 
@@ -54,14 +65,18 @@ void CommandLine::executeSimple() {
     }
 }
 
+const fs::path &CommandLine::getFile() const {
+    return file;
+}
+
 po::options_description &CommandLine::getDesc() {
     return desc;
 }
 
 fs::path CommandLine::defaultFile() {
     fs::path dir { fs::current_path() };
-    fs::path file { filename };
-    return dir / file;
+    fs::path storageFile { filename };
+    return dir / storageFile;
 }
 
 const po::variables_map &CommandLine::getVm() const {
