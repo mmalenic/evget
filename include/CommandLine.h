@@ -17,14 +17,17 @@
 #define INPUT_EVENT_RECORDER_COMMANDLINE_H
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 namespace po = boost::program_options;
+namespace fs = boost::filesystem;
 
 static const std::string VERSION = "1.0";
 static const std::string HELP_MESSAGE =
     "Records events from input devices and stores them in a SQLite file.\n"
     "Written by Marko Malenic 2021.\n\n"
     "Options";
+static const std::string FILE_NAME = "events.sqlite";
 
 /**
  * The CommandLine class controls command line options.
@@ -53,10 +56,22 @@ public:
     void parseCommandLine(int argc, char **argv);
 
     /**
+    * Get the default file location.
+    * @return default file location
+    */
+    static fs::path defaultFile();
+
+    /**
      * Get description.
      * @return description
      */
     po::options_description &getDesc();
+
+    /**
+     * Get the variables map.
+     * @return variables map
+     */
+    const po::variables_map &getVm() const;
 
     /**
      * Get the platform information from the system.
@@ -68,20 +83,14 @@ public:
      * Get the file.
      * @return the file
      */
-    virtual const std::string &getFile() const = 0;
-
-    /**
-     * Get the default file location.
-     * @return default file location
-     */
-    virtual std::string defaultFile() = 0;
+    virtual const fs::path &getFile() const = 0;
 
 protected:
     po::options_description desc;
+    po::variables_map vm;
 
 private:
     const std::string versionMessage;
-    po::variables_map vm;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

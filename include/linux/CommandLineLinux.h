@@ -31,12 +31,10 @@ public:
 
     std::string platformInformation() override;
 
-    const std::string &getFile() const override;
-
-    std::string defaultFile() override;
+    const fs::path &getFile() const override;
 
 private:
-    std::string file;
+    fs::path file;
 };
 
 

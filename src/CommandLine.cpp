@@ -53,3 +53,13 @@ void CommandLine::executeSimple() {
 po::options_description &CommandLine::getDesc() {
     return desc;
 }
+
+fs::path CommandLine::defaultFile() {
+    fs::path dir { fs::current_path() };
+    fs::path file { FILE_NAME };
+    return dir / file;
+}
+
+const po::variables_map &CommandLine::getVm() const {
+    return vm;
+}

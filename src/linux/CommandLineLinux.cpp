@@ -15,20 +15,23 @@
 
 #include "linux/CommandLineLinux.h"
 
-#include "sys/utsname.h"
+#include <sys/utsname.h>
+#include <boost/filesystem.hpp>
+#include <iostream>
 
 using namespace std;
 
 CommandLineLinux::CommandLineLinux(int argc, char **argv) :
     CommandLine { CommandLineLinux::platformInformation() } {
+
     getDesc().add_options()
-        ("file,f", po::value<string>(&this->file)->default_value(CommandLineLinux::defaultFile()),
+        ("file,f", po::value<fs::path>(&this->file)->default_value(defaultFile()),
         "file to store events, defaults to current directory.");
 
     parseCommandLine(argc, argv);
 }
 
-const std::string &CommandLineLinux::getFile() const {
+const fs::path &CommandLineLinux::getFile() const {
     return file;
 }
 
@@ -38,8 +41,4 @@ std::string CommandLineLinux::platformInformation() {
         return "unknown";
     }
     return uts.sysname;
-}
-
-std::string CommandLineLinux::defaultFile() {
-    return std::string();
 }
