@@ -60,7 +60,7 @@ po::options_description &CommandLine::getDesc() {
 
 fs::path CommandLine::defaultFile() {
     fs::path dir { fs::current_path() };
-    fs::path file { FILE_NAME };
+    fs::path file { filename };
     return dir / file;
 }
 

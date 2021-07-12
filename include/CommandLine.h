@@ -52,7 +52,7 @@ public:
     * Get the default file location.
     * @return default file location
     */
-    static fs::path defaultFile();
+    fs::path defaultFile();
 
     /**
      * Get description.

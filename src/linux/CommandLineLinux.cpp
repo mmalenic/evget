@@ -31,12 +31,23 @@ CommandLineLinux::CommandLineLinux(int argc, char **argv) :
     listEventDevices { false } {
 
     getDesc().add_options()
-        ((fileOption.first + "," + fileOption.second).c_str(), po::value<fs::path>(&this->file)->default_value(defaultFile()), "file to store events, defaults to current directory.")
-        ((mouseDeviceOption.first + "," + mouseDeviceOption.second).c_str(), po::value<fs::path>(&this->mouseDevice)->default_value(fs::path {}), "set mouse device.")
-        ((keyDeviceOption.first + "," + keyDeviceOption.second).c_str(), po::value<fs::path>(&this->keyDevice)->default_value(fs::path {}), "set keyboard device.")
-        ((touchDeviceOption.first + "," + touchDeviceOption.second).c_str(), po::value<fs::path>(&this->touchDevice)->default_value(fs::path {}), "set touch device.")
-        ((listEventDevicesOption.first + "," + listEventDevicesOption.second).c_str(), po::value<bool>(&this->listEventDevices)->default_value(false), "lists available event devices.");
+        ((fileOption.first + "," + fileOption.second).c_str(),
+            po::value<fs::path>(&this->file)->default_value(defaultFile()),
+            "file to store events, defaults to current directory.")
+        ((mouseDeviceOption.first + "," + mouseDeviceOption.second).c_str(),
+            po::value<fs::path>(&this->mouseDevice)->default_value(fs::path {}),
+            "set mouse device.")
+        ((keyDeviceOption.first + "," + keyDeviceOption.second).c_str(),
+            po::value<fs::path>(&this->keyDevice)->default_value(fs::path {}),
+            "set keyboard device.")
+        ((touchDeviceOption.first + "," + touchDeviceOption.second).c_str(),
+            po::value<fs::path>(&this->touchDevice)->default_value(fs::path {}),
+            "set touch device.")
+        ((listEventDevicesOption.first + "," + listEventDevicesOption.second).c_str(),
+            po::value<bool>(&this->listEventDevices)->default_value(false),
+            "lists available event devices.");
 
+    checkListDevicesExclusive();
     parseCommandLine(argc, argv);
 }
 

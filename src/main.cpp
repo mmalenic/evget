@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "../include/CommandLine.h"
+#include <CommandLineLinux.h>
 
 int main(int argc, char *argv[]) {
-    CommandLine cmd {argc, argv, ""};
+    CommandLineLinux cmd {argc, argv};
     cmd.executeSimple();
     return 1;
 }
