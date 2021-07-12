@@ -20,14 +20,18 @@
 using namespace std;
 
 CommandLine::CommandLine(const string& platformInformation) :
-    desc { HELP_MESSAGE },
+    desc { "Records events from input devices and stores them in a SQLite file.\n"
+           "Written by Marko Malenic 2021.\n\n"
+           "Options" },
+    versionNumber { "1.0" },
     versionMessage {
-        "input-event-recorder (" + platformInformation + ") " + VERSION + ".\n\n"
+        "input-event-recorder (" + platformInformation + ") " + versionNumber + ".\n\n"
         "Copyright (C) 2021 Marko Malenic.\n"
         "This program comes with ABSOLUTELY NO WARRANTY.\n"
         "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
         "Written by Marko Malenic 2021.\n"
-    } {
+    },
+    filename { "events.sqlite" } {
     desc.add_options()
         ("help,h", "produce help message.")
         ("version,v", "version information.")

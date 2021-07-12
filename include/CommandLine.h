@@ -22,13 +22,6 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-static const std::string VERSION = "1.0";
-static const std::string HELP_MESSAGE =
-    "Records events from input devices and stores them in a SQLite file.\n"
-    "Written by Marko Malenic 2021.\n\n"
-    "Options";
-static const std::string FILE_NAME = "events.sqlite";
-
 /**
  * The CommandLine class controls command line options.
  */
@@ -90,7 +83,9 @@ protected:
     po::variables_map vm;
 
 private:
+    const std::string versionNumber;
     const std::string versionMessage;
+    const std::string filename;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

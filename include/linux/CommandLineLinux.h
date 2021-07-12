@@ -16,8 +16,9 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 #define INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 
-#include <string>
 #include <CommandLine.h>
+
+static const std::string FILE_OPTION = "file";
 
 class CommandLineLinux : public CommandLine {
 public:
@@ -29,12 +30,47 @@ public:
      */
     CommandLineLinux(int argc, char *argv[]);
 
+    /**
+     * Get mouse device path.
+     * @return mouse device path
+     */
+    const fs::path &getMouseDevice() const;
+
+    /**
+    * Get key device path.
+    * @return key device path
+    */
+    const fs::path &getKeyDevice() const;
+
+    /**
+    * Get touch device path.
+    * @return touch device path
+    */
+    const fs::path &getTouchDevice() const;
+
     std::string platformInformation() override;
 
     const fs::path &getFile() const override;
 
+    bool isListEventDevices() const;
+
 private:
+    std::pair<std::string, std::string> fileOption;
+    std::pair<std::string, std::string> mouseDeviceOption;
+    std::pair<std::string, std::string> keyDeviceOption;
+    std::pair<std::string, std::string> touchDeviceOption;
+    std::pair<std::string, std::string> listEventDevicesOption;
+
     fs::path file;
+    fs::path mouseDevice;
+    fs::path keyDevice;
+    fs::path touchDevice;
+    bool listEventDevices;
+
+    /**
+     * Checks to see with the list-event-devices flag is used alone{}.
+     */
+    void checkListDevicesExclusive();
 };
 
 

@@ -22,11 +22,20 @@
 using namespace std;
 
 CommandLineLinux::CommandLineLinux(int argc, char **argv) :
-    CommandLine { CommandLineLinux::platformInformation() } {
+    CommandLine { CommandLineLinux::platformInformation() },
+    fileOption {"file", "f"},
+    mouseDeviceOption {"mouse-device", "m"},
+    keyDeviceOption {"keyboard-device", "k"},
+    touchDeviceOption {"touch-device", "t"},
+    listEventDevicesOption {"list-event-devices", "l"},
+    listEventDevices { false } {
 
     getDesc().add_options()
-        ("file,f", po::value<fs::path>(&this->file)->default_value(defaultFile()),
-        "file to store events, defaults to current directory.");
+        ((fileOption.first + "," + fileOption.second).c_str(), po::value<fs::path>(&this->file)->default_value(defaultFile()), "file to store events, defaults to current directory.")
+        ((mouseDeviceOption.first + "," + mouseDeviceOption.second).c_str(), po::value<fs::path>(&this->mouseDevice)->default_value(fs::path {}), "set mouse device.")
+        ((keyDeviceOption.first + "," + keyDeviceOption.second).c_str(), po::value<fs::path>(&this->keyDevice)->default_value(fs::path {}), "set keyboard device.")
+        ((touchDeviceOption.first + "," + touchDeviceOption.second).c_str(), po::value<fs::path>(&this->touchDevice)->default_value(fs::path {}), "set touch device.")
+        ((listEventDevicesOption.first + "," + listEventDevicesOption.second).c_str(), po::value<bool>(&this->listEventDevices)->default_value(false), "lists available event devices.");
 
     parseCommandLine(argc, argv);
 }
@@ -41,4 +50,36 @@ std::string CommandLineLinux::platformInformation() {
         return "unknown";
     }
     return uts.sysname;
+}
+
+const fs::path &CommandLineLinux::getMouseDevice() const {
+    return mouseDevice;
+}
+
+const fs::path &CommandLineLinux::getKeyDevice() const {
+    return keyDevice;
+}
+
+const fs::path &CommandLineLinux::getTouchDevice() const {
+    return touchDevice;
+}
+
+void CommandLineLinux::checkListDevicesExclusive() {
+    po::variables_map vm = getVm();
+    if (
+        (vm.count(listEventDevicesOption.first)) && !(vm[listEventDevicesOption.first].defaulted()) &&
+        (
+            (vm.count(fileOption.first) && !(vm[fileOption.first].defaulted())) ||
+            (vm.count(mouseDeviceOption.first) && !(vm[mouseDeviceOption.first].defaulted())) ||
+            (vm.count(keyDeviceOption.first) && !(vm[keyDeviceOption.first].defaulted())) ||
+            (vm.count(touchDeviceOption.first) && !(vm[touchDeviceOption.first].defaulted()))
+        )
+    ) {
+        cout << "The list-event-devices option must be specified alone\n";
+        exit(EXIT_SUCCESS);
+    }
+}
+
+bool CommandLineLinux::isListEventDevices() const {
+    return listEventDevices;
 }
