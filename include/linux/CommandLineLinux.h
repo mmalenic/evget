@@ -16,26 +16,28 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 #define INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 
-#include "../include/CommandLine.h"
+#include <string>
+#include <CommandLine.h>
 
 class CommandLineLinux : public CommandLine {
-private:
-    bool listEventDevices{};
 public:
-
     /**
-     * Create the command line object.
+     * Create a CommandLine object.
      *
      * @param argc from main
      * @param argv from main
      */
     CommandLineLinux(int argc, char *argv[]);
 
-    /**
-     * get the list event devices flag.
-     * @return list event devices flag
-     */
-    bool isListEventDevices() const;
+    std::string platformInformation() override;
+
+    const std::string &getFile() const override;
+
+    std::string defaultFile() override;
+
+private:
+    std::string file;
 };
+
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINELINUX_H

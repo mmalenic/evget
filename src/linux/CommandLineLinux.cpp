@@ -13,17 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <linux/CommandLineLinux.h>
-#include <string>
+#include "linux/CommandLineLinux.h"
 
+using namespace std;
 
+CommandLineLinux::CommandLineLinux(int argc, char **argv) :
+    CommandLine { CommandLineLinux::platformInformation() } {
+    getDesc().add_options()
+        ("file,f", po::value<string>(&this->file)->default_value(CommandLineLinux::defaultFile()),
+        "file to store events, defaults to current directory.");
 
-
-CommandLineLinux::CommandLineLinux(int argc1, char *argv1[], const std::string &file, int argc, char **argv)
-        : CommandLine(argc1, argv1, file) {
-
+    parseCommandLine(argc, argv);
 }
 
-bool CommandLineLinux::isListEventDevices() const {
-    return false;
+const std::string &CommandLineLinux::getFile() const {
+    return file;
+}
+
+std::string CommandLineLinux::platformInformation() {
+    return std::string();
+}
+
+std::string CommandLineLinux::defaultFile() {
+    return std::string();
 }

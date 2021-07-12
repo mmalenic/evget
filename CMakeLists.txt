@@ -18,16 +18,11 @@ project(input-event-recorder)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include/linux
+    ${PROJECT_SOURCE_DIR}/include/win32_64
     ${PROJECT_SOURCE_DIR}/src
-)
-
-file(GLOB SOURCES
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-    "${PROJECT_SOURCE_DIR}/src/*.c"
-)
-file(GLOB INCLUDES
-    "${PROJECT_SOURCE_DIR}/include/*.h"
-    "${PROJECT_SOURCE_DIR}/include/*.hpp"
+    ${PROJECT_SOURCE_DIR}/src/linux
+    ${PROJECT_SOURCE_DIR}/src/win32_64
 )
 
 set(CMAKE_CXX_STANDARD 14)
@@ -38,6 +33,12 @@ find_package(Boost 1.71.0 COMPONENTS program_options)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    add_executable(input-event-recorder ${INCLUDES} ${SOURCES} src/linux/CommandLineLinux.cpp include/linux/CommandLineLinux.h)
+    add_executable(input-event-recorder
+        include/CommandLine.h
+        include/linux/CommandLineLinux.h
+        src/main.cpp
+        src/CommandLine.cpp
+        src/linux/CommandLineLinux.cpp
+    )
     target_link_libraries(input-event-recorder ${Boost_LIBRARIES})
 endif()

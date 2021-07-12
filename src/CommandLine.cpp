@@ -19,33 +19,24 @@
 
 using namespace std;
 
-CommandLine::CommandLine(int argc, char **argv, const string& default_file) :
-        platformInformation {"unknown" },
-        versionMessage {
-                "input-event-recorder (" + platformInformation + ") " + VERSION + ".\n\n"
+CommandLine::CommandLine(const string& platformInformation) :
+    desc { HELP_MESSAGE },
+    versionMessage {
+        "input-event-recorder (" + platformInformation + ") " + VERSION + ".\n\n"
         "Copyright (C) 2021 Marko Malenic.\n"
         "This program comes with ABSOLUTELY NO WARRANTY.\n"
         "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
         "Written by Marko Malenic 2021.\n"
-    },
-        desc { HELP_MESSAGE } {
+    } {
     desc.add_options()
         ("help,h", "produce help message.")
         ("version,v", "version information.")
-        ("file,f", po::value<string>(&this->file)->default_value(default_file),
-                "file to store events, defaults to current directory.")
         ;
-
-    parseCommandLine(argc, argv);
 }
 
-void CommandLine::parseCommandLine(int argc, char *const *argv) {
+void CommandLine::parseCommandLine(int argc, char **argv) {
     store(parse_command_line(argc, argv, desc), vm);
     notify(vm);
-}
-
-const std::string &CommandLine::getFile() const {
-    return file;
 }
 
 void CommandLine::executeSimple() {
@@ -57,4 +48,8 @@ void CommandLine::executeSimple() {
         cout << versionMessage;
         exit(EXIT_SUCCESS);
     }
+}
+
+po::options_description &CommandLine::getDesc() {
+    return desc;
 }

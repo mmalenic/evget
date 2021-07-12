@@ -34,17 +34,9 @@ public:
     /**
      * Create a CommandLine object.
      *
-     * @param argc from main
-     * @param argv from main
-     * @param file default file location
+     * @param platformInformation platform information string
      */
-    CommandLine(int argc, char *argv[], const std::string& file);
-
-    /**
-     * Get the file storing events.
-     * @return file storing events
-     */
-    const std::string &getFile() const;
+    CommandLine(const std::string& platformInformation);
 
     /**
      * Handles command line options that have simple logic, like the help message,
@@ -54,23 +46,41 @@ public:
 
     /**
     * Perform the actual command line parsing.
-    * @return
+    *
+    * @param argc from main
+    * @param argv from main
     */
-    void parseCommandLine(int argc, char *const *argv);
+    void parseCommandLine(int argc, char **argv);
 
     /**
-    * Perform the actual command line parsing.
-    * @return
-    */
-    virtual void addAdditionalOptions() = 0;
+     * Get description.
+     * @return description
+     */
+    po::options_description &getDesc();
+
+    /**
+     * Get the platform information from the system.
+     * @return platform information
+     */
+    virtual std::string platformInformation() = 0;
+
+    /**
+     * Get the file.
+     * @return the file
+     */
+    virtual const std::string &getFile() const = 0;
+
+    /**
+     * Get the default file location.
+     * @return default file location
+     */
+    virtual std::string defaultFile() = 0;
+
+protected:
+    po::options_description desc;
 
 private:
-    const std::string platformInformation;
     const std::string versionMessage;
-
-    std::string file;
-
-    po::options_description desc;
     po::variables_map vm;
 };
 
