@@ -15,6 +15,8 @@
 
 #include "linux/CommandLineLinux.h"
 
+#include "sys/utsname.h"
+
 using namespace std;
 
 CommandLineLinux::CommandLineLinux(int argc, char **argv) :
@@ -31,7 +33,11 @@ const std::string &CommandLineLinux::getFile() const {
 }
 
 std::string CommandLineLinux::platformInformation() {
-    return std::string();
+    struct utsname uts {};
+    if ((uname(&uts)) == -1) {
+        return "unknown";
+    }
+    return uts.sysname;
 }
 
 std::string CommandLineLinux::defaultFile() {
