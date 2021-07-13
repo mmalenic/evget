@@ -44,7 +44,6 @@ CommandLineLinux::CommandLineLinux(int argc, char **argv) :
             get<2>(listEventDevicesOption).c_str());
 
     parseCommandLine(argc, argv);
-    checkExclusiveOptions();
 }
 
 std::string CommandLineLinux::platformInformation() {
@@ -53,6 +52,11 @@ std::string CommandLineLinux::platformInformation() {
         return "unknown";
     }
     return uts.sysname;
+}
+
+void CommandLineLinux::execute() {
+    CommandLine::execute();
+    checkExclusiveOptions();
 }
 
 const fs::path &CommandLineLinux::getMouseDevice() const {

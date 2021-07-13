@@ -35,12 +35,6 @@ public:
     CommandLine(const std::string& platformInformation);
 
     /**
-     * Handles command line options that have simple logic, like the help message,
-     * or version information.
-     */
-    void executeSimple();
-
-    /**
     * Perform the actual command line parsing.
     *
     * @param argc from main
@@ -83,6 +77,12 @@ public:
      * @return platform information
      */
     virtual std::string platformInformation() = 0;
+
+    /**
+     * Handles command line options that have simple logic, like the help message,
+     * or version information.
+     */
+    virtual void execute();
 
 protected:
     /**

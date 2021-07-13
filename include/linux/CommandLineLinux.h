@@ -48,9 +48,11 @@ public:
     */
     const fs::path &getTouchDevice() const;
 
+    bool isListEventDevices() const;
+
     std::string platformInformation() override;
 
-    bool isListEventDevices() const;
+    void execute() override;
 
 private:
     std::tuple<std::string, std::string, std::string> mouseDeviceOption;

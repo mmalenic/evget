@@ -17,6 +17,6 @@
 
 int main(int argc, char *argv[]) {
     CommandLineLinux cmd {argc, argv};
-    cmd.executeSimple();
+    cmd.execute();
     return 1;
 }
