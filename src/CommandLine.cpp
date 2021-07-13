@@ -34,7 +34,7 @@ CommandLine::CommandLine(const string& platformInformation) :
     },
     filename { "events.sqlite" },
     fileOption { "file", "f", "file to store events, defaults to current directory." },
-    printOption { "print", "p", "only print instead of storing events." },
+    printOption { "print", "p", "print events." },
     print { false } {
 
     desc.add_options()
@@ -43,10 +43,9 @@ CommandLine::CommandLine(const string& platformInformation) :
         ((get<0>(fileOption) + "," + get<1>(fileOption)).c_str(),
             po::value<fs::path>(&this->file)->default_value(defaultFile()),
             get<2>(fileOption).c_str())
-        ((get<0>(printOption) + "," + get<0>(printOption)).c_str(),
-            po::value<bool>(&this->print)->default_value(false),
-            get<0>(printOption).c_str())
-        ;
+        ((get<0>(printOption) + "," + get<1>(printOption)).c_str(),
+            po::bool_switch(&print),
+            get<2>(printOption).c_str());
 }
 
 void CommandLine::parseCommandLine(int argc, char **argv) {
@@ -81,4 +80,16 @@ fs::path CommandLine::defaultFile() {
 
 const po::variables_map &CommandLine::getVm() const {
     return vm;
+}
+
+bool CommandLine::isPrint() const {
+    return print;
+}
+
+const tuple<std::string, std::string, std::string> &CommandLine::getFileOption() const {
+    return fileOption;
+}
+
+const tuple<std::string, std::string, std::string> &CommandLine::getPrintOption() const {
+    return printOption;
 }

@@ -61,6 +61,24 @@ public:
     const fs::path &getFile() const;
 
     /**
+     * Get file option.
+     * @return file option
+     */
+    const std::tuple<std::string, std::string, std::string> &getFileOption() const;
+
+    /**
+     * Get print option.
+     * @return print option.
+     */
+    const std::tuple<std::string, std::string, std::string> &getPrintOption() const;
+
+    /**
+     * Getter for print flag.
+     * @return print flag
+     */
+    bool isPrint() const;
+
+    /**
      * Get the platform information from the system.
      * @return platform information
      */

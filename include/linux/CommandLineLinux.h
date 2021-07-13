@@ -66,7 +66,7 @@ private:
     /**
      * Checks to see with the list-event-devices flag is used alone{}.
      */
-    void checkListDevicesExclusive();
+    void checkExclusiveOptions();
 };
 
 
