@@ -16,28 +16,63 @@
 cmake_minimum_required(VERSION 3.19)
 project(input-event-recorder)
 
-include_directories(
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/linux
-    ${PROJECT_SOURCE_DIR}/include/win32_64
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/src/linux
-    ${PROJECT_SOURCE_DIR}/src/win32_64
-)
-
 set(CMAKE_CXX_STANDARD 14)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-set(HEADERS
-    include/CommandLine.h
-    include/linux/CommandLineLinux.h
-)
-set(SOURCES
-    src/CommandLine.cpp
-    src/linux/CommandLineLinux.cpp
-)
+if(UNIX AND NOT APPLE)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/linux
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src/linux
+    )
+
+    set(HEADERS
+        include/CommandLine.h
+        include/linux/CommandLineLinux.h
+    )
+    set(SOURCES
+        src/CommandLine.cpp
+        src/linux/CommandLineLinux.cpp
+    )
+
+    if(BUILD_TESTING)
+        include_directories(
+            ${PROJECT_SOURCE_DIR}/test
+            ${PROJECT_SOURCE_DIR}/test/linux
+        )
+
+        set(TESTS
+            test/linux/CommandLineLinuxTest.cpp
+        )
+    endif()
+endif()
+
+if(WIN32)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/win32_64
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src/win32_64
+    )
+
+    set(HEADERS
+    )
+    set(SOURCES
+    )
+
+    if(BUILD_TESTING)
+        include_directories(
+            ${PROJECT_SOURCE_DIR}/test
+            ${PROJECT_SOURCE_DIR}/test/win32_64
+        )
+
+        set(TESTS
+        )
+    endif()
+endif()
 
 find_package(Boost 1.71.0 COMPONENTS program_options filesystem)
 
