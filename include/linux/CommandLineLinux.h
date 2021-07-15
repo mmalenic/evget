@@ -50,7 +50,7 @@ public:
 
     std::string platformInformation() override;
 
-    void execute() override;
+    void read_args() override;
 
 private:
     std::tuple<std::string, std::string, std::string> mouseDeviceOption;
@@ -64,7 +64,7 @@ private:
     bool listEventDevices;
 
     /**
-     * Checks to see with the list-event-devices flag is used alone{}.
+     * Checks to see with the list-event-devices flag is used alone.
      */
     void checkExclusiveOptions();
 };

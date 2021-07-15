@@ -53,7 +53,7 @@ void CommandLine::parseCommandLine(int argc, char **argv) {
     notify(vm);
 }
 
-void CommandLine::execute() {
+void CommandLine::read_args() {
     if (vm.count("help")) {
         cout << desc << "\n";
         exit(EXIT_SUCCESS);

@@ -73,16 +73,22 @@ public:
     bool isPrint() const;
 
     /**
+     * Handles command line options that have simple logic, like the help message,
+     * or version information.
+     */
+    virtual void read_args();
+
+    /**
      * Get the platform information from the system.
      * @return platform information
      */
     virtual std::string platformInformation() = 0;
 
-    /**
-     * Handles command line options that have simple logic, like the help message,
-     * or version information.
-     */
-    virtual void execute();
+    virtual ~CommandLine() = default;
+    CommandLine(const CommandLine&) = default;
+    CommandLine(CommandLine&&) = default;
+    CommandLine& operator=(const CommandLine&) = delete;
+    CommandLine& operator=(CommandLine&&) = delete;
 
 protected:
     /**
@@ -109,7 +115,7 @@ private:
     std::tuple<std::string, std::string, std::string> printOption;
 
     fs::path file;
-    bool print;
+    bool print{};
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

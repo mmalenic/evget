@@ -54,8 +54,8 @@ std::string CommandLineLinux::platformInformation() {
     return uts.sysname;
 }
 
-void CommandLineLinux::execute() {
-    CommandLine::execute();
+void CommandLineLinux::read_args() {
+    CommandLine::read_args();
     checkExclusiveOptions();
 }
 
