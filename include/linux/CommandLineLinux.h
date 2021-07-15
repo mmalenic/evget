@@ -18,6 +18,9 @@
 
 #include <CommandLine.h>
 
+/**
+ * Linux specific command line.
+ */
 class CommandLineLinux : public CommandLine {
 public:
     /**
@@ -32,21 +35,21 @@ public:
      * Get mouse device path.
      * @return mouse device path
      */
-    const fs::path &getMouseDevice() const;
+    [[nodiscard]] const fs::path &getMouseDevice() const;
 
     /**
     * Get key device path.
     * @return key device path
     */
-    const fs::path &getKeyDevice() const;
+    [[nodiscard]] const fs::path &getKeyDevice() const;
 
     /**
     * Get touch device path.
     * @return touch device path
     */
-    const fs::path &getTouchDevice() const;
+    [[nodiscard]] const fs::path &getTouchDevice() const;
 
-    bool isListEventDevices() const;
+    [[nodiscard]] bool isListEventDevices() const;
 
     std::string platformInformation() override;
 

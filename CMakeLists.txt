@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(input-event-recorder)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
@@ -32,10 +32,12 @@ if(UNIX AND NOT APPLE)
     set(HEADERS
         include/CommandLine.h
         include/linux/CommandLineLinux.h
+        include/linux/EventDeviceLister.h
     )
     set(SOURCES
         src/CommandLine.cpp
         src/linux/CommandLineLinux.cpp
+        src/linux/EventDeviceLister.cpp
     )
 
     if(BUILD_TESTING)

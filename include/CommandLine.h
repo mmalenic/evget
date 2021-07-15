@@ -17,10 +17,10 @@
 #define INPUT_EVENT_RECORDER_COMMANDLINE_H
 
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 /**
  * The CommandLine class controls command line options.
