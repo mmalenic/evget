@@ -29,16 +29,60 @@ set(CMAKE_CXX_STANDARD 14)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
+
+set(HEADERS
+    include/CommandLine.h
+    include/linux/CommandLineLinux.h
+)
+set(SOURCES
+    src/CommandLine.cpp
+    src/linux/CommandLineLinux.cpp
+)
+
 find_package(Boost 1.71.0 COMPONENTS program_options filesystem)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(input-event-recorder
-        include/CommandLine.h
-        include/linux/CommandLineLinux.h
         src/main.cpp
-        src/CommandLine.cpp
-        src/linux/CommandLineLinux.cpp
+        ${HEADERS}
+        ${SOURCES}
     )
     target_link_libraries(input-event-recorder ${Boost_LIBRARIES})
 endif()
+
+include(CTest)
+
+if(BUILD_TESTING)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/test
+        ${PROJECT_SOURCE_DIR}/test/linux
+        ${PROJECT_SOURCE_DIR}/test/win32_64
+    )
+
+    set(TESTS
+        test/linux/CommandLineLinuxTest.cpp
+    )
+
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG e2239ee6043f73722e7aa812a459f54a28552929 # release 1.11.0
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
+    add_executable(CommandLineLinuxTest
+        ${HEADERS}
+        ${SOURCES}
+        ${TESTS}
+    )
+    target_link_libraries(
+        CommandLineLinuxTest gtest_main ${Boost_LIBRARIES}
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(CommandLineLinuxTest)
+endif()
+
