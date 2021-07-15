@@ -16,7 +16,58 @@
 #include <gtest/gtest.h>
 #include <CommandLineLinux.h>
 
-TEST(CommandLineTest, HelpOption) {
-//    CommandLineLinux cmd { 2, (char **) "-h" };
-//    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(0), "Success");
+TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg[] = "-h";
+    char *argv[] = { &name[0], &arg[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
+TEST(CommandLineTest, HelpOptionLong) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg[] = "--help";
+    char *argv[] = { &name[0], &arg[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
+TEST(CommandLineTest, VersionOptionShort) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg[] = "-v";
+    char *argv[] = { &name[0], &arg[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
+TEST(CommandLineTest, VersionOptionLong) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg[] = "--version";
+    char *argv[] = { &name[0], &arg[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
+TEST(CommandLineTest, ListEventDevicesExclusive) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg0[] = "--list-event-devices";
+    char arg1[] = "--mouse-device";
+    char arg2[] = "/";
+    char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
+TEST(CommandLineTest, AtLeastOneEventDevice) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg[] = "";
+    char *argv[] = { &name[0], &arg[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    CommandLineLinux cmd { argc, argv };
+    EXPECT_EXIT(cmd.execute(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }

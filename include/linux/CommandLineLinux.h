@@ -18,8 +18,6 @@
 
 #include <CommandLine.h>
 
-static const std::string FILE_OPTION = "file";
-
 class CommandLineLinux : public CommandLine {
 public:
     /**
@@ -70,6 +68,5 @@ private:
      */
     void checkExclusiveOptions();
 };
-
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
