@@ -24,6 +24,19 @@ using namespace std;
 namespace algo = boost::algorithm;
 
 bool EventDevice::operator<(const EventDevice &eventDevice) const {
+    if (byId.has_value() && !eventDevice.byId.has_value()) {
+        return true;
+    }
+    if (!byId.has_value() && eventDevice.byId.has_value()) {
+        return false;
+    }
+    if (byPath.has_value() && !eventDevice.byPath.has_value()) {
+        return true;
+    }
+    if (!byPath.has_value() && eventDevice.byPath.has_value()) {
+        return false;
+    }
+
     string s1 = algo::to_lower_copy(eventNumber.string());
     string s2 = algo::to_lower_copy(eventDevice.eventNumber.string());
 
@@ -51,6 +64,17 @@ bool EventDevice::operator<(const EventDevice &eventDevice) const {
     }
 
     return false;
+}
+
+std::ostream &operator<<(ostream &os, const EventDevice &eventDevice) {
+    os << "       " << eventDevice.eventNumber.string() << "\n";
+    if (eventDevice.byId.has_value()) {
+        os << "by-id      <- " << eventDevice.byId.value() << "\n";
+    }
+    if (eventDevice.byPath.has_value()) {
+        os << "by-path    <- " << eventDevice.byPath.value() << "\n";
+    }
+    return os;
 }
 
 EventDeviceLister::EventDeviceLister() :
@@ -93,14 +117,21 @@ optional<fs::path> EventDeviceLister::checkSymlink(const fs::path &entry, const 
 }
 
 std::ostream &operator<<(ostream &os, const EventDeviceLister &deviceLister) {
-    for (auto device : deviceLister.eventDevices) {
-        os << "    " << device.eventNumber << "\n    <- ";
-        if (device.byId.has_value()) {
-            os << "by-id" << device.byId.value() << "\n    <- ";
+    if (!deviceLister.eventDevices.empty()) {
+        os << "Event devices with symbolic links: \n";
+    }
+    auto i = deviceLister.eventDevices.begin();
+    for (; i != deviceLister.eventDevices.end(); i++) {
+        os << *i << "\n";
+        if (!(*i).byId.has_value() && !(*i).byId.has_value()) {
+            break;
         }
-        if (device.byPath.has_value()) {
-            os << "by-path" << device.byId.value() << "\n";
-        }
+    }
+    if (i != deviceLister.eventDevices.end()) {
+        os << "Event devices without symbolic links: \n";
+    }
+    for (; i != deviceLister.eventDevices.end(); i++) {
+        os << *i;
     }
     return os;
 }
