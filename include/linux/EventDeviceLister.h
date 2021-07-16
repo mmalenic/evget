@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <map>
 
 namespace fs = std::filesystem;
 
@@ -30,6 +31,8 @@ struct EventDevice {
     fs::path eventNumber;
     std::optional<std::string> byId;
     std::optional<std::string> byPath;
+    std::optional<std::string> name;
+    std::vector<std::string> capabilities;
 
     bool operator<(const EventDevice& eventDevice) const;
     friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
@@ -58,8 +61,12 @@ public:
 
 private:
     const fs::path inputDirectory;
-    const fs::path by_id;
-    const fs::path by_path;
+    const fs::path byId;
+    const fs::path byPath;
+    const fs::path sysClass;
+    const fs::path namePath;
+    const std::map<int, std::string> eventCodeToName;
+
     std::vector<EventDevice> eventDevices;
 
     /**
@@ -70,6 +77,24 @@ private:
      * @return
      */
     static std::optional<fs::path> checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept;
+
+    /**
+     * Get name.
+     * @return name
+     */
+    [[nodiscard]] std::string getName(const fs::path& device);
+
+    /**
+     * Get capabilities.
+     * @return name
+     */
+    [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
+
+    /**
+     * Create the event codes to name map.
+     * @return event codes to name map
+     */
+    [[nodiscard]] std::map<int, std::string> getEventCodeToName();
 };
 
 #endif //INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
