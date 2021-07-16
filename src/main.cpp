@@ -14,9 +14,18 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <CommandLineLinux.h>
+#include <EventDeviceLister.h>
+#include <iostream>
+
+using namespace std;
 
 int main(int argc, char *argv[]) {
     CommandLineLinux cmd {argc, argv};
     cmd.read_args();
+
+    if (cmd.isListEventDevices()) {
+        EventDeviceLister lister {};
+        cout << lister;
+    }
     return 1;
 }

@@ -32,7 +32,7 @@ EventDeviceLister::EventDeviceLister() :
 vector<EventDevice> EventDeviceLister::listEventDevices() {
     vector<EventDevice> devices {};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
-        if (entry.is_character_file()) {
+        if (entry.is_character_file() && entry.path().filename().string().find("event") != string::npos) {
             EventDevice device = {
                 entry.path(),
                 checkSymlink(entry, by_id, "Could not read by-id directory: "),
@@ -51,9 +51,9 @@ const vector<EventDevice> &EventDeviceLister::getEventDevices() const {
 
 optional<fs::path> EventDeviceLister::checkSymlink(const fs::path &entry, const fs::path &path, const string &msg) noexcept {
     try {
-        for (auto& id_entry : fs::directory_iterator(path)) {
-            if (id_entry.is_symlink() && (fs::read_symlink(id_entry.path()) == entry)) {
-                return id_entry.path();
+        for (auto& symEntry : fs::directory_iterator(path)) {
+            if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
+                return symEntry.path();
             }
         }
     } catch (fs::filesystem_error& err) {
@@ -69,7 +69,7 @@ std::ostream &operator<<(ostream &os, const EventDeviceLister &deviceLister) {
             os << "by-id" << device.byId.value() << "\n    <- ";
         }
         if (device.byPath.has_value()) {
-            os << "by-path" << device.byId.value() << "\n    <- \n";
+            os << "by-path" << device.byId.value() << "\n";
         }
     }
     return os;

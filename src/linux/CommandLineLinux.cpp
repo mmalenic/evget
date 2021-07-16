@@ -78,23 +78,26 @@ bool CommandLineLinux::isListEventDevices() const {
 void CommandLineLinux::checkExclusiveOptions() {
     po::variables_map vm = getVm();
     if (
-        (vm.count(get<0>(listEventDevicesOption))) && !(vm[get<0>(listEventDevicesOption)].defaulted()) &&
+        (vm.count(get<0>(listEventDevicesOption))) && !vm[get<0>(listEventDevicesOption)].defaulted() &&
         (
-            (vm.count(get<0>(getFileOption())) && !(vm[get<0>(getFileOption())].defaulted())) ||
-            (vm.count(get<0>(mouseDeviceOption)) && !(vm[get<0>(mouseDeviceOption)].defaulted())) ||
-            (vm.count(get<0>(keyDeviceOption)) && !(vm[get<0>(keyDeviceOption)].defaulted())) ||
-            (vm.count(get<0>(touchDeviceOption)) && !(vm[get<0>(touchDeviceOption)].defaulted())) ||
-            (vm.count(get<0>(getPrintOption())) && !(vm[get<0>(getPrintOption())].defaulted()))
+            (vm.count(get<0>(getFileOption())) && !vm[get<0>(getFileOption())].defaulted()) ||
+            (vm.count(get<0>(mouseDeviceOption)) && !vm[get<0>(mouseDeviceOption)].defaulted()) ||
+            (vm.count(get<0>(keyDeviceOption)) && !vm[get<0>(keyDeviceOption)].defaulted()) ||
+            (vm.count(get<0>(touchDeviceOption)) && !vm[get<0>(touchDeviceOption)].defaulted()) ||
+            (vm.count(get<0>(getPrintOption())) && !vm[get<0>(getPrintOption())].defaulted())
         )
     ) {
         cout << "The list-event-devices option must be specified alone.\n";
+        cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
     }
-    if (!((vm.count(get<0>(mouseDeviceOption))) && !(vm[get<0>(mouseDeviceOption)].defaulted())) &&
-        !((vm.count(get<0>(keyDeviceOption))) && !(vm[get<0>(keyDeviceOption)].defaulted())) &&
-        !((vm.count(get<0>(touchDeviceOption))) && !(vm[get<0>(touchDeviceOption)].defaulted()))
+    if (!(vm.count(get<0>(listEventDevicesOption))) && !(vm[get<0>(listEventDevicesOption)].defaulted()) &&
+        !(vm.count(get<0>(mouseDeviceOption)) && !vm[get<0>(mouseDeviceOption)].defaulted()) &&
+        !(vm.count(get<0>(keyDeviceOption)) && !vm[get<0>(keyDeviceOption)].defaulted()) &&
+        !(vm.count(get<0>(touchDeviceOption)) && !vm[get<0>(touchDeviceOption)].defaulted())
     ) {
         cout << "At least one event device must be specified.\n";
+        cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
     }
 }
