@@ -79,6 +79,12 @@ private:
     static std::optional<fs::path> checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept;
 
     /**
+     * Create the event codes to name map.
+     * @return event codes to name map
+     */
+    [[nodiscard]] static std::map<int, std::string> getEventCodeToName();
+
+    /**
      * Get name.
      * @return name
      */
@@ -89,12 +95,6 @@ private:
      * @return name
      */
     [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
-
-    /**
-     * Create the event codes to name map.
-     * @return event codes to name map
-     */
-    [[nodiscard]] std::map<int, std::string> getEventCodeToName();
 };
 
 #endif //INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H

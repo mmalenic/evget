@@ -83,8 +83,8 @@ EventDeviceLister::EventDeviceLister() :
     inputDirectory { "/dev/input" },
     byId {inputDirectory / "by-id" },
     byPath {inputDirectory / "by-path" },
-    sysClass { "/sys/class" },
-    namePath { "name" },
+    sysClass { "/sys/class/input" },
+    namePath { "device/name" },
     eventCodeToName { getEventCodeToName() },
     eventDevices { listEventDevices() } { }
 
@@ -153,7 +153,7 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
     vector<string> vec {};
     for (const auto& type : eventCodeToName) {
         if (!!(bit[type.first / ULONG_BITS] & (1uL << (type.first % ULONG_BITS)))) {
-
+            vec.push_back(type.second);
         }
     }
 
@@ -161,11 +161,11 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
 }
 
 string EventDeviceLister::getName(const fs::path &device) {
-    fs::path fullPath = sysClass / device / namePath;
+    fs::path fullPath = sysClass / device.filename() / namePath;
     ifstream file { fullPath };
-    stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
+    string name { (istreambuf_iterator<char>(file)), istreambuf_iterator<char>() };
+    name.erase(remove(name.begin(), name.end(), '\n'), name.end());
+    return name;
 }
 
 map<int, string> EventDeviceLister::getEventCodeToName() {
