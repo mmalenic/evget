@@ -91,7 +91,7 @@ private:
     [[nodiscard]] std::string getName(const fs::path& device);
 
     /**
-     * Get capabilities.
+     * Get capabilities. The underlying ioctl calls require elevated privileges.
      * @return name
      */
     [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);

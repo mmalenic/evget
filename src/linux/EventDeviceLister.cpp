@@ -148,7 +148,13 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
 
     memset(bit, 0, sizeof(bit));
     int fd = open(device.string().c_str(), O_RDONLY);
-    ioctl(fd, EVIOCGBIT(0, EV_MAX), bit);
+
+    if (fd == -1) {
+        perror("Could not open device");
+        return {};
+    }
+
+    ioctl(fd, EVIOCGBIT(0, EV_MAX), &bit);
 
     vector<string> vec {};
     for (const auto& type : eventCodeToName) {
@@ -157,6 +163,7 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
         }
     }
 
+    close(fd);
     return vec;
 }
 
