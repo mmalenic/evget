@@ -14,13 +14,43 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <algorithm>
-#include "EventDeviceLister.h"
-#include "iostream"
+#include <boost/algorithm/string.hpp>
+#include <EventDeviceLister.h>
+#include <iostream>
+#include <regex>
 
 using namespace std;
 
+namespace algo = boost::algorithm;
+
 bool EventDevice::operator<(const EventDevice &eventDevice) const {
-    return eventNumber < eventDevice.eventNumber;
+    string s1 = algo::to_lower_copy(eventNumber.string());
+    string s2 = algo::to_lower_copy(eventDevice.eventNumber.string());
+
+    regex numOrAlpha { R"(\d+|\D+)" };
+    string nums = "0123456789";
+    auto beginS1 = std::sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
+    auto endS1 = std::sregex_iterator();
+
+    auto beginS2 = std::sregex_iterator(s2.begin(), s2.end(), numOrAlpha);
+    auto endS2 = std::sregex_iterator();
+
+    for (pair i { beginS1, beginS2 }; i.first != endS1 && i.second != endS2; ++i.first, ++i.second) {
+        string matchS1 = ((smatch) *i.first).str();
+        string matchS2 = ((smatch) *i.second).str();
+
+        if (matchS1.find_first_of(nums) != string::npos && matchS2.find_first_of(nums) != string::npos) {
+            if (stol(matchS1) < stol(matchS2)) {
+                return true;
+            }
+        } else {
+            if (matchS1 < matchS2) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 EventDeviceLister::EventDeviceLister() :

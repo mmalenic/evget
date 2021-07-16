@@ -32,6 +32,8 @@ struct EventDevice {
     std::optional<std::string> byPath;
 
     bool operator<(const EventDevice& eventDevice) const;
+
+
 };
 
 class EventDeviceLister {
