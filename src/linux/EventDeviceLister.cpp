@@ -69,12 +69,24 @@ bool EventDevice::operator<(const EventDevice &eventDevice) const {
 }
 
 std::ostream &operator<<(ostream &os, const EventDevice &eventDevice) {
-    os << "       " << eventDevice.eventNumber.string() << "\n";
+    if (eventDevice.name.has_value()) {
+        os << eventDevice.name.value();
+    }
+    os << "       " << eventDevice.eventNumber.string() << "       ";
+    if (!eventDevice.capabilities.empty()) {
+        os << "capabilities = [";
+        for (auto i { eventDevice.capabilities.begin() }; i != --eventDevice.capabilities.end(); ++i) {
+            os << *i << ", ";
+        }
+        os << eventDevice.capabilities.back() << "]";
+    }
+    os << "\n";
+
     if (eventDevice.byId.has_value()) {
-        os << "by-id      <- " << eventDevice.byId.value() << "\n";
+        os << "by-id          <- " << eventDevice.byId.value() << "\n";
     }
     if (eventDevice.byPath.has_value()) {
-        os << "by-path    <- " << eventDevice.byPath.value() << "\n";
+        os << "by-path        <- " << eventDevice.byPath.value() << "\n";
     }
     return os;
 }
