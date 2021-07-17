@@ -27,6 +27,8 @@
 #define ULONG_BITS (CHAR_BIT * sizeof (unsigned long))
 #define STRINGIFY(x) #x
 
+static constexpr size_t MIN_SPACE_GAP = 4;
+
 using namespace std;
 
 namespace algo = boost::algorithm;
@@ -98,7 +100,8 @@ EventDeviceLister::EventDeviceLister() :
     sysClass { "/sys/class/input" },
     namePath { "device/name" },
     eventCodeToName { getEventCodeToName() },
-    eventDevices { listEventDevices() } { }
+    eventDevices { listEventDevices() },
+    maxNameSize { 0 } { }
 
 vector<EventDevice> EventDeviceLister::listEventDevices() {
     vector<EventDevice> devices {};
@@ -109,12 +112,18 @@ vector<EventDevice> EventDeviceLister::listEventDevices() {
                 checkSymlink(entry, byId, "Could not read by-id directory: "),
                 checkSymlink(entry, byPath, "Could not read by-path directory: "),
                 getName(entry.path()),
-                getCapabilities(entry.path())
+                getCapabilities(entry.path()),
+                0
             };
             devices.push_back(device);
         }
     }
     sort(devices.begin(), devices.end());
+
+    for (auto device : devices) {
+        device.maxNameSize = maxNameSize;
+    }
+
     return devices;
 }
 
@@ -184,6 +193,11 @@ string EventDeviceLister::getName(const fs::path &device) {
     ifstream file { fullPath };
     string name { (istreambuf_iterator<char>(file)), istreambuf_iterator<char>() };
     name.erase(remove(name.begin(), name.end(), '\n'), name.end());
+
+    if (name.length() > maxNameSize) {
+        maxNameSize = name.length();
+    }
+
     return name;
 }
 
