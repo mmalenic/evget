@@ -28,12 +28,13 @@ namespace fs = std::filesystem;
  * Store the paths for event devices.
  */
 struct EventDevice {
-    fs::path eventNumber;
+    fs::path device;
     std::optional<std::string> byId;
     std::optional<std::string> byPath;
     std::optional<std::string> name;
     std::vector<std::string> capabilities;
     size_t maxNameSize;
+    size_t maxPathSize;
 
     bool operator<(const EventDevice& eventDevice) const;
     friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
@@ -68,8 +69,9 @@ private:
     const fs::path namePath;
     const std::map<int, std::string> eventCodeToName;
 
-    std::vector<EventDevice> eventDevices;
     size_t maxNameSize;
+    size_t maxPathSize;
+    std::vector<EventDevice> eventDevices;
 
     /**
      * Check the symlink in path to see if they point to entry.

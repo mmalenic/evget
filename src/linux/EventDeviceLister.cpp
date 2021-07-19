@@ -28,10 +28,13 @@
 #define STRINGIFY(x) #x
 
 static constexpr size_t MIN_SPACE_GAP = 4;
+static constexpr size_t SPACE_FOR_SYMLINK = 4;
+static constexpr char BY_ID[] = "by-id";
+static constexpr char BY_PATH[] = "by-path";
 
 using namespace std;
 
-namespace algo = boost::algorithm;
+namespace algorithm = boost::algorithm;
 
 bool EventDevice::operator<(const EventDevice &eventDevice) const {
     if ((byId.has_value() && !eventDevice.byId.has_value()) || (byPath.has_value() && !eventDevice.byPath.has_value())) {
@@ -40,9 +43,8 @@ bool EventDevice::operator<(const EventDevice &eventDevice) const {
     if ((!byId.has_value() && eventDevice.byId.has_value()) || (!byPath.has_value() && eventDevice.byPath.has_value())) {
         return false;
     }
-
-    string s1 = algo::to_lower_copy(eventNumber.string());
-    string s2 = algo::to_lower_copy(eventDevice.eventNumber.string());
+    string s1 = algorithm::to_lower_copy(device.string());
+    string s2 = algorithm::to_lower_copy(eventDevice.device.string());
 
     regex numOrAlpha { R"(\d+|\D+)" };
     string nums = "0123456789";
@@ -71,10 +73,17 @@ bool EventDevice::operator<(const EventDevice &eventDevice) const {
 }
 
 std::ostream &operator<<(ostream &os, const EventDevice &eventDevice) {
+    size_t deviceNameLength = 0;
+    size_t devicePathLength = eventDevice.device.string().length();
     if (eventDevice.name.has_value()) {
         os << eventDevice.name.value();
+        deviceNameLength = eventDevice.name->length();
     }
-    os << "       " << eventDevice.eventNumber.string() << "       ";
+    auto totalName = MIN_SPACE_GAP + eventDevice.maxNameSize;
+    auto spacesName = totalName - deviceNameLength;
+    auto spacesPath = (MIN_SPACE_GAP + eventDevice.maxPathSize) - devicePathLength;
+    os << string(spacesName, ' ') << eventDevice.device.string() << string(spacesPath, ' ') ;
+
     if (!eventDevice.capabilities.empty()) {
         os << "capabilities = [";
         for (auto i { eventDevice.capabilities.begin() }; i != --eventDevice.capabilities.end(); ++i) {
@@ -85,10 +94,12 @@ std::ostream &operator<<(ostream &os, const EventDevice &eventDevice) {
     os << "\n";
 
     if (eventDevice.byId.has_value()) {
-        os << "by-id          <- " << eventDevice.byId.value() << "\n";
+        auto spacesById = totalName - (sizeof(BY_ID) / sizeof(*BY_ID)) + SPACE_FOR_SYMLINK;
+        os << BY_ID << string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
     }
     if (eventDevice.byPath.has_value()) {
-        os << "by-path        <- " << eventDevice.byPath.value() << "\n";
+        auto spacesByPath = totalName - (sizeof(BY_PATH) / sizeof(*BY_PATH)) + SPACE_FOR_SYMLINK;
+        os << BY_PATH << string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
     }
     return os;
 }
@@ -100,8 +111,9 @@ EventDeviceLister::EventDeviceLister() :
     sysClass { "/sys/class/input" },
     namePath { "device/name" },
     eventCodeToName { getEventCodeToName() },
-    eventDevices { listEventDevices() },
-    maxNameSize { 0 } { }
+    maxNameSize { 0 },
+    maxPathSize { 0 },
+    eventDevices { listEventDevices() } { }
 
 vector<EventDevice> EventDeviceLister::listEventDevices() {
     vector<EventDevice> devices {};
@@ -113,15 +125,20 @@ vector<EventDevice> EventDeviceLister::listEventDevices() {
                 checkSymlink(entry, byPath, "Could not read by-path directory: "),
                 getName(entry.path()),
                 getCapabilities(entry.path()),
+                0,
                 0
             };
+            if (entry.path().string().length() > maxPathSize) {
+                maxPathSize = entry.path().string().length();
+            }
             devices.push_back(device);
         }
     }
     sort(devices.begin(), devices.end());
 
-    for (auto device : devices) {
-        device.maxNameSize = maxNameSize;
+    for (auto i = devices.begin(); i < devices.end(); ++i) {
+        i->maxNameSize = maxNameSize;
+        i->maxPathSize = maxPathSize;
     }
 
     return devices;
