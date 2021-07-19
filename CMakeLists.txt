@@ -32,11 +32,13 @@ if(UNIX AND NOT APPLE)
     set(HEADERS
         include/CommandLine.h
         include/linux/CommandLineLinux.h
+        include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
     )
     set(SOURCES
         src/CommandLine.cpp
         src/linux/CommandLineLinux.cpp
+        src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
     )
 

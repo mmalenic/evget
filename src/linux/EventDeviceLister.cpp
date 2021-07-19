@@ -20,89 +20,13 @@
 #include <regex>
 #include <fstream>
 #include <linux/input.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <EventDevice.h>
 
 #define ULONG_BITS (CHAR_BIT * sizeof (unsigned long))
 #define STRINGIFY(x) #x
 
-static constexpr size_t MIN_SPACE_GAP = 4;
-static constexpr size_t SPACE_FOR_SYMLINK = 4;
-static constexpr char BY_ID[] = "by-id";
-static constexpr char BY_PATH[] = "by-path";
-
 using namespace std;
-
-namespace algorithm = boost::algorithm;
-
-bool EventDevice::operator<(const EventDevice &eventDevice) const {
-    if ((byId.has_value() && !eventDevice.byId.has_value()) || (byPath.has_value() && !eventDevice.byPath.has_value())) {
-        return true;
-    }
-    if ((!byId.has_value() && eventDevice.byId.has_value()) || (!byPath.has_value() && eventDevice.byPath.has_value())) {
-        return false;
-    }
-    string s1 = algorithm::to_lower_copy(device.string());
-    string s2 = algorithm::to_lower_copy(eventDevice.device.string());
-
-    regex numOrAlpha { R"(\d+|\D+)" };
-    string nums = "0123456789";
-    auto beginS1 = std::sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
-    auto endS1 = std::sregex_iterator();
-
-    auto beginS2 = std::sregex_iterator(s2.begin(), s2.end(), numOrAlpha);
-    auto endS2 = std::sregex_iterator();
-
-    for (pair i { beginS1, beginS2 }; i.first != endS1 && i.second != endS2; ++i.first, ++i.second) {
-        string matchS1 = ((smatch) *i.first).str();
-        string matchS2 = ((smatch) *i.second).str();
-
-        if (matchS1.find_first_of(nums) != string::npos && matchS2.find_first_of(nums) != string::npos) {
-            if (stol(matchS1) < stol(matchS2)) {
-                return true;
-            }
-        } else {
-            if (matchS1 < matchS2) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-std::ostream &operator<<(ostream &os, const EventDevice &eventDevice) {
-    size_t deviceNameLength = 0;
-    size_t devicePathLength = eventDevice.device.string().length();
-    if (eventDevice.name.has_value()) {
-        os << eventDevice.name.value();
-        deviceNameLength = eventDevice.name->length();
-    }
-    auto totalName = MIN_SPACE_GAP + eventDevice.maxNameSize;
-    auto spacesName = totalName - deviceNameLength;
-    auto spacesPath = (MIN_SPACE_GAP + eventDevice.maxPathSize) - devicePathLength;
-    os << string(spacesName, ' ') << eventDevice.device.string() << string(spacesPath, ' ') ;
-
-    if (!eventDevice.capabilities.empty()) {
-        os << "capabilities = [";
-        for (auto i { eventDevice.capabilities.begin() }; i != --eventDevice.capabilities.end(); ++i) {
-            os << *i << ", ";
-        }
-        os << eventDevice.capabilities.back() << "]";
-    }
-    os << "\n";
-
-    if (eventDevice.byId.has_value()) {
-        auto spacesById = totalName - (sizeof(BY_ID) / sizeof(*BY_ID)) + SPACE_FOR_SYMLINK;
-        os << BY_ID << string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
-    }
-    if (eventDevice.byPath.has_value()) {
-        auto spacesByPath = totalName - (sizeof(BY_PATH) / sizeof(*BY_PATH)) + SPACE_FOR_SYMLINK;
-        os << BY_PATH << string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
-    }
-    return os;
-}
 
 EventDeviceLister::EventDeviceLister() :
     inputDirectory { "/dev/input" },
@@ -119,27 +43,26 @@ vector<EventDevice> EventDeviceLister::listEventDevices() {
     vector<EventDevice> devices {};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
         if (entry.is_character_file() && entry.path().filename().string().find("event") != string::npos) {
+            auto name = getName(entry.path());
             EventDevice device = {
                 entry.path(),
                 checkSymlink(entry, byId, "Could not read by-id directory: "),
                 checkSymlink(entry, byPath, "Could not read by-path directory: "),
                 getName(entry.path()),
-                getCapabilities(entry.path()),
-                0,
-                0
+                getCapabilities(entry.path())
             };
-            if (entry.path().string().length() > maxPathSize) {
-                maxPathSize = entry.path().string().length();
+
+            if (name.length() > EventDevice::getMaxNameSize()) {
+                EventDevice::setMaxNameSize(name.length());
             }
+            if (entry.path().string().length() > EventDevice::getMaxPathSize()) {
+                EventDevice::setMaxPathSize(entry.path().string().length());
+            }
+
             devices.push_back(device);
         }
     }
     sort(devices.begin(), devices.end());
-
-    for (auto i = devices.begin(); i < devices.end(); ++i) {
-        i->maxNameSize = maxNameSize;
-        i->maxPathSize = maxPathSize;
-    }
 
     return devices;
 }
@@ -167,7 +90,7 @@ ostream &operator<<(ostream &os, const EventDeviceLister &deviceLister) {
     }
     auto i = deviceLister.eventDevices.begin();
     for (; i != deviceLister.eventDevices.end(); i++) {
-        if (!(*i).byId.has_value() && !(*i).byId.has_value()) {
+        if (!(*i).getById().has_value() && !(*i).getById().has_value()) {
             break;
         }
         os << *i << "\n";
