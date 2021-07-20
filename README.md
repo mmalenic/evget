@@ -1,30 +1,36 @@
-[comment]: <> (Copyright &#40;C&#41; Marko Malenic 2021.)
+[comment]: <> (MIT License)
 
-[comment]: <> ()
+[comment]: <> (Copyright &#40;c&#41; 2021 Marko Malenic)
 
-[comment]: <> (This program is free software: you can redistribute it and/or modify)
+[comment]: <> (Permission is hereby granted, free of charge, to any person obtaining a copy)
 
-[comment]: <> (it under the terms of the GNU General Public License as published by)
+[comment]: <> (of this software and associated documentation files &#40;the "Software"&#41;, to deal)
 
-[comment]: <> (the Free Software Foundation, either version 3 of the License, or)
+[comment]: <> (in the Software without restriction, including without limitation the rights)
 
-[comment]: <> (&#40;at your option&#41; any later version.)
+[comment]: <> (to use, copy, modify, merge, publish, distribute, sublicense, and/or sell)
 
-[comment]: <> ()
+[comment]: <> (copies of the Software, and to permit persons to whom the Software is)
 
-[comment]: <> (This program is distributed in the hope that it will be useful,)
+[comment]: <> (furnished to do so, subject to the following conditions:)
 
-[comment]: <> (but WITHOUT ANY WARRANTY; without even the implied warranty of)
+[comment]: <> (The above copyright notice and this permission notice shall be included in all)
 
-[comment]: <> (MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the)
+[comment]: <> (copies or substantial portions of the Software.)
 
-[comment]: <> (GNU General Public License for more details.)
+[comment]: <> (THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR)
 
-[comment]: <> ()
+[comment]: <> (IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,)
 
-[comment]: <> (You should have received a copy of the GNU General Public License)
+[comment]: <> (FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE)
 
-[comment]: <> (along with this program.  If not, see <https://www.gnu.org/licenses/>.)
+[comment]: <> (AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER)
+
+[comment]: <> (LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,)
+
+[comment]: <> (OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE)
+
+[comment]: <> (SOFTWARE.)
 
 # mouse-movement-recorder
 Simple recorder that shows mouse coordinates
