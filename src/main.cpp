@@ -19,12 +19,12 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
-    CommandLineLinux cmd {argc, argv};
+int main(int argc, char* argv[]) {
+    CommandLineLinux cmd{argc, argv};
     cmd.read_args();
 
     if (cmd.isListEventDevices()) {
-        EventDeviceLister lister {};
+        EventDeviceLister lister{};
         cout << lister;
     }
     return 1;

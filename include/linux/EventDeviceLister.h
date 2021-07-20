@@ -16,15 +16,16 @@
 #ifndef INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
 #define INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
 
-#include <filesystem>
-#include <string>
-#include <vector>
-#include <optional>
-#include <map>
 #include "EventDevice.h"
 
+#include <filesystem>
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+
 class EventDeviceLister {
-public:
+  public:
     /**
      * Create an event device lister.
      */
@@ -40,11 +41,11 @@ public:
      * Get event devices.
      * @return event devices
      */
-    [[nodiscard]] const std::vector<EventDevice> &getEventDevices() const;
+    [[nodiscard]] const std::vector<EventDevice>& getEventDevices() const;
 
     friend std::ostream& operator<<(std::ostream& os, const EventDeviceLister& deviceLister);
 
-private:
+  private:
     const fs::path inputDirectory;
     const fs::path byId;
     const fs::path byPath;
@@ -63,7 +64,8 @@ private:
      * @param msg
      * @return
      */
-    static std::optional<fs::path> checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept;
+    static std::optional<fs::path>
+    checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept;
 
     /**
      * Create the event codes to name map.
@@ -84,4 +86,4 @@ private:
     [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
 };
 
-#endif //INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
+#endif // INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H

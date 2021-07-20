@@ -40,7 +40,7 @@ public:
     * @param argc from main
     * @param argv from main
     */
-    void parseCommandLine(int argc, char **argv);
+    void parseCommandLine(int argc, char** argv);
 
     /**
     * Get the default file location.
@@ -52,19 +52,19 @@ public:
     * Get the file.
     * @return the file
     */
-    const fs::path &getFile() const;
+    const fs::path& getFile() const;
 
     /**
      * Get file option.
      * @return file option
      */
-    const std::tuple<std::string, std::string, std::string> &getFileOption() const;
+    const std::tuple<std::string, std::string, std::string>& getFileOption() const;
 
     /**
      * Get print option.
      * @return print option.
      */
-    const std::tuple<std::string, std::string, std::string> &getPrintOption() const;
+    const std::tuple<std::string, std::string, std::string>& getPrintOption() const;
 
     /**
      * Getter for print flag.
@@ -95,13 +95,13 @@ protected:
      * Get description.
      * @return description
      */
-    po::options_description &getDesc();
+    po::options_description& getDesc();
 
     /**
      * Get the variables map.
      * @return variables map
      */
-    const po::variables_map &getVm() const;
+    const po::variables_map& getVm() const;
 
 private:
     po::options_description desc;

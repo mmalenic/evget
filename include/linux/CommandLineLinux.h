@@ -29,25 +29,25 @@ public:
      * @param argc from main
      * @param argv from main
      */
-    CommandLineLinux(int argc, char *argv[]);
+    CommandLineLinux(int argc, char* argv[]);
 
     /**
      * Get mouse device path.
      * @return mouse device path
      */
-    [[nodiscard]] const fs::path &getMouseDevice() const;
+    [[nodiscard]] const fs::path& getMouseDevice() const;
 
     /**
-    * Get key device path.
-    * @return key device path
-    */
-    [[nodiscard]] const fs::path &getKeyDevice() const;
+     * Get key device path.
+     * @return key device path
+     */
+    [[nodiscard]] const fs::path& getKeyDevice() const;
 
     /**
-    * Get touch device path.
-    * @return touch device path
-    */
-    [[nodiscard]] const fs::path &getTouchDevice() const;
+     * Get touch device path.
+     * @return touch device path
+     */
+    [[nodiscard]] const fs::path& getTouchDevice() const;
 
     [[nodiscard]] bool isListEventDevices() const;
 
@@ -72,4 +72,4 @@ private:
     void checkExclusiveOptions();
 };
 
-#endif //INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
+#endif // INPUT_EVENT_RECORDER_COMMANDLINELINUX_H

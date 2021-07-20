@@ -15,32 +15,33 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <EventDeviceLister.h>
-#include <iostream>
-#include <regex>
-#include <fstream>
-#include <linux/input.h>
-#include <fcntl.h>
 #include <EventDevice.h>
+#include <EventDeviceLister.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <linux/input.h>
+#include <regex>
 
-#define ULONG_BITS (CHAR_BIT * sizeof (unsigned long))
+#define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
 
 using namespace std;
 
-EventDeviceLister::EventDeviceLister() :
-    inputDirectory { "/dev/input" },
-    byId {inputDirectory / "by-id" },
-    byPath {inputDirectory / "by-path" },
-    sysClass { "/sys/class/input" },
-    namePath { "device/name" },
-    eventCodeToName { getEventCodeToName() },
-    maxNameSize { 0 },
-    maxPathSize { 0 },
-    eventDevices { listEventDevices() } { }
+EventDeviceLister::EventDeviceLister()
+    : inputDirectory{"/dev/input"},
+    byId{inputDirectory / "by-id"},
+    byPath{inputDirectory / "by-path"},
+    sysClass{"/sys/class/input"},
+    namePath{"device/name"},
+    eventCodeToName{getEventCodeToName()},
+    maxNameSize{0},
+    maxPathSize{0},
+    eventDevices{listEventDevices()} {
+}
 
 vector<EventDevice> EventDeviceLister::listEventDevices() {
-    vector<EventDevice> devices {};
+    vector<EventDevice> devices{};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
         if (entry.is_character_file() && entry.path().filename().string().find("event") != string::npos) {
             auto name = getName(entry.path());
@@ -67,11 +68,12 @@ vector<EventDevice> EventDeviceLister::listEventDevices() {
     return devices;
 }
 
-const vector<EventDevice> &EventDeviceLister::getEventDevices() const {
+const vector<EventDevice>& EventDeviceLister::getEventDevices() const {
     return eventDevices;
 }
 
-optional<fs::path> EventDeviceLister::checkSymlink(const fs::path &entry, const fs::path &path, const string &msg) noexcept {
+optional<fs::path>
+EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const string& msg) noexcept {
     try {
         for (auto& symEntry : fs::directory_iterator(path)) {
             if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
@@ -84,7 +86,7 @@ optional<fs::path> EventDeviceLister::checkSymlink(const fs::path &entry, const 
     return {};
 }
 
-ostream &operator<<(ostream &os, const EventDeviceLister &deviceLister) {
+ostream& operator<<(ostream& os, const EventDeviceLister& deviceLister) {
     if (!deviceLister.eventDevices.empty()) {
         os << "Event devices with symbolic links: \n";
     }
@@ -104,7 +106,7 @@ ostream &operator<<(ostream &os, const EventDeviceLister &deviceLister) {
     return os;
 }
 
-vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
+vector<string> EventDeviceLister::getCapabilities(const fs::path& device) {
     unsigned long bit[EV_MAX];
 
     memset(bit, 0, sizeof(bit));
@@ -117,7 +119,7 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
 
     ioctl(fd, EVIOCGBIT(0, EV_MAX), &bit);
 
-    vector<string> vec {};
+    vector<string> vec{};
     for (const auto& type : eventCodeToName) {
         if (!!(bit[type.first / ULONG_BITS] & (1uL << (type.first % ULONG_BITS)))) {
             vec.push_back(type.second);
@@ -128,10 +130,10 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path &device) {
     return vec;
 }
 
-string EventDeviceLister::getName(const fs::path &device) {
+string EventDeviceLister::getName(const fs::path& device) {
     fs::path fullPath = sysClass / device.filename() / namePath;
-    ifstream file { fullPath };
-    string name { (istreambuf_iterator<char>(file)), istreambuf_iterator<char>() };
+    ifstream file{fullPath};
+    string name{(istreambuf_iterator<char>(file)), istreambuf_iterator<char>()};
     name.erase(remove(name.begin(), name.end(), '\n'), name.end());
 
     if (name.length() > maxNameSize) {
@@ -143,18 +145,18 @@ string EventDeviceLister::getName(const fs::path &device) {
 
 map<int, string> EventDeviceLister::getEventCodeToName() {
     return {
-        {EV_SYN, STRINGIFY(EV_SYN)},
-        {EV_KEY, STRINGIFY(EV_KEY)},
-        {EV_REL, STRINGIFY(EV_REL)},
-        {EV_ABS, STRINGIFY(EV_ABS)},
-        {EV_MSC, STRINGIFY(EV_MSC)},
-        {EV_SW, STRINGIFY(EV_SW)},
-        {EV_LED, STRINGIFY(EV_LED)},
-        {EV_SND, STRINGIFY(EV_SND)},
-        {EV_REP, STRINGIFY(EV_REP)},
-        {EV_FF, STRINGIFY(EV_FF)},
-        {EV_PWR, STRINGIFY(EV_PWR)},
+        {EV_SYN,       STRINGIFY(EV_SYN)},
+        {EV_KEY,       STRINGIFY(EV_KEY)},
+        {EV_REL,       STRINGIFY(EV_REL)},
+        {EV_ABS,       STRINGIFY(EV_ABS)},
+        {EV_MSC,       STRINGIFY(EV_MSC)},
+        {EV_SW,        STRINGIFY(EV_SW)},
+        {EV_LED,       STRINGIFY(EV_LED)},
+        {EV_SND,       STRINGIFY(EV_SND)},
+        {EV_REP,       STRINGIFY(EV_REP)},
+        {EV_FF,        STRINGIFY(EV_FF)},
+        {EV_PWR,       STRINGIFY(EV_PWR)},
         {EV_FF_STATUS, STRINGIFY(EV_FF_STATUS)},
-        {EV_MAX, STRINGIFY(EV_MAX)},
+        {EV_MAX,       STRINGIFY(EV_MAX)},
     };
 }

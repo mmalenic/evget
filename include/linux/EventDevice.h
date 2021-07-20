@@ -35,39 +35,41 @@ public:
      * @param name device name
      * @param capabilities capabilities
      */
-    EventDevice(fs::path device, const std::optional<std::string> &byId,
-                const std::optional<std::string> &byPath, const std::optional<std::string> &name,
-                const std::vector<std::string> &capabilities);
+    EventDevice(
+        fs::path device, const std::optional<std::string>& byId,
+        const std::optional<std::string>& byPath, const std::optional<std::string>& name,
+        const std::vector<std::string>& capabilities
+    );
 
     /**
      * Get device.
      * @return device
      */
-    [[nodiscard]] const fs::path &getDevice() const;
+    [[nodiscard]] const fs::path& getDevice() const;
 
     /**
      * Get by id.
      * @return by id
      */
-    [[nodiscard]] const std::optional<std::string> &getById() const;
+    [[nodiscard]] const std::optional<std::string>& getById() const;
 
     /**
      * Get by path.
      * @return by path
      */
-    [[nodiscard]] const std::optional<std::string> &getByPath() const;
+    [[nodiscard]] const std::optional<std::string>& getByPath() const;
 
     /**
      * Get name.
      * @return name
      */
-    [[nodiscard]] const std::optional<std::string> &getName() const;
+    [[nodiscard]] const std::optional<std::string>& getName() const;
 
     /**
      * Get capabilities.
      * @return capabilities
      */
-    [[nodiscard]] const std::vector<std::string> &getCapabilities() const;
+    [[nodiscard]] const std::vector<std::string>& getCapabilities() const;
 
     /**
      * Get max name size.

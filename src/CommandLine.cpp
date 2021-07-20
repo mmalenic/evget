@@ -20,35 +20,41 @@
 using namespace std;
 
 CommandLine::CommandLine(const string& platformInformation) :
-    desc { "Records events from input devices and stores them in a SQLite file.\n"
-           "Written by Marko Malenic 2021.\n\n"
-           "Options" },
-    vm {},
-    versionNumber { "1.0" },
-    versionMessage {
-        "input-event-recorder (" + platformInformation + ") " + versionNumber + ".\n\n"
-        "Copyright (C) 2021 Marko Malenic.\n"
-        "This program comes with ABSOLUTELY NO WARRANTY.\n"
-        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
-        "Written by Marko Malenic 2021.\n"
+    desc{
+        "Records events from input devices and stores them in a SQLite file.\n"
+        "Written by Marko Malenic 2021.\n\n"
+        "Options"
     },
-    filename { "events.sqlite" },
-    fileOption { "file", "f", "file to store events, defaults to current directory." },
-    printOption { "print", "p", "print events." },
-    print { false } {
+    vm{},
+    versionNumber{"1.0"},
+    versionMessage{
+        "input-event-recorder (" + platformInformation + ") " + versionNumber
+            + ".\n\n" "Copyright (C) 2021 Marko Malenic.\n"
+              "This program comes with ABSOLUTELY NO WARRANTY.\n"
+              "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
+              "Written by Marko Malenic 2021.\n"
+    },
+    filename{"events.sqlite"},
+    fileOption{"file", "f", "file to store events, defaults to current directory."},
+    printOption{"print", "p", "print events."},
+    print{false} {
 
     desc.add_options()
-        ("help,h", "produce help message.")
-        ("version,v", "version information.")
-        ((get<0>(fileOption) + "," + get<1>(fileOption)).c_str(),
-            po::value<fs::path>(&this->file)->default_value(defaultFile()),
-            get<2>(fileOption).c_str())
-        ((get<0>(printOption) + "," + get<1>(printOption)).c_str(),
-            po::bool_switch(&print),
-            get<2>(printOption).c_str());
+            ("help,h", "produce help message.")
+            ("version,v", "version information.")
+            (
+                (get<0>(fileOption) + "," + get<1>(fileOption)).c_str(),
+                po::value<fs::path>(&this->file)->default_value(defaultFile()),
+                get<2>(fileOption).c_str()
+            )
+            (
+                (get<0>(printOption) + "," + get<1>(printOption)).c_str(),
+                po::bool_switch(&print),
+                get<2>(printOption).c_str()
+            );
 }
 
-void CommandLine::parseCommandLine(int argc, char **argv) {
+void CommandLine::parseCommandLine(int argc, char** argv) {
     store(parse_command_line(argc, argv, desc), vm);
     notify(vm);
 }
@@ -64,21 +70,21 @@ void CommandLine::read_args() {
     }
 }
 
-const fs::path &CommandLine::getFile() const {
+const fs::path& CommandLine::getFile() const {
     return file;
 }
 
-po::options_description &CommandLine::getDesc() {
+po::options_description& CommandLine::getDesc() {
     return desc;
 }
 
 fs::path CommandLine::defaultFile() {
-    fs::path dir { fs::current_path() };
-    fs::path storageFile { filename };
+    fs::path dir{fs::current_path()};
+    fs::path storageFile{filename};
     return dir / storageFile;
 }
 
-const po::variables_map &CommandLine::getVm() const {
+const po::variables_map& CommandLine::getVm() const {
     return vm;
 }
 
@@ -86,10 +92,10 @@ bool CommandLine::isPrint() const {
     return print;
 }
 
-const tuple<std::string, std::string, std::string> &CommandLine::getFileOption() const {
+const tuple<std::string, std::string, std::string>& CommandLine::getFileOption() const {
     return fileOption;
 }
 
-const tuple<std::string, std::string, std::string> &CommandLine::getPrintOption() const {
+const tuple<std::string, std::string, std::string>& CommandLine::getPrintOption() const {
     return printOption;
 }
