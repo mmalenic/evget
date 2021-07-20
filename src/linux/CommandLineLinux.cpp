@@ -69,9 +69,10 @@ std::string CommandLineLinux::platformInformation() {
     return uts.sysname;
 }
 
-void CommandLineLinux::read_args() {
-    CommandLine::read_args();
-    checkExclusiveOptions();
+void CommandLineLinux::readArgs() {
+    CommandLine::simpleArgs();
+    CommandLine::readArgs();
+    validateArgs();
 }
 
 const fs::path& CommandLineLinux::getMouseDevice() const {
@@ -90,7 +91,7 @@ bool CommandLineLinux::isListEventDevices() const {
     return listEventDevices;
 }
 
-void CommandLineLinux::checkExclusiveOptions() {
+void CommandLineLinux::validateArgs() {
     po::variables_map vm = getVm();
     if ((vm.count(get<0>(listEventDevicesOption))) && !vm[get<0>(listEventDevicesOption)].defaulted()
         && ((vm.count(get<0>(getFileOption())) && !vm[get<0>(getFileOption())].defaulted())
@@ -98,7 +99,7 @@ void CommandLineLinux::checkExclusiveOptions() {
             || (vm.count(get<0>(keyDeviceOption)) && !vm[get<0>(keyDeviceOption)].defaulted())
             || (vm.count(get<0>(touchDeviceOption)) && !vm[get<0>(touchDeviceOption)].defaulted())
             || (vm.count(get<0>(getPrintOption())) && !vm[get<0>(getPrintOption())].defaulted()))) {
-        cout << "The list-event-devices option must be specified alone.\n";
+        cout << "The list-event-devices option can only be specified with non-conflicting options.\n";
         cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
     }

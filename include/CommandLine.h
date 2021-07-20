@@ -25,10 +25,12 @@
 
 #include <boost/program_options.hpp>
 #include <filesystem>
+#include <spdlog/spdlog.h>
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
 
+class level;
 /**
  * The CommandLine class controls command line options.
  */
@@ -80,10 +82,21 @@ public:
     bool isPrint() const;
 
     /**
+     * Get the log level.
+     * @return
+     */
+    spdlog::level::level_enum getLogLevel() const;
+
+    /**
      * Handles command line options that have simple logic, like the help message,
      * or version information.
      */
-    virtual void read_args();
+    void simpleArgs();
+
+    /**
+     * Checks to see that the options are correctly specified, and finalises object.
+     */
+    virtual void readArgs();
 
     /**
      * Get the platform information from the system.
@@ -120,9 +133,12 @@ private:
 
     std::tuple<std::string, std::string, std::string> fileOption;
     std::tuple<std::string, std::string, std::string> printOption;
+    std::tuple<std::string, std::string, std::string> logLevelOption;
 
     fs::path file;
     bool print{};
+    std::string logLevelString;
+    spdlog::level::level_enum logLevel;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

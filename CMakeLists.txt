@@ -24,9 +24,6 @@ cmake_minimum_required(VERSION 3.19)
 project(input-event-recorder)
 
 set(CMAKE_CXX_STANDARD 20)
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
 
 if(UNIX AND NOT APPLE)
     include_directories(
@@ -86,28 +83,42 @@ if(WIN32)
     endif()
 endif()
 
-find_package(Boost 1.71.0 COMPONENTS program_options filesystem)
+include(FetchContent)
 
-if(Boost_FOUND)
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS program_options filesystem)
+
+find_package(spdlog QUIET)
+if (NOT spdlog_FOUND)
+    FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG        v1.8.5
+    )
+
+    FetchContent_GetProperties(spdlog)
+    if (NOT spdlog_POPULATED)
+        FetchContent_Populate(spdlog)
+        add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
+    endif()
+endif()
+find_package(spdlog REQUIRED)
+
+if(Boost_FOUND AND spdlog_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(input-event-recorder
         src/main.cpp
         ${HEADERS}
         ${SOURCES}
     )
-    target_link_libraries(input-event-recorder ${Boost_LIBRARIES})
+    target_link_libraries(input-event-recorder ${Boost_LIBRARIES} spdlog::spdlog)
 endif()
 
 include(CTest)
 
 if(BUILD_TESTING)
-    include_directories(
-        ${PROJECT_SOURCE_DIR}/test
-        ${PROJECT_SOURCE_DIR}/test/linux
-        ${PROJECT_SOURCE_DIR}/test/win32_64
-    )
-
-    include(FetchContent)
     FetchContent_Declare(
             googletest
             GIT_REPOSITORY https://github.com/google/googletest.git
@@ -116,16 +127,14 @@ if(BUILD_TESTING)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
 
-    add_executable(CommandLineLinuxTest
+    add_executable(Test
         ${HEADERS}
         ${SOURCES}
         ${TESTS}
     )
-    target_link_libraries(
-        CommandLineLinuxTest gtest_main ${Boost_LIBRARIES}
-    )
+    target_link_libraries(Test gtest_main ${Boost_LIBRARIES} spdlog::spdlog)
 
     include(GoogleTest)
-    gtest_discover_tests(CommandLineLinuxTest)
+    gtest_discover_tests(Test)
 endif()
 

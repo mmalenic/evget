@@ -22,6 +22,7 @@
 
 #include "../include/CommandLine.h"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 using namespace std;
@@ -44,7 +45,9 @@ CommandLine::CommandLine(const string& platformInformation) :
     filename{"events.sqlite"},
     fileOption{"file", "f", "file to store events, defaults to current directory."},
     printOption{"print", "p", "print events."},
-    print{false} {
+    logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\"."},
+    print{false},
+    logLevelString{"warning"} {
 
     desc.add_options()
             ("help,h", "produce help message.")
@@ -58,6 +61,11 @@ CommandLine::CommandLine(const string& platformInformation) :
                 (get<0>(printOption) + "," + get<1>(printOption)).c_str(),
                 po::bool_switch(&print),
                 get<2>(printOption).c_str()
+            )
+            (
+                (get<0>(logLevelOption) + "," + get<1>(logLevelOption)).c_str(),
+                po::value<string>(&logLevelString)->default_value("warning"),
+                get<2>(logLevelOption).c_str()
             );
 }
 
@@ -71,7 +79,7 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
     notify(vm);
 }
 
-void CommandLine::read_args() {
+void CommandLine::simpleArgs() {
     if (vm.count("help")) {
         cout << desc << "\n";
         exit(EXIT_SUCCESS);
@@ -79,6 +87,23 @@ void CommandLine::read_args() {
     if (vm.count("version")) {
         cout << versionMessage;
         exit(EXIT_SUCCESS);
+    }
+}
+
+void CommandLine::readArgs() {
+    if (vm.count(get<0>(logLevelOption)) && !vm[get<0>(logLevelOption)].defaulted()) {
+        auto option = vm[get<0>(logLevelOption)].as<string>();
+
+        if (find(begin(spdlog::level::level_names), end(spdlog::level::level_names), option) == end(spdlog::level::level_names)) {
+            cout << "Invalid log level setting.\nValid values are:\n\n[";
+            for (auto i{begin(spdlog::level::level_names)}; i != prev(end(spdlog::level::level_names)); ++i) {
+                cout << *i << ", ";
+            }
+            cout << *prev(end(spdlog::level::level_names)) << "]\n";
+            exit(EXIT_SUCCESS);
+        }
+
+        logLevel =  spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
     }
 }
 
@@ -110,4 +135,8 @@ const tuple<std::string, std::string, std::string>& CommandLine::getFileOption()
 
 const tuple<std::string, std::string, std::string>& CommandLine::getPrintOption() const {
     return printOption;
+}
+
+spdlog::level::level_enum CommandLine::getLogLevel() const {
+    return logLevel;
 }

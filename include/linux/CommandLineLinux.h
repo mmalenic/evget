@@ -56,11 +56,14 @@ public:
      */
     [[nodiscard]] const fs::path& getTouchDevice() const;
 
+    /**
+     * Get the list event devices option.
+     * @return is list event devices
+     */
     [[nodiscard]] bool isListEventDevices() const;
 
     std::string platformInformation() override;
-
-    void read_args() override;
+    void readArgs() override;
 
 private:
     std::tuple<std::string, std::string, std::string> mouseDeviceOption;
@@ -74,9 +77,9 @@ private:
     bool listEventDevices;
 
     /**
-     * Checks to see with the list-event-devices flag is used alone.
+     * Validates arguments.
      */
-    void checkExclusiveOptions();
+    void validateArgs();
 };
 
 #endif // INPUT_EVENT_RECORDER_COMMANDLINELINUX_H

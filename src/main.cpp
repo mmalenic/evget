@@ -23,12 +23,15 @@
 #include <CommandLineLinux.h>
 #include <EventDeviceLister.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
     CommandLineLinux cmd{argc, argv};
-    cmd.read_args();
+    cmd.readArgs();
+
+    spdlog::set_level(cmd.getLogLevel());
 
     if (cmd.isListEventDevices()) {
         EventDeviceLister lister{};
