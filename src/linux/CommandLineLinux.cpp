@@ -39,17 +39,17 @@ CommandLineLinux::CommandLineLinux(int argc, char** argv) :
     getDesc().add_options()
                  (
                      (get<0>(mouseDeviceOption) + "," + get<1>(mouseDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->mouseDevice)->default_value(fs::path{}),
+                     po::value<fs::path>(&this->mouseDevice),
                      get<2>(mouseDeviceOption).c_str()
                  )
                  (
                      (get<0>(keyDeviceOption) + "," + get<1>(keyDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->keyDevice)->default_value(fs::path{}),
+                     po::value<fs::path>(&this->keyDevice),
                      get<2>(keyDeviceOption).c_str()
                  )
                  (
                      (get<0>(touchDeviceOption) + "," + get<1>(touchDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->touchDevice)->default_value(fs::path{}),
+                     po::value<fs::path>(&this->touchDevice),
                      get<2>(touchDeviceOption).c_str()
                  )
                  (
@@ -103,8 +103,8 @@ void CommandLineLinux::validateArgs() {
         cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
     }
-    if (vm[get<0>(listEventDevicesOption)].defaulted() && vm[get<0>(mouseDeviceOption)].defaulted()
-        && vm[get<0>(keyDeviceOption)].defaulted() && vm[get<0>(touchDeviceOption)].defaulted()) {
+    if (vm[get<0>(listEventDevicesOption)].defaulted() && !vm.count(get<0>(mouseDeviceOption))
+        && !vm.count(get<0>(keyDeviceOption)) && !vm.count(get<0>(touchDeviceOption))) {
         cout << "At least one event device must be specified.\n";
         cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);

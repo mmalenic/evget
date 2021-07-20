@@ -94,6 +94,12 @@ public:
     void simpleArgs();
 
     /**
+     * Get the valid log levels.
+     * @return valid log levels
+     */
+    static std::string validLogLevels();
+
+    /**
      * Checks to see that the options are correctly specified, and finalises object.
      */
     virtual void readArgs();

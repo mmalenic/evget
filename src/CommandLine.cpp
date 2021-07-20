@@ -30,7 +30,7 @@ using namespace std;
 
 CommandLine::CommandLine(const string& platformInformation) :
     desc{
-        "Records events from input devices and stores them in a SQLite file.\n"
+        "Records events from input devices and stores them in an SQLite file.\n"
         "Written by Marko Malenic 2021.\n\n"
         "Options"
     },
@@ -46,7 +46,7 @@ CommandLine::CommandLine(const string& platformInformation) :
     filename{"events.sqlite"},
     fileOption{"file", "f", "file to store events, defaults to current directory."},
     printOption{"print", "p", "print events."},
-    logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\"."},
+    logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\".\n" + validLogLevels()},
     print{false},
     logLevelString{"warning"} {
 
@@ -100,20 +100,7 @@ void CommandLine::readArgs() {
             return;
         }
         if (spdlog::level::from_str(option) == spdlog::level::off) {
-            cout << "Invalid log level setting.\nValid values are:\n\n[";
-            auto levels = {
-                spdlog::level::to_string_view(spdlog::level::trace).data(),
-                spdlog::level::to_string_view(spdlog::level::debug).data(),
-                spdlog::level::to_string_view(spdlog::level::info).data(),
-                spdlog::level::to_string_view(spdlog::level::warn).data(),
-                spdlog::level::to_string_view(spdlog::level::err).data(),
-                spdlog::level::to_string_view(spdlog::level::critical).data(),
-                spdlog::level::to_string_view(spdlog::level::off).data()
-            };
-            for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
-                cout << *i << ", ";
-            }
-            cout << *prev(levels.end()) << "]\n";
+            cout << "Invalid log level setting.\n" << validLogLevels();
             exit(EXIT_SUCCESS);
         }
 
@@ -153,4 +140,27 @@ const tuple<std::string, std::string, std::string>& CommandLine::getPrintOption(
 
 spdlog::level::level_enum CommandLine::getLogLevel() const {
     return logLevel;
+}
+
+string CommandLine::validLogLevels() {
+    auto levels = {
+        spdlog::level::to_string_view(spdlog::level::trace).data(),
+        spdlog::level::to_string_view(spdlog::level::debug).data(),
+        spdlog::level::to_string_view(spdlog::level::info).data(),
+        spdlog::level::to_string_view(spdlog::level::warn).data(),
+        spdlog::level::to_string_view(spdlog::level::err).data(),
+        spdlog::level::to_string_view(spdlog::level::critical).data(),
+        spdlog::level::to_string_view(spdlog::level::off).data()
+    };
+
+    string stringOut;
+    stringOut += "Valid values are:\n[";
+    for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
+        stringOut += *i;
+        stringOut += ", ";
+    }
+    stringOut += *prev(levels.end());
+    stringOut += "]";
+
+    return stringOut;
 }
