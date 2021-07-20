@@ -95,18 +95,12 @@ if (NOT spdlog_FOUND)
     FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.8.5
+        GIT_TAG        v1.9.0
     )
-
-    FetchContent_GetProperties(spdlog)
-    if (NOT spdlog_POPULATED)
-        FetchContent_Populate(spdlog)
-        add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
-    endif()
+    FetchContent_MakeAvailable(spdlog)
 endif()
-find_package(spdlog REQUIRED)
 
-if(Boost_FOUND AND spdlog_FOUND)
+if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(input-event-recorder
         src/main.cpp

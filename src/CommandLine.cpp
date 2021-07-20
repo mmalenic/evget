@@ -23,6 +23,7 @@
 #include "../include/CommandLine.h"
 
 #include <spdlog/spdlog.h>
+#include <spdlog/common.h>
 #include <iostream>
 
 using namespace std;
@@ -94,12 +95,25 @@ void CommandLine::readArgs() {
     if (vm.count(get<0>(logLevelOption)) && !vm[get<0>(logLevelOption)].defaulted()) {
         auto option = vm[get<0>(logLevelOption)].as<string>();
 
-        if (find(begin(spdlog::level::level_names), end(spdlog::level::level_names), option) == end(spdlog::level::level_names)) {
+        if (option == "off") {
+            logLevel =  spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
+            return;
+        }
+        if (spdlog::level::from_str(option) == spdlog::level::off) {
             cout << "Invalid log level setting.\nValid values are:\n\n[";
-            for (auto i{begin(spdlog::level::level_names)}; i != prev(end(spdlog::level::level_names)); ++i) {
+            auto levels = {
+                spdlog::level::to_string_view(spdlog::level::trace).data(),
+                spdlog::level::to_string_view(spdlog::level::debug).data(),
+                spdlog::level::to_string_view(spdlog::level::info).data(),
+                spdlog::level::to_string_view(spdlog::level::warn).data(),
+                spdlog::level::to_string_view(spdlog::level::err).data(),
+                spdlog::level::to_string_view(spdlog::level::critical).data(),
+                spdlog::level::to_string_view(spdlog::level::off).data()
+            };
+            for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
                 cout << *i << ", ";
             }
-            cout << *prev(end(spdlog::level::level_names)) << "]\n";
+            cout << *prev(levels.end()) << "]\n";
             exit(EXIT_SUCCESS);
         }
 
