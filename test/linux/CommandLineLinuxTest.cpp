@@ -70,5 +70,6 @@ TEST(CommandLineTest, AtLeastOneEventDevice) { // NOLINT(cert-err58-cpp)
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
     CommandLineLinux cmd { argc, argv };
+    cmd.read_args();
     EXPECT_EXIT(cmd.read_args(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }

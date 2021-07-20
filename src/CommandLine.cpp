@@ -55,7 +55,12 @@ CommandLine::CommandLine(const string& platformInformation) :
 }
 
 void CommandLine::parseCommandLine(int argc, char** argv) {
-    store(parse_command_line(argc, argv, desc), vm);
+    try {
+        store(parse_command_line(argc, argv, desc), vm);
+    } catch (po::error &error) {
+        cout << "Error: " << error.what();
+        exit(EXIT_SUCCESS);
+    }
     notify(vm);
 }
 

@@ -95,10 +95,8 @@ void CommandLineLinux::checkExclusiveOptions() {
         cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
     }
-    if (!(vm.count(get<0>(listEventDevicesOption))) && !(vm[get<0>(listEventDevicesOption)].defaulted())
-        && !(vm.count(get<0>(mouseDeviceOption)) && !vm[get<0>(mouseDeviceOption)].defaulted())
-        && !(vm.count(get<0>(keyDeviceOption)) && !vm[get<0>(keyDeviceOption)].defaulted())
-        && !(vm.count(get<0>(touchDeviceOption)) && !vm[get<0>(touchDeviceOption)].defaulted())) {
+    if (vm[get<0>(listEventDevicesOption)].defaulted() && vm[get<0>(mouseDeviceOption)].defaulted()
+        && vm[get<0>(keyDeviceOption)].defaulted() && vm[get<0>(touchDeviceOption)].defaulted()) {
         cout << "At least one event device must be specified.\n";
         cout << getDesc() << "\n";
         exit(EXIT_SUCCESS);
