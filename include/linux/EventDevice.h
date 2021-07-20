@@ -36,8 +36,10 @@ public:
      * @param capabilities capabilities
      */
     EventDevice(
-        fs::path device, const std::optional<std::string>& byId,
-        const std::optional<std::string>& byPath, const std::optional<std::string>& name,
+        fs::path device,
+        const std::optional<std::string>& byId,
+        const std::optional<std::string>& byPath,
+        const std::optional<std::string>& name,
         const std::vector<std::string>& capabilities
     );
 

@@ -28,8 +28,8 @@
 
 using namespace std;
 
-EventDeviceLister::EventDeviceLister()
-    : inputDirectory{"/dev/input"},
+EventDeviceLister::EventDeviceLister() :
+    inputDirectory{"/dev/input"},
     byId{inputDirectory / "by-id"},
     byPath{inputDirectory / "by-path"},
     sysClass{"/sys/class/input"},

@@ -42,8 +42,7 @@ EventDevice::EventDevice(
     const optional<std::string>& byPath,
     const optional<std::string>& name,
     const vector<std::string>& capabilities
-)
-    : device{std::move(device)}, byId{byId}, byPath{byPath}, name{name}, capabilities{capabilities} {
+) : device{std::move(device)}, byId{byId}, byPath{byPath}, name{name}, capabilities{capabilities} {
 }
 
 const std::optional<string>& EventDevice::getById() const {

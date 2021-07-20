@@ -25,7 +25,7 @@
 #include <vector>
 
 class EventDeviceLister {
-  public:
+public:
     /**
      * Create an event device lister.
      */
@@ -45,7 +45,7 @@ class EventDeviceLister {
 
     friend std::ostream& operator<<(std::ostream& os, const EventDeviceLister& deviceLister);
 
-  private:
+private:
     const fs::path inputDirectory;
     const fs::path byId;
     const fs::path byPath;
@@ -64,8 +64,11 @@ class EventDeviceLister {
      * @param msg
      * @return
      */
-    static std::optional<fs::path>
-    checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept;
+    static std::optional<fs::path> checkSymlink(
+        const fs::path& entry,
+        const fs::path& path,
+        const std::string& msg
+    ) noexcept;
 
     /**
      * Create the event codes to name map.
