@@ -97,7 +97,7 @@ public:
      */
     static void setMaxPathSize(size_t newMaxPathSize);
 
-    bool operator<(const EventDevice& eventDevice) const;
+    std::partial_ordering operator<=>(const EventDevice& eventDevice) const;
     friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
 
 private:

@@ -38,14 +38,14 @@ const fs::path& EventDevice::getDevice() const {
 
 EventDevice::EventDevice(
     fs::path device,
-    const optional<std::string>& byId,
-    const optional<std::string>& byPath,
-    const optional<std::string>& name,
-    const vector<std::string>& capabilities
-) : device{std::move(device)}, byId{byId}, byPath{byPath}, name{name}, capabilities{capabilities} {
+    const optional<string>& byId,
+    const optional<string>& byPath,
+    const optional<string>& name,
+    const vector<string>& capabilities
+) : device{move(device)}, byId{byId}, byPath{byPath}, name{name}, capabilities{capabilities} {
 }
 
-const std::optional<string>& EventDevice::getById() const {
+const optional<string>& EventDevice::getById() const {
     return byId;
 }
 
@@ -77,22 +77,22 @@ void EventDevice::setMaxPathSize(size_t newMaxPathSize) {
     EventDevice::maxPathSize = newMaxPathSize;
 }
 
-bool EventDevice::operator<(const EventDevice& eventDevice) const {
-    if ((byId.has_value() && !eventDevice.byId.has_value()) ||
-        (byPath.has_value() && !eventDevice.byPath.has_value())) {
-        return true;
+partial_ordering EventDevice::operator<=>(const EventDevice& eventDevice) const {
+    if ((byId.has_value() && !eventDevice.byId.has_value())
+        || (byPath.has_value() && !eventDevice.byPath.has_value())) {
+        return partial_ordering::less;
     }
     if ((!byId.has_value() && eventDevice.byId.has_value()) ||
         (!byPath.has_value() && eventDevice.byPath.has_value())) {
-        return false;
+        return partial_ordering::greater;
     }
     string s1 = algorithm::to_lower_copy(device.string());
     string s2 = algorithm::to_lower_copy(eventDevice.device.string());
 
     regex numOrAlpha{R"(\d+|\D+)"};
     string nums = "0123456789";
-    auto beginS1 = std::sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
-    auto endS1 = std::sregex_iterator();
+    auto beginS1 = sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
+    auto endS1 = sregex_iterator();
 
     auto beginS2 = std::sregex_iterator(s2.begin(), s2.end(), numOrAlpha);
     auto endS2 = std::sregex_iterator();
@@ -103,19 +103,19 @@ bool EventDevice::operator<(const EventDevice& eventDevice) const {
 
         if (matchS1.find_first_of(nums) != string::npos && matchS2.find_first_of(nums) != string::npos) {
             if (stol(matchS1) < stol(matchS2)) {
-                return true;
+                return partial_ordering::less;
             }
         } else {
             if (matchS1 < matchS2) {
-                return true;
+                return partial_ordering::less;
             }
         }
     }
 
-    return false;
+    return partial_ordering::unordered;
 }
 
-std::ostream& operator<<(ostream& os, const EventDevice& eventDevice) {
+ostream& operator<<(ostream& os, const EventDevice& eventDevice) {
     size_t deviceNameLength = 0;
     size_t devicePathLength = eventDevice.device.string().length();
     if (eventDevice.name.has_value()) {
