@@ -50,6 +50,7 @@ if(UNIX AND NOT APPLE)
 
         set(TESTS
             test/linux/CommandLineLinuxTest.cpp
+            test/linux/EventDeviceTest.cpp
         )
     endif()
 endif()
@@ -97,10 +98,6 @@ if(BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test
         ${PROJECT_SOURCE_DIR}/test/linux
         ${PROJECT_SOURCE_DIR}/test/win32_64
-    )
-
-    set(TESTS
-        test/linux/CommandLineLinuxTest.cpp
     )
 
     include(FetchContent)

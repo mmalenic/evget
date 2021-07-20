@@ -13,8 +13,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include "CommandLineLinux.h"
+
 #include <gtest/gtest.h>
-#include <CommandLineLinux.h>
 
 TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
     char name[] = "";

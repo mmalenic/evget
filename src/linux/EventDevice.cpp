@@ -13,12 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <boost/algorithm/string.hpp>
+#include "EventDevice.h"
 
+#include <boost/algorithm/string.hpp>
 #include <utility>
 #include <regex>
-
-#include "EventDevice.h"
 
 using namespace std;
 
