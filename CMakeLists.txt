@@ -25,6 +25,9 @@ project(input-event-recorder)
 
 set(CMAKE_CXX_STANDARD 20)
 
+option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
+option(DOWNLOAD_TEST_DEPENDENCIES "Download test dependencies if they are missing." ON)
+
 if(UNIX AND NOT APPLE)
     include_directories(
         ${PROJECT_SOURCE_DIR}/include
@@ -83,50 +86,26 @@ if(WIN32)
     endif()
 endif()
 
-include(FetchContent)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
 
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.71.0 REQUIRED COMPONENTS program_options filesystem)
-
-find_package(spdlog QUIET)
-if (NOT spdlog_FOUND)
-    FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.9.0
-    )
-    FetchContent_MakeAvailable(spdlog)
-endif()
-
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    add_executable(input-event-recorder
-        src/main.cpp
-        ${HEADERS}
-        ${SOURCES}
-    )
-    target_link_libraries(input-event-recorder ${Boost_LIBRARIES} spdlog::spdlog)
-endif()
+include_directories(${Boost_INCLUDE_DIRS})
+add_executable(input-event-recorder
+    src/main.cpp
+    ${HEADERS}
+    ${SOURCES}
+)
+target_link_libraries(input-event-recorder CONAN_PKG::boost CONAN_PKG::spdlog)
 
 include(CTest)
 
 if(BUILD_TESTING)
-    FetchContent_Declare(
-            googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG e2239ee6043f73722e7aa812a459f54a28552929 # release 1.11.0
-    )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-
     add_executable(Test
         ${HEADERS}
         ${SOURCES}
         ${TESTS}
     )
-    target_link_libraries(Test gtest_main ${Boost_LIBRARIES} spdlog::spdlog)
+    target_link_libraries(Test CONAN_PKG::gtest CONAN_PKG::boost CONAN_PKG::spdlog)
 
     include(GoogleTest)
     gtest_discover_tests(Test)

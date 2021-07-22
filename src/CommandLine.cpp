@@ -23,7 +23,6 @@
 #include "../include/CommandLine.h"
 
 #include <spdlog/spdlog.h>
-#include <spdlog/common.h>
 #include <iostream>
 
 using namespace std;
@@ -48,7 +47,8 @@ CommandLine::CommandLine(const string& platformInformation) :
     printOption{"print", "p", "print events."},
     logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\".\n" + validLogLevels()},
     print{false},
-    logLevelString{"warning"} {
+    logLevelString{"warning"},
+    logLevel{spdlog::level::warn}{
 
     desc.add_options()
             ("help,h", "produce help message.")
