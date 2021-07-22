@@ -7,11 +7,13 @@ class App(ConanFile):
     generators = 'cmake'
     options = {
         'build_tests': [True, False],
-        'download_dependencies': [True, False]
+        'download_dependencies': [True, False],
+        'shared': [True, False]
     }
     default_options = {
         'build_tests': True,
-        'download_dependencies': True
+        'download_dependencies': True,
+        'shared': True
     }
 
     def requirements(self):
