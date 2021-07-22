@@ -2,6 +2,7 @@ from conans import ConanFile, CMake
 
 
 class App(ConanFile):
+    name = 'evget'
     settings = 'os', 'arch', 'compiler', 'build_type'
     requires = 'boost/1.76.0', 'spdlog/1.9.0'
     generators = 'cmake'

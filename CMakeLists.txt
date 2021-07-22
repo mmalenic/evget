@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.19)
-project(input-event-recorder)
+project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -99,12 +99,12 @@ else()
     conan_basic_setup(TARGETS)
 endif()
 
-add_executable(input-event-recorder
+add_executable(evget
     src/main.cpp
     ${HEADERS}
     ${SOURCES}
 )
-target_link_libraries(input-event-recorder CONAN_PKG::boost CONAN_PKG::spdlog)
+target_link_libraries(evget CONAN_PKG::boost CONAN_PKG::spdlog)
 
 include(CTest)
 

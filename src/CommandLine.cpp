@@ -36,7 +36,7 @@ CommandLine::CommandLine(const string& platformInformation) :
     vm{},
     versionNumber{"1.0"},
     versionMessage{
-        "input-event-recorder (" + platformInformation + ") " + versionNumber
+        "evget (" + platformInformation + ") " + versionNumber
             + ".\n\n" "Copyright (C) 2021 Marko Malenic.\n"
               "This program comes with ABSOLUTELY NO WARRANTY.\n"
               "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
