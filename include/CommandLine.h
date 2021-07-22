@@ -82,10 +82,22 @@ public:
     bool isPrint() const;
 
     /**
+     * Getter for raw events flag.
+     * @return raw events flag
+     */
+    bool isRawEvents() const;
+
+    /**
      * Get the log level.
      * @return
      */
     spdlog::level::level_enum getLogLevel() const;
+
+    /**
+     * Get the file type.
+     * @return file type
+     */
+    const std::string& getFiletype() const;
 
     /**
      * Handles command line options that have simple logic, like the help message,
@@ -138,11 +150,15 @@ private:
     const std::string filename;
 
     std::tuple<std::string, std::string, std::string> fileOption;
+    std::tuple<std::string, std::string, std::string> filetypeOption;
     std::tuple<std::string, std::string, std::string> printOption;
+    std::tuple<std::string, std::string, std::string> useRawEventsOption;
     std::tuple<std::string, std::string, std::string> logLevelOption;
 
     fs::path file;
-    bool print{};
+    std::string filetype;
+    bool print;
+    bool useRawEvents;
     std::string logLevelString;
     spdlog::level::level_enum logLevel;
 };

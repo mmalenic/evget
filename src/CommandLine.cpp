@@ -44,11 +44,15 @@ CommandLine::CommandLine(const string& platformInformation) :
     },
     filename{"events.sqlite"},
     fileOption{"file", "f", "file to store events, defaults to current directory."},
+    filetypeOption{"filetype", "e", "filetype to use, if specified, overrides the ending on the filename."},
     printOption{"print", "p", "print events."},
+    useRawEventsOption{"use-raw-events", "r", "use raw system events instead of universal cross platform events."},
     logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\".\n" + validLogLevels()},
+    filetype{"sqlite"},
     print{false},
+    useRawEvents{false},
     logLevelString{"warning"},
-    logLevel{spdlog::level::warn}{
+    logLevel{spdlog::level::warn} {
 
     desc.add_options()
             ("help,h", "produce help message.")
@@ -59,13 +63,23 @@ CommandLine::CommandLine(const string& platformInformation) :
                 get<2>(fileOption).c_str()
             )
             (
+                (get<0>(filetypeOption) + "," + get<1>(filetypeOption)).c_str(),
+                po::value<string>(&this->filetype)->default_value(filetype),
+                get<2>(filetypeOption).c_str()
+            )
+            (
                 (get<0>(printOption) + "," + get<1>(printOption)).c_str(),
                 po::bool_switch(&print),
                 get<2>(printOption).c_str()
             )
             (
+                (get<0>(useRawEventsOption) + "," + get<1>(useRawEventsOption)).c_str(),
+                po::bool_switch(&useRawEvents),
+                get<2>(useRawEventsOption).c_str()
+            )
+            (
                 (get<0>(logLevelOption) + "," + get<1>(logLevelOption)).c_str(),
-                po::value<string>(&logLevelString)->default_value("warning"),
+                po::value<string>(&logLevelString)->default_value(logLevelString),
                 get<2>(logLevelOption).c_str()
             );
 }
@@ -73,7 +87,7 @@ CommandLine::CommandLine(const string& platformInformation) :
 void CommandLine::parseCommandLine(int argc, char** argv) {
     try {
         store(parse_command_line(argc, argv, desc), vm);
-    } catch (po::error &error) {
+    } catch (po::error& error) {
         cout << "Error: " << error.what();
         exit(EXIT_SUCCESS);
     }
@@ -96,7 +110,7 @@ void CommandLine::readArgs() {
         auto option = vm[get<0>(logLevelOption)].as<string>();
 
         if (option == "off") {
-            logLevel =  spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
+            logLevel = spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
             return;
         }
         if (spdlog::level::from_str(option) == spdlog::level::off) {
@@ -104,7 +118,12 @@ void CommandLine::readArgs() {
             exit(EXIT_SUCCESS);
         }
 
-        logLevel =  spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
+        logLevel = spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
+    }
+    if ((vm.count(get<0>(filetypeOption)) && !vm[get<0>(filetypeOption)].defaulted())
+        && !(vm.count(get<0>(fileOption)) && !vm[get<0>(fileOption)].defaulted())) {
+        cout << "The filetype option can only be specified if the file option is also specified.\n";
+        exit(EXIT_SUCCESS);
     }
 }
 
@@ -163,4 +182,12 @@ string CommandLine::validLogLevels() {
     stringOut += "]";
 
     return stringOut;
+}
+
+const string& CommandLine::getFiletype() const {
+    return filetype;
+}
+
+bool CommandLine::isRawEvents() const {
+    return useRawEvents;
 }
