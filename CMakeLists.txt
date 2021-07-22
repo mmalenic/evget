@@ -56,6 +56,7 @@ if(UNIX AND NOT APPLE)
 
         set(TESTS
             test/linux/CommandLineLinuxTest.cpp
+            test/linux/EventDeviceListerTest.cpp
             test/linux/EventDeviceTest.cpp
         )
     endif()
