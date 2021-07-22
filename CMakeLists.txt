@@ -26,7 +26,6 @@ project(input-event-recorder)
 set(CMAKE_CXX_STANDARD 20)
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
-option(DOWNLOAD_TEST_DEPENDENCIES "Download test dependencies if they are missing." ON)
 
 if(UNIX AND NOT APPLE)
     include_directories(
@@ -86,10 +85,20 @@ if(WIN32)
     endif()
 endif()
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+if (DOWNLOAD_DEPENDENCIES)
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+            "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
 
-include_directories(${Boost_INCLUDE_DIRS})
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+    conan_cmake_run(REQUIRES boost/1.76.0 spdlog/1.9.0 gtest/cci.20210126 BASIC_SETUP CMAKE_TARGETS)
+else()
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS)
+endif()
+
 add_executable(input-event-recorder
     src/main.cpp
     ${HEADERS}
