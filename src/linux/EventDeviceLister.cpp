@@ -29,6 +29,7 @@
 #include <iostream>
 #include <linux/input.h>
 #include <regex>
+#include <spdlog/spdlog.h>
 
 #define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
@@ -88,7 +89,7 @@ EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, con
             }
         }
     } catch (fs::filesystem_error& err) {
-        cout << msg << err.what() << "\n";
+        spdlog::warn(msg + err.what());
     }
     return {};
 }
@@ -120,7 +121,8 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path& device) {
     int fd = open(device.string().c_str(), O_RDONLY);
 
     if (fd == -1) {
-        perror("Could not open device");
+        string err = strerror(errno);
+        spdlog::warn("Could not open device to read capabilities: " + err);
         return {};
     }
 
