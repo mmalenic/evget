@@ -29,7 +29,7 @@ using namespace std;
 
 CommandLine::CommandLine(const string& platformInformation) :
     desc{
-        "Records events from input devices and stores them in an SQLite file.\n"
+        "Shows events from input devices.\n"
         "Written by Marko Malenic 2021.\n\n"
         "Options"
     },
