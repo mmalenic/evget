@@ -24,11 +24,27 @@
 #define EVGET_INCLUDE_EVENTDATA_H
 
 #include <any>
+#include <vector>
 
-enum EventType {
+/**
+ * Types to represent events.
+ */
+enum DataType {
     str,
     time,
     number
+};
+
+/**
+ * Device formats for event data.
+ */
+enum EventDeviceFormat {
+    raw,
+    mousemove,
+    mouseclick,
+    mousewheel,
+    key,
+    touch
 };
 
 /**
@@ -41,7 +57,7 @@ public:
      * @param type type
      * @param entry entry
      */
-    void addEntry(EventType type, std::any entry);
+    void addEntry(EventDeviceFormat format, DataType type, std::any entry);
 
     /**
      * Get the resulting event data.
@@ -50,7 +66,7 @@ public:
     EventData finish();
 
 private:
-    std::vector<std::pair<EventType, std::any>> eventData;
+    std::vector<std::tuple<EventDeviceFormat, DataType, std::any>> eventData;
 };
 
 #endif //EVGET_INCLUDE_EVENTDATA_H
