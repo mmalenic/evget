@@ -23,12 +23,44 @@
 #include "../include/CommandLine.h"
 
 #include <spdlog/spdlog.h>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 
 using namespace std;
 
+namespace algorithm = boost::algorithm;
+
+static constexpr char SQLITE_STRING[] = "sqlite";
+static constexpr char CSV_STRING[] = "csv";
+
+std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
+    switch (filetype) {
+    case Filetype::sqlite:os << SQLITE_STRING;
+        break;
+    case csv:os << CSV_STRING;
+        break;
+    }
+    return os;
+}
+
+std::istream& operator>>(std::istream& in, Filetype& algorithm) {
+    string token{};
+    in >> token;
+    algorithm::to_lower(token);
+
+    if (token == SQLITE_STRING) {
+        algorithm = Filetype::sqlite;
+    } else if (token == CSV_STRING) {
+        algorithm = Filetype::csv;
+    } else {
+        throw po::validation_error(po::validation_error::invalid_option_value, "filetype", token);
+    }
+    return in;
+}
+
 CommandLine::CommandLine(const string& platformInformation) :
     desc{
+        "Usage: evget [OPTION]...\n"
         "Shows events from input devices.\n"
         "Written by Marko Malenic 2021.\n\n"
         "Options"
@@ -44,11 +76,20 @@ CommandLine::CommandLine(const string& platformInformation) :
     },
     filename{"events.sqlite"},
     fileOption{"file", "f", "file to store events, defaults to current directory."},
-    filetypeOption{"filetype", "e", "filetype to use, if specified, overrides the ending on the filename."},
+    filetypeOption{
+        "filetype",
+        "e",
+        string{"filetype to use, if specified, overrides the ending on the filename.\nValid values are:\n[ "}
+            + SQLITE_STRING + ", " + CSV_STRING + " ]"
+    },
     printOption{"print", "p", "print events."},
     useRawEventsOption{"use-raw-events", "r", "use raw system events instead of universal cross platform events."},
-    logLevelOption{"log-level", "u", "log level to print messages at, defaults to \"warning\".\n" + validLogLevels()},
-    filetype{"sqlite"},
+    logLevelOption{
+        "log-level",
+        "u",
+        "log level to print messages at, defaults to \"warning\".\nValid values are:\n" + validLogLevels()
+    },
+    filetype{extractFiletype(filename)},
     print{false},
     useRawEvents{false},
     logLevelString{"warning"},
@@ -64,7 +105,7 @@ CommandLine::CommandLine(const string& platformInformation) :
             )
             (
                 (get<0>(filetypeOption) + "," + get<1>(filetypeOption)).c_str(),
-                po::value<string>(&this->filetype)->default_value(filetype),
+                po::value<Filetype>(&this->filetype)->default_value(filetype),
                 get<2>(filetypeOption).c_str()
             )
             (
@@ -114,7 +155,8 @@ void CommandLine::readArgs() {
             return;
         }
         if (spdlog::level::from_str(option) == spdlog::level::off) {
-            cout << "Invalid log level setting.\n" << validLogLevels();
+            cout << "Invalid log level setting.\n";
+            cout << desc << "\n";
             exit(EXIT_SUCCESS);
         }
 
@@ -173,21 +215,38 @@ string CommandLine::validLogLevels() {
     };
 
     string stringOut;
-    stringOut += "Valid values are:\n[";
+    stringOut += "[ ";
     for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
         stringOut += *i;
         stringOut += ", ";
     }
     stringOut += *prev(levels.end());
-    stringOut += "]";
+    stringOut += " ]";
 
     return stringOut;
 }
 
-const string& CommandLine::getFiletype() const {
+const Filetype& CommandLine::getFiletype() const {
     return filetype;
 }
 
 bool CommandLine::isRawEvents() const {
     return useRawEvents;
+}
+
+Filetype CommandLine::extractFiletype(const string& str) {
+    fs::path path{str};
+    string ext{path.extension()};
+    ext.erase(0, 1);
+    istringstream stream{ext};
+    Filetype filetype{};
+    try {
+        stream >> filetype;
+    } catch (po::validation_error& err) {
+        spdlog::warn(
+            string{"Cannot extract filetype from filename alone: "} + err.what() + " Using default filetype sqlite."
+        );
+        return sqlite;
+    }
+    return filetype;
 }

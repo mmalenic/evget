@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
-if(UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE)
     include_directories(
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/linux
@@ -48,7 +48,7 @@ if(UNIX AND NOT APPLE)
         src/linux/EventDeviceLister.cpp
     )
 
-    if(BUILD_TESTING)
+    if (BUILD_TESTING)
         include_directories(
             ${PROJECT_SOURCE_DIR}/test
             ${PROJECT_SOURCE_DIR}/test/linux
@@ -62,7 +62,7 @@ if(UNIX AND NOT APPLE)
     endif()
 endif()
 
-if(WIN32)
+if (WIN32)
     include_directories(
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/win32_64
@@ -87,7 +87,7 @@ if(WIN32)
 endif()
 
 if (DOWNLOAD_DEPENDENCIES)
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+    if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
         file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
             "${CMAKE_BINARY_DIR}/conan.cmake")
@@ -109,7 +109,7 @@ target_link_libraries(evget CONAN_PKG::boost CONAN_PKG::spdlog)
 
 include(CTest)
 
-if(BUILD_TESTING)
+if (BUILD_TESTING)
     add_executable(Test
         ${HEADERS}
         ${SOURCES}

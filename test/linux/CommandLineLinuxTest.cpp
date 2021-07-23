@@ -70,6 +70,17 @@ TEST(CommandLineTest, IncorrectLogLevel) { // NOLINT(cert-err58-cpp)
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
+TEST(CommandLineTest, IncorrectFileType) { // NOLINT(cert-err58-cpp)
+    char name[] = "";
+    char arg0[] = "-m";
+    char arg1[] = "/";
+    char arg2[] = "-e";
+    char arg3[] = "";
+    char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], &arg3[0], nullptr };
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+    EXPECT_EXIT(CommandLineLinux(argc, argv), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
 TEST(CommandLineTest, ListEventDevicesExclusive) { // NOLINT(cert-err58-cpp)
     char name[] = "";
     char arg0[] = "--list-event-devices";

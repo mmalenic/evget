@@ -28,7 +28,7 @@
 
 using namespace std;
 
-TEST(EventDeviceListerTest, ContainsAllDevices) { // NOLINT(cert-err58-cpp)
+TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
     vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
 
     vector<bool> results {};
@@ -49,7 +49,7 @@ TEST(EventDeviceListerTest, ContainsAllDevices) { // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
 }
 
-TEST(EventDeviceListerTest, ContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
     vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
 
     vector<bool> results {};
@@ -62,7 +62,7 @@ TEST(EventDeviceListerTest, ContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
 }
 
-TEST(EventDeviceListerTest, ContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
     vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
 
     vector<bool> results {};

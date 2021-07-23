@@ -30,7 +30,14 @@
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
 
-class level;
+/**
+ * Available filetypes.
+ */
+enum Filetype {
+    csv,
+    sqlite
+};
+
 /**
  * The CommandLine class controls command line options.
  */
@@ -97,7 +104,7 @@ public:
      * Get the file type.
      * @return file type
      */
-    const std::string& getFiletype() const;
+    const Filetype& getFiletype() const;
 
     /**
      * Handles command line options that have simple logic, like the help message,
@@ -112,6 +119,13 @@ public:
     static std::string validLogLevels();
 
     /**
+     * Extract the filetyoe from the string.
+     * @param str string to use
+     * @return filetype
+     */
+    static Filetype extractFiletype(const std::string& str);
+
+    /**
      * Checks to see that the options are correctly specified, and finalises object.
      */
     virtual void readArgs();
@@ -121,6 +135,9 @@ public:
      * @return platform information
      */
     virtual std::string platformInformation() = 0;
+
+    friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
+    friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
 
     virtual ~CommandLine() = default;
     CommandLine(const CommandLine&) = default;
@@ -156,7 +173,7 @@ private:
     std::tuple<std::string, std::string, std::string> logLevelOption;
 
     fs::path file;
-    std::string filetype;
+    Filetype filetype;
     bool print;
     bool useRawEvents;
     std::string logLevelString;
