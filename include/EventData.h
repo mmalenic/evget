@@ -25,13 +25,14 @@
 
 #include <any>
 #include <vector>
+#include <string>
 
 /**
  * Types to represent events.
  */
 enum DataType {
     str,
-    time,
+    eventtime,
     number
 };
 
@@ -53,11 +54,16 @@ enum EventDeviceFormat {
 class EventData {
 public:
     /**
+     * Create the event data.
+     */
+    EventData();
+
+    /**
      * Add an entry to the data container
      * @param type type
      * @param entry entry
      */
-    void addEntry(EventDeviceFormat format, DataType type, std::any entry);
+    void addEntry(EventDeviceFormat format, DataType type, const std::any& entry);
 
     /**
      * Get the resulting event data.
@@ -66,7 +72,23 @@ public:
     EventData finish();
 
 private:
-    std::vector<std::tuple<EventDeviceFormat, DataType, std::any>> eventData;
+    bool dataCreated;
+    std::vector<std::tuple<EventDeviceFormat, DataType, const std::any&>> eventData;
+};
+
+/**
+ * Exception used for an unsupported operation.
+ */
+class UnsupportedOperationException : public std::exception {
+public:
+    /**
+     * Create exception with message.
+     * @param message message
+     */
+    UnsupportedOperationException(std::string message = "Unsupported Operation.");
+    const char* what() const noexcept override;
+private:
+    std::string message;
 };
 
 #endif //EVGET_INCLUDE_EVENTDATA_H

@@ -21,3 +21,8 @@
 // SOFTWARE.
 
 #include "../include/EventHandler.h"
+
+template<typename T>
+EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T> transformer) :
+    storage{storage}, transformer{transformer} {
+}

@@ -37,7 +37,7 @@ public:
      * Create the event listener with storage.
      * @param storage storage
      */
-    EventHandler(Storage storage, DataTransformer<T> transformer);
+    EventHandler(Storage& storage, DataTransformer<T> transformer);
 
     /**
      * Process the data and give it to the storage.
@@ -52,7 +52,7 @@ public:
     virtual EventHandler& operator=(EventHandler&&) = default;
 
 private:
-    Storage storage;
+    Storage& storage;
     DataTransformer<T> transformer;
 };
 

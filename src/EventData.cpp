@@ -20,4 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <tuple>
+#include <utility>
 #include "../include/EventData.h"
+
+using namespace std;
+
+EventData::EventData() : dataCreated{false}, eventData{} {
+}
+
+void EventData::addEntry(EventDeviceFormat format, DataType type, const std::any& entry) {
+    if (dataCreated) {
+        throw UnsupportedOperationException("Attempted to modify after call to finish.");
+    }
+    eventData.emplace_back(format, type, entry);
+}
+
+EventData EventData::finish() {
+    dataCreated = true;
+    return *this;
+}
+
+UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{std::move(message)} {
+}
+
+const char* UnsupportedOperationException::what() const noexcept {
+    return message.c_str();
+}

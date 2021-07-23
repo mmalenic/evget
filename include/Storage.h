@@ -23,15 +23,18 @@
 #ifndef EVGET_INCLUDE_STORAGE_H
 #define EVGET_INCLUDE_STORAGE_H
 
+#include "EventData.h"
+
 /**
  * Storage class represents storing event data.
  */
 class Storage {
+public:
     /**
      * Store the events.
      * @param eventData events to store
      */
-    void storeEvents(std::vector<EventData> eventData);
+    virtual void storeEvents(std::vector<EventData> eventData) = 0;
 
     Storage() = default;
     virtual ~Storage() = default;
