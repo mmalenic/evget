@@ -32,6 +32,15 @@ namespace algorithm = boost::algorithm;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
+static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
+                                      "Shows events from input devices.\n"
+                                      "Written by Marko Malenic 2021.\n\n"
+                                      "Options";
+static constexpr char VERSION[] = "1.0";
+static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
+                                       "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                                       "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
+                                       "Written by Marko Malenic 2021.\n";
 
 std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
     switch (filetype) {
@@ -60,19 +69,13 @@ std::istream& operator>>(std::istream& in, Filetype& algorithm) {
 
 CommandLine::CommandLine(const string& platformInformation) :
     desc{
-        "Usage: evget [OPTION]...\n"
-        "Shows events from input devices.\n"
-        "Written by Marko Malenic 2021.\n\n"
-        "Options"
+        DESCRIPTION
     },
     vm{},
-    versionNumber{"1.0"},
+    versionNumber{VERSION},
     versionMessage{
         "evget (" + platformInformation + ") " + versionNumber
-            + ".\n\n" "Copyright (C) 2021 Marko Malenic.\n"
-              "This program comes with ABSOLUTELY NO WARRANTY.\n"
-              "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
-              "Written by Marko Malenic 2021.\n"
+            + ".\n\n" + LICENSE_INFO
     },
     filename{"events.sqlite"},
     fileOption{"file", "f", "file to store events, defaults to current directory."},
@@ -129,7 +132,7 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
     try {
         store(parse_command_line(argc, argv, desc), vm);
     } catch (po::error& error) {
-        cout << "Error: " << error.what();
+        cout << "Error: " << error.what() << "\n";
         exit(EXIT_SUCCESS);
     }
     notify(vm);

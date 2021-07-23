@@ -37,12 +37,22 @@ if (UNIX AND NOT APPLE)
 
     set(HEADERS
         include/CommandLine.h
+        include/DataTransformer.h
+        include/EventData.h
+        include/EventHandler.h
+        include/GetRawEvents.h
+        include/Storage.h
         include/linux/CommandLineLinux.h
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
     )
     set(SOURCES
         src/CommandLine.cpp
+        src/DataTransformer.cpp
+        src/EventData.cpp
+        src/EventHandler.cpp
+        src/GetRawEvents.cpp
+        src/Storage.cpp
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
@@ -71,8 +81,20 @@ if (WIN32)
     )
 
     set(HEADERS
+        include/CommandLine.h
+        include/DataTransformer.h
+        include/EventData.h
+        include/EventHandler.h
+        include/GetRawEvents.h
+        include/Storage.h
     )
     set(SOURCES
+        src/CommandLine.cpp
+        src/DataTransformer.cpp
+        src/EventData.cpp
+        src/EventHandler.cpp
+        src/GetRawEvents.cpp
+        src/Storage.cpp
     )
 
     if(BUILD_TESTING)
