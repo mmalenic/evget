@@ -21,28 +21,11 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <EventData.h>
+#include "EventDataEntry.h"
 
-using namespace std;
-
-TEST(EventDataTest, CreationAndIteration) { // NOLINT(cert-err58-cpp)
-    EventData eventData{};
-    eventData.addEntry(mouseclick, text, "");
-    eventData.finish();
-
-    auto n = 0;
-    for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-        ASSERT_EQ(mouseclick, i->getEventDeviceFormat());
-        ASSERT_EQ(text, i->getDataType());
-        ASSERT_EQ("", i->getEntry());
-    }
-    ASSERT_EQ(n, 1);
-}
-
-TEST(EventDataTest, ThrowsAfterFinish) { // NOLINT(cert-err58-cpp)
-    EventData eventData{};
-    eventData.addEntry(mouseclick, text, "");
-    eventData.finish();
-
-    ASSERT_THROW(eventData.addEntry(mouseclick, text, ""), UnsupportedOperationException);
+TEST(EventDataEntryTest, Getters) { // NOLINT(cert-err58-cpp)
+    EventDataEntry entry {mouseclick, text, ""};
+    ASSERT_EQ(mouseclick, entry.getEventDeviceFormat());
+    ASSERT_EQ(text, entry.getDataType());
+    ASSERT_EQ("", entry.getEntry());
 }

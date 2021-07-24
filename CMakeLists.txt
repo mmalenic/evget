@@ -68,6 +68,7 @@ if (UNIX AND NOT APPLE)
 
         set(TESTS
             test/EventDataTest.cpp
+            test/EventDataEntryTest.cpp
             test/linux/CommandLineLinuxTest.cpp
             test/linux/EventDeviceListerTest.cpp
             test/linux/EventDeviceTest.cpp
@@ -110,6 +111,7 @@ if (WIN32)
 
         set(TESTS
             test/EventDataTest.cpp
+            test/EventDataEntryTest.cpp
         )
     endif()
 endif()
