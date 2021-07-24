@@ -27,34 +27,14 @@
 #include <vector>
 #include <string>
 #include <variant>
-
-/**
- * Types to represent events.
- */
-enum DataType {
-    text,
-    eventtime,
-    integer
-};
-
-/**
- * Device formats for event data.
- */
-enum EventDeviceFormat {
-    raw,
-    mousemove,
-    mouseclick,
-    mousewheel,
-    key,
-    touch
-};
+#include "EventDataEntry.h"
 
 /**
  * Data container to represent event data.
  */
 class EventData {
 public:
-    typedef typename std::vector<std::tuple<EventDeviceFormat, DataType, const std::string&>>::iterator iterator;
+    typedef typename std::vector<EventDataEntry>::iterator iterator;
     /**
      * Create the event data.
      */
@@ -87,7 +67,7 @@ public:
 
 private:
     bool dataCreated;
-    std::vector<std::tuple<EventDeviceFormat, DataType, const std::string&>> eventData;
+    std::vector<EventDataEntry> eventData;
 };
 
 /**

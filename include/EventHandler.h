@@ -26,6 +26,7 @@
 #include <vector>
 #include "DataTransformer.h"
 #include "Storage.h"
+
 /**
  * Class represents a listener for events.
  * @tparam T type of data

@@ -20,31 +20,66 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_DATATRANSFORMER_H
-#define EVGET_INCLUDE_DATATRANSFORMER_H
+#ifndef EVGET_INCLUDE_EVENTDATAENTRY_H
+#define EVGET_INCLUDE_EVENTDATAENTRY_H
 
-#include "EventData.h"
+#include <string>
 
 /**
- * Transform the data so its usable by storage.
- * @tparam T type of data
+ * Device formats for event data.
  */
-template <typename T>
-class DataTransformer {
-public:
-    /**
-     * Transform the data.
-     * @param data data to transform
-     * @return event data for storage
-     */
-    virtual std::vector<EventData> transformData(std::vector<T> data) = 0;
-
-    DataTransformer() = default;
-    virtual ~DataTransformer() = default;
-    DataTransformer(const DataTransformer&) = default;
-    DataTransformer(DataTransformer&&) = default;
-    virtual DataTransformer& operator=(const DataTransformer&) = default;
-    virtual DataTransformer& operator=(DataTransformer&&) = default;
+enum EventDeviceFormat {
+    raw,
+    mousemove,
+    mouseclick,
+    mousewheel,
+    key,
+    touch
 };
 
-#endif //EVGET_INCLUDE_DATATRANSFORMER_H
+/**
+ * Types to represent events.
+ */
+enum DataType {
+    text,
+    eventtime,
+    integer
+};
+
+/**
+ * Class represents an event data entry, i.e. one field.
+ */
+class EventDataEntry {
+public:
+    /**
+     * Create the entry.
+     * @param eventDeviceFormat format
+     * @param dataType type
+     * @param entry entry
+     */
+    EventDataEntry(EventDeviceFormat eventDeviceFormat, DataType dataType, std::string entry);
+/**
+     * Get the event device format.
+     * @return event device format
+     */
+    [[nodiscard]] EventDeviceFormat getEventDeviceFormat() const;
+
+    /**
+     * Get the data type.
+     * @return data type
+     */
+    [[nodiscard]] DataType getDataType() const;
+
+    /**
+     * Get the entry.
+     * @return entry
+     */
+    [[nodiscard]] const std::string& getEntry() const;
+
+private:
+    EventDeviceFormat eventDeviceFormat;
+    DataType dataType;
+    std::string entry;
+};
+
+#endif //EVGET_INCLUDE_EVENTDATAENTRY_H

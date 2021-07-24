@@ -39,6 +39,7 @@ if (UNIX AND NOT APPLE)
         include/CommandLine.h
         include/DataTransformer.h
         include/EventData.h
+        include/EventDataEntry.h
         include/EventHandler.h
         include/GetRawEvents.h
         include/Storage.h
@@ -50,6 +51,7 @@ if (UNIX AND NOT APPLE)
         src/CommandLine.cpp
         src/DataTransformer.cpp
         src/EventData.cpp
+        src/EventDataEntry.cpp
         src/EventHandler.cpp
         src/GetRawEvents.cpp
         src/Storage.cpp
@@ -85,6 +87,7 @@ if (WIN32)
         include/CommandLine.h
         include/DataTransformer.h
         include/EventData.h
+        include/EventDataEntry.h
         include/EventHandler.h
         include/GetRawEvents.h
         include/Storage.h
@@ -93,6 +96,7 @@ if (WIN32)
         src/CommandLine.cpp
         src/DataTransformer.cpp
         src/EventData.cpp
+        src/EventDataEntry.cpp
         src/EventHandler.cpp
         src/GetRawEvents.cpp
         src/Storage.cpp

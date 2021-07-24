@@ -49,7 +49,6 @@ EventData::iterator EventData::end() noexcept {
     return eventData.end();
 }
 
-
 UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{std::move(message)} {
 }
 

@@ -20,31 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_DATATRANSFORMER_H
-#define EVGET_INCLUDE_DATATRANSFORMER_H
+#include "EventDataEntry.h"
 
-#include "EventData.h"
+#include <utility>
 
-/**
- * Transform the data so its usable by storage.
- * @tparam T type of data
- */
-template <typename T>
-class DataTransformer {
-public:
-    /**
-     * Transform the data.
-     * @param data data to transform
-     * @return event data for storage
-     */
-    virtual std::vector<EventData> transformData(std::vector<T> data) = 0;
+EventDeviceFormat EventDataEntry::getEventDeviceFormat() const {
+    return eventDeviceFormat;
+}
 
-    DataTransformer() = default;
-    virtual ~DataTransformer() = default;
-    DataTransformer(const DataTransformer&) = default;
-    DataTransformer(DataTransformer&&) = default;
-    virtual DataTransformer& operator=(const DataTransformer&) = default;
-    virtual DataTransformer& operator=(DataTransformer&&) = default;
-};
+DataType EventDataEntry::getDataType() const {
+    return dataType;
+}
 
-#endif //EVGET_INCLUDE_DATATRANSFORMER_H
+const std::string& EventDataEntry::getEntry() const {
+    return entry;
+}
+
+EventDataEntry::EventDataEntry(EventDeviceFormat eventDeviceFormat, DataType dataType, std::string entry) :
+    eventDeviceFormat{eventDeviceFormat}, dataType{dataType}, entry{std::move(entry)} {
+}
