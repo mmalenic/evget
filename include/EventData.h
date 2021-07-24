@@ -26,14 +26,15 @@
 #include <any>
 #include <vector>
 #include <string>
+#include <variant>
 
 /**
  * Types to represent events.
  */
 enum DataType {
-    str,
+    text,
     eventtime,
-    number
+    integer
 };
 
 /**
@@ -53,6 +54,7 @@ enum EventDeviceFormat {
  */
 class EventData {
 public:
+    typedef typename std::vector<std::tuple<EventDeviceFormat, DataType, const std::string&>>::iterator iterator;
     /**
      * Create the event data.
      */
@@ -63,7 +65,7 @@ public:
      * @param type type
      * @param entry entry
      */
-    void addEntry(EventDeviceFormat format, DataType type, const std::any& entry);
+    void addEntry(EventDeviceFormat format, DataType type, const std::string& entry);
 
     /**
      * Get the resulting event data.
@@ -71,9 +73,21 @@ public:
      */
     EventData finish();
 
+    /**
+     * Iterator begin.
+     * @return iterator begin
+     */
+    [[nodiscard]] iterator begin() noexcept;
+
+    /**
+     * Iterator end.
+     * @return iterator end
+     */
+    [[nodiscard]] iterator end() noexcept;
+
 private:
     bool dataCreated;
-    std::vector<std::tuple<EventDeviceFormat, DataType, const std::any&>> eventData;
+    std::vector<std::tuple<EventDeviceFormat, DataType, const std::string&>> eventData;
 };
 
 /**
@@ -85,8 +99,9 @@ public:
      * Create exception with message.
      * @param message message
      */
-    UnsupportedOperationException(std::string message = "Unsupported Operation.");
-    const char* what() const noexcept override;
+    explicit UnsupportedOperationException(std::string message = "Unsupported Operation.");
+    [[nodiscard]] const char* what() const noexcept override;
+
 private:
     std::string message;
 };
