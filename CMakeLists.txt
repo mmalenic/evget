@@ -41,19 +41,20 @@ if (UNIX AND NOT APPLE)
         include/EventData.h
         include/EventDataEntry.h
         include/EventHandler.h
-        include/GetRawEvents.h
+        include/RawEvents.h
         include/Storage.h
         include/linux/CommandLineLinux.h
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
     )
+
     set(SOURCES
         src/CommandLine.cpp
         src/DataTransformer.cpp
         src/EventData.cpp
         src/EventDataEntry.cpp
         src/EventHandler.cpp
-        src/GetRawEvents.cpp
+        src/RawEvents.cpp
         src/Storage.cpp
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
@@ -90,16 +91,17 @@ if (WIN32)
         include/EventData.h
         include/EventDataEntry.h
         include/EventHandler.h
-        include/GetRawEvents.h
+        include/RawEvents.h
         include/Storage.h
     )
+
     set(SOURCES
         src/CommandLine.cpp
         src/DataTransformer.cpp
         src/EventData.cpp
         src/EventDataEntry.cpp
         src/EventHandler.cpp
-        src/GetRawEvents.cpp
+        src/RawEvents.cpp
         src/Storage.cpp
     )
 

@@ -20,9 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/EventHandler.h"
+#include "EventHandler.h"
 
 template<typename T>
 EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T> transformer) :
     storage{storage}, transformer{transformer} {
+}
+
+template<typename T>
+void EventHandler<T>::processData(std::vector<T> data) {
+    storage.storeEvents(transformer.transformData(data));
 }

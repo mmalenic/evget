@@ -25,7 +25,7 @@
 
 #include <vector>
 #include "DataTransformer.h"
-#include "Storage.h"
+#include "Storage.h"\
 
 /**
  * Class represents a listener for events.
@@ -37,6 +37,8 @@ public:
     /**
      * Create the event listener with storage.
      * @param storage storage
+     * @param transformer transformer
+     * @param rawEvents rawEvents
      */
     EventHandler(Storage& storage, DataTransformer<T> transformer);
 
@@ -44,13 +46,13 @@ public:
      * Process the data and give it to the storage.
      * @param data data to process
      */
-    virtual void processData(std::vector<T> data) = 0;
+    void processData(std::vector<T> data);
 
     virtual ~EventHandler() = default;
     EventHandler(const EventHandler&) = default;
-    EventHandler(EventHandler&&) = default;
-    virtual EventHandler& operator=(const EventHandler&) = default;
-    virtual EventHandler& operator=(EventHandler&&) = default;
+    EventHandler(EventHandler&&) noexcept = default;
+    EventHandler& operator=(const EventHandler&) = default;
+    EventHandler& operator=(EventHandler&&) noexcept = default;
 
 private:
     Storage& storage;

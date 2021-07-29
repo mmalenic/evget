@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_SRC_GETRAWEVENTS_H
-#define EVGET_SRC_GETRAWEVENTS_H
+#ifndef EVGET_INCLUDE_RAWEVENTS_H
+#define EVGET_INCLUDE_RAWEVENTS_H
 
 #include <vector>
 #include <chrono>
@@ -32,14 +32,14 @@
  * @tparam T type of events to get
  */
 template <typename T>
-class GetRawEvents {
+class RawEvents {
 public:
     /**
      * Create the raw event getter.
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    GetRawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency);
+    RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency);
 
     /**
      * Register the event handler to process events
@@ -52,15 +52,15 @@ public:
      */
     virtual void drainRawEvents() = 0;
 
-    virtual ~GetRawEvents() = default;
-    GetRawEvents(const GetRawEvents&) = default;
-    GetRawEvents(GetRawEvents&&) = default;
-    virtual GetRawEvents& operator=(const GetRawEvents&) = default;
-    virtual GetRawEvents& operator=(GetRawEvents&&) = default;
+    virtual ~RawEvents() = default;
+    RawEvents(const RawEvents&) = default;
+    RawEvents(RawEvents&&) = default;
+    virtual RawEvents& operator=(const RawEvents&) = default;
+    virtual RawEvents& operator=(RawEvents&&) = default;
 
 private:
     unsigned char bufferSize;
     std::chrono::seconds drainFrequency;
 };
 
-#endif //EVGET_SRC_GETRAWEVENTS_H
+#endif //EVGET_INCLUDE_RAWEVENTS_H

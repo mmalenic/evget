@@ -96,7 +96,7 @@ EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, con
 
 ostream& operator<<(ostream& os, const EventDeviceLister& deviceLister) {
     if (!deviceLister.eventDevices.empty()) {
-        os << "Event devices with symbolic links: \n";
+        os << "Event devices with path or id symbolic links: \n";
     }
     auto i = deviceLister.eventDevices.begin();
     for (; i != deviceLister.eventDevices.end(); i++) {
@@ -106,7 +106,7 @@ ostream& operator<<(ostream& os, const EventDeviceLister& deviceLister) {
         os << *i << "\n";
     }
     if (i != deviceLister.eventDevices.end()) {
-        os << "Event devices without symbolic links: \n";
+        os << "Event devices without path or id symbolic links: \n";
     }
     for (; i != deviceLister.eventDevices.end(); i++) {
         os << *i;

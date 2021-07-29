@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/GetRawEvents.h"
+#include "../include/RawEvents.h"
 
 template<typename T>
-GetRawEvents<T>::GetRawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency) :
+RawEvents<T>::RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency) :
     bufferSize{bufferSize}, drainFrequency{drainFrequency} {
 }

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "linux/CommandLineLinux.h"
+#include "CommandLineLinux.h"
 
 #include <sys/utsname.h>
 #include <boost/filesystem.hpp>
