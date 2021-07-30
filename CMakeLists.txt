@@ -27,49 +27,68 @@ set(CMAKE_CXX_STANDARD 20)
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+
+set(HEADERS_COMMON
+    include/CommandLine.h
+    include/DataTransformer.h
+    include/EventData.h
+    include/EventDataEntry.h
+    include/EventHandler.h
+    include/RawEvents.h
+    include/Storage.h
+)
+
+set(SOURCES_COMMON
+    src/CommandLine.cpp
+    src/DataTransformer.cpp
+    src/EventData.cpp
+    src/EventDataEntry.cpp
+    src/EventHandler.cpp
+    src/RawEvents.cpp
+    src/Storage.cpp
+)
+
+if (BUILD_TESTING)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/test
+    )
+
+    set(TESTS_COMMON
+        test/EventDataTest.cpp
+        test/EventDataEntryTest.cpp
+    )
+endif()
+
 if (UNIX AND NOT APPLE)
     include_directories(
-        ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/linux
-        ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_SOURCE_DIR}/src/linux
     )
 
     set(HEADERS
-        include/CommandLine.h
-        include/DataTransformer.h
-        include/EventData.h
-        include/EventDataEntry.h
-        include/EventHandler.h
-        include/RawEvents.h
-        include/Storage.h
         include/linux/CommandLineLinux.h
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
+        include/linux/RawEventsLinux.h
     )
 
     set(SOURCES
-        src/CommandLine.cpp
-        src/DataTransformer.cpp
-        src/EventData.cpp
-        src/EventDataEntry.cpp
-        src/EventHandler.cpp
-        src/RawEvents.cpp
-        src/Storage.cpp
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
+        src/linux/RawEventsLinux.cpp
     )
 
     if (BUILD_TESTING)
         include_directories(
-            ${PROJECT_SOURCE_DIR}/test
             ${PROJECT_SOURCE_DIR}/test/linux
         )
 
         set(TESTS
-            test/EventDataTest.cpp
-            test/EventDataEntryTest.cpp
             test/linux/CommandLineLinuxTest.cpp
             test/linux/EventDeviceListerTest.cpp
             test/linux/EventDeviceTest.cpp
@@ -77,43 +96,46 @@ if (UNIX AND NOT APPLE)
     endif()
 endif()
 
-if (WIN32)
+if (APPLE)
     include_directories(
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/include/win32_64
-        ${PROJECT_SOURCE_DIR}/src
-        ${PROJECT_SOURCE_DIR}/src/win32_64
+        ${PROJECT_SOURCE_DIR}/include/osx
+        ${PROJECT_SOURCE_DIR}/src/osx
     )
 
     set(HEADERS
-        include/CommandLine.h
-        include/DataTransformer.h
-        include/EventData.h
-        include/EventDataEntry.h
-        include/EventHandler.h
-        include/RawEvents.h
-        include/Storage.h
     )
 
     set(SOURCES
-        src/CommandLine.cpp
-        src/DataTransformer.cpp
-        src/EventData.cpp
-        src/EventDataEntry.cpp
-        src/EventHandler.cpp
-        src/RawEvents.cpp
-        src/Storage.cpp
     )
 
     if(BUILD_TESTING)
         include_directories(
-            ${PROJECT_SOURCE_DIR}/test
+            ${PROJECT_SOURCE_DIR}/test/osx
+        )
+
+        set(TESTS
+        )
+    endif()
+endif()
+
+if (WIN32)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/include/win32_64
+        ${PROJECT_SOURCE_DIR}/src/win32_64
+    )
+
+    set(HEADERS
+    )
+
+    set(SOURCES
+    )
+
+    if(BUILD_TESTING)
+        include_directories(
             ${PROJECT_SOURCE_DIR}/test/win32_64
         )
 
         set(TESTS
-            test/EventDataTest.cpp
-            test/EventDataEntryTest.cpp
         )
     endif()
 endif()
@@ -134,6 +156,8 @@ endif()
 
 add_executable(evget
     src/main.cpp
+    ${HEADERS_COMMON}
+    ${SOURCES_COMMON}
     ${HEADERS}
     ${SOURCES}
 )
@@ -143,6 +167,8 @@ include(CTest)
 
 if (BUILD_TESTING)
     add_executable(Test
+        ${HEADERS_COMMON}
+        ${SOURCES_COMMON}
         ${HEADERS}
         ${SOURCES}
         ${TESTS}

@@ -28,24 +28,23 @@
 #include "EventHandler.h"
 
 /**
- * Class represents getting the raw system events.
- * @tparam T type of events to get
+ * Class represents processing the raw system events.
+ * @tparam T type of events to process
  */
 template <typename T>
 class RawEvents {
 public:
     /**
-     * Create the raw event getter.
+     * Create the raw event processor.
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency);
+    RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler);
 
     /**
-     * Register the event handler to process events
-     * @param eventHandler event handler
+     * Set up and run the event loop.
      */
-    virtual void registerEventHandler(EventHandler<T> &eventHandler) = 0;
+    virtual void eventLoop() = 0;
 
     /**
      * Drains raw event to listeners.
@@ -61,6 +60,7 @@ public:
 private:
     unsigned char bufferSize;
     std::chrono::seconds drainFrequency;
+    EventHandler<T> &eventHandler;
 };
 
 #endif //EVGET_INCLUDE_RAWEVENTS_H

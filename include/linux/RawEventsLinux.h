@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,9 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/RawEvents.h"
+#ifndef EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
+#define EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
 
-template<typename T>
-RawEvents<T>::RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
-    bufferSize{bufferSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler} {
-}
+#include <linux/input.h>
+#include "RawEvents.h"
+
+/**
+ * Class represents processing linux raw system events.
+ * @tparam T type of events to process
+ */
+class RawEventsLinux : RawEvents<input_event> {
+public:
+    /**
+     * Create the raw event processor.
+     * @param bufferSize used with buffer to store events into
+     * @param drainFrequency how often to drain events
+     */
+    RawEventsLinux(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<input_event> &eventHandler);
+
+    void eventLoop() override;
+    void drainRawEvents() override;
+private:
+};
+
+#endif // EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H

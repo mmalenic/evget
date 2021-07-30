@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,9 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/RawEvents.h"
+#include "RawEventsLinux.h"
 
-template<typename T>
-RawEvents<T>::RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
-    bufferSize{bufferSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler} {
+RawEventsLinux::RawEventsLinux(
+    unsigned char bufferSize,
+    std::chrono::seconds drainFrequency,
+    EventHandler<input_event>& eventHandler
+) : RawEvents{bufferSize, drainFrequency, eventHandler} {
+}
+
+void RawEventsLinux::drainRawEvents() {
+
+}
+
+void RawEventsLinux::eventLoop() {
+
 }
