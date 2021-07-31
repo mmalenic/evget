@@ -41,7 +41,6 @@ public:
 
     void eventLoop() override;
     void drainRawEvents() override;
-private:
 };
 
 #endif // EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H

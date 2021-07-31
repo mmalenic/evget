@@ -23,6 +23,39 @@
 #include "../include/RawEvents.h"
 
 template<typename T>
-RawEvents<T>::RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
-    bufferSize{bufferSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler} {
+RawEvents<T>::RawEvents(size_t bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
+    bufferSize{bufferSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, buffer{bufferSize} {
+}
+
+template<typename T>
+size_t RawEvents<T>::getBufferSize() const {
+    return bufferSize;
+}
+
+template<typename T>
+const std::chrono::seconds& RawEvents<T>::getDrainFrequency() const {
+    return drainFrequency;
+}
+
+template<typename T>
+EventHandler<T>& RawEvents<T>::getEventHandler() const {
+    return eventHandler;
+}
+
+template<typename T>
+void RawEvents<T>::eventLoop() {
+}
+
+template<typename T>
+void RawEvents<T>::drainRawEvents() {
+
+}
+
+template<typename T>
+void RawEvents<T>::setup() {
+
+}
+template<typename T>
+void RawEvents<T>::shutdown() {
+
 }

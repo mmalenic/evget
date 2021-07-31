@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <chrono>
+#include <boost/circular_buffer.hpp>
 #include "EventHandler.h"
 
 /**
@@ -39,17 +40,47 @@ public:
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEvents(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler);
+    RawEvents(size_t bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler);
+
+    /**
+     * Get buffer size.
+     * @return buffer size
+     */
+    size_t getBufferSize() const;
+
+    /**
+     * Get drain frequency.
+     * @return drain frequency
+     */
+    const std::chrono::seconds& getDrainFrequency() const;
+
+    /**
+     * Get event handler.
+     * @return event handler
+     */
+    EventHandler<T>& getEventHandler() const;
 
     /**
      * Set up and run the event loop.
      */
-    virtual void eventLoop() = 0;
+    virtual void eventLoop();
 
     /**
      * Drains raw event to listeners.
      */
-    virtual void drainRawEvents() = 0;
+    virtual void drainRawEvents();
+
+    /**
+     * Set up the event loop.
+     */
+    virtual void setup();
+
+    /**
+     * Cleanup after event loop.
+     */
+    virtual void shutdown();
+
+    virtual T readRawEvents() = 0;
 
     virtual ~RawEvents() = default;
     RawEvents(const RawEvents&) = default;
@@ -58,9 +89,11 @@ public:
     virtual RawEvents& operator=(RawEvents&&) = default;
 
 private:
-    unsigned char bufferSize;
+    size_t bufferSize;
     std::chrono::seconds drainFrequency;
     EventHandler<T> &eventHandler;
+
+    boost::circular_buffer<T> buffer;
 };
 
 #endif //EVGET_INCLUDE_RAWEVENTS_H
