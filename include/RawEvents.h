@@ -26,7 +26,6 @@
 #include <vector>
 #include <chrono>
 #include <boost/circular_buffer.hpp>
-#include "EventHandler.h"
 
 /**
  * Class represents processing the raw system events.
@@ -40,7 +39,7 @@ public:
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEvents(size_t bufferSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler);
+    RawEvents(size_t bufferSize, std::chrono::seconds drainFrequency);
 
     /**
      * Get buffer size.
@@ -55,12 +54,6 @@ public:
     const std::chrono::seconds& getDrainFrequency() const;
 
     /**
-     * Get event handler.
-     * @return event handler
-     */
-    EventHandler<T>& getEventHandler() const;
-
-    /**
      * Set up and run the event loop.
      */
     virtual void eventLoop();
@@ -68,7 +61,7 @@ public:
     /**
      * Drains raw event to listeners.
      */
-    virtual void drainRawEvents();
+    virtual std::vector<T> drainRawEvents();
 
     /**
      * Set up the event loop.
@@ -91,7 +84,6 @@ public:
 private:
     size_t bufferSize;
     std::chrono::seconds drainFrequency;
-    EventHandler<T> &eventHandler;
 
     boost::circular_buffer<T> buffer;
 };

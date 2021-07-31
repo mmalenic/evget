@@ -25,7 +25,8 @@
 
 #include <vector>
 #include "DataTransformer.h"
-#include "Storage.h"\
+#include "Storage.h"
+#include "RawEvents.h"
 
 /**
  * Class represents a listener for events.
@@ -40,7 +41,7 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(Storage& storage, DataTransformer<T> transformer);
+    EventHandler(Storage& storage, DataTransformer<T> transformer, RawEvents<T> rawEvents);
 
     /**
      * Process the data and give it to the storage.
@@ -57,6 +58,7 @@ public:
 private:
     Storage& storage;
     DataTransformer<T> transformer;
+    RawEvents<T> rawEvents;
 };
 
 #endif //EVGET_INCLUDE_EVENTHANDLER_H
