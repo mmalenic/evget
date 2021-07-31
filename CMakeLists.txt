@@ -39,6 +39,7 @@ set(HEADERS_COMMON
     include/EventDataEntry.h
     include/EventHandler.h
     include/RawEvents.h
+    include/ShutdownHandler.h
     include/Storage.h
 )
 
@@ -49,6 +50,7 @@ set(SOURCES_COMMON
     src/EventDataEntry.cpp
     src/EventHandler.cpp
     src/RawEvents.cpp
+    src/ShutdownHandler.cpp
     src/Storage.cpp
 )
 

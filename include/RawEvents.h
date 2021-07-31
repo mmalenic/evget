@@ -27,6 +27,7 @@
 #include <chrono>
 #include <boost/circular_buffer.hpp>
 #include "EventHandler.h"
+#include "ShutdownHandler.h"
 
 /**
  * Class represents processing the raw system events.
@@ -40,7 +41,7 @@ public:
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler);
+    RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler, ShutdownHandler& shutdownHandler);
 
     /**
      * Get buffer size.
@@ -99,6 +100,7 @@ private:
     const size_t minimumDrainSize;
     const std::chrono::seconds drainFrequency;
     EventHandler<T> &eventHandler;
+    ShutdownHandler& shutdownHandler;
 
     boost::circular_buffer<T> buffer;
 };

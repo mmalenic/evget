@@ -26,8 +26,8 @@
 using namespace std;
 
 template<typename T>
-RawEvents<T>::RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
-    bufferSize{bufferSize}, minimumDrainSize{minimumDrainSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, buffer{bufferSize} {
+RawEvents<T>::RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler, ShutdownHandler& shutdownHandler) :
+    bufferSize{bufferSize}, minimumDrainSize{minimumDrainSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, buffer{bufferSize}, shutdownHandler{shutdownHandler} {
 }
 
 template<typename T>
@@ -49,13 +49,14 @@ template<typename T>
 void RawEvents<T>::eventLoop() {
     setup();
     auto start_time = chrono::high_resolution_clock::now();
-    while (true) {
+    while (!shutdownHandler.shouldShutdown()) {
         buffer.push_back(readRawEvent());
-        if (buffer.size() >= minimumDrainSize && chrono::high_resolution_clock::now() - start_time >= drainFrequency) {
+        if (shutdownHandler.shouldShutdown() || (buffer.size() >= minimumDrainSize && chrono::high_resolution_clock::now() - start_time >= drainFrequency)) {
             drainRawEvents();
             start_time = chrono::high_resolution_clock::now();
         }
     }
+    shutdown();
 }
 
 template<typename T>
