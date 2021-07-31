@@ -23,11 +23,11 @@
 #include "EventHandler.h"
 
 template<typename T>
-EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T> transformer, RawEvents<T> rawEvents) :
-    storage{storage}, transformer{transformer}, rawEvents{rawEvents} {
+EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T> transformer) :
+    storage{storage}, transformer{transformer} {
 }
 
 template<typename T>
-void EventHandler<T>::processData(std::vector<T> data) {
+void EventHandler<T>::processEvents(std::vector<T> data) {
     storage.storeEvents(transformer.transformData(data));
 }

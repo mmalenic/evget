@@ -21,12 +21,13 @@
 // SOFTWARE.
 
 #include "../include/RawEvents.h"
+#include <vector>
 
 using namespace std;
 
 template<typename T>
-RawEvents<T>::RawEvents(size_t bufferSize, std::chrono::seconds drainFrequency) :
-    bufferSize{bufferSize}, drainFrequency{drainFrequency}, buffer{bufferSize} {
+RawEvents<T>::RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler) :
+    bufferSize{bufferSize}, minimumDrainSize{minimumDrainSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, buffer{bufferSize} {
 }
 
 template<typename T>
@@ -40,14 +41,28 @@ const std::chrono::seconds& RawEvents<T>::getDrainFrequency() const {
 }
 
 template<typename T>
-void RawEvents<T>::eventLoop() {
+EventHandler<T>& RawEvents<T>::getEventHandler() const {
+    return eventHandler;
 }
 
 template<typename T>
-vector<T> RawEvents<T>::drainRawEvents() {
+void RawEvents<T>::eventLoop() {
+    setup();
+    auto start_time = chrono::high_resolution_clock::now();
+    while (true) {
+        buffer.push_back(readRawEvent());
+        if (buffer.size() >= minimumDrainSize && chrono::high_resolution_clock::now() - start_time >= drainFrequency) {
+            drainRawEvents();
+            start_time = chrono::high_resolution_clock::now();
+        }
+    }
+}
+
+template<typename T>
+void RawEvents<T>::drainRawEvents() {
     vector<T> events = vector{buffer.begin(), buffer.end()};
     buffer.clear();
-    return events;
+    eventHandler.processEvents(events);
 }
 
 template<typename T>
@@ -56,4 +71,9 @@ void RawEvents<T>::setup() {
 
 template<typename T>
 void RawEvents<T>::shutdown() {
+}
+
+template<typename T>
+size_t RawEvents<T>::getMinimumDrainSize() const {
+    return minimumDrainSize;
 }
