@@ -32,6 +32,10 @@ public:
     virtual bool shouldShutdown() = 0;
 
     ShutdownHandler() = delete;
+    ShutdownHandler(const ShutdownHandler&) = delete;
+    ShutdownHandler(ShutdownHandler&&) noexcept = delete;
+    ShutdownHandler& operator=(const ShutdownHandler&) = delete;
+    ShutdownHandler& operator=(ShutdownHandler&&) noexcept = delete;
 };
 
 #endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H

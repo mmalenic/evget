@@ -22,12 +22,7 @@
 
 #include "RawEventsLinux.h"
 
-RawEventsLinux::RawEventsLinux(
-    unsigned char bufferSize,
-    std::chrono::seconds drainFrequency,
-    EventHandler<input_event>& eventHandler
-) : RawEvents{bufferSize, drainFrequency, eventHandler} {
-}
+using namespace std;
 
 void RawEventsLinux::drainRawEvents() {
 
@@ -35,4 +30,13 @@ void RawEventsLinux::drainRawEvents() {
 
 void RawEventsLinux::eventLoop() {
 
+}
+
+RawEventsLinux::RawEventsLinux(
+    size_t bufferSize,
+    size_t minimumDrainSize,
+    chrono::seconds drainFrequency,
+    EventHandler<input_event>& eventHandler,
+    ShutdownHandler& shutdownHandler
+) : RawEvents(bufferSize, minimumDrainSize, drainFrequency, eventHandler, shutdownHandler) {
 }

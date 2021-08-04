@@ -20,4 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/Storage.h"
+#ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+
+#include "ShutdownHandler.h"
+
+class ShutdownHandlerLinux : public ShutdownHandler {
+public:
+    bool shouldShutdown() override;
+};
+
+#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H

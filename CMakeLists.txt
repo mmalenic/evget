@@ -48,10 +48,6 @@ set(SOURCES_COMMON
     src/DataTransformer.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
-    src/EventHandler.cpp
-    src/RawEvents.cpp
-    src/ShutdownHandler.cpp
-    src/Storage.cpp
 )
 
 if (BUILD_TESTING)
@@ -76,6 +72,7 @@ if (UNIX AND NOT APPLE)
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
         include/linux/RawEventsLinux.h
+        include/linux/ShutdownHandlerLinux.h
     )
 
     set(SOURCES
@@ -83,6 +80,7 @@ if (UNIX AND NOT APPLE)
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
         src/linux/RawEventsLinux.cpp
+        src/linux/ShutdownHandlerLinux.cpp
     )
 
     if (BUILD_TESTING)

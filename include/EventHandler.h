@@ -40,7 +40,7 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(Storage& storage, DataTransformer<T> transformer);
+    EventHandler(Storage& storage, DataTransformer<T>& transformer);
 
     /**
      * Process the data and give it to the storage.
@@ -56,7 +56,18 @@ public:
 
 private:
     Storage& storage;
-    DataTransformer<T> transformer;
+    DataTransformer<T>& transformer;
 };
+
+template<typename T>
+EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T>& transformer) :
+    storage{storage}, transformer{transformer} {
+}
+
+template<typename T>
+void EventHandler<T>::processEvents(std::vector<T> data) {
+    storage.storeEvents(transformer.transformData(data));
+}
+
 
 #endif //EVGET_INCLUDE_EVENTHANDLER_H

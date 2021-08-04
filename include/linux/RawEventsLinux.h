@@ -30,14 +30,14 @@
  * Class represents processing linux raw system events.
  * @tparam T type of events to process
  */
-class RawEventsLinux : RawEvents<input_event> {
+class RawEventsLinux : public RawEvents<input_event> {
 public:
     /**
      * Create the raw event processor.
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEventsLinux(unsigned char bufferSize, std::chrono::seconds drainFrequency, EventHandler<input_event> &eventHandler);
+    RawEventsLinux(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<input_event> &eventHandler, ShutdownHandler& shutdownHandler);
 
     void eventLoop() override;
     void drainRawEvents() override;

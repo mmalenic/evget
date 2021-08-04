@@ -47,19 +47,19 @@ public:
      * Get buffer size.
      * @return buffer size
      */
-    size_t getBufferSize() const;
+    [[nodiscard]] size_t getBufferSize() const;
 
     /**
      * Get minimum drain size.
      * @return minimum drain size
      */
-    size_t getMinimumDrainSize() const;
+    [[nodiscard]] size_t getMinimumDrainSize() const;
 
     /**
      * Get drain frequency.
      * @return drain frequency
      */
-    const std::chrono::seconds& getDrainFrequency() const;
+    [[nodiscard]] const std::chrono::seconds& getDrainFrequency() const;
 
     /**
      * Get event handler.
@@ -91,18 +91,72 @@ public:
 
     virtual ~RawEvents() = default;
     RawEvents(const RawEvents&) = default;
-    RawEvents(RawEvents&&) = default;
-    virtual RawEvents& operator=(const RawEvents&) = default;
-    virtual RawEvents& operator=(RawEvents&&) = default;
+    RawEvents(RawEvents&&) noexcept = default;
+    RawEvents& operator=(const RawEvents&) = default;
+    RawEvents& operator=(RawEvents&&) noexcept = default;
 
 private:
     const size_t bufferSize;
     const size_t minimumDrainSize;
     const std::chrono::seconds drainFrequency;
-    EventHandler<T> &eventHandler;
+    EventHandler<T>& eventHandler;
     ShutdownHandler& shutdownHandler;
 
     boost::circular_buffer<T> buffer;
 };
+
+template<typename T>
+RawEvents<T>::RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler, ShutdownHandler& shutdownHandler) :
+    bufferSize{bufferSize}, minimumDrainSize{minimumDrainSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, shutdownHandler{shutdownHandler}, buffer{bufferSize} {
+}
+
+template<typename T>
+size_t RawEvents<T>::getBufferSize() const {
+    return bufferSize;
+}
+
+template<typename T>
+const std::chrono::seconds& RawEvents<T>::getDrainFrequency() const {
+    return drainFrequency;
+}
+
+template<typename T>
+EventHandler<T>& RawEvents<T>::getEventHandler() const {
+    return eventHandler;
+}
+
+template<typename T>
+void RawEvents<T>::eventLoop() {
+    setup();
+    auto start_time = std::chrono::high_resolution_clock::now();
+    while (!shutdownHandler.shouldShutdown()) {
+        buffer.push_back(readRawEvent());
+        if (shutdownHandler.shouldShutdown() || (buffer.size() >= minimumDrainSize && std::chrono::high_resolution_clock::now() - start_time >= drainFrequency)) {
+            drainRawEvents();
+            start_time = std::chrono::high_resolution_clock::now();
+        }
+    }
+    shutdown();
+}
+
+template<typename T>
+void RawEvents<T>::drainRawEvents() {
+    std::vector<T> events = std::vector(buffer.begin(), buffer.end());
+    buffer.clear();
+    eventHandler.processEvents(events);
+}
+
+template<typename T>
+size_t RawEvents<T>::getMinimumDrainSize() const {
+    return minimumDrainSize;
+}
+
+template<typename T>
+void RawEvents<T>::setup() {
+}
+
+template<typename T>
+void RawEvents<T>::shutdown() {
+}
 
 #endif //EVGET_INCLUDE_RAWEVENTS_H
