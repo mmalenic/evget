@@ -48,7 +48,7 @@ set(SOURCES_COMMON
     src/DataTransformer.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
-)
+    )
 
 if (BUILD_TESTING)
     include_directories(
