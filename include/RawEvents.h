@@ -27,6 +27,7 @@
 #include <chrono>
 #include <boost/fiber/buffered_channel.hpp>
 #include <boost/asio.hpp>
+#include <spdlog/spdlog.h>
 #include "EventHandler.h"
 #include "ShutdownHandler.h"
 #include "Cancellable.h"
@@ -78,16 +79,13 @@ RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : Cance
 
 template<typename T>
 boost::asio::awaitable<void> RawEvents<T>::eventLoop() {
-//    setup();
-//    auto start_time = std::chrono::high_resolution_clock::now();
-//    while (!shutdownHandler.shouldShutdown()) {
-//        buffer.push_back(readRawEvent());
-//        if (shutdownHandler.shouldShutdown() || (buffer.size() >= minimumDrainSize && std::chrono::high_resolution_clock::now() - start_time >= drainFrequency)) {
-//            drainRawEvents();
-//            start_time = std::chrono::high_resolution_clock::now();
-//        }
-//    }
-//    shutdown();
+    setup();
+    while (!isCancelled()) {
+        T rawEvent = co_await readRawEvent();
+        auto result = sendChannel.try_push(rawEvent);
+        spdlog::warn("Channel is full, losing event.");
+    }
+    shutdown();
 }
 
 template<typename T>
