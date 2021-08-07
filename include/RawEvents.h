@@ -29,13 +29,14 @@
 #include <boost/asio.hpp>
 #include "EventHandler.h"
 #include "ShutdownHandler.h"
+#include "Cancellable.h"
 
 /**
  * Class represents processing the raw system events.
  * @tparam T type of events to process
  */
 template <typename T>
-class RawEvents {
+class RawEvents : public Cancellable {
 public:
     /**
      * Create the raw event processor.
@@ -72,7 +73,7 @@ private:
 };
 
 template<typename T>
-RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : sendChannel{sendChannel} {
+RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : Cancellable{}, sendChannel{sendChannel} {
 }
 
 template<typename T>

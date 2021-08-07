@@ -37,9 +37,7 @@ public:
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
-
-    boost::asio::awaitable<void> eventLoop() override;
+    explicit RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
 };
 
 #endif // EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
