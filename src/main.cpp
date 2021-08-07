@@ -24,6 +24,7 @@
 #include <EventDeviceLister.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <atomic>
 
 using namespace std;
 

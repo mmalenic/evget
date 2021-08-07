@@ -23,16 +23,14 @@
 #ifndef EVGET_INCLUDE_SHUTDOWNHANDLER_H
 #define EVGET_INCLUDE_SHUTDOWNHANDLER_H
 
-#include <atomic>
+#include <csignal>
+#include <vector>
 
-template <typename T, typename R, typename S>
+/**
+ * Represents the shutdown handler which intercepts program termination.
+ */
 class ShutdownHandler {
 public:
-    typedef R (* ReturnValueFn)();
-    typedef void* (* RegisterHandlerFn)(S, T);
-    typedef void* (* FlipRegisterHandlerFn)(T, S);
-
-    ShutdownHandler(std::vector<S> registerFor, ReturnValueFn returnValueFn, RegisterHandlerFn registerHandlerFn);
     /**
      * Whether the program should shutdown.
      * @return should shutdown.
@@ -46,49 +44,18 @@ public:
     static void setShutdownFlag(bool flag);
 
     /**
-     * Set the shutdown flag to true.
-     */
-    static R activateShutdownFlag(T input);
-
-    /**
      * Set the interrupt handler.
      */
     virtual void registerInterruptHandler() = 0;
 
+    ShutdownHandler() = delete;
     ShutdownHandler(const ShutdownHandler&) = delete;
     ShutdownHandler(ShutdownHandler&&) noexcept = delete;
     ShutdownHandler& operator=(const ShutdownHandler&) = delete;
     ShutdownHandler& operator=(ShutdownHandler&&) noexcept = delete;
 
 private:
-    static std::atomic<bool> shutdown;
-    static ReturnValueFn returnValueFn;
+    static sig_atomic_t shutdown;
 };
-
-template<typename T, typename R, typename S>
-bool ShutdownHandler<T, R, S>::shouldShutdown() {
-    return shutdown.load();
-}
-
-template<typename T, typename R, typename S>
-void ShutdownHandler<T, R, S>::setShutdownFlag(bool flag) {
-    shutdown.store(flag);
-}
-
-template<typename T, typename R, typename S>
-R ShutdownHandler<T, R, S>::activateShutdownFlag(T _) {
-    setShutdownFlag(true);
-    return R();
-}
-template<typename T, typename R, typename S>
-ShutdownHandler<T, R, S>::ShutdownHandler(
-    std::vector<S> registerFor,
-    ShutdownHandler::ReturnValueFn returnValueFn,
-    ShutdownHandler::RegisterHandlerFn registerHandlerFn
-) : returnValueFn{returnValueFn} {
-    for (auto value : registerFor) {
-
-    }
-}
 
 #endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H

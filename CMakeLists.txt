@@ -48,6 +48,7 @@ set(SOURCES_COMMON
     src/DataTransformer.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
+    src/ShutdownHandler.cpp
     )
 
 if (BUILD_TESTING)

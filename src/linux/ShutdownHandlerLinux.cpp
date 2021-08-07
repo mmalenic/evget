@@ -20,8 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <ShutdownHandlerLinux.h>
+#include "ShutdownHandlerLinux.h"
 
-bool ShutdownHandlerLinux::shouldShutdown() {
-    return false;
+#include <csignal>
+
+void ShutdownHandlerLinux::registerInterruptHandler() {
+    signal(SIGINT, activateShutdown);
+}
+
+void ShutdownHandlerLinux::activateShutdown([[maybe_unused]] int _) {
+    setShutdownFlag(true);
 }
