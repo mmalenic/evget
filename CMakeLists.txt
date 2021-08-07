@@ -93,6 +93,7 @@ if (UNIX AND NOT APPLE)
             test/linux/CommandLineLinuxTest.cpp
             test/linux/EventDeviceListerTest.cpp
             test/linux/EventDeviceTest.cpp
+            test/linux/ShutdownHandlerLinuxTest.cpp
         )
     endif()
 endif()

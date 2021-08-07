@@ -48,11 +48,11 @@ public:
      */
     virtual void registerInterruptHandler() = 0;
 
-    ShutdownHandler() = delete;
-    ShutdownHandler(const ShutdownHandler&) = delete;
-    ShutdownHandler(ShutdownHandler&&) noexcept = delete;
-    ShutdownHandler& operator=(const ShutdownHandler&) = delete;
-    ShutdownHandler& operator=(ShutdownHandler&&) noexcept = delete;
+    ShutdownHandler() = default;
+    ShutdownHandler(const ShutdownHandler&) = default;
+    ShutdownHandler(ShutdownHandler&&) noexcept = default;
+    ShutdownHandler& operator=(const ShutdownHandler&) = default;
+    ShutdownHandler& operator=(ShutdownHandler&&) noexcept = default;
 
 private:
     static sig_atomic_t shutdown;
