@@ -22,21 +22,13 @@
 
 #include "RawEventsLinux.h"
 
+namespace asio = boost::asio;
+
 using namespace std;
 
-void RawEventsLinux::drainRawEvents() {
+asio::awaitable<void> RawEventsLinux::eventLoop() {
 
 }
 
-void RawEventsLinux::eventLoop() {
-
-}
-
-RawEventsLinux::RawEventsLinux(
-    size_t bufferSize,
-    size_t minimumDrainSize,
-    chrono::seconds drainFrequency,
-    EventHandler<input_event>& eventHandler,
-    ShutdownHandler& shutdownHandler
-) : RawEvents(bufferSize, minimumDrainSize, drainFrequency, eventHandler, shutdownHandler) {
+RawEventsLinux::RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel) : RawEvents(sendChannel) {
 }

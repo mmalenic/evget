@@ -51,7 +51,7 @@ class App(ConanFile):
             self.requires('gtest/cci.20210126')
 
     def package_info(self):
-        self.cpp_info.requires = ['boost::algorithm', 'boost::circular_buffer', 'boost::program_options']
+        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::fiber', 'boost::program_options']
 
     def build(self):
         cmake = CMake()

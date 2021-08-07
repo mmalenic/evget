@@ -33,6 +33,7 @@ include_directories(
 )
 
 set(HEADERS_COMMON
+    include/Cancellable.h
     include/CommandLine.h
     include/DataTransformer.h
     include/EventData.h
@@ -44,18 +45,18 @@ set(HEADERS_COMMON
 )
 
 set(SOURCES_COMMON
+    src/Cancellable.cpp
     src/CommandLine.cpp
     src/DataTransformer.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
     src/ShutdownHandler.cpp
-    )
+)
 
 if (BUILD_TESTING)
     include_directories(
         ${PROJECT_SOURCE_DIR}/test
     )
-
     set(TESTS_COMMON
         test/EventDataTest.cpp
         test/EventDataEntryTest.cpp
@@ -173,6 +174,7 @@ if (BUILD_TESTING)
         ${SOURCES_COMMON}
         ${HEADERS}
         ${SOURCES}
+        ${TESTS_COMMON}
         ${TESTS}
     )
     target_link_libraries(Test CONAN_PKG::gtest CONAN_PKG::boost CONAN_PKG::spdlog)

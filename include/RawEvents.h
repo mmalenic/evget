@@ -25,7 +25,8 @@
 
 #include <vector>
 #include <chrono>
-#include <boost/circular_buffer.hpp>
+#include <boost/fiber/buffered_channel.hpp>
+#include <boost/asio.hpp>
 #include "EventHandler.h"
 #include "ShutdownHandler.h"
 
@@ -38,44 +39,15 @@ class RawEvents {
 public:
     /**
      * Create the raw event processor.
-     * @param bufferSize used with buffer to store events into
-     * @param drainFrequency how often to drain events
+     * @param sendChannel send channel to send events to
      */
-    RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler, ShutdownHandler& shutdownHandler);
+    explicit RawEvents(boost::fibers::buffered_channel<T>& sendChannel);
 
-    /**
-     * Get buffer size.
-     * @return buffer size
-     */
-    [[nodiscard]] size_t getBufferSize() const;
-
-    /**
-     * Get minimum drain size.
-     * @return minimum drain size
-     */
-    [[nodiscard]] size_t getMinimumDrainSize() const;
-
-    /**
-     * Get drain frequency.
-     * @return drain frequency
-     */
-    [[nodiscard]] const std::chrono::seconds& getDrainFrequency() const;
-
-    /**
-     * Get event handler.
-     * @return event handler
-     */
-    EventHandler<T>& getEventHandler() const;
 
     /**
      * Set up and run the event loop.
      */
-    virtual void eventLoop();
-
-    /**
-     * Drains raw event to listeners.
-     */
-    virtual void drainRawEvents();
+    virtual boost::asio::awaitable<void> eventLoop();
 
     /**
      * Set up the event loop.
@@ -96,59 +68,25 @@ public:
     RawEvents& operator=(RawEvents&&) noexcept = default;
 
 private:
-    const size_t bufferSize;
-    const size_t minimumDrainSize;
-    const std::chrono::seconds drainFrequency;
-    EventHandler<T>& eventHandler;
-    ShutdownHandler& shutdownHandler;
-
-    boost::circular_buffer<T> buffer;
+    boost::fibers::buffered_channel<T>& sendChannel;
 };
 
 template<typename T>
-RawEvents<T>::RawEvents(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<T> &eventHandler, ShutdownHandler& shutdownHandler) :
-    bufferSize{bufferSize}, minimumDrainSize{minimumDrainSize}, drainFrequency{drainFrequency}, eventHandler{eventHandler}, shutdownHandler{shutdownHandler}, buffer{bufferSize} {
+RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : sendChannel{sendChannel} {
 }
 
 template<typename T>
-size_t RawEvents<T>::getBufferSize() const {
-    return bufferSize;
-}
-
-template<typename T>
-const std::chrono::seconds& RawEvents<T>::getDrainFrequency() const {
-    return drainFrequency;
-}
-
-template<typename T>
-EventHandler<T>& RawEvents<T>::getEventHandler() const {
-    return eventHandler;
-}
-
-template<typename T>
-void RawEvents<T>::eventLoop() {
-    setup();
-    auto start_time = std::chrono::high_resolution_clock::now();
-    while (!shutdownHandler.shouldShutdown()) {
-        buffer.push_back(readRawEvent());
-        if (shutdownHandler.shouldShutdown() || (buffer.size() >= minimumDrainSize && std::chrono::high_resolution_clock::now() - start_time >= drainFrequency)) {
-            drainRawEvents();
-            start_time = std::chrono::high_resolution_clock::now();
-        }
-    }
-    shutdown();
-}
-
-template<typename T>
-void RawEvents<T>::drainRawEvents() {
-    std::vector<T> events = std::vector(buffer.begin(), buffer.end());
-    buffer.clear();
-    eventHandler.processEvents(events);
-}
-
-template<typename T>
-size_t RawEvents<T>::getMinimumDrainSize() const {
-    return minimumDrainSize;
+boost::asio::awaitable<void> RawEvents<T>::eventLoop() {
+//    setup();
+//    auto start_time = std::chrono::high_resolution_clock::now();
+//    while (!shutdownHandler.shouldShutdown()) {
+//        buffer.push_back(readRawEvent());
+//        if (shutdownHandler.shouldShutdown() || (buffer.size() >= minimumDrainSize && std::chrono::high_resolution_clock::now() - start_time >= drainFrequency)) {
+//            drainRawEvents();
+//            start_time = std::chrono::high_resolution_clock::now();
+//        }
+//    }
+//    shutdown();
 }
 
 template<typename T>

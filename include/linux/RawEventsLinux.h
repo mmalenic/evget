@@ -37,10 +37,9 @@ public:
      * @param bufferSize used with buffer to store events into
      * @param drainFrequency how often to drain events
      */
-    RawEventsLinux(size_t bufferSize, size_t minimumDrainSize, std::chrono::seconds drainFrequency, EventHandler<input_event> &eventHandler, ShutdownHandler& shutdownHandler);
+    RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
 
-    void eventLoop() override;
-    void drainRawEvents() override;
+    boost::asio::awaitable<void> eventLoop() override;
 };
 
 #endif // EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
