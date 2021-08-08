@@ -13,34 +13,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef EVGET_INCLUDE_CANCELLABLE_H
-#define EVGET_INCLUDE_CANCELLABLE_H
+#include "Task.h"
 
-#include <atomic>
+bool Task::isCancelled() const {
+    return cancelled.load();
+}
 
-/**
- * Cancellable class.
- */
-class Cancellable {
-public:
-    /**
-     * Create cancellable object.
-     */
-    Cancellable();
+void Task::cancel() {
+    cancelled.store(true);
+}
 
-    /**
-     * Cancel the class.
-     */
-    void cancel();
+Task::Task() : cancelled{false} {
+}
 
-    /**
-     * Check if cancelled.
-     * @return is cancelled.
-     */
-    [[nodiscard]] bool isCancelled() const;
+bool Task::isStarted() const {
+    return started.load();
+}
 
-private:
-    std::atomic<bool> cancelled;
-};
-
-#endif //EVGET_INCLUDE_CANCELLABLE_H
+boost::asio::awaitable<void> Task::start() {
+    started.store(true);
+}

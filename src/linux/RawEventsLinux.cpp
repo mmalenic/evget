@@ -26,9 +26,9 @@ namespace asio = boost::asio;
 
 using namespace std;
 
-asio::awaitable<void> RawEventsLinux::eventLoop() {
-
-}
+//asio::awaitable<void> RawEventsLinux::eventLoop() {
+//
+//}
 
 RawEventsLinux::RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel) : RawEvents(sendChannel) {
 }

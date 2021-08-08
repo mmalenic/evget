@@ -33,7 +33,7 @@ include_directories(
 )
 
 set(HEADERS_COMMON
-    include/Cancellable.h
+    include/Task.h
     include/CommandLine.h
     include/DataTransformer.h
     include/EventData.h
@@ -45,7 +45,7 @@ set(HEADERS_COMMON
 )
 
 set(SOURCES_COMMON
-    src/Cancellable.cpp
+    src/Task.cpp
     src/CommandLine.cpp
     src/DataTransformer.cpp
     src/EventData.cpp

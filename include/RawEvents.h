@@ -30,14 +30,14 @@
 #include <spdlog/spdlog.h>
 #include "EventHandler.h"
 #include "ShutdownHandler.h"
-#include "Cancellable.h"
+#include "Task.h"
 
 /**
  * Class represents processing the raw system events.
  * @tparam T type of events to process
  */
 template <typename T>
-class RawEvents : public Cancellable {
+class RawEvents : public Task {
 public:
     /**
      * Create the raw event processor.
@@ -61,7 +61,9 @@ public:
      */
     virtual void shutdown();
 
-    virtual T readRawEvent() = 0;
+    virtual boost::asio::awaitable<T> readRawEvent() = 0;
+
+    boost::asio::awaitable<void> start() override;
 
     virtual ~RawEvents() = default;
     RawEvents(const RawEvents&) = default;
@@ -74,7 +76,7 @@ private:
 };
 
 template<typename T>
-RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : Cancellable{}, sendChannel{sendChannel} {
+RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : Task{}, sendChannel{sendChannel} {
 }
 
 template<typename T>
@@ -83,7 +85,9 @@ boost::asio::awaitable<void> RawEvents<T>::eventLoop() {
     while (!isCancelled()) {
         T rawEvent = co_await readRawEvent();
         auto result = sendChannel.try_push(rawEvent);
-        spdlog::warn("Channel is full, losing event.");
+        if (result == boost::fibers::channel_op_status::full) {
+            spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
+        }
     }
     shutdown();
 }
@@ -94,6 +98,12 @@ void RawEvents<T>::setup() {
 
 template<typename T>
 void RawEvents<T>::shutdown() {
+}
+
+template<typename T>
+boost::asio::awaitable<void> RawEvents<T>::start() {
+    co_await Task::start();
+    co_await eventLoop();
 }
 
 #endif //EVGET_INCLUDE_RAWEVENTS_H
