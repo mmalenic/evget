@@ -22,25 +22,46 @@
 
 #include "SystemEventsLinux.h"
 
+#include <utility>
+
 namespace asio = boost::asio;
 
 using namespace std;
 
-
-SystemEventsLinux::SystemEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel) : SystemEvents(sendChannel), fd{} {
+SystemEventsLinux::SystemEventsLinux(
+    boost::fibers::buffered_channel<std::pair<SystemEventDevice, input_event>>& sendChannel,
+    std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices
+) : SystemEvents(sendChannel), devices{std::move(devices)} {
 }
 
-boost::asio::awaitable<input_event> SystemEventsLinux::readSystemEvent() {
-    if (!fd.has_value()) {
-        throw UnsupportedOperationException("File descriptor has not been initialized.");
+boost::asio::awaitable<void> SystemEventsLinux::eventLoop() {
+
+    for (auto device : devices) {
+
     }
-    return boost::asio::awaitable<input_event>();
 }
 
-void SystemEventsLinux::setup() {
-    SystemEvents::setup();
-}
+boost::asio::awaitable<bool> SystemEventsLinux::eventLoopForDevice(SystemEventDevice device, std::filesystem::path path) {
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd == -1) {
+        string err = strerror(errno);
+        spdlog::warn("Could not open device to read events: " + err);
+        co_return false;
+    }
 
-void SystemEventsLinux::shutdown() {
-    SystemEvents::shutdown();
+    asio::posix::stream_descriptor stream{getContext(), fd};
+    while (!isCancelled()) {
+        struct input_event event;
+        memset(&event, 0, sizeof(event));
+        co_await stream.async_read_some(&event);
+
+        auto result = sendChannel.try_push(event);
+        if (result == boost::fibers::channel_op_status::full) {
+            spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
+        }
+    }
+
+    stream.cancel();
+    stream.close();
+    co_return true;
 }

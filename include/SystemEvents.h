@@ -33,6 +33,15 @@
 #include "Task.h"
 
 /**
+ * System event device types.
+ */
+enum SystemEventDevice {
+    mouseDevice,
+    keyDevice,
+    touchDevice
+};
+
+/**
  * Class represents processing the system events.
  * @tparam T type of events to process
  */
@@ -45,27 +54,10 @@ public:
      */
     explicit SystemEvents(boost::fibers::buffered_channel<T>& sendChannel);
 
-
     /**
      * Set up and run the event loop.
      */
-    virtual boost::asio::awaitable<void> eventLoop();
-
-    /**
-     * Set up the event loop.
-     */
-    virtual void setup();
-
-    /**
-     * Cleanup after event loop.
-     */
-    virtual void shutdown();
-
-    /**
-     * Read the system event.
-     * @return system event
-     */
-    virtual boost::asio::awaitable<T> readSystemEvent() = 0;
+    virtual boost::asio::awaitable<void> eventLoop() = 0;
 
     boost::asio::awaitable<void> start() override;
 
@@ -81,27 +73,6 @@ private:
 
 template<typename T>
 SystemEvents<T>::SystemEvents(boost::fibers::buffered_channel<T>& sendChannel) : Task{}, sendChannel{sendChannel} {
-}
-
-template<typename T>
-boost::asio::awaitable<void> SystemEvents<T>::eventLoop() {
-    setup();
-    while (!isCancelled()) {
-        T rawEvent = co_await readSystemEvent();
-        auto result = sendChannel.try_push(rawEvent);
-        if (result == boost::fibers::channel_op_status::full) {
-            spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
-        }
-    }
-    shutdown();
-}
-
-template<typename T>
-void SystemEvents<T>::setup() {
-}
-
-template<typename T>
-void SystemEvents<T>::shutdown() {
 }
 
 template<typename T>

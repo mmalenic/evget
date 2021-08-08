@@ -24,26 +24,31 @@
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
 
 #include <linux/input.h>
+#include <filesystem>
 #include "SystemEvents.h"
 
 /**
  * Class represents processing linux system events.
  * @tparam T type of events to process
  */
-class SystemEventsLinux : public SystemEvents<input_event> {
+class SystemEventsLinux : public SystemEvents<std::pair<SystemEventDevice, input_event>> {
 public:
     /**
      * Create the event processor.
      * @param sendChannel send channel to send events to
      */
-    explicit SystemEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
+    explicit SystemEventsLinux(boost::fibers::buffered_channel<std::pair<SystemEventDevice, input_event>>& sendChannel, std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices);
 
-    boost::asio::awaitable<input_event> readSystemEvent() override;
-    void setup() override;
-    void shutdown() override;
+    /**
+     * Run the event loop for a single device.
+     * @return true if successful
+     */
+    boost::asio::awaitable<bool> eventLoopForDevice(SystemEventDevice device, std::filesystem::path path);
+
+    boost::asio::awaitable<void> eventLoop() override;
 
 private:
-    std::optional<boost::asio::posix::stream_descriptor> fd;
+    std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices;
 };
 
 #endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
