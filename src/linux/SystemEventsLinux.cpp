@@ -20,15 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "RawEventsLinux.h"
+#include "SystemEventsLinux.h"
 
 namespace asio = boost::asio;
 
 using namespace std;
 
-//asio::awaitable<void> RawEventsLinux::eventLoop() {
-//
-//}
 
-RawEventsLinux::RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel) : RawEvents(sendChannel) {
+SystemEventsLinux::SystemEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel) : SystemEvents(sendChannel), fd{} {
+}
+
+boost::asio::awaitable<input_event> SystemEventsLinux::readSystemEvent() {
+    if (!fd.has_value()) {
+        throw UnsupportedOperationException("File descriptor has not been initialized.");
+    }
+    return boost::asio::awaitable<input_event>();
+}
+
+void SystemEventsLinux::setup() {
+    SystemEvents::setup();
+}
+
+void SystemEventsLinux::shutdown() {
+    SystemEvents::shutdown();
 }

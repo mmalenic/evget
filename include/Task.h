@@ -18,6 +18,9 @@
 
 #include <atomic>
 #include <boost/asio.hpp>
+#include <boost/optional.hpp>
+#include <UnsupportedOperationException.h>
+#include <optional>
 
 /**
  * Task class.
@@ -30,6 +33,12 @@ public:
     Task();
 
     /**
+     * Create the task with the context.
+     * @param context context
+     */
+    void create(boost::asio::io_context& context);
+
+    /**
      * Cancel the task.
      */
     void cancel();
@@ -38,6 +47,18 @@ public:
      * Cancel the task.
      */
     void stop();
+
+    /**
+     * Check if created.
+     * @return is created
+     */
+    [[nodiscard]] boost::asio::io_context& getContext() const;
+
+    /**
+     * Check if created.
+     * @return is created
+     */
+    [[nodiscard]] bool isCreated() const;
 
     /**
      * Check if started.
@@ -63,9 +84,16 @@ public:
     virtual boost::asio::awaitable<void> start();
 
 private:
+    boost::optional<boost::asio::io_context&> context;
+
     std::atomic<bool> started;
     std::atomic<bool> cancelled;
     std::atomic<bool> stopped;
+
+    /**
+     * Ensures that the context has been added to the task.
+     */
+    void checkContext() const;
 };
 
 #endif //EVGET_INCLUDE_TASK_H

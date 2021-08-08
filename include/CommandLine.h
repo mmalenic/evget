@@ -68,43 +68,43 @@ public:
     * Get the file.
     * @return the file
     */
-    const fs::path& getFile() const;
+    [[nodiscard]] const fs::path& getFile() const;
 
     /**
      * Get file option.
      * @return file option
      */
-    const std::tuple<std::string, std::string, std::string>& getFileOption() const;
+    [[nodiscard]] const std::tuple<std::string, std::string, std::string>& getFileOption() const;
 
     /**
      * Get print option.
      * @return print option.
      */
-    const std::tuple<std::string, std::string, std::string>& getPrintOption() const;
+    [[nodiscard]] const std::tuple<std::string, std::string, std::string>& getPrintOption() const;
 
     /**
      * Getter for print flag.
      * @return print flag
      */
-    bool isPrint() const;
+    [[nodiscard]] bool isPrint() const;
 
     /**
      * Getter for raw events flag.
      * @return raw events flag
      */
-    bool isRawEvents() const;
+    [[nodiscard]] bool isRawEvents() const;
 
     /**
      * Get the log level.
      * @return
      */
-    spdlog::level::level_enum getLogLevel() const;
+    [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
     /**
      * Get the file type.
      * @return file type
      */
-    const Filetype& getFiletype() const;
+    [[nodiscard]] const Filetype& getFiletype() const;
 
     /**
      * Handles command line options that have simple logic, like the help message,

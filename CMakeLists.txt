@@ -39,9 +39,10 @@ set(HEADERS_COMMON
     include/EventData.h
     include/EventDataEntry.h
     include/EventHandler.h
-    include/RawEvents.h
+    include/SystemEvents.h
     include/ShutdownHandler.h
     include/Storage.h
+    include/UnsupportedOperationException.h
 )
 
 set(SOURCES_COMMON
@@ -51,6 +52,7 @@ set(SOURCES_COMMON
     src/EventData.cpp
     src/EventDataEntry.cpp
     src/ShutdownHandler.cpp
+    src/UnsupportedOperationException.cpp
 )
 
 if (BUILD_TESTING)
@@ -73,7 +75,7 @@ if (UNIX AND NOT APPLE)
         include/linux/CommandLineLinux.h
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
-        include/linux/RawEventsLinux.h
+        include/linux/SystemEventsLinux.h
         include/linux/ShutdownHandlerLinux.h
     )
 
@@ -81,7 +83,7 @@ if (UNIX AND NOT APPLE)
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
-        src/linux/RawEventsLinux.cpp
+        src/linux/SystemEventsLinux.cpp
         src/linux/ShutdownHandlerLinux.cpp
     )
 

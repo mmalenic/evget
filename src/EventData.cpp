@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <tuple>
-#include <utility>
+#include <UnsupportedOperationException.h>
 #include "../include/EventData.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ EventData::EventData() : dataCreated{false}, eventData{} {
 
 void EventData::addEntry(EventDeviceFormat format, DataType type, const string& entry) {
     if (dataCreated) {
-        throw UnsupportedOperationException("Attempted to modify after call to stop.");
+        throw UnsupportedOperationException{"Attempted to modify after call to stop."};
     }
     eventData.emplace_back(format, type, entry);
 }
@@ -47,11 +47,4 @@ EventData::iterator EventData::begin() noexcept {
 
 EventData::iterator EventData::end() noexcept {
     return eventData.end();
-}
-
-UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{std::move(message)} {
-}
-
-const char* UnsupportedOperationException::what() const noexcept {
-    return message.c_str();
 }

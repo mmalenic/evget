@@ -20,24 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
-#define EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
+#ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
+#define EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
 
 #include <linux/input.h>
-#include "RawEvents.h"
+#include "SystemEvents.h"
 
 /**
- * Class represents processing linux raw system events.
+ * Class represents processing linux system events.
  * @tparam T type of events to process
  */
-class RawEventsLinux : public RawEvents<input_event> {
+class SystemEventsLinux : public SystemEvents<input_event> {
 public:
     /**
-     * Create the raw event processor.
-     * @param bufferSize used with buffer to store events into
-     * @param drainFrequency how often to drain events
+     * Create the event processor.
+     * @param sendChannel send channel to send events to
      */
-    explicit RawEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
+    explicit SystemEventsLinux(boost::fibers::buffered_channel<input_event>& sendChannel);
+
+    boost::asio::awaitable<input_event> readSystemEvent() override;
+    void setup() override;
+    void shutdown() override;
+
+private:
+    std::optional<boost::asio::posix::stream_descriptor> fd;
 };
 
-#endif // EVGET_INCLUDE_LINUX_RAWEVENTSLINUX_H
+#endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H

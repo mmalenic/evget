@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_RAWEVENTS_H
-#define EVGET_INCLUDE_RAWEVENTS_H
+#ifndef EVGET_INCLUDE_SYSTEMEVENTS_H
+#define EVGET_INCLUDE_SYSTEMEVENTS_H
 
 #include <vector>
 #include <chrono>
@@ -33,17 +33,17 @@
 #include "Task.h"
 
 /**
- * Class represents processing the raw system events.
+ * Class represents processing the system events.
  * @tparam T type of events to process
  */
 template <typename T>
-class RawEvents : public Task {
+class SystemEvents : public Task {
 public:
     /**
-     * Create the raw event processor.
+     * Create the system event processor.
      * @param sendChannel send channel to send events to
      */
-    explicit RawEvents(boost::fibers::buffered_channel<T>& sendChannel);
+    explicit SystemEvents(boost::fibers::buffered_channel<T>& sendChannel);
 
 
     /**
@@ -61,29 +61,33 @@ public:
      */
     virtual void shutdown();
 
-    virtual boost::asio::awaitable<T> readRawEvent() = 0;
+    /**
+     * Read the system event.
+     * @return system event
+     */
+    virtual boost::asio::awaitable<T> readSystemEvent() = 0;
 
     boost::asio::awaitable<void> start() override;
 
-    virtual ~RawEvents() = default;
-    RawEvents(const RawEvents&) = default;
-    RawEvents(RawEvents&&) noexcept = default;
-    RawEvents& operator=(const RawEvents&) = default;
-    RawEvents& operator=(RawEvents&&) noexcept = default;
+    virtual ~SystemEvents() = default;
+    SystemEvents(const SystemEvents&) = default;
+    SystemEvents(SystemEvents&&) noexcept = default;
+    SystemEvents& operator=(const SystemEvents&) = default;
+    SystemEvents& operator=(SystemEvents&&) noexcept = default;
 
 private:
     boost::fibers::buffered_channel<T>& sendChannel;
 };
 
 template<typename T>
-RawEvents<T>::RawEvents(boost::fibers::buffered_channel<T>& sendChannel) : Task{}, sendChannel{sendChannel} {
+SystemEvents<T>::SystemEvents(boost::fibers::buffered_channel<T>& sendChannel) : Task{}, sendChannel{sendChannel} {
 }
 
 template<typename T>
-boost::asio::awaitable<void> RawEvents<T>::eventLoop() {
+boost::asio::awaitable<void> SystemEvents<T>::eventLoop() {
     setup();
     while (!isCancelled()) {
-        T rawEvent = co_await readRawEvent();
+        T rawEvent = co_await readSystemEvent();
         auto result = sendChannel.try_push(rawEvent);
         if (result == boost::fibers::channel_op_status::full) {
             spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
@@ -93,17 +97,18 @@ boost::asio::awaitable<void> RawEvents<T>::eventLoop() {
 }
 
 template<typename T>
-void RawEvents<T>::setup() {
+void SystemEvents<T>::setup() {
 }
 
 template<typename T>
-void RawEvents<T>::shutdown() {
+void SystemEvents<T>::shutdown() {
 }
 
 template<typename T>
-boost::asio::awaitable<void> RawEvents<T>::start() {
+boost::asio::awaitable<void> SystemEvents<T>::start() {
     co_await Task::start();
     co_await eventLoop();
+    stop();
 }
 
-#endif //EVGET_INCLUDE_RAWEVENTS_H
+#endif //EVGET_INCLUDE_SYSTEMEVENTS_H

@@ -70,20 +70,4 @@ private:
     std::vector<EventDataEntry> eventData;
 };
 
-/**
- * Exception used for an unsupported operation.
- */
-class UnsupportedOperationException : public std::exception {
-public:
-    /**
-     * Create exception with message.
-     * @param message message
-     */
-    explicit UnsupportedOperationException(std::string message = "Unsupported Operation.");
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
 #endif //EVGET_INCLUDE_EVENTDATA_H
