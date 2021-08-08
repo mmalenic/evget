@@ -23,13 +23,21 @@ void Task::cancel() {
     cancelled.store(true);
 }
 
-Task::Task() : cancelled{false} {
+Task::Task() : started{false}, cancelled{false}, stopped{false} {
 }
 
 bool Task::isStarted() const {
     return started.load();
 }
 
+bool Task::isStopped() const {
+    return started.load();
+}
+
 boost::asio::awaitable<void> Task::start() {
     started.store(true);
+}
+
+void Task::stop() {
+    stopped.store(true);
 }

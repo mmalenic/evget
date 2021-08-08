@@ -31,7 +31,7 @@ EventData::EventData() : dataCreated{false}, eventData{} {
 
 void EventData::addEntry(EventDeviceFormat format, DataType type, const string& entry) {
     if (dataCreated) {
-        throw UnsupportedOperationException("Attempted to modify after call to finish.");
+        throw UnsupportedOperationException("Attempted to modify after call to stop.");
     }
     eventData.emplace_back(format, type, entry);
 }

@@ -35,6 +35,11 @@ public:
     void cancel();
 
     /**
+     * Cancel the task.
+     */
+    void stop();
+
+    /**
      * Check if started.
      * @return has started
      */
@@ -47,6 +52,12 @@ public:
     [[nodiscard]] bool isCancelled() const;
 
     /**
+     * Check if stopped normally.
+     * @return is stopped.
+     */
+    [[nodiscard]] bool isStopped() const;
+
+    /**
      * Start the task.
      */
     virtual boost::asio::awaitable<void> start();
@@ -54,6 +65,7 @@ public:
 private:
     std::atomic<bool> started;
     std::atomic<bool> cancelled;
+    std::atomic<bool> stopped;
 };
 
 #endif //EVGET_INCLUDE_TASK_H
