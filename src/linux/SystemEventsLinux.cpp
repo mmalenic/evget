@@ -25,6 +25,7 @@
 #include <utility>
 
 namespace asio = boost::asio;
+namespace fibers = boost::fibers;
 
 using namespace std;
 
@@ -34,19 +35,13 @@ SystemEventsLinux::SystemEventsLinux(
 ) : SystemEvents(sendChannel), devices{std::move(devices)} {
 }
 
-boost::asio::awaitable<void> SystemEventsLinux::eventLoop() {
-
-    for (auto device : devices) {
-
-    }
-}
-
-boost::asio::awaitable<bool> SystemEventsLinux::eventLoopForDevice(SystemEventDevice device, std::filesystem::path path) {
+boost::asio::awaitable<void> SystemEventsLinux::eventLoopForDevice(SystemEventDevice device, std::filesystem::path path, fibers::buffered_channel<bool>& result) {
     int fd = open(path.c_str(), O_RDONLY);
     if (fd == -1) {
         string err = strerror(errno);
         spdlog::warn("Could not open device to read events: " + err);
-        co_return false;
+        result.try_push(false);
+        co_return;
     }
 
     asio::posix::stream_descriptor stream{getContext(), fd};
@@ -55,13 +50,27 @@ boost::asio::awaitable<bool> SystemEventsLinux::eventLoopForDevice(SystemEventDe
         memset(&event, 0, sizeof(event));
         co_await stream.async_read_some(&event);
 
-        auto result = sendChannel.try_push(event);
-        if (result == boost::fibers::channel_op_status::full) {
+        auto result = sendChannel.try_push(make_pair(device, event));
+        if (result == fibers::channel_op_status::full) {
             spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
         }
     }
 
     stream.cancel();
     stream.close();
-    co_return true;
+    result.try_push(true);
+    co_return;
+}
+
+boost::asio::awaitable<void> SystemEventsLinux::eventLoop() {
+    fibers::buffered_channel<bool> results{devices.size + 1};
+    for (auto device : devices) {
+        co_spawn(getContext(), eventLoopForDevice(device.first, device.second), boost::asio::detached);
+    }
+    bool first = co_await results.pop();
+    if (none_of(results.begin(), results.end(), [](bool v)
+                { return v; }))
+    {
+        throw UnsupportedOperationException("No devices were set for reading input events.");
+    }
 }

@@ -43,7 +43,7 @@ public:
      * Run the event loop for a single device.
      * @return true if successful
      */
-    boost::asio::awaitable<bool> eventLoopForDevice(SystemEventDevice device, std::filesystem::path path);
+    boost::asio::awaitable<void> eventLoopForDevice(SystemEventDevice device, std::filesystem::path path, boost::fibers::buffered_channel<bool>& result);
 
     boost::asio::awaitable<void> eventLoop() override;
 
