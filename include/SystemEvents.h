@@ -33,15 +33,6 @@
 #include "Task.h"
 
 /**
- * System event device types.
- */
-enum SystemEventDevice {
-    mouseDevice,
-    keyDevice,
-    touchDevice
-};
-
-/**
  * Class represents processing the system events.
  * @tparam T type of events to process
  */

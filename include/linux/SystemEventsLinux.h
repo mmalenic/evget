@@ -37,7 +37,7 @@ public:
      * Create the event processor.
      * @param sendChannel send channel to send events to
      */
-    explicit SystemEventsLinux(boost::fibers::buffered_channel<std::pair<SystemEventDevice, input_event>>& sendChannel, std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices);
+    explicit SystemEventsLinux(std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices);
 
     /**
      * Run the event loop for a single device.

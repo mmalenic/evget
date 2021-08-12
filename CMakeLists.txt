@@ -39,6 +39,7 @@ set(HEADERS_COMMON
     include/EventData.h
     include/EventDataEntry.h
     include/EventHandler.h
+    include/SystemEventDevice.h
     include/SystemEvents.h
     include/ShutdownHandler.h
     include/Storage.h
