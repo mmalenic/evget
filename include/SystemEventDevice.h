@@ -30,11 +30,26 @@
 template <typename T>
 class SystemEventDevice {
 public:
+    /**
+     * Possible values.
+     */
     enum Value {
         mouseDevice,
         keyDevice,
         touchDevice
     };
+
+    /**
+     * Get the value.
+     * @return value
+     */
+    Value getValue() const;
+
+    /**
+     * Get the data.
+     * @return data
+     */
+    T getData() const;
 
     /**
      * Create the device.
@@ -47,12 +62,6 @@ public:
     bool operator ==(const SystemEventDevice &b) const;
     bool operator ==(const Value &b) const;
     operator bool() = delete;
-
-    virtual ~SystemEventDevice() = default;
-    SystemEventDevice(const SystemEventDevice&) = default;
-    SystemEventDevice(SystemEventDevice&&) noexcept = default;
-    SystemEventDevice& operator=(const SystemEventDevice&) = default;
-    SystemEventDevice& operator=(SystemEventDevice&&) noexcept = default;
 
 private:
     Value value;
@@ -76,6 +85,16 @@ bool SystemEventDevice<T>::operator==(const SystemEventDevice& b) const {
 template<typename T>
 bool SystemEventDevice<T>::operator==(const SystemEventDevice::Value& b) const {
     return value == b;
+}
+
+template<typename T>
+T SystemEventDevice<T>::getData() const {
+    return data;
+}
+
+template<typename T>
+typename SystemEventDevice<T>::Value SystemEventDevice<T>::getValue() const {
+    return value;
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTDEVICE_H

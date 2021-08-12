@@ -26,29 +26,39 @@
 #include <linux/input.h>
 #include <filesystem>
 #include "SystemEvents.h"
+#include "SystemEventDevice.h"
 
 /**
  * Class represents processing linux system events.
  * @tparam T type of events to process
  */
-class SystemEventsLinux : public SystemEvents<std::pair<SystemEventDevice, input_event>> {
+class SystemEventsLinux : public SystemEvents<SystemEventDevice<input_event>> {
 public:
     /**
-     * Create the event processor.
-     * @param sendChannel send channel to send events to
+     * Create the system events.
+     *
+     * @param mouseDevices mouse devices
+     * @param keyDevices key devices
+     * @param touchDevices touch devices
      */
-    explicit SystemEventsLinux(std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices);
+    SystemEventsLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices);
 
     /**
      * Run the event loop for a single device.
-     * @return true if successful
      */
-    boost::asio::awaitable<void> eventLoopForDevice(SystemEventDevice device, std::filesystem::path path, boost::fibers::buffered_channel<bool>& result);
+    boost::asio::awaitable<bool> eventLoopForDevice(SystemEventDevice<input_event>::Value device, std::filesystem::path path);
+
+    /**
+     * Run the event loop for each set of devices.
+     */
+    boost::asio::awaitable<void> eventLoopForEach(SystemEventDevice<input_event>::Value device, std::vector<std::filesystem::path> paths);
 
     boost::asio::awaitable<void> eventLoop() override;
 
 private:
-    std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices;
+    std::vector<std::filesystem::path> mouseDevices;
+    std::vector<std::filesystem::path> keyDevices;
+    std::vector<std::filesystem::path> touchDevices;
 };
 
 #endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H

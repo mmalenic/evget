@@ -40,15 +40,21 @@ template <typename T>
 class SystemEvents : public Task {
 public:
     /**
-     * Create the system event processor.
-     * @param sendChannel send channel to send events to
+     * Create the system events class.
+     * @param nDevices number of devices tracked
      */
-    explicit SystemEvents(boost::fibers::buffered_channel<T>& sendChannel);
+    explicit SystemEvents(size_t nDevices);
 
     /**
      * Set up and run the event loop.
      */
     virtual boost::asio::awaitable<void> eventLoop() = 0;
+
+    /**
+     * Submit the result of a coroutines.
+     * @param result result to submit
+     */
+    virtual void submitResult(bool result);
 
     boost::asio::awaitable<void> start() override;
 
@@ -59,18 +65,28 @@ public:
     SystemEvents& operator=(SystemEvents&&) noexcept = default;
 
 private:
-    boost::fibers::buffered_channel<T>& sendChannel;
+    const size_t nDevices;
+    std::vector<bool> results;
 };
-
-template<typename T>
-SystemEvents<T>::SystemEvents(boost::fibers::buffered_channel<T>& sendChannel) : Task{}, sendChannel{sendChannel} {
-}
 
 template<typename T>
 boost::asio::awaitable<void> SystemEvents<T>::start() {
     co_await Task::start();
     co_await eventLoop();
     stop();
+}
+
+template<typename T>
+void SystemEvents<T>::submitResult(bool result) {
+    results.push_back(result);
+    if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
+        spdlog::error("No devices were set.");
+        throw UnsupportedOperationException();
+    }
+}
+
+template<typename T>
+SystemEvents<T>::SystemEvents(const size_t nDevices) : nDevices{nDevices}, results{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTS_H

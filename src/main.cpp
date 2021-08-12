@@ -24,15 +24,30 @@
 #include <EventDeviceLister.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <boost/asio.hpp>
 #include <atomic>
 
 using namespace std;
+
+boost::asio::awaitable<int> test(int arg) {
+    int a = arg;
+    co_return 1;
+}
 
 int main(int argc, char* argv[]) {
     CommandLineLinux cmd{argc, argv};
     cmd.readArgs();
 
     spdlog::set_level(cmd.getLogLevel());
+
+    boost::asio::io_context context{};
+
+    boost::asio::co_spawn(context,
+        []() {
+            return test(1);
+        }, [cmd](exception_ptr e, int a) {
+            cmd.getLogLevel();
+        });
 
     if (cmd.isListEventDevices()) {
         EventDeviceLister lister{};

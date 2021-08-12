@@ -30,47 +30,48 @@ namespace fibers = boost::fibers;
 using namespace std;
 
 SystemEventsLinux::SystemEventsLinux(
-    boost::fibers::buffered_channel<std::pair<SystemEventDevice, input_event>>& sendChannel,
-    std::vector<std::pair<SystemEventDevice, std::filesystem::path>> devices
-) : SystemEvents(sendChannel), devices{std::move(devices)} {
+    std::vector<std::filesystem::path>  mouseDevices,
+    std::vector<std::filesystem::path>  keyDevices,
+    std::vector<std::filesystem::path>  touchDevices
+    ) : SystemEvents{mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
 }
 
-boost::asio::awaitable<void> SystemEventsLinux::eventLoopForDevice(SystemEventDevice device, std::filesystem::path path, fibers::buffered_channel<bool>& result) {
+boost::asio::awaitable<bool> SystemEventsLinux::eventLoopForDevice(SystemEventDevice<input_event>::Value device, std::filesystem::path path) {
     int fd = open(path.c_str(), O_RDONLY);
     if (fd == -1) {
         string err = strerror(errno);
         spdlog::warn("Could not open device to read events: " + err);
-        result.try_push(false);
-        co_return;
+        co_return false;
     }
 
-    asio::posix::stream_descriptor stream{getContext(), fd};
-    while (!isCancelled()) {
-        struct input_event event;
-        memset(&event, 0, sizeof(event));
-        co_await stream.async_read_some(&event);
-
-        auto result = sendChannel.try_push(make_pair(device, event));
-        if (result == fibers::channel_op_status::full) {
-            spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
-        }
-    }
-
-    stream.cancel();
-    stream.close();
-    result.try_push(true);
-    co_return;
+//    asio::posix::stream_descriptor stream{getContext(), fd};
+//    while (!isCancelled()) {
+//        struct input_event event;
+//        memset(&event, 0, sizeof(event));
+//        co_await stream.async_read_some(&event);
+//
+//        auto eventValue = SystemEventDevice(device, event);
+//        auto result = sendChannel.try_push(make_pair(device, event));
+//        if (result == fibers::channel_op_status::full) {
+//            spdlog::warn("Channel is full, losing event, consider increasing buffer size.");
+//        }
+//    }
+//
+//    stream.cancel();
+//    stream.close();
+    co_return true;
 }
 
 boost::asio::awaitable<void> SystemEventsLinux::eventLoop() {
-    fibers::buffered_channel<bool> results{devices.size + 1};
-    for (auto device : devices) {
-        co_spawn(getContext(), eventLoopForDevice(device.first, device.second), boost::asio::detached);
-    }
-    bool first = co_await results.pop();
-    if (none_of(results.begin(), results.end(), [](bool v)
-                { return v; }))
-    {
-        throw UnsupportedOperationException("No devices were set for reading input events.");
+    eventLoopForEach(SystemEventDevice<input_event>::mouseDevice, mouseDevices);
+    eventLoopForEach(SystemEventDevice<input_event>::keyDevice, keyDevices);
+    eventLoopForEach(SystemEventDevice<input_event>::touchDevice, touchDevices);
+}
+boost::asio::awaitable<void> SystemEventsLinux::eventLoopForEach(
+    SystemEventDevice<input_event>::Value device,
+    std::vector<std::filesystem::path> paths
+    ) {
+    for (auto path : paths) {
+        co_spawn(getContext(), [&]() { return eventLoopForDevice(device, path); }, [&](exception_ptr e, bool result) { submitResult(result); });
     }
 }
