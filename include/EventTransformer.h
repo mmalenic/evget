@@ -20,31 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_DATATRANSFORMER_H
-#define EVGET_INCLUDE_DATATRANSFORMER_H
+#ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
+#define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
 #include "EventData.h"
+#include "SystemEvent.h"
 
 /**
  * Transform the data so its usable by storage.
  * @tparam T type of data
  */
 template <typename T>
-class DataTransformer {
+class EventTransformer {
 public:
     /**
      * Transform the data.
      * @param data data to transform
      * @return event data for storage
      */
-    virtual std::vector<EventData> transformData(std::vector<T> data) = 0;
+    virtual std::vector<EventData> transformEvent(SystemEvent<T> data) = 0;
 
-    DataTransformer() = default;
-    virtual ~DataTransformer() = default;
-    DataTransformer(const DataTransformer&) = default;
-    DataTransformer(DataTransformer&&) = default;
-    virtual DataTransformer& operator=(const DataTransformer&) = default;
-    virtual DataTransformer& operator=(DataTransformer&&) = default;
+    EventTransformer() = default;
+    virtual ~EventTransformer() = default;
+    EventTransformer(const EventTransformer&) = default;
+    EventTransformer(EventTransformer&&) = default;
+    virtual EventTransformer& operator=(const EventTransformer&) = default;
+    virtual EventTransformer& operator=(EventTransformer&&) = default;
 };
 
-#endif //EVGET_INCLUDE_DATATRANSFORMER_H
+#endif //EVGET_INCLUDE_EVENTTRANSFORMER_H

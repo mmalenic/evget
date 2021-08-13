@@ -20,30 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_SYSTEMEVENTDEVICE_H
-#define EVGET_INCLUDE_SYSTEMEVENTDEVICE_H
+#ifndef EVGET_INCLUDE_SYSTEMEVENT_H
+#define EVGET_INCLUDE_SYSTEMEVENT_H
 
 /**
  * Defines the type of events that system events can take.
  * @tparam T the type of event
  */
 template <typename T>
-class SystemEventDevice {
+class SystemEvent {
 public:
     /**
-     * Possible values.
+     * Possible types.
      */
-    enum Value {
+    enum Type {
         mouseDevice,
         keyDevice,
         touchDevice
     };
 
     /**
-     * Get the value.
-     * @return value
+     * Get the type.
+     * @return type
      */
-    Value getValue() const;
+    Type getType() const;
 
     /**
      * Get the data.
@@ -53,48 +53,48 @@ public:
 
     /**
      * Create the device.
-     * @param value value
+     * @param type type
      * @param data data
      */
-    SystemEventDevice(Value value, T data);
+    SystemEvent(Type type, T data);
 
-    explicit operator Value() const;
-    bool operator ==(const SystemEventDevice &b) const;
-    bool operator ==(const Value &b) const;
+    explicit operator Type() const;
+    bool operator ==(const SystemEvent &b) const;
+    bool operator ==(const Type &b) const;
     operator bool() = delete;
 
 private:
-    Value value;
+    Type type;
     T data;
 };
 
 template<typename T>
-SystemEventDevice<T>::SystemEventDevice(SystemEventDevice::Value value, T data) : value{value}, data{data} {
+SystemEvent<T>::SystemEvent(SystemEvent::Type type, T data) : type{type}, data{data} {
 }
 
 template<typename T>
-SystemEventDevice<T>::operator Value() const {
-    return value;
+SystemEvent<T>::operator Type() const {
+    return type;
 }
 
 template<typename T>
-bool SystemEventDevice<T>::operator==(const SystemEventDevice& b) const {
-    return value == b.value;
+bool SystemEvent<T>::operator==(const SystemEvent& b) const {
+    return type == b.type;
 }
 
 template<typename T>
-bool SystemEventDevice<T>::operator==(const SystemEventDevice::Value& b) const {
-    return value == b;
+bool SystemEvent<T>::operator==(const SystemEvent::Type& b) const {
+    return type == b;
 }
 
 template<typename T>
-T SystemEventDevice<T>::getData() const {
+T SystemEvent<T>::getData() const {
     return data;
 }
 
 template<typename T>
-typename SystemEventDevice<T>::Value SystemEventDevice<T>::getValue() const {
-    return value;
+typename SystemEvent<T>::Type SystemEvent<T>::getType() const {
+    return type;
 }
 
-#endif //EVGET_INCLUDE_SYSTEMEVENTDEVICE_H
+#endif //EVGET_INCLUDE_SYSTEMEVENT_H

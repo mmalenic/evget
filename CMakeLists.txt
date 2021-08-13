@@ -35,12 +35,12 @@ include_directories(
 set(HEADERS_COMMON
     include/Task.h
     include/CommandLine.h
-    include/DataTransformer.h
+    include/EventTransformer.h
     include/EventData.h
     include/EventDataEntry.h
     include/EventHandler.h
-    include/SystemEventDevice.h
-    include/SystemEvents.h
+    include/SystemEvent.h
+    include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
     include/UnsupportedOperationException.h
@@ -49,7 +49,6 @@ set(HEADERS_COMMON
 set(SOURCES_COMMON
     src/Task.cpp
     src/CommandLine.cpp
-    src/DataTransformer.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
     src/ShutdownHandler.cpp
@@ -76,7 +75,7 @@ if (UNIX AND NOT APPLE)
         include/linux/CommandLineLinux.h
         include/linux/EventDevice.h
         include/linux/EventDeviceLister.h
-        include/linux/SystemEventsLinux.h
+        include/linux/SystemEventLoopLinux.h
         include/linux/ShutdownHandlerLinux.h
     )
 
@@ -84,7 +83,7 @@ if (UNIX AND NOT APPLE)
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
-        src/linux/SystemEventsLinux.cpp
+        src/linux/SystemEventLoopLinux.cpp
         src/linux/ShutdownHandlerLinux.cpp
     )
 

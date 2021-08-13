@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_SYSTEMEVENTS_H
-#define EVGET_INCLUDE_SYSTEMEVENTS_H
+#ifndef EVGET_INCLUDE_SYSTEMEVENTLOOP_H
+#define EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 
 #include <vector>
 #include <chrono>
@@ -37,13 +37,13 @@
  * @tparam T type of events to process
  */
 template <typename T>
-class SystemEvents : public Task {
+class SystemEventLoop : public Task {
 public:
     /**
      * Create the system events class.
      * @param nDevices number of devices tracked
      */
-    explicit SystemEvents(size_t nDevices);
+    explicit SystemEventLoop(size_t nDevices, EventHandler<T>& eventHandler);
 
     /**
      * Set up and run the event loop.
@@ -56,28 +56,35 @@ public:
      */
     virtual void submitResult(bool result);
 
+    /**
+     * Get the event handler.
+     * @return event handler
+     */
+    EventHandler<T>& getEventHandler() const;
+
     boost::asio::awaitable<void> start() override;
 
-    virtual ~SystemEvents() = default;
-    SystemEvents(const SystemEvents&) = default;
-    SystemEvents(SystemEvents&&) noexcept = default;
-    SystemEvents& operator=(const SystemEvents&) = default;
-    SystemEvents& operator=(SystemEvents&&) noexcept = default;
+    virtual ~SystemEventLoop() = default;
+    SystemEventLoop(const SystemEventLoop&) = default;
+    SystemEventLoop(SystemEventLoop&&) noexcept = default;
+    SystemEventLoop& operator=(const SystemEventLoop&) = default;
+    SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
 
 private:
     const size_t nDevices;
+    EventHandler<T>& eventHandler;
     std::vector<bool> results;
 };
 
 template<typename T>
-boost::asio::awaitable<void> SystemEvents<T>::start() {
+boost::asio::awaitable<void> SystemEventLoop<T>::start() {
     co_await Task::start();
     co_await eventLoop();
     stop();
 }
 
 template<typename T>
-void SystemEvents<T>::submitResult(bool result) {
+void SystemEventLoop<T>::submitResult(bool result) {
     results.push_back(result);
     if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
         spdlog::error("No devices were set.");
@@ -86,7 +93,12 @@ void SystemEvents<T>::submitResult(bool result) {
 }
 
 template<typename T>
-SystemEvents<T>::SystemEvents(const size_t nDevices) : nDevices{nDevices}, results{} {
+SystemEventLoop<T>::SystemEventLoop(const size_t nDevices, EventHandler<T>& eventHandler) : nDevices{nDevices}, eventHandler{eventHandler}, results{} {
 }
 
-#endif //EVGET_INCLUDE_SYSTEMEVENTS_H
+template<typename T>
+EventHandler<T>& SystemEventLoop<T>::getEventHandler() const {
+    return eventHandler;
+}
+
+#endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

@@ -20,19 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
-#define EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
+#ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
+#define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
 #include <linux/input.h>
 #include <filesystem>
-#include "SystemEvents.h"
-#include "SystemEventDevice.h"
+#include "SystemEventLoop.h"
+#include "SystemEvent.h"
 
 /**
  * Class represents processing linux system events.
  * @tparam T type of events to process
  */
-class SystemEventsLinux : public SystemEvents<SystemEventDevice<input_event>> {
+class SystemEventLoopLinux : public SystemEventLoop<input_event> {
 public:
     /**
      * Create the system events.
@@ -41,17 +41,17 @@ public:
      * @param keyDevices key devices
      * @param touchDevices touch devices
      */
-    SystemEventsLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices);
+    SystemEventLoopLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices, EventHandler<input_event>& eventHandler);
 
     /**
-     * Run the event loop for a single device.
+     * Run the event loop for a single type.
      */
-    boost::asio::awaitable<bool> eventLoopForDevice(SystemEventDevice<input_event>::Value device, std::filesystem::path path);
+    boost::asio::awaitable<bool> eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path);
 
     /**
      * Run the event loop for each set of devices.
      */
-    boost::asio::awaitable<void> eventLoopForEach(SystemEventDevice<input_event>::Value device, std::vector<std::filesystem::path> paths);
+    boost::asio::awaitable<void> eventLoopForEach(SystemEvent<input_event>::Type type, std::vector<std::filesystem::path> paths);
 
     boost::asio::awaitable<void> eventLoop() override;
 
@@ -61,4 +61,4 @@ private:
     std::vector<std::filesystem::path> touchDevices;
 };
 
-#endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTSLINUX_H
+#endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H

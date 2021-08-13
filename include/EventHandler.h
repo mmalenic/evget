@@ -24,7 +24,8 @@
 #define EVGET_INCLUDE_EVENTHANDLER_H
 
 #include <vector>
-#include "DataTransformer.h"
+#include "EventTransformer.h"
+#include "SystemEvent.h"
 #include "Storage.h"
 
 /**
@@ -40,13 +41,13 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(Storage& storage, DataTransformer<T>& transformer);
+    EventHandler(Storage& storage, EventTransformer<T>& transformer);
 
     /**
      * Process the data and give it to the storage.
      * @param data data to process
      */
-    void processEvents(std::vector<T> data);
+    void processEvent(SystemEvent<T> event);
 
     virtual ~EventHandler() = default;
     EventHandler(const EventHandler&) = default;
@@ -56,17 +57,17 @@ public:
 
 private:
     Storage& storage;
-    DataTransformer<T>& transformer;
+    EventTransformer<T>& transformer;
 };
 
 template<typename T>
-EventHandler<T>::EventHandler(Storage& storage, DataTransformer<T>& transformer) :
+EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer) :
     storage{storage}, transformer{transformer} {
 }
 
 template<typename T>
-void EventHandler<T>::processEvents(std::vector<T> data) {
-    storage.storeEvents(transformer.transformData(data));
+void EventHandler<T>::processEvent(SystemEvent<T> event) {
+    storage.storeEvents(transformer.transformEvent(event));
 }
 
 
