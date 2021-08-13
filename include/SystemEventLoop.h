@@ -28,9 +28,9 @@
 #include <boost/fiber/buffered_channel.hpp>
 #include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
-#include "EventHandler.h"
 #include "ShutdownHandler.h"
 #include "Task.h"
+#include "SystemEvent.h"
 
 /**
  * Class represents processing the system events.
@@ -43,12 +43,12 @@ public:
      * Create the system events class.
      * @param nDevices number of devices tracked
      */
-    explicit SystemEventLoop(size_t nDevices, EventHandler<T>& eventHandler);
+    SystemEventLoop(size_t nDevices);
 
     /**
      * Set up and run the event loop.
      */
-    virtual boost::asio::awaitable<void> eventLoop() = 0;
+    virtual boost::asio::awaitable<void> eventLoop(std::function<void(SystemEvent<T>)> notify) = 0;
 
     /**
      * Submit the result of a coroutines.
@@ -56,13 +56,7 @@ public:
      */
     virtual void submitResult(bool result);
 
-    /**
-     * Get the event handler.
-     * @return event handler
-     */
-    EventHandler<T>& getEventHandler() const;
-
-    boost::asio::awaitable<void> start() override;
+    boost::asio::awaitable<void> start(std::function<void(SystemEvent<T>)> notify) override;
 
     virtual ~SystemEventLoop() = default;
     SystemEventLoop(const SystemEventLoop&) = default;
@@ -72,14 +66,13 @@ public:
 
 private:
     const size_t nDevices;
-    EventHandler<T>& eventHandler;
     std::vector<bool> results;
 };
 
 template<typename T>
-boost::asio::awaitable<void> SystemEventLoop<T>::start() {
+boost::asio::awaitable<void> SystemEventLoop<T>::start(std::function<void(SystemEvent<T>)> notify) {
     co_await Task::start();
-    co_await eventLoop();
+    co_await eventLoop(notify);
     stop();
 }
 
@@ -93,12 +86,7 @@ void SystemEventLoop<T>::submitResult(bool result) {
 }
 
 template<typename T>
-SystemEventLoop<T>::SystemEventLoop(const size_t nDevices, EventHandler<T>& eventHandler) : nDevices{nDevices}, eventHandler{eventHandler}, results{} {
-}
-
-template<typename T>
-EventHandler<T>& SystemEventLoop<T>::getEventHandler() const {
-    return eventHandler;
+SystemEventLoop<T>::SystemEventLoop(size_t nDevices) : nDevices{nDevices}, results{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

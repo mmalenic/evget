@@ -25,7 +25,7 @@ void Task::cancel() {
     cancelled.store(true);
 }
 
-Task::Task() : context{}, started{false}, cancelled{false}, stopped{false} {
+Task::Task() : executionContext{}, started{false}, cancelled{false}, stopped{false} {
 }
 
 bool Task::isStarted() const {
@@ -34,7 +34,7 @@ bool Task::isStarted() const {
 }
 
 bool Task::isCreated() const {
-    return context.has_value();
+    return executionContext.has_value();
 }
 
 bool Task::isStopped() const {
@@ -42,7 +42,8 @@ bool Task::isStopped() const {
     return started.load();
 }
 
-boost::asio::awaitable<void> Task::start() {
+template <typename T>
+boost::asio::awaitable<void> Task::start(std::function<void(T)> notify) {
     checkContext();
     started.store(true);
 }
@@ -58,11 +59,11 @@ void Task::checkContext() const {
     }
 }
 
-void Task::create(boost::asio::io_context& context) {
-    this->context = context;
+void Task::context(boost::asio::thread_pool& context) {
+    this->executionContext = context;
 }
 
-boost::asio::io_context& Task::getContext() const {
+boost::asio::thread_pool& Task::getContext() const {
     checkContext();
-    return context.get();
+    return executionContext.get();
 }

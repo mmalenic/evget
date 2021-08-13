@@ -41,19 +41,19 @@ public:
      * @param keyDevices key devices
      * @param touchDevices touch devices
      */
-    SystemEventLoopLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices, EventHandler<input_event>& eventHandler);
+    SystemEventLoopLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices);
 
     /**
      * Run the event loop for a single type.
      */
-    boost::asio::awaitable<bool> eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path);
+    boost::asio::awaitable<bool> eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path, std::function<void(SystemEvent<input_event>)> notify);
 
     /**
      * Run the event loop for each set of devices.
      */
-    boost::asio::awaitable<void> eventLoopForEach(SystemEvent<input_event>::Type type, std::vector<std::filesystem::path> paths);
+    boost::asio::awaitable<void> eventLoopForEach(SystemEvent<input_event>::Type type, std::vector<std::filesystem::path> paths, std::function<void(SystemEvent<input_event>)> notify);
 
-    boost::asio::awaitable<void> eventLoop() override;
+    boost::asio::awaitable<void> eventLoop(std::function<void(SystemEvent<input_event>)> notify) override;
 
 private:
     std::vector<std::filesystem::path> mouseDevices;

@@ -41,7 +41,7 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(Storage& storage, EventTransformer<T>& transformer);
+    EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop);
 
     /**
      * Process the data and give it to the storage.
@@ -58,11 +58,17 @@ public:
 private:
     Storage& storage;
     EventTransformer<T>& transformer;
+    SystemEventLoop<T>& eventLoop;
 };
 
 template<typename T>
-EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer) :
-    storage{storage}, transformer{transformer} {
+EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) :
+    storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
+    boost::asio::thread_pool context{};
+
+    auto notify = std::bind(&processEvent, &this, std::placeholders::_1);
+    eventLoop.context(context);
+    eventLoop.eventLoop(notify);
 }
 
 template<typename T>

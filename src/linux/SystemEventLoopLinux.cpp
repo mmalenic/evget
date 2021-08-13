@@ -32,12 +32,11 @@ using namespace std;
 SystemEventLoopLinux::SystemEventLoopLinux(
     std::vector<std::filesystem::path>  mouseDevices,
     std::vector<std::filesystem::path>  keyDevices,
-    std::vector<std::filesystem::path>  touchDevices,
-    EventHandler<input_event>& eventHandler
-    ) : SystemEventLoop{mouseDevices.size() + keyDevices.size() + touchDevices.size(), eventHandler}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    std::vector<std::filesystem::path>  touchDevices
+    ) : SystemEventLoop{mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
 }
 
-boost::asio::awaitable<bool> SystemEventLoopLinux::eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path) {
+boost::asio::awaitable<bool> SystemEventLoopLinux::eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path, std::function<void(SystemEvent<input_event>)> notify) {
     int fd = open(path.c_str(), O_RDONLY);
     if (fd == -1) {
         string err = strerror(errno);
@@ -58,7 +57,7 @@ boost::asio::awaitable<bool> SystemEventLoopLinux::eventLoopForDevice(SystemEven
         }
 
         auto systemEvent = SystemEvent(type, event);
-        getEventHandler().processEvent(systemEvent);
+        notify(systemEvent);
     }
 
     stream.cancel();
@@ -66,17 +65,18 @@ boost::asio::awaitable<bool> SystemEventLoopLinux::eventLoopForDevice(SystemEven
     co_return true;
 }
 
-boost::asio::awaitable<void> SystemEventLoopLinux::eventLoop() {
-    eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
-    eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
-    eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+boost::asio::awaitable<void> SystemEventLoopLinux::eventLoop(std::function<void(SystemEvent<input_event>)> notify) {
+    eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices, notify);
+    eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices, notify);
+    eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices, notify);
 }
 
 boost::asio::awaitable<void> SystemEventLoopLinux::eventLoopForEach(
     SystemEvent<input_event>::Type type,
-    std::vector<std::filesystem::path> paths
+    std::vector<std::filesystem::path> paths,
+    std::function<void(SystemEvent<input_event>)> notify
     ) {
     for (auto path : paths) {
-        co_spawn(getContext(), [&]() { return eventLoopForDevice(type, path); }, [&](exception_ptr e, bool result) { submitResult(result); });
+        co_spawn(getContext(), [&]() { return eventLoopForDevice(type, path, notify); }, [&](exception_ptr e, bool result) { submitResult(result); });
     }
 }

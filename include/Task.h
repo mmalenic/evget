@@ -36,7 +36,7 @@ public:
      * Create the task with the context.
      * @param context context
      */
-    void create(boost::asio::io_context& context);
+    void context(boost::asio::thread_pool& context);
 
     /**
      * Cancel the task.
@@ -52,7 +52,7 @@ public:
      * Check if created.
      * @return is created
      */
-    [[nodiscard]] boost::asio::io_context& getContext() const;
+    [[nodiscard]] boost::asio::thread_pool& getContext() const;
 
     /**
      * Check if created.
@@ -80,11 +80,13 @@ public:
 
     /**
      * Start the task.
+     * @tparam T data input type
      */
-    virtual boost::asio::awaitable<void> start();
+    template<typename T>
+    virtual boost::asio::awaitable<void> start(std::function<void(T)> notify);
 
 private:
-    boost::optional<boost::asio::io_context&> context;
+    boost::optional<boost::asio::thread_pool&> executionContext;
 
     std::atomic<bool> started;
     std::atomic<bool> cancelled;
