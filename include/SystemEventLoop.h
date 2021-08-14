@@ -31,13 +31,14 @@
 #include "ShutdownHandler.h"
 #include "Task.h"
 #include "SystemEvent.h"
+#include "SystemEventListener.h"
 
 /**
  * Class represents processing the system events.
  * @tparam T type of events to process
  */
 template <typename T>
-class SystemEventLoop : public Task {
+class SystemEventLoop : public Task, public SystemEventListener<T> {
 public:
     /**
      * Create the system events class.
@@ -54,9 +55,16 @@ public:
      * Submit the result of a coroutines.
      * @param result result to submit
      */
-    virtual void submitResult(bool result);
+    virtual void submitOutcome(bool result);
 
-    boost::asio::awaitable<void> start(std::function<void(SystemEvent<T>)> notify) override;
+    /**
+     * Register listeners to notify.
+     * @param systemEventListener lister
+     */
+    void registerSystemEventListener(SystemEventListener<T>& systemEventListener);
+
+    boost::asio::awaitable<void> start() override;
+    void notify(SystemEvent<T> event) override;
 
     virtual ~SystemEventLoop() = default;
     SystemEventLoop(const SystemEventLoop&) = default;
@@ -70,14 +78,14 @@ private:
 };
 
 template<typename T>
-boost::asio::awaitable<void> SystemEventLoop<T>::start(std::function<void(SystemEvent<T>)> notify) {
+boost::asio::awaitable<void> SystemEventLoop<T>::start() {
     co_await Task::start();
-    co_await eventLoop(notify);
+    co_await eventLoop();
     stop();
 }
 
 template<typename T>
-void SystemEventLoop<T>::submitResult(bool result) {
+void SystemEventLoop<T>::submitOutcome(bool result) {
     results.push_back(result);
     if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
         spdlog::error("No devices were set.");

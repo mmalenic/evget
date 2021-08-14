@@ -27,13 +27,14 @@
 #include "EventTransformer.h"
 #include "SystemEvent.h"
 #include "Storage.h"
+#include "SystemEventListener.h"
 
 /**
  * Class represents a listener for events.
  * @tparam T type of data
  */
 template <typename T>
-class EventHandler {
+class EventHandler : SystemEventListener {
 public:
     /**
      * Create the event listener with storage.
@@ -43,11 +44,7 @@ public:
      */
     EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop);
 
-    /**
-     * Process the data and give it to the storage.
-     * @param data data to process
-     */
-    void processEvent(SystemEvent<T> event);
+    void notify(SystemEvent<T> event) override;
 
     virtual ~EventHandler() = default;
     EventHandler(const EventHandler&) = default;
@@ -65,6 +62,7 @@ template<typename T>
 EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) :
     storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
     boost::asio::thread_pool context{};
+    eventLoop.reg
 
     auto notify = std::bind(&processEvent, &this, std::placeholders::_1);
     eventLoop.context(context);
@@ -72,9 +70,8 @@ EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer
 }
 
 template<typename T>
-void EventHandler<T>::processEvent(SystemEvent<T> event) {
+void EventHandler<T>::notify(SystemEvent<T> event) {
     storage.storeEvents(transformer.transformEvent(event));
 }
-
 
 #endif //EVGET_INCLUDE_EVENTHANDLER_H

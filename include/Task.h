@@ -83,7 +83,7 @@ public:
      * @tparam T data input type
      */
     template<typename T>
-    virtual boost::asio::awaitable<void> start(std::function<void(T)> notify);
+    virtual boost::asio::awaitable<void> start();
 
 private:
     boost::optional<boost::asio::thread_pool&> executionContext;

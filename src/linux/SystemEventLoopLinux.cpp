@@ -77,6 +77,9 @@ boost::asio::awaitable<void> SystemEventLoopLinux::eventLoopForEach(
     std::function<void(SystemEvent<input_event>)> notify
     ) {
     for (auto path : paths) {
-        co_spawn(getContext(), [&]() { return eventLoopForDevice(type, path, notify); }, [&](exception_ptr e, bool result) { submitResult(result); });
+        co_spawn(getContext(), [&]() { return eventLoopForDevice(type, path, notify); }, [&](exception_ptr e, bool result) {
+            submitOutcome(
+                result
+            ); });
     }
 }
