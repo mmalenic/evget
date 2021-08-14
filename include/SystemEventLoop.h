@@ -49,7 +49,7 @@ public:
     /**
      * Set up and run the event loop.
      */
-    virtual boost::asio::awaitable<void> eventLoop(std::function<void(SystemEvent<T>)> notify) = 0;
+    virtual boost::asio::awaitable<void> eventLoop() = 0;
 
     /**
      * Submit the result of a coroutines.
@@ -75,6 +75,7 @@ public:
 private:
     const size_t nDevices;
     std::vector<bool> results;
+    std::vector<std::reference_wrapper<SystemEventListener<T>>> eventListeners;
 };
 
 template<typename T>
@@ -82,6 +83,18 @@ boost::asio::awaitable<void> SystemEventLoop<T>::start() {
     co_await Task::start();
     co_await eventLoop();
     stop();
+}
+
+template<typename T>
+void SystemEventLoop<T>::notify(SystemEvent<T> event) {
+    for (auto listener : eventListeners) {
+        listener.get().notify(event);
+    }
+}
+
+template<typename T>
+void SystemEventLoop<T>::registerSystemEventListener(SystemEventListener<T>& systemEventListener) {
+    eventListeners.push_back(systemEventListener);
 }
 
 template<typename T>
@@ -94,7 +107,7 @@ void SystemEventLoop<T>::submitOutcome(bool result) {
 }
 
 template<typename T>
-SystemEventLoop<T>::SystemEventLoop(size_t nDevices) : nDevices{nDevices}, results{} {
+SystemEventLoop<T>::SystemEventLoop(size_t nDevices) : nDevices{nDevices}, results{}, eventListeners{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

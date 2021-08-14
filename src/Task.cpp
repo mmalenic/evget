@@ -42,8 +42,7 @@ bool Task::isStopped() const {
     return started.load();
 }
 
-template <typename T>
-boost::asio::awaitable<void> Task::start(std::function<void(T)> notify) {
+boost::asio::awaitable<void> Task::start() {
     checkContext();
     started.store(true);
 }

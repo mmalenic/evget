@@ -29,6 +29,7 @@
  */
 template<typename T>
 class SystemEventListener {
+public:
     /**
      * Notify if an event.
      * @param event event

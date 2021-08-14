@@ -80,9 +80,7 @@ public:
 
     /**
      * Start the task.
-     * @tparam T data input type
      */
-    template<typename T>
     virtual boost::asio::awaitable<void> start();
 
 private:
