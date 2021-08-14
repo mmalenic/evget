@@ -37,14 +37,14 @@
  * Class represents processing the system events.
  * @tparam T type of events to process
  */
-template <typename T>
-class SystemEventLoop : public Task, public SystemEventListener<T> {
+template <typename T, boost::asio::execution::executor E>
+class SystemEventLoop : public Task<E>, public SystemEventListener<T> {
 public:
     /**
      * Create the system events class.
      * @param nDevices number of devices tracked
      */
-    SystemEventLoop(size_t nDevices, boost::asio::thread_pool& context);
+    SystemEventLoop(size_t nDevices, E& context);
 
     /**
      * Set up and run the event loop.
@@ -78,27 +78,27 @@ private:
     std::vector<std::reference_wrapper<SystemEventListener<T>>> eventListeners;
 };
 
-template<typename T>
-boost::asio::awaitable<void> SystemEventLoop<T>::start() {
-    co_await Task::start();
+template<typename T, boost::asio::execution::executor E>
+boost::asio::awaitable<void> SystemEventLoop<T, E>::start() {
+    co_await Task<E>::start();
     co_await eventLoop();
-    stop();
+    this->stop();
 }
 
-template<typename T>
-void SystemEventLoop<T>::notify(SystemEvent<T> event) {
+template<typename T, boost::asio::execution::executor E>
+void SystemEventLoop<T, E>::notify(SystemEvent<T> event) {
     for (auto listener : eventListeners) {
         listener.get().notify(event);
     }
 }
 
-template<typename T>
-void SystemEventLoop<T>::registerSystemEventListener(SystemEventListener<T>& systemEventListener) {
+template<typename T, boost::asio::execution::executor E>
+void SystemEventLoop<T, E>::registerSystemEventListener(SystemEventListener<T>& systemEventListener) {
     eventListeners.push_back(systemEventListener);
 }
 
-template<typename T>
-void SystemEventLoop<T>::submitOutcome(bool result) {
+template<typename T, boost::asio::execution::executor E>
+void SystemEventLoop<T, E>::submitOutcome(bool result) {
     results.push_back(result);
     if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
         spdlog::error("No devices were set.");
@@ -106,8 +106,8 @@ void SystemEventLoop<T>::submitOutcome(bool result) {
     }
 }
 
-template<typename T>
-SystemEventLoop<T>::SystemEventLoop(size_t nDevices, boost::asio::thread_pool& context) : Task{context}, nDevices{nDevices}, results{}, eventListeners{} {
+template<typename T, boost::asio::execution::executor E>
+SystemEventLoop<T, E>::SystemEventLoop(size_t nDevices, E& context) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

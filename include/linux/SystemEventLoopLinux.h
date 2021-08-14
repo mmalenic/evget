@@ -30,9 +30,9 @@
 
 /**
  * Class represents processing linux system events.
- * @tparam T type of events to process
  */
-class SystemEventLoopLinux : public SystemEventLoop<input_event> {
+template<boost::asio::execution::executor E>
+class SystemEventLoopLinux : public SystemEventLoop<input_event, E> {
 public:
     /**
      * Create the system events.

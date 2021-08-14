@@ -25,12 +25,13 @@
 /**
  * Task class.
  */
+template<boost::asio::execution::executor E>
 class Task {
 public:
     /**
      * Create task object.
      */
-    Task(boost::asio::thread_pool& context);
+    explicit Task(E& context);
 
     /**
      * Cancel the task.
@@ -46,7 +47,7 @@ public:
      * Get context.
      * @return context
      */
-    [[nodiscard]] boost::asio::thread_pool& getContext() const;
+    [[nodiscard]] E& getContext() const;
 
     /**
      * Check if started.
@@ -72,7 +73,7 @@ public:
     virtual boost::asio::awaitable<void> start();
 
 private:
-    boost::asio::thread_pool& executionContext;
+    E& executionContext;
 
     std::atomic<bool> started;
     std::atomic<bool> cancelled;

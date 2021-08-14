@@ -15,33 +15,41 @@
 
 #include "Task.h"
 
-bool Task::isCancelled() const {
+template<boost::asio::execution::executor E>
+bool Task<E>::isCancelled() const {
     return cancelled.load();
 }
 
-void Task::cancel() {
+template<boost::asio::execution::executor E>
+void Task<E>::cancel() {
     cancelled.store(true);
 }
 
-Task::Task(boost::asio::thread_pool& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {
+template<boost::asio::execution::executor E>
+Task<E>::Task(E& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {
 }
 
-bool Task::isStarted() const {
+template<boost::asio::execution::executor E>
+bool Task<E>::isStarted() const {
     return started.load();
 }
 
-bool Task::isStopped() const {
+template<boost::asio::execution::executor E>
+bool Task<E>::isStopped() const {
     return started.load();
 }
 
-boost::asio::awaitable<void> Task::start() {
+template<boost::asio::execution::executor E>
+boost::asio::awaitable<void> Task<E>::start() {
     started.store(true);
 }
 
-void Task::stop() {
+template<boost::asio::execution::executor E>
+void Task<E>::stop() {
     stopped.store(true);
 }
 
-boost::asio::thread_pool& Task::getContext() const {
+template<boost::asio::execution::executor E>
+E& Task<E>::getContext() const {
     return executionContext;
 }
