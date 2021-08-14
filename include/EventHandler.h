@@ -26,6 +26,7 @@
 #include <vector>
 #include "EventTransformer.h"
 #include "SystemEvent.h"
+#include "SystemEventLoop.h"
 #include "Storage.h"
 #include "EventListener.h"
 
@@ -42,9 +43,10 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(&E context, Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop);
+    EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, SystemEventLoop<T, E>& eventLoop);
 
     void notify(SystemEvent<T> event) override;
+    boost::asio::awaitable<void> start() override;
 
     virtual ~EventHandler() = default;
     EventHandler(const EventHandler&) = default;
@@ -53,19 +55,26 @@ public:
     EventHandler& operator=(EventHandler&&) noexcept = default;
 
 private:
-    Storage& storage;
+    Storage<E>& storage;
     EventTransformer<T>& transformer;
-    SystemEventLoop<T>& eventLoop;
+    SystemEventLoop<T, E>& eventLoop;
 };
 
-template<typename T>
-EventHandler<T>::EventHandler(&E context, Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) : Task<E>{context},
+template<typename T, boost::asio::execution::executor E>
+boost::asio::awaitable<void> EventHandler<T, E>::start() {
+    Task<E>::start();
+    storage.start();
+    eventLoop.start();
+}
+
+template<typename T, boost::asio::execution::executor E>
+EventHandler<T, E>::EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, SystemEventLoop<T, E>& eventLoop) : Task<E>{context},
     storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
     eventLoop.registerSystemEventListener(&this);
 }
 
-template<typename T>
-void EventHandler<T>::notify(SystemEvent<T> event) {
+template<typename T, boost::asio::execution::executor E>
+void EventHandler<T, E>::notify(SystemEvent<T> event) {
     storage.notify(transformer.transformEvent(event));
 }
 

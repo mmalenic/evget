@@ -61,7 +61,7 @@ public:
      * Register listeners to notify.
      * @param systemEventListener lister
      */
-    void registerSystemEventListener(EventListener<T>& systemEventListener);
+    void registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener);
 
     boost::asio::awaitable<void> start() override;
     void notify(SystemEvent<T> event) override;
@@ -75,7 +75,7 @@ public:
 private:
     const size_t nDevices;
     std::vector<bool> results;
-    std::vector<std::reference_wrapper<EventListener<T>>> eventListeners;
+    std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
 };
 
 template<typename T, boost::asio::execution::executor E>
@@ -93,7 +93,7 @@ void SystemEventLoop<T, E>::notify(SystemEvent<T> event) {
 }
 
 template<typename T, boost::asio::execution::executor E>
-void SystemEventLoop<T, E>::registerSystemEventListener(EventListener<T>& systemEventListener) {
+void SystemEventLoop<T, E>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
     eventListeners.push_back(systemEventListener);
 }
 

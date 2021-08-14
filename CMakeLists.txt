@@ -48,7 +48,6 @@ set(HEADERS_COMMON
 )
 
 set(SOURCES_COMMON
-    src/Task.cpp
     src/CommandLine.cpp
     src/EventData.cpp
     src/EventDataEntry.cpp
@@ -84,7 +83,6 @@ if (UNIX AND NOT APPLE)
         src/linux/CommandLineLinux.cpp
         src/linux/EventDevice.cpp
         src/linux/EventDeviceLister.cpp
-        src/linux/SystemEventLoopLinux.cpp
         src/linux/ShutdownHandlerLinux.cpp
     )
 

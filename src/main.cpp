@@ -26,6 +26,8 @@
 #include <spdlog/spdlog.h>
 #include <boost/asio.hpp>
 #include <atomic>
+#include <EventHandler.h>
+#include <SystemEventLoopLinux.h>
 
 using namespace std;
 
@@ -40,7 +42,13 @@ int main(int argc, char* argv[]) {
 
     spdlog::set_level(cmd.getLogLevel());
 
-    boost::asio::io_context context{};
+    boost::asio::thread_pool pool{};
+    auto context = pool.get_executor();
+    Storage<boost::asio::thread_pool::executor_type> storage{context};
+    EventTransformer<int> transformer{};
+    SystemEventLoopLinux eventLoop{context, {}, {}, {}};
+
+//    EventHandler hanlder{Storage<boost::asio::thread_pool::executor_type>{context.get_executor()}, EventTransformer<void>{}, SystemEventLoopLinux{context, vector{}, vector{}, vector{}}};
 
     boost::asio::co_spawn(context,
         []() {

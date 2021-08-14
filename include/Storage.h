@@ -25,18 +25,37 @@
 
 #include "EventData.h"
 #include "EventListener.h"
+#include "Task.h"
 
 /**
  * Storage class represents storing event data.
  */
+template<boost::asio::execution::executor E>
 class Storage : Task<E>, EventListener<EventData> {
 public:
-    Storage() = default;
+    explicit Storage(E& context);
+
+    boost::asio::awaitable<void> start() override;
+    void notify(EventData event) override;
+
     virtual ~Storage() = default;
     Storage(const Storage&) = default;
     Storage(Storage&&) = default;
     virtual Storage& operator=(const Storage&) = default;
     virtual Storage& operator=(Storage&&) = default;
 };
+
+template<boost::asio::execution::executor E>
+Storage<E>::Storage(E& context) : Task<E>{context} {
+}
+
+template<boost::asio::execution::executor E>
+boost::asio::awaitable<void> Storage<E>::start(){
+    Task<E>::start();
+}
+
+template<boost::asio::execution::executor E>
+void Storage<E>::notify(EventData event) {
+}
 
 #endif //EVGET_INCLUDE_STORAGE_H

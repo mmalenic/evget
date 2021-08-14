@@ -38,7 +38,7 @@ public:
      * @param event event to transform
      * @return event event for storage
      */
-    virtual EventData transformEvent(SystemEvent<T> event) = 0;
+    virtual EventData transformEvent(SystemEvent<T> event);
 
     EventTransformer() = default;
     virtual ~EventTransformer() = default;
@@ -47,5 +47,10 @@ public:
     virtual EventTransformer& operator=(const EventTransformer&) = default;
     virtual EventTransformer& operator=(EventTransformer&&) = default;
 };
+
+template<typename T>
+EventData EventTransformer<T>::transformEvent(SystemEvent<T> event) {
+    return EventData();
+}
 
 #endif //EVGET_INCLUDE_EVENTTRANSFORMER_H

@@ -27,6 +27,7 @@
 #include <filesystem>
 #include "SystemEventLoop.h"
 #include "SystemEvent.h"
+#include <utility>
 
 /**
  * Class represents processing linux system events.
@@ -41,7 +42,12 @@ public:
      * @param keyDevices key devices
      * @param touchDevices touch devices
      */
-    SystemEventLoopLinux(E& context, std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices);
+    SystemEventLoopLinux(
+        E& context,
+        std::vector<std::filesystem::path> mouseDevices,
+        std::vector<std::filesystem::path> keyDevices,
+        std::vector<std::filesystem::path> touchDevices
+        );
 
     /**
      * Run the event loop for a single type.
@@ -60,5 +66,70 @@ private:
     std::vector<std::filesystem::path> keyDevices;
     std::vector<std::filesystem::path> touchDevices;
 };
+
+namespace asio = boost::asio;
+namespace fibers = boost::fibers;
+
+using namespace std;
+
+template<boost::asio::execution::executor E>
+SystemEventLoopLinux<E>::SystemEventLoopLinux(
+    E& context,
+    std::vector<std::filesystem::path>  mouseDevices,
+    std::vector<std::filesystem::path>  keyDevices,
+    std::vector<std::filesystem::path>  touchDevices
+    ) : SystemEventLoop<input_event, E>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    }
+
+    template<boost::asio::execution::executor E>
+    boost::asio::awaitable<bool> SystemEventLoopLinux<E>::eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path) {
+        int fd = open(path.c_str(), O_RDONLY);
+        if (fd == -1) {
+            string err = strerror(errno);
+            spdlog::warn("Could not open type to read events: " + err);
+            co_return false;
+        }
+
+        asio::posix::stream_descriptor stream{this->getContext(), fd};
+        while (!this->isCancelled()) {
+            struct input_event event;
+            memset(&event, 0, sizeof(event));
+            size_t n = co_await stream.async_read_some(asio::buffer(&event, sizeof(event)), asio::use_awaitable);
+            spdlog::trace("Event read in event loop.");
+
+            if (n != sizeof(event)) {
+                spdlog::warn("Incorrect bytes read for input event.");
+                continue;
+            }
+
+            auto systemEvent = SystemEvent(type, event);
+            this->notify(systemEvent);
+        }
+
+        stream.cancel();
+        stream.close();
+        co_return true;
+    }
+
+    template<boost::asio::execution::executor E>
+    boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoop() {
+        eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
+        eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
+        eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+    }
+
+    template<boost::asio::execution::executor E>
+    boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoopForEach(
+        SystemEvent<input_event>::Type type,
+        std::vector<std::filesystem::path> paths
+        ) {
+        for (auto path : paths) {
+            co_spawn(this->getContext(), [&]() { return eventLoopForDevice(type, path); }, [&](exception_ptr e, bool result) {
+                this->submitOutcome(
+                    result
+                    ); });
+        }
+    }
+
 
 #endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
