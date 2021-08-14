@@ -43,7 +43,7 @@ set(HEADERS_COMMON
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
-    include/SystemEventListener.h
+    include/EventListener.h
     include/UnsupportedOperationException.h
 )
 

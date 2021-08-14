@@ -20,27 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_SYSTEMEVENTLISTENER_H
-#define EVGET_INCLUDE_SYSTEMEVENTLISTENER_H
+#ifndef EVGET_INCLUDE_EVENTLISTENER_H
+#define EVGET_INCLUDE_EVENTLISTENER_H
 
 /**
- * Represents system events listeners.
+ * Represents event listeners.
  * @tparam T event type
  */
 template<typename T>
-class SystemEventListener {
+class EventListener {
 public:
     /**
      * Notify if an event.
      * @param event event
      */
-    virtual void notify(SystemEvent<T> event) = 0;
+    virtual void notify(T event) = 0;
 
-    SystemEventListener() = default;
-    SystemEventListener(const SystemEventListener&) = default;
-    SystemEventListener(SystemEventListener&&) noexcept = default;
-    SystemEventListener& operator=(const SystemEventListener&) = default;
-    SystemEventListener& operator=(SystemEventListener&&) noexcept = default;
+    EventListener() = default;
+    EventListener(const EventListener&) = default;
+    EventListener(EventListener&&) noexcept = default;
+    EventListener& operator=(const EventListener&) = default;
+    EventListener& operator=(EventListener&&) noexcept = default;
 };
 
-#endif //EVGET_INCLUDE_SYSTEMEVENTLISTENER_H
+#endif //EVGET_INCLUDE_EVENTLISTENER_H

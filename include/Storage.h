@@ -24,18 +24,13 @@
 #define EVGET_INCLUDE_STORAGE_H
 
 #include "EventData.h"
+#include "EventListener.h"
 
 /**
  * Storage class represents storing event data.
  */
-class Storage {
+class Storage : Task<E>, EventListener<EventData> {
 public:
-    /**
-     * Store the events.
-     * @param eventData events to store
-     */
-    virtual void storeEvents(std::vector<EventData> eventData) = 0;
-
     Storage() = default;
     virtual ~Storage() = default;
     Storage(const Storage&) = default;

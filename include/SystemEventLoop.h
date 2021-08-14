@@ -31,14 +31,14 @@
 #include "ShutdownHandler.h"
 #include "Task.h"
 #include "SystemEvent.h"
-#include "SystemEventListener.h"
+#include "EventListener.h"
 
 /**
  * Class represents processing the system events.
  * @tparam T type of events to process
  */
 template <typename T, boost::asio::execution::executor E>
-class SystemEventLoop : public Task<E>, public SystemEventListener<T> {
+class SystemEventLoop : public Task<E>, public EventListener<SystemEvent<T>> {
 public:
     /**
      * Create the system events class.
@@ -61,7 +61,7 @@ public:
      * Register listeners to notify.
      * @param systemEventListener lister
      */
-    void registerSystemEventListener(SystemEventListener<T>& systemEventListener);
+    void registerSystemEventListener(EventListener<T>& systemEventListener);
 
     boost::asio::awaitable<void> start() override;
     void notify(SystemEvent<T> event) override;
@@ -75,7 +75,7 @@ public:
 private:
     const size_t nDevices;
     std::vector<bool> results;
-    std::vector<std::reference_wrapper<SystemEventListener<T>>> eventListeners;
+    std::vector<std::reference_wrapper<EventListener<T>>> eventListeners;
 };
 
 template<typename T, boost::asio::execution::executor E>
@@ -93,7 +93,7 @@ void SystemEventLoop<T, E>::notify(SystemEvent<T> event) {
 }
 
 template<typename T, boost::asio::execution::executor E>
-void SystemEventLoop<T, E>::registerSystemEventListener(SystemEventListener<T>& systemEventListener) {
+void SystemEventLoop<T, E>::registerSystemEventListener(EventListener<T>& systemEventListener) {
     eventListeners.push_back(systemEventListener);
 }
 

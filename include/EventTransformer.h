@@ -34,11 +34,11 @@ template <typename T>
 class EventTransformer {
 public:
     /**
-     * Transform the data.
-     * @param data data to transform
-     * @return event data for storage
+     * Transform the event.
+     * @param event event to transform
+     * @return event event for storage
      */
-    virtual std::vector<EventData> transformEvent(SystemEvent<T> data) = 0;
+    virtual EventData transformEvent(SystemEvent<T> event) = 0;
 
     EventTransformer() = default;
     virtual ~EventTransformer() = default;

@@ -27,14 +27,14 @@
 #include "EventTransformer.h"
 #include "SystemEvent.h"
 #include "Storage.h"
-#include "SystemEventListener.h"
+#include "EventListener.h"
 
 /**
  * Class represents a listener for events.
  * @tparam T type of data
  */
 template <typename T, boost::asio::execution::executor E>
-class EventHandler : Task<E>, SystemEventListener<T> {
+class EventHandler : Task<E>, EventListener<SystemEvent<T>> {
 public:
     /**
      * Create the event listener with storage.
@@ -66,7 +66,7 @@ EventHandler<T>::EventHandler(&E context, Storage& storage, EventTransformer<T>&
 
 template<typename T>
 void EventHandler<T>::notify(SystemEvent<T> event) {
-    storage.storeEvents(transformer.transformEvent(event));
+    storage.notify(transformer.transformEvent(event));
 }
 
 #endif //EVGET_INCLUDE_EVENTHANDLER_H
