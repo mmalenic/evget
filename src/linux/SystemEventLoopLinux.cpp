@@ -31,11 +31,11 @@ using namespace std;
 
 template<boost::asio::execution::executor E>
 SystemEventLoopLinux<E>::SystemEventLoopLinux(
+    E& context,
     std::vector<std::filesystem::path>  mouseDevices,
     std::vector<std::filesystem::path>  keyDevices,
-    std::vector<std::filesystem::path>  touchDevices,
-    boost::asio::thread_pool& context
-    ) : SystemEventLoop<input_event, E>{mouseDevices.size() + keyDevices.size() + touchDevices.size(), context}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    std::vector<std::filesystem::path>  touchDevices
+    ) : SystemEventLoop<input_event, E>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
 }
 
 template<boost::asio::execution::executor E>

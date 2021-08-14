@@ -35,6 +35,12 @@ public:
      * @param event event
      */
     virtual void notify(SystemEvent<T> event) = 0;
+
+    SystemEventListener() = default;
+    SystemEventListener(const SystemEventListener&) = default;
+    SystemEventListener(SystemEventListener&&) noexcept = default;
+    SystemEventListener& operator=(const SystemEventListener&) = default;
+    SystemEventListener& operator=(SystemEventListener&&) noexcept = default;
 };
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLISTENER_H

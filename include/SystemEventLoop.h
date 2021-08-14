@@ -44,7 +44,7 @@ public:
      * Create the system events class.
      * @param nDevices number of devices tracked
      */
-    SystemEventLoop(size_t nDevices, E& context);
+    SystemEventLoop(E& context, size_t nDevices);
 
     /**
      * Set up and run the event loop.
@@ -52,7 +52,7 @@ public:
     virtual boost::asio::awaitable<void> eventLoop() = 0;
 
     /**
-     * Submit the result of a coroutines.
+     * Submit the result of a coroutine.
      * @param result result to submit
      */
     virtual void submitOutcome(bool result);
@@ -107,7 +107,7 @@ void SystemEventLoop<T, E>::submitOutcome(bool result) {
 }
 
 template<typename T, boost::asio::execution::executor E>
-SystemEventLoop<T, E>::SystemEventLoop(size_t nDevices, E& context) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
+SystemEventLoop<T, E>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

@@ -33,8 +33,8 @@
  * Class represents a listener for events.
  * @tparam T type of data
  */
-template <typename T>
-class EventHandler : SystemEventListener {
+template <typename T, boost::asio::execution::executor E>
+class EventHandler : Task<E>, SystemEventListener<T> {
 public:
     /**
      * Create the event listener with storage.
@@ -42,7 +42,7 @@ public:
      * @param transformer transformer
      * @param rawEvents rawEvents
      */
-    EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop);
+    EventHandler(&E context, Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop);
 
     void notify(SystemEvent<T> event) override;
 
@@ -59,8 +59,9 @@ private:
 };
 
 template<typename T>
-EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) :
+EventHandler<T>::EventHandler(&E context, Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) : Task<E>{context},
     storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
+    eventLoop.registerSystemEventListener(&this);
 }
 
 template<typename T>
