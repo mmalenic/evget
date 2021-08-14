@@ -30,13 +30,7 @@ public:
     /**
      * Create task object.
      */
-    Task();
-
-    /**
-     * Create the task with the context.
-     * @param context context
-     */
-    void context(boost::asio::thread_pool& context);
+    Task(boost::asio::thread_pool& context);
 
     /**
      * Cancel the task.
@@ -44,21 +38,15 @@ public:
     void cancel();
 
     /**
-     * Cancel the task.
+     * Stop the task.
      */
     void stop();
 
     /**
-     * Check if created.
-     * @return is created
+     * Get context.
+     * @return context
      */
     [[nodiscard]] boost::asio::thread_pool& getContext() const;
-
-    /**
-     * Check if created.
-     * @return is created
-     */
-    [[nodiscard]] bool isCreated() const;
 
     /**
      * Check if started.
@@ -84,16 +72,11 @@ public:
     virtual boost::asio::awaitable<void> start();
 
 private:
-    boost::optional<boost::asio::thread_pool&> executionContext;
+    boost::asio::thread_pool& executionContext;
 
     std::atomic<bool> started;
     std::atomic<bool> cancelled;
     std::atomic<bool> stopped;
-
-    /**
-     * Ensures that the context has been added to the task.
-     */
-    void checkContext() const;
 };
 
 #endif //EVGET_INCLUDE_TASK_H

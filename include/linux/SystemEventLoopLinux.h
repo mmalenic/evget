@@ -41,7 +41,7 @@ public:
      * @param keyDevices key devices
      * @param touchDevices touch devices
      */
-    SystemEventLoopLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices);
+    SystemEventLoopLinux(std::vector<std::filesystem::path> mouseDevices, std::vector<std::filesystem::path> keyDevices, std::vector<std::filesystem::path> touchDevices, boost::asio::thread_pool& context);
 
     /**
      * Run the event loop for a single type.

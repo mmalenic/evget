@@ -61,11 +61,6 @@ private:
 template<typename T>
 EventHandler<T>::EventHandler(Storage& storage, EventTransformer<T>& transformer, SystemEventLoop<T>& eventLoop) :
     storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
-    boost::asio::thread_pool context{};
-
-    auto notify = std::bind(&processEvent, &this, std::placeholders::_1);
-    eventLoop.context(context);
-    eventLoop.eventLoop(notify);
 }
 
 template<typename T>

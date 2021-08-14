@@ -44,7 +44,7 @@ public:
      * Create the system events class.
      * @param nDevices number of devices tracked
      */
-    SystemEventLoop(size_t nDevices);
+    SystemEventLoop(size_t nDevices, boost::asio::thread_pool& context);
 
     /**
      * Set up and run the event loop.
@@ -107,7 +107,7 @@ void SystemEventLoop<T>::submitOutcome(bool result) {
 }
 
 template<typename T>
-SystemEventLoop<T>::SystemEventLoop(size_t nDevices) : nDevices{nDevices}, results{}, eventListeners{} {
+SystemEventLoop<T>::SystemEventLoop(size_t nDevices, boost::asio::thread_pool& context) : Task{context}, nDevices{nDevices}, results{}, eventListeners{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

@@ -16,53 +16,32 @@
 #include "Task.h"
 
 bool Task::isCancelled() const {
-    checkContext();
     return cancelled.load();
 }
 
 void Task::cancel() {
-    checkContext();
     cancelled.store(true);
 }
 
-Task::Task() : executionContext{}, started{false}, cancelled{false}, stopped{false} {
+Task::Task(boost::asio::thread_pool& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {
 }
 
 bool Task::isStarted() const {
-    checkContext();
     return started.load();
 }
 
-bool Task::isCreated() const {
-    return executionContext.has_value();
-}
-
 bool Task::isStopped() const {
-    checkContext();
     return started.load();
 }
 
 boost::asio::awaitable<void> Task::start() {
-    checkContext();
     started.store(true);
 }
 
 void Task::stop() {
-    checkContext();
     stopped.store(true);
 }
 
-void Task::checkContext() const {
-    if (!isCreated()) {
-        throw UnsupportedOperationException{"Task contains no context."};
-    }
-}
-
-void Task::context(boost::asio::thread_pool& context) {
-    this->executionContext = context;
-}
-
 boost::asio::thread_pool& Task::getContext() const {
-    checkContext();
-    return executionContext.get();
+    return executionContext;
 }

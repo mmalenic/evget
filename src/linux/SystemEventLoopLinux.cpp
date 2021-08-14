@@ -32,8 +32,9 @@ using namespace std;
 SystemEventLoopLinux::SystemEventLoopLinux(
     std::vector<std::filesystem::path>  mouseDevices,
     std::vector<std::filesystem::path>  keyDevices,
-    std::vector<std::filesystem::path>  touchDevices
-    ) : SystemEventLoop{mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    std::vector<std::filesystem::path>  touchDevices,
+    boost::asio::thread_pool& context
+    ) : SystemEventLoop{mouseDevices.size() + keyDevices.size() + touchDevices.size(), context}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
 }
 
 boost::asio::awaitable<bool> SystemEventLoopLinux::eventLoopForDevice(SystemEvent<input_event>::Type type, std::filesystem::path path) {
