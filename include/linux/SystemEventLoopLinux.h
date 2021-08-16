@@ -33,7 +33,7 @@
  * Class represents processing linux system events.
  */
 template<boost::asio::execution::executor E>
-class SystemEventLoopLinux : public SystemEventLoop<input_event, E> {
+class SystemEventLoopLinux : public SystemEventLoop<E, input_event> {
 public:
     /**
      * Create the system events.
@@ -78,7 +78,7 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
     std::vector<std::filesystem::path>  mouseDevices,
     std::vector<std::filesystem::path>  keyDevices,
     std::vector<std::filesystem::path>  touchDevices
-    ) : SystemEventLoop<input_event, E>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    ) : SystemEventLoop<E, input_event>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
     }
 
     template<boost::asio::execution::executor E>

@@ -37,7 +37,7 @@
  * Class represents processing the system events.
  * @tparam T type of events to process
  */
-template <typename T, boost::asio::execution::executor E>
+template <boost::asio::execution::executor E, typename T>
 class SystemEventLoop : public Task<E>, public EventListener<SystemEvent<T>> {
 public:
     /**
@@ -78,27 +78,27 @@ private:
     std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
 };
 
-template<typename T, boost::asio::execution::executor E>
-boost::asio::awaitable<void> SystemEventLoop<T, E>::start() {
+template <boost::asio::execution::executor E, typename T>
+boost::asio::awaitable<void> SystemEventLoop<E, T>::start() {
     co_await Task<E>::start();
     co_await eventLoop();
     this->stop();
 }
 
-template<typename T, boost::asio::execution::executor E>
-void SystemEventLoop<T, E>::notify(SystemEvent<T> event) {
+template <boost::asio::execution::executor E, typename T>
+void SystemEventLoop<E, T>::notify(SystemEvent<T> event) {
     for (auto listener : eventListeners) {
         listener.get().notify(event);
     }
 }
 
-template<typename T, boost::asio::execution::executor E>
-void SystemEventLoop<T, E>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
+template <boost::asio::execution::executor E, typename T>
+void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
     eventListeners.push_back(systemEventListener);
 }
 
-template<typename T, boost::asio::execution::executor E>
-void SystemEventLoop<T, E>::submitOutcome(bool result) {
+template <boost::asio::execution::executor E, typename T>
+void SystemEventLoop<E, T>::submitOutcome(bool result) {
     results.push_back(result);
     if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
         spdlog::error("No devices were set.");
@@ -106,8 +106,8 @@ void SystemEventLoop<T, E>::submitOutcome(bool result) {
     }
 }
 
-template<typename T, boost::asio::execution::executor E>
-SystemEventLoop<T, E>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
+template <boost::asio::execution::executor E, typename T>
+SystemEventLoop<E, T>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

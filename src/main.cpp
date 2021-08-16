@@ -45,10 +45,10 @@ int main(int argc, char* argv[]) {
     boost::asio::thread_pool pool{};
     auto context = pool.get_executor();
     Storage<boost::asio::thread_pool::executor_type> storage{context};
-    EventTransformer<int> transformer{};
+    EventTransformer<input_event> transformer{};
     SystemEventLoopLinux eventLoop{context, {}, {}, {}};
 
-//    EventHandler hanlder{Storage<boost::asio::thread_pool::executor_type>{context.get_executor()}, EventTransformer<void>{}, SystemEventLoopLinux{context, vector{}, vector{}, vector{}}};
+    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 
     boost::asio::co_spawn(context,
         []() {

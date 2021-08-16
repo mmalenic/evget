@@ -34,6 +34,9 @@ CommandLineLinux::CommandLineLinux(int argc, char** argv) :
     keyDeviceOption{"keyboard-device", "k", "set keyboard device."},
     touchDeviceOption{"touch-device", "t", "set touch device."},
     listEventDevicesOption{"list-event-devices", "l", "lists available event devices."},
+    mouseDevice{},
+    keyDevice{},
+    touchDevice{},
     listEventDevices{false} {
 
     getDesc().add_options()
