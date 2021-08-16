@@ -39,22 +39,22 @@ public:
     CommandLineLinux(int argc, char* argv[]);
 
     /**
-     * Get mouse device path.
+     * Get mouse devices path.
      * @return mouse device path
      */
-    [[nodiscard]] const fs::path& getMouseDevice() const;
+    [[nodiscard]] const std::vector<fs::path>& getMouseDevices() const;
 
     /**
-     * Get key device path.
+     * Get key devices path.
      * @return key device path
      */
-    [[nodiscard]] const fs::path& getKeyDevice() const;
+    [[nodiscard]] const std::vector<fs::path>& getKeyDevices() const;
 
     /**
-     * Get touch device path.
+     * Get touch devices path.
      * @return touch device path
      */
-    [[nodiscard]] const fs::path& getTouchDevice() const;
+    [[nodiscard]] const std::vector<fs::path>& getTouchDevices() const;
 
     /**
      * Get the list event devices option.
@@ -71,9 +71,9 @@ private:
     std::tuple<std::string, std::string, std::string> touchDeviceOption;
     std::tuple<std::string, std::string, std::string> listEventDevicesOption;
 
-    fs::path mouseDevice;
-    fs::path keyDevice;
-    fs::path touchDevice;
+    std::vector<fs::path> mouseDevice;
+    std::vector<fs::path> keyDevice;
+    std::vector<fs::path> touchDevice;
     bool listEventDevices;
 
     /**

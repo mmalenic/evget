@@ -42,17 +42,17 @@ CommandLineLinux::CommandLineLinux(int argc, char** argv) :
     getDesc().add_options()
                  (
                      (get<0>(mouseDeviceOption) + "," + get<1>(mouseDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->mouseDevice),
+                     po::value<vector<fs::path>>(&this->mouseDevice)->multitoken(),
                      get<2>(mouseDeviceOption).c_str()
                  )
                  (
                      (get<0>(keyDeviceOption) + "," + get<1>(keyDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->keyDevice),
+                     po::value<vector<fs::path>>(&this->keyDevice)->multitoken(),
                      get<2>(keyDeviceOption).c_str()
                  )
                  (
                      (get<0>(touchDeviceOption) + "," + get<1>(touchDeviceOption)).c_str(),
-                     po::value<fs::path>(&this->touchDevice),
+                     po::value<vector<fs::path>>(&this->touchDevice)->multitoken(),
                      get<2>(touchDeviceOption).c_str()
                  )
                  (
@@ -78,15 +78,15 @@ void CommandLineLinux::readArgs() {
     validateArgs();
 }
 
-const fs::path& CommandLineLinux::getMouseDevice() const {
+const vector<fs::path>& CommandLineLinux::getMouseDevices() const {
     return mouseDevice;
 }
 
-const fs::path& CommandLineLinux::getKeyDevice() const {
+const vector<fs::path>& CommandLineLinux::getKeyDevices() const {
     return keyDevice;
 }
 
-const fs::path& CommandLineLinux::getTouchDevice() const {
+const vector<fs::path>& CommandLineLinux::getTouchDevices() const {
     return touchDevice;
 }
 

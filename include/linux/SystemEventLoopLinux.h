@@ -75,9 +75,9 @@ using namespace std;
 template<boost::asio::execution::executor E>
 SystemEventLoopLinux<E>::SystemEventLoopLinux(
     E& context,
-    std::vector<std::filesystem::path>  mouseDevices,
-    std::vector<std::filesystem::path>  keyDevices,
-    std::vector<std::filesystem::path>  touchDevices
+    std::vector<std::filesystem::path> mouseDevices,
+    std::vector<std::filesystem::path> keyDevices,
+    std::vector<std::filesystem::path> touchDevices
     ) : SystemEventLoop<E, input_event>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
     }
 
