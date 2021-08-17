@@ -62,9 +62,10 @@ private:
 
 template <boost::asio::execution::executor E, typename T>
 boost::asio::awaitable<void> EventHandler<E, T>::start() {
-    Task<E>::start();
-    storage.start();
-    eventLoop.start();
+    co_await Task<E>::start();
+    co_await storage.start();
+    co_await eventLoop.start();
+    co_return;
 }
 
 template <boost::asio::execution::executor E, typename T>

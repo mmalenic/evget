@@ -83,6 +83,7 @@ boost::asio::awaitable<void> SystemEventLoop<E, T>::start() {
     co_await Task<E>::start();
     co_await eventLoop();
     this->stop();
+    co_return;
 }
 
 template <boost::asio::execution::executor E, typename T>

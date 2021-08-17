@@ -107,6 +107,7 @@ bool Task<E>::isStopped() const {
 template<boost::asio::execution::executor E>
 boost::asio::awaitable<void> Task<E>::start() {
     started.store(true);
+    co_return;
 }
 
 template<boost::asio::execution::executor E>

@@ -116,6 +116,7 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
         eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
         eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
         eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+        co_return;
     }
 
     template<boost::asio::execution::executor E>
@@ -129,6 +130,7 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
                     result
                     ); });
         }
+        co_return;
     }
 
 

@@ -52,6 +52,7 @@ Storage<E>::Storage(E& context) : Task<E>{context} {
 template<boost::asio::execution::executor E>
 boost::asio::awaitable<void> Storage<E>::start(){
     Task<E>::start();
+    co_return;
 }
 
 template<boost::asio::execution::executor E>

@@ -50,12 +50,7 @@ int main(int argc, char* argv[]) {
 
     EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 
-    boost::asio::co_spawn(context,
-        []() {
-            return test(1);
-        }, [cmd](exception_ptr e, int a) {
-            cmd.getLogLevel();
-        });
+    boost:asio::co_spawn(context, handler.start(), boost::asio::detached);
 
     if (cmd.isListEventDevices()) {
         EventDeviceLister lister{};
