@@ -71,14 +71,14 @@ public:
      * Spawn a task.
      */
      template<typename R>
-     void spawn(std::function<boost::asio::awaitable<R>()> f,
+     void spawn(auto&& f,
          std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { });
 
      /**
      * Spawn a task with void return.
      */
      void spawn(
-         std::function<boost::asio::awaitable<void>()> f,
+         auto&& f,
          std::function<void(std::exception_ptr)> callback = [](std::exception_ptr e) { });
 
     /**
@@ -136,8 +136,8 @@ E& Task<E>::getContext() const {
 
 template<boost::asio::execution::executor E>
 template<typename R>
-void Task<E>::spawn(std::function<boost::asio::awaitable<R>()> f, std::function<void(std::exception_ptr, R)> callback) {
-    co_spawn(getContext(), f, [&](std::exception_ptr e, R result) {
+void Task<E>::spawn(auto&& f, std::function<void(std::exception_ptr, R)> callback) {
+    co_spawn(getContext(), f, [callback](std::exception_ptr e, R result) {
             if (e) {
                 spdlog::info("Exception occurred in coroutine callback");
             }
@@ -146,9 +146,9 @@ void Task<E>::spawn(std::function<boost::asio::awaitable<R>()> f, std::function<
 }
 
 template<boost::asio::execution::executor E>
-void Task<E>::spawn(std::function<boost::asio::awaitable<void>()> f,
+void Task<E>::spawn(auto&& f,
     std::function<void(std::exception_ptr)> callback) {
-    co_spawn(getContext(), f, [&](std::exception_ptr e) {
+    co_spawn(getContext(), f, [callback](std::exception_ptr e) {
             if (e) {
                 spdlog::info("Exception occurred in coroutine callback");
             }
