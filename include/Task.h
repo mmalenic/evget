@@ -70,14 +70,16 @@ public:
     /**
      * Spawn a task.
      */
-     template<typename R, typename... T>
-     void spawn(std::function<void(std::exception_ptr&, R)> callback, std::function<boost::asio::awaitable<R>(T...)> f, std::string fName, T... args);
+     template<typename R>
+     void spawn(std::function<boost::asio::awaitable<R>()> f,
+         std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { });
 
      /**
      * Spawn a task with void return.
      */
-     template<typename... T>
-     void spawn(std::function<void(std::exception_ptr&)> callback, std::function<boost::asio::awaitable<void>(T...)> f, std::string fName, T... args);
+     void spawn(
+         std::function<boost::asio::awaitable<void>()> f,
+         std::function<void(std::exception_ptr)> callback = [](std::exception_ptr e) { });
 
     /**
      * Start the task.
@@ -133,26 +135,20 @@ E& Task<E>::getContext() const {
 }
 
 template<boost::asio::execution::executor E>
-template<typename R, typename... T>
-void Task<E>::spawn(std::function<void(std::exception_ptr&, R)> callback, std::function<boost::asio::awaitable<R>(T...)> f, std::string fName, T... args) {
-    co_spawn(getContext(), [&]() {
-            spdlog::trace("Coroutine spawned from " + fName + " function");
-            return f(args...);
-        }, [&](std::exception_ptr e) {
+template<typename R>
+void Task<E>::spawn(std::function<boost::asio::awaitable<R>()> f, std::function<void(std::exception_ptr, R)> callback) {
+    co_spawn(getContext(), f, [&](std::exception_ptr e, R result) {
             if (e) {
                 spdlog::info("Exception occurred in coroutine callback");
             }
-            callback(e);
+            callback(e, result);
         });
 }
 
 template<boost::asio::execution::executor E>
-template<typename... T>
-void Task<E>::spawn(std::function<void(std::exception_ptr&)> callback, std::function<boost::asio::awaitable<void>(T...)> f, std::string fName, T... args) {
-    co_spawn(getContext(), [&]() {
-            spdlog::trace("Coroutine spawned from " + fName + " function");
-            return f(args...);
-        }, [&](std::exception_ptr& e) {
+void Task<E>::spawn(std::function<boost::asio::awaitable<void>()> f,
+    std::function<void(std::exception_ptr)> callback) {
+    co_spawn(getContext(), f, [&](std::exception_ptr e) {
             if (e) {
                 spdlog::info("Exception occurred in coroutine callback");
             }

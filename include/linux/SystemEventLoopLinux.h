@@ -113,9 +113,18 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
 
     template<boost::asio::execution::executor E>
     boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoop() {
-        co_await eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
-        co_await eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
-        co_await eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+        this->spawn([&]() {
+            spdlog::trace("Spawned for each mouse device");
+            return eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
+        });
+        this->spawn([&]() {
+            spdlog::trace("Spawned for each key device");
+            return eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
+        });
+        this->spawn([&]() {
+            spdlog::trace("Spawned for each touch device");
+            return eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+        });
         co_return;
     }
 
@@ -125,10 +134,9 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
         std::vector<std::filesystem::path> paths
         ) {
         for (auto path : paths) {
-            co_spawn(this->getContext(), [&]() { return eventLoopForDevice(type, path); }, [&](exception_ptr e, bool result) {
-                this->submitOutcome(
-                    result
-                    ); });
+            this->template spawn<bool>([&]() { return eventLoopForDevice(type, path); }, [&](exception_ptr e, bool result) {
+                this->submitOutcome(result);
+            });
         }
         co_return;
     }
