@@ -44,9 +44,9 @@ public:
      */
     SystemEventLoopLinux(
         E& context,
-        std::vector<std::filesystem::path> mouseDevices,
-        std::vector<std::filesystem::path> keyDevices,
-        std::vector<std::filesystem::path> touchDevices
+        const std::vector<std::filesystem::path>& mouseDevices,
+        const std::vector<std::filesystem::path>& keyDevices,
+        const std::vector<std::filesystem::path>& touchDevices
         );
 
     /**
@@ -62,9 +62,9 @@ public:
     boost::asio::awaitable<void> eventLoop() override;
 
 private:
-    std::vector<std::filesystem::path> mouseDevices;
-    std::vector<std::filesystem::path> keyDevices;
-    std::vector<std::filesystem::path> touchDevices;
+    const std::vector<std::filesystem::path>& mouseDevices;
+    const std::vector<std::filesystem::path>& keyDevices;
+    const std::vector<std::filesystem::path>& touchDevices;
 };
 
 namespace asio = boost::asio;
@@ -75,10 +75,10 @@ using namespace std;
 template<boost::asio::execution::executor E>
 SystemEventLoopLinux<E>::SystemEventLoopLinux(
     E& context,
-    std::vector<std::filesystem::path> mouseDevices,
-    std::vector<std::filesystem::path> keyDevices,
-    std::vector<std::filesystem::path> touchDevices
-    ) : SystemEventLoop<E, input_event>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{std::move(mouseDevices)}, keyDevices{std::move(keyDevices)}, touchDevices{std::move(touchDevices)} {
+    const std::vector<std::filesystem::path>& mouseDevices,
+    const std::vector<std::filesystem::path>& keyDevices,
+    const std::vector<std::filesystem::path>& touchDevices
+    ) : SystemEventLoop<E, input_event>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()}, mouseDevices{mouseDevices}, keyDevices{keyDevices}, touchDevices{touchDevices} {
     }
 
     template<boost::asio::execution::executor E>
@@ -113,9 +113,9 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
 
     template<boost::asio::execution::executor E>
     boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoop() {
-        eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
-        eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
-        eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+        co_await eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
+        co_await eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
+        co_await eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
         co_return;
     }
 

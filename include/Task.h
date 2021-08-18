@@ -68,6 +68,18 @@ public:
     [[nodiscard]] bool isStopped() const;
 
     /**
+     * Spawn a task.
+     */
+     template<typename R, typename... T>
+     void spawn(std::function<void(std::exception_ptr&, R)> callback, std::function<boost::asio::awaitable<R>(T...)> f, std::string fName, T... args);
+
+     /**
+     * Spawn a task with void return.
+     */
+     template<typename... T>
+     void spawn(std::function<void(std::exception_ptr&)> callback, std::function<boost::asio::awaitable<void>(T...)> f, std::string fName, T... args);
+
+    /**
      * Start the task.
      */
     virtual boost::asio::awaitable<void> start();
@@ -118,6 +130,34 @@ void Task<E>::stop() {
 template<boost::asio::execution::executor E>
 E& Task<E>::getContext() const {
     return executionContext;
+}
+
+template<boost::asio::execution::executor E>
+template<typename R, typename... T>
+void Task<E>::spawn(std::function<void(std::exception_ptr&, R)> callback, std::function<boost::asio::awaitable<R>(T...)> f, std::string fName, T... args) {
+    co_spawn(getContext(), [&]() {
+            spdlog::trace("Coroutine spawned from " + fName + " function");
+            return f(args...);
+        }, [&](std::exception_ptr e) {
+            if (e) {
+                spdlog::info("Exception occurred in coroutine callback");
+            }
+            callback(e);
+        });
+}
+
+template<boost::asio::execution::executor E>
+template<typename... T>
+void Task<E>::spawn(std::function<void(std::exception_ptr&)> callback, std::function<boost::asio::awaitable<void>(T...)> f, std::string fName, T... args) {
+    co_spawn(getContext(), [&]() {
+            spdlog::trace("Coroutine spawned from " + fName + " function");
+            return f(args...);
+        }, [&](std::exception_ptr& e) {
+            if (e) {
+                spdlog::info("Exception occurred in coroutine callback");
+            }
+            callback(e);
+        });
 }
 
 #endif //EVGET_INCLUDE_TASK_H

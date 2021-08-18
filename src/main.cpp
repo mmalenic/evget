@@ -46,15 +46,17 @@ int main(int argc, char* argv[]) {
     auto context = pool.get_executor();
     Storage<boost::asio::thread_pool::executor_type> storage{context};
     EventTransformer<input_event> transformer{};
-    SystemEventLoopLinux eventLoop{context, {}, {}, {}};
+    SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
 
     EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 
-    boost:asio::co_spawn(context, handler.start(), boost::asio::detached);
+    boost:asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
 
     if (cmd.isListEventDevices()) {
         EventDeviceLister lister{};
         cout << lister;
     }
+
+    pool.join();
     return 1;
 }
