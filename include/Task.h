@@ -70,16 +70,16 @@ public:
     /**
      * Spawn a task.
      */
-     template<typename R>
-     void spawn(auto&& f,
-         std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { });
+    template<typename R>
+    void spawn(std::function<boost::asio::awaitable<R>()> f,
+        std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { });
 
      /**
      * Spawn a task with void return.
      */
      void spawn(
-         auto&& f,
-         std::function<void(std::exception_ptr)> callback = [](std::exception_ptr e) { });
+         std::function<boost::asio::awaitable<void>()> f,
+         std::function<void(std::exception_ptr)>  callback = [](std::exception_ptr e) { });
 
     /**
      * Start the task.
@@ -136,7 +136,8 @@ E& Task<E>::getContext() const {
 
 template<boost::asio::execution::executor E>
 template<typename R>
-void Task<E>::spawn(auto&& f, std::function<void(std::exception_ptr, R)> callback) {
+void Task<E>::spawn(std::function<boost::asio::awaitable<R>()> f,
+    std::function<void(std::exception_ptr, R)> callback) {
     co_spawn(getContext(), f, [callback](std::exception_ptr e, R result) {
             if (e) {
                 spdlog::info("Exception occurred in coroutine callback");
@@ -146,7 +147,8 @@ void Task<E>::spawn(auto&& f, std::function<void(std::exception_ptr, R)> callbac
 }
 
 template<boost::asio::execution::executor E>
-void Task<E>::spawn(auto&& f,
+void Task<E>::spawn(
+    std::function<boost::asio::awaitable<void>()> f,
     std::function<void(std::exception_ptr)> callback) {
     co_spawn(getContext(), f, [callback](std::exception_ptr e) {
             if (e) {
