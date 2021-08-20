@@ -95,6 +95,7 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
             struct input_event event;
             memset(&event, 0, sizeof(event));
             size_t n = co_await stream.async_read_some(asio::buffer(&event, sizeof(event)), asio::use_awaitable);
+            printf("%d\n", event.time);
             spdlog::trace("Event read in event loop.");
 
             if (n != sizeof(event)) {
