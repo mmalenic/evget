@@ -33,7 +33,7 @@ public:
     /**
      * Possible types.
      */
-    enum Type {
+    enum class Type {
         mouseDevice,
         keyDevice,
         touchDevice

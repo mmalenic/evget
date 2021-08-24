@@ -48,7 +48,7 @@ public:
      *
      * @param platformInformation platform information string
      */
-    CommandLine(const std::string& platformInformation);
+    explicit CommandLine(const std::string& platformInformation);
 
     /**
     * Perform the actual command line parsing.
@@ -156,7 +156,7 @@ protected:
      * Get the variables map.
      * @return variables map
      */
-    const po::variables_map& getVm() const;
+    [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
     po::options_description desc;

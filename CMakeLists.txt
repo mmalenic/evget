@@ -43,6 +43,7 @@ set(HEADERS_COMMON
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
+    include/Fields.h
     include/EventListener.h
     include/UnsupportedOperationException.h
 )
@@ -52,6 +53,7 @@ set(SOURCES_COMMON
     src/EventData.cpp
     src/EventDataEntry.cpp
     src/ShutdownHandler.cpp
+    src/Fields.cpp
     src/UnsupportedOperationException.cpp
 )
 
