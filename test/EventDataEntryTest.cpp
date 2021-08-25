@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "EventDataEntry.h"
+#include "EventData/EventDataEntry.h"
 
 TEST(EventDataEntryTest, Getters) { // NOLINT(cert-err58-cpp)
     EventDataEntry entry {mouseclick, text, ""};

@@ -20,67 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENTDATAENTRY_H
-#define EVGET_INCLUDE_EVENTDATAENTRY_H
+#ifndef EVGET_INCLUDE_FIELDS_H
+#define EVGET_INCLUDE_FIELDS_H
 
 #include <string>
+#include <vector>
 
-/**
- * Device formats for event data.
- */
-enum EventDeviceFormat {
-    raw,
-    mousemove,
-    mouseclick,
-    mousewheel,
-    key,
-    touch
-};
-
-/**
- * Types to represent events.
- */
-enum DataType {
-    text,
-    eventtime,
-    integer
-};
-
-/**
- * Class represents an event data entry, i.e. one field.
- */
-class EventDataEntry {
+class EventType {
 public:
-    /**
-     * Create the entry.
-     * @param eventDeviceFormat format
-     * @param dataType type
-     * @param entry entry
-     */
-    EventDataEntry(EventDeviceFormat eventDeviceFormat, DataType dataType, std::string entry);
+    enum class FormatType {
+        SYSTEM,
+        STANDARD
+    };
 
-    /**
-     * Get the event device format.
-     * @return event device format
-     */
-    [[nodiscard]] EventDeviceFormat getEventDeviceFormat() const;
-
-    /**
-     * Get the data type.
-     * @return data type
-     */
-    [[nodiscard]] DataType getDataType() const;
-
-    /**
-     * Get the entry.
-     * @return entry
-     */
-    [[nodiscard]] const std::string& getEntry() const;
-
-private:
-    EventDeviceFormat eventDeviceFormat;
-    DataType dataType;
-    std::string entry;
+    void include(std::string field, FormatType type);
+    std::vector<std::string> getFields();
+    FormatType getType(std::string field);
 };
 
-#endif //EVGET_INCLUDE_EVENTDATAENTRY_H
+class MouseMove : public EventType {
+};
+class MouseClick : public EventType {};
+class MouseWheel : public EventType {};
+class Key : public EventType {};
+class Touch : public EventType {};
+
+/**
+ * Describes the fields that can be stored.
+ */
+class Fields {
+public:
+
+    /**
+     * Construct fields from string.
+     * @param fields fields string
+     */
+    explicit Fields(std::string fields);
+};
+
+#endif //EVGET_INCLUDE_FIELDS_H

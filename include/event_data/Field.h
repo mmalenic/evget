@@ -20,4 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Fields.h"
+#ifndef EVGET_INCLUDE_EVENT_DATA_FIELD_H
+#define EVGET_INCLUDE_EVENT_DATA_FIELD_H
+
+#include <string>
+
+/**
+ * Represents a field in an event.
+ */
+class Field {
+public:
+    /**
+     * Create the entry.
+     * @param name name
+     * @param entry entry
+     */
+    Field(std::string name, std::string entry);
+
+    /**
+     * Get the entry.
+     * @return entry
+     */
+    [[nodiscard]] const std::string& getEntry() const;
+
+    /**
+     * Get the name.
+     * @return name
+     */
+    [[nodiscard]] const std::string& getName() const;
+
+private:
+    std::string name;
+    std::string entry;
+};
+
+#endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H

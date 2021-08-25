@@ -35,23 +35,12 @@
 class EventData {
 public:
     typedef typename std::vector<EventDataEntry>::iterator iterator;
-    /**
-     * Create the event data.
-     */
-    EventData();
 
     /**
-     * Add an entry to the data container
-     * @param type type
-     * @param entry entry
+     * Construct the event data
+     * @param nFields number of fields.
      */
-    void addEntry(EventDeviceFormat format, DataType type, const std::string& entry);
-
-    /**
-     * Get the resulting event data.
-     * @return event data
-     */
-    EventData finish();
+    explicit EventData(size_t nFields);
 
     /**
      * Iterator begin.
@@ -65,9 +54,50 @@ public:
      */
     [[nodiscard]] iterator end() noexcept;
 
+    /**
+     * Include a field.
+     * @param position at position
+     * @param entry with entry
+     */
+    void includeField(size_t position, std::string entry);
+
+    /**
+     * Get the entry.
+     * @param position at position
+     * @return entry
+     */
+    EventDataEntry getEntry(size_t position);
+
+    /**
+     * Get the name of the data.
+     * @return name
+     */
+    virtual std::string name() = 0;
+
+    /**
+     * Get the fields.
+     * @return fields
+     */
+    virtual std::vector<std::string> fields() = 0;
+
 private:
-    bool dataCreated;
     std::vector<EventDataEntry> eventData;
 };
+
+class MouseMove : public EventData {
+public:
+    static constexpr size_t NUM_FIELDS = 1;
+    enum class Field {
+
+    };
+
+    MouseMove();
+
+    void includeField(Field field, std::string entry);
+};
+class MouseClick : public EventData {};
+class MouseWheel : public EventData {};
+class Key : public EventData {};
+class Touch : public EventData {};
 
 #endif //EVGET_INCLUDE_EVENTDATA_H

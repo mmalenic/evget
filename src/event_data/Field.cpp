@@ -20,22 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "EventDataEntry.h"
+#include "event_data/Field.h"
 
 #include <utility>
 
-EventDeviceFormat EventDataEntry::getEventDeviceFormat() const {
-    return eventDeviceFormat;
-}
-
-DataType EventDataEntry::getDataType() const {
-    return dataType;
-}
-
-const std::string& EventDataEntry::getEntry() const {
+const std::string& Field::getEntry() const {
     return entry;
 }
 
-EventDataEntry::EventDataEntry(EventDeviceFormat eventDeviceFormat, DataType dataType, std::string entry) :
-    eventDeviceFormat{eventDeviceFormat}, dataType{dataType}, entry{std::move(entry)} {
+Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
+}
+
+const std::string& Field::getName() const {
+    return name;
 }

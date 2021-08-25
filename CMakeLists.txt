@@ -36,24 +36,24 @@ set(HEADERS_COMMON
     include/Task.h
     include/CommandLine.h
     include/EventTransformer.h
-    include/EventData.h
-    include/EventDataEntry.h
+    include/event_data/EventData.h
     include/EventHandler.h
     include/SystemEvent.h
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
-    include/Fields.h
+    include/event_data/Fields.h
     include/EventListener.h
+    include/event_data/Field.h
     include/UnsupportedOperationException.h
 )
 
 set(SOURCES_COMMON
     src/CommandLine.cpp
-    src/EventData.cpp
-    src/EventDataEntry.cpp
+    src/event_data/Field.cpp
+    src/event_data/EventData.cpp
     src/ShutdownHandler.cpp
-    src/Fields.cpp
+    src/event_data/Fields.cpp
     src/UnsupportedOperationException.cpp
 )
 

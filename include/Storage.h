@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_STORAGE_H
 #define EVGET_INCLUDE_STORAGE_H
 
-#include "EventData.h"
+#include "EventData/EventData.h"
 #include "EventListener.h"
 #include "Task.h"
 

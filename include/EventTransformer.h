@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
-#include "EventData.h"
+#include "EventData/EventData.h"
 #include "SystemEvent.h"
 
 /**

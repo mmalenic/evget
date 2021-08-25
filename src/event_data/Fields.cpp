@@ -20,41 +20,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_FIELDS_H
-#define EVGET_INCLUDE_FIELDS_H
-
-#include <string>
-#include <vector>
-
-class EventType {
-public:
-    enum class FormatType {
-        SYSTEM,
-        STANDARD
-    };
-
-    void include(std::string field, FormatType type);
-    std::vector<std::string> getFields();
-    FormatType getType(std::string field);
-};
-
-class MouseMove : public EventType {};
-class MouseClick : public EventType {};
-class MouseWheel : public EventType {};
-class Key : public EventType {};
-class Touch : public EventType {};
-
-/**
- * Describes the fields that can be stored.
- */
-class Fields {
-public:
-
-    /**
-     * Construct fields from string.
-     * @param fields fields string
-     */
-    explicit Fields(std::string fields);
-};
-
-#endif //EVGET_INCLUDE_FIELDS_H
+#include "EventData/Fields.h"
