@@ -22,6 +22,7 @@
 
 #include <tuple>
 #include <UnsupportedOperationException.h>
+#include <event_data/EventData.h>
 #include "EventData/EventData.h"
 
 using namespace std;
@@ -47,4 +48,8 @@ EventData::iterator EventData::begin() noexcept {
 
 EventData::iterator EventData::end() noexcept {
     return eventData.end();
+}
+
+size_t EventData::numberOfFields() const {
+    return nFields;
 }

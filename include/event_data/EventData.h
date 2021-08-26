@@ -27,14 +27,15 @@
 #include <vector>
 #include <string>
 #include <variant>
-#include "EventDataEntry.h"
+
+#include "Field.h"
 
 /**
  * Data container to represent event data.
  */
 class EventData {
 public:
-    typedef typename std::vector<EventDataEntry>::iterator iterator;
+    typedef typename std::vector<Field>::iterator iterator;
 
     /**
      * Construct the event data
@@ -55,18 +56,16 @@ public:
     [[nodiscard]] iterator end() noexcept;
 
     /**
-     * Include a field.
-     * @param position at position
-     * @param entry with entry
+     * Get the field.
+     * @param name by name
      */
-    void includeField(size_t position, std::string entry);
+    Field getByName(std::string name);
 
     /**
-     * Get the entry.
-     * @param position at position
-     * @return entry
+     * Get the number of fields.
+     * @return number of fields
      */
-    EventDataEntry getEntry(size_t position);
+    size_t numberOfFields() const;
 
     /**
      * Get the name of the data.
@@ -74,27 +73,22 @@ public:
      */
     virtual std::string name() = 0;
 
-    /**
-     * Get the fields.
-     * @return fields
-     */
-    virtual std::vector<std::string> fields() = 0;
-
 private:
-    std::vector<EventDataEntry> eventData;
+    const size_t nFields;
+    std::vector<Field> field;
 };
 
-class MouseMove : public EventData {
-public:
-    static constexpr size_t NUM_FIELDS = 1;
-    enum class Field {
-
-    };
-
-    MouseMove();
-
-    void includeField(Field field, std::string entry);
-};
+//class MouseMove : public EventData {
+//public:
+//    static constexpr size_t NUM_FIELDS = 1;
+//    enum class Field {
+//
+//    };
+//
+//    MouseMove();
+//
+//    void includeField(Field field, std::string entry);
+//};
 class MouseClick : public EventData {};
 class MouseWheel : public EventData {};
 class Key : public EventData {};
