@@ -23,6 +23,12 @@
 #include <gtest/gtest.h>
 #include "event_data/Field.h"
 
+TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
+    Field field {"name"};
+    ASSERT_EQ("name", field.getName());
+    ASSERT_EQ("", field.getEntry());
+}
+
 TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
     Field field {"name", "entry"};
     ASSERT_EQ("name", field.getName());
@@ -34,6 +40,8 @@ TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("name", field.getName());
+    Field field {"name", ""};
+    ASSERT_EQ("", field.getEntry());
+    field.setEntry("entry");
+    ASSERT_EQ("entry", field.getEntry());
 }
