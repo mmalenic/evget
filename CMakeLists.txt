@@ -42,7 +42,6 @@ set(HEADERS_COMMON
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
-    include/event_data/Fields.h
     include/event_data/MouseMove.h
     include/EventListener.h
     include/event_data/Field.h
@@ -55,7 +54,6 @@ set(SOURCES_COMMON
     src/event_data/EventData.cpp
     src/event_data/MouseMove.cpp
     src/ShutdownHandler.cpp
-    src/event_data/Fields.cpp
     src/UnsupportedOperationException.cpp
 )
 

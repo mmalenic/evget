@@ -35,13 +35,13 @@
  */
 class EventData {
 public:
-    typedef typename std::vector<Field>::iterator iterator;
+    using iterator = std::vector<Field>::iterator;
 
     /**
      * Construct the event data
      * @param nFields number of fields.
      */
-    explicit EventData(size_t nFields);
+    EventData(size_t nFields, std::string name);
 
     /**
      * Iterator begin.
@@ -77,10 +77,11 @@ public:
      * Get the name of the data.
      * @return name
      */
-    virtual std::string name() = 0;
+    [[nodiscard]] std::string getName() const;
 
 private:
     const size_t nFields;
+    const std::string name;
     std::vector<Field> fields;
 };
 

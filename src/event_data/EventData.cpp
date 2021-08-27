@@ -24,11 +24,13 @@
 #include <UnsupportedOperationException.h>
 #include <event_data/EventData.h>
 #include <stdexcept>
+#include <utility>
 
 using namespace std;
 
-EventData::EventData(size_t nFields) : nFields{nFields}, fields{nFields} {
+EventData::EventData(size_t nFields, std::string name) : nFields{nFields}, name{std::move(name)}, fields{nFields} {
 }
+
 EventData::iterator EventData::begin() noexcept {
     return fields.begin();
 }
@@ -55,4 +57,8 @@ Field EventData::getAtPosition(size_t position) {
     } catch (out_of_range& error) {
         throw UnsupportedOperationException(error.what());
     }
+}
+
+std::string EventData::getName() const {
+    return name;
 }
