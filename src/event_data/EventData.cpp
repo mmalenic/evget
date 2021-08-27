@@ -23,33 +23,36 @@
 #include <tuple>
 #include <UnsupportedOperationException.h>
 #include <event_data/EventData.h>
-#include "EventData/EventData.h"
+#include <stdexcept>
 
 using namespace std;
 
-EventData::EventData() : dataCreated{false}, eventData{} {
+EventData::EventData(size_t nFields) : nFields{nFields}, fields{nFields} {
 }
-
-void EventData::addEntry(EventDeviceFormat format, DataType type, const string& entry) {
-    if (dataCreated) {
-        throw UnsupportedOperationException{"Attempted to modify after call to stop."};
-    }
-    eventData.emplace_back(format, type, entry);
-}
-
-EventData EventData::finish() {
-    dataCreated = true;
-    return *this;
-}
-
 EventData::iterator EventData::begin() noexcept {
-    return eventData.begin();
+    return fields.begin();
 }
 
 EventData::iterator EventData::end() noexcept {
-    return eventData.end();
+    return fields.end();
 }
 
 size_t EventData::numberOfFields() const {
     return nFields;
+}
+
+Field EventData::getByName(std::string name) {
+    auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
+    if (result != end()) {
+        return *result;
+    }
+    throw UnsupportedOperationException(name + " not in event data.");
+}
+
+Field EventData::getAtPosition(size_t position) {
+    try {
+        return fields.at(position);
+    } catch (out_of_range& error) {
+        throw UnsupportedOperationException(error.what());
+    }
 }

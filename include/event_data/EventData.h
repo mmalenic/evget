@@ -62,10 +62,16 @@ public:
     Field getByName(std::string name);
 
     /**
+     * Get the field.
+     * @param position position
+     */
+    Field getAtPosition(size_t position);
+
+    /**
      * Get the number of fields.
      * @return number of fields
      */
-    size_t numberOfFields() const;
+    [[nodiscard]] size_t numberOfFields() const;
 
     /**
      * Get the name of the data.
@@ -75,7 +81,7 @@ public:
 
 private:
     const size_t nFields;
-    std::vector<Field> field;
+    std::vector<Field> fields;
 };
 
 //class MouseMove : public EventData {
