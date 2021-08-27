@@ -35,7 +35,7 @@ public:
      * @param name name
      * @param entry entry
      */
-    Field(std::string name, std::string entry);
+    explicit Field(std::string name, std::string entry = "");
 
     /**
      * Get the entry.

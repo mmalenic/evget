@@ -23,9 +23,17 @@
 #include <gtest/gtest.h>
 #include "event_data/Field.h"
 
-TEST(FieldTest, Getters) { // NOLINT(cert-err58-cpp)
+TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
     Field field {"name", "entry"};
-    ASSERT_EQ(mouseclick, entry.getEventDeviceFormat());
-    ASSERT_EQ(text, entry.getDataType());
-    ASSERT_EQ("", entry.getEntry());
+    ASSERT_EQ("name", field.getName());
+}
+
+TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
+    Field field {"name", "entry"};
+    ASSERT_EQ("entry", field.getEntry());
+}
+
+TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
+    Field field {"name", "entry"};
+    ASSERT_EQ("name", field.getName());
 }
