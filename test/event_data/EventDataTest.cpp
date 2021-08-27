@@ -27,7 +27,8 @@
 using namespace std;
 
 TEST(EventDataTest, CreationAndIteration) { // NOLINT(cert-err58-cpp)
-    EventData eventData{};
+    EventData eventData{1, "name"};
+    eventData.
     eventData.addEntry(mouseclick, text, "");
     eventData.finish();
 

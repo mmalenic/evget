@@ -62,3 +62,12 @@ Field EventData::getAtPosition(size_t position) {
 std::string EventData::getName() const {
     return name;
 }
+
+void EventData::includeField(Field field, const std::string& entry) {
+    field.setEntry(entry);
+    fields.emplace_back(std::move(field));
+}
+
+void EventData::includeField(Field field) {
+    fields.emplace_back(std::move(field));
+}

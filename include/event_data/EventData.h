@@ -79,6 +79,19 @@ public:
      */
     [[nodiscard]] std::string getName() const;
 
+    /**
+     * Include a field.
+     * @param field field
+     */
+    void includeField(Field field);
+
+    /**
+     * Include a field.
+     * @param field field
+     * @param entry entry
+     */
+    void includeField(Field field, const std::string& entry);
+
 private:
     const size_t nFields;
     const std::string name;
