@@ -64,8 +64,8 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test
     )
     set(TESTS_COMMON
-        test/EventDataTest.cpp
-        test/EventDataEntryTest.cpp
+        test/event_data/EventDataTest.cpp
+        test/event_data/FieldTest.cpp
     )
 endif()
 

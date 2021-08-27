@@ -24,13 +24,17 @@
 
 #include <utility>
 
-const std::string& Field::getEntry() const {
+std::string Field::getEntry() const {
     return entry;
 }
 
 Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-const std::string& Field::getName() const {
+std::string Field::getName() const {
     return name;
+}
+
+void Field::setEntry(const std::string& entry) {
+    this->entry = entry;
 }

@@ -21,10 +21,10 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "EventData/EventDataEntry.h"
+#include "event_data/Field.h"
 
-TEST(EventDataEntryTest, Getters) { // NOLINT(cert-err58-cpp)
-    EventDataEntry entry {mouseclick, text, ""};
+TEST(FieldTest, Getters) { // NOLINT(cert-err58-cpp)
+    Field field {"name", "entry"};
     ASSERT_EQ(mouseclick, entry.getEventDeviceFormat());
     ASSERT_EQ(text, entry.getDataType());
     ASSERT_EQ("", entry.getEntry());

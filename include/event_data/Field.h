@@ -41,22 +41,22 @@ public:
      * Get the entry.
      * @return entry
      */
-    [[nodiscard]] const std::string& getEntry() const;
+    [[nodiscard]] std::string getEntry() const;
 
     /**
      * Get the name.
      * @return name
      */
-    [[nodiscard]] const std::string& getName() const;
+    [[nodiscard]] std::string getName() const;
 
     /**
-     * Include a field.
+     * Set field.
      * @param entry entry
      */
-    void include(Field field, std::string entry);
+    void setEntry(const std::string& entry);
 
 private:
-    std::string name;
+    const std::string name;
     std::string entry;
 };
 
