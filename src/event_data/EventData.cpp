@@ -44,6 +44,27 @@ size_t EventData::numberOfFields() const {
 }
 
 Field EventData::getByName(std::string name) {
+    return getReferenceByName(name);
+}
+
+Field EventData::getAtPosition(size_t position) {
+    return getReferenceAtPosition(position);
+}
+
+std::string EventData::getName() const {
+    return name;
+}
+
+void EventData::setForName(std::string name, const std::string& entry) {
+    auto field = getReferenceByName(name);
+    field.setEntry(entry);
+}
+void EventData::setForPosition(size_t position, const std::string& entry) {
+    auto field = getReferenceAtPosition(position);
+    field.setEntry(entry);
+}
+
+Field& EventData::getReferenceByName(std::string name) {
     auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
     if (result != end()) {
         return *result;
@@ -51,23 +72,10 @@ Field EventData::getByName(std::string name) {
     throw UnsupportedOperationException(name + " not in event data.");
 }
 
-Field EventData::getAtPosition(size_t position) {
+Field& EventData::getReferenceAtPosition(size_t position) {
     try {
         return fields.at(position);
     } catch (out_of_range& error) {
         throw UnsupportedOperationException(error.what());
     }
-}
-
-std::string EventData::getName() const {
-    return name;
-}
-
-void EventData::includeField(Field field, const std::string& entry) {
-    field.setEntry(entry);
-    fields.emplace_back(std::move(field));
-}
-
-void EventData::includeField(Field field) {
-    fields.emplace_back(std::move(field));
 }

@@ -62,10 +62,22 @@ public:
     Field getByName(std::string name);
 
     /**
+     * Set the field.
+     * @param name with name
+     */
+    void setForName(std::string name, const std::string& entry);
+
+    /**
      * Get the field.
      * @param position position
      */
     Field getAtPosition(size_t position);
+
+    /**
+     * Set the field.
+     * @param position with position
+     */
+    void setForPosition(size_t position, const std::string& entry);
 
     /**
      * Get the number of fields.
@@ -79,23 +91,22 @@ public:
      */
     [[nodiscard]] std::string getName() const;
 
-    /**
-     * Include a field.
-     * @param field field
-     */
-    void includeField(Field field);
-
-    /**
-     * Include a field.
-     * @param field field
-     * @param entry entry
-     */
-    void includeField(Field field, const std::string& entry);
-
 private:
     const size_t nFields;
     const std::string name;
     std::vector<Field> fields;
+
+    /**
+     * Get the field.
+     * @param name by name
+     */
+    Field& getReferenceByName(std::string name);
+
+    /**
+     * Get the field.
+     * @param position position
+     */
+    Field& getReferenceAtPosition(size_t position);
 };
 
 //class MouseMove : public EventData {
