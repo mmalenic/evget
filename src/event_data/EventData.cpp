@@ -59,6 +59,7 @@ void EventData::setForName(std::string name, const std::string& entry) {
     auto field = getReferenceByName(name);
     field.setEntry(entry);
 }
+
 void EventData::setForPosition(size_t position, const std::string& entry) {
     auto field = getReferenceAtPosition(position);
     field.setEntry(entry);
@@ -73,9 +74,8 @@ Field& EventData::getReferenceByName(std::string name) {
 }
 
 Field& EventData::getReferenceAtPosition(size_t position) {
-    try {
+    if (position < fields.size()) {
         return fields.at(position);
-    } catch (out_of_range& error) {
-        throw UnsupportedOperationException(error.what());
     }
+    throw UnsupportedOperationException(to_string(position) + " index out of range.");
 }

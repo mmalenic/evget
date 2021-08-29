@@ -26,25 +26,14 @@
 
 using namespace std;
 
-TEST(EventDataTest, CreationAndIteration) { // NOLINT(cert-err58-cpp)
+TEST(EventDataTest, Iteration) { // NOLINT(cert-err58-cpp)
     EventData eventData{1, "name"};
-    eventData.inclu
-    eventData.addEntry(mouseclick, text, "");
-    eventData.finish();
+    eventData.setForPosition(0, "entry");
 
     auto n = 0;
     for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-        ASSERT_EQ(mouseclick, i->getEventDeviceFormat());
-        ASSERT_EQ(text, i->getDataType());
-        ASSERT_EQ("", i->getEntry());
+        ASSERT_EQ("", i->getName());
+        ASSERT_EQ("entry", i->getEntry());
     }
     ASSERT_EQ(n, 1);
-}
-
-TEST(EventDataTest, ThrowsAfterFinish) { // NOLINT(cert-err58-cpp)
-    EventData eventData{};
-    eventData.addEntry(mouseclick, text, "");
-    eventData.finish();
-
-    ASSERT_THROW(eventData.addEntry(mouseclick, text, ""), UnsupportedOperationException);
 }
