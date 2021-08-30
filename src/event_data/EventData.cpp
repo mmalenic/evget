@@ -62,12 +62,12 @@ std::string EventData::getName() const {
 }
 
 void EventData::setForName(std::string name, const std::string& entry) {
-    auto field = getReferenceByName(name);
+    auto& field = getReferenceByName(name);
     field.setEntry(entry);
 }
 
 void EventData::setForPosition(size_t position, const std::string& entry) {
-    auto field = getReferenceAtPosition(position);
+    auto& field = getReferenceAtPosition(position);
     field.setEntry(entry);
 }
 
