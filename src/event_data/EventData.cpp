@@ -23,12 +23,18 @@
 #include <tuple>
 #include <UnsupportedOperationException.h>
 #include <event_data/EventData.h>
-#include <stdexcept>
 #include <utility>
 
 using namespace std;
 
-EventData::EventData(size_t nFields, std::string name) : nFields{nFields}, name{std::move(name)}, fields{nFields} {
+EventData::EventData(string name, initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
+}
+
+EventData::EventData(string name, initializer_list<string> fieldNames) : nFields{fieldNames.size()}, name{std::move(name)}, fields{} {
+    fields.reserve(nFields);
+    for (const auto& fieldName : fieldNames) {
+        fields.emplace_back(fieldName);
+    }
 }
 
 EventData::iterator EventData::begin() noexcept {

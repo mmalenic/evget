@@ -38,10 +38,18 @@ public:
     using iterator = std::vector<Field>::iterator;
 
     /**
-     * Construct the event data
-     * @param nFields number of fields.
+     * Construct the event data.
+     * @param name name of event data
+     * @param fields fields.
      */
-    EventData(size_t nFields, std::string name);
+    EventData(std::string name, std::initializer_list<Field> fields);
+
+    /**
+     * Construct the event data.
+     * @param name name of event data
+     * @param fields fields.
+     */
+    EventData(std::string name, std::initializer_list<std::string> fieldsNames);
 
     /**
      * Iterator begin.
