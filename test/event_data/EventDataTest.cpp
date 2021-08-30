@@ -22,31 +22,35 @@
 
 #include <gtest/gtest.h>
 #include <event_data/EventData.h>
+
+#include <utility>
 #include "UnsupportedOperationException.h"
 
 using namespace std;
 
-TEST(EventDataTest, CreationAndIterationByName) { // NOLINT(cert-err58-cpp)
-    EventData eventData{"name", {"field"}};
+void test_create_and_iterate(auto&& create) {
+    string field_name = "field";
+    string entry = "entry";
+    EventData eventData = create(field_name, "name");
     eventData.setForPosition(0, "entry");
 
     auto n = 0;
     for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-        ASSERT_EQ("field", i->getName());
-        ASSERT_EQ("entry", i->getEntry());
+        ASSERT_EQ(field_name, i->getName());
+        ASSERT_EQ(entry, i->getEntry());
     }
     ASSERT_EQ(n, 1);
 }
 
-TEST(EventDataTest, CreationAndIterationByField) { // NOLINT(cert-err58-cpp)
-    Field field{"field"};
-    EventData eventData{"name", {field}};
-    eventData.setForPosition(0, "entry");
+TEST(EventDataTest, CreationAndIterationByName) { // NOLINT(cert-err58-cpp)
+    test_create_and_iterate([](string field_name, string name) {
+        return EventData{std::move(name), {std::move(field_name)}};
+    });
+}
 
-    auto n = 0;
-    for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-        ASSERT_EQ("field", i->getName());
-        ASSERT_EQ("entry", i->getEntry());
-    }
-    ASSERT_EQ(n, 1);
+TEST(EventDataTest, CreationAndIterationByField) { // NOLINT(cert-err58-cpp)
+    test_create_and_iterate([](string field_name, string name) {
+        Field field{std::move(field_name)};
+        return EventData{std::move(name), {field}};
+    });
 }
