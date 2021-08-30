@@ -116,15 +116,15 @@ SystemEventLoopLinux<E>::SystemEventLoopLinux(
     boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoop() {
         this->spawn([this]() {
             spdlog::trace("Spawned for each mouse device");
-            return eventLoopForEach(SystemEvent<input_event>::mouseDevice, mouseDevices);
+            return eventLoopForEach(SystemEvent<input_event>::Type::mouseDevice, mouseDevices);
         });
         this->spawn([this]() {
             spdlog::trace("Spawned for each key device");
-            return eventLoopForEach(SystemEvent<input_event>::keyDevice, keyDevices);
+            return eventLoopForEach(SystemEvent<input_event>::Type::keyDevice, keyDevices);
         });
         this->spawn([this]() {
             spdlog::trace("Spawned for each touch device");
-            return eventLoopForEach(SystemEvent<input_event>::touchDevice, touchDevices);
+            return eventLoopForEach(SystemEvent<input_event>::Type::touchDevice, touchDevices);
         });
         co_return;
     }

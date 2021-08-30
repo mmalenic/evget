@@ -40,14 +40,14 @@ public:
     /**
      * Construct the event data.
      * @param name name of event data
-     * @param fields fields.
+     * @param fields fields
      */
     EventData(std::string name, std::initializer_list<Field> fields);
 
     /**
      * Construct the event data.
      * @param name name of event data
-     * @param fields fields.
+     * @param fieldsNames field names
      */
     EventData(std::string name, std::initializer_list<std::string> fieldsNames);
 

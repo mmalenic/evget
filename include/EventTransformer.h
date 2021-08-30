@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
-#include "EventData/EventData.h"
+#include "event_data/EventData.h"
 #include "SystemEvent.h"
 
 /**
@@ -50,7 +50,7 @@ public:
 
 template<typename T>
 EventData EventTransformer<T>::transformEvent(SystemEvent<T> event) {
-    return EventData();
+    return EventData{"", {""}};
 }
 
 #endif //EVGET_INCLUDE_EVENTTRANSFORMER_H

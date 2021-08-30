@@ -50,7 +50,7 @@ size_t EventData::numberOfFields() const {
 }
 
 Field EventData::getByName(std::string name) {
-    return getReferenceByName(name);
+    return getReferenceByName(std::move(name));
 }
 
 Field EventData::getAtPosition(size_t position) {
