@@ -66,7 +66,7 @@ void EventData::setForName(std::string name, const std::string& entry) {
     field.setEntry(entry);
 }
 
-void EventData::setForPosition(size_t position, const std::string& entry) {
+void EventData::setAtPosition(size_t position, const std::string& entry) {
     auto& field = getReferenceAtPosition(position);
     field.setEntry(entry);
 }

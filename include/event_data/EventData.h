@@ -85,7 +85,7 @@ public:
      * Set the field.
      * @param position with position
      */
-    void setForPosition(size_t position, const std::string& entry);
+    void setAtPosition(size_t position, const std::string& entry);
 
     /**
      * Get the number of fields.
