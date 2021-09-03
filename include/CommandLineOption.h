@@ -24,6 +24,7 @@
 #define EVGET_INCLUDE_COMMANDLINEOPTION_H
 
 #include <string_view>
+#include <vector>
 
 /**
  * Represents a command line option.
@@ -39,13 +40,13 @@ public:
     constexpr CommandLineOption(
         std::string_view shortName,
         std::string_view longName,
-        std::string_view description
-    ) : shortName{shortName}, longName{longName}, description{description} {
+        std::initializer_list<std::string_view> description
+    ) : shortName{shortName}, longName{longName}, description{toStringView(description)} {
     }
 
     /**
      * Get short name.
-     * @return short name
+     * @return shor
      */
     [[nodiscard]] constexpr std::string_view getShortName() const;
 
@@ -65,6 +66,8 @@ private:
     const std::string_view shortName;
     const std::string_view longName;
     const std::string_view description;
+
+    constexpr std::string_view toStringView(std::initializer_list<std::string_view> strings);
 };
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

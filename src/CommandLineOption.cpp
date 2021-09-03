@@ -20,16 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <array>
 #include "../include/CommandLineOption.h"
 
-constexpr std::string_view CommandLineOption::getShortName() const {
+std::string CommandLineOption::getShortName() const {
     return shortName;
 }
 
-constexpr std::string_view CommandLineOption::getLongName() const {
+std::string CommandLineOption::getLongName() const {
     return longName;
 }
 
-constexpr std::string_view CommandLineOption::getDescription() const {
+std::string CommandLineOption::getDescription() const {
     return description;
 }

@@ -26,6 +26,7 @@
 #include <boost/program_options.hpp>
 #include <filesystem>
 #include <spdlog/spdlog.h>
+#include "CommandLineOption.h"
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
@@ -116,7 +117,7 @@ public:
      * Get the valid log levels.
      * @return valid log levels
      */
-    static std::string validLogLevels();
+    static constexpr const char * validLogLevels();
 
     /**
      * Extract the filetyoe from the string.
@@ -134,7 +135,7 @@ public:
      * Get the platform information from the system.
      * @return platform information
      */
-    virtual std::string platformInformation() = 0;
+    virtual constexpr std::string_view platformInformation() = 0;
 
     friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
     friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
@@ -159,11 +160,15 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-    static constexpr std::tuple<std::string_view , std::string, std::string> fileOption = {"file", "f", "file to store events, defaults to current directory."};
-    static constexpr std::tuple<std::string, std::string, std::string> filetypeOption;
-    static constexpr std::tuple<std::string, std::string, std::string> printOption;
-    static constexpr std::tuple<std::string, std::string, std::string> useRawEventsOption;
-    static constexpr std::tuple<std::string, std::string, std::string> logLevelOption;
+    static const CommandLineOption fileOption{"file", "f", "file to store events, defaults to current directory."};
+    static const CommandLineOption filetypeOption;
+    static const CommandLineOption printOption{"print", "p", "print events."};
+    static const CommandLineOption useRawEventsOption{"use-raw-events", "r", "use raw system events instead of universal cross platform events."};
+    static const CommandLineOption logLevelOption{
+        "log-level",
+        "u",
+        "log level to print messages at, defaults to \"warning\".\nValid values are:\n" + validLogLevels()
+    };
 
     po::options_description desc;
     po::variables_map vm;
