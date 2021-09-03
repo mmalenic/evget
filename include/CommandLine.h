@@ -159,18 +159,18 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
+    static constexpr std::tuple<std::string_view , std::string, std::string> fileOption = {"file", "f", "file to store events, defaults to current directory."};
+    static constexpr std::tuple<std::string, std::string, std::string> filetypeOption;
+    static constexpr std::tuple<std::string, std::string, std::string> printOption;
+    static constexpr std::tuple<std::string, std::string, std::string> useRawEventsOption;
+    static constexpr std::tuple<std::string, std::string, std::string> logLevelOption;
+
     po::options_description desc;
     po::variables_map vm;
 
     const std::string versionNumber;
     const std::string versionMessage;
     const std::string filename;
-
-    std::tuple<std::string, std::string, std::string> fileOption;
-    std::tuple<std::string, std::string, std::string> filetypeOption;
-    std::tuple<std::string, std::string, std::string> printOption;
-    std::tuple<std::string, std::string, std::string> useRawEventsOption;
-    std::tuple<std::string, std::string, std::string> logLevelOption;
 
     fs::path file;
     Filetype filetype;

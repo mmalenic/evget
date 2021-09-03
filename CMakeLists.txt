@@ -46,6 +46,7 @@ set(HEADERS_COMMON
     include/EventListener.h
     include/event_data/Field.h
     include/UnsupportedOperationException.h
+    include/CommandLineOption.h
 )
 
 set(SOURCES_COMMON
@@ -55,6 +56,7 @@ set(SOURCES_COMMON
     src/event_data/MouseMove.cpp
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
+    src/CommandLineOption.cpp
 )
 
 if (BUILD_TESTING)
@@ -64,6 +66,7 @@ if (BUILD_TESTING)
     set(TESTS_COMMON
         test/event_data/EventDataTest.cpp
         test/event_data/FieldTest.cpp
+        test/CommandLineTest.cpp
     )
 endif()
 
