@@ -160,22 +160,18 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-    static const CommandLineOption fileOption{"file", "f", "file to store events, defaults to current directory."};
-    static const CommandLineOption filetypeOption;
-    static const CommandLineOption printOption{"print", "p", "print events."};
-    static const CommandLineOption useRawEventsOption{"use-raw-events", "r", "use raw system events instead of universal cross platform events."};
-    static const CommandLineOption logLevelOption{
-        "log-level",
-        "u",
-        "log level to print messages at, defaults to \"warning\".\nValid values are:\n" + validLogLevels()
-    };
-
-    po::options_description desc;
-    po::variables_map vm;
+    const CommandLineOption fileOption;
+    const CommandLineOption filetypeOption;
+    const CommandLineOption printOption;
+    const CommandLineOption useRawEventsOption;
+    const CommandLineOption logLevelOption;
 
     const std::string versionNumber;
     const std::string versionMessage;
     const std::string filename;
+
+    po::options_description desc;
+    po::variables_map vm;
 
     fs::path file;
     Filetype filetype;

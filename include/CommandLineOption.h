@@ -23,51 +23,57 @@
 #ifndef EVGET_INCLUDE_COMMANDLINEOPTION_H
 #define EVGET_INCLUDE_COMMANDLINEOPTION_H
 
-#include <string_view>
-#include <vector>
+#include <string>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
 
 /**
  * Represents a command line option.
+ * @tparam value of command line option
  */
+template<typename T>
 class CommandLineOption {
 public:
-    /**
-     * Create command line option.
-     * @param shortName short name
-     * @param longName long name
-     * @param description description
-     */
-    constexpr CommandLineOption(
-        std::string_view shortName,
-        std::string_view longName,
-        std::initializer_list<std::string_view> description
-    ) : shortName{shortName}, longName{longName}, description{toStringView(description)} {
-    }
+    class CommandLineOptionBuilder {
+        void shortName(std::string shortName);
+        void longName(std::string longName);
+        void description(std::string description);
+        void defaultValue(po::typed_value<T> defaultValue);
+        void required();
+        void conflictsWith(std::string name);
+        CommandLineOption build();
+
+        friend class CommandLineOption;
+    };
 
     /**
      * Get short name.
      * @return shor
      */
-    [[nodiscard]] constexpr std::string_view getShortName() const;
+    [[nodiscard]] const std::string getShortName() const;
 
     /**
      * Get long name.
      * @return long name
      */
-    [[nodiscard]] constexpr std::string_view getLongName() const;
+    [[nodiscard]] const std::string getLongName() const;
 
     /**
      * Get description.
      * @return description
      */
-    [[nodiscard]] constexpr std::string_view getDescription() const;
+    [[nodiscard]] const std::string getDescription() const;
+
+    bool checkConflicts(po::variables_map &vm);
 
 private:
-    const std::string_view shortName;
-    const std::string_view longName;
-    const std::string_view description;
-
-    constexpr std::string_view toStringView(std::initializer_list<std::string_view> strings);
+    const std::string shortName;
+    const std::string longName;
+    const std::string description;
+    const bool required;
+    const std::vector<std::string> conflictsWith;
+    po::typed_value<T> value;
 };
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

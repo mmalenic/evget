@@ -90,7 +90,7 @@ CommandLine::CommandLine(const string& platformInformation) :
     logLevelOption{
         "log-level",
         "u",
-        "log level to print messages at, defaults to \"warning\".\nValid values are:\n" + validLogLevels()
+        string{"log level to print messages at, defaults to \"warning\".\nValid values are:\n"} + validLogLevels()
     },
     filetype{extractFiletype(filename)},
     print{false},

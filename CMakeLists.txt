@@ -47,7 +47,7 @@ set(HEADERS_COMMON
     include/event_data/Field.h
     include/UnsupportedOperationException.h
     include/CommandLineOption.h
-)
+    )
 
 set(SOURCES_COMMON
     src/CommandLine.cpp
@@ -57,7 +57,7 @@ set(SOURCES_COMMON
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
     src/CommandLineOption.cpp
-)
+    )
 
 if (BUILD_TESTING)
     include_directories(
