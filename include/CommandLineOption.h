@@ -26,9 +26,11 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <optional>
-#include "CommandLineOptionBuilder.h"
 
 namespace po = boost::program_options;
+
+template<typename T>
+class CommandLineOptionBuilder;
 
 /**
  * Represents a command line option.
@@ -41,7 +43,7 @@ public:
     /**
      * Create from builder.
      */
-    explicit CommandLineOption(CommandLineOptionBuilder builder);
+    explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
 
     /**
      * Get short name.
@@ -72,18 +74,9 @@ private:
     const std::vector<std::string> conflictsWith;
     po::typed_value<T> value;
 };
-template<typename T>
-CommandLineOption<T>::CommandLineOptionBuilder::CommandLineOptionBuilder() :
-    _shortName{},
-    _longName{},
-    _description{},
-    _required{false},
-    _conflictsWith{},
-    value{} {
-}
 
 template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOption::CommandLineOptionBuilder builder) :
+CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     shortName{builder._shortName},
     longName{builder._longName},
     description{builder._description},

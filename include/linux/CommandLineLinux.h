@@ -62,7 +62,7 @@ public:
      */
     [[nodiscard]] bool isListEventDevices() const;
 
-    std::string platformInformation() override;
+//    std::string platformInformation() override;
     void readArgs() override;
 
 private:

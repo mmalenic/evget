@@ -160,11 +160,11 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-    const CommandLineOption fileOption;
-    const CommandLineOption filetypeOption;
-    const CommandLineOption printOption;
-    const CommandLineOption useRawEventsOption;
-    const CommandLineOption logLevelOption;
+    const CommandLineOption<fs::path> fileOption;
+    const CommandLineOption<Filetype> filetypeOption;
+    const CommandLineOption<bool> printOption;
+    const CommandLineOption<bool> useRawEventsOption;
+    const CommandLineOption<std::string> logLevelOption;
 
     const std::string versionNumber;
     const std::string versionMessage;

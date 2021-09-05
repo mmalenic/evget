@@ -25,6 +25,7 @@
 
 #include <string>
 #include <boost/program_options.hpp>
+#include <utility>
 #include "CommandLineOption.h"
 
 namespace po = boost::program_options;
@@ -36,7 +37,7 @@ namespace po = boost::program_options;
 template <typename T>
 class CommandLineOptionBuilder {
 public:
-    friend class CommandLineOption;
+    friend class CommandLineOption<T>;
 
     /**
      * Create CommandLineOptionBuilder.
@@ -77,15 +78,66 @@ public:
     /**
      * Build CommandLineOption.
      */
-    CommandLineOption build();
+    CommandLineOption<T> build();
 
 private:
-    const std::string _shortName;
-    const std::string _longName;
-    const std::string _description;
-    const bool _required;
-    const std::vector<std::string> _conflictsWith;
+    std::string _shortName;
+    std::string _longName;
+    std::string _description;
+    bool _required;
+    std::vector<std::string> _conflictsWith;
     std::optional<po::typed_value<T>> value;
 };
+
+template<typename T>
+CommandLineOptionBuilder<T>::CommandLineOptionBuilder() :
+    _shortName{},
+    _longName{},
+    _description{},
+    _required{false},
+    _conflictsWith{},
+    value{} {
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::shortName(std::string shortName) {
+    _shortName = std::move(shortName);
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::longName(std::string longName) {
+    _longName = std::move(longName);
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::description(std::string description) {
+    _description = std::move(description);
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::required() {
+    _required = true;
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::conflictsWith(std::string name) {
+    _conflictsWith.emplace_back(name);
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(po::typed_value<T> defaultValue) {
+    value = defaultValue;
+    return *this;
+}
+
+template<typename T>
+CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
+    return CommandLineOption(this);
+}
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H
