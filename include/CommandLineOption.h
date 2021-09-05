@@ -25,47 +25,44 @@
 
 #include <string>
 #include <boost/program_options.hpp>
+#include <optional>
+#include "CommandLineOptionBuilder.h"
 
 namespace po = boost::program_options;
 
 /**
  * Represents a command line option.
- * @tparam value of command line option
+ * @tparam T value of command line option
  */
 template<typename T>
 class CommandLineOption {
 public:
-    class CommandLineOptionBuilder {
-        void shortName(std::string shortName);
-        void longName(std::string longName);
-        void description(std::string description);
-        void defaultValue(po::typed_value<T> defaultValue);
-        void required();
-        void conflictsWith(std::string name);
-        CommandLineOption build();
 
-        friend class CommandLineOption;
-    };
+    /**
+     * Create from builder.
+     */
+    explicit CommandLineOption(CommandLineOptionBuilder builder);
 
     /**
      * Get short name.
-     * @return shor
      */
     [[nodiscard]] const std::string getShortName() const;
 
     /**
      * Get long name.
-     * @return long name
      */
     [[nodiscard]] const std::string getLongName() const;
 
     /**
      * Get description.
-     * @return description
      */
     [[nodiscard]] const std::string getDescription() const;
 
-    bool checkConflicts(po::variables_map &vm);
+    /**
+     * Check for option invariants after reading command line arguments.
+     * @throws InvalidCommandLineOption if invariant not satisfied
+     */
+    void checkInvariants(po::variables_map &vm);
 
 private:
     const std::string shortName;
@@ -75,5 +72,25 @@ private:
     const std::vector<std::string> conflictsWith;
     po::typed_value<T> value;
 };
+template<typename T>
+CommandLineOption<T>::CommandLineOptionBuilder::CommandLineOptionBuilder() :
+    _shortName{},
+    _longName{},
+    _description{},
+    _required{false},
+    _conflictsWith{},
+    value{} {
+}
+
+template<typename T>
+CommandLineOption<T>::CommandLineOption(CommandLineOption::CommandLineOptionBuilder builder) :
+    shortName{builder._shortName},
+    longName{builder._longName},
+    description{builder._description},
+    required{builder._requied},
+    conflictsWith{builder._conflictsWith},
+    value{builder.value}
+    {
+}
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

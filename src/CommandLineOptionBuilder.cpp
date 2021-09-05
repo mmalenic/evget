@@ -20,26 +20,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <array>
-#include <utility>
-#include "../include/CommandLineOption.h"
-
-std::string CommandLineOption::getShortName() const {
-    return shortName;
-}
-
-std::string CommandLineOption::getLongName() const {
-    return longName;
-}
-
-std::string CommandLineOption::getDescription() const {
-    return description;
-}
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOption::CommandLineOptionBuilder builder) {
-
-}
-
-CommandLineOption::CommandLineOption(std::string shortName, std::string longName, std::string description)
-: shortName{std::move(shortName)}, longName{std::move(longName)}, description{std::move(description)} {
-}
+#include "../include/CommandLineOptionBuilder.h"

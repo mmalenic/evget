@@ -20,26 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <array>
-#include <utility>
-#include "../include/CommandLineOption.h"
+#include "InvalidCommandLineOption.h"
 
-std::string CommandLineOption::getShortName() const {
-    return shortName;
+InvalidCommandLineOption::InvalidCommandLineOption(std::string message) : message{move(message)} {
 }
 
-std::string CommandLineOption::getLongName() const {
-    return longName;
-}
-
-std::string CommandLineOption::getDescription() const {
-    return description;
-}
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOption::CommandLineOptionBuilder builder) {
-
-}
-
-CommandLineOption::CommandLineOption(std::string shortName, std::string longName, std::string description)
-: shortName{std::move(shortName)}, longName{std::move(longName)}, description{std::move(description)} {
+const char* InvalidCommandLineOption::what() const noexcept {
+    return message.c_str();
 }

@@ -20,26 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <array>
-#include <utility>
-#include "../include/CommandLineOption.h"
+#ifndef EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
+#define EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 
-std::string CommandLineOption::getShortName() const {
-    return shortName;
-}
+#include <string>
 
-std::string CommandLineOption::getLongName() const {
-    return longName;
-}
+class InvalidCommandLineOption : public std::exception {
+public:
+    /**
+     * Create exception with message.
+     */
+    explicit InvalidCommandLineOption(std::string message = "Invalid Command Line Option");
+    [[nodiscard]] const char* what() const noexcept override;
 
-std::string CommandLineOption::getDescription() const {
-    return description;
-}
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOption::CommandLineOptionBuilder builder) {
+private:
+    std::string message;
+};
 
-}
-
-CommandLineOption::CommandLineOption(std::string shortName, std::string longName, std::string description)
-: shortName{std::move(shortName)}, longName{std::move(longName)}, description{std::move(description)} {
-}
+#endif //EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
