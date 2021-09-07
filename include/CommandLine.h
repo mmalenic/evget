@@ -160,25 +160,16 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-    const CommandLineOption<fs::path> fileOption;
-    const CommandLineOption<Filetype> filetypeOption;
-    const CommandLineOption<bool> printOption;
-    const CommandLineOption<bool> useRawEventsOption;
-    const CommandLineOption<std::string> logLevelOption;
-
-    const std::string versionNumber;
-    const std::string versionMessage;
-    const std::string filename;
+    const CommandLineOption<std::string> helpOption;
+    const CommandLineOption<std::string> versionOption;
+    const CommandLineOption<fs::path> baseFilePath;
+    const CommandLineOption<std::vector<Filetype>> filetypes;
+    const CommandLineOption<bool> print;
+    const CommandLineOption<bool> useRawEvents;
+    const CommandLineOption<spdlog::level::level_enum> logLevel;
 
     po::options_description desc;
     po::variables_map vm;
-
-    fs::path file;
-    Filetype filetype;
-    bool print;
-    bool useRawEvents;
-    std::string logLevelString;
-    spdlog::level::level_enum logLevel;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

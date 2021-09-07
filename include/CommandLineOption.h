@@ -26,43 +26,46 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <optional>
+#include "CommandLineOptionBuilder.h"
 
 namespace po = boost::program_options;
-
-template<typename T>
-class CommandLineOptionBuilder;
 
 /**
  * Represents a command line option.
  * @tparam T value of command line option
  */
-template<typename T>
+template<typename T, Validator<T> Validate>
 class CommandLineOption {
 public:
 
     /**
      * Create from builder.
      */
-    explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
+    explicit CommandLineOption(CommandLineOptionBuilder<T, Validate> builder);
 
     /**
      * Get short name.
      */
-    [[nodiscard]] const std::string getShortName() const;
+    [[nodiscard]] std::string getShortName() const;
 
     /**
      * Get long name.
      */
-    [[nodiscard]] const std::string getLongName() const;
+    [[nodiscard]] std::string getLongName() const;
 
     /**
      * Get description.
      */
-    [[nodiscard]] const std::string getDescription() const;
+    [[nodiscard]] std::string getDescription() const;
+
+    /**
+     * Get value.
+     */
+    T getValue() const;
 
     /**
      * Check for option invariants after reading command line arguments.
-     * @throws InvalidCommandLineOption if invariant not satisfied
+     * @throws InvalidCommandLineOption if invariant is not satisfied
      */
     void checkInvariants(po::variables_map &vm);
 
@@ -72,11 +75,12 @@ private:
     const std::string description;
     const bool required;
     const std::vector<std::string> conflictsWith;
-    po::typed_value<T> value;
+    const T value;
+    const Validate&& validator;
 };
 
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
+template<typename T, Validator<T> Validate>
+CommandLineOption<T, Validate>::CommandLineOption(CommandLineOptionBuilder<T, Validate> builder) :
     shortName{builder._shortName},
     longName{builder._longName},
     description{builder._description},
@@ -84,6 +88,31 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     conflictsWith{builder._conflictsWith},
     value{builder.value}
     {
+}
+
+template<typename T, Validator<T> Validate>
+T CommandLineOption<T, Validate>::getValue() const {
+    return value;
+}
+
+template<typename T, Validator<T> Validate>
+std::string CommandLineOption<T, Validate>::getShortName() const {
+    return shortName;
+}
+
+template<typename T, Validator<T> Validate>
+std::string CommandLineOption<T, Validate>::getLongName() const {
+    return longName;
+}
+
+template<typename T, Validator<T> Validate>
+std::string CommandLineOption<T, Validate>::getDescription() const {
+    return description;
+}
+
+template<typename T, Validator<T> Validate>
+void CommandLineOption<T, Validate>::checkInvariants(po::variables_map& vm) {
+
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

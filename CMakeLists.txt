@@ -58,9 +58,7 @@ set(SOURCES_COMMON
     src/event_data/MouseMove.cpp
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
-    src/CommandLineOption.cpp
     src/InvalidCommandLineOption.cpp
-    src/CommandLineOptionBuilder.cpp
     )
 
 if (BUILD_TESTING)
