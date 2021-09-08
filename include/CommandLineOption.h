@@ -26,22 +26,25 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <optional>
-#include "CommandLineOptionBuilder.h"
 
 namespace po = boost::program_options;
+
+template <typename T>
+class CommandLineOptionBuilder;
 
 /**
  * Represents a command line option.
  * @tparam T value of command line option
  */
-template<typename T, Validator<T> Validate>
+template<typename T>
 class CommandLineOption {
 public:
+    using Validator = std::function<T(std::optional<std::string>)>;
 
     /**
      * Create from builder.
      */
-    explicit CommandLineOption(CommandLineOptionBuilder<T, Validate> builder);
+    explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
 
     /**
      * Get short name.
@@ -75,43 +78,44 @@ private:
     const std::string description;
     const bool required;
     const std::vector<std::string> conflictsWith;
-    const T value;
-    const Validate&& validator;
+    const std::optional<Validator> validator;
+    const std::optional<T> value;
 };
 
-template<typename T, Validator<T> Validate>
-CommandLineOption<T, Validate>::CommandLineOption(CommandLineOptionBuilder<T, Validate> builder) :
+template<typename T>
+CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     shortName{builder._shortName},
     longName{builder._longName},
     description{builder._description},
     required{builder._requied},
     conflictsWith{builder._conflictsWith},
+    validator{builder._validator},
     value{builder.value}
     {
 }
 
-template<typename T, Validator<T> Validate>
-T CommandLineOption<T, Validate>::getValue() const {
+template<typename T>
+T CommandLineOption<T>::getValue() const {
     return value;
 }
 
-template<typename T, Validator<T> Validate>
-std::string CommandLineOption<T, Validate>::getShortName() const {
+template<typename T>
+std::string CommandLineOption<T>::getShortName() const {
     return shortName;
 }
 
-template<typename T, Validator<T> Validate>
-std::string CommandLineOption<T, Validate>::getLongName() const {
+template<typename T>
+std::string CommandLineOption<T>::getLongName() const {
     return longName;
 }
 
-template<typename T, Validator<T> Validate>
-std::string CommandLineOption<T, Validate>::getDescription() const {
+template<typename T>
+std::string CommandLineOption<T>::getDescription() const {
     return description;
 }
 
-template<typename T, Validator<T> Validate>
-void CommandLineOption<T, Validate>::checkInvariants(po::variables_map& vm) {
+template<typename T>
+void CommandLineOption<T>::checkInvariants(po::variables_map& vm) {
 
 }
 

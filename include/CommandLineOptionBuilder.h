@@ -27,30 +27,18 @@
 #include <boost/program_options.hpp>
 #include <utility>
 #include "CommandLineOption.h"
+#include "UnsupportedOperationException.h"
 
 namespace po = boost::program_options;
-
-/**
- * A Validator function takes a string as input and returns the type if valid.
- * @tparam Validate validation function
- * @tparam T return type
- */
-template<typename Validate, typename T>
-concept Validator = std::regular_invocable<Validate, std::string> &&
-    std::convertible_to<std::invoke_result<Validate, std::string>, std::optional<T>>;
-
-
-template <typename T, Validator<T> Validate>
-class CommandLineOption;
 
 /**
  * Command line option builder.
  * @tparam T value of option
  */
-template <typename T, Validator<T> Validate>
+template <typename T>
 class CommandLineOptionBuilder {
 public:
-    friend class CommandLineOption<T, Validate>;
+    friend class CommandLineOption<T>;
 
     /**
      * Create CommandLineOptionBuilder.
@@ -91,12 +79,12 @@ public:
     /**
      * Set the validation function.
      */
-    CommandLineOptionBuilder& validator(Validate&& validate);
+    CommandLineOptionBuilder& validator(Validator validator);
 
     /**
      * Build CommandLineOption.
      */
-    CommandLineOption<T, Validate> build();
+    CommandLineOption<T> build();
 
 private:
     std::string _shortName;
@@ -104,65 +92,68 @@ private:
     std::string _description;
     bool _required;
     std::vector<std::string> _conflictsWith;
-    Validate&& _validate;
+    std::optional<Validator> _validator;
     std::optional<T> value;
 };
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>::CommandLineOptionBuilder() :
+template <typename T>
+CommandLineOptionBuilder<T>::CommandLineOptionBuilder() :
     _shortName{},
     _longName{},
     _description{},
     _required{false},
     _conflictsWith{},
-    _validate{[](const std::string& _) { return std::nullopt; }},
+    _validator{},
     value{} {
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::shortName(std::string shortName) {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::shortName(std::string shortName) {
     _shortName = std::move(shortName);
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::longName(std::string longName) {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::longName(std::string longName) {
     _longName = std::move(longName);
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::description(std::string description) {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::description(std::string description) {
     _description = std::move(description);
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::required() {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::required() {
     _required = true;
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::conflictsWith(std::string name) {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::conflictsWith(std::string name) {
     _conflictsWith.emplace_back(name);
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::defaultValue(T defaultValue) {
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(T defaultValue) {
     value = defaultValue;
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOptionBuilder<T, Validate>& CommandLineOptionBuilder<T, Validate>::validator(Validate&& validate) {
-    _validate = validate;
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::validator(Validator validator) {
+    _validator = validator;
     return *this;
 }
 
-template <typename T, Validator<T> Validate>
-CommandLineOption<T, Validate> CommandLineOptionBuilder<T, Validate>::build() {
+template <typename T>
+CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
+    if (!value.has_value() && !_required) {
+        throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
+    }
     return CommandLineOption(this);
 }
 
