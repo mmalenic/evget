@@ -25,31 +25,25 @@
 
 namespace po = boost::program_options;
 
-TEST(CommandLineOptionBuilderTest, NoRequiredAndNoDefaultTest) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    CommandLineOptionBuilder<int> option = CommandLineOptionBuilder<int>(desc).shortName("");
-    ASSERT_THROW(option.build(), UnsupportedOperationException);
-}
-
-TEST(CommandLineOptionBuilderTest, ShortNameTest) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ShortNameTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().shortName("name").build();
     ASSERT_EQ("name", option.getShortName());
 }
 
-TEST(CommandLineOptionBuilderTest, LongNameTest) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, LongNameTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().longName("name").build();
     ASSERT_EQ("name", option.getLongName());
 }
 
-TEST(CommandLineOptionBuilderTest, DescriptionTest) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, DescriptionTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().description("desc").build();
     ASSERT_EQ("desc", option.getDescription());
 }
 
-TEST(CommandLineOptionBuilderTest, DefaultValueTest) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, DefaultValueTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
     ASSERT_EQ(1, option.getValue());

@@ -21,7 +21,10 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLineOptionBuilder.h>
+#include <CommandLineOption.h>
 
-TEST(CommandLineOptionBuilderTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionBuilderTest, NoRequiredAndNoDefaultTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOptionBuilder<int> option = CommandLineOptionBuilder<int>(desc).shortName("");
+    ASSERT_THROW(option.build(), UnsupportedOperationException);
 }

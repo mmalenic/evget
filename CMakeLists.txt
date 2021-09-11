@@ -71,6 +71,7 @@ if (BUILD_TESTING)
         test/event_data/FieldTest.cpp
         test/CommandLineTest.cpp
         test/CommandLineOptionTest.cpp
+        test/CommandLineOptionBuilderTest.cpp
     )
 endif()
 
