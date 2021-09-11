@@ -36,3 +36,21 @@ TEST(CommandLineOptionBuilderTest, ShortNameTest) { // NOLINT(cert-err58-cpp)
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().shortName("name").build();
     ASSERT_EQ("name", option.getShortName());
 }
+
+TEST(CommandLineOptionBuilderTest, LongNameTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().longName("name").build();
+    ASSERT_EQ("name", option.getLongName());
+}
+
+TEST(CommandLineOptionBuilderTest, DescriptionTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().description("desc").build();
+    ASSERT_EQ("desc", option.getDescription());
+}
+
+TEST(CommandLineOptionBuilderTest, DefaultValueTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
+    ASSERT_EQ(1, option.getValue());
+}

@@ -121,7 +121,7 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
 
 template<typename T>
 T CommandLineOption<T>::getValue() const {
-    return value;
+    return value.value();
 }
 
 template<typename T>
