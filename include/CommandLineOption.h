@@ -80,7 +80,6 @@ private:
     const bool required;
     const std::vector<std::string> conflictsWith;
     const std::optional<T> implicitValue;
-    const std::optional<int> positionalValue;
     const std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
 
     std::string stringValue;
@@ -96,14 +95,18 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
     implicitValue{builder._implicitValue},
-    positionalValue{builder._positionalValue},
-    stringValue{},
     value{builder.value} {
     builder._desc.add_options()(
         (shortName + "," + longName).c_str(),
         po::value<std::string>() ? validator.has_value() : po::value<T>(),
         description.c_str()
     );
+    if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
+        builder._positionalDesc->get().add(
+            (shortName + "," + longName).c_str(),
+            builder._positionalAmount
+        );
+    }
 }
 
 template<typename T>
@@ -128,8 +131,44 @@ std::string CommandLineOption<T>::getDescription() const {
 
 template<typename T>
 void CommandLineOption<T>::afterRead(po::variables_map& vm) {
+    // Check required.
     if (!vm.count(shortName) && required) {
         throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", longName));
+    }
+
+    // Check implicit value.
+    if (vm.count(shortName) && vm[shortName].empty()) {
+        if (implicitValue.has_value()) {
+            value = implicitValue;
+        } else {
+            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", longName));
+        }
+    }
+
+    // Check conflicts
+    for (const auto& maybeConflict : conflictsWith) {
+        if (shortName == maybeConflict || longName == maybeConflict) {
+            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", longName, maybeConflict));
+        }
+    }
+
+    // Check regular value and validator.
+    if (vm.count(shortName) && !vm[shortName].empty()) {
+        if (!validator.has_value()) {
+            value = vm[shortName].as<T>();
+        } else {
+            std::optional<std::string> validatedValue = validator(vm[shortName].as<std::string>());
+            if (validatedValue.has_value()) {
+                value = validatedValue;
+            } else {
+                throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", longName));
+            }
+        }
+    }
+
+    // Should not happen.
+    if (!value.has_value()) {
+        throw UnsupportedOperationException("CommandLineOption does not have a value when it should.");
     }
 }
 

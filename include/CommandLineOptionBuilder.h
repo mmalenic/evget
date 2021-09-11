@@ -77,7 +77,7 @@ public:
     /**
      * Make this optional a positional value, that takes the amount of values.
      */
-    CommandLineOptionBuilder& positionalValue(int amount);
+    CommandLineOptionBuilder& positionalValue(int amount, po::positional_options_description& positionalDesc);
 
     /**
      * State as required option.
@@ -102,6 +102,7 @@ public:
 
 private:
     po::options_description& _desc;
+    std::optional<std::reference_wrapper<po::positional_options_description>> _positionalDesc;
     std::string _shortName;
     std::string _longName;
     std::string _description;
@@ -109,7 +110,7 @@ private:
     std::vector<std::string> _conflictsWith;
     std::optional<Validator> _validator;
     std::optional<T> _implicitValue;
-    std::optional<int> _positionalValue;
+    std::optional<int> _positionalAmount;
     std::optional<T> value;
 };
 
@@ -174,8 +175,9 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::implicitValue(T implic
 }
 
 template<typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::positionalValue(int amount) {
-    _positionalValue = amount;
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::positionalValue(int amount, po::positional_options_description& positionalDesc) {
+    _positionalAmount = amount;
+    _positionalDesc = positionalDesc;
     return *this;
 }
 
