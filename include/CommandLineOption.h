@@ -91,20 +91,30 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     shortName{builder._shortName},
     longName{builder._longName},
     description{builder._description},
-    required{builder._requied},
+    required{builder._required},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
     implicitValue{builder._implicitValue},
     value{builder.value} {
-    builder._desc.add_options()(
-        (shortName + "," + longName).c_str(),
-        po::value<std::string>() ? validator.has_value() : po::value<T>(),
-        description.c_str()
-    );
+
+    if (validator.has_value()) {
+        builder._desc.add_options()(
+            (shortName + "," + longName).c_str(),
+            po::value<T>(),
+            description.c_str()
+        );
+    } else {
+        builder._desc.add_options()(
+            (shortName + "," + longName).c_str(),
+            po::value<std::string>(),
+            description.c_str()
+        );
+    }
+
     if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
         builder._positionalDesc->get().add(
             (shortName + "," + longName).c_str(),
-            builder._positionalAmount
+            *builder._positionalAmount
         );
     }
 }

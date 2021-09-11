@@ -186,7 +186,7 @@ CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
     if (!value.has_value() && !_required) {
         throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
     }
-    return CommandLineOption(this);
+    return CommandLineOption(*this);
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H
