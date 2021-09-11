@@ -26,11 +26,11 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <optional>
+#include <fmt/core.h>
+#include "CommandLineOptionBuilder.h"
+#include "InvalidCommandLineOption.h"
 
 namespace po = boost::program_options;
-
-template <typename T>
-class CommandLineOptionBuilder;
 
 /**
  * Represents a command line option.
@@ -39,8 +39,6 @@ class CommandLineOptionBuilder;
 template<typename T>
 class CommandLineOption {
 public:
-    using Validator = std::function<T(std::optional<std::string>)>;
-
     /**
      * Create from builder.
      */
@@ -64,13 +62,16 @@ public:
     /**
      * Get value.
      */
-    T getValue() const;
+    [[nodiscard]] T getValue() const;
 
     /**
-     * Check for option invariants after reading command line arguments.
-     * @throws InvalidCommandLineOption if invariant is not satisfied
+     * Check for option conditions after reading command line arguments.
+     * This must be called to notify the command line option that options
+     * have been read.
+     *
+     * @throws InvalidCommandLineOption if conditions are not satisfied
      */
-    void checkInvariants(po::variables_map &vm);
+    void afterRead(po::variables_map &vm);
 
 private:
     const std::string shortName;
@@ -78,8 +79,10 @@ private:
     const std::string description;
     const bool required;
     const std::vector<std::string> conflictsWith;
-    const std::optional<Validator> validator;
-    const std::optional<T> value;
+    const std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
+
+    std::string stringValue;
+    std::optional<T> value;
 };
 
 template<typename T>
@@ -90,8 +93,13 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     required{builder._requied},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
-    value{builder.value}
-    {
+    stringValue{},
+    value{builder.value} {
+    builder._desc.add_options()(
+        (shortName + "," + longName).c_str(),
+        po::value<std::string>() ? validator.has_value() : po::value<T>(),
+        description.c_str()
+    );
 }
 
 template<typename T>
@@ -115,8 +123,10 @@ std::string CommandLineOption<T>::getDescription() const {
 }
 
 template<typename T>
-void CommandLineOption<T>::checkInvariants(po::variables_map& vm) {
-
+void CommandLineOption<T>::afterRead(po::variables_map& vm) {
+    if (!vm.count(shortName) && required) {
+        throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", longName));
+    }
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

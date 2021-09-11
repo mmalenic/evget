@@ -29,7 +29,7 @@
 using namespace std;
 
 CommandLineLinux::CommandLineLinux(int argc, char** argv) :
-    CommandLine{CommandLineLinux::platformInformation()},
+    CommandLine{""},
     mouseDeviceOption{"mouse-device", "m", "set mouse device."},
     keyDeviceOption{"keyboard-device", "k", "set keyboard device."},
     touchDeviceOption{"touch-device", "t", "set touch device."},
@@ -64,13 +64,13 @@ CommandLineLinux::CommandLineLinux(int argc, char** argv) :
     parseCommandLine(argc, argv);
 }
 
-std::string CommandLineLinux::platformInformation() {
-    struct utsname uts{};
-    if ((uname(&uts)) == -1) {
-        return "unknown";
-    }
-    return uts.sysname;
-}
+//std::string CommandLineLinux::platformInformation() {
+//    struct utsname uts{};
+//    if ((uname(&uts)) == -1) {
+//        return "unknown";
+//    }
+//    return uts.sysname;
+//}
 
 void CommandLineLinux::readArgs() {
     CommandLine::simpleArgs();

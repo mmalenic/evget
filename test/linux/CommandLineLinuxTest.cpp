@@ -24,7 +24,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
+/*TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
     char name[] = "";
     char arg[] = "-h";
     char *argv[] = { &name[0], &arg[0], nullptr };
@@ -99,4 +99,4 @@ TEST(CommandLineTest, AtLeastOneEventDevice) { // NOLINT(cert-err58-cpp)
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
     CommandLineLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-}
+}*/

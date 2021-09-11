@@ -160,13 +160,13 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-    const CommandLineOption<std::string> helpOption;
-    const CommandLineOption<std::string> versionOption;
-    const CommandLineOption<fs::path> baseFilePath;
-    const CommandLineOption<std::vector<Filetype>> filetypes;
-    const CommandLineOption<bool> print;
-    const CommandLineOption<bool> useRawEvents;
-    const CommandLineOption<spdlog::level::level_enum> logLevel;
+//    const CommandLineOption<std::string> helpOption;
+//    const CommandLineOption<std::string> versionOption;
+//    const CommandLineOption<fs::path> baseFilePath;
+//    const CommandLineOption<std::vector<Filetype>> filetypes;
+//    const CommandLineOption<bool> print;
+//    const CommandLineOption<bool> useRawEvents;
+//    const CommandLineOption<spdlog::level::level_enum> logLevel;
 
     po::options_description desc;
     po::variables_map vm;

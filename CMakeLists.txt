@@ -59,6 +59,7 @@ set(SOURCES_COMMON
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
+    src/CommandLineOption.cpp
     )
 
 if (BUILD_TESTING)

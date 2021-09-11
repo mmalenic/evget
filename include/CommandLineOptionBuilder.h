@@ -26,10 +26,12 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <utility>
-#include "CommandLineOption.h"
 #include "UnsupportedOperationException.h"
 
 namespace po = boost::program_options;
+
+template <typename T>
+class CommandLineOption;
 
 /**
  * Command line option builder.
@@ -38,12 +40,14 @@ namespace po = boost::program_options;
 template <typename T>
 class CommandLineOptionBuilder {
 public:
+    using Validator = std::function<T(std::optional<std::string>)>;
+
     friend class CommandLineOption<T>;
 
     /**
      * Create CommandLineOptionBuilder.
      */
-    CommandLineOptionBuilder();
+    explicit CommandLineOptionBuilder(po::options_description& desc);
 
     /**
      * Set short name, representing one dash option.
@@ -87,6 +91,7 @@ public:
     CommandLineOption<T> build();
 
 private:
+    po::options_description& _desc;
     std::string _shortName;
     std::string _longName;
     std::string _description;
@@ -97,7 +102,8 @@ private:
 };
 
 template <typename T>
-CommandLineOptionBuilder<T>::CommandLineOptionBuilder() :
+CommandLineOptionBuilder<T>::CommandLineOptionBuilder(po::options_description& desc) :
+    _desc{desc},
     _shortName{},
     _longName{},
     _description{},

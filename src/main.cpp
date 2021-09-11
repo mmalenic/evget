@@ -28,35 +28,53 @@
 #include <atomic>
 #include <EventHandler.h>
 #include <SystemEventLoopLinux.h>
+#include <boost/program_options.hpp>
 
 using namespace std;
 
-boost::asio::awaitable<int> test(int arg) {
-    int a = arg;
-    co_return 1;
-}
-
 int main(int argc, char* argv[]) {
-    CommandLineLinux cmd{argc, argv};
-    cmd.readArgs();
+//    CommandLineLinux cmd{argc, argv};
+//    cmd.readArgs();
+//
+//    spdlog::set_level(cmd.getLogLevel());
+//
+//    boost::asio::thread_pool pool{};
+//    auto context = pool.get_executor();
+//    Storage<boost::asio::thread_pool::executor_type> storage{context};
+//    EventTransformer<input_event> transformer{};
+//    SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
+//
+//    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
+//
+//    boost:asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+//
+//    if (cmd.isListEventDevices()) {
+//        EventDeviceLister lister{};
+//        cout << lister;
+//    }
+//
+//    pool.join();
+    po::options_description desc("Allowed options");
+    desc.add_options()
+            ("help", "produce help message")
+            ("compression", po::value<int>(), "set compression level")
+        ;
 
-    spdlog::set_level(cmd.getLogLevel());
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
 
-    boost::asio::thread_pool pool{};
-    auto context = pool.get_executor();
-    Storage<boost::asio::thread_pool::executor_type> storage{context};
-    EventTransformer<input_event> transformer{};
-    SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
-
-    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
-
-    boost:asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
-
-    if (cmd.isListEventDevices()) {
-        EventDeviceLister lister{};
-        cout << lister;
+    if (vm.count("help")) {
+        cout << desc << "\n";
+        return 1;
     }
 
-    pool.join();
+    if (vm.count("compression")) {
+        cout << "Compression level was set to "
+             << vm["compression"].as<int>() << ".\n";
+    } else {
+        cout << "Compression level was not set.\n";
+    }
+
     return 1;
 }
