@@ -79,6 +79,8 @@ private:
     const std::string description;
     const bool required;
     const std::vector<std::string> conflictsWith;
+    const std::optional<T> implicitValue;
+    const std::optional<int> positionalValue;
     const std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
 
     std::string stringValue;
@@ -93,6 +95,8 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     required{builder._requied},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
+    implicitValue{builder._implicitValue},
+    positionalValue{builder._positionalValue},
     stringValue{},
     value{builder.value} {
     builder._desc.add_options()(
