@@ -70,6 +70,16 @@ public:
     CommandLineOptionBuilder& defaultValue(T defaultValue);
 
     /**
+     * Set implicit value, if the option is specified without a value.
+     */
+    CommandLineOptionBuilder& implicitValue(T implicitValue);
+
+    /**
+     * Make this optional a positional value, that takes the amount of values.
+     */
+    CommandLineOptionBuilder& positionalValue(int amount);
+
+    /**
      * State as required option.
      */
     CommandLineOptionBuilder& required();
@@ -98,6 +108,8 @@ private:
     bool _required;
     std::vector<std::string> _conflictsWith;
     std::optional<Validator> _validator;
+    std::optional<T> _implicitValue;
+    std::optional<int> _positionalValue;
     std::optional<T> value;
 };
 
@@ -152,6 +164,18 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(T default
 template <typename T>
 CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::validator(Validator validator) {
     _validator = validator;
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::implicitValue(T implicitValue) {
+    _implicitValue = implicitValue;
+    return *this;
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::positionalValue(int amount) {
+    _positionalValue = amount;
     return *this;
 }
 
