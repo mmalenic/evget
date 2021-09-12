@@ -167,7 +167,7 @@ void CommandLineOption<T>::afterRead(po::variables_map& vm) {
         if (!validator.has_value()) {
             value = vm[shortName].as<T>();
         } else {
-            std::optional<std::string> validatedValue = validator(vm[shortName].as<std::string>());
+            std::optional<T> validatedValue = (*validator)(vm[shortName].as<std::string>());
             if (validatedValue.has_value()) {
                 value = validatedValue;
             } else {

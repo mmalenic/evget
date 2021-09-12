@@ -40,7 +40,7 @@ class CommandLineOption;
 template <typename T>
 class CommandLineOptionBuilder {
 public:
-    using Validator = std::function<T(std::optional<std::string>)>;
+    using Validator = std::function<std::optional<T>(std::string)>;
 
     friend class CommandLineOption<T>;
 

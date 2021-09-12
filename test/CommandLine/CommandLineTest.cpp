@@ -23,31 +23,35 @@
 #include <gmock/gmock.h>
 #include <CommandLine.h>
 
-///**
-// * Mock command line object.
-// */
-//class MockCommandLine : public CommandLine {
-//public:
-//    MOCK_METHOD(void, readArgs, (), (override));
+/**
+ * Mock command line object.
+ */
+class MockCommandLine : public CommandLine {
+public:
+    MOCK_METHOD(void, readArgs, (), (override));
 //    MOCK_METHOD(std::string, platformInformation, (), (override));
-//};
-//
-///**
-// * Make the command line object.
-// * @param args args to use
-// * @param create_cmd function to create the object
-// */
-//void make_cmd(std::initializer_list<char *> args, auto&& create_cmd) {
-//    std::vector<char *> vector{args};
-//    vector.push_back(nullptr);
-//    char **argv = &vector[0];
-//    int argc = static_cast<int>(vector.size() - 1);
-//    create_cmd(argc, argv);
-//}
-//
-//void assert_exit(CommandLine& cmd) {
-//    ASSERT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-//}
+};
+
+/**
+ * Make the command line object.
+ * @param args args to use
+ * @param create_cmd function to create the object
+ */
+void make_cmd(std::initializer_list<const char *> args, auto&& create_cmd) {
+    std::vector<const char *> vector{args};
+    vector.push_back(nullptr);
+    const char **argv = &vector[0];
+    int argc = static_cast<int>(vector.size() - 1);
+    create_cmd(argc, argv);
+}
+
+/**
+ * Assert exit on the command line object.
+ */
+void assert_exit(CommandLine& cmd) {
+    ASSERT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}
+
 //
 //TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
 //    char name[] = "";

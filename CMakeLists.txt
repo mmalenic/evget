@@ -69,9 +69,9 @@ if (BUILD_TESTING)
     set(TESTS_COMMON
         test/event_data/EventDataTest.cpp
         test/event_data/FieldTest.cpp
-        test/CommandLineTest.cpp
-        test/CommandLineOptionTest.cpp
-        test/CommandLineOptionBuilderTest.cpp
+        test/CommandLine/CommandLineTest.cpp
+        test/CommandLine/CommandLineOptionTest.cpp
+        test/CommandLine/CommandLineOptionBuilderTest.cpp
     )
 endif()
 
@@ -102,7 +102,7 @@ if (UNIX AND NOT APPLE)
         )
 
         set(TESTS
-            test/linux/CommandLineLinuxTest.cpp
+            test/CommandLine/platform/linux/CommandLineLinuxTest.cpp
             test/linux/EventDeviceListerTest.cpp
             test/linux/EventDeviceTest.cpp
             test/linux/ShutdownHandlerLinuxTest.cpp
