@@ -34,32 +34,32 @@ include_directories(
 
 set(HEADERS_COMMON
     include/Task.h
-    include/CommandLine.h
+    include/CommandLine/CommandLine.h
     include/EventTransformer.h
-    include/event_data/EventData.h
+    include/EventData/EventData.h
     include/EventHandler.h
     include/SystemEvent.h
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
-    include/event_data/MouseMove.h
+    include/EventData/MouseMove.h
     include/EventListener.h
-    include/event_data/Field.h
+    include/EventData/Field.h
     include/UnsupportedOperationException.h
-    include/CommandLineOption.h
+    include/CommandLine/CommandLineOption.h
     include/InvalidCommandLineOption.h
-    include/CommandLineOptionBuilder.h
+    include/CommandLine/CommandLineOptionBuilder.h
     )
 
 set(SOURCES_COMMON
-    src/CommandLine.cpp
-    src/event_data/Field.cpp
-    src/event_data/EventData.cpp
-    src/event_data/MouseMove.cpp
+    src/CommandLine/CommandLine.cpp
+    src/EventData/Field.cpp
+    src/EventData/EventData.cpp
+    src/EventData/MouseMove.cpp
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
-    src/CommandLineOption.cpp
+    src/CommandLine/CommandLineOption.cpp
     )
 
 if (BUILD_TESTING)
@@ -67,8 +67,8 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test
     )
     set(TESTS_COMMON
-        test/event_data/EventDataTest.cpp
-        test/event_data/FieldTest.cpp
+        test/EventData/EventDataTest.cpp
+        test/EventData/FieldTest.cpp
         test/CommandLine/CommandLineTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
@@ -77,35 +77,35 @@ endif()
 
 if (UNIX AND NOT APPLE)
     include_directories(
-        ${PROJECT_SOURCE_DIR}/include/linux
-        ${PROJECT_SOURCE_DIR}/src/linux
+        include/platform/linux
+        src/platform/linux
     )
 
     set(HEADERS
-        include/linux/CommandLineLinux.h
-        include/linux/EventDevice.h
-        include/linux/EventDeviceLister.h
-        include/linux/SystemEventLoopLinux.h
-        include/linux/ShutdownHandlerLinux.h
+        include/platform/linux/CommandLine/CommandLineLinux.h
+        include/platform/linux/EventDevice.h
+        include/platform/linux/EventDeviceLister.h
+        include/platform/linux/SystemEventLoopLinux.h
+        include/platform/linux/ShutdownHandlerLinux.h
     )
 
     set(SOURCES
-        src/linux/CommandLineLinux.cpp
-        src/linux/EventDevice.cpp
-        src/linux/EventDeviceLister.cpp
-        src/linux/ShutdownHandlerLinux.cpp
+        src/platform/linux/CommandLine/CommandLineLinux.cpp
+        src/platform/linux/EventDevice.cpp
+        src/platform/linux/EventDeviceLister.cpp
+        src/platform/linux/ShutdownHandlerLinux.cpp
     )
 
     if (BUILD_TESTING)
         include_directories(
-            ${PROJECT_SOURCE_DIR}/test/linux
+            test/platform/linux
         )
 
         set(TESTS
-            test/CommandLine/platform/linux/CommandLineLinuxTest.cpp
-            test/linux/EventDeviceListerTest.cpp
-            test/linux/EventDeviceTest.cpp
-            test/linux/ShutdownHandlerLinuxTest.cpp
+            test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
+            test/platform/linux/EventDeviceListerTest.cpp
+            test/platform/linux/EventDeviceTest.cpp
+            test/platform/linux/ShutdownHandlerLinuxTest.cpp
         )
     endif()
 endif()

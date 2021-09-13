@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLineOption.h>
+#include <CommandLine/CommandLineOption.h>
 #include "CommandLineTest.cpp"
 
 namespace po = boost::program_options;

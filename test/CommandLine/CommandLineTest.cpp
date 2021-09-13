@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gmock/gmock.h>
-#include <CommandLine.h>
+#include <CommandLine/CommandLine.h>
 
 /**
  * Mock command line object.

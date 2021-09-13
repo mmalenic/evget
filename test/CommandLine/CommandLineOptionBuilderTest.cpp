@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLineOption.h>
+#include <CommandLine/CommandLineOption.h>
 
 TEST(CommandLineOptionBuilderTest, NoRequiredAndNoDefaultTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
