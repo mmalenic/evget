@@ -57,7 +57,6 @@ function(add_program_for)
         endif()
 
     endif()
-
 endfunction()
 
 function(add_program)
@@ -67,51 +66,23 @@ function(add_program)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if (ADD_PROGRAM_PLATFORM_GUARD OR NOT DEFINED ADD_PROGRAM_PLATFORM_GUARD)
-        
-        if (DEFINED ADD_PROGRAM_TARGET)
-
-            if (DEFINED ADD_PROGRAM_SRCS)
-                if (ADD_PROGRAM_MAKE_EXECUTABLE)
-                    add_executable(ADD_PROGRAM_TARGET ADD_PROGRAM_SRCS)
-                else()
-                    target_sources(ADD_PROGRAM_TARGET ADD_PROGRAM_SRCS)
-                endif()
-            endif()
-
-            if (DEFINED ADD_PROGRAM_DEPENDENCIES)
-                target_link_libraries(ADD_PROGRAM_TARGET ADD_PROGRAM_DEPENDENCIES)
-            endif()
-
-            if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)b
-                target_include_directories(ADD_PROGRAM_TARGET ADD_PROGRAM_INCLUDE_DIRS)
-            endif()
-
-        endif()
-
+        add_program_for(
+            MAKE_EXECUTABLE ADD_PROGRAM_MAKE_EXECUTABLE
+            TARGET ADD_PROGRAM_TARGET
+            SRCS ADD_PROGRAM_SRCS DEPENDENCIES ADD_PROGRAM_DEPENDENCIES INCLUDE_DIRS ADD_PROGRAM_INCLUDE_DIRS
+        )
 
         if (BUILD_TESTING AND DEFINED ADD_PROGRAM_TEST_TARGET)
-
-            if (DEFINED ADD_PROGRAM_TEST_SRCS)
-                if (ADD_PROGRAM_MAKE_EXECUTABLE)
-                    add_executable(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_SRCS)
-                else()
-                    target_sources(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_SRCS)
-                endif()
-            endif()
-
-            if (DEFINED ADD_PROGRAM_TEST_DEPENDENCIES)
-                target_link_libraries(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_DEPENDENCIES)
-            endif()
-
-            if (DEFINED ADD_PROGRAM_TEST_INCLUDE_DIRS)
-                target_include_directories(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_INCLUDE_DIRS)
-            endif()
-
+            add_program_for(
+                MAKE_EXECUTABLE ADD_PROGRAM_MAKE_EXECUTABLE
+                TARGET ADD_PROGRAM_TEST_TARGET
+                SRCS ADD_PROGRAM_TEST_SRCS DEPENDENCIES ADD_PROGRAM_TEST_DEPENDENCIES INCLUDE_DIRS ADD_PROGRAM_TEST_INCLUDE_DIRS
+            )
             include(GoogleTest)
             gtest_discover_tests(ADD_PROGRAM_TEST_TARGET)
         endif()
 
-     endif()
+    endif()
 endfunction()
 
 set(HEADERS_COMMON
