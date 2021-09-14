@@ -34,7 +34,7 @@ class App(ConanFile):
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
     requires = 'boost/1.77.0', 'fmt/8.0.1', 'spdlog/1.9.2'
-    generators = 'cmake'
+    generators = 'CMakeDeps'
     options = {
         'build_tests': [True, False],
         'download_dependencies': [True, False],

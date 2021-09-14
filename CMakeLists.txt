@@ -162,10 +162,13 @@ if (DOWNLOAD_DEPENDENCIES)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_run(REQUIRES boost/1.76.0 spdlog/1.9.0 gtest/cci.20210126 BASIC_SETUP CMAKE_TARGETS)
-else()
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS)
+    conan_cmake_autodetect(settings)
+    conan_cmake_install(
+        PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
+        BUILD missing
+        REMOTE conan-center
+        SETTINGS ${settings}
+    )
 endif()
 
 add_executable(evget
