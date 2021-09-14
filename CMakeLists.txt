@@ -32,6 +32,88 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
+function(add_program_for)
+    set(options MAKE_EXECUTABLE)
+    set(one_value_args TARGET)
+    set(multi_value_args SRCS DEPENDENCIES INCLUDE_DIRS)
+    cmake_parse_arguments(ADD_PROGRAM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    
+    if (DEFINED ADD_PROGRAM_FOR_TARGET)
+
+        if (DEFINED ADD_PROGRAM_FOR_SRCS)
+            if (ADD_PROGRAM_FOR_MAKE_EXECUTABLE)
+                add_executable(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_SRCS)
+            else()
+                target_sources(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_SRCS)
+            endif()
+        endif()
+
+        if (DEFINED ADD_PROGRAM_FOR_DEPENDENCIES)
+            target_link_libraries(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_DEPENDENCIES)
+        endif()
+
+        if (DEFINED ADD_PROGRAM_FOR_INCLUDE_DIRS)
+            target_include_directories(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_INCLUDE_DIRS)
+        endif()
+
+    endif()
+
+endfunction()
+
+function(add_program)
+    set(options MAKE_EXECUTABLE PLATFORM_GUARD)
+    set(one_value_args TARGET TEST_TARGET)
+    set(multi_value_args SRCS DEPENDENCIES INCLUDE_DIRS TEST_SRCS TEST_DEPENDENCIES TEST_INCLUDE_DIRS)
+    cmake_parse_arguments(ADD_PROGRAM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if (ADD_PROGRAM_PLATFORM_GUARD OR NOT DEFINED ADD_PROGRAM_PLATFORM_GUARD)
+        
+        if (DEFINED ADD_PROGRAM_TARGET)
+
+            if (DEFINED ADD_PROGRAM_SRCS)
+                if (ADD_PROGRAM_MAKE_EXECUTABLE)
+                    add_executable(ADD_PROGRAM_TARGET ADD_PROGRAM_SRCS)
+                else()
+                    target_sources(ADD_PROGRAM_TARGET ADD_PROGRAM_SRCS)
+                endif()
+            endif()
+
+            if (DEFINED ADD_PROGRAM_DEPENDENCIES)
+                target_link_libraries(ADD_PROGRAM_TARGET ADD_PROGRAM_DEPENDENCIES)
+            endif()
+
+            if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)b
+                target_include_directories(ADD_PROGRAM_TARGET ADD_PROGRAM_INCLUDE_DIRS)
+            endif()
+
+        endif()
+
+
+        if (BUILD_TESTING AND DEFINED ADD_PROGRAM_TEST_TARGET)
+
+            if (DEFINED ADD_PROGRAM_TEST_SRCS)
+                if (ADD_PROGRAM_MAKE_EXECUTABLE)
+                    add_executable(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_SRCS)
+                else()
+                    target_sources(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_SRCS)
+                endif()
+            endif()
+
+            if (DEFINED ADD_PROGRAM_TEST_DEPENDENCIES)
+                target_link_libraries(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_DEPENDENCIES)
+            endif()
+
+            if (DEFINED ADD_PROGRAM_TEST_INCLUDE_DIRS)
+                target_include_directories(ADD_PROGRAM_TEST_TARGET ADD_PROGRAM_TEST_INCLUDE_DIRS)
+            endif()
+
+            include(GoogleTest)
+            gtest_discover_tests(ADD_PROGRAM_TEST_TARGET)
+        endif()
+
+     endif()
+endfunction()
+
 set(HEADERS_COMMON
     include/Task.h
     include/CommandLine/CommandLine.h
