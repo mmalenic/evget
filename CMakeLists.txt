@@ -148,7 +148,7 @@ add_program(
 
 # Linux functionality.
 add_program(
-    TARGET evget MAKE_EXECUTABLEW
+    TARGET ${EXECUTABLE_NAME}
     PLATFORM_GUARD UNIX AND NOT APPLE
     PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
     INCLUDE_DIRS
@@ -156,98 +156,93 @@ add_program(
     ${PROJECT_SOURCE_DIR}/src/platform/linux
     SRCS
     # Headers
+    include/platform/linux/CommandLine/CommandLineLinux.h
+    include/platform/linux/EventDevice.h
+    include/platform/linux/EventDeviceLister.h
+    include/platform/linux/ShutdownHandlerLinux.h
+    # Sources
+    src/platform/linux/CommandLine/CommandLineLinux.cpp
+    src/platform/linux/EventDevice.cpp
+    src/platform/linux/EventDeviceLister.cpp
+    src/platform/linux/ShutdownHandlerLinux.cpp
+)
+
+# OSX functionality
+add_program(
+    TARGET ${EXECUTABLE_NAME}
+    PLATFORM_GUARD APPLE
+    PLATFORM_REQUIRES
+    INCLUDE_DIRS
+    ${PROJECT_SOURCE_DIR}/include/platform/osx
+    ${PROJECT_SOURCE_DIR}/src/platform/osx
+    SRCS
+    # Headers
+    # Sources
+)
+
+# Windows functionality
+add_program(
+    TARGET ${EXECUTABLE_NAME}
+    PLATFORM_GUARD WIN32
+    PLATFORM_REQUIRES
+    INCLUDE_DIRS
+    ${PROJECT_SOURCE_DIR}/include/platform/win32_64
+    ${PROJECT_SOURCE_DIR}/src/platform/win32_64
+    SRCS
+    # Headers
     # Sources
 )
 
 
 if (BUILD_TESTING)
-    include_directories(
+    # Common tests.
+    add_program(
+        TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
+        PLATFORM_GUARD TRUE
+        INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test
-    )
-    set(TESTS_COMMON
+        SRCS
         test/EventData/EventDataTest.cpp
         test/EventData/FieldTest.cpp
         test/CommandLine/CommandLineTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
     )
-endif()
 
-if (UNIX AND NOT APPLE)
-    include_directories(
-        include/platform/linux
-        src/platform/linux
+    # Linux tests.
+    add_program(
+        TARGET ${TEST_EXECUTABLE_NAME}
+        PLATFORM_GUARD UNIX AND NOT APPLE
+        PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
+        INCLUDE_DIRS
+        ${PROJECT_SOURCE_DIR}/test/platform/linux
+        SRCS
+        test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
+        test/platform/linux/EventDeviceListerTest.cpp
+        test/platform/linux/EventDeviceTest.cpp
+        test/platform/linux/ShutdownHandlerLinuxTest.cpp
     )
 
-    set(HEADERS
-        include/platform/linux/CommandLine/CommandLineLinux.h
-        include/platform/linux/EventDevice.h
-        include/platform/linux/EventDeviceLister.h
-        include/platform/linux/SystemEventLoopLinux.h
-        include/platform/linux/ShutdownHandlerLinux.h
+    # OSX tests
+    add_program(
+        TARGET ${TEST_EXECUTABLE_NAME}
+        PLATFORM_GUARD APPLE
+        PLATFORM_REQUIRES
+        INCLUDE_DIRS
+        ${PROJECT_SOURCE_DIR}/test/platform/osx
+        SRCS
     )
 
-    set(SOURCES
-        src/platform/linux/CommandLine/CommandLineLinux.cpp
-        src/platform/linux/EventDevice.cpp
-        src/platform/linux/EventDeviceLister.cpp
-        src/platform/linux/ShutdownHandlerLinux.cpp
+    # Windows tests
+    add_program(
+        TARGET ${TEST_EXECUTABLE_NAME}
+        PLATFORM_GUARD WIN32
+        PLATFORM_REQUIRES
+        INCLUDE_DIRS
+        ${PROJECT_SOURCE_DIR}/test/platform/win32_64
+        SRCS
     )
 
-    if (BUILD_TESTING)
-        include_directories(
-            test/platform/linux
-        )
-
-        set(TESTS
-            test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
-            test/platform/linux/EventDeviceListerTest.cpp
-            test/platform/linux/EventDeviceTest.cpp
-            test/platform/linux/ShutdownHandlerLinuxTest.cpp
-        )
-    endif()
-endif()
-
-if (APPLE)
-    include_directories(
-        ${PROJECT_SOURCE_DIR}/include/osx
-        ${PROJECT_SOURCE_DIR}/src/osx
-    )
-
-    set(HEADERS
-    )
-
-    set(SOURCES
-    )
-
-    if(BUILD_TESTING)
-        include_directories(
-            ${PROJECT_SOURCE_DIR}/test/osx
-        )
-
-        set(TESTS
-        )
-    endif()
-endif()
-
-if (WIN32)
-    include_directories(
-        ${PROJECT_SOURCE_DIR}/include/win32_64
-        ${PROJECT_SOURCE_DIR}/src/win32_64
-    )
-
-    set(HEADERS
-    )
-
-    set(SOURCES
-    )
-
-    if(BUILD_TESTING)
-        include_directories(
-            ${PROJECT_SOURCE_DIR}/test/win32_64
-        )
-
-        set(TESTS
-        )
-    endif()
+    include(GoogleTest)
+    gtest_discover_tests(${TEST_EXECUTABLE_NAME})
 endif()
