@@ -24,68 +24,101 @@ cmake_minimum_required(VERSION 3.19)
 project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
+set(EXECUTABLE_NAME "evget")
+set(TEST_EXECUTABLE_NAME "evget_test")
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
-include_directories(
+INCLUDE(CheckIncludeFiles)
+INCLUDE(CTest)
+
+# Adds program dependencies by using find_package and target_link_libraries.
+function(program_dependencies)
+    set(options PLATFORM_GUARD)
+    set(one_value_args TARGET)
+    set(multi_value_args FIND_DEPS LINK_DEPS)
+    cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    if (PROGRAM_DEPENDENCIES_PLATFORM_GUARD)
+        find_package(${PROGRAM_DEPENDENCIES_FIND_DEPS})
+        if (TARGET PROGRAM_DEPENDENCIES_LINK_DEPS)
+            message("Found package ${PROGRAM_DEPENDENCIES_FIND_DEPS}, linked to ${PROGRAM_DEPENDENCIES_TARGET}")
+            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEPS})
+        endif()
+    endif()
+endfunction()
+
+# Adds a program executable, library, or source files to an existing targets, 
+# and optionally includes libraries.
+function(add_program)
+    set(options MAKE_EXECUTABLE MAKE_LIBRARY PLATFORM_GUARD)
+    set(one_value_args TARGET)
+    set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
+    cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    
+    if (DEFINED ADD_PROGRAM_PLATFORM_REQUIRES)
+        CHECK_INCLUDE_FILES("${ADD_PROGRAM_PLATFORM_REQUIRES}" REQUIRES)
+    else()
+        set(REQUIRES TRUE)
+    endif()
+
+    if (ADD_PROGRAM_PLATFORM_GUARD AND REQUIRES)
+        if (DEFINED ADD_PROGRAM_TARGET)
+
+            if (DEFINED ADD_PROGRAM_SRCS)
+                if (ADD_PROGRAM_MAKE_EXECUTABLE)
+                    message("Added executable ${ADD_PROGRAM_TARGET}")
+                    add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
+                elseif (ADD_PROGRAM_MAKE_LIBRARY)
+                    message("Added library ${ADD_PROGRAM_TARGET}")
+                    add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
+                else()
+                    message("Added sources to ${ADD_PROGRAM_TARGET}")
+                    target_sources(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
+                endif()
+            endif()
+
+            if (DEFINED ADD_PROGRAM_FOR_INCLUDE_DIRS)
+                message("Included directories for ${ADD_PROGRAM_TARGET}")
+                target_include_directories(${ADD_PROGRAM_FOR_TARGET} ${ADD_PROGRAM_FOR_INCLUDE_DIRS})
+            endif()
+
+        endif()
+    endif()
+endfunction()
+
+if (DOWNLOAD_DEPENDENCIES)
+    if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+            "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
+
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+    conan_cmake_autodetect(settings)
+
+    conan_add_remote(
+        NAME conancenter
+        URL https://center.conan.io
+        VERIFY_SSL True
+    )
+    conan_cmake_install(
+        PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
+        BUILD missing
+        REMOTE conancenter
+        SETTINGS ${settings}
+    )
+endif()
+
+# Common functionality.
+add_program(
+    TARGET ${EXECUTABLE_NAME} MAKE_EXECUTABLE
+    PLATFORM_GUARD TRUE
+    INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
-)
-
-function(add_program_for)
-    set(options MAKE_EXECUTABLE)
-    set(one_value_args TARGET)
-    set(multi_value_args SRCS DEPENDENCIES INCLUDE_DIRS)
-    cmake_parse_arguments(ADD_PROGRAM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    
-    if (DEFINED ADD_PROGRAM_FOR_TARGET)
-
-        if (DEFINED ADD_PROGRAM_FOR_SRCS)
-            if (ADD_PROGRAM_FOR_MAKE_EXECUTABLE)
-                add_executable(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_SRCS)
-            else()
-                target_sources(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_SRCS)
-            endif()
-        endif()
-
-        if (DEFINED ADD_PROGRAM_FOR_DEPENDENCIES)
-            target_link_libraries(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_DEPENDENCIES)
-        endif()
-
-        if (DEFINED ADD_PROGRAM_FOR_INCLUDE_DIRS)
-            target_include_directories(ADD_PROGRAM_FOR_TARGET ADD_PROGRAM_FOR_INCLUDE_DIRS)
-        endif()
-
-    endif()
-endfunction()
-
-function(add_program)
-    set(options MAKE_EXECUTABLE PLATFORM_GUARD)
-    set(one_value_args TARGET TEST_TARGET)
-    set(multi_value_args SRCS DEPENDENCIES INCLUDE_DIRS TEST_SRCS TEST_DEPENDENCIES TEST_INCLUDE_DIRS)
-    cmake_parse_arguments(ADD_PROGRAM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    if (ADD_PROGRAM_PLATFORM_GUARD OR NOT DEFINED ADD_PROGRAM_PLATFORM_GUARD)
-        add_program_for(
-            MAKE_EXECUTABLE ADD_PROGRAM_MAKE_EXECUTABLE
-            TARGET ADD_PROGRAM_TARGET
-            SRCS ADD_PROGRAM_SRCS DEPENDENCIES ADD_PROGRAM_DEPENDENCIES INCLUDE_DIRS ADD_PROGRAM_INCLUDE_DIRS
-        )
-
-        if (BUILD_TESTING AND DEFINED ADD_PROGRAM_TEST_TARGET)
-            add_program_for(
-                MAKE_EXECUTABLE ADD_PROGRAM_MAKE_EXECUTABLE
-                TARGET ADD_PROGRAM_TEST_TARGET
-                SRCS ADD_PROGRAM_TEST_SRCS DEPENDENCIES ADD_PROGRAM_TEST_DEPENDENCIES INCLUDE_DIRS ADD_PROGRAM_TEST_INCLUDE_DIRS
-            )
-            include(GoogleTest)
-            gtest_discover_tests(ADD_PROGRAM_TEST_TARGET)
-        endif()
-
-    endif()
-endfunction()
-
-set(HEADERS_COMMON
+    SRCS
+    # Headers
     include/Task.h
     include/CommandLine/CommandLine.h
     include/EventTransformer.h
@@ -102,9 +135,7 @@ set(HEADERS_COMMON
     include/CommandLine/CommandLineOption.h
     include/InvalidCommandLineOption.h
     include/CommandLine/CommandLineOptionBuilder.h
-    )
-
-set(SOURCES_COMMON
+    # Sources
     src/CommandLine/CommandLine.cpp
     src/EventData/Field.cpp
     src/EventData/EventData.cpp
@@ -113,7 +144,21 @@ set(SOURCES_COMMON
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
     src/CommandLine/CommandLineOption.cpp
-    )
+)
+
+# Linux functionality.
+add_program(
+    TARGET evget MAKE_EXECUTABLEW
+    PLATFORM_GUARD UNIX AND NOT APPLE
+    PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
+    INCLUDE_DIRS
+    ${PROJECT_SOURCE_DIR}/include/platform/linux
+    ${PROJECT_SOURCE_DIR}/src/platform/linux
+    SRCS
+    # Headers
+    # Sources
+)
+
 
 if (BUILD_TESTING)
     include_directories(
@@ -206,47 +251,3 @@ if (WIN32)
         )
     endif()
 endif()
-
-if (DOWNLOAD_DEPENDENCIES)
-    if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-            "${CMAKE_BINARY_DIR}/conan.cmake")
-    endif()
-
-    include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_autodetect(settings)
-    conan_cmake_install(
-        PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
-        BUILD missing
-        REMOTE conan-center
-        SETTINGS ${settings}
-    )
-endif()
-
-add_executable(evget
-    src/main.cpp
-    ${HEADERS_COMMON}
-    ${SOURCES_COMMON}
-    ${HEADERS}
-    ${SOURCES}
-)
-target_link_libraries(evget CONAN_PKG::boost CONAN_PKG::spdlog)
-
-include(CTest)
-
-if (BUILD_TESTING)
-    add_executable(Test
-        ${HEADERS_COMMON}
-        ${SOURCES_COMMON}
-        ${HEADERS}
-        ${SOURCES}
-        ${TESTS_COMMON}
-        ${TESTS}
-    )
-    target_link_libraries(Test CONAN_PKG::gtest CONAN_PKG::boost CONAN_PKG::spdlog)
-
-    include(GoogleTest)
-    gtest_discover_tests(Test)
-endif()
-
