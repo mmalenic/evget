@@ -54,14 +54,19 @@ endfunction()
 # Adds program dependencies by using find_package and target_link_libraries.
 function(program_dependencies)
     set(one_value_args TARGET PLATFORM_GUARD)
-    set(multi_value_args FIND_DEP LINK_DEP PLATFORM_REQUIRES)
+    set(multi_value_args DEP LINK PLATFORM_REQUIRES)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     platform_check(PLATFORM_GUARD ${PROGRAM_DEPENDENCIES_PLATFORM_GUARD} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT GUARD)
     if (GUARD)
-        find_package(${PROGRAM_DEPENDENCIES_FIND_DEP})
-        if (TARGET ${PROGRAM_DEPENDENCIES_LINK_DEP})
-            message("Found package ${PROGRAM_DEPENDENCIES_LINK_DEP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
+        # Try to guess link.
+        if (NOT DEFINED PROGRAM_DEPENDENCIES_LINK)
+            set(PROGRAM_DEPENDENCIES_LINK ${PROGRAM_DEPENDENCIES_DEP}::${PROGRAM_DEPENDENCIES_DEP})
+        endif()
+
+        find_package(${PROGRAM_DEPENDENCIES_DEP})
+        if (TARGET ${PROGRAM_DEPENDENCIES_LINK})
+            message("Found package ${PROGRAM_DEPENDENCIES_LINK}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
             target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEP})
         endif()
     endif()
@@ -158,7 +163,7 @@ add_program(
     src/InvalidCommandLineOption.cpp
     src/CommandLine/CommandLineOption.cpp
 )
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} FIND_DEP fmt LINK_DEP fmt::fmt)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP fmt)
 
 # Linux functionality.
 add_program(
