@@ -37,11 +37,15 @@ function(platform_check)
     set(one_value_args RESULT PLATFORM_GUARD)
     set(multi_value_args PLATFORM_REQUIRES)
     cmake_parse_arguments(PLATFORM_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
-   
+    
     if (NOT DEFINED PLATFORM_CHECK_PLATFORM_GUARD OR "${PLATFORM_CHECK_PLATFORM_GUARD}" OR "${${PLATFORM_CHECK_PLATFORM_GUARD}}")
-        CHECK_INCLUDE_FILES("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
-        if (REQUIRES)
+        if (NOT DEFINED PLATFORM_CHECK_PLATFORM_REQUIRES OR "${PLATFORM_CHECK_PLATFORM_REQUIRES}" STREQUAL "")
             set(${PLATFORM_CHECK_RESULT} TRUE PARENT_SCOPE)
+        else()
+            CHECK_INCLUDE_FILES("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
+            if (REQUIRES)
+                set(${PLATFORM_CHECK_RESULT} TRUE PARENT_SCOPE)
+            endif()
         endif()
     endif()
 
