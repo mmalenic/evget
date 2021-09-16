@@ -32,18 +32,35 @@ option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CTest)
 
+# Returns true for the current platform.
+function(platform_check)
+    set(one_value_args RESULT PLATFORM_GUARD)
+    set(multi_value_args PLATFORM_REQUIRES)
+    cmake_parse_arguments(PLATFORM_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+   
+    if (NOT DEFINED PLATFORM_CHECK_PLATFORM_GUARD OR "${PLATFORM_CHECK_PLATFORM_GUARD}" OR "${${PLATFORM_CHECK_PLATFORM_GUARD}}")
+        CHECK_INCLUDE_FILES("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
+        if (REQUIRES)
+            set(${PLATFORM_CHECK_RESULT} TRUE PARENT_SCOPE)
+        endif()
+    endif()
+
+    unset(REQUIRES CACHE)
+endfunction()
+
 # Adds program dependencies by using find_package and target_link_libraries.
 function(program_dependencies)
     set(options PLATFORM_GUARD)
     set(one_value_args TARGET)
-    set(multi_value_args FIND_DEPS LINK_DEPS)
+    set(multi_value_args FIND_DEP LINK_DEP PLATFORM_REQUIRES)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    if (PROGRAM_DEPENDENCIES_PLATFORM_GUARD)
-        find_package(${PROGRAM_DEPENDENCIES_FIND_DEPS})
-        if (TARGET PROGRAM_DEPENDENCIES_LINK_DEPS)
-            message("Found package ${PROGRAM_DEPENDENCIES_FIND_DEPS}, linked to ${PROGRAM_DEPENDENCIES_TARGET}")
-            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEPS})
+    platform_check(PLATFORM_GUARD ${PROGRAM_DEPENDENCIES_PLATFORM_GUARD} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT GUARD)
+    if (GUARD)
+        find_package(${PROGRAM_DEPENDENCIES_FIND_DEP})
+        if (TARGET PROGRAM_DEPENDENCIES_LINK_DEP)
+            message("Found package ${PROGRAM_DEPENDENCIES_FIND_DEP}, linked to ${PROGRAM_DEPENDENCIES_TARGET}")
+            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEPS)
         endif()
     endif()
 endfunction()
@@ -51,18 +68,13 @@ endfunction()
 # Adds a program executable, library, or source files to an existing targets, 
 # and optionally includes libraries.
 function(add_program)
-    set(options MAKE_EXECUTABLE MAKE_LIBRARY PLATFORM_GUARD)
-    set(one_value_args TARGET)
+    set(options MAKE_EXECUTABLE MAKE_LIBRARY)
+    set(one_value_args TARGET PLATFORM_GUARD)
     set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
     
-    if (DEFINED ADD_PROGRAM_PLATFORM_REQUIRES)
-        CHECK_INCLUDE_FILES("${ADD_PROGRAM_PLATFORM_REQUIRES}" REQUIRES)
-    else()
-        set(REQUIRES TRUE)
-    endif()
-
-    if (ADD_PROGRAM_PLATFORM_GUARD AND REQUIRES)
+    platform_check(PLATFORM_GUARD ${ADD_PROGRAM_PLATFORM_GUARD} PLATFORM_REQUIRES ${ADD_PROGRAM_PLATFORM_REQUIRES} RESULT GUARD)
+    if (GUARD)
         if (DEFINED ADD_PROGRAM_TARGET)
 
             if (DEFINED ADD_PROGRAM_SRCS)
@@ -113,7 +125,6 @@ endif()
 # Common functionality.
 add_program(
     TARGET ${EXECUTABLE_NAME} MAKE_EXECUTABLE
-    PLATFORM_GUARD TRUE
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
@@ -193,12 +204,10 @@ add_program(
     # Sources
 )
 
-
 if (BUILD_TESTING)
     # Common tests.
     add_program(
         TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-        PLATFORM_GUARD TRUE
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test
         SRCS
