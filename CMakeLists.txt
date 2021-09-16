@@ -24,7 +24,6 @@ cmake_minimum_required(VERSION 3.19)
 project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
-set(EXECUTABLE_NAME "evget")
 set(TEST_EXECUTABLE_NAME "evget_test")
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
@@ -32,7 +31,7 @@ option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CTest)
 
-# Returns true for the current platform.
+# Checks the platform, returning the a result equivalent to true for the current platform.
 function(platform_check)
     set(one_value_args RESULT PLATFORM_GUARD)
     set(multi_value_args PLATFORM_REQUIRES)
@@ -54,17 +53,16 @@ endfunction()
 
 # Adds program dependencies by using find_package and target_link_libraries.
 function(program_dependencies)
-    set(options PLATFORM_GUARD)
-    set(one_value_args TARGET)
+    set(one_value_args TARGET PLATFORM_GUARD)
     set(multi_value_args FIND_DEP LINK_DEP PLATFORM_REQUIRES)
-    cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments(PROGRAM_DEPENDENCIES "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     platform_check(PLATFORM_GUARD ${PROGRAM_DEPENDENCIES_PLATFORM_GUARD} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT GUARD)
     if (GUARD)
         find_package(${PROGRAM_DEPENDENCIES_FIND_DEP})
-        if (TARGET PROGRAM_DEPENDENCIES_LINK_DEP)
-            message("Found package ${PROGRAM_DEPENDENCIES_FIND_DEP}, linked to ${PROGRAM_DEPENDENCIES_TARGET}")
-            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEPS)
+        if (TARGET ${PROGRAM_DEPENDENCIES_LINK_DEP})
+            message("Found package ${PROGRAM_DEPENDENCIES_LINK_DEP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
+            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${PROGRAM_DEPENDENCIES_LINK_DEP})
         endif()
     endif()
 endfunction()
@@ -128,7 +126,7 @@ endif()
 
 # Common functionality.
 add_program(
-    TARGET ${EXECUTABLE_NAME} MAKE_EXECUTABLE
+    TARGET ${CMAKE_PROJECT_NAME} MAKE_EXECUTABLE
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
@@ -160,10 +158,11 @@ add_program(
     src/InvalidCommandLineOption.cpp
     src/CommandLine/CommandLineOption.cpp
 )
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} FIND_DEP fmt LINK_DEP fmt::fmt)
 
 # Linux functionality.
 add_program(
-    TARGET ${EXECUTABLE_NAME}
+    TARGET ${CMAKE_PROJECT_NAME}
     PLATFORM_GUARD UNIX AND NOT APPLE
     PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
     INCLUDE_DIRS
@@ -184,7 +183,7 @@ add_program(
 
 # OSX functionality
 add_program(
-    TARGET ${EXECUTABLE_NAME}
+    TARGET ${CMAKE_PROJECT_NAME}
     PLATFORM_GUARD APPLE
     PLATFORM_REQUIRES
     INCLUDE_DIRS
@@ -197,7 +196,7 @@ add_program(
 
 # Windows functionality
 add_program(
-    TARGET ${EXECUTABLE_NAME}
+    TARGET ${CMAKE_PROJECT_NAME}
     PLATFORM_GUARD WIN32
     PLATFORM_REQUIRES
     INCLUDE_DIRS
