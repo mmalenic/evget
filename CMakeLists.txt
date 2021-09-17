@@ -52,42 +52,44 @@ function(platform_check)
 endfunction()
 
 # Adds program dependencies by using find_package and target_link_libraries.
+# DEP should specify an three arguments: visibility, dependency name, and version.
 function(program_dependencies)
     set(options NOT_REQUIRED)
-    set(one_value_args TARGET PLATFORM_GUARD)
-    set(multi_value_args DEP PLATFORM_REQUIRES COMPONENTS)
+    set(one_value_args PLATFORM_GUARD)
+    set(multi_value_args TARGET DEP PLATFORM_REQUIRES COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
     
     platform_check(PLATFORM_GUARD ${PROGRAM_DEPENDENCIES_PLATFORM_GUARD} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT GUARD)
     if (GUARD AND DEFINED PROGRAM_DEPENDENCIES_DEP)
-        if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            find_package(${PROGRAM_DEPENDENCIES_DEP})
-        elseif (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            find_package(${PROGRAM_DEPENDENCIES_DEP} COMPONENTS ${PROGRAM_DEPENDENCIES_COMPONENTS})
-        elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            find_package(${PROGRAM_DEPENDENCIES_DEP} REQUIRED)
+        list(LENGTH PROGRAM_DEPENDENCIES_DEP LIST_LENGTH)
+        if (${LIST_LENGTH} EQUAL 3)
+            list (GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
+            list (GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_NAME)
+            list (GET PROGRAM_DEPENDENCIES_DEP 2 DEPENDENCY_VERSION)
         else()
-            find_package(${PROGRAM_DEPENDENCIES_DEP} REQUIRED COMPONENTS ${PROGRAM_DEPENDENCIES_COMPONENTS})
+            message(FATAL_ERROR "Required argument to dependency unspecified.")
         endif()
 
-        list (GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_NAME)
-        list(LENGTH PROGRAM_DEPENDENCIES_DEP LIST_LENGTH)
-        if (${LIST_LENGTH} GREATER 0)
-            message("Found package ${DEPENDENCY_NAME}")
-            list (GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_VERSION)
+        if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION})
+        elseif (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} COMPONENTS ${PROGRAM_DEPENDENCIES_COMPONENTS})
+        elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED)
         else()
-            message("Found package ${DEPENDENCY_NAME} with version ${DEPENDENCY_VERSION}")
+            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${PROGRAM_DEPENDENCIES_COMPONENTS})
         endif()
+        message("Found package ${DEPENDENCY_NAME} with version ${DEPENDENCY_VERSION}")
 
         # Try to guess components
         if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            set(PROGRAM_DEPENDENCIES_COMPONENTS ${DEPENDENCY_NAME})
+            list(APPEND PROGRAM_DEPENDENCIES_COMPONENTS ${DEPENDENCY_NAME})
         endif()
 
         foreach(COMP IN LISTS PROGRAM_DEPENDENCIES_COMPONENTS)
             if (TARGET ${DEPENDENCY_NAME}::${COMP})
                 message("Found target ${DEPENDENCY_NAME}::${COMP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
-                target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_NAME}::${COMP})
+                target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
             endif()
         endforeach()
     endif()
@@ -97,7 +99,7 @@ endfunction()
 # and optionally includes libraries.
 function(add_program)
     set(options MAKE_EXECUTABLE MAKE_LIBRARY)
-    set(one_value_args TARGET PLATFORM_GUARD)
+    set(one_value_args TARGET PLATFORM_GUARD INCLUDE_VISIBILITY)
     set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
     
@@ -120,7 +122,7 @@ function(add_program)
 
             if (DEFINED ADD_PROGRAM_FOR_INCLUDE_DIRS)
                 message("Included directories for ${ADD_PROGRAM_TARGET}")
-                target_include_directories(${ADD_PROGRAM_FOR_TARGET} ${ADD_PROGRAM_FOR_INCLUDE_DIRS})
+                target_include_directories(${ADD_PROGRAM_FOR_TARGET} ${INCLUDE_VISIBILITY} ${ADD_PROGRAM_FOR_INCLUDE_DIRS})
             endif()
 
         endif()
@@ -184,7 +186,10 @@ add_program(
     src/InvalidCommandLineOption.cpp
     src/CommandLine/CommandLineOption.cpp
 )
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP fmt 8.0.1 QUIET)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC fmt 8.0.1)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC spdlog 1.9.2)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC Boost 1.7.7 COMPONENTS asio program_options)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PRIVATE Boost 1.7.7 COMPONENTS algorithm)
 
 # Linux functionality.
 add_program(
