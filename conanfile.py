@@ -34,7 +34,7 @@ class App(ConanFile):
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
     requires = 'boost/1.77.0', 'fmt/8.0.1', 'spdlog/1.9.2'
-    generators = 'CMakeDeps'
+    generators = 'CMakeDeps', 'cmake_paths'
     options = {
         'build_tests': [True, False],
         'download_dependencies': [True, False],
@@ -50,11 +50,12 @@ class App(ConanFile):
         if self.options.build_tests:
             self.requires('gtest/cci.20210126')
 
-    def package_info(self):
-        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::program_options']
+    #def package_info(self):
+        #self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::program_options']
 
     def build(self):
-        cmake = CMake()
+        cmake = CMake(self)
+        cmake.configure()
 
         cmake.definitions['BUILD_TESTING'] = self.options.build_tests
         cmake.definitions['DOWNLOAD_DEPENDENCIES'] = self.options.download_dependencies
