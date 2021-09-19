@@ -23,7 +23,6 @@
 cmake_minimum_required(VERSION 3.19)
 project(evget)
 
-set(Boost_DEBUG ON)
 set(CMAKE_CXX_STANDARD 20)
 set(TEST_EXECUTABLE_NAME "evget_test")
 
@@ -58,7 +57,7 @@ endfunction()
 # COMPONENTS should specify arguments in pairs of: visibility, and component name.
 # If COMPONENTS is present, visibility from DEP is ignored.
 function(program_dependencies)
-    set(options NOT_REQUIRED)
+    set(options NOT_REQUIRED FIND_ALL)
     set(one_value_args PLATFORM_GUARD)
     set(multi_value_args TARGET DEP PLATFORM_REQUIRES COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -87,11 +86,11 @@ function(program_dependencies)
             endforeach()
         endif()
            
-        if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+        if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL))
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION})
         elseif (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} COMPONENTS ${COMPONENTS})
-        elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+        elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL)
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED)
         else()
             message("HERE: " ${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
@@ -110,6 +109,7 @@ function(program_dependencies)
                 math(EXPR INDEX_NAME "${INDEX} + 1")
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} VISIBILITY)
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX_NAME} COMP)
+                message(${VISIBILITY} ${COMP})
                 if (TARGET ${DEPENDENCY_NAME}::${COMP})
                     message("Found target ${DEPENDENCY_NAME}::${COMP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
                     target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
@@ -141,7 +141,7 @@ function(add_program)
                     add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
                 else()
                     message("Added sources to ${ADD_PROGRAM_TARGET}")
-                    target_sources(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
+                    target_sources(${ADD_PROGRAM_TARGET} PRIVATE ${ADD_PROGRAM_SRCS})
                 endif()
             endif()
 
@@ -174,9 +174,8 @@ if (DOWNLOAD_DEPENDENCIES)
         REMOTE conancenter
         SETTINGS ${settings}
     )
-    if (EXISTS "${CMAKE_BINARY_DIR}/conan_paths.cmake")
-        include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
-    endif()
+    set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+    set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 endif()
 
 # Common functionality.
@@ -215,8 +214,7 @@ add_program(
 )
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC spdlog 1.9.2)
-find_package(Boost 1.76 REQUIRED COMPONENTS program_options)
-# program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC Boost 1.77.0)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP Boost 1.77 FIND_ALL COMPONENTS PUBLIC program_options PUBLIC headers)
 
 # Linux functionality.
 add_program(
