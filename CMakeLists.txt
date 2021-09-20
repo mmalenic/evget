@@ -52,8 +52,7 @@ function(platform_check)
 endfunction()
 
 # Adds program dependencies by using find_package and target_link_libraries.
-# DEP should specify an optional argument: visibility, and two required arguments:
-# dependency name, and version.
+# DEP can specify arguments: visibility, dependency name, and version.
 # COMPONENTS should specify arguments in pairs of: visibility, and component name.
 # If COMPONENTS is present, visibility from DEP is ignored.
 function(program_dependencies)
@@ -66,19 +65,25 @@ function(program_dependencies)
     if (GUARD AND DEFINED PROGRAM_DEPENDENCIES_DEP)
         list(LENGTH PROGRAM_DEPENDENCIES_DEP DEP_LENGTH)
         if (${DEP_LENGTH} EQUAL 3)
-            list (GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
-            list (GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_NAME)
-            list (GET PROGRAM_DEPENDENCIES_DEP 2 DEPENDENCY_VERSION)
+            list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
+            list(GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_NAME)
+            list(GET PROGRAM_DEPENDENCIES_DEP 2 DEPENDENCY_VERSION)
         elseif (${DEP_LENGTH} EQUAL 2)
-            list (GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_NAME)
-            list (GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_VERSION)
+            list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_NAME)
+            if ("${DEPENDENCY_NAME}" STREQUAL "PUBLIC" OR "${DEPENDENCY_NAME}" STREQUAL "PRIVATE" OR "${DEPENDENCY_NAME}" STREQUAL "INTERFACE")
+                list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
+                list(GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_NAME)
+            else()
+                list(GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_VERSION)
+            endif()
+        elseif (${DEP_LENGTH} EQUAL 1)
+            list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_NAME)
         else()
             message(FATAL_ERROR "Required argument to DEP unspecified.")
         endif()
 
         if (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS LIST_LENGTH)
-            message(${LIST_LENGTH})
             math(EXPR LOOP "${LIST_LENGTH} - 1")
             foreach(INDEX RANGE 1 ${LOOP} 2)
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP_NAME)
@@ -93,7 +98,6 @@ function(program_dependencies)
         elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL)
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED)
         else()
-            message("HERE: " ${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
         endif()
         message("Found package ${DEPENDENCY_NAME} with version ${DEPENDENCY_VERSION}")
@@ -109,7 +113,6 @@ function(program_dependencies)
                 math(EXPR INDEX_NAME "${INDEX} + 1")
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} VISIBILITY)
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX_NAME} COMP)
-                message(${VISIBILITY} ${COMP})
                 if (TARGET ${DEPENDENCY_NAME}::${COMP})
                     message("Found target ${DEPENDENCY_NAME}::${COMP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
                     target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
@@ -145,9 +148,13 @@ function(add_program)
                 endif()
             endif()
 
-            if (DEFINED ADD_PROGRAM_FOR_INCLUDE_DIRS)
+            if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
                 message("Included directories for ${ADD_PROGRAM_TARGET}")
-                target_include_directories(${ADD_PROGRAM_FOR_TARGET} ${INCLUDE_VISIBILITY} ${ADD_PROGRAM_FOR_INCLUDE_DIRS})
+                if (DEFINED ADD_PROGRAM_INCLUDE_VISIBILITY)
+                    target_include_directories(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_INCLUDE_VISIBILITY} ${ADD_PROGRAM_INCLUDE_DIRS})
+                else()
+                    target_include_directories(${ADD_PROGRAM_TARGET} PUBLIC ${ADD_PROGRAM_INCLUDE_DIRS})
+                endif()
             endif()
         endif()
     endif()
@@ -269,6 +276,8 @@ if (BUILD_TESTING)
         TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test
+        ${PROJECT_SOURCE_DIR}/TestUtilities/include
+        ${PROJECT_SOURCE_DIR}/TestUtilities/src
         SRCS
         test/EventData/EventDataTest.cpp
         test/EventData/FieldTest.cpp
@@ -276,6 +285,7 @@ if (BUILD_TESTING)
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
     )
+    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest)
 
     # Linux tests.
     add_program(
@@ -284,6 +294,8 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/linux
+        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/linux
+        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/linux
         SRCS
         test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
         test/platform/linux/EventDeviceListerTest.cpp
@@ -298,6 +310,8 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/osx
+        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/osx
+        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/osx
         SRCS
     )
 
@@ -308,9 +322,12 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/win32_64
+        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/win32_64
+        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/win32_64
         SRCS
     )
 
     include(GoogleTest)
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     gtest_discover_tests(${TEST_EXECUTABLE_NAME})
 endif()
