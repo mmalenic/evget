@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.19)
 project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
-set(TEST_EXECUTABLE_NAME "evget_test")
+set(TEST_EXECUTABLE_NAME "evget-test")
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
@@ -56,7 +56,7 @@ endfunction()
 # COMPONENTS should specify arguments in pairs of: visibility, and component name.
 # If COMPONENTS is present, visibility from DEP is ignored.
 function(program_dependencies)
-    set(options NOT_REQUIRED FIND_ALL)
+    set(options NOT_REQUIRED FIND_ALL ONLY_LINK)
     set(one_value_args PLATFORM_GUARD)
     set(multi_value_args TARGET DEP PLATFORM_REQUIRES COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -82,6 +82,12 @@ function(program_dependencies)
             message(FATAL_ERROR "Required argument to DEP unspecified.")
         endif()
 
+        if (PROGRAM_DEPENDENCIES_ONLY_LINK AND TARGET ${DEPENDENCY_NAME})
+            message(STATUS "Linking ${DEPENDENCY_NAME} with ${PROGRAM_DEPENDENCIES_TARGET}.")
+            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME})
+            return()
+        endif()
+
         if (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS LIST_LENGTH)
             math(EXPR LOOP "${LIST_LENGTH} - 1")
@@ -102,11 +108,16 @@ function(program_dependencies)
         else()
             find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
         endif()
-        message("Found package ${DEPENDENCY_NAME} with version ${DEPENDENCY_VERSION}")
+        
+        if (DEFINED DEPENDENCY_VERSION)
+            message(STATUS "Found package ${DEPENDENCY_NAME} with version ${DEPENDENCY_VERSION}.")
+        else()
+            message(STATUS "Found package ${DEPENDENCY_NAME}.")
+        endif()
 
         # Try to guess components
         if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS AND TARGET ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
-            message("Found target ${DEPENDENCY_NAME}::${DEPENDENCY_NAME}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
+            message(STATUS "Found target ${DEPENDENCY_NAME}::${DEPENDENCY_NAME}, linking with ${PROGRAM_DEPENDENCIES_TARGET}")
             target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
         elseif (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
@@ -117,8 +128,7 @@ function(program_dependencies)
                     set(DEPENDENCY_VISIBILITY ${COMP})
                 else()
                     if (TARGET ${DEPENDENCY_NAME}::${COMP})
-                        message("HERE: " ${DEPENDENCY_VISIBILITY})
-                        message("Found target ${DEPENDENCY_NAME}::${COMP}, linked with ${PROGRAM_DEPENDENCIES_TARGET}")
+                        message(STATUS "Found target ${DEPENDENCY_NAME}::${COMP}, linking with ${PROGRAM_DEPENDENCIES_TARGET}.")
                         target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
                     endif()
                 endif()
@@ -142,19 +152,19 @@ function(add_program)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
                 if (ADD_PROGRAM_MAKE_EXECUTABLE)
-                    message("Added executable ${ADD_PROGRAM_TARGET}")
+                    message(STATUS "Adding executable ${ADD_PROGRAM_TARGET}.")
                     add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
                 elseif (ADD_PROGRAM_MAKE_LIBRARY)
-                    message("Added library ${ADD_PROGRAM_TARGET}")
-                    add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
+                    message(STATUS "Adding library ${ADD_PROGRAM_TARGET}.")
+                    add_library(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
                 else()
-                    message("Added sources to ${ADD_PROGRAM_TARGET}")
+                    message(STATUS "Adding sources to ${ADD_PROGRAM_TARGET}.")
                     target_sources(${ADD_PROGRAM_TARGET} PRIVATE ${ADD_PROGRAM_SRCS})
                 endif()
             endif()
 
             if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
-                message("Included directories for ${ADD_PROGRAM_TARGET}")
+                message(STATUS "Including directories for ${ADD_PROGRAM_TARGET}.")
                 if (DEFINED ADD_PROGRAM_INCLUDE_VISIBILITY)
                     target_include_directories(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_INCLUDE_VISIBILITY} ${ADD_PROGRAM_INCLUDE_DIRS})
                 else()
@@ -167,9 +177,8 @@ endfunction()
 
 if (DOWNLOAD_DEPENDENCIES)
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-            "${CMAKE_BINARY_DIR}/conan.cmake")
+        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan.")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
@@ -192,7 +201,7 @@ endif()
 
 # Common functionality.
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME} MAKE_EXECUTABLE
+    TARGET ${CMAKE_PROJECT_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
@@ -275,6 +284,16 @@ add_program(
     # Sources
 )
 
+# Make executable.
+add_program(
+    TARGET ${CMAKE_PROJECT_NAME}-bin MAKE_EXECUTABLE
+    SRCS
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME}-bin DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
+set_target_properties(${CMAKE_PROJECT_NAME}-bin PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME}})
+message(STATUS "Renamed executable ${CMAKE_PROJECT_NAME}-bin to ${CMAKE_PROJECT_NAME}.")
+
 if (BUILD_TESTING)
     # Common tests.
     add_program(
@@ -331,6 +350,7 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/win32_64
         SRCS
     )
+    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
 
     include(GoogleTest)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
