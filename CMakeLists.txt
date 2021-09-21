@@ -309,9 +309,9 @@ if (BUILD_TESTING)
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
         # Util Headers
-        test/TestUtilities/include/CommandLine/MockCommandLine.h
+        test/TestUtilities/include/CommandLine/CommandLineUtilities.h
         # Util Sources
-        test/TestUtilities/src/CommandLine/MockCommandLine.cpp
+        test/TestUtilities/src/CommandLine/CommandLineUtilities.cpp
     )
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest)
 

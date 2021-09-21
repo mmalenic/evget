@@ -131,12 +131,6 @@ public:
      */
     virtual void readArgs();
 
-    /**
-     * Get the platform information from the system.
-     * @return platform information
-     */
-    virtual constexpr std::string_view platformInformation() = 0;
-
     friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
     friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
 
