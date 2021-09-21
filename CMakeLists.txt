@@ -300,14 +300,18 @@ if (BUILD_TESTING)
         TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test
-        ${PROJECT_SOURCE_DIR}/TestUtilities/include
-        ${PROJECT_SOURCE_DIR}/TestUtilities/src
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src
         SRCS
         test/EventData/EventDataTest.cpp
         test/EventData/FieldTest.cpp
         test/CommandLine/CommandLineTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
+        # Util Headers
+        test/TestUtilities/include/CommandLine/MockCommandLine.h
+        # Util Sources
+        test/TestUtilities/src/CommandLine/MockCommandLine.cpp
     )
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest)
 
@@ -318,13 +322,15 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/linux
-        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/linux
-        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/linux
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/linux
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/linux
         SRCS
         test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
         test/platform/linux/EventDeviceListerTest.cpp
         test/platform/linux/EventDeviceTest.cpp
         test/platform/linux/ShutdownHandlerLinuxTest.cpp
+        # Util Headers
+        # Util Sources
     )
 
     # OSX tests
@@ -334,9 +340,11 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/osx
-        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/osx
-        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/osx
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/osx
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/osx
         SRCS
+        # Util Headers
+        # Util Sources
     )
 
     # Windows tests
@@ -346,9 +354,11 @@ if (BUILD_TESTING)
         PLATFORM_REQUIRES
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/win32_64
-        ${PROJECT_SOURCE_DIR}/TestUtilities/include/platform/win32_64
-        ${PROJECT_SOURCE_DIR}/TestUtilities/src/platform/win32_64
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/win32_64
+        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/win32_64
         SRCS
+        # Util Headers
+        # Util Sources
     )
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
 

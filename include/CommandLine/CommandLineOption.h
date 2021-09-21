@@ -100,13 +100,13 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     if (validator.has_value()) {
         builder._desc.add_options()(
             (shortName + "," + longName).c_str(),
-            po::value<T>(),
+            po::value<std::string>(),
             description.c_str()
         );
     } else {
         builder._desc.add_options()(
             (shortName + "," + longName).c_str(),
-            po::value<std::string>(),
+            po::value<T>(),
             description.c_str()
         );
     }
