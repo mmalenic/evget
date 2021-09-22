@@ -60,12 +60,6 @@ public:
     void parseCommandLine(int argc, char** argv);
 
     /**
-    * Get the default file location.
-    * @return default file location
-    */
-    fs::path defaultFile();
-
-    /**
     * Get the file.
     * @return the file
     */
@@ -117,7 +111,7 @@ public:
      * Get the valid log levels.
      * @return valid log levels
      */
-    static constexpr const char * validLogLevels();
+    static std::string validLogLevels();
 
     /**
      * Extract the filetyoe from the string.
@@ -154,16 +148,16 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
-//    const CommandLineOption<std::string> helpOption;
-//    const CommandLineOption<std::string> versionOption;
-//    const CommandLineOption<fs::path> baseFilePath;
-//    const CommandLineOption<std::vector<Filetype>> filetypes;
-//    const CommandLineOption<bool> print;
-//    const CommandLineOption<bool> useRawEvents;
-//    const CommandLineOption<spdlog::level::level_enum> logLevel;
-
     po::options_description desc;
     po::variables_map vm;
+
+    const CommandLineOption<bool> helpOption;
+    const CommandLineOption<bool> versionOption;
+    const CommandLineOption<fs::path> storageFolder;
+    const CommandLineOption<std::vector<Filetype>> filetypes;
+    const CommandLineOption<bool> print;
+    const CommandLineOption<bool> useRawEvents;
+    const CommandLineOption<spdlog::level::level_enum> logLevel;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

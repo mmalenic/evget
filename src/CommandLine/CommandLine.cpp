@@ -26,8 +26,6 @@
 #include <boost/algorithm/string.hpp>
 #include <iostream>
 
-using namespace std;
-
 namespace algorithm = boost::algorithm;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
@@ -41,6 +39,7 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This program comes with ABSOLUTELY NO WARRANTY.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
                                        "Written by Marko Malenic 2021.\n";
+static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
 
 std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
     switch (filetype) {
@@ -53,7 +52,7 @@ std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
 }
 
 std::istream& operator>>(std::istream& in, Filetype& algorithm) {
-    string token{};
+    std::string token{};
     in >> token;
     algorithm::to_lower(token);
 
@@ -67,66 +66,53 @@ std::istream& operator>>(std::istream& in, Filetype& algorithm) {
     return in;
 }
 
-CommandLine::CommandLine(const string& platformInformation) :
+CommandLine::CommandLine(const std::string& platformInformation) :
     desc{
         DESCRIPTION
     },
-    vm{}
-//    versionNumber{VERSION},
-//    versionMessage{
-//        "evget (" + platformInformation + ") " + versionNumber
-//            + ".\n\n" + LICENSE_INFO
-//    },
-//    filename{"events.sqlite"},
-//    fileOption{"file", "f", "file to store events, defaults to current directory."},
-//    filetypeOption{
-//        "filetype",
-//        "e",
-//        string{"filetype to use, if specified, overrides the ending on the filename.\nValid values are:\n[ "}
-//            + SQLITE_STRING + ", " + CSV_STRING + " ]"
-//    },
-//    printOption{"print", "p", "print events."},
-//    useRawEventsOption{"use-raw-events", "r", "use raw system events instead of universal cross platform events."},
-//    logLevelOption{
-//        "log-level",
-//        "u",
-//        string{"log level to print messages at, defaults to \"warning\".\nValid values are:\n"} + validLogLevels()
-//    },
-//    filetype{extractFiletype(filename)},
-//    print{false},
-//    useRawEvents{false},
-//    logLevelString{"warning"},
-//    logLevel{spdlog::level::warn}
-    {
-
-//    desc.add_options()
-//            ("help,h", "produce help message.")
-//            ("version,v", "version information.")
-//            (
-//                (get<0>(fileOption) + "," + get<1>(fileOption)).c_str(),
-//                po::value<fs::path>(&this->file)->default_value(defaultFile()),
-//                get<2>(fileOption).c_str()
-//            )
-//            (
-//                (get<0>(filetypeOption) + "," + get<1>(filetypeOption)).c_str(),
-//                po::value<Filetype>(&this->filetype)->default_value(filetype),
-//                get<2>(filetypeOption).c_str()
-//            )
-//            (
-//                (get<0>(printOption) + "," + get<1>(printOption)).c_str(),
-//                po::bool_switch(&print),
-//                get<2>(printOption).c_str()
-//            )
-//            (
-//                (get<0>(useRawEventsOption) + "," + get<1>(useRawEventsOption)).c_str(),
-//                po::bool_switch(&useRawEvents),
-//                get<2>(useRawEventsOption).c_str()
-//            )
-//            (
-//                (get<0>(logLevelOption) + "," + get<1>(logLevelOption)).c_str(),
-//                po::value<string>(&logLevelString)->default_value(logLevelString),
-//                get<2>(logLevelOption).c_str()
-//            );
+    vm{},
+    helpOption{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").build()},
+    versionOption{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").build()},
+    storageFolder{
+    CommandLineOptionBuilder<fs::path>{desc}
+        .shortName("o")
+        .longName("folder")
+        .description("Folder location where events are stored.")
+        .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
+        .build()
+    },
+    filetypes{
+        CommandLineOptionBuilder<std::vector<Filetype>>{desc}
+            .shortName("t")
+            .longName("filetypes")
+            .description("Filetypes used to store events.")
+            .defaultValue(std::vector{sqlite})
+            .build()
+    },
+    print{
+        CommandLineOptionBuilder<bool>{desc}
+            .shortName("p")
+            .longName("print")
+            .description("Print events.")
+            .defaultValue(false)
+            .build()
+    },
+    useRawEvents{
+        CommandLineOptionBuilder<bool>{desc}
+            .shortName("r")
+            .longName("use-raw-events")
+            .description("Capture raw system events as well as universal cross platform events.")
+            .defaultValue(false)
+            .build()
+    },
+    logLevel{
+        CommandLineOptionBuilder<spdlog::level::level_enum>{desc}
+            .shortName("u")
+            .longName("log-level")
+            .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + validLogLevels())
+            .defaultValue(spdlog::level::warn)
+            .build()
+    } {
 }
 
 void CommandLine::parseCommandLine(int argc, char** argv) {
@@ -181,12 +167,6 @@ po::options_description& CommandLine::getDesc() {
     return desc;
 }
 
-fs::path CommandLine::defaultFile() {
-    fs::path dir{fs::current_path()};
-//    fs::path storageFile{filename};
-//    return dir / storageFile;
-}
-
 const po::variables_map& CommandLine::getVm() const {
     return vm;
 }
@@ -207,28 +187,28 @@ spdlog::level::level_enum CommandLine::getLogLevel() const {
 //    return logLevel;
 }
 
-//string CommandLine::validLogLevels() {
-//    auto levels = {
-//        spdlog::level::to_string_view(spdlog::level::trace).data(),
-//        spdlog::level::to_string_view(spdlog::level::debug).data(),
-//        spdlog::level::to_string_view(spdlog::level::info).data(),
-//        spdlog::level::to_string_view(spdlog::level::warn).data(),
-//        spdlog::level::to_string_view(spdlog::level::err).data(),
-//        spdlog::level::to_string_view(spdlog::level::critical).data(),
-//        spdlog::level::to_string_view(spdlog::level::off).data()
-//    };
-//
-//    string stringOut;
-//    stringOut += "[ ";
-//    for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
-//        stringOut += *i;
-//        stringOut += ", ";
-//    }
-//    stringOut += *prev(levels.end());
-//    stringOut += " ]";
-//
-//    return stringOut;
-//}
+std::string CommandLine::validLogLevels() {
+    auto levels = {
+        spdlog::level::to_string_view(spdlog::level::trace).data(),
+        spdlog::level::to_string_view(spdlog::level::debug).data(),
+        spdlog::level::to_string_view(spdlog::level::info).data(),
+        spdlog::level::to_string_view(spdlog::level::warn).data(),
+        spdlog::level::to_string_view(spdlog::level::err).data(),
+        spdlog::level::to_string_view(spdlog::level::critical).data(),
+        spdlog::level::to_string_view(spdlog::level::off).data()
+    };
+
+    string stringOut;
+    stringOut += "[ ";
+    for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
+        stringOut += *i;
+        stringOut += ", ";
+    }
+    stringOut += *prev(levels.end());
+    stringOut += " ]";
+
+    return stringOut;
+}
 
 const Filetype& CommandLine::getFiletype() const {
 //    return filetype;

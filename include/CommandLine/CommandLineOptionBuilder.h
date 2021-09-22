@@ -40,6 +40,9 @@ class CommandLineOption;
 template <typename T>
 class CommandLineOptionBuilder {
 public:
+    /**
+     * Validator is a function that takes a string and returns an optional value.
+     */
     using Validator = std::function<std::optional<T>(std::string)>;
 
     friend class CommandLineOption<T>;
