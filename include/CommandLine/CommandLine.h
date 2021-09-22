@@ -111,7 +111,12 @@ public:
      * Get the valid log levels.
      * @return valid log levels
      */
-    static std::string validLogLevels();
+	static std::string logLevelsString();
+
+    /**
+     * Converts the log level string into a log level if possible.
+     */
+	static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
 
     /**
      * Extract the filetyoe from the string.

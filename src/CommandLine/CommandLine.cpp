@@ -87,6 +87,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
+            //.validator()
             .build()
     },
     print{
@@ -109,10 +110,12 @@ CommandLine::CommandLine(const std::string& platformInformation) :
         CommandLineOptionBuilder<spdlog::level::level_enum>{desc}
             .shortName("u")
             .longName("log-level")
-            .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + validLogLevels())
+            .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
+    	    .validator(validateLogLevel)
             .build()
-    } {
+    }
+{
 }
 
 void CommandLine::parseCommandLine(int argc, char** argv) {
@@ -187,27 +190,29 @@ spdlog::level::level_enum CommandLine::getLogLevel() const {
 //    return logLevel;
 }
 
-std::string CommandLine::validLogLevels() {
-    auto levels = {
-        spdlog::level::to_string_view(spdlog::level::trace).data(),
-        spdlog::level::to_string_view(spdlog::level::debug).data(),
-        spdlog::level::to_string_view(spdlog::level::info).data(),
-        spdlog::level::to_string_view(spdlog::level::warn).data(),
-        spdlog::level::to_string_view(spdlog::level::err).data(),
-        spdlog::level::to_string_view(spdlog::level::critical).data(),
-        spdlog::level::to_string_view(spdlog::level::off).data()
-    };
-
-    string stringOut;
+std::string CommandLine::logLevelsString() {
+    std::string stringOut;
     stringOut += "[ ";
-    for (auto i{levels.begin()}; i != prev(levels.end()); ++i) {
-        stringOut += *i;
+    for (auto i{std::begin(SPDLOG_LEVEL_NAMES)}; i != std::prev(std::begin(SPDLOG_LEVEL_NAMES)); ++i) {
+        stringOut += i->data();
         stringOut += ", ";
     }
-    stringOut += *prev(levels.end());
+    stringOut += std::prev(std::begin(SPDLOG_LEVEL_NAMES))->data();
     stringOut += " ]";
 
     return stringOut;
+}
+
+std::optional<spdlog::level::level_enum> CommandLine::validateLogLevel(std::string logLevel) {
+	algorithm::to_lower(logLevel);
+    if (logLevel == "off" || logLevel == "o") {
+		return spdlog::level::off;
+    }
+    auto level = spdlog::level::from_str(logLevel);
+    if (level == spdlog::level::off) {
+        return std::nullopt;
+    }
+    return level;
 }
 
 const Filetype& CommandLine::getFiletype() const {
@@ -218,7 +223,7 @@ bool CommandLine::isRawEvents() const {
 //    return useRawEvents;
 }
 
-Filetype CommandLine::extractFiletype(const string& str) {
+Filetype CommandLine::extractFiletype(const std::string& str) {
     fs::path path{str};
     string ext{path.extension()};
     ext.erase(0, 1);
