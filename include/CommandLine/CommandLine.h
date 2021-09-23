@@ -60,10 +60,9 @@ public:
     void parseCommandLine(int argc, char** argv);
 
     /**
-    * Get the file.
-    * @return the file
-    */
-    [[nodiscard]] const fs::path& getFile() const;
+     * Get the folder.
+     */
+    [[nodiscard]] fs::path getFolder() const;
 
 
     /**
@@ -88,7 +87,7 @@ public:
      * Get the file type.
      * @return file type
      */
-    [[nodiscard]] std::vector<Filetype> CommandLine::getFiletype() const;
+    [[nodiscard]] std::vector<Filetype> getFiletype() const;
 
     /**
      * Get the valid log levels.
@@ -128,10 +127,17 @@ protected:
      */
     [[nodiscard]] const po::variables_map& getVm() const;
 
+    /**
+     * Get the options so that a derived class can add to them.
+     * @return
+     */
+    std::vector<std::unique_ptr<CommandLineOptionBase>>& getOptions();
+
 private:
     po::options_description desc;
     po::variables_map vm;
 
+    std::vector<std::unique_ptr<CommandLineOptionBase>> options;
     const CommandLineOption<bool> help;
     const CommandLineOption<bool> version;
     const CommandLineOption<fs::path> storageFolder;

@@ -71,14 +71,16 @@ CommandLine::CommandLine(const std::string& platformInformation) :
         DESCRIPTION
     },
     vm{},
-    help{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").build()},
-    version{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").build()},
+    options{},
+    help{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").store(options).build()},
+    version{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").store(options).build()},
     storageFolder{
     CommandLineOptionBuilder<fs::path>{desc}
         .shortName("o")
         .longName("folder")
         .description("Folder location where events are stored.")
         .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
+        .store(options)
         .build()
     },
     filetypes{
@@ -87,6 +89,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
+            .store(options)
             //.validator()
             .build()
     },
@@ -96,6 +99,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("print")
             .description("Print events.")
             .defaultValue(false)
+            .store(options)
             .build()
     },
     rawEvents{
@@ -104,6 +108,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("use-raw-events")
             .description("Capture raw system events as well as cross platform events.")
             .defaultValue(false)
+            .store(options)
             .build()
     },
     logLevel{
@@ -113,6 +118,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
     	    .validator(validateLogLevel)
+            .store(options)
             .build()
     }
 {
@@ -126,6 +132,10 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
         exit(EXIT_SUCCESS);
     }
     notify(vm);
+
+    for (auto const& option : options) {
+        option->afterRead(vm);
+    }
 }
 
 void CommandLine::readArgs() {
@@ -151,8 +161,8 @@ void CommandLine::readArgs() {
 //    }
 }
 
-const fs::path& CommandLine::getFile() const {
-//    return file;
+fs::path CommandLine::getFolder() const {
+    return storageFolder.getValue();
 }
 
 po::options_description& CommandLine::getDesc() {
@@ -202,4 +212,8 @@ std::vector<Filetype> CommandLine::getFiletype() const {
 
 bool CommandLine::useRawEvents() const {
     return rawEvents.getValue();
+}
+
+std::vector<std::unique_ptr<CommandLineOptionBase>>& CommandLine::getOptions() {
+    return options;
 }
