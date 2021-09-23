@@ -102,12 +102,6 @@ public:
     [[nodiscard]] const Filetype& getFiletype() const;
 
     /**
-     * Handles command line options that have simple logic, like the help message,
-     * or version information.
-     */
-    void simpleArgs();
-
-    /**
      * Get the valid log levels.
      * @return valid log levels
      */
@@ -117,13 +111,6 @@ public:
      * Converts the log level string into a log level if possible.
      */
 	static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
-
-    /**
-     * Extract the filetyoe from the string.
-     * @param str string to use
-     * @return filetype
-     */
-    static Filetype extractFiletype(const std::string& str);
 
     /**
      * Checks to see that the options are correctly specified, and finalises object.

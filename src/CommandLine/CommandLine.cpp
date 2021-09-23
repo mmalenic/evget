@@ -102,7 +102,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
         CommandLineOptionBuilder<bool>{desc}
             .shortName("r")
             .longName("use-raw-events")
-            .description("Capture raw system events as well as universal cross platform events.")
+            .description("Capture raw system events as well as cross platform events.")
             .defaultValue(false)
             .build()
     },
@@ -126,17 +126,6 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
         exit(EXIT_SUCCESS);
     }
     notify(vm);
-}
-
-void CommandLine::simpleArgs() {
-    if (vm.count("help")) {
-        cout << desc << "\n";
-        exit(EXIT_SUCCESS);
-    }
-//    if (vm.count("version")) {
-//        cout << versionMessage;
-//        exit(EXIT_SUCCESS);
-//    }
 }
 
 void CommandLine::readArgs() {
@@ -220,22 +209,5 @@ const Filetype& CommandLine::getFiletype() const {
 }
 
 bool CommandLine::isRawEvents() const {
-//    return useRawEvents;
-}
-
-Filetype CommandLine::extractFiletype(const std::string& str) {
-    fs::path path{str};
-    string ext{path.extension()};
-    ext.erase(0, 1);
-    istringstream stream{ext};
-    Filetype filetype{};
-    try {
-        stream >> filetype;
-    } catch (po::validation_error& err) {
-        spdlog::warn(
-            string{"Cannot extract filetype from filename alone: "} + err.what() + " Using default filetype sqlite."
-        );
-        return sqlite;
-    }
-    return filetype;
+    return useRawEvents;
 }
