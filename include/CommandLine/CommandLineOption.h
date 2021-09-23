@@ -29,6 +29,7 @@
 #include <fmt/core.h>
 #include "CommandLineOptionBuilder.h"
 #include "InvalidCommandLineOption.h"
+#include "CommandLineOptionBase.h"
 
 namespace po = boost::program_options;
 
@@ -37,7 +38,7 @@ namespace po = boost::program_options;
  * @tparam T value of command line option
  */
 template<typename T>
-class CommandLineOption {
+class CommandLineOption : public CommandLineOptionBase {
 public:
     /**
      * Create from builder.
@@ -45,38 +46,13 @@ public:
     explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
 
     /**
-     * Get short name.
-     */
-    [[nodiscard]] std::string getShortName() const;
-
-    /**
-     * Get long name.
-     */
-    [[nodiscard]] std::string getLongName() const;
-
-    /**
-     * Get description.
-     */
-    [[nodiscard]] std::string getDescription() const;
-
-    /**
      * Get value.
      */
     [[nodiscard]] T getValue() const;
 
-    /**
-     * Check for option conditions after reading command line arguments.
-     * This must be called to notify the command line option that options
-     * have been read.
-     *
-     * @throws InvalidCommandLineOption if conditions are not satisfied
-     */
-    void afterRead(po::variables_map &vm);
+    void afterRead(po::variables_map &vm) override;
 
 private:
-    const std::string shortName;
-    const std::string longName;
-    const std::string description;
     const bool required;
     const std::vector<std::string> conflictsWith;
     const std::optional<T> implicitValue;
@@ -88,9 +64,7 @@ private:
 
 template<typename T>
 CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
-    shortName{builder._shortName},
-    longName{builder._longName},
-    description{builder._description},
+    CommandLineOptionBase{builder._shortName, builder._longName, builder._description},
     required{builder._required},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
@@ -99,21 +73,21 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
 
     if (validator.has_value()) {
         builder._desc.add_options()(
-            (shortName + "," + longName).c_str(),
+            (getShortName() + "," + getLongName()).c_str(),
             po::value<std::string>(),
-            description.c_str()
+            getDescription().c_str()
         );
     } else {
         builder._desc.add_options()(
-            (shortName + "," + longName).c_str(),
+            (getShortName() + "," + getLongName()).c_str(),
             po::value<T>(),
-            description.c_str()
+            getDescription().c_str()
         );
     }
 
     if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
         builder._positionalDesc->get().add(
-            (shortName + "," + longName).c_str(),
+            (getShortName() + "," + getLongName()).c_str(),
             *builder._positionalAmount
         );
     }
@@ -125,53 +99,38 @@ T CommandLineOption<T>::getValue() const {
 }
 
 template<typename T>
-std::string CommandLineOption<T>::getShortName() const {
-    return shortName;
-}
-
-template<typename T>
-std::string CommandLineOption<T>::getLongName() const {
-    return longName;
-}
-
-template<typename T>
-std::string CommandLineOption<T>::getDescription() const {
-    return description;
-}
-
-template<typename T>
 void CommandLineOption<T>::afterRead(po::variables_map& vm) {
     // Check required.
-    if (!vm.count(shortName) && required) {
-        throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", longName));
+    if (!vm.count(getShortName()) && required) {
+        throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", getLongName()));
     }
 
     // Check implicit value.
-    if (vm.count(shortName) && vm[shortName].empty()) {
+    if (vm.count(getShortName()) && vm[getShortName()].empty()) {
         if (implicitValue.has_value()) {
             value = implicitValue;
         } else {
-            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", longName));
+            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getLongName()));
         }
     }
 
     // Check conflicts
     for (const auto& maybeConflict : conflictsWith) {
-        if (shortName == maybeConflict || longName == maybeConflict) {
-            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", longName, maybeConflict));
+        if (getShortName() == maybeConflict || getLongName() == maybeConflict) {
+            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getLongName(), maybeConflict));
         }
     }
 
     // Check regular value and validator.
-    if (vm.count(shortName) && !vm[shortName].empty()) {
+    if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
         if (!validator.has_value()) {
-            value = vm[shortName].as<T>();
+            value = vm[getShortName()].template as<T>();
         } else {
-            std::optional<T> validatedValue = (*validator)(vm[shortName].as<std::string>());
+            std::optional<T> validatedValue = (*validator)(vm[getShortName()].template as<std::string>());
             if (validatedValue.has_value()) {
                 value = validatedValue;
             } else {
-                throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", longName));
+                throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", getLongName()));
             }
         }
     }

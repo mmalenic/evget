@@ -122,7 +122,7 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
     try {
         store(parse_command_line(argc, argv, desc), vm);
     } catch (po::error& error) {
-        cout << "Error: " << error.what() << "\n";
+        std::cout << "Error: " << error.what() << "\n";
         exit(EXIT_SUCCESS);
     }
     notify(vm);

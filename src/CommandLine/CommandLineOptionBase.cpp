@@ -20,19 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CommandLine/CommandLineOption.h"
+#include "CommandLine/CommandLineOptionBase.h"
 
-template<>
-CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) :
-    CommandLineOptionBase{builder._shortName, builder._longName, builder._description},
-    required{builder._required},
-    conflictsWith{builder._conflictsWith},
-    validator{builder._validator},
-    stringValue{},
-    value{builder.value} {
-    builder._desc.add_options()(
-        (getShortName() + "," + getLongName()).c_str(),
-        po::bool_switch(),
-        getDescription().c_str()
-    );
+#include <utility>
+
+std::string CommandLineOptionBase::getShortName() const {
+    return shortName;
+}
+
+std::string CommandLineOptionBase::getLongName() const {
+    return longName;
+}
+
+std::string CommandLineOptionBase::getDescription() const {
+    return description;
+}
+
+CommandLineOptionBase::CommandLineOptionBase(std::string shortName, std::string longName, std::string description) : shortName{std::move(shortName)}, longName{std::move(longName)}, description{std::move(description)} {
 }
