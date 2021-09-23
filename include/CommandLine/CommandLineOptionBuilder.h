@@ -27,6 +27,7 @@
 #include <boost/program_options.hpp>
 #include <utility>
 #include "UnsupportedOperationException.h"
+#include "CommandLineOptionBase.h"
 
 namespace po = boost::program_options;
 
@@ -83,6 +84,11 @@ public:
     CommandLineOptionBuilder& positionalValue(int amount, po::positional_options_description& positionalDesc);
 
     /**
+     * Make this optional a positional value, that takes the amount of values.
+     */
+    CommandLineOptionBuilder& store(std::vector<std::unique_ptr<CommandLineOptionBase>>& in);
+
+    /**
      * State as required option.
      */
     CommandLineOptionBuilder& required();
@@ -91,7 +97,7 @@ public:
      * State that the option conflicts with another.
      * @param name name of conflicting option
      */
-    CommandLineOptionBuilder& conflictsWith(std::string name);
+    CommandLineOptionBuilder& conflictsWith(const std::string& name);
 
     /**
      * Set the validation function.
@@ -104,7 +110,7 @@ public:
     CommandLineOption<T> build();
 
 private:
-    po::options_description& _desc;
+    std::reference_wrapper<po::options_description> _desc;
     std::optional<std::reference_wrapper<po::positional_options_description>> _positionalDesc;
     std::string _shortName;
     std::string _longName;
@@ -115,6 +121,7 @@ private:
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
+    std::optional<std::reference_wrapper<std::vector<std::unique_ptr<CommandLineOptionBase>>>> storeIn;
 };
 
 template <typename T>
@@ -126,7 +133,8 @@ CommandLineOptionBuilder<T>::CommandLineOptionBuilder(po::options_description& d
     _required{false},
     _conflictsWith{},
     _validator{},
-    value{} {
+    value{},
+    storeIn{} {
 }
 
 template <typename T>
@@ -154,7 +162,7 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::required() {
 }
 
 template <typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::conflictsWith(std::string name) {
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::conflictsWith(const std::string& name) {
     _conflictsWith.emplace_back(name);
     return *this;
 }
@@ -190,6 +198,12 @@ CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
         throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
     }
     return CommandLineOption(*this);
+}
+
+template<typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::store(std::vector<std::unique_ptr<CommandLineOptionBase>> &in) {
+    storeIn = in;
+    return *this;
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H

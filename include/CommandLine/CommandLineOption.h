@@ -91,6 +91,10 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
             *builder._positionalAmount
         );
     }
+
+    if (builder.storeIn.has_value()) {
+        builder->storeIn.get().push_back(this);
+    }
 }
 
 template<typename T>

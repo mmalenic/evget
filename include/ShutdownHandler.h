@@ -49,6 +49,7 @@ public:
     virtual void registerInterruptHandler() = 0;
 
     ShutdownHandler() = default;
+    virtual ~ShutdownHandler() = default;
     ShutdownHandler(const ShutdownHandler&) = default;
     ShutdownHandler(ShutdownHandler&&) noexcept = default;
     ShutdownHandler& operator=(const ShutdownHandler&) = default;
