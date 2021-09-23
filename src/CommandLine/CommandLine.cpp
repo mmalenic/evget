@@ -71,8 +71,8 @@ CommandLine::CommandLine(const std::string& platformInformation) :
         DESCRIPTION
     },
     vm{},
-    helpOption{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").build()},
-    versionOption{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").build()},
+    help{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").build()},
+    version{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").build()},
     storageFolder{
     CommandLineOptionBuilder<fs::path>{desc}
         .shortName("o")
@@ -98,7 +98,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .defaultValue(false)
             .build()
     },
-    useRawEvents{
+    rawEvents{
         CommandLineOptionBuilder<bool>{desc}
             .shortName("r")
             .longName("use-raw-events")
@@ -163,20 +163,12 @@ const po::variables_map& CommandLine::getVm() const {
     return vm;
 }
 
-bool CommandLine::isPrint() const {
-//    return print;
-}
-
-const tuple<std::string, std::string, std::string>& CommandLine::getFileOption() const {
-//    return fileOption;
-}
-
-const tuple<std::string, std::string, std::string>& CommandLine::getPrintOption() const {
-//    return printOption;
+bool CommandLine::shouldPrint() const {
+    return print.getValue();
 }
 
 spdlog::level::level_enum CommandLine::getLogLevel() const {
-//    return logLevel;
+    return logLevel.getValue();
 }
 
 std::string CommandLine::logLevelsString() {
@@ -204,10 +196,10 @@ std::optional<spdlog::level::level_enum> CommandLine::validateLogLevel(std::stri
     return level;
 }
 
-const Filetype& CommandLine::getFiletype() const {
-//    return filetype;
+std::vector<Filetype> CommandLine::getFiletype() const {
+    return filetypes.getValue();
 }
 
-bool CommandLine::isRawEvents() const {
-    return useRawEvents;
+bool CommandLine::useRawEvents() const {
+    return rawEvents.getValue();
 }

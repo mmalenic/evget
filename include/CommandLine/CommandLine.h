@@ -65,29 +65,18 @@ public:
     */
     [[nodiscard]] const fs::path& getFile() const;
 
-    /**
-     * Get file option.
-     * @return file option
-     */
-    [[nodiscard]] const std::tuple<std::string, std::string, std::string>& getFileOption() const;
-
-    /**
-     * Get print option.
-     * @return print option.
-     */
-    [[nodiscard]] const std::tuple<std::string, std::string, std::string>& getPrintOption() const;
 
     /**
      * Getter for print flag.
      * @return print flag
      */
-    [[nodiscard]] bool isPrint() const;
+    [[nodiscard]] bool shouldPrint() const;
 
     /**
      * Getter for raw events flag.
      * @return raw events flag
      */
-    [[nodiscard]] bool isRawEvents() const;
+    [[nodiscard]] bool useRawEvents() const;
 
     /**
      * Get the log level.
@@ -99,7 +88,7 @@ public:
      * Get the file type.
      * @return file type
      */
-    [[nodiscard]] const Filetype& getFiletype() const;
+    [[nodiscard]] std::vector<Filetype> CommandLine::getFiletype() const;
 
     /**
      * Get the valid log levels.
@@ -143,12 +132,12 @@ private:
     po::options_description desc;
     po::variables_map vm;
 
-    const CommandLineOption<bool> helpOption;
-    const CommandLineOption<bool> versionOption;
+    const CommandLineOption<bool> help;
+    const CommandLineOption<bool> version;
     const CommandLineOption<fs::path> storageFolder;
     const CommandLineOption<std::vector<Filetype>> filetypes;
     const CommandLineOption<bool> print;
-    const CommandLineOption<bool> useRawEvents;
+    const CommandLineOption<bool> rawEvents;
     const CommandLineOption<spdlog::level::level_enum> logLevel;
 };
 
