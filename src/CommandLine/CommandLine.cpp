@@ -133,32 +133,14 @@ void CommandLine::parseCommandLine(int argc, char** argv) {
     }
     notify(vm);
 
-    for (auto const& option : options) {
-        option->afterRead(vm);
+    try {
+        for (auto const &option: options) {
+            option->afterRead(vm);
+        }
+    } catch (InvalidCommandLineOption& error) {
+        std::cout << error.what() << "\n";
+        exit(EXIT_SUCCESS);
     }
-}
-
-void CommandLine::readArgs() {
-//    if (vm.count(get<0>(logLevelOption)) && !vm[get<0>(logLevelOption)].defaulted()) {
-//        auto option = vm[get<0>(logLevelOption)].as<string>();
-//
-//        if (option == "off") {
-//            logLevel = spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
-//            return;
-//        }
-//        if (spdlog::level::from_str(option) == spdlog::level::off) {
-//            cout << "Invalid log level setting.\n";
-//            cout << desc << "\n";
-//            exit(EXIT_SUCCESS);
-//        }
-//
-//        logLevel = spdlog::level::from_str(vm[get<0>(logLevelOption)].as<string>());
-//    }
-//    if ((vm.count(get<0>(filetypeOption)) && !vm[get<0>(filetypeOption)].defaulted())
-//        && !(vm.count(get<0>(fileOption)) && !vm[get<0>(fileOption)].defaulted())) {
-//        cout << "The filetype option can only be specified if the file option is also specified.\n";
-//        exit(EXIT_SUCCESS);
-//    }
 }
 
 fs::path CommandLine::getFolder() const {

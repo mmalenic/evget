@@ -100,11 +100,6 @@ public:
      */
 	static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
 
-    /**
-     * Checks to see that the options are correctly specified, and finalises object.
-     */
-    virtual void readArgs();
-
     friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
     friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
 
