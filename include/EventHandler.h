@@ -41,7 +41,7 @@ public:
      * Create the event listener with storage.
      * @param storage storage
      * @param transformer transformer
-     * @param rawEvents rawEvents
+     * @param rawEvents systemEvents
      */
     EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, SystemEventLoop<E, T>& eventLoop);
 

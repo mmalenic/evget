@@ -72,16 +72,30 @@ CommandLine::CommandLine(const std::string& platformInformation) :
     },
     vm{},
     options{},
-    help{CommandLineOptionBuilder<bool>{desc}.shortName("h").longName("help").description("Produce help message describing program options.").store(options).build()},
-    version{CommandLineOptionBuilder<bool>{desc}.shortName("v").longName("version").description("Produce version message.").store(options).build()},
+    help{
+        CommandLineOptionBuilder<bool>{desc}
+            .shortName("h")
+            .longName("help")
+            .description("Produce help message describing program options.")
+            .store(options)
+            .build()
+    },
+    version{
+        CommandLineOptionBuilder<bool>{desc}
+            .shortName("v")
+            .longName("version")
+            .description("Produce version message.")
+            .store(options)
+            .build()
+    },
     storageFolder{
-    CommandLineOptionBuilder<fs::path>{desc}
-        .shortName("o")
-        .longName("folder")
-        .description("Folder location where events are stored.")
-        .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
-        .store(options)
-        .build()
+        CommandLineOptionBuilder<fs::path>{desc}
+            .shortName("o")
+            .longName("folder")
+            .description("Folder location where events are stored.")
+            .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
+            .store(options)
+            .build()
     },
     filetypes{
         CommandLineOptionBuilder<std::vector<Filetype>>{desc}
@@ -102,10 +116,10 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .store(options)
             .build()
     },
-    rawEvents{
+    systemEvents{
         CommandLineOptionBuilder<bool>{desc}
-            .shortName("r")
-            .longName("use-raw-events")
+            .shortName("s")
+            .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .defaultValue(false)
             .store(options)
@@ -117,30 +131,22 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
-    	    .validator(validateLogLevel)
+            .validator(validateLogLevel)
             .store(options)
             .build()
     }
 {
 }
 
-void CommandLine::parseCommandLine(int argc, char** argv) {
-    try {
-        store(parse_command_line(argc, argv, desc), vm);
-    } catch (po::error& error) {
-        std::cout << "Error: " << error.what() << "\n";
-        exit(EXIT_SUCCESS);
-    }
+bool CommandLine::parseCommandLine(int argc, char** argv) {
+    po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).allow_unregistered().run();
+    store(parsed, vm);
     notify(vm);
 
-    try {
-        for (auto const &option: options) {
-            option->afterRead(vm);
-        }
-    } catch (InvalidCommandLineOption& error) {
-        std::cout << error.what() << "\n";
-        exit(EXIT_SUCCESS);
+    for (auto const &option: options) {
+        option->afterRead(vm);
     }
+    return true;
 }
 
 fs::path CommandLine::getFolder() const {
@@ -192,8 +198,8 @@ std::vector<Filetype> CommandLine::getFiletype() const {
     return filetypes.getValue();
 }
 
-bool CommandLine::useRawEvents() const {
-    return rawEvents.getValue();
+bool CommandLine::useSystemEvents() const {
+    return systemEvents.getValue();
 }
 
 std::vector<std::unique_ptr<CommandLineOptionBase>>& CommandLine::getOptions() {

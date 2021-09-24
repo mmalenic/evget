@@ -52,18 +52,17 @@ public:
     explicit CommandLine(const std::string& platformInformation);
 
     /**
-    * Perform the actual command line parsing.
-    *
-    * @param argc from main
-    * @param argv from main
-    */
-    void parseCommandLine(int argc, char** argv);
+     * Perform the actual command line parsing. Returns true if operation of the program should continue.
+     *
+     * @param argc from main
+     * @param argv from main
+     */
+    bool parseCommandLine(int argc, char** argv);
 
     /**
      * Get the folder.
      */
     [[nodiscard]] fs::path getFolder() const;
-
 
     /**
      * Getter for print flag.
@@ -72,10 +71,10 @@ public:
     [[nodiscard]] bool shouldPrint() const;
 
     /**
-     * Getter for raw events flag.
-     * @return raw events flag
+     * Getter for system events flag.
+     * @return system events flag
      */
-    [[nodiscard]] bool useRawEvents() const;
+    [[nodiscard]] bool useSystemEvents() const;
 
     /**
      * Get the log level.
@@ -138,7 +137,7 @@ private:
     const CommandLineOption<fs::path> storageFolder;
     const CommandLineOption<std::vector<Filetype>> filetypes;
     const CommandLineOption<bool> print;
-    const CommandLineOption<bool> rawEvents;
+    const CommandLineOption<bool> systemEvents;
     const CommandLineOption<spdlog::level::level_enum> logLevel;
 };
 
