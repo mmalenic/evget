@@ -53,10 +53,11 @@ public:
     void afterRead(po::variables_map &vm) override;
 
 private:
-    const bool required;
-    const std::vector<std::string> conflictsWith;
-    const std::optional<T> implicitValue;
-    const std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
+    bool required;
+    std::vector<std::string> conflictsWith;
+    std::optional<T> implicitValue;
+    std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
+    std::optional<typename CommandLineOptionBuilder<T>::PerformAction> action;
 
     std::string stringValue;
     std::optional<T> value;
@@ -68,6 +69,7 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     required{builder._required},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
+    action{builder._action},
     implicitValue{builder._implicitValue},
     value{builder.value} {
 
@@ -142,6 +144,11 @@ void CommandLineOption<T>::afterRead(po::variables_map& vm) {
     // Should not happen.
     if (!value.has_value()) {
         throw UnsupportedOperationException("CommandLineOption does not have a value when it should.");
+    }
+
+    // Perform action.
+    if (action.has_value()) {
+        *action(*value);
     }
 }
 

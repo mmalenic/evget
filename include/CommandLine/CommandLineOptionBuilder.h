@@ -45,6 +45,7 @@ public:
      * Validator is a function that takes a string and returns an optional value.
      */
     using Validator = std::function<std::optional<T>(std::string)>;
+    using PerformAction = std::function<void(T)>;
 
     friend class CommandLineOption<T>;
 
@@ -84,6 +85,11 @@ public:
     CommandLineOptionBuilder& positionalValue(int amount, po::positional_options_description& positionalDesc);
 
     /**
+     * Perform an action after reading, with the value of the option.
+     */
+    CommandLineOptionBuilder& performAfterRead(PerformAction action);
+
+    /**
      * Make this optional a positional value, that takes the amount of values.
      */
     CommandLineOptionBuilder& store(std::vector<std::unique_ptr<CommandLineOptionBase>>& in);
@@ -118,6 +124,7 @@ private:
     bool _required;
     std::vector<std::string> _conflictsWith;
     std::optional<Validator> _validator;
+    std::optional<PerformAction> _action;
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
@@ -176,6 +183,12 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(T default
 template <typename T>
 CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::validator(Validator validator) {
     _validator = validator;
+    return *this;
+}
+
+template <typename T>
+CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::performAfterRead(PerformAction action) {
+    _action = action;
     return *this;
 }
 

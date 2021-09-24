@@ -146,6 +146,15 @@ bool CommandLine::parseCommandLine(int argc, char** argv) {
     for (auto const &option: options) {
         option->afterRead(vm);
     }
+
+    if (help.getValue()) {
+        std::cout << desc << "\n";
+    }
+    if (version.getValue()) {
+
+    }
+
+
     return true;
 }
 
