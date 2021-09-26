@@ -20,14 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <CommandLineLinux.h>
-#include <EventDeviceLister.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <boost/asio.hpp>
 #include <atomic>
 #include <EventHandler.h>
-#include <SystemEventLoopLinux.h>
 #include <boost/program_options.hpp>
 
 using namespace std;
@@ -54,27 +51,27 @@ int main(int argc, char* argv[]) {
 //    }
 //
 //    pool.join();
-    po::options_description desc("Allowed options");
-    desc.add_options()
-            ("help", "produce help message")
-            ("compression", po::value<int>(), "set compression level")
-        ;
-
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
-
-    if (vm.count("help")) {
-        cout << desc << "\n";
-        return 1;
-    }
-
-    if (vm.count("compression")) {
-        cout << "Compression level was set to "
-             << vm["compression"].as<int>() << ".\n";
-    } else {
-        cout << "Compression level was not set.\n";
-    }
+//    po::options_description desc("Allowed options");
+//    desc.add_options()
+//            ("help", "produce help message")
+//            ("compression", po::value<int>(), "set compression level")
+//        ;
+//
+//    po::variables_map vm;
+//    po::store(po::parse_command_line(argc, argv, desc), vm);
+//    po::notify(vm);
+//
+//    if (vm.count("help")) {
+//        cout << desc << "\n";
+//        return 1;
+//    }
+//
+//    if (vm.count("compression")) {
+//        cout << "Compression level was set to "
+//             << vm["compression"].as<int>() << ".\n";
+//    } else {
+//        cout << "Compression level was not set.\n";
+//    }
 
     return 1;
 }

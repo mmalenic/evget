@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "event_data/Field.h"
+#include "EventData/Field.h"
 
 TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
     Field field {"name"};

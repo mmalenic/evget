@@ -28,9 +28,10 @@ CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builde
     required{builder._required},
     conflictsWith{builder._conflictsWith},
     validator{builder._validator},
+    action{builder._action},
     stringValue{},
     value{builder.value} {
-    builder._desc.add_options()(
+    builder._desc.get().add_options()(
         (getShortName() + "," + getLongName()).c_str(),
         po::bool_switch(),
         getDescription().c_str()

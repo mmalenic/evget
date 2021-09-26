@@ -90,11 +90,6 @@ public:
     CommandLineOptionBuilder& performAfterRead(PerformAction action);
 
     /**
-     * Make this optional a positional value, that takes the amount of values.
-     */
-    CommandLineOptionBuilder& store(std::vector<std::unique_ptr<CommandLineOptionBase>>& in);
-
-    /**
      * State as required option.
      */
     CommandLineOptionBuilder& required();
@@ -128,7 +123,6 @@ private:
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
-    std::optional<std::reference_wrapper<std::vector<std::unique_ptr<CommandLineOptionBase>>>> storeIn;
 };
 
 template <typename T>
@@ -140,8 +134,7 @@ CommandLineOptionBuilder<T>::CommandLineOptionBuilder(po::options_description& d
     _required{false},
     _conflictsWith{},
     _validator{},
-    value{},
-    storeIn{} {
+    value{} {
 }
 
 template <typename T>
@@ -211,12 +204,6 @@ CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
         throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
     }
     return CommandLineOption(*this);
-}
-
-template<typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::store(std::vector<std::unique_ptr<CommandLineOptionBase>> &in) {
-    storeIn = in;
-    return *this;
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H

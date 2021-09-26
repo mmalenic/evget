@@ -73,14 +73,14 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
     implicitValue{builder._implicitValue},
     value{builder.value} {
 
-    if (validator.has_value()) {
-        builder._desc.add_options()(
+    if constexpr(validator.has_value()) {
+        builder._desc.get().add_options()(
             (getShortName() + "," + getLongName()).c_str(),
             po::value<std::string>(),
             getDescription().c_str()
         );
     } else {
-        builder._desc.add_options()(
+        builder._desc.get().add_options()(
             (getShortName() + "," + getLongName()).c_str(),
             po::value<T>(),
             getDescription().c_str()
@@ -92,10 +92,6 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
             (getShortName() + "," + getLongName()).c_str(),
             *builder._positionalAmount
         );
-    }
-
-    if (builder.storeIn.has_value()) {
-        builder->storeIn.get().push_back(this);
     }
 }
 
@@ -148,7 +144,7 @@ void CommandLineOption<T>::afterRead(po::variables_map& vm) {
 
     // Perform action.
     if (action.has_value()) {
-        *action(*value);
+        (*action)(*value);
     }
 }
 

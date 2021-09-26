@@ -30,6 +30,7 @@ namespace algorithm = boost::algorithm;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
+static constexpr char PROJECT_NAME[] = "evget";
 static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
                                       "Shows events from input devices.\n"
                                       "Written by Marko Malenic 2021.\n\n"
@@ -38,7 +39,7 @@ static constexpr char VERSION[] = "1.0";
 static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This program comes with ABSOLUTELY NO WARRANTY.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
-                                       "Written by Marko Malenic 2021.\n";
+                                       "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
 
 std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
@@ -77,7 +78,11 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
-            .store(options)
+            .performAfterRead([&desc = this->desc](bool value) {
+                if (value) {
+                    std::cout << desc << "\n";
+                }
+            })
             .build()
     },
     version{
@@ -85,7 +90,11 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
-            .store(options)
+            .performAfterRead([&platformInformation](bool value) {
+                if (value) {
+                    std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
+                }
+            })
             .build()
     },
     storageFolder{
@@ -94,7 +103,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("folder")
             .description("Folder location where events are stored.")
             .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
-            .store(options)
             .build()
     },
     filetypes{
@@ -103,7 +111,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
-            .store(options)
             //.validator()
             .build()
     },
@@ -113,7 +120,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("print")
             .description("Print events.")
             .defaultValue(false)
-            .store(options)
             .build()
     },
     systemEvents{
@@ -122,7 +128,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .defaultValue(false)
-            .store(options)
             .build()
     },
     logLevel{
@@ -132,7 +137,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
             .validator(validateLogLevel)
-            .store(options)
             .build()
     }
 {
@@ -143,16 +147,16 @@ bool CommandLine::parseCommandLine(int argc, char** argv) {
     store(parsed, vm);
     notify(vm);
 
-    for (auto const &option: options) {
-        option->afterRead(vm);
-    }
-
-    if (help.getValue()) {
-        std::cout << desc << "\n";
-    }
-    if (version.getValue()) {
-
-    }
+//    for (auto const &option: options) {
+//        option->afterRead(vm);
+//    }
+//
+//    if (help.getValue()) {
+//        std::cout << desc << "\n";
+//    }
+//    if (version.getValue()) {
+//
+//    }
 
 
     return true;

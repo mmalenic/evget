@@ -22,7 +22,7 @@
 
 #include <tuple>
 #include <UnsupportedOperationException.h>
-#include <event_data/EventData.h>
+#include <EventData/EventData.h>
 #include <utility>
 
 using namespace std;
