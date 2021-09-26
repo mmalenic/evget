@@ -222,6 +222,7 @@ add_program(
     include/InvalidCommandLineOption.h
     include/CommandLine/CommandLineOptionBuilder.h
     include/CommandLine/CommandLineOptionBase.h
+    include/CommandLine/CommandLineOptionValidator.h
     # Sources
     src/CommandLine/CommandLine.cpp
     src/EventData/Field.cpp
@@ -231,7 +232,6 @@ add_program(
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
     src/CommandLine/CommandLineOption.cpp
-    src/CommandLine/CommandLineOptionBase.cpp
 )
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC spdlog 1.9.2)

@@ -27,12 +27,17 @@
 #include <boost/program_options.hpp>
 #include <utility>
 #include "UnsupportedOperationException.h"
-#include "CommandLineOptionBase.h"
 
 namespace po = boost::program_options;
 
 template <typename T>
+class CommandLineOptionBase;
+
+template <typename T>
 class CommandLineOption;
+
+template <typename T>
+class CommandLineOptionValidator;
 
 /**
  * Command line option builder.
@@ -47,7 +52,9 @@ public:
     using Validator = std::function<std::optional<T>(std::string)>;
     using PerformAction = std::function<void(T)>;
 
+    friend class CommandLineOptionBase<T>;
     friend class CommandLineOption<T>;
+    friend class CommandLineOptionValidator<T>;
 
     /**
      * Create CommandLineOptionBuilder.

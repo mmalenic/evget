@@ -72,7 +72,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
         DESCRIPTION
     },
     vm{},
-    options{},
     help{
         CommandLineOptionBuilder<bool>{desc}
             .shortName("h")
@@ -213,8 +212,4 @@ std::vector<Filetype> CommandLine::getFiletype() const {
 
 bool CommandLine::useSystemEvents() const {
     return systemEvents.getValue();
-}
-
-std::vector<std::unique_ptr<CommandLineOptionBase>>& CommandLine::getOptions() {
-    return options;
 }

@@ -23,14 +23,7 @@
 #include "CommandLine/CommandLineOption.h"
 
 template<>
-CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) :
-    CommandLineOptionBase{builder._shortName, builder._longName, builder._description},
-    required{builder._required},
-    conflictsWith{builder._conflictsWith},
-    validator{builder._validator},
-    action{builder._action},
-    stringValue{},
-    value{builder.value} {
+CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) : CommandLineOptionBase<bool>(builder) {
     builder._desc.get().add_options()(
         (getShortName() + "," + getLongName()).c_str(),
         po::bool_switch(),

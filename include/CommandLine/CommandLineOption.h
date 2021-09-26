@@ -27,7 +27,6 @@
 #include <boost/program_options.hpp>
 #include <optional>
 #include <fmt/core.h>
-#include "CommandLineOptionBuilder.h"
 #include "InvalidCommandLineOption.h"
 #include "CommandLineOptionBase.h"
 
@@ -38,114 +37,21 @@ namespace po = boost::program_options;
  * @tparam T value of command line option
  */
 template<typename T>
-class CommandLineOption : public CommandLineOptionBase {
+class CommandLineOption : public CommandLineOptionBase<T> {
 public:
     /**
      * Create from builder.
      */
     explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
-
-    /**
-     * Get value.
-     */
-    [[nodiscard]] T getValue() const;
-
-    void afterRead(po::variables_map &vm) override;
-
-private:
-    bool required;
-    std::vector<std::string> conflictsWith;
-    std::optional<T> implicitValue;
-    std::optional<typename CommandLineOptionBuilder<T>::Validator> validator;
-    std::optional<typename CommandLineOptionBuilder<T>::PerformAction> action;
-
-    std::string stringValue;
-    std::optional<T> value;
 };
 
 template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) :
-    CommandLineOptionBase{builder._shortName, builder._longName, builder._description},
-    required{builder._required},
-    conflictsWith{builder._conflictsWith},
-    validator{builder._validator},
-    action{builder._action},
-    implicitValue{builder._implicitValue},
-    value{builder.value} {
-
-    if constexpr(validator.has_value()) {
-        builder._desc.get().add_options()(
-            (getShortName() + "," + getLongName()).c_str(),
-            po::value<std::string>(),
-            getDescription().c_str()
-        );
-    } else {
-        builder._desc.get().add_options()(
-            (getShortName() + "," + getLongName()).c_str(),
-            po::value<T>(),
-            getDescription().c_str()
-        );
-    }
-
-    if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
-        builder._positionalDesc->get().add(
-            (getShortName() + "," + getLongName()).c_str(),
-            *builder._positionalAmount
-        );
-    }
-}
-
-template<typename T>
-T CommandLineOption<T>::getValue() const {
-    return value.value();
-}
-
-template<typename T>
-void CommandLineOption<T>::afterRead(po::variables_map& vm) {
-    // Check required.
-    if (!vm.count(getShortName()) && required) {
-        throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", getLongName()));
-    }
-
-    // Check implicit value.
-    if (vm.count(getShortName()) && vm[getShortName()].empty()) {
-        if (implicitValue.has_value()) {
-            value = implicitValue;
-        } else {
-            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getLongName()));
-        }
-    }
-
-    // Check conflicts
-    for (const auto& maybeConflict : conflictsWith) {
-        if (getShortName() == maybeConflict || getLongName() == maybeConflict) {
-            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getLongName(), maybeConflict));
-        }
-    }
-
-    // Check regular value and validator.
-    if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
-        if (!validator.has_value()) {
-            value = vm[getShortName()].template as<T>();
-        } else {
-            std::optional<T> validatedValue = (*validator)(vm[getShortName()].template as<std::string>());
-            if (validatedValue.has_value()) {
-                value = validatedValue;
-            } else {
-                throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", getLongName()));
-            }
-        }
-    }
-
-    // Should not happen.
-    if (!value.has_value()) {
-        throw UnsupportedOperationException("CommandLineOption does not have a value when it should.");
-    }
-
-    // Perform action.
-    if (action.has_value()) {
-        (*action)(*value);
-    }
+CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder) {
+    builder._desc.get().add_options()(
+       (this->getShortName() + "," + this->getLongName()).c_str(),
+       po::value<T>(),
+       this->getDescription().c_str()
+    );
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

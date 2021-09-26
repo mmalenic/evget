@@ -121,17 +121,10 @@ protected:
      */
     [[nodiscard]] const po::variables_map& getVm() const;
 
-    /**
-     * Get the options so that a derived class can add to them.
-     * @return
-     */
-    std::vector<std::unique_ptr<CommandLineOptionBase>>& getOptions();
-
 private:
     po::options_description desc;
     po::variables_map vm;
 
-    std::vector<std::unique_ptr<CommandLineOptionBase>> options;
     const CommandLineOption<bool> help;
     const CommandLineOption<bool> version;
     const CommandLineOption<fs::path> storageFolder;
