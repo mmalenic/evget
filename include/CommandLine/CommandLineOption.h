@@ -30,8 +30,6 @@
 #include "InvalidCommandLineOption.h"
 #include "CommandLineOptionBase.h"
 
-namespace po = boost::program_options;
-
 /**
  * Represents a command line option.
  * @tparam T value of command line option

@@ -47,24 +47,22 @@ private:
 template<typename T>
 CommandLineOptionValidator<T>::CommandLineOptionValidator(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder), validator{builder._validator} {
     builder._desc.get().add_options()(
-        (getShortName() + "," + getLongName()).c_str(),
+        (this->getShortName() + "," + this->getLongName()).c_str(),
         po::value<std::string>(),
-        getDescription().c_str()
+        this->getDescription().c_str()
     );
 }
 
 template<typename T>
 void CommandLineOptionValidator<T>::parseValue(po::variables_map &vm) {
-    if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
-        if (!validator.has_value()) {
-            value = vm[getShortName()].template as<T>();
+    if (!validator.has_value()) {
+        CommandLineOptionBase<T>::parseValue(vm);
+    } else if (vm.count(this->getShortName()) && !vm[this->getShortName()].empty()) {
+        std::optional<T> validatedValue = (*validator)(vm[this->getShortName()].template as<std::string>());
+        if (validatedValue.has_value()) {
+            this->setValue(*validatedValue);
         } else {
-            std::optional<T> validatedValue = (*validator)(vm[getShortName()].template as<std::string>());
-            if (validatedValue.has_value()) {
-                value = validatedValue;
-            } else {
-                throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", getLongName()));
-            }
+            throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", this->getLongName()));
         }
     }
 }

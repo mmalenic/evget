@@ -135,8 +135,7 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
-            .validator(validateLogLevel)
-            .build()
+            .build(validateLogLevel)
     }
 {
 }

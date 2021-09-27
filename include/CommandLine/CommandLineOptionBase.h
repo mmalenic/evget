@@ -63,6 +63,11 @@ public:
     [[nodiscard]] T getValue() const;
 
     /**
+     * Set the value.
+     */
+    void setValue(T value);
+
+    /**
      * Check for option conditions after reading command line arguments.
      * This must be called to notify the command line option that options
      * have been read.
@@ -174,6 +179,11 @@ void CommandLineOptionBase<T>::parseValue(po::variables_map& vm) {
     if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
         value = vm[getShortName()].template as<T>();
     }
+}
+
+template<typename T>
+void CommandLineOptionBase<T>::setValue(T value) {
+    CommandLineOptionBase::value = value;
 }
 
 #endif //EVGET_COMMANDLINEOPTIONBASE_H

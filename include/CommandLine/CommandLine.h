@@ -27,6 +27,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include "CommandLineOption.h"
+#include "CommandLineOptionValidator.h"
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
@@ -131,7 +132,7 @@ private:
     const CommandLineOption<std::vector<Filetype>> filetypes;
     const CommandLineOption<bool> print;
     const CommandLineOption<bool> systemEvents;
-    const CommandLineOption<spdlog::level::level_enum> logLevel;
+    const CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

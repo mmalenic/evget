@@ -108,14 +108,14 @@ public:
     CommandLineOptionBuilder& conflictsWith(const std::string& name);
 
     /**
-     * Set the validation function.
-     */
-    CommandLineOptionBuilder& validator(Validator validator);
-
-    /**
      * Build CommandLineOption.
      */
     CommandLineOption<T> build();
+
+    /**
+     * Build CommandLineOptionValidator
+     */
+    CommandLineOptionValidator<T> build(Validator validator);
 
 private:
     std::reference_wrapper<po::options_description> _desc;
@@ -130,6 +130,8 @@ private:
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
+
+    void checkValidValue();
 };
 
 template <typename T>
@@ -181,12 +183,6 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(T default
 }
 
 template <typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::validator(Validator validator) {
-    _validator = validator;
-    return *this;
-}
-
-template <typename T>
 CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::performAfterRead(PerformAction action) {
     _action = action;
     return *this;
@@ -205,12 +201,24 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::positionalValue(int am
     return *this;
 }
 
-template <typename T>
-CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
+template<typename T>
+void CommandLineOptionBuilder<T>::checkValidValue() {
     if (!value.has_value() && !_required) {
         throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
     }
+}
+
+template <typename T>
+CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
+    checkValidValue();
     return CommandLineOption(*this);
+}
+
+template <typename T>
+CommandLineOptionValidator<T> CommandLineOptionBuilder<T>::build(Validator validator) {
+    checkValidValue();
+    _validator = validator;
+    return CommandLineOptionValidator(*this);
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H
