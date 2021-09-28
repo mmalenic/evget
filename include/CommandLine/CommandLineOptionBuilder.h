@@ -53,8 +53,6 @@ public:
     using PerformAction = std::function<void(T)>;
 
     friend class CommandLineOptionBase<T>;
-    friend class CommandLineOption<T>;
-    friend class CommandLineOptionValidator<T>;
 
     /**
      * Create CommandLineOptionBuilder.
@@ -125,7 +123,6 @@ private:
     std::string _description;
     bool _required;
     std::vector<std::string> _conflictsWith;
-    std::optional<Validator> _validator;
     std::optional<PerformAction> _action;
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
@@ -142,7 +139,6 @@ CommandLineOptionBuilder<T>::CommandLineOptionBuilder(po::options_description& d
     _description{},
     _required{false},
     _conflictsWith{},
-    _validator{},
     value{} {
 }
 
@@ -217,8 +213,7 @@ CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
 template <typename T>
 CommandLineOptionValidator<T> CommandLineOptionBuilder<T>::build(Validator validator) {
     checkValidValue();
-    _validator = validator;
-    return CommandLineOptionValidator(*this);
+    return CommandLineOptionValidator(*this, validator);
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTIONBUILDER_H

@@ -35,7 +35,7 @@ public:
     /**
      * Create from builder.
      */
-    explicit CommandLineOptionValidator(CommandLineOptionBuilder<T> builder);
+    explicit CommandLineOptionValidator(CommandLineOptionBuilder<T> builder, typename CommandLineOptionBuilder<T>::Validator validator);
 
     void parseValue(po::variables_map &vm) override;
 
@@ -45,8 +45,8 @@ private:
 
 
 template<typename T>
-CommandLineOptionValidator<T>::CommandLineOptionValidator(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder), validator{builder._validator} {
-    builder._desc.get().add_options()(
+CommandLineOptionValidator<T>::CommandLineOptionValidator(CommandLineOptionBuilder<T> builder, typename CommandLineOptionBuilder<T>::Validator validator) : CommandLineOptionBase<T>(builder), validator{validator} {
+    this->getDesc().add_options()(
         (this->getShortName() + "," + this->getLongName()).c_str(),
         po::value<std::string>(),
         this->getDescription().c_str()

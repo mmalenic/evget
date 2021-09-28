@@ -22,9 +22,11 @@
 
 #include "CommandLine/CommandLineOption.h"
 
+#include <utility>
+
 template<>
-CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) : CommandLineOptionBase<bool>(builder) {
-    builder._desc.get().add_options()(
+CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) : CommandLineOptionBase<bool>(std::move(builder)) {
+    this->getDesc().add_options()(
         (getShortName() + "," + getLongName()).c_str(),
         po::bool_switch(),
         getDescription().c_str()

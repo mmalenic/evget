@@ -87,6 +87,12 @@ public:
     CommandLineOptionBase& operator=(const CommandLineOptionBase&) = default;
     CommandLineOptionBase& operator=(CommandLineOptionBase&&) noexcept = default;
 
+protected:
+    /**
+     * Get the program options description.
+     */
+    [[nodiscard]] boost::program_options::options_description getDesc() const;
+
 private:
     std::string shortName;
     std::string longName;
@@ -98,6 +104,7 @@ private:
     std::optional<typename CommandLineOptionBuilder<T>::PerformAction> action;
 
     std::optional<T> value;
+    std::reference_wrapper<po::options_description> desc;
 };
 
 template<typename T>
@@ -129,7 +136,8 @@ CommandLineOptionBase<T>::CommandLineOptionBase(CommandLineOptionBuilder<T> buil
     conflictsWith{builder._conflictsWith},
     action{builder._action},
     implicitValue{builder._implicitValue},
-    value{builder.value} {
+    value{builder.value},
+    desc{builder._desc} {
     if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
         builder._positionalDesc->get().add(
                 (getShortName() + "," + getLongName()).c_str(),
@@ -184,6 +192,11 @@ void CommandLineOptionBase<T>::parseValue(po::variables_map& vm) {
 template<typename T>
 void CommandLineOptionBase<T>::setValue(T value) {
     CommandLineOptionBase::value = value;
+}
+
+template<typename T>
+boost::program_options::options_description CommandLineOptionBase<T>::getDesc() const {
+    return desc;
 }
 
 #endif //EVGET_COMMANDLINEOPTIONBASE_H
