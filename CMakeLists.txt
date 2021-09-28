@@ -162,10 +162,11 @@ function(add_program)
             endif()
 
             if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
-                message(STATUS "Including directories for ${ADD_PROGRAM_TARGET}.")
                 if (DEFINED ADD_PROGRAM_INCLUDE_VISIBILITY)
+                    message(STATUS "Including ${ADD_PROGRAM_INCLUDE_VISIBILITY} directories: ${ADD_PROGRAM_INCLUDE_DIRS} for ${ADD_PROGRAM_TARGET}.")
                     target_include_directories(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_INCLUDE_VISIBILITY} ${ADD_PROGRAM_INCLUDE_DIRS})
                 else()
+                    message(STATUS "Including PUBLIC directories: ${ADD_PROGRAM_INCLUDE_DIRS} for ${ADD_PROGRAM_TARGET}.")
                     target_include_directories(${ADD_PROGRAM_TARGET} PUBLIC ${ADD_PROGRAM_INCLUDE_DIRS})
                 endif()
             endif()
@@ -309,9 +310,9 @@ if (BUILD_TESTING)
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBuilderTest.cpp
         # Util Headers
-        test/TestUtilities/include/CommandLine/CommandLineUtilities.h
+        test/TestUtilities/include/CommandLine/CommandLineTestUtilities.h
         # Util Sources
-        test/TestUtilities/src/CommandLine/CommandLineUtilities.cpp
+        test/TestUtilities/src/CommandLine/CommandLineTestUtilities.cpp
     )
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest)
 

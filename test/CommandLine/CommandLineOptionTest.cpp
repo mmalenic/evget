@@ -21,9 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <CommandLine/CommandLineTestUtilities.h>
 #include <CommandLine/CommandLineOption.h>
-#include "CommandLineTest.cpp"
-#include "CommandLine/CommandLineUtilities.h"
 
 namespace po = boost::program_options;
 
@@ -56,7 +55,7 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     po::variables_map vm{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).shortName("name").required().build();
 
-    TestUtilities::CommandLineUtilities::makeCmd({"program"}, [&desc, &vm](int argc, const char* argv[]) {
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program"}, [&desc, &vm](int argc, const char* argv[]) {
         store(parse_command_line(argc, argv, desc), vm);
         vm.notify();
     });

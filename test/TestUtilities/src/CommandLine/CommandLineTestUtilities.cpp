@@ -20,27 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
-#define EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
+#include <CommandLine/CommandLineTestUtilities.h>
 
-#include <gmock/gmock.h>
-#include <CommandLine/CommandLine.h>
-
-/**
- * CommandLine test utilities.
- */
-namespace TestUtilities::CommandLineUtilities {
-    /**
-     * Make the command line object.
-     * @param args args to use
-     * @param create_cmd function to create the object
-     */
-    void makeCmd(std::initializer_list<const char*> args, auto&& createCmd);
-
-    /**
-     * Assert exit on the command line object.
-     */
-    void assertExit(CommandLine& cmd);
-};
-
-#endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
+void TestUtilities::CommandLineTestUtilities::assertExit(CommandLine& cmd) {
+	//ASSERT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+}

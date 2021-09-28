@@ -20,16 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <CommandLine/CommandLineUtilities.h>
+#ifndef EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
+#define EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
 
-void TestUtilities::CommandLineUtilities::makeCmd(std::initializer_list<const char*> args, auto&& createCmd) {
-    std::vector<const char*> vector{ args };
-    vector.push_back(nullptr);
-    const char** argv = vector.data();
-    int argc = static_cast<int>(vector.size() - 1);
-    createCmd(argc, argv);
-}
+/**
+ * CommandLine test utilities.
+ */
 
-void TestUtilities::CommandLineUtilities::assertExit(CommandLine& cmd) {
-	//ASSERT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-}
+#include <CommandLine/CommandLine.h>
+
+namespace TestUtilities::CommandLineTestUtilities {
+    /**
+     * Make the command line object.
+     * @param args args to use
+     * @param create_cmd function to create the object
+     */
+    void makeCmd(std::initializer_list<const char*> args, auto&& createCmd) {
+		std::vector<const char *> vector{args};
+		vector.push_back(nullptr);
+		const char **argv = vector.data();
+		int argc = static_cast<int>(vector.size() - 1);
+		createCmd(argc, argv);
+    }
+
+    /**
+     * Assert exit on the command line object.
+     */
+    void assertExit(CommandLine& cmd);
+};
+
+#endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
