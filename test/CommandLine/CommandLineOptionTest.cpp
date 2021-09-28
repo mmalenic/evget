@@ -50,6 +50,30 @@ TEST(CommandLineOptionTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(1, option.getValue());
 }
 
+TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::variables_map vm{};
+    CommandLineOption<bool> option = CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program"}, [&desc, &vm](int argc, const char* argv[]) {
+        store(parse_command_line(argc, argv, desc), vm);
+        vm.notify();
+    });
+    ASSERT_EQ(false, option.getValue());
+}
+
+TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::variables_map vm{};
+    CommandLineOption<bool> option = CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-f"}, [&desc, &vm](int argc, const char* argv[]) {
+        store(parse_command_line(argc, argv, desc), vm);
+        vm.notify();
+    });
+    ASSERT_EQ(true, option.getValue());
+}
+
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::variables_map vm{};

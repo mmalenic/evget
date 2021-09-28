@@ -38,11 +38,6 @@ template<typename T>
 class CommandLineOptionBase {
 public:
     /**
-     * Create from builder.
-     */
-    explicit CommandLineOptionBase(CommandLineOptionBuilder<T> builder);
-
-    /**
      * Get short name.
      */
     [[nodiscard]] std::string getShortName() const;
@@ -81,23 +76,43 @@ public:
      */
     virtual void parseValue(po::variables_map &vm);
 
-    virtual ~CommandLineOptionBase() = default;
-    CommandLineOptionBase(const CommandLineOptionBase&) = default;
-    CommandLineOptionBase(CommandLineOptionBase&&) noexcept = default;
-    CommandLineOptionBase& operator=(const CommandLineOptionBase&) = default;
-    CommandLineOptionBase& operator=(CommandLineOptionBase&&) noexcept = default;
-
 protected:
+    /**
+     * Create from builder.
+     */
+    explicit CommandLineOptionBase(CommandLineOptionBuilder<T> builder);
+
     /**
      * Get the program options description.
      */
     [[nodiscard]] boost::program_options::options_description getDesc() const;
+
+    /**
+     * Get if value is required.
+     */
+    [[nodiscard]] bool isRequired() const;
+
+    /**
+     * Get conflicting options.
+     */
+    [[nodiscard]] const std::vector<std::string>& getConflictsWith() const;
+
+    /**
+     * If implicit value is specified from the builder.
+     */
+    [[nodiscard]] bool isImplicit() const;
+
+    /**
+     * If value has a default, specified from the builder.
+     */
+    [[nodiscard]] bool isDefaulted() const;
 
 private:
     std::string shortName;
     std::string longName;
     std::string description;
 
+    bool hasDefault;
     bool required;
     std::vector<std::string> conflictsWith;
     std::optional<T> implicitValue;
@@ -132,6 +147,7 @@ CommandLineOptionBase<T>::CommandLineOptionBase(CommandLineOptionBuilder<T> buil
     shortName{builder._shortName},
     longName{builder._longName},
     description{builder._description},
+    hasDefault{builder.value.has_value()},
     required{builder._required},
     conflictsWith{builder._conflictsWith},
     action{builder._action},
@@ -197,6 +213,26 @@ void CommandLineOptionBase<T>::setValue(T value) {
 template<typename T>
 boost::program_options::options_description CommandLineOptionBase<T>::getDesc() const {
     return desc;
+}
+
+template<typename T>
+bool CommandLineOptionBase<T>::isRequired() const {
+    return required;
+}
+
+template<typename T>
+const std::vector<std::string>& CommandLineOptionBase<T>::getConflictsWith() const {
+    return conflictsWith;
+}
+
+template<typename T>
+bool CommandLineOptionBase<T>::isImplicit() const {
+    return implicitValue.has_value();
+}
+
+template<typename T>
+bool CommandLineOptionBase<T>::isDefaulted() const {
+    return hasDefault;
 }
 
 #endif //EVGET_COMMANDLINEOPTIONBASE_H

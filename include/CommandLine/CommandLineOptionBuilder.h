@@ -127,8 +127,6 @@ private:
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
-
-    void checkValidValue();
 };
 
 template <typename T>
@@ -197,22 +195,13 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::positionalValue(int am
     return *this;
 }
 
-template<typename T>
-void CommandLineOptionBuilder<T>::checkValidValue() {
-    if (!value.has_value() && !_required) {
-        throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
-    }
-}
-
 template <typename T>
 CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
-    checkValidValue();
     return CommandLineOption(*this);
 }
 
 template <typename T>
 CommandLineOptionValidator<T> CommandLineOptionBuilder<T>::build(Validator validator) {
-    checkValidValue();
     return CommandLineOptionValidator(*this, validator);
 }
 
