@@ -47,7 +47,7 @@ public:
 
 template<typename T>
 CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder) {
-    this->getDesc().add_options()(
+    this->getOptionsDesc().add_options()(
        (this->getShortName() + "," + this->getLongName()).c_str(),
        po::value<T>(),
        this->getDescription().c_str()

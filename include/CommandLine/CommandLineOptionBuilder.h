@@ -52,6 +52,9 @@ public:
     using Validator = std::function<std::optional<T>(std::string)>;
     using PerformAction = std::function<void(T)>;
 
+    template <typename R, typename U>
+    using DisableIfBool = std::enable_if_t<sizeof(U) && (!std::is_same<T, bool>::value), R>;
+
     friend class CommandLineOptionBase<T>;
 
     /**
@@ -77,12 +80,14 @@ public:
     /**
      * Set default value, if the option is not present.
      */
-    CommandLineOptionBuilder& defaultValue(T defaultValue);
+    template <typename U = T>
+    DisableIfBool<CommandLineOptionBuilder&, U> defaultValue(T defaultValue);
 
     /**
      * Set implicit value, if the option is specified without a value.
      */
-    CommandLineOptionBuilder& implicitValue(T implicitValue);
+    template <typename U = T>
+    DisableIfBool<CommandLineOptionBuilder&, U> implicitValue(T implicitValue);
 
     /**
      * Make this optional a positional value, that takes the amount of values.
@@ -171,7 +176,9 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::conflictsWith(const st
 }
 
 template <typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::defaultValue(T defaultValue) {
+template <typename U>
+typename CommandLineOptionBuilder<T>::template DisableIfBool<CommandLineOptionBuilder<T>&, U>
+CommandLineOptionBuilder<T>::defaultValue(T defaultValue) {
     value = defaultValue;
     return *this;
 }
@@ -182,8 +189,9 @@ CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::performAfterRead(Perfo
     return *this;
 }
 
-template<typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::implicitValue(T implicitValue) {
+template <typename T>
+template <typename U>
+typename CommandLineOptionBuilder<T>::template DisableIfBool<CommandLineOptionBuilder<T>&, U> CommandLineOptionBuilder<T>::implicitValue(T implicitValue) {
     _implicitValue = implicitValue;
     return *this;
 }

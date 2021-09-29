@@ -85,7 +85,7 @@ protected:
     /**
      * Get the program options description.
      */
-    [[nodiscard]] boost::program_options::options_description getDesc() const;
+    [[nodiscard]] boost::program_options::options_description& getOptionsDesc() const;
 
     /**
      * Get if value is required.
@@ -211,7 +211,7 @@ void CommandLineOptionBase<T>::setValue(T value) {
 }
 
 template<typename T>
-boost::program_options::options_description CommandLineOptionBase<T>::getDesc() const {
+boost::program_options::options_description& CommandLineOptionBase<T>::getOptionsDesc() const {
     return desc;
 }
 

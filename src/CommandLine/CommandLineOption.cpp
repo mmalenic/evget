@@ -26,7 +26,7 @@
 
 template<>
 CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) : CommandLineOptionBase<bool>(std::move(builder)) {
-    this->getDesc().add_options()(
+    this->getOptionsDesc().add_options()(
         (getShortName() + "," + getLongName()).c_str(),
         po::bool_switch(),
         getDescription().c_str()

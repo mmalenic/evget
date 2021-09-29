@@ -46,7 +46,7 @@ private:
 
 template<typename T>
 CommandLineOptionValidator<T>::CommandLineOptionValidator(CommandLineOptionBuilder<T> builder, typename CommandLineOptionBuilder<T>::Validator validator) : CommandLineOptionBase<T>(builder), validator{validator} {
-    this->getDesc().add_options()(
+    this->getOptionsDesc().add_options()(
         (this->getShortName() + "," + this->getLongName()).c_str(),
         po::value<std::string>(),
         this->getDescription().c_str()
