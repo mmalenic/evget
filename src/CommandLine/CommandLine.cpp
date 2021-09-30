@@ -118,7 +118,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("p")
             .longName("print")
             .description("Print events.")
-            .defaultValue(false)
             .build()
     },
     systemEvents{
@@ -126,7 +125,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("s")
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
-            .defaultValue(false)
             .build()
     },
     logLevel{

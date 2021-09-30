@@ -118,7 +118,8 @@ public:
     /**
      * Build CommandLineOptionValidator
      */
-    CommandLineOptionValidator<T> build(Validator validator);
+    template <typename U = T>
+    DisableIfBool<CommandLineOptionValidator<T>, U> build(Validator validator);
 
 private:
     std::reference_wrapper<po::options_description> _desc;
@@ -209,7 +210,9 @@ CommandLineOption<T> CommandLineOptionBuilder<T>::build() {
 }
 
 template <typename T>
-CommandLineOptionValidator<T> CommandLineOptionBuilder<T>::build(Validator validator) {
+template <typename U>
+typename CommandLineOptionBuilder<T>::template DisableIfBool<CommandLineOptionValidator<T>, U>
+CommandLineOptionBuilder<T>::build(Validator validator) {
     return CommandLineOptionValidator(*this, validator);
 }
 
