@@ -25,6 +25,7 @@
 #include <spdlog/spdlog.h>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <utility>
 
 namespace algorithm = boost::algorithm;
 
@@ -67,7 +68,8 @@ std::istream& operator>>(std::istream& in, Filetype& algorithm) {
     return in;
 }
 
-CommandLine::CommandLine(const std::string& platformInformation) :
+CommandLine::CommandLine(std::string platformInformation) :
+    platformInformation{std::move(platformInformation)},
     desc{
         DESCRIPTION
     },
@@ -77,11 +79,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
-            .performAfterRead([&desc = this->desc](bool value) {
-                if (value) {
-                    std::cout << desc << "\n";
-                }
-            })
             .build()
     },
     version{
@@ -89,11 +86,6 @@ CommandLine::CommandLine(const std::string& platformInformation) :
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
-            .performAfterRead([&platformInformation](bool value) {
-                if (value) {
-                    std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
-                }
-            })
             .build()
     },
     storageFolder{
@@ -143,17 +135,22 @@ bool CommandLine::parseCommandLine(int argc, char** argv) {
     store(parsed, vm);
     notify(vm);
 
-//    for (auto const &option: options) {
-//        option->afterRead(vm);
-//    }
-//
-//    if (help.getValue()) {
-//        std::cout << desc << "\n";
-//    }
-//    if (version.getValue()) {
-//
-//    }
+    help.afterRead(vm);
+    version.afterRead(vm);
+    storageFolder.afterRead(vm);
+    filetypes.afterRead(vm);
+    print.afterRead(vm);
+    systemEvents.afterRead(vm);
+    logLevel.afterRead(vm);
 
+    if (help.getValue()) {
+        std::cout << getDesc() << "\n";
+        return false;
+    }
+    if (version.getValue()) {
+        std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
+        return false;
+    }
 
     return true;
 }

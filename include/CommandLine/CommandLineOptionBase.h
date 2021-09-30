@@ -116,7 +116,6 @@ private:
     bool required;
     std::vector<std::string> conflictsWith;
     std::optional<T> implicitValue;
-    std::optional<typename CommandLineOptionBuilder<T>::PerformAction> action;
 
     std::optional<T> value;
     std::reference_wrapper<po::options_description> desc;
@@ -150,7 +149,6 @@ CommandLineOptionBase<T>::CommandLineOptionBase(CommandLineOptionBuilder<T> buil
     hasDefault{builder.value.has_value()},
     required{builder._required},
     conflictsWith{builder._conflictsWith},
-    action{builder._action},
     implicitValue{builder._implicitValue},
     value{builder.value},
     desc{builder._desc} {
@@ -190,11 +188,6 @@ void CommandLineOptionBase<T>::afterRead(po::variables_map& vm) {
     // Should not happen.
     if (!value.has_value()) {
         throw UnsupportedOperationException("CommandLineOption does not have a value when it should.");
-    }
-
-    // Perform action.
-    if (action.has_value()) {
-        (*action)(*value);
     }
 }
 

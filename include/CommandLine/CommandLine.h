@@ -50,7 +50,7 @@ public:
      *
      * @param platformInformation platform information string
      */
-    explicit CommandLine(const std::string& platformInformation);
+    explicit CommandLine(std::string platformInformation);
 
     /**
      * Perform the actual command line parsing. Returns true if operation of the program should continue.
@@ -123,16 +123,17 @@ protected:
     [[nodiscard]] const po::variables_map& getVm() const;
 
 private:
+    std::string platformInformation;
     po::options_description desc;
     po::variables_map vm;
 
-    const CommandLineOption<bool> help;
-    const CommandLineOption<bool> version;
-    const CommandLineOption<fs::path> storageFolder;
-    const CommandLineOption<std::vector<Filetype>> filetypes;
-    const CommandLineOption<bool> print;
-    const CommandLineOption<bool> systemEvents;
-    const CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
+    CommandLineOption<bool> help;
+    CommandLineOption<bool> version;
+    CommandLineOption<fs::path> storageFolder;
+    CommandLineOption<std::vector<Filetype>> filetypes;
+    CommandLineOption<bool> print;
+    CommandLineOption<bool> systemEvents;
+    CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

@@ -50,8 +50,10 @@ public:
      * Validator is a function that takes a string and returns an optional value.
      */
     using Validator = std::function<std::optional<T>(std::string)>;
-    using PerformAction = std::function<void(T)>;
 
+    /**
+     * Disable if bool, return R otherwise.
+     */
     template <typename R, typename U>
     using DisableIfBool = std::enable_if_t<sizeof(U) && (!std::is_same<T, bool>::value), R>;
 
@@ -95,11 +97,6 @@ public:
     CommandLineOptionBuilder& positionalValue(int amount, po::positional_options_description& positionalDesc);
 
     /**
-     * Perform an action after reading, with the value of the option.
-     */
-    CommandLineOptionBuilder& performAfterRead(PerformAction action);
-
-    /**
      * State as required option.
      */
     CommandLineOptionBuilder& required();
@@ -129,7 +126,6 @@ private:
     std::string _description;
     bool _required;
     std::vector<std::string> _conflictsWith;
-    std::optional<PerformAction> _action;
     std::optional<T> _implicitValue;
     std::optional<int> _positionalAmount;
     std::optional<T> value;
@@ -138,11 +134,14 @@ private:
 template <typename T>
 CommandLineOptionBuilder<T>::CommandLineOptionBuilder(po::options_description& desc) :
     _desc{desc},
+    _positionalDesc{},
     _shortName{},
     _longName{},
     _description{},
     _required{false},
     _conflictsWith{},
+    _implicitValue{},
+    _positionalAmount{},
     value{} {
 }
 
@@ -181,12 +180,6 @@ template <typename U>
 typename CommandLineOptionBuilder<T>::template DisableIfBool<CommandLineOptionBuilder<T>&, U>
 CommandLineOptionBuilder<T>::defaultValue(T defaultValue) {
     value = defaultValue;
-    return *this;
-}
-
-template <typename T>
-CommandLineOptionBuilder<T>& CommandLineOptionBuilder<T>::performAfterRead(PerformAction action) {
-    _action = action;
     return *this;
 }
 
