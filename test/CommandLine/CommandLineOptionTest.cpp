@@ -26,30 +26,6 @@
 
 namespace po = boost::program_options;
 
-TEST(CommandLineOptionTest, GetShortNameTest) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().shortName("name").build();
-    ASSERT_EQ("name", option.getShortName());
-}
-
-TEST(CommandLineOptionTest, GetLongNameTest) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().longName("name").build();
-    ASSERT_EQ("name", option.getLongName());
-}
-
-TEST(CommandLineOptionTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().description("desc").build();
-    ASSERT_EQ("desc", option.getDescription());
-}
-
-TEST(CommandLineOptionTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
-    ASSERT_EQ(1, option.getValue());
-}
-
 TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::variables_map vm{};

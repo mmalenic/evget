@@ -23,8 +23,26 @@
 #include <gtest/gtest.h>
 #include <CommandLine/CommandLineOption.h>
 
-TEST(CommandLineOptionBuilderTest, NoRequiredAndNoDefaultTest) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionBaseTest, GetShortNameTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOptionBuilder<int> option = CommandLineOptionBuilder<int>(desc).shortName("");
-    ASSERT_THROW(option.build(), UnsupportedOperationException);
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().shortName("name").build();
+    ASSERT_EQ("name", option.getShortName());
+}
+
+TEST(CommandLineOptionBaseTest, GetLongNameTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().longName("name").build();
+    ASSERT_EQ("name", option.getLongName());
+}
+
+TEST(CommandLineOptionBaseTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().description("desc").build();
+    ASSERT_EQ("desc", option.getDescription());
+}
+
+TEST(CommandLineOptionBaseTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
+    ASSERT_EQ(1, option.getValue());
 }

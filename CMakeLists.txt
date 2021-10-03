@@ -308,7 +308,7 @@ if (BUILD_TESTING)
         test/EventData/FieldTest.cpp
         test/CommandLine/CommandLineTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
-        test/CommandLine/CommandLineOptionBuilderTest.cpp
+        test/CommandLine/CommandLineOptionBaseTest.cpp
         # Util Headers
         test/TestUtilities/include/CommandLine/CommandLineTestUtilities.h
         # Util Sources
