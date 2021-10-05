@@ -26,7 +26,7 @@
 
 namespace po = boost::program_options;
 
-TEST(CommandLineOptionTest, RequiredImplicitOrDefault) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     ASSERT_THROW(CommandLineOptionBuilder<int>(desc).shortName("name").build(), UnsupportedOperationException);
 }
