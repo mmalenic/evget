@@ -56,8 +56,8 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : C
 
 template<typename T>
 void CommandLineOption<T>::afterRead(po::variables_map &vm) {
-    if (!this->isDefaulted() && !this->isRequired()) {
-        throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
+    if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
+        throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
     }
     CommandLineOptionBase<T>::afterRead(vm);
 }

@@ -27,17 +27,16 @@
 namespace po = boost::program_options;
 
 TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    ASSERT_EQ(false, option.getValue());
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+        return CommandLineOptionBuilder<bool>(desc).shortName("a").build();
     }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
         ASSERT_EQ(false, option.getValue());
     });
 }
 
 TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-f"}, [](po::options_description& desc) {
-        return CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<bool>(desc).shortName("a").build();
     }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
         ASSERT_EQ(true, option.getValue());
     });
@@ -45,8 +44,16 @@ TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return CommandLineOptionBuilder<int>(desc).shortName("name").required().build();
+        return CommandLineOptionBuilder<int>(desc).shortName("a").required().build();
     }, [](po::variables_map& vm, CommandLineOption<int>& option) {
         ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
+    });
+}
+
+TEST(CommandLineOptionTest, CheckImplicitValuePresent) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("a").implicitValue(1).build();
+    }, [](po::variables_map& _vm, CommandLineOption<int>& option) {
+        ASSERT_EQ(1, option.getValue());
     });
 }
