@@ -29,7 +29,8 @@ namespace po = boost::program_options;
 TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<bool>(desc).shortName("a").build();
-    }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
+    }, [](po::variables_map& vm, CommandLineOption<bool>& option) {
+        option.afterRead(vm);
         ASSERT_EQ(false, option.getValue());
     });
 }
@@ -37,7 +38,8 @@ TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<bool>(desc).shortName("a").build();
-    }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
+    }, [](po::variables_map& vm, CommandLineOption<bool>& option) {
+        option.afterRead(vm);
         ASSERT_EQ(true, option.getValue());
     });
 }
@@ -53,7 +55,16 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, CheckImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<int>(desc).shortName("a").implicitValue(1).build();
-    }, [](po::variables_map& _vm, CommandLineOption<int>& option) {
+    }, [](po::variables_map& vm, CommandLineOption<int>& option) {
+        option.afterRead(vm);
         ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionTest, CheckImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("a").defaultValue(1).build();
+    }, [](po::variables_map& vm, CommandLineOption<int>& option) {
+        ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
     });
 }
