@@ -44,6 +44,24 @@ namespace TestUtilities::CommandLineTestUtilities {
     }
 
     /**
+     * Assert on an option.
+     * @param args program args
+     * @param createOption create option object
+     * @param assertCmd assert with option
+     */
+    void assertOnCmd(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
+        po::options_description desc{};
+        po::variables_map vm{};
+        auto option = createOption(desc);
+
+        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm](int argc, const char* argv[]) {
+            store(parse_command_line(argc, argv, desc), vm);
+            vm.notify();
+        });
+        assertCmd(vm, option);
+    }
+
+    /**
      * Assert exit on the command line object.
      */
     void assertExit(CommandLine& cmd);

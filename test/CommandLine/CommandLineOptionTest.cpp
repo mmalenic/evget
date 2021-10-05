@@ -27,37 +27,26 @@
 namespace po = boost::program_options;
 
 TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    po::variables_map vm{};
-    CommandLineOption<bool> option = CommandLineOptionBuilder<bool>(desc).shortName("f").build();
-
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program"}, [&desc, &vm](int argc, const char* argv[]) {
-        store(parse_command_line(argc, argv, desc), vm);
-        vm.notify();
-    });
     ASSERT_EQ(false, option.getValue());
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+    }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
+        ASSERT_EQ(false, option.getValue());
+    });
 }
 
 TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    po::variables_map vm{};
-    CommandLineOption<bool> option = CommandLineOptionBuilder<bool>(desc).shortName("f").build();
-
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-f"}, [&desc, &vm](int argc, const char* argv[]) {
-        store(parse_command_line(argc, argv, desc), vm);
-        vm.notify();
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-f"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<bool>(desc).shortName("f").build();
+    }, [](po::variables_map& _vm, const CommandLineOption<bool>& option) {
+        ASSERT_EQ(true, option.getValue());
     });
-    ASSERT_EQ(true, option.getValue());
 }
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    po::variables_map vm{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).shortName("name").required().build();
-
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program"}, [&desc, &vm](int argc, const char* argv[]) {
-        store(parse_command_line(argc, argv, desc), vm);
-        vm.notify();
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("name").required().build();
+    }, [](po::variables_map& vm, CommandLineOption<int>& option) {
+        ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
     });
-    ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
 }
