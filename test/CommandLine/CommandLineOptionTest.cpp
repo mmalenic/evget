@@ -52,7 +52,7 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, CheckImplicitValuePresent) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<int>(desc).shortName("a").implicitValue(1).build();
     }, [](po::variables_map& vm, CommandLineOption<int>& option) {
@@ -61,7 +61,7 @@ TEST(CommandLineOptionTest, CheckImplicitValuePresent) { // NOLINT(cert-err58-cp
     });
 }
 
-TEST(CommandLineOptionTest, CheckImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<int>(desc).shortName("a").required().build();
     }, [](po::variables_map& vm, CommandLineOption<int>& option) {
@@ -69,10 +69,19 @@ TEST(CommandLineOptionTest, CheckImplicitValueNotPresent) { // NOLINT(cert-err58
     });
 }
 
-TEST(CommandLineOptionTest, CheckConflictingOptions) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "-b", "2"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
     }, [](po::variables_map& vm, CommandLineOption<int>& option) {
         ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
+    });
+}
+
+TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("a").required().build();
+    }, [](po::variables_map& vm, CommandLineOption<int>& option) {
+        option.afterRead(vm);
+        ASSERT_EQ(1, option.getValue());
     });
 }
