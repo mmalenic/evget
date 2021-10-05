@@ -63,7 +63,15 @@ TEST(CommandLineOptionTest, CheckImplicitValuePresent) { // NOLINT(cert-err58-cp
 
 TEST(CommandLineOptionTest, CheckImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
-        return CommandLineOptionBuilder<int>(desc).shortName("a").defaultValue(1).build();
+        return CommandLineOptionBuilder<int>(desc).shortName("a").required().build();
+    }, [](po::variables_map& vm, CommandLineOption<int>& option) {
+        ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
+    });
+}
+
+TEST(CommandLineOptionTest, CheckConflictingOptions) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "-b", "2"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
     }, [](po::variables_map& vm, CommandLineOption<int>& option) {
         ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
     });

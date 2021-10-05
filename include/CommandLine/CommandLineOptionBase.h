@@ -178,7 +178,7 @@ void CommandLineOptionBase<T>::afterRead(po::variables_map& vm) {
 
     // Check conflicts
     for (const auto& maybeConflict : conflictsWith) {
-        if (getShortName() == maybeConflict || getLongName() == maybeConflict) {
+        if (vm.count(maybeConflict)) {
             throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getLongName(), maybeConflict));
         }
     }
