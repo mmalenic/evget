@@ -32,8 +32,3 @@ CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builde
         getDescription().c_str()
     );
 }
-
-template<>
-void CommandLineOption<bool>::afterRead(po::variables_map &vm) {
-    CommandLineOptionBase<bool>::afterRead(vm);
-}

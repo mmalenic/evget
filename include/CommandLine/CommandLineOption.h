@@ -41,8 +41,6 @@ public:
      * Create from builder.
      */
     explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
-
-    void afterRead(po::variables_map& vm) override;
 };
 
 template<typename T>
@@ -52,14 +50,10 @@ CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : C
        po::value<T>(),
        this->getDescription().c_str()
     );
-}
 
-template<typename T>
-void CommandLineOption<T>::afterRead(po::variables_map &vm) {
     if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
         throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
     }
-    CommandLineOptionBase<T>::afterRead(vm);
 }
 
 #endif //EVGET_INCLUDE_COMMANDLINEOPTION_H
