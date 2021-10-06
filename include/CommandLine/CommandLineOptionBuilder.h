@@ -41,13 +41,13 @@ class CommandLineOptionValidator;
 
 /**
  * Command line option builder.
- * @tparam T value of option
+ * @tparam T _value of option
  */
 template <typename T>
 class CommandLineOptionBuilder {
 public:
     /**
-     * Validator is a function that takes a string and returns an optional value.
+     * Validator is a function that takes a string and returns an optional _value.
      */
     using Validator = std::function<std::optional<T>(std::string)>;
 
@@ -80,19 +80,19 @@ public:
     CommandLineOptionBuilder& description(std::string description);
 
     /**
-     * Set default value, if the option is not present.
+     * Set default _value, if the option is not present.
      */
     template <typename U = T>
     DisableIfBool<CommandLineOptionBuilder&, U> defaultValue(T defaultValue);
 
     /**
-     * Set implicit value, if the option is specified without a value.
+     * Set implicit _value, if the option is specified without a _value.
      */
     template <typename U = T>
     DisableIfBool<CommandLineOptionBuilder&, U> implicitValue(T implicitValue);
 
     /**
-     * Make this optional a positional value, that takes the amount of values.
+     * Make this optional a positional _value, that takes the amount of values.
      */
     CommandLineOptionBuilder& positionalValue(int amount, po::positional_options_description& positionalDesc);
 

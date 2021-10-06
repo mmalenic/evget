@@ -27,7 +27,7 @@
 
 /**
  * A command line option with custom validation.
- * @tparam T value type.
+ * @tparam T _value type.
  */
 template<typename T>
 class CommandLineOptionValidator : public CommandLineOptionBase<T> {
@@ -62,7 +62,7 @@ void CommandLineOptionValidator<T>::parseValue(po::variables_map &vm) {
         if (validatedValue.has_value()) {
             this->setValue(*validatedValue);
         } else {
-            throw InvalidCommandLineOption(fmt::format("Could not parse {} value, incorrect format", this->getLongName()));
+            throw InvalidCommandLineOption(fmt::format("Could not parse {} _value, incorrect format", this->getLongName()));
         }
     }
 }

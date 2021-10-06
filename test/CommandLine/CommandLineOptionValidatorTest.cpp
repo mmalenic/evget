@@ -20,40 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_COMMANDLINEOPTION_H
-#define EVGET_INCLUDE_COMMANDLINEOPTION_H
+#include <gtest/gtest.h>
+#include <CommandLine/CommandLineTestUtilities.h>
 
-#include <string>
-#include <boost/program_options.hpp>
-#include <optional>
-#include <fmt/core.h>
-#include "InvalidCommandLineOption.h"
-#include "CommandLineOptionBase.h"
-
-/**
- * Represents a command line option.
- * @tparam T _value of command line option
- */
-template<typename T>
-class CommandLineOption : public CommandLineOptionBase<T> {
-public:
-    /**
-     * Create from builder.
-     */
-    explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
-};
-
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder) {
-    this->getOptionsDesc().add_options()(
-       (this->getShortName() + "," + this->getLongName()).c_str(),
-       po::value<T>(),
-       this->getDescription().c_str()
-    );
-
-    if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
-        throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
-    }
+TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
+        return CommandLineOptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
+            return 2;
+        });
+    }, [](po::variables_map& vm, CommandLineOptionValidator<int>& option) {
+        option.afterRead(vm);
+        ASSERT_EQ(2, option.getValue());
+    });
 }
-
-#endif //EVGET_INCLUDE_COMMANDLINEOPTION_H

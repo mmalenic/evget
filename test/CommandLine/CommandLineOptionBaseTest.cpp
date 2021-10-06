@@ -41,6 +41,13 @@ TEST(CommandLineOptionBaseTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ("desc", option.getDescription());
 }
 
+TEST(CommandLineOptionBaseTest, SetValue) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
+    option.setValue(2);
+    ASSERT_EQ(2, option.getValue());
+}
+
 TEST(CommandLineOptionBaseTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();

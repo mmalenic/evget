@@ -32,7 +32,7 @@ namespace po = boost::program_options;
 
 /**
  * Base class for CommandLineOption that represents non-template behaviour.
- * @tparam T value of command line option
+ * @tparam T _value of command line option
  */
 template<typename T>
 class CommandLineOptionBase {
@@ -53,14 +53,14 @@ public:
     [[nodiscard]] std::string getDescription() const;
 
     /**
-     * Get value.
+     * Get _value.
      */
     [[nodiscard]] T getValue() const;
 
     /**
-     * Set the value.
+     * Set the newValue.
      */
-    void setValue(T value);
+    void setValue(T newValue);
 
     /**
      * Check for option conditions after reading command line arguments.
@@ -72,7 +72,7 @@ public:
     virtual void afterRead(po::variables_map &vm);
 
     /**
-     * Parse value component.
+     * Parse _value component.
      */
     virtual void parseValue(po::variables_map &vm);
 
@@ -88,7 +88,7 @@ protected:
     [[nodiscard]] boost::program_options::options_description& getOptionsDesc() const;
 
     /**
-     * Get if value is required.
+     * Get if _value is required.
      */
     [[nodiscard]] bool isRequired() const;
 
@@ -98,12 +98,12 @@ protected:
     [[nodiscard]] const std::vector<std::string>& getConflictsWith() const;
 
     /**
-     * If implicit value is specified from the builder.
+     * If implicit _value is specified from the builder.
      */
     [[nodiscard]] bool isImplicit() const;
 
     /**
-     * If value has a default, specified from the builder.
+     * If _value has a default, specified from the builder.
      */
     [[nodiscard]] bool isDefaulted() const;
 
@@ -117,7 +117,7 @@ private:
     std::vector<std::string> conflictsWith;
     std::optional<T> implicitValue;
 
-    std::optional<T> value;
+    std::optional<T> _value;
     std::reference_wrapper<po::options_description> desc;
 };
 
@@ -138,7 +138,7 @@ std::string CommandLineOptionBase<T>::getDescription() const {
 
 template<typename T>
 T CommandLineOptionBase<T>::getValue() const {
-    return value.value();
+    return _value.value();
 }
 
 template<typename T>
@@ -150,7 +150,7 @@ CommandLineOptionBase<T>::CommandLineOptionBase(CommandLineOptionBuilder<T> buil
     required{builder._required},
     conflictsWith{builder._conflictsWith},
     implicitValue{builder._implicitValue},
-    value{builder.value},
+    _value{builder.value},
     desc{builder._desc} {
     if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
         builder._positionalDesc->get().add(
@@ -167,12 +167,12 @@ void CommandLineOptionBase<T>::afterRead(po::variables_map& vm) {
         throw InvalidCommandLineOption(fmt::format("{} is a required option but it was not specified.", getLongName()));
     }
 
-    // Check implicit value.
+    // Check implicit _value.
     if (vm.count(getShortName()) && vm[getShortName()].empty()) {
         if (implicitValue.has_value()) {
-            value = implicitValue;
+            _value = implicitValue;
         } else {
-            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getLongName()));
+            throw InvalidCommandLineOption(fmt::format("If specified, {} must have a _value", getLongName()));
         }
     }
 
@@ -186,21 +186,21 @@ void CommandLineOptionBase<T>::afterRead(po::variables_map& vm) {
     parseValue(vm);
 
     // Should not happen.
-    if (!value.has_value()) {
-        throw UnsupportedOperationException("CommandLineOption does not have a value when it should.");
+    if (!_value.has_value()) {
+        throw UnsupportedOperationException("CommandLineOption does not have a _value when it should.");
     }
 }
 
 template<typename T>
 void CommandLineOptionBase<T>::parseValue(po::variables_map& vm) {
     if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
-        value = vm[getShortName()].template as<T>();
+        _value = vm[getShortName()].template as<T>();
     }
 }
 
 template<typename T>
 void CommandLineOptionBase<T>::setValue(T value) {
-    CommandLineOptionBase::value = value;
+    CommandLineOptionBase::_value = value;
 }
 
 template<typename T>
