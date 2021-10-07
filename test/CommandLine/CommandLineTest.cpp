@@ -37,3 +37,11 @@ TEST(CommandLineTest, VersionOption) { // NOLINT(cert-err58-cpp)
         ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
+
+TEST(CommandLineTest, FolderOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-o" "folder"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(fs::path{"folder"}, cmd.getFolder());
+    });
+}
