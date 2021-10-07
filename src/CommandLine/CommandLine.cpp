@@ -130,7 +130,7 @@ CommandLine::CommandLine(std::string platformInformation) :
 {
 }
 
-bool CommandLine::parseCommandLine(int argc, char** argv) {
+bool CommandLine::parseCommandLine(int argc, const char* argv[]) {
     po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).allow_unregistered().run();
     store(parsed, vm);
     notify(vm);

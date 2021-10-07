@@ -58,7 +58,7 @@ public:
      * @param argc from main
      * @param argv from main
      */
-    bool parseCommandLine(int argc, char** argv);
+    bool parseCommandLine(int argc, const char* argv[]);
 
     /**
      * Get the folder.
@@ -88,17 +88,6 @@ public:
      * @return file type
      */
     [[nodiscard]] std::vector<Filetype> getFiletype() const;
-
-    /**
-     * Get the valid log levels.
-     * @return valid log levels
-     */
-	static std::string logLevelsString();
-
-    /**
-     * Converts the log level string into a log level if possible.
-     */
-	static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
 
     friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
     friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
@@ -134,6 +123,17 @@ private:
     CommandLineOption<bool> print;
     CommandLineOption<bool> systemEvents;
     CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
+
+    /**
+     * Get the valid log levels.
+     * @return valid log levels
+     */
+    static std::string logLevelsString();
+
+    /**
+     * Converts the log level string into a log level if possible.
+     */
+    static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
 };
 
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

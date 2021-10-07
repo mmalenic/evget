@@ -21,40 +21,19 @@
 // SOFTWARE.
 
 #include <gmock/gmock.h>
+#include <CommandLine/CommandLineTestUtilities.h>
 #include <CommandLine/CommandLine.h>
-//
-//TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
-//    char name[] = "";
-//    char arg[] = "-h";
-//    char *argv[] = { &name[0], &arg[0], nullptr };
-//    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-//    CommandLineLinux cmd { argc, argv };
-//    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-//}
-//
-//TEST(CommandLineTest, HelpOptionLong) { // NOLINT(cert-err58-cpp)
-//    char name[] = "";
-//    char arg[] = "--help";
-//    char *argv[] = { &name[0], &arg[0], nullptr };
-//    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-//    CommandLineLinux cmd { argc, argv };
-//    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-//}
-//
-//TEST(CommandLineTest, VersionOptionShort) { // NOLINT(cert-err58-cpp)
-//    char name[] = "";
-//    char arg[] = "-v";
-//    char *argv[] = { &name[0], &arg[0], nullptr };
-//    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-//    CommandLineLinux cmd { argc, argv };
-//    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-//}
-//
-//TEST(CommandLineTest, VersionOptionLong) { // NOLINT(cert-err58-cpp)
-//    char name[] = "";
-//    char arg[] = "--version";
-//    char *argv[] = { &name[0], &arg[0], nullptr };
-//    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-//    CommandLineLinux cmd { argc, argv };
-//    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-//}
+
+TEST(CommandLineTest, HelpOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-h"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
+    });
+}
+
+TEST(CommandLineTest, VersionOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-v"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
+    });
+}
