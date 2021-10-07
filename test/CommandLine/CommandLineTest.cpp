@@ -40,8 +40,40 @@ TEST(CommandLineTest, VersionOption) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineTest, FolderOption) { // NOLINT(cert-err58-cpp)
     CommandLine cmd{""};
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-o" "folder"}, [&cmd](int argc, const char* argv[]) {
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-o", "folder"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(fs::path{"folder"}, cmd.getFolder());
+    });
+}
+
+TEST(CommandLineTest, FiletypeOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-t", "sqlite"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(std::vector<Filetype>{sqlite}, cmd.getFiletype());
+    });
+}
+
+TEST(CommandLineTest, PrintOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-p"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(true, cmd.shouldPrint());
+    });
+}
+
+TEST(CommandLineTest, SystemEventsOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-s"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(true, cmd.useSystemEvents());
+    });
+}
+
+TEST(CommandLineTest, LogLevelOption) { // NOLINT(cert-err58-cpp)
+    CommandLine cmd{""};
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-u", "err"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(spdlog::level::err, cmd.getLogLevel());
     });
 }
