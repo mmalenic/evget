@@ -29,111 +29,119 @@
 #include "CommandLineOption.h"
 #include "CommandLineOptionValidator.h"
 
-namespace po = boost::program_options;
-namespace fs = std::filesystem;
+namespace CommandLine {
 
-/**
- * Available filetypes.
- */
-enum Filetype {
-    csv,
-    sqlite
-};
-
-/**
- * The CommandLine class controls command line options.
- */
-class CommandLine {
-public:
-    /**
-     * Create a CommandLine object.
-     *
-     * @param platformInformation platform information string
-     */
-    explicit CommandLine(std::string platformInformation);
+    namespace po = boost::program_options;
+    namespace fs = std::filesystem;
 
     /**
-     * Perform the actual command line parsing. Returns true if operation of the program should continue.
-     *
-     * @param argc from main
-     * @param argv from main
+     * Available filetypes.
      */
-    bool parseCommandLine(int argc, const char* argv[]);
+    enum Filetype {
+        csv,
+        sqlite
+    };
 
     /**
-     * Get the folder.
+     * The CommandLine class controls command line options.
      */
-    [[nodiscard]] fs::path getFolder() const;
+    class CommandLine {
+    public:
+        /**
+         * Create a CommandLine object.
+         *
+         * @param platformInformation platform information string
+         */
+        explicit CommandLine(std::string platformInformation);
 
-    /**
-     * Getter for print flag.
-     * @return print flag
-     */
-    [[nodiscard]] bool shouldPrint() const;
+        /**
+         * Perform the actual command line parsing. Returns true if operation of the program should continue.
+         *
+         * @param argc from main
+         * @param argv from main
+         */
+        bool parseCommandLine(int argc, const char *argv[]);
 
-    /**
-     * Getter for system events flag.
-     * @return system events flag
-     */
-    [[nodiscard]] bool useSystemEvents() const;
+        /**
+         * Get the folder.
+         */
+        [[nodiscard]] fs::path getFolder() const;
 
-    /**
-     * Get the log level.
-     * @return
-     */
-    [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
+        /**
+         * Getter for print flag.
+         * @return print flag
+         */
+        [[nodiscard]] bool shouldPrint() const;
 
-    /**
-     * Get the file type.
-     * @return file type
-     */
-    [[nodiscard]] std::vector<Filetype> getFiletype() const;
+        /**
+         * Getter for system events flag.
+         * @return system events flag
+         */
+        [[nodiscard]] bool useSystemEvents() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Filetype& filetype);
-    friend std::istream& operator>>(std::istream& in, Filetype& algorithm);
+        /**
+         * Get the log level.
+         * @return
+         */
+        [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
-    virtual ~CommandLine() = default;
-    CommandLine(const CommandLine&) = default;
-    CommandLine(CommandLine&&) = default;
-    CommandLine& operator=(const CommandLine&) = delete;
-    CommandLine& operator=(CommandLine&&) = delete;
+        /**
+         * Get the file type.
+         * @return file type
+         */
+        [[nodiscard]] std::vector<Filetype> getFiletype() const;
 
-protected:
-    /**
-     * Get description.
-     * @return description
-     */
-    po::options_description& getDesc();
+        friend std::ostream &operator<<(std::ostream &os, const Filetype &filetype);
 
-    /**
-     * Get the variables map.
-     * @return variables map
-     */
-    [[nodiscard]] const po::variables_map& getVm() const;
+        friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
 
-private:
-    std::string platformInformation;
-    po::options_description desc;
-    po::variables_map vm;
+        virtual ~CommandLine() = default;
 
-    CommandLineOption<bool> help;
-    CommandLineOption<bool> version;
-    CommandLineOption<fs::path> storageFolder;
-    CommandLineOption<std::vector<Filetype>> filetypes;
-    CommandLineOption<bool> print;
-    CommandLineOption<bool> systemEvents;
-    CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
+        CommandLine(const CommandLine &) = default;
 
-    /**
-     * Get the valid log levels.
-     * @return valid log levels
-     */
-    static std::string logLevelsString();
+        CommandLine(CommandLine &&) = default;
 
-    /**
-     * Converts the log level string into a log level if possible.
-     */
-    static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
-};
+        CommandLine &operator=(const CommandLine &) = delete;
 
+        CommandLine &operator=(CommandLine &&) = delete;
+
+    protected:
+        /**
+         * Get description.
+         * @return description
+         */
+        po::options_description &getDesc();
+
+        /**
+         * Get the variables map.
+         * @return variables map
+         */
+        [[nodiscard]] const po::variables_map &getVm() const;
+
+    private:
+        std::string platformInformation;
+        po::options_description desc;
+        po::variables_map vm;
+
+        CommandLineOption<bool> help;
+        CommandLineOption<bool> version;
+        CommandLineOption<fs::path> storageFolder;
+        CommandLineOption<std::vector<Filetype>> filetypes;
+        CommandLineOption<bool> print;
+        CommandLineOption<bool> systemEvents;
+        CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
+
+        /**
+         * Get the valid log levels.
+         * @return valid log levels
+         */
+        static std::string logLevelsString();
+
+        /**
+         * Converts the log level string into a log level if possible.
+         */
+        static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
+    };
+
+}
 #endif //INPUT_EVENT_RECORDER_COMMANDLINE_H

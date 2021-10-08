@@ -43,32 +43,32 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
 
-std::ostream& operator<<(std::ostream& os, const Filetype& filetype) {
+std::ostream& operator<<(std::ostream& os, const CommandLine::Filetype& filetype) {
     switch (filetype) {
-    case Filetype::sqlite:os << SQLITE_STRING;
+    case CommandLine::Filetype::sqlite:os << SQLITE_STRING;
         break;
-    case csv:os << CSV_STRING;
+    case CommandLine::csv:os << CSV_STRING;
         break;
     }
     return os;
 }
 
-std::istream& operator>>(std::istream& in, Filetype& algorithm) {
+std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
     std::string token{};
     in >> token;
     algorithm::to_lower(token);
 
     if (token == SQLITE_STRING) {
-        algorithm = Filetype::sqlite;
+        algorithm = CommandLine::Filetype::sqlite;
     } else if (token == CSV_STRING) {
-        algorithm = Filetype::csv;
+        algorithm = CommandLine::Filetype::csv;
     } else {
         throw po::validation_error(po::validation_error::invalid_option_value, "filetype", token);
     }
     return in;
 }
 
-CommandLine::CommandLine(std::string platformInformation) :
+CommandLine::CommandLine::CommandLine(std::string platformInformation) :
     platformInformation{std::move(platformInformation)},
     desc{
         DESCRIPTION
@@ -130,7 +130,7 @@ CommandLine::CommandLine(std::string platformInformation) :
 {
 }
 
-bool CommandLine::parseCommandLine(int argc, const char* argv[]) {
+bool CommandLine::CommandLine::parseCommandLine(int argc, const char* argv[]) {
     po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).allow_unregistered().run();
     store(parsed, vm);
     notify(vm);
@@ -155,27 +155,27 @@ bool CommandLine::parseCommandLine(int argc, const char* argv[]) {
     return true;
 }
 
-fs::path CommandLine::getFolder() const {
+CommandLine::fs::path CommandLine::CommandLine::getFolder() const {
     return storageFolder.getValue();
 }
 
-po::options_description& CommandLine::getDesc() {
+po::options_description& CommandLine::CommandLine::getDesc() {
     return desc;
 }
 
-const po::variables_map& CommandLine::getVm() const {
+const po::variables_map& CommandLine::CommandLine::getVm() const {
     return vm;
 }
 
-bool CommandLine::shouldPrint() const {
+bool CommandLine::CommandLine::shouldPrint() const {
     return print.getValue();
 }
 
-spdlog::level::level_enum CommandLine::getLogLevel() const {
+spdlog::level::level_enum CommandLine::CommandLine::getLogLevel() const {
     return logLevel.getValue();
 }
 
-std::string CommandLine::logLevelsString() {
+std::string CommandLine::CommandLine::logLevelsString() {
     std::string stringOut;
     stringOut += "[ ";
     for (auto i{std::begin(SPDLOG_LEVEL_NAMES)}; i != std::prev(std::begin(SPDLOG_LEVEL_NAMES)); ++i) {
@@ -188,7 +188,7 @@ std::string CommandLine::logLevelsString() {
     return stringOut;
 }
 
-std::optional<spdlog::level::level_enum> CommandLine::validateLogLevel(std::string logLevel) {
+std::optional<spdlog::level::level_enum> CommandLine::CommandLine::validateLogLevel(std::string logLevel) {
 	algorithm::to_lower(logLevel);
     if (logLevel == "off" || logLevel == "o") {
 		return spdlog::level::off;
@@ -200,10 +200,10 @@ std::optional<spdlog::level::level_enum> CommandLine::validateLogLevel(std::stri
     return level;
 }
 
-std::vector<Filetype> CommandLine::getFiletype() const {
+std::vector<CommandLine::Filetype> CommandLine::CommandLine::getFiletype() const {
     return filetypes.getValue();
 }
 
-bool CommandLine::useSystemEvents() const {
+bool CommandLine::CommandLine::useSystemEvents() const {
     return systemEvents.getValue();
 }
