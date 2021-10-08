@@ -23,7 +23,7 @@
 #include <gtest/gtest.h>
 #include <CommandLine/CommandLineTestUtilities.h>
 
-TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return CommandLineOptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
             return 2;

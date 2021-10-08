@@ -60,11 +60,6 @@ namespace TestUtilities::CommandLineTestUtilities {
         });
         assertCmd(vm, option);
     }
-
-    /**
-     * Assert exit on the command line object.
-     */
-    void assertExit(CommandLine& cmd);
 };
 
 #endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H

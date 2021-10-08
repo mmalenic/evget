@@ -21,7 +21,3 @@
 // SOFTWARE.
 
 #include <CommandLine/CommandLineTestUtilities.h>
-
-void TestUtilities::CommandLineTestUtilities::assertExit(CommandLine& cmd) {
-	//ASSERT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-}

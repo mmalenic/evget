@@ -24,38 +24,40 @@
 #include <CommandLine/CommandLineTestUtilities.h>
 #include <CommandLine/CommandLine.h>
 
+namespace cmd = CommandLine;
+
 TEST(CommandLineTest, HelpOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-h"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST(CommandLineTest, VersionOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-v"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST(CommandLineTest, FolderOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-o", "folder"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        ASSERT_EQ(fs::path{"folder"}, cmd.getFolder());
+        ASSERT_EQ(cmd::fs::path{"folder"}, cmd.getFolder());
     });
 }
 
 TEST(CommandLineTest, FiletypeOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-t", "sqlite"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        ASSERT_EQ(std::vector<Filetype>{sqlite}, cmd.getFiletype());
+        ASSERT_EQ(std::vector<cmd::Filetype>{cmd::sqlite}, cmd.getFiletype());
     });
 }
 
 TEST(CommandLineTest, PrintOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-p"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.shouldPrint());
@@ -63,7 +65,7 @@ TEST(CommandLineTest, PrintOption) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(CommandLineTest, SystemEventsOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-s"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.useSystemEvents());
@@ -71,7 +73,7 @@ TEST(CommandLineTest, SystemEventsOption) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(CommandLineTest, LogLevelOption) { // NOLINT(cert-err58-cpp)
-    CommandLine cmd{""};
+    cmd::CommandLine cmd{""};
     TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-u", "err"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(spdlog::level::err, cmd.getLogLevel());
