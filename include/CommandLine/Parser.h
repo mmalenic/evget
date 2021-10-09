@@ -26,8 +26,8 @@
 #include <boost/program_options.hpp>
 #include <filesystem>
 #include <spdlog/spdlog.h>
-#include "CommandLineOption.h"
-#include "CommandLineOptionValidator.h"
+#include "Option.h"
+#include "OptionValidator.h"
 
 namespace CommandLine {
 
@@ -123,13 +123,13 @@ namespace CommandLine {
         po::options_description desc;
         po::variables_map vm;
 
-        CommandLineOption<bool> help;
-        CommandLineOption<bool> version;
-        CommandLineOption<fs::path> storageFolder;
-        CommandLineOption<std::vector<Filetype>> filetypes;
-        CommandLineOption<bool> print;
-        CommandLineOption<bool> systemEvents;
-        CommandLineOptionValidator<spdlog::level::level_enum> logLevel;
+        Option<bool> help;
+        Option<bool> version;
+        Option<fs::path> storageFolder;
+        Option<std::vector<Filetype>> filetypes;
+        Option<bool> print;
+        Option<bool> systemEvents;
+        OptionValidator<spdlog::level::level_enum> logLevel;
 
         /**
          * Get the valid log levels.

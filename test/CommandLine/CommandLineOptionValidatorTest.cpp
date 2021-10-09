@@ -23,12 +23,15 @@
 #include <gtest/gtest.h>
 #include <CommandLine/CommandLineTestUtilities.h>
 
+namespace po = boost::program_options;
+namespace Cmd = CommandLine;
+
 TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
-        return CommandLineOptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
+        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
             return 2;
         });
-    }, [](po::variables_map& vm, CommandLineOptionValidator<int>& option) {
+    }, [](po::variables_map& vm, Cmd::OptionValidator<int>& option) {
         option.afterRead(vm);
         ASSERT_EQ(2, option.getValue());
     });

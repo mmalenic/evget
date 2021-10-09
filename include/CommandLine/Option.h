@@ -28,31 +28,35 @@
 #include <optional>
 #include <fmt/core.h>
 #include "InvalidCommandLineOption.h"
-#include "CommandLineOptionBase.h"
+#include "OptionBase.h"
 
-/**
- * Represents a command line option.
- * @tparam T _value of command line option
- */
-template<typename T>
-class CommandLineOption : public CommandLineOptionBase<T> {
-public:
+namespace CommandLine {
+
     /**
-     * Create from builder.
+     * Represents a command line option.
+     * @tparam T _value of command line option
      */
-    explicit CommandLineOption(CommandLineOptionBuilder<T> builder);
-};
+    template<typename T>
+    class Option : public OptionBase<T> {
+    public:
+        /**
+         * Create from builder.
+         */
+        explicit Option(OptionBuilder<T> builder);
+    };
 
-template<typename T>
-CommandLineOption<T>::CommandLineOption(CommandLineOptionBuilder<T> builder) : CommandLineOptionBase<T>(builder) {
-    this->getOptionsDesc().add_options()(
-       (this->getShortName() + "," + this->getLongName()).c_str(),
-       po::value<T>(),
-       this->getDescription().c_str()
-    );
+    template<typename T>
+    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
+        this->getOptionsDesc().add_options()(
+                (this->getShortName() + "," + this->getLongName()).c_str(),
+                po::value<T>(),
+                this->getDescription().c_str()
+        );
 
-    if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
-        throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
+        if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
+            throw UnsupportedOperationException{
+                    "Value must at least be required, implicit, or have a default specified."};
+        }
     }
 }
 

@@ -219,11 +219,11 @@ add_program(
     include/EventListener.h
     include/EventData/Field.h
     include/UnsupportedOperationException.h
-    include/CommandLine/CommandLineOption.h
+    include/CommandLine/Option.h
     include/InvalidCommandLineOption.h
-    include/CommandLine/CommandLineOptionBuilder.h
-    include/CommandLine/CommandLineOptionBase.h
-    include/CommandLine/CommandLineOptionValidator.h
+    include/CommandLine/OptionBuilder.h
+    include/CommandLine/OptionBase.h
+    include/CommandLine/OptionValidator.h
     # Sources
     src/CommandLine/Parser.cpp
     src/EventData/Field.cpp
@@ -232,7 +232,7 @@ add_program(
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
-    src/CommandLine/CommandLineOption.cpp
+    src/CommandLine/Option.cpp
 )
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC spdlog 1.9.2)
@@ -292,7 +292,7 @@ add_program(
     ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME}-bin DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
-set_target_properties(${CMAKE_PROJECT_NAME}-bin PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME}})
+set_target_properties(${CMAKE_PROJECT_NAME}-bin PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME})
 message(STATUS "Renamed executable ${CMAKE_PROJECT_NAME}-bin to ${CMAKE_PROJECT_NAME}.")
 
 if (BUILD_TESTING)

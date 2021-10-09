@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CommandLine/CommandLineOption.h"
+#include "CommandLine/Option.h"
 
 #include <utility>
 
 template<>
-CommandLineOption<bool>::CommandLineOption(CommandLineOptionBuilder<bool> builder) : CommandLineOptionBase<bool>(std::move(builder)) {
+CommandLine::Option<bool>::Option(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
     this->getOptionsDesc().add_options()(
         (getShortName() + "," + getLongName()).c_str(),
         po::bool_switch(),

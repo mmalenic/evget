@@ -28,6 +28,7 @@
 #include <utility>
 
 namespace algorithm = boost::algorithm;
+namespace po = boost::program_options;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
@@ -75,21 +76,21 @@ CommandLine::Parser::Parser(std::string platformInformation) :
     },
     vm{},
     help{
-        CommandLineOptionBuilder<bool>{desc}
+        OptionBuilder<bool>{desc}
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
             .build()
     },
     version{
-        CommandLineOptionBuilder<bool>{desc}
+        OptionBuilder<bool>{desc}
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
             .build()
     },
     storageFolder{
-        CommandLineOptionBuilder<fs::path>{desc}
+        OptionBuilder<fs::path>{desc}
             .shortName("o")
             .longName("folder")
             .description("Folder location where events are stored.")
@@ -97,7 +98,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .build()
     },
     filetypes{
-        CommandLineOptionBuilder<std::vector<Filetype>>{desc}
+        OptionBuilder<std::vector<Filetype>>{desc}
             .shortName("t")
             .longName("filetypes")
             .description("Filetypes used to store events.")
@@ -106,21 +107,21 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .build()
     },
     print{
-        CommandLineOptionBuilder<bool>{desc}
+        OptionBuilder<bool>{desc}
             .shortName("p")
             .longName("print")
             .description("Print events.")
             .build()
     },
     systemEvents{
-        CommandLineOptionBuilder<bool>{desc}
+        OptionBuilder<bool>{desc}
             .shortName("s")
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .build()
     },
     logLevel{
-        CommandLineOptionBuilder<spdlog::level::level_enum>{desc}
+        OptionBuilder<spdlog::level::level_enum>{desc}
             .shortName("u")
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())

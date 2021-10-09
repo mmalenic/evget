@@ -30,6 +30,9 @@
 #include <CommandLine/Parser.h>
 
 namespace TestUtilities::CommandLineTestUtilities {
+
+    namespace po = boost::program_options;
+
     /**
      * Make the command line object.
      * @param args args to use

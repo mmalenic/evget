@@ -21,35 +21,38 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLine/CommandLineOption.h>
+#include <CommandLine/Option.h>
+
+namespace po = boost::program_options;
+namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionBaseTest, GetShortNameTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().shortName("name").build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().shortName("name").build();
     ASSERT_EQ("name", option.getShortName());
 }
 
 TEST(CommandLineOptionBaseTest, GetLongNameTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().longName("name").build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().longName("name").build();
     ASSERT_EQ("name", option.getLongName());
 }
 
 TEST(CommandLineOptionBaseTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().description("desc").build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().description("desc").build();
     ASSERT_EQ("desc", option.getDescription());
 }
 
 TEST(CommandLineOptionBaseTest, SetValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().defaultValue(1).build();
     option.setValue(2);
     ASSERT_EQ(2, option.getValue());
 }
 
 TEST(CommandLineOptionBaseTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    CommandLineOption<int> option = CommandLineOptionBuilder<int>(desc).required().defaultValue(1).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().defaultValue(1).build();
     ASSERT_EQ(1, option.getValue());
 }
