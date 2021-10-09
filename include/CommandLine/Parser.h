@@ -43,16 +43,16 @@ namespace CommandLine {
     };
 
     /**
-     * The CommandLine class controls command line options.
+     * The Parser class controls command line options.
      */
-    class CommandLine {
+    class Parser {
     public:
         /**
-         * Create a CommandLine object.
+         * Create a Parser object.
          *
          * @param platformInformation platform information string
          */
-        explicit CommandLine(std::string platformInformation);
+        explicit Parser(std::string platformInformation);
 
         /**
          * Perform the actual command line parsing. Returns true if operation of the program should continue.
@@ -95,15 +95,15 @@ namespace CommandLine {
 
         friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
 
-        virtual ~CommandLine() = default;
+        virtual ~Parser() = default;
 
-        CommandLine(const CommandLine &) = default;
+        Parser(const Parser &) = default;
 
-        CommandLine(CommandLine &&) = default;
+        Parser(Parser &&) = default;
 
-        CommandLine &operator=(const CommandLine &) = delete;
+        Parser &operator=(const Parser &) = delete;
 
-        CommandLine &operator=(CommandLine &&) = delete;
+        Parser &operator=(Parser &&) = delete;
 
     protected:
         /**

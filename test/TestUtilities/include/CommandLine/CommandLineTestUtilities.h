@@ -24,10 +24,10 @@
 #define EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
 
 /**
- * CommandLine test utilities.
+ * Parser test utilities.
  */
 
-#include <CommandLine/CommandLine.h>
+#include <CommandLine/Parser.h>
 
 namespace TestUtilities::CommandLineTestUtilities {
     /**

@@ -23,7 +23,7 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 #define INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 
-#include <CommandLine/CommandLine.h>
+#include <CommandLine/Parser.h>
 
 /**
  * Linux specific command line.

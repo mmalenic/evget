@@ -207,7 +207,7 @@ add_program(
     SRCS
     # Headers
     include/Task.h
-    include/CommandLine/CommandLine.h
+    include/CommandLine/Parser.h
     include/EventTransformer.h
     include/EventData/EventData.h
     include/EventHandler.h
@@ -225,7 +225,7 @@ add_program(
     include/CommandLine/CommandLineOptionBase.h
     include/CommandLine/CommandLineOptionValidator.h
     # Sources
-    src/CommandLine/CommandLine.cpp
+    src/CommandLine/Parser.cpp
     src/EventData/Field.cpp
     src/EventData/EventData.cpp
     src/EventData/MouseMove.cpp
