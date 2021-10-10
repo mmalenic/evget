@@ -20,15 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CommandLine/Option.h"
+#ifndef EVGET_OPTIONFLAG_H
+#define EVGET_OPTIONFLAG_H
 
-#include <utility>
+namespace CommandLine {
 
-template<>
-CommandLine::Option<bool>::Option(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
-    this->getOptionsDesc().add_options()(
-        (getShortName() + "," + getLongName()).c_str(),
-        po::bool_switch(),
-        getDescription().c_str()
-    );
+    template<typename T>
+    class OptionFlag : public OptionBase<T> {
+    public:
+        /**
+         * Create from builder.
+         */
+        explicit OptionFlag(OptionBuilder<T> builder);
+    };
+
+    template<typename T>
+    OptionFlag<T>::OptionFlag(OptionBuilder<T> builder) : OptionBase<T>(builder) {
+        this->getOptionsDesc().add_options()(
+                (getShortName() + "," + getLongName()).c_str(),
+                po::bool_switch(),
+                getDescription().c_str()
+        );
+    }
 }
+
+
+#endif //EVGET_OPTIONFLAG_H
