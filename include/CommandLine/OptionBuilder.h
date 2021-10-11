@@ -57,10 +57,17 @@ namespace CommandLine {
         using Validator = std::function<std::optional<T>(std::string)>;
 
         /**
-         * Disable if bool, return R otherwise.
+         * Disable if bool, returning R.
          */
         template<typename R, typename U>
         using DisableIfBool = std::enable_if_t<sizeof(U) && (!std::is_same<T, bool>::value), R>;
+
+        /**
+         * Enable if bool, returning R.
+         */
+        template<typename R, typename U>
+        using EnableIfBool = std::enable_if_t<sizeof(U) && (std::is_same<T, bool>::value), R>;
+
 
         friend class OptionBase<T>;
 
@@ -115,7 +122,8 @@ namespace CommandLine {
         /**
          * Build flag option.
          */
-        OptionFlag buildFlag();
+        template<typename U = T>
+        EnableIfBool<OptionFlag, U> buildFlag();
 
         /**
          * Build Option.
@@ -215,7 +223,8 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionFlag<T> OptionBuilder<T>::buildFlag() {
+    template<typename U>
+    typename OptionBuilder<T>::template EnableIfBool<OptionFlag, U> OptionBuilder<T>::buildFlag() {
         return OptionFlag(*this);
     }
 
