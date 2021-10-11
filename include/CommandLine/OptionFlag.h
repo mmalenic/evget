@@ -25,6 +25,8 @@
 #ifndef EVGET_OPTIONFLAG_H
 #define EVGET_OPTIONFLAG_H
 
+#include "OptionBase.h"
+
 namespace CommandLine {
 
     class OptionFlag : public OptionBase<bool> {
@@ -35,12 +37,7 @@ namespace CommandLine {
         explicit OptionFlag(OptionBuilder<bool> builder);
     };
 
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
-        this->getOptionsDesc().add_options()(
-                (getShortName() + "," + getLongName()).c_str(),
-                po::bool_switch(),
-                getDescription().c_str()
-        );
+    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder), *po::bool_switch()) {
     }
 }
 

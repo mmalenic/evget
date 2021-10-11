@@ -46,14 +46,8 @@ namespace CommandLine {
     };
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
-        this->getOptionsDesc().add_options()(
-                (this->getShortName() + "," + this->getLongName()).c_str(),
-                po::value<T>(),
-                this->getDescription().c_str()
-        );
-
-        if (!this->isDefaulted() && !this->isRequired() && !this->isImplicit()) {
+    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder, *po::value<T>()) {
+        if (!this->hasDefault() && !this->isRequired() && !this->hasImplicit()) {
             throw UnsupportedOperationException{
                     "Value must at least be required, implicit, or have a default specified."};
         }

@@ -50,12 +50,11 @@ namespace CommandLine {
     template<typename T>
     OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
-            : OptionBase<T>(builder), validator{validator} {
-        this->getOptionsDesc().add_options()(
-                (this->getShortName() + "," + this->getLongName()).c_str(),
-                po::value<std::string>(),
-                this->getDescription().c_str()
-        );
+            : OptionBase<T>(builder, *po::value<std::string>()), validator{validator} {
+        if (!this->hasDefault() && !this->isRequired() && !this->hasImplicit()) {
+            throw UnsupportedOperationException{
+                    "Value must at least be required, implicit, or have a default specified."};
+        }
     }
 
     template<typename T>
