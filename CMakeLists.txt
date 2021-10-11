@@ -310,6 +310,7 @@ if (BUILD_TESTING)
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBaseTest.cpp
         test/CommandLine/CommandLineOptionValidatorTest.cpp
+        test/CommandLine/CommandLineOptionFlagTest.cpp
         # Util Headers
         test/TestUtilities/include/CommandLine/CommandLineTestUtilities.h
         # Util Sources

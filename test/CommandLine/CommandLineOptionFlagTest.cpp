@@ -1,5 +1,3 @@
-#include <utility>
-
 // MIT License
 //
 // Copyright (c) 2021 Marko Malenic
@@ -22,27 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_OPTIONFLAG_H
-#define EVGET_OPTIONFLAG_H
+#include <gtest/gtest.h>
+#include <CommandLine/CommandLineTestUtilities.h>
+#include <CommandLine/OptionFlag.h>
 
-namespace CommandLine {
+namespace po = boost::program_options;
+namespace Cmd = CommandLine;
 
-    class OptionFlag : public OptionBase<bool> {
-    public:
-        /**
-         * Create from builder.
-         */
-        explicit OptionFlag(OptionBuilder<bool> builder);
-    };
-
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
-        this->getOptionsDesc().add_options()(
-                (getShortName() + "," + getLongName()).c_str(),
-                po::bool_switch(),
-                getDescription().c_str()
-        );
-    }
+TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
+        return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
+    }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
+        option.afterRead(vm);
+        ASSERT_EQ(false, option.getValue());
+    });
 }
 
-
-#endif //EVGET_OPTIONFLAG_H
+TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+        return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
+    }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
+        option.afterRead(vm);
+        ASSERT_EQ(true, option.getValue());
+    });
+}

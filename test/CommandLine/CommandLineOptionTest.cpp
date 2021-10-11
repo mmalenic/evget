@@ -32,24 +32,6 @@ TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
     ASSERT_THROW(Cmd::OptionBuilder<int>(desc).shortName("name").build(), UnsupportedOperationException);
 }
 
-TEST(CommandLineOptionTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName("a").build();
-    }, [](po::variables_map& vm, Cmd::Option<bool>& option) {
-        option.afterRead(vm);
-        ASSERT_EQ(false, option.getValue());
-    });
-}
-
-TEST(CommandLineOptionTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName("a").build();
-    }, [](po::variables_map& vm, Cmd::Option<bool>& option) {
-        option.afterRead(vm);
-        ASSERT_EQ(true, option.getValue());
-    });
-}
-
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();

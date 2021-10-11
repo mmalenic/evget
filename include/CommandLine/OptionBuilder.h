@@ -39,6 +39,8 @@ namespace CommandLine {
     template<typename T>
     class Option;
 
+    class OptionFlag;
+
     template<typename T>
     class OptionValidator;
 
@@ -109,6 +111,11 @@ namespace CommandLine {
          * @param name name of conflicting option
          */
         OptionBuilder &conflictsWith(const std::string &name);
+
+        /**
+         * Build flag option.
+         */
+        OptionFlag buildFlag();
 
         /**
          * Build Option.
@@ -205,6 +212,11 @@ namespace CommandLine {
     template<typename T>
     Option<T> OptionBuilder<T>::build() {
         return Option(*this);
+    }
+
+    template<typename T>
+    OptionFlag<T> OptionBuilder<T>::buildFlag() {
+        return OptionFlag(*this);
     }
 
     template<typename T>
