@@ -82,7 +82,7 @@ namespace CommandLine {
         /**
          * Create from builder.
          */
-        explicit OptionBase(OptionBuilder<T> builder, po::typed_value<T>& typedValue);
+        explicit OptionBase(OptionBuilder<T> builder);
 
         /**
          * Get the program options description.
@@ -100,21 +100,21 @@ namespace CommandLine {
         [[nodiscard]] const std::vector<std::string> &getConflicting() const;
 
         /**
-         * If implicit _value is specified from the builder.
+         * Get the optional default value.
          */
-        [[nodiscard]] bool hasImplicit() const;
+        const std::optional<T> &getDefaultValue() const;
 
         /**
-         * If _value has a default, specified from the builder.
+         * Get the optional implicit value.
          */
-        [[nodiscard]] bool hasDefault() const;
+        const std::optional<T> &getImplicitValue() const;
 
     private:
         std::string shortName;
         std::string longName;
         std::string description;
 
-        bool defaultValue;
+        std::optional<T> defaultValue;
         bool required;
         std::vector<std::string> conflictsWith;
         std::optional<T> implicitValue;
@@ -144,11 +144,11 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBase<T>::OptionBase(OptionBuilder<T> builder, po::typed_value<T>& typedValue) :
+    OptionBase<T>::OptionBase(OptionBuilder<T> builder) :
             shortName{builder._shortName},
             longName{builder._longName},
             description{builder._description},
-            defaultValue{builder.value.has_value()},
+            defaultValue{builder.value},
             required{builder._required},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
@@ -160,17 +160,6 @@ namespace CommandLine {
                     *builder._positionalAmount
             );
         }
-        if (hasDefault()) {
-            typedValue.default_value(*_value, "");
-        }
-        if (hasImplicit()) {
-            typedValue.implicit_value(*implicitValue, "");
-        }
-        getOptionsDesc().add_options()(
-                (this->getLongName() + "," + this->getShortName()).c_str(),
-                &typedValue,
-                this->getDescription().c_str()
-        );
     }
 
     template<typename T>
@@ -183,7 +172,7 @@ namespace CommandLine {
 
         // Check implicit _value.
         if (vm.count(getShortName()) && vm[getShortName()].empty()) {
-            if (hasImplicit()) {
+            if (implicitValue.has_value()) {
                 _value = implicitValue;
             } else {
                 throw InvalidCommandLineOption(fmt::format("If specified, {} must have a _value", getLongName()));
@@ -234,13 +223,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::hasImplicit() const {
-        return implicitValue.has_value();
+    const std::optional<T> &OptionBase<T>::getDefaultValue() const {
+        return defaultValue;
     }
 
     template<typename T>
-    bool OptionBase<T>::hasDefault() const {
-        return defaultValue;
+    const std::optional<T> &OptionBase<T>::getImplicitValue() const {
+        return implicitValue;
     }
 }
 

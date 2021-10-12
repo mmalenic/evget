@@ -46,11 +46,24 @@ namespace CommandLine {
     };
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder, *po::value<T>()) {
-        if (!this->hasDefault() && !this->isRequired() && !this->hasImplicit()) {
+    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
+        if (!this->getDefaultValue().has_value() && !this->isRequired() && !this->getImplicitValue().has_value()) {
             throw UnsupportedOperationException{
                     "Value must at least be required, implicit, or have a default specified."};
         }
+
+        auto typedValue = po::value<T>();
+        if (this->getDefaultValue().has_value()) {
+            typedValue->default_value(*this->getDefaultValue(), "");
+        }
+        if (this->getImplicitValue().has_value()) {
+            typedValue->implicit_value(*this->getDefaultValue(), "");
+        }
+        this->getOptionsDesc().add_options()(
+                (this->getLongName() + "," + this->getShortName()).c_str(),
+                typedValue,
+                this->getDescription().c_str()
+        );
     }
 }
 
