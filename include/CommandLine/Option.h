@@ -59,6 +59,7 @@ namespace CommandLine {
         if (this->getImplicitValue().has_value()) {
             typedValue->implicit_value(*this->getDefaultValue(), "");
         }
+
         this->getOptionsDesc().add_options()(
                 (this->getLongName() + "," + this->getShortName()).c_str(),
                 typedValue,

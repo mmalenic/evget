@@ -37,7 +37,12 @@ namespace CommandLine {
         explicit OptionFlag(OptionBuilder<bool> builder);
     };
 
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder), *po::bool_switch()) {
+    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(builder) {
+        this->getOptionsDesc().add_options()(
+                (this->getLongName() + "," + this->getShortName()).c_str(),
+                po::bool_switch(),
+                getDescription().c_str()
+        );
     }
 }
 
