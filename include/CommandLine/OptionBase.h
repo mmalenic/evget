@@ -109,6 +109,12 @@ namespace CommandLine {
          */
         const std::optional<T> &getImplicitValue() const;
 
+        /**
+         * Checks whether the option is at least, default or required. Throws
+         * UnsupportedOperationException if not.
+         */
+        void checkInvariants();
+
     private:
         std::string shortName;
         std::string longName;
@@ -230,6 +236,14 @@ namespace CommandLine {
     template<typename T>
     const std::optional<T> &OptionBase<T>::getImplicitValue() const {
         return implicitValue;
+    }
+
+    template<typename T>
+    void OptionBase<T>::checkInvariants() {
+        if (!this->getDefaultValue().has_value() && !this->isRequired()) {
+            throw UnsupportedOperationException{
+                    "Value must at least be required, implicit, or have a default specified."};
+        }
     }
 }
 

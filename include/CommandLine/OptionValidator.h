@@ -51,10 +51,7 @@ namespace CommandLine {
     OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
-        if (!this->getDefaultValue().has_value() && !this->isRequired() && !this->getImplicitValue().has_value()) {
-            throw UnsupportedOperationException{
-                    "Value must at least be required, implicit, or have a default specified."};
-        }
+        this->checkInvariants();
 
         auto typedValue = po::value<std::string>();
         if (this->getDefaultValue().has_value()) {

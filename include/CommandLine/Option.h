@@ -47,10 +47,7 @@ namespace CommandLine {
 
     template<typename T>
     Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
-        if (!this->getDefaultValue().has_value() && !this->isRequired() && !this->getImplicitValue().has_value()) {
-            throw UnsupportedOperationException{
-                    "Value must at least be required, implicit, or have a default specified."};
-        }
+        this->checkInvariants();
 
         auto typedValue = po::value<T>();
         if (this->getDefaultValue().has_value()) {
