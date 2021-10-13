@@ -74,9 +74,19 @@ namespace CommandLine {
         virtual void afterRead(po::variables_map &vm);
 
         /**
-         * Parse _value component.
+         * Parse value component.
          */
         virtual void parseValue(po::variables_map &vm);
+
+        /**
+         * Parse implicit value component.
+         */
+        virtual void parseImplicitValue(po::variables_map &vm);
+
+        /**
+         * Parse default value component.
+         */
+        virtual void parseDefaultValue(po::variables_map &vm);
 
     protected:
         /**
@@ -176,14 +186,10 @@ namespace CommandLine {
                     fmt::format("{} is a required option but it was not specified.", getLongName()));
         }
 
-        // Check implicit _value.
-        if (vm.count(getShortName()) && vm[getShortName()].empty()) {
-            if (implicitValue.has_value()) {
-                _value = implicitValue;
-            } else {
-                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a _value", getLongName()));
-            }
-        }
+        // Parse value.
+        parseDefaultValue(vm);
+        parseImplicitValue(vm);
+        parseValue(vm);
 
         // Check conflicts
         for (const auto &maybeConflict: conflictsWith) {
@@ -193,11 +199,9 @@ namespace CommandLine {
             }
         }
 
-        parseValue(vm);
-
         // Should not happen.
         if (!_value.has_value()) {
-            throw UnsupportedOperationException("Option does not have a _value when it should.");
+            throw UnsupportedOperationException("Option does not have a value when it should.");
         }
     }
 
@@ -209,8 +213,26 @@ namespace CommandLine {
     }
 
     template<typename T>
+    void OptionBase<T>::parseDefaultValue(po::variables_map &vm) {
+        if (!vm.count(getShortName()) && defaultValue.has_value()) {
+            _value = defaultValue;
+        }
+    }
+
+    template<typename T>
+    void OptionBase<T>::parseImplicitValue(po::variables_map &vm) {
+        if (vm.count(getShortName()) && vm[getShortName()].empty()) {
+            if (implicitValue.has_value()) {
+                _value = implicitValue;
+            } else {
+                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getLongName()));
+            }
+        }
+    }
+
+    template<typename T>
     void OptionBase<T>::setValue(T value) {
-        OptionBase::_value = value;
+        _value = value;
     }
 
     template<typename T>
@@ -241,8 +263,7 @@ namespace CommandLine {
     template<typename T>
     void OptionBase<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
-            throw UnsupportedOperationException{
-                    "Value must at least be required, implicit, or have a default specified."};
+            throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
         }
     }
 }

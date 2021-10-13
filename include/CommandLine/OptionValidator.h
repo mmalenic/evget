@@ -43,7 +43,7 @@ namespace CommandLine {
         void parseValue(po::variables_map &vm) override;
 
     private:
-        std::optional<typename OptionBuilder<T>::Validator> validator;
+        typename OptionBuilder<T>::Validator validator;
     };
 
 
@@ -70,9 +70,7 @@ namespace CommandLine {
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
-        if (!validator.has_value()) {
-            OptionBase<T>::parseValue(vm);
-        } else if (vm.count(this->getShortName()) && !vm[this->getShortName()].empty()) {
+        if (vm.count(this->getShortName()) && !vm[this->getShortName()].empty()) {
             std::optional<T> validatedValue = (*validator)(vm[this->getShortName()].template as<std::string>());
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);

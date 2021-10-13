@@ -35,14 +35,28 @@ namespace CommandLine {
          * Create from builder.
          */
         explicit OptionFlag(OptionBuilder<bool> builder);
+
+        void parseValue(po::variables_map &vm) override;
+        void parseDefaultValue(po::variables_map &vm) override;
+        void parseImplicitValue(po::variables_map &vm) override;
     };
 
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(builder) {
+    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
         this->getOptionsDesc().add_options()(
                 (this->getLongName() + "," + this->getShortName()).c_str(),
                 po::bool_switch(),
                 getDescription().c_str()
         );
+    }
+
+    void OptionFlag::parseValue(po::variables_map &vm) {
+        this->setValue(vm.count(getShortName()));
+    }
+
+    void OptionFlag::parseDefaultValue(po::variables_map &vm) {
+    }
+
+    void OptionFlag::parseImplicitValue(po::variables_map &vm) {
     }
 }
 
