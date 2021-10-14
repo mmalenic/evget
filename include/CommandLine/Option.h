@@ -46,22 +46,8 @@ namespace CommandLine {
     };
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
+    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder, this->createTypedValue(this->getDefaultValue(), this->getImplicitValue(), "")) {
         this->checkInvariants();
-
-        auto typedValue = po::value<T>();
-        if (this->getDefaultValue().has_value()) {
-            typedValue->default_value(*this->getDefaultValue(), "");
-        }
-        if (this->getImplicitValue().has_value()) {
-            typedValue->implicit_value(*this->getDefaultValue(), "");
-        }
-
-        this->getOptionsDesc().add_options()(
-                (this->getLongName() + "," + this->getShortName()).c_str(),
-                typedValue,
-                this->getDescription().c_str()
-        );
     }
 }
 

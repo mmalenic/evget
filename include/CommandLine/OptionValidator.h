@@ -50,28 +50,14 @@ namespace CommandLine {
     template<typename T>
     OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
-            : OptionBase<T>(builder), validator{validator} {
+            : OptionBase<T>(builder, this->template createTypedValue<std::string>("", "", "")), validator{validator} {
         this->checkInvariants();
-
-        auto typedValue = po::value<std::string>();
-        if (this->getDefaultValue().has_value()) {
-            typedValue->default_value("", "");
-        }
-        if (this->getImplicitValue().has_value()) {
-            typedValue->implicit_value("", "");
-        }
-
-        this->getOptionsDesc().add_options()(
-                (this->getShortName() + "," + this->getLongName()).c_str(),
-                typedValue,
-                this->getDescription().c_str()
-        );
     }
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
         if (vm.count(this->getShortName()) && !vm[this->getShortName()].empty()) {
-            std::optional<T> validatedValue = (*validator)(vm[this->getShortName()].template as<std::string>());
+            std::optional<T> validatedValue = validator(vm[this->getShortName()].template as<std::string>());
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);
             } else {
