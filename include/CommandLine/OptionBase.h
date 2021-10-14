@@ -93,7 +93,7 @@ namespace CommandLine {
          * Create from builder.
          */
         template<typename U>
-        explicit OptionBase(OptionBuilder<T> builder, std::unique_ptr<po::typed_value<U>> typedValue);
+        explicit OptionBase(OptionBuilder<T> builder, po::typed_value<U>* typedValue);
 
         /**
          * Get the program options description.
@@ -128,9 +128,11 @@ namespace CommandLine {
 
         /**
          * Create the typed value using default and implicit values.
+         * Use of raw pointer ensures consistency and a lack of bugs
+         * with the boost program options library.
          */
         template<typename U>
-        static std::unique_ptr<po::typed_value<U>> createTypedValue(const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation);
+        static po::typed_value<U>* createTypedValue(const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation);
 
     private:
         std::string shortName;
@@ -168,7 +170,7 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    OptionBase<T>::OptionBase(OptionBuilder<T> builder, std::unique_ptr<po::typed_value<U>> typedValue) :
+    OptionBase<T>::OptionBase(OptionBuilder<T> builder, po::typed_value<U>* typedValue) :
             shortName{builder._shortName},
             longName{builder._longName},
             description{builder._description},
@@ -186,7 +188,7 @@ namespace CommandLine {
         }
         this->getOptionsDesc().add_options()(
                 (this->getLongName() + "," + this->getShortName()).c_str(),
-                typedValue.get(),
+                typedValue,
                 this->getDescription().c_str()
         );
     }
@@ -282,7 +284,7 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    std::unique_ptr<po::typed_value<U>> OptionBase<T>::createTypedValue(const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation) {
+    po::typed_value<U>* OptionBase<T>::createTypedValue(const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation) {
         po::typed_value<U>* typedValue = po::value<U>();
         if (defaultValue.has_value()) {
             typedValue->default_value(*defaultValue, representation);
@@ -290,7 +292,7 @@ namespace CommandLine {
         if (implicitValue.has_value()) {
             typedValue->implicit_value(*implicitValue, representation);
         }
-        return std::unique_ptr<po::typed_value<U>>(typedValue);
+        return typedValue;
     }
 }
 

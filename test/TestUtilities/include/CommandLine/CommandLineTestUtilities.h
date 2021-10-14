@@ -42,7 +42,12 @@ namespace TestUtilities::CommandLineTestUtilities {
 		std::vector<const char *> vector{args};
 		vector.push_back(nullptr);
 		const char **argv = vector.data();
+
+        if (vector.size() - 1 > std::numeric_limits<int>::max()) {
+            throw std::overflow_error{"Number of args is larger than the maximum int value."};
+        }
 		int argc = static_cast<int>(vector.size() - 1);
+
 		createCmd(argc, argv);
     }
 
@@ -57,8 +62,8 @@ namespace TestUtilities::CommandLineTestUtilities {
         po::variables_map vm{};
         auto option = createOption(desc);
 
-        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm](int argc, const char* argv[]) {
-            store(parse_command_line(argc, argv, desc), vm);
+        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm](int argc, const char** argv) {
+            po::store(po::parse_command_line(argc, argv, desc), vm);
             vm.notify();
         });
         assertCmd(vm, option);

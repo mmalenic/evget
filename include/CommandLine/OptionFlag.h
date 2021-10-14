@@ -41,7 +41,7 @@ namespace CommandLine {
         void parseImplicitValue(po::variables_map &vm) override;
     };
 
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder), std::unique_ptr<po::typed_value<bool>>{po::bool_switch()}) {
+    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder), po::bool_switch()) {
     }
 
     void OptionFlag::parseValue(po::variables_map &vm) {
