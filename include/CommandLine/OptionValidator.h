@@ -50,7 +50,7 @@ namespace CommandLine {
     template<typename T>
     OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
-            : OptionBase<T>(builder, this->template createTypedValue<std::string>("", "", "")), validator{validator} {
+            : OptionBase<T>(builder, this->template createTypedValue<std::string>(this->isRequired(), "", "", "")), validator{validator} {
         this->checkInvariants();
     }
 
