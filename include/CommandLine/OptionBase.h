@@ -127,6 +127,12 @@ namespace CommandLine {
         void checkInvariants();
 
         /**
+         * Get the value from the variables map.
+         */
+        template<typename U>
+        std::optional<U> getValueFromVm(po::variables_map &vm);
+
+        /**
          * Create the typed value using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
@@ -284,8 +290,20 @@ namespace CommandLine {
     template<typename T>
     void OptionBase<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
-            throw UnsupportedOperationException{"Value must at least be required, implicit, or have a default specified."};
+            throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
         }
+    }
+
+    template<typename T>
+    template<typename U>
+    std::optional<U> OptionBase<T>::getValueFromVm(po::variables_map &vm) {
+        if (!longName.empty() && vm.count(longName)) {
+            return vm[longName].template as<U>();
+        }
+        if (!shortName.empty() && vm.count(fmt::format("-{}", shortName))) {
+            return vm[shortName].template as<U>();
+        }
+        return std::nullopt;
     }
 
     template<typename T>
