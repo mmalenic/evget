@@ -132,7 +132,13 @@ namespace CommandLine {
          * with the boost program options library.
          */
         template<typename U>
-        static po::typed_value<U>* createTypedValue(bool required, const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation);
+        static po::typed_value<U>* setTypedValue(
+                bool required,
+                const std::optional<U>& defaultValue,
+                const std::optional<U>& implicitValue,
+                std::string representation,
+                po::typed_value<U>* typedValue = po::value<U>()
+                );
 
     private:
         std::string shortName;
@@ -284,8 +290,13 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    po::typed_value<U>* OptionBase<T>::createTypedValue(bool required, const std::optional<U>& defaultValue, const std::optional<U>& implicitValue, std::string representation) {
-        po::typed_value<U>* typedValue = po::value<U>();
+    po::typed_value<U>* OptionBase<T>::setTypedValue(
+            bool required,
+            const std::optional<U>& defaultValue,
+            const std::optional<U>& implicitValue,
+            std::string representation,
+            po::typed_value<U>* typedValue
+            ) {
         if (required) {
             typedValue->required();
         }
