@@ -133,6 +133,11 @@ namespace CommandLine {
         std::optional<U> getValueFromVm(po::variables_map &vm);
 
         /**
+         * Check if the value is present in the variables map.
+         */
+        bool isValuePresent(po::variables_map &vm);
+
+        /**
          * Create the typed value using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
@@ -148,7 +153,9 @@ namespace CommandLine {
 
     private:
         std::string shortName;
+        std::string shortNameKey;
         std::string longName;
+        std::string longNameKey;
         std::string description;
 
         std::optional<T> defaultValue;
@@ -184,7 +191,9 @@ namespace CommandLine {
     template<typename U>
     OptionBase<T>::OptionBase(OptionBuilder<T> builder, po::typed_value<U>* typedValue) :
             shortName{builder._shortName},
+            shortNameKey{fmt::format("-{}", shortName)},
             longName{builder._longName},
+            longNameKey{builder._longName},
             description{builder._description},
             defaultValue{builder.value},
             required{builder._required},
@@ -297,13 +306,21 @@ namespace CommandLine {
     template<typename T>
     template<typename U>
     std::optional<U> OptionBase<T>::getValueFromVm(po::variables_map &vm) {
-        if (!longName.empty() && vm.count(longName)) {
-            return vm[longName].template as<U>();
-        }
-        if (!shortName.empty() && vm.count(fmt::format("-{}", shortName))) {
-            return vm[shortName].template as<U>();
+        if (isValuePresent(vm)) {
+            if (!vm[longNameKey].empty()) {
+                return vm[longNameKey].template as<U>();
+            }
+            if (!vm[shortNameKey].empty()) {
+                return vm[shortNameKey].template as<U>();
+            }
         }
         return std::nullopt;
+    }
+
+    template<typename T>
+    bool OptionBase<T>::isValuePresent(po::variables_map &vm) {
+        return ((!longName.empty() && vm.count(longNameKey)) ||
+                (!shortName.empty() && vm.count(shortNameKey));
     }
 
     template<typename T>
