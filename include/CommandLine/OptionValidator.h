@@ -56,13 +56,13 @@ namespace CommandLine {
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
-        if (vm.count(this->getShortName()) && !vm[this->getShortName()].empty()) {
-            std::optional<T> validatedValue = validator(vm[this->getShortName()].template as<std::string>());
+        if (this->isOptionPresent(vm) && !this->isOptionEmpty(vm)) {
+            std::optional<T> validatedValue = validator(*this->template getValueFromVm<std::string>(vm));
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);
             } else {
                 throw InvalidCommandLineOption(
-                        fmt::format("Could not parse {} _value, incorrect format", this->getLongName()));
+                        fmt::format("Could not parse {} value, incorrect format", this->getLongName()));
             }
         }
     }
