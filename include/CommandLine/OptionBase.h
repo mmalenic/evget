@@ -143,6 +143,12 @@ namespace CommandLine {
         bool isOptionPresent(po::variables_map &vm);
 
         /**
+         * Return the name of this option, which is the longName if present,
+         * otherwise it is the shortName.
+         */
+        std::string getName();
+
+        /**
          * Create the typed value using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
@@ -224,7 +230,7 @@ namespace CommandLine {
         // Check required.
         if (!isOptionPresent(vm) && required) {
             throw InvalidCommandLineOption(
-                    fmt::format("{} is a required option but it was not specified.", getLongName()));
+                    fmt::format("{} is a required option but it was not specified.", getName()));
         }
 
         // Parse value.
@@ -236,7 +242,7 @@ namespace CommandLine {
         for (const auto &maybeConflict: conflictsWith) {
             if (vm.count(maybeConflict) || vm.count(fmt::format("-{}", maybeConflict))) {
                 throw InvalidCommandLineOption(
-                        fmt::format("Conflicting options {}, and {} specified", getLongName(), maybeConflict));
+                        fmt::format("Conflicting options {}, and {} specified", getName(), maybeConflict));
             }
         }
 
@@ -264,7 +270,7 @@ namespace CommandLine {
             if (implicitValue.has_value()) {
                 _value = implicitValue;
             } else {
-                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getLongName()));
+                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getName()));
             }
         }
     }
@@ -328,6 +334,14 @@ namespace CommandLine {
     template<typename T>
     bool OptionBase<T>::isOptionEmpty(po::variables_map &vm) {
         return (vm.at(longNameKey).empty() || vm.at(shortNameKey).empty());
+    }
+
+    template<typename T>
+    std::string OptionBase<T>::getName() {
+        if (!longName.empty()) {
+            return longName;
+        }
+        return shortName;
     }
 
     template<typename T>

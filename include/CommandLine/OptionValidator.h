@@ -62,7 +62,7 @@ namespace CommandLine {
                 this->setValue(*validatedValue);
             } else {
                 throw InvalidCommandLineOption(
-                        fmt::format("Could not parse {} value, incorrect format", this->getLongName()));
+                        fmt::format("Could not parse {} value, incorrect format", this->getName()));
             }
         }
     }

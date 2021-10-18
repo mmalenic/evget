@@ -51,7 +51,7 @@ namespace CommandLine {
     }
 
     void OptionFlag::parseValue(po::variables_map &vm) {
-        this->setValue(vm.count(getLongName()));
+        this->setValue(this->isOptionPresent(vm));
     }
 
     void OptionFlag::parseDefaultValue(po::variables_map &vm) {
