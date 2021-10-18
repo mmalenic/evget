@@ -65,6 +65,12 @@ namespace CommandLine {
         void setValue(T newValue);
 
         /**
+         * Return the name of this option, which is the longName if present,
+         * otherwise it is the shortName.
+         */
+        std::string getName();
+
+        /**
          * Check for option conditions after reading command line arguments.
          * This must be called to notify the command line option that options
          * have been read.
@@ -143,12 +149,6 @@ namespace CommandLine {
         bool isOptionPresent(po::variables_map &vm);
 
         /**
-         * Return the name of this option, which is the longName if present,
-         * otherwise it is the shortName.
-         */
-        std::string getName();
-
-        /**
          * Create the typed value using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
@@ -212,6 +212,10 @@ namespace CommandLine {
             implicitValue{builder._implicitValue},
             _value{builder.value},
             desc{builder._desc} {
+        if (shortName.empty() && longName.empty()) {
+            throw UnsupportedOperationException("Option should contain at least a short name, or a long name.");
+        }
+
         if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
             builder._positionalDesc->get().add(
                     (getShortName() + "," + getLongName()).c_str(),
