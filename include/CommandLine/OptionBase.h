@@ -133,9 +133,14 @@ namespace CommandLine {
         std::optional<U> getValueFromVm(po::variables_map &vm);
 
         /**
+         * Check if the  option is present but empty.
+         */
+        bool isOptionEmpty(po::variables_map &vm);
+
+        /**
          * Check if the value is present in the variables map.
          */
-        bool isValuePresent(po::variables_map &vm);
+        bool isOptionPresent(po::variables_map &vm);
 
         /**
          * Create the typed value using default and implicit values.
@@ -217,7 +222,7 @@ namespace CommandLine {
     template<typename T>
     void OptionBase<T>::afterRead(po::variables_map &vm) {
         // Check required.
-        if (!vm.count(getShortName()) && required) {
+        if (!isOptionPresent(vm) && required) {
             throw InvalidCommandLineOption(
                     fmt::format("{} is a required option but it was not specified.", getLongName()));
         }
@@ -229,7 +234,7 @@ namespace CommandLine {
 
         // Check conflicts
         for (const auto &maybeConflict: conflictsWith) {
-            if (vm.count(maybeConflict)) {
+            if (vm.count(maybeConflict) || vm.count(fmt::format("-{}", maybeConflict))) {
                 throw InvalidCommandLineOption(
                         fmt::format("Conflicting options {}, and {} specified", getLongName(), maybeConflict));
             }
@@ -243,21 +248,19 @@ namespace CommandLine {
 
     template<typename T>
     void OptionBase<T>::parseValue(po::variables_map &vm) {
-        if (vm.count(getShortName()) && !vm[getShortName()].empty()) {
-            _value = vm[getShortName()].template as<T>();
-        }
+        _value = getValueFromVm<T>(vm);
     }
 
     template<typename T>
     void OptionBase<T>::parseDefaultValue(po::variables_map &vm) {
-        if (!vm.count(getShortName()) && defaultValue.has_value()) {
+        if (!isOptionPresent(vm) && defaultValue.has_value()) {
             _value = defaultValue;
         }
     }
 
     template<typename T>
     void OptionBase<T>::parseImplicitValue(po::variables_map &vm) {
-        if (vm.count(getShortName()) && vm[getShortName()].empty()) {
+        if (isOptionPresent(vm) && isOptionEmpty(vm)) {
             if (implicitValue.has_value()) {
                 _value = implicitValue;
             } else {
@@ -306,11 +309,11 @@ namespace CommandLine {
     template<typename T>
     template<typename U>
     std::optional<U> OptionBase<T>::getValueFromVm(po::variables_map &vm) {
-        if (isValuePresent(vm)) {
-            if (!vm[longNameKey].empty()) {
+        if (isOptionPresent(vm)) {
+            if (!vm.at(longNameKey).empty()) {
                 return vm[longNameKey].template as<U>();
             }
-            if (!vm[shortNameKey].empty()) {
+            if (!vm.at(shortNameKey).empty()) {
                 return vm[shortNameKey].template as<U>();
             }
         }
@@ -318,9 +321,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::isValuePresent(po::variables_map &vm) {
-        return ((!longName.empty() && vm.count(longNameKey)) ||
-                (!shortName.empty() && vm.count(shortNameKey));
+    bool OptionBase<T>::isOptionPresent(po::variables_map &vm) {
+        return vm.count(longNameKey) || vm.count(shortNameKey);
+    }
+
+    template<typename T>
+    bool OptionBase<T>::isOptionEmpty(po::variables_map &vm) {
+        return (vm.at(longNameKey).empty() || vm.at(shortNameKey).empty());
     }
 
     template<typename T>
