@@ -36,7 +36,6 @@ namespace CommandLine {
          */
         explicit OptionFlag(OptionBuilder<bool> builder);
 
-        void parseValue(po::variables_map &vm) override;
         void parseDefaultValue(po::variables_map &vm) override;
         void parseImplicitValue(po::variables_map &vm) override;
     };
@@ -48,10 +47,6 @@ namespace CommandLine {
                                                                                    this->getImplicitValue(),
                                                                                    "",
                                                                                    po::bool_switch())) {
-    }
-
-    void OptionFlag::parseValue(po::variables_map &vm) {
-        this->setValue(this->isOptionPresent(vm));
     }
 
     void OptionFlag::parseDefaultValue(po::variables_map &vm) {

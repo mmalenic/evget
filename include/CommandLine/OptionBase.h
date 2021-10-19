@@ -319,13 +319,14 @@ namespace CommandLine {
     template<typename T>
     template<typename U>
     std::optional<U> OptionBase<T>::getValueFromVm(po::variables_map &vm) {
-        if (isOptionPresent(vm)) {
-            if (!vm.at(longNameKey).empty()) {
-                return vm[longNameKey].template as<U>();
-            }
-            if (!vm.at(shortNameKey).empty()) {
-                return vm[shortNameKey].template as<U>();
-            }
+        if (vm.count(longNameKey) && !vm.at(longNameKey).empty()) {
+            return vm[longNameKey].template as<U>();
+        }
+        if (vm.count(shortNameKey) && !vm.at(shortNameKey).empty()) {
+            auto b = vm[shortNameKey];
+            auto c = vm[shortNameKey].empty();
+            auto a = vm[shortNameKey].template as<U>();
+            return vm[shortNameKey].template as<U>();
         }
         return std::nullopt;
     }

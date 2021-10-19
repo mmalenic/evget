@@ -32,15 +32,17 @@ TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
         option.afterRead(vm);
+        auto a = option.getValue();
         ASSERT_EQ(false, option.getValue());
     });
 }
 
 TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "--aa"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<bool>(desc).longName("aa").buildFlag();
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+        return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
         option.afterRead(vm);
+        auto a = option.getValue();
         ASSERT_EQ(true, option.getValue());
     });
 }
