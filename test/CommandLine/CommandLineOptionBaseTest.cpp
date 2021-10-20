@@ -40,19 +40,19 @@ TEST(CommandLineOptionBaseTest, GetLongNameTest) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionBaseTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().description("desc").build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().description("desc").build();
     ASSERT_EQ("desc", option.getDescription());
 }
 
 TEST(CommandLineOptionBaseTest, SetValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().defaultValue(1).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().defaultValue(1).build();
     option.setValue(2);
     ASSERT_EQ(2, option.getValue());
 }
 
 TEST(CommandLineOptionBaseTest, GetDefaultValueTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().defaultValue(1).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().defaultValue(1).build();
     ASSERT_EQ(1, option.getValue());
 }

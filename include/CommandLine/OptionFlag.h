@@ -56,5 +56,4 @@ namespace CommandLine {
     }
 }
 
-
 #endif //EVGET_OPTIONFLAG_H
