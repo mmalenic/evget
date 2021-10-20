@@ -323,9 +323,6 @@ namespace CommandLine {
             return vm[longNameKey].template as<U>();
         }
         if (vm.count(shortNameKey) && !vm.at(shortNameKey).empty()) {
-            auto b = vm[shortNameKey];
-            auto c = vm[shortNameKey].empty();
-            auto a = vm[shortNameKey].template as<U>();
             return vm[shortNameKey].template as<U>();
         }
         return std::nullopt;

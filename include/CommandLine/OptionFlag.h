@@ -43,8 +43,8 @@ namespace CommandLine {
     OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder),
                                                                            CommandLine::OptionFlag::setTypedValue(
                                                                                    this->isRequired(),
-                                                                                   this->getDefaultValue(),
-                                                                                   this->getImplicitValue(),
+                                                                                   {false},
+                                                                                   {},
                                                                                    "",
                                                                                    po::bool_switch())) {
     }

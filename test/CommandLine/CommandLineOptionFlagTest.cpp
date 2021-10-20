@@ -32,8 +32,7 @@ TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
         option.afterRead(vm);
-        auto a = option.getValue();
-        ASSERT_EQ(false, option.getValue());
+        ASSERT_FALSE(option.getValue());
     });
 }
 
@@ -42,7 +41,6 @@ TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
         option.afterRead(vm);
-        auto a = option.getValue();
-        ASSERT_EQ(true, option.getValue());
+        ASSERT_TRUE(option.getValue());
     });
 }
