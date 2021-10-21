@@ -34,7 +34,7 @@ TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
+        return Cmd::OptionBuilder<int>(desc).shortName("name").required().build();
     }, [](po::variables_map& vm, Cmd::Option<int>& option) {
         ASSERT_THROW(option.afterRead(vm), InvalidCommandLineOption);
     });

@@ -152,15 +152,15 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T>::OptionBuilder(po::options_description &desc) :
             _desc{desc},
-            _positionalDesc{},
+            _positionalDesc{std::nullopt},
             _shortName{},
             _longName{},
             _description{},
             _required{false},
             _conflictsWith{},
-            _implicitValue{},
-            _positionalAmount{},
-            value{} {
+            _implicitValue{std::nullopt},
+            _positionalAmount{std::nullopt},
+            value{std::nullopt} {
     }
 
     template<typename T>

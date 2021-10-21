@@ -149,6 +149,12 @@ namespace CommandLine {
         bool isOptionPresent(po::variables_map &vm);
 
         /**
+         * Add an option to the options description.
+         */
+        template<typename U>
+        void addOptionToDesc(po::typed_value<U>* typedValue);
+
+        /**
          * Create the typed value using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
@@ -156,8 +162,8 @@ namespace CommandLine {
         template<typename U>
         static po::typed_value<U>* setTypedValue(
                 bool required,
-                const std::optional<U>& defaultValue,
-                const std::optional<U>& implicitValue,
+                std::optional<U> defaultValue,
+                std::optional<U> implicitValue,
                 std::string representation,
                 po::typed_value<U>* typedValue = po::value<U>()
                 );
@@ -222,11 +228,6 @@ namespace CommandLine {
                     *builder._positionalAmount
             );
         }
-        this->getOptionsDesc().add_options()(
-                (this->getLongName() + "," + this->getShortName()).c_str(),
-                typedValue,
-                this->getDescription().c_str()
-        );
     }
 
     template<typename T>
@@ -346,12 +347,23 @@ namespace CommandLine {
         return shortName;
     }
 
+
+    template<typename T>
+    template<typename U>
+    void OptionBase<T>::addOptionToDesc(po::typed_value<U>* typedValue) {
+        this->getOptionsDesc().add_options()(
+                (this->getLongName() + "," + this->getShortName()).c_str(),
+                typedValue,
+                this->getDescription().c_str()
+        );
+    }
+
     template<typename T>
     template<typename U>
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             bool required,
-            const std::optional<U>& defaultValue,
-            const std::optional<U>& implicitValue,
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
             std::string representation,
             po::typed_value<U>* typedValue
             ) {
