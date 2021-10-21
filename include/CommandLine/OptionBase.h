@@ -98,8 +98,7 @@ namespace CommandLine {
         /**
          * Create from builder.
          */
-        template<typename U>
-        explicit OptionBase(OptionBuilder<T> builder, po::typed_value<U>* typedValue);
+        explicit OptionBase(OptionBuilder<T> builder);
 
         /**
          * Get the program options description.
@@ -205,8 +204,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    template<typename U>
-    OptionBase<T>::OptionBase(OptionBuilder<T> builder, po::typed_value<U>* typedValue) :
+    OptionBase<T>::OptionBase(OptionBuilder<T> builder) :
             shortName{builder._shortName},
             shortNameKey{fmt::format("-{}", shortName)},
             longName{builder._longName},

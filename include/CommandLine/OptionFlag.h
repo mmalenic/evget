@@ -40,13 +40,14 @@ namespace CommandLine {
         void parseImplicitValue(po::variables_map &vm) override;
     };
 
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder),
-                                                                           CommandLine::OptionFlag::setTypedValue(
-                                                                                   this->isRequired(),
-                                                                                   {false},
-                                                                                   {},
-                                                                                   "",
-                                                                                   po::bool_switch())) {
+    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
+        auto value = CommandLine::OptionFlag::setTypedValue(
+        this->isRequired(),
+                {false},
+                {std::nullopt},
+                "",
+                po::bool_switch());
+        this->addOptionToDesc(value);
     }
 
     void OptionFlag::parseDefaultValue(po::variables_map &vm) {

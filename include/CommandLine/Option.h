@@ -46,11 +46,13 @@ namespace CommandLine {
     };
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder, this->setTypedValue(this->isRequired(),
-                                                                                             this->getDefaultValue(),
-                                                                                             this->getImplicitValue(),
-                                                                                             "")) {
+    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
         this->checkInvariants();
+        auto value = this->setTypedValue(this->isRequired(),
+                            this->getDefaultValue(),
+                            this->getImplicitValue(),
+                            "");
+        this->addOptionToDesc(value);
     }
 }
 

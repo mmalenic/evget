@@ -50,8 +50,10 @@ namespace CommandLine {
     template<typename T>
     OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
-            : OptionBase<T>(builder, this->template setTypedValue<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, "")), validator{validator} {
+            : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
+        auto value = this->template setTypedValue<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, "");
+        this->addOptionToDesc(value);
     }
 
     template<typename T>
