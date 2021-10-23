@@ -31,7 +31,7 @@ TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
-        Cmd::OptionFlag::afterReadForAll({option}, vm);
+        Cmd::OptionFlag::afterReadFor({option}, vm);
         ASSERT_FALSE(option.getValue());
     });
 }
@@ -40,7 +40,7 @@ TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
-        option.afterRead(vm);
+        Cmd::OptionFlag::afterReadFor({option}, vm);
         ASSERT_TRUE(option.getValue());
     });
 }

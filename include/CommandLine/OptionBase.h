@@ -98,7 +98,7 @@ namespace CommandLine {
          * Performs the after read for all the options, handling exceptions thrown by the
          * boost program options library.
          */
-        static void afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm);
+        static void afterReadFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm);
 
     protected:
         /**
@@ -394,7 +394,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm) {
+    void OptionBase<T>::afterReadFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm) {
         std::exception_ptr e_ptr;
         try {
             po::notify(vm);
