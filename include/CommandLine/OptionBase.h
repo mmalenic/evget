@@ -403,7 +403,7 @@ namespace CommandLine {
         }
 
         for (auto option : options) {
-            option.afterRead(vm);
+            option.get().afterRead(vm);
         }
 
         if (e_ptr) {
