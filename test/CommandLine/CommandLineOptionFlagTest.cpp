@@ -31,6 +31,7 @@ TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
     }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
+        Cmd::OptionBase<bool>::afterread
         option.afterRead(vm);
         ASSERT_FALSE(option.getValue());
     });

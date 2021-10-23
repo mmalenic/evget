@@ -64,7 +64,6 @@ namespace TestUtilities::CommandLineTestUtilities {
 
         TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm](int argc, const char** argv) {
             po::store(po::parse_command_line(argc, argv, desc), vm);
-            po::notify(vm);
         });
         assertCmd(vm, option);
     }

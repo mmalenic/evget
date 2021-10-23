@@ -94,6 +94,12 @@ namespace CommandLine {
          */
         virtual void parseDefaultValue(po::variables_map &vm);
 
+        /**
+         * Performs the after read for all the options, handling exceptions thrown by the
+         * boost program options library.
+         */
+        static void afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm);
+
     protected:
         /**
          * Create from builder.
@@ -171,12 +177,6 @@ namespace CommandLine {
                 std::string representation,
                 po::typed_value<U>* typedValue = po::value<U>()
                 );
-
-        /**
-         * Performs the after read for all the options, handling exceptions thrown by the
-         * boost program options library.
-         */
-        static void afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm);
 
     private:
         std::string shortName;
