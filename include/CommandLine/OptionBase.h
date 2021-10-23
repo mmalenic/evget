@@ -172,6 +172,12 @@ namespace CommandLine {
                 po::typed_value<U>* typedValue = po::value<U>()
                 );
 
+        /**
+         * Performs the after read for all the options, handling exceptions thrown by the
+         * boost program options library.
+         */
+        static void afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm);
+
     private:
         std::string shortName;
         std::string shortNameKey;
@@ -385,6 +391,24 @@ namespace CommandLine {
             typedValue->implicit_value(*implicitValue, representation);
         }
         return typedValue;
+    }
+
+    template<typename T>
+    void OptionBase<T>::afterReadForAll(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm) {
+        std::exception_ptr e_ptr;
+        try {
+            po::notify(vm);
+        } catch (po::error& error) {
+            e_ptr = std::current_exception();
+        }
+
+        for (auto option : options) {
+            option.afterRead(vm);
+        }
+
+        if (e_ptr) {
+            std::rethrow_exception(e_ptr);
+        }
     }
 }
 
