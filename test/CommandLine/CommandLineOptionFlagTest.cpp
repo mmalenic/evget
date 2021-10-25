@@ -30,8 +30,8 @@ namespace Cmd = CommandLine;
 TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
-    }, [](po::variables_map& vm, Cmd::OptionFlag& option) {
-        Cmd::OptionFlag::afterReadFor({option}, vm);
+    }, [](po::variables_map& vm, Cmd::OptionFlag& option, auto fn) {
+        Cmd::OptionFlag::afterReadFor({option}, vm, fn);
         ASSERT_FALSE(option.getValue());
     });
 }
