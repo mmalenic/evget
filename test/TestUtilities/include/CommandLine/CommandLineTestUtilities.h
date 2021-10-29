@@ -63,10 +63,8 @@ namespace TestUtilities::CommandLineTestUtilities {
         auto option = createOption(desc);
 
         TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm, &assertCmd](int argc, const char** argv) {
-            auto parsed = [&argc, &argv, &desc](){
-                po::parse_command_line(argc, argv, desc);
-            };
-            assertCmd(vm, option, parsed);
+            po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
+            assertCmd(vm, option, parser);
         });
     }
 };
