@@ -398,20 +398,11 @@ namespace CommandLine {
 
     template<typename T>
     void OptionBase<T>::afterReadFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser) {
-        std::exception_ptr e_ptr;
-        try {
-            po::store(parser.run(), vm);
-            po::notify(vm);
-        } catch (po::error& error) {
-            e_ptr = std::current_exception();
-        }
+        po::store(parser.run(), vm);
+        po::notify(vm);
 
         for (auto option : options) {
             option.get().afterRead(vm);
-        }
-
-        if (e_ptr) {
-            std::rethrow_exception(e_ptr);
         }
     }
 }

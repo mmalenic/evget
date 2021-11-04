@@ -60,7 +60,8 @@ TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "-b", "2"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser
+    & parser) {
         ASSERT_THROW(Cmd::Option<int>::afterReadFor({option}, vm, parser), InvalidCommandLineOption);
     });
 }
