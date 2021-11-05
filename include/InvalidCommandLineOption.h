@@ -24,13 +24,16 @@
 #define EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 
 #include <string>
+#include <boost/program_options.hpp>
 
-class InvalidCommandLineOption : public std::exception {
+namespace po = boost::program_options;
+
+class InvalidCommandLineOption : public po::error_with_option_name {
 public:
     /**
      * Create exception with message.
      */
-    explicit InvalidCommandLineOption(std::string message = "Invalid Command Line Option");
+    explicit InvalidCommandLineOption(const std::string& message = "Invalid Command Line Option");
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
