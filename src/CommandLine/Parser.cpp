@@ -136,13 +136,13 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     store(parsed, vm);
     notify(vm);
 
-    help.afterRead(vm);
-    version.afterRead(vm);
-    storageFolder.afterRead(vm);
-    filetypes.afterRead(vm);
-    print.afterRead(vm);
-    systemEvents.afterRead(vm);
-    logLevel.afterRead(vm);
+    help.run(vm);
+    version.run(vm);
+    storageFolder.run(vm);
+    filetypes.run(vm);
+    print.run(vm);
+    systemEvents.run(vm);
+    logLevel.run(vm);
 
     if (help.getValue()) {
         std::cout << getDesc() << "\n";

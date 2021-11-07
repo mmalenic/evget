@@ -32,7 +32,7 @@ TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
             return 2;
         });
     }, [](po::variables_map& vm, Cmd::OptionValidator<int>& option, po::command_line_parser& parser) {
-        Cmd::OptionValidator<int>::afterReadFor({option}, vm, parser);
+        Cmd::OptionValidator<int>::runFor({option}, vm, parser);
         ASSERT_EQ(2, option.getValue());
     });
 }

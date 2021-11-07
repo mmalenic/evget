@@ -80,7 +80,7 @@ namespace CommandLine {
          *
          * @throws InvalidCommandLineOption if conditions are not satisfied
          */
-        virtual void afterRead(po::variables_map &vm);
+        virtual void run(po::variables_map &vm);
 
         /**
          * Parse value component.
@@ -101,7 +101,7 @@ namespace CommandLine {
          * Performs the after read for all the options, handling exceptions thrown by the
          * boost program options library.
          */
-        static void afterReadFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser);
+        static void runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser);
 
     protected:
         /**
@@ -243,7 +243,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::afterRead(po::variables_map &vm) {
+    void OptionBase<T>::run(po::variables_map &vm) {
         // Check required.
         if (!isOptionPresent(vm) && required) {
             throw InvalidCommandLineOption(
@@ -397,12 +397,12 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::afterReadFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser) {
+    void OptionBase<T>::runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser) {
         po::store(parser.run(), vm);
         po::notify(vm);
 
         for (auto option : options) {
-            option.get().afterRead(vm);
+            option.get().run(vm);
         }
     }
 }
