@@ -36,7 +36,7 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
     }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
-        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::error);
+        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::required_option);
     });
 }
 
@@ -53,7 +53,7 @@ TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
     }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
-        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::error);
+        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::invalid_command_line_syntax);
     });
 }
 
