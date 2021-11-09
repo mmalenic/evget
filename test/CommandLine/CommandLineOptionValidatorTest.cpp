@@ -31,7 +31,7 @@ TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
             return 2;
         });
-    }, [](po::variables_map& vm, Cmd::OptionValidator<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
         Cmd::OptionValidator<int>::runFor({option}, vm, parser);
         ASSERT_EQ(2, option.getValue());
     });

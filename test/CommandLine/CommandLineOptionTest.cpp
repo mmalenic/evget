@@ -35,7 +35,7 @@ TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
         ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::required_option);
     });
 }
@@ -43,7 +43,7 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(2).implicitValue(1).build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
         Cmd::Option<int>::runFor({option}, vm, parser);
         ASSERT_EQ(1, option.getValue());
     });
@@ -52,24 +52,28 @@ TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
         ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::invalid_command_line_syntax);
     });
 }
 
 TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "-b", "2"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser
-    & parser) {
-        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), InvalidCommandLineOption);
+    po::options_description desc{};
+    po::variables_map vm{};
+
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().build();
+
+    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+        po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
+        ASSERT_THROW(Cmd::Option<int>::runFor({optionA, optionB}, vm, parser), InvalidCommandLineOption);
     });
 }
 
 TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
     TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, Cmd::Option<int>& option, po::command_line_parser& parser) {
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
         Cmd::Option<int>::runFor({option}, vm, parser);
         ASSERT_EQ(1, option.getValue());
     });

@@ -67,6 +67,24 @@ namespace TestUtilities::CommandLineTestUtilities {
             assertCmd(vm, option, parser);
         });
     }
-};
+
+
+    /**
+     * Assert on an option.
+     * @param args program args
+     * @param createOption create option object
+     * @param assertCmd assert with option
+     */
+    void assertOnCmds(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
+        po::options_description desc{};
+        po::variables_map vm{};
+        auto option = createOption(desc);
+
+        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
+            po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
+            assertCmd(vm, parser, option);
+        });
+    }
+}
 
 #endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
