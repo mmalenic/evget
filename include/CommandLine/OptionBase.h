@@ -244,15 +244,6 @@ namespace CommandLine {
 
     template<typename T>
     void OptionBase<T>::run(po::variables_map &vm) {
-        // Check required.
-        if (!isOptionPresent(vm) && required) {
-            throw InvalidCommandLineOption(
-                    fmt::format("{} is a required option but it was not specified.", getName()));
-        }
-
-        // Parse value.
-        parseDefaultValue(vm);
-        parseImplicitValue(vm);
         parseValue(vm);
 
         // Check conflicts
@@ -263,9 +254,9 @@ namespace CommandLine {
             }
         }
 
-        // Should not happen.
+        // Unsupported use of option.
         if (!_value.has_value()) {
-            throw UnsupportedOperationException("Option does not have a value when it should.");
+            throw UnsupportedOperationException("Unsupported use of option.");
         }
     }
 
