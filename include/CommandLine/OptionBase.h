@@ -88,16 +88,6 @@ namespace CommandLine {
         virtual void parseValue(po::variables_map &vm);
 
         /**
-         * Parse implicit value component.
-         */
-        virtual void parseImplicitValue(po::variables_map &vm);
-
-        /**
-         * Parse default value component.
-         */
-        virtual void parseDefaultValue(po::variables_map &vm);
-
-        /**
          * Performs the after read for all the options, handling exceptions thrown by the
          * boost program options library.
          */
@@ -263,24 +253,6 @@ namespace CommandLine {
     template<typename T>
     void OptionBase<T>::parseValue(po::variables_map &vm) {
         _value = getValueFromVm<T>(vm);
-    }
-
-    template<typename T>
-    void OptionBase<T>::parseDefaultValue(po::variables_map &vm) {
-        if (!isOptionPresent(vm) && defaultValue.has_value()) {
-            _value = defaultValue;
-        }
-    }
-
-    template<typename T>
-    void OptionBase<T>::parseImplicitValue(po::variables_map &vm) {
-        if (isOptionPresentAndEmpty(vm)) {
-            if (implicitValue.has_value()) {
-                _value = implicitValue;
-            } else {
-                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getName()));
-            }
-        }
     }
 
     template<typename T>
