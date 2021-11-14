@@ -35,9 +35,6 @@ namespace CommandLine {
          * Create from builder.
          */
         explicit OptionFlag(OptionBuilder<bool> builder);
-
-        void parseDefaultValue(po::variables_map &vm) override;
-        void parseImplicitValue(po::variables_map &vm) override;
     };
 
     OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
@@ -48,12 +45,6 @@ namespace CommandLine {
                 "",
                 po::bool_switch());
         this->addOptionToDesc(value);
-    }
-
-    void OptionFlag::parseDefaultValue(po::variables_map &vm) {
-    }
-
-    void OptionFlag::parseImplicitValue(po::variables_map &vm) {
     }
 }
 

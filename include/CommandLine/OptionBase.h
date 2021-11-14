@@ -311,12 +311,12 @@ namespace CommandLine {
 
     template<typename T>
     bool OptionBase<T>::isOptionPresentAndEmpty(po::variables_map &vm) {
-        return (vm.count(longNameKey) && vm.at(longNameKey).empty()) || (vm.count(shortNameKey) || vm.at(shortNameKey).empty());
+        return (vm.count(longNameKey) && vm.at(longNameKey).empty()) || (vm.count(shortNameKey) && vm.at(shortNameKey).empty());
     }
 
     template<typename T>
     bool OptionBase<T>::isOptionPresentAndNotEmpty(po::variables_map &vm) {
-        return (vm.count(longNameKey) && !vm.at(longNameKey).empty()) || (vm.count(shortNameKey) || !vm.at(shortNameKey).empty());
+        return (vm.count(longNameKey) && !vm.at(longNameKey).empty()) || (vm.count(shortNameKey) && !vm.at(shortNameKey).empty());
     }
 
     template<typename T>
