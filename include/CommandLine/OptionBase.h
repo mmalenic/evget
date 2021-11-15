@@ -364,14 +364,16 @@ namespace CommandLine {
         }
 
         if (defaultValue.has_value() && representation.has_value()) {
-            typedValue->default_value(*defaultValue, representation);
+            typedValue->default_value(*defaultValue, *representation);
         } else if (defaultValue.has_value() && !representation.has_value()) {
+            // TODO check if value is streamable.
             typedValue->default_value(*defaultValue);
         }
 
         if (implicitValue.has_value() && representation.has_value()) {
-            typedValue->implicit_value(*implicitValue, representation);
+            typedValue->implicit_value(*implicitValue, *representation);
         } else if (implicitValue.has_value() && !representation.has_value()) {
+            // TODO check if value is streamable.
             typedValue->default_value(*defaultValue);
         }
 
