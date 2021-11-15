@@ -42,7 +42,7 @@ namespace CommandLine {
         this->isRequired(),
                 {false},
                 {std::nullopt},
-                "",
+        {std::nullopt},
                 po::bool_switch());
         this->addOptionToDesc(value);
     }

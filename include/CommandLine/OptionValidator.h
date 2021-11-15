@@ -52,7 +52,7 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        auto value = this->template setTypedValue<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, "");
+        auto value = this->template setTypedValue<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, this->getRepresentation());
         this->addOptionToDesc(value);
     }
 

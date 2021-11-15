@@ -125,6 +125,11 @@ namespace CommandLine {
         const std::optional<T> &getImplicitValue() const;
 
         /**
+         * Get the optional implicit value.
+         */
+        const std::optional<std::string> &getRepresentation() const;
+
+        /**
          * Checks whether the option is at least, default or required. Throws
          * UnsupportedOperationException if not.
          */
@@ -182,6 +187,7 @@ namespace CommandLine {
         bool required;
         std::vector<std::string> conflictsWith;
         std::optional<T> implicitValue;
+        std::optional<std::string> representation;
 
         std::optional<T> _value;
         std::reference_wrapper<po::options_description> desc;
@@ -218,6 +224,7 @@ namespace CommandLine {
             required{builder._required},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
+            representation{builder._representation},
             _value{builder.value},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
@@ -283,6 +290,11 @@ namespace CommandLine {
     template<typename T>
     const std::optional<T> &OptionBase<T>::getImplicitValue() const {
         return implicitValue;
+    }
+
+    template<typename T>
+    const std::optional<std::string> &OptionBase<T>::getRepresentation() const {
+        return representation;
     }
 
     template<typename T>
@@ -356,6 +368,7 @@ namespace CommandLine {
         } else if (defaultValue.has_value() && !representation.has_value()) {
             typedValue->default_value(*defaultValue);
         }
+
         if (implicitValue.has_value() && representation.has_value()) {
             typedValue->implicit_value(*implicitValue, representation);
         } else if (implicitValue.has_value() && !representation.has_value()) {

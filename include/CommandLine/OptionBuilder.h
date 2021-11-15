@@ -92,6 +92,11 @@ namespace CommandLine {
         OptionBuilder &description(std::string description);
 
         /**
+         * Set representation of default or implicit value.
+         */
+        OptionBuilder &representation(std::string representation);
+
+        /**
          * Set default _value, if the option is not present.
          */
         template<typename U = T>
@@ -104,7 +109,7 @@ namespace CommandLine {
         DisableIfBool<OptionBuilder &, U> implicitValue(T implicitValue);
 
         /**
-         * Make this optional a positional _value, that takes the amount of values.
+         * Make this optional a positional value, that takes the specified amount of values.
          */
         OptionBuilder &positionalValue(int amount, po::positional_options_description &positionalDesc);
 
@@ -146,6 +151,7 @@ namespace CommandLine {
         std::vector<std::string> _conflictsWith;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
+        std::optional<std::string> _representation;
         std::optional<T> value;
     };
 
@@ -178,6 +184,12 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::description(std::string description) {
         _description = std::move(description);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::representation(std::string representation) {
+        _representation = std::move(representation);
         return *this;
     }
 

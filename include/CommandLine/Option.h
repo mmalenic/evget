@@ -51,7 +51,7 @@ namespace CommandLine {
         auto value = this->setTypedValue(this->isRequired(),
                             this->getDefaultValue(),
                             this->getImplicitValue(),
-                            "");
+                            this->getRepresentation());
         this->addOptionToDesc(value);
     }
 }
