@@ -167,7 +167,7 @@ namespace CommandLine {
                 bool required,
                 std::optional<U> defaultValue,
                 std::optional<U> implicitValue,
-                std::string representation,
+                std::optional<std::string> representation,
                 po::typed_value<U>* typedValue = po::value<U>()
                 );
 
@@ -344,18 +344,24 @@ namespace CommandLine {
             bool required,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
-            std::string representation,
+            std::optional<std::string> representation,
             po::typed_value<U>* typedValue
             ) {
         if (required) {
             typedValue->required();
         }
-        if (defaultValue.has_value()) {
+
+        if (defaultValue.has_value() && representation.has_value()) {
             typedValue->default_value(*defaultValue, representation);
+        } else if (defaultValue.has_value() && !representation.has_value()) {
+            typedValue->default_value(*defaultValue);
         }
-        if (implicitValue.has_value()) {
+        if (implicitValue.has_value() && representation.has_value()) {
             typedValue->implicit_value(*implicitValue, representation);
+        } else if (implicitValue.has_value() && !representation.has_value()) {
+            typedValue->default_value(*defaultValue);
         }
+
         return typedValue;
     }
 
