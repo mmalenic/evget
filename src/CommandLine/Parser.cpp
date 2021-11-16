@@ -102,6 +102,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .shortName("t")
             .longName("filetypes")
             .description("Filetypes used to store events.")
+            .representation("sqlite")
             .defaultValue(std::vector{sqlite})
             //.validator()
             .build()

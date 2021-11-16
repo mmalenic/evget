@@ -157,6 +157,16 @@ namespace CommandLine {
         bool isOptionPresent(po::variables_map &vm);
 
         /**
+     * Add an option to the options description.
+     */
+        template<typename U>
+        void addOptionToDesc(bool required,
+                             std::optional<U> defaultValue,
+                             std::optional<U> implicitValue,
+                             std::optional<std::string> representation,
+                             po::typed_value<U>* typedValue = po::value<U>());
+
+        /**
          * Add an option to the options description.
          */
         template<typename U>
@@ -352,6 +362,19 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
+    void OptionBase<T>::addOptionToDesc(
+            bool required,
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
+            std::optional<std::string> representation,
+            po::typed_value<U>* typedValue
+    ) {
+        auto value = OptionBase<T>::setTypedValue(required, defaultValue, implicitValue, representation, typedValue);
+        this->template addOptionToDesc(value);
+    }
+
+    template<typename T>
+    template<typename U>
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             bool required,
             std::optional<U> defaultValue,
@@ -366,14 +389,12 @@ namespace CommandLine {
         if (defaultValue.has_value() && representation.has_value()) {
             typedValue->default_value(*defaultValue, *representation);
         } else if (defaultValue.has_value() && !representation.has_value()) {
-            // TODO check if value is streamable.
             typedValue->default_value(*defaultValue);
         }
 
         if (implicitValue.has_value() && representation.has_value()) {
             typedValue->implicit_value(*implicitValue, *representation);
         } else if (implicitValue.has_value() && !representation.has_value()) {
-            // TODO check if value is streamable.
             typedValue->default_value(*defaultValue);
         }
 

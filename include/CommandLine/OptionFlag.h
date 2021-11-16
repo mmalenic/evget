@@ -38,13 +38,13 @@ namespace CommandLine {
     };
 
     OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
-        auto value = CommandLine::OptionFlag::setTypedValue(
-        this->isRequired(),
+        this->addOptionToDesc(
+                this->isRequired(),
                 {false},
                 {std::nullopt},
-        {std::nullopt},
-                po::bool_switch());
-        this->addOptionToDesc(value);
+                {std::nullopt},
+                po::bool_switch()
+                );
     }
 }
 

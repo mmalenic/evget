@@ -68,7 +68,6 @@ namespace CommandLine {
         template<typename R, typename U>
         using EnableIfBool = std::enable_if_t<sizeof(U) && (std::is_same<T, bool>::value), R>;
 
-
         friend class OptionBase<T>;
 
         /**
@@ -97,13 +96,13 @@ namespace CommandLine {
         OptionBuilder &representation(std::string representation);
 
         /**
-         * Set default _value, if the option is not present.
+         * Set default value, when the option is not present.
          */
         template<typename U = T>
         DisableIfBool<OptionBuilder &, U> defaultValue(T defaultValue);
 
         /**
-         * Set implicit _value, if the option is specified without a _value.
+         * Set implicit value, when the option is specified without a value.
          */
         template<typename U = T>
         DisableIfBool<OptionBuilder &, U> implicitValue(T implicitValue);
