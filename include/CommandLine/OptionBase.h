@@ -157,8 +157,8 @@ namespace CommandLine {
         bool isOptionPresent(po::variables_map &vm);
 
         /**
-     * Add an option to the options description.
-     */
+         * Add an option to the options description.
+         */
         template<typename U>
         void addOptionToDesc(bool required,
                              std::optional<U> defaultValue,
@@ -170,21 +170,16 @@ namespace CommandLine {
          * Add an option to the options description.
          */
         template<typename U>
-        void addOptionToDesc(po::typed_value<U>* typedValue);
+        void addOptionToDesc(bool required,
+                             std::optional<U> defaultValue,
+                             std::optional<U> implicitValue,
+                             po::typed_value<U>* typedValue = po::value<U>());
 
         /**
-         * Create the typed value using default and implicit values.
-         * Use of raw pointer ensures consistency and a lack of bugs
-         * with the boost program options library.
+         * Add an option to the options description.
          */
         template<typename U>
-        static po::typed_value<U>* setTypedValue(
-                bool required,
-                std::optional<U> defaultValue,
-                std::optional<U> implicitValue,
-                std::optional<std::string> representation,
-                po::typed_value<U>* typedValue = po::value<U>()
-                );
+        void addOptionToDesc(po::typed_value<U>* typedValue);
 
     private:
         std::string shortName;
@@ -201,6 +196,32 @@ namespace CommandLine {
 
         std::optional<T> _value;
         std::reference_wrapper<po::options_description> desc;
+
+        /**
+         * Create the typed value using default and implicit values.
+         * Use of raw pointer ensures consistency and a lack of bugs
+         * with the boost program options library.
+         */
+        template<typename U>
+        static po::typed_value<U>* setTypedValue(
+                bool required,
+                po::typed_value<U>* typedValue = po::value<U>()
+        );
+
+        template<typename U>
+        static po::typed_value<U>* setTypedValue(
+                std::optional<U> defaultValue,
+                std::optional<U> implicitValue,
+                std::string representation,
+                po::typed_value<U>* typedValue = po::value<U>()
+        );
+
+        template<typename U>
+        static po::typed_value<U>* setTypedValue(
+                std::optional<U> defaultValue,
+                std::optional<U> implicitValue,
+                po::typed_value<U>* typedValue = po::value<U>()
+        );
     };
 
     template<typename T>
@@ -369,35 +390,66 @@ namespace CommandLine {
             std::optional<std::string> representation,
             po::typed_value<U>* typedValue
     ) {
-        auto value = OptionBase<T>::setTypedValue(required, defaultValue, implicitValue, representation, typedValue);
-        this->template addOptionToDesc(value);
+        OptionBase<T>::setTypedValue(required, typedValue);
+        OptionBase<T>::setTypedValue(defaultValue, implicitValue, representation, typedValue);
+        this->addOptionToDesc(typedValue);
+    }
+
+    template<typename T>
+    template<typename U>
+    void OptionBase<T>::addOptionToDesc(
+            bool required,
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
+            po::typed_value<U>* typedValue
+    ) {
+        OptionBase<T>::setTypedValue(required, typedValue);
+        OptionBase<T>::setTypedValue(defaultValue, implicitValue, typedValue);
+        this->addOptionToDesc(typedValue);
     }
 
     template<typename T>
     template<typename U>
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             bool required,
-            std::optional<U> defaultValue,
-            std::optional<U> implicitValue,
-            std::optional<std::string> representation,
             po::typed_value<U>* typedValue
             ) {
         if (required) {
             typedValue->required();
         }
+        return typedValue;
+    }
 
-        if (defaultValue.has_value() && representation.has_value()) {
-            typedValue->default_value(*defaultValue, *representation);
-        } else if (defaultValue.has_value() && !representation.has_value()) {
+    template<typename T>
+    template<typename U>
+    po::typed_value<U>* OptionBase<T>::setTypedValue(
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
+            std::string representation,
+            po::typed_value<U>* typedValue
+    ) {
+        if (defaultValue.has_value()) {
+            typedValue->default_value(*defaultValue, representation);
+        }
+        if (implicitValue.has_value()) {
+            typedValue->implicit_value(*implicitValue, representation);
+        }
+        return typedValue;
+    }
+
+    template<typename T>
+    template<typename U>
+    po::typed_value<U>* OptionBase<T>::setTypedValue(
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
+            po::typed_value<U>* typedValue
+    ) {
+        if (defaultValue.has_value()) {
             typedValue->default_value(*defaultValue);
         }
-
-        if (implicitValue.has_value() && representation.has_value()) {
-            typedValue->implicit_value(*implicitValue, *representation);
-        } else if (implicitValue.has_value() && !representation.has_value()) {
-            typedValue->default_value(*defaultValue);
+        if (implicitValue.has_value()) {
+            typedValue->implicit_value(*implicitValue);
         }
-
         return typedValue;
     }
 
