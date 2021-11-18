@@ -163,7 +163,7 @@ namespace CommandLine {
         void addOptionToDesc(bool required,
                              std::optional<U> defaultValue,
                              std::optional<U> implicitValue,
-                             std::optional<std::string> representation,
+                             std::string representation,
                              po::typed_value<U>* typedValue = po::value<U>());
 
         /**
@@ -192,7 +192,6 @@ namespace CommandLine {
         bool required;
         std::vector<std::string> conflictsWith;
         std::optional<T> implicitValue;
-        std::optional<std::string> representation;
 
         std::optional<T> _value;
         std::reference_wrapper<po::options_description> desc;
@@ -255,7 +254,6 @@ namespace CommandLine {
             required{builder._required},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
-            representation{builder._representation},
             _value{builder.value},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
@@ -324,11 +322,6 @@ namespace CommandLine {
     }
 
     template<typename T>
-    const std::optional<std::string> &OptionBase<T>::getRepresentation() const {
-        return representation;
-    }
-
-    template<typename T>
     void OptionBase<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
             throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
@@ -387,7 +380,7 @@ namespace CommandLine {
             bool required,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
-            std::optional<std::string> representation,
+            std::string representation,
             po::typed_value<U>* typedValue
     ) {
         OptionBase<T>::setTypedValue(required, typedValue);
