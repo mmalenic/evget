@@ -158,7 +158,7 @@ namespace CommandLine {
         void addOptionToDesc(bool required,
                              std::optional<U> defaultValue,
                              std::optional<U> implicitValue,
-                             std::string representation,
+                             const std::string& representation,
                              po::typed_value<U>* typedValue = po::value<U>());
 
         /**
@@ -206,7 +206,7 @@ namespace CommandLine {
         static po::typed_value<U>* setTypedValue(
                 std::optional<U> defaultValue,
                 std::optional<U> implicitValue,
-                std::string representation,
+                const std::string& representation,
                 po::typed_value<U>* typedValue = po::value<U>()
         );
 
@@ -375,7 +375,7 @@ namespace CommandLine {
             bool required,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
-            std::string representation,
+            const std::string& representation,
             po::typed_value<U>* typedValue
     ) {
         OptionBase<T>::setTypedValue(required, typedValue);
@@ -413,7 +413,7 @@ namespace CommandLine {
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
-            std::string representation,
+            const std::string& representation,
             po::typed_value<U>* typedValue
     ) {
         if (defaultValue.has_value()) {

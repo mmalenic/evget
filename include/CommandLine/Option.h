@@ -47,7 +47,7 @@ namespace CommandLine {
         /**
          * Create from builder.
          */
-        explicit Option(OptionBuilder<T> builder, std::string representation);
+        explicit Option(OptionBuilder<T> builder, const std::string& representation);
     };
 
     template<typename T>
@@ -59,7 +59,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder, std::string representation) : OptionBase<T>(builder) {
+    Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : OptionBase<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
                               this->getDefaultValue(),
