@@ -125,11 +125,6 @@ namespace CommandLine {
         const std::optional<T> &getImplicitValue() const;
 
         /**
-         * Get the optional implicit value.
-         */
-        const std::optional<std::string> &getRepresentation() const;
-
-        /**
          * Checks whether the option is at least, default or required. Throws
          * UnsupportedOperationException if not.
          */

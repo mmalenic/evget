@@ -40,6 +40,12 @@ namespace CommandLine {
         explicit OptionValidator(OptionBuilder<T> builder,
                                  typename OptionBuilder<T>::Validator validator);
 
+        /**
+         * Create from builder.
+         */
+        explicit OptionValidator(OptionBuilder<T> builder,
+                                 typename OptionBuilder<T>::Validator validator, std::string representation);
+
         void parseValue(po::variables_map &vm) override;
 
     private:
@@ -52,7 +58,15 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, this->getRepresentation());
+        this->template addOptionToDesc<std::string>(this->isRequired(), std::optional{""}, std::optional{""});
+    }
+
+    template<typename T>
+    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
+                                        typename OptionBuilder<T>::Validator validator, std::string representation)
+            : OptionBase<T>(builder), validator{validator} {
+        this->checkInvariants();
+        this->template addOptionToDesc<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, representation);
     }
 
     template<typename T>
