@@ -91,11 +91,6 @@ namespace CommandLine {
         OptionBuilder &description(std::string description);
 
         /**
-         * Set representation of default or implicit value.
-         */
-        OptionBuilder &representation(std::string representation);
-
-        /**
          * Set default value, when the option is not present.
          */
         template<typename U = T>
@@ -135,10 +130,21 @@ namespace CommandLine {
         Option<T> build();
 
         /**
-         * Build OptionValidator
+         * Build Option.
+         */
+        Option<T> build(const std::string& representation);
+
+        /**
+         * Build Option with validator.
          */
         template<typename U = T>
         DisableIfBool<OptionValidator<T>, U> build(Validator validator);
+
+        /**
+         * Build Option with validator.
+         */
+        template<typename U = T>
+        DisableIfBool<OptionValidator<T>, U> build(Validator validator, const std::string& representation);
 
     private:
         std::reference_wrapper<po::options_description> _desc;
@@ -187,12 +193,6 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::representation(std::string representation) {
-        _representation = std::move(representation);
-        return *this;
-    }
-
-    template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::required() {
         _required = true;
         return *this;
@@ -234,6 +234,11 @@ namespace CommandLine {
     }
 
     template<typename T>
+    Option<T> OptionBuilder<T>::build(const std::string& representation) {
+        return Option(*this, representation);
+    }
+
+    template<typename T>
     template<typename U>
     typename OptionBuilder<T>::template EnableIfBool<OptionFlag, U> OptionBuilder<T>::buildFlag() {
         return OptionFlag(*this);
@@ -244,6 +249,13 @@ namespace CommandLine {
     typename OptionBuilder<T>::template DisableIfBool<OptionValidator<T>, U>
     OptionBuilder<T>::build(Validator validator) {
         return OptionValidator(*this, validator);
+    }
+
+    template<typename T>
+    template<typename U>
+    typename OptionBuilder<T>::template DisableIfBool<OptionValidator<T>, U>
+    OptionBuilder<T>::build(Validator validator, const std::string& representation) {
+        return OptionValidator(*this, validator, representation);
     }
 }
 
