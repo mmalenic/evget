@@ -28,7 +28,7 @@
 
 namespace po = boost::program_options;
 
-class InvalidCommandLineOption : public po::error_with_option_name {
+class InvalidCommandLineOption : public po::error {
 public:
     /**
      * Create exception with message.

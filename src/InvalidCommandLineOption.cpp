@@ -22,7 +22,7 @@
 
 #include "InvalidCommandLineOption.h"
 
-InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message) : po::error_with_option_name{message}, message{message} {
+InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message) : po::error{message}, message{message} {
 }
 
 const char* InvalidCommandLineOption::what() const noexcept {
