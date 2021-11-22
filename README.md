@@ -32,5 +32,5 @@
 
 [comment]: <> (SOFTWARE.)
 
-# mouse-movement-recorder
-Simple recorder that shows mouse coordinates
+# Work in progress
+Work in progress
