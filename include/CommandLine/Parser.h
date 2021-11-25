@@ -28,6 +28,7 @@
 #include <spdlog/spdlog.h>
 #include "Option.h"
 #include "OptionValidator.h"
+#include "OptionFlag.h"
 
 namespace CommandLine {
 
@@ -123,12 +124,12 @@ namespace CommandLine {
         po::options_description desc;
         po::variables_map vm;
 
-        Option<bool> help;
-        Option<bool> version;
+        OptionFlag help;
+        OptionFlag version;
         Option<fs::path> storageFolder;
         Option<std::vector<Filetype>> filetypes;
-        Option<bool> print;
-        Option<bool> systemEvents;
+        OptionFlag print;
+        OptionFlag systemEvents;
         OptionValidator<spdlog::level::level_enum> logLevel;
 
         /**

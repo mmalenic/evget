@@ -80,14 +80,14 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
-            .build()
+            .buildFlag()
     },
     version{
         OptionBuilder<bool>{desc}
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
-            .build()
+            .buildFlag()
     },
     storageFolder{
         OptionBuilder<fs::path>{desc}
@@ -111,14 +111,14 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .shortName("p")
             .longName("print")
             .description("Print events.")
-            .build()
+            .buildFlag()
     },
     systemEvents{
         OptionBuilder<bool>{desc}
             .shortName("s")
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
-            .build()
+            .buildFlag()
     },
     logLevel{
         OptionBuilder<spdlog::level::level_enum>{desc}
