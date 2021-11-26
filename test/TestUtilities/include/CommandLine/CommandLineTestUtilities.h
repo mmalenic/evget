@@ -27,7 +27,7 @@
  * Parser test utilities.
  */
 
-#include <CommandLine/Parser.h>
+#include <boost/program_options.hpp>
 
 namespace TestUtilities::CommandLineTestUtilities {
 

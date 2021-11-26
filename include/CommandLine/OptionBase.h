@@ -26,7 +26,9 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <optional>
+#include <fmt/core.h>
 #include "OptionBuilder.h"
+#include "InvalidCommandLineOption.h"
 
 namespace CommandLine {
 

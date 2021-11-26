@@ -22,7 +22,7 @@
 
 #include <gtest/gtest.h>
 #include <CommandLine/CommandLineTestUtilities.h>
-#include <CommandLine/Option.h>
+#include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
 namespace Cmd = CommandLine;

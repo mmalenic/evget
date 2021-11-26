@@ -20,28 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include <CommandLine/CommandLineTestUtilities.h>
-#include <CommandLine/OptionFlag.h>
-#include "CommandLine/Parser.h"
+#include "CommandLine/OptionFlag.h"
 
-namespace po = boost::program_options;
-namespace Cmd = CommandLine;
-
-TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::OptionFlag::runFor({option}, vm, parser);
-        ASSERT_FALSE(option.getValue());
-    });
-}
-
-TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::OptionFlag::runFor({option}, vm, parser);
-        ASSERT_TRUE(option.getValue());
-    });
+CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
+    this->addOptionToDesc(
+            this->isRequired(),
+            {false},
+            {true},
+            po::bool_switch()
+    );
 }

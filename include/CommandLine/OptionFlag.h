@@ -36,15 +36,6 @@ namespace CommandLine {
          */
         explicit OptionFlag(OptionBuilder<bool> builder);
     };
-
-    OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
-        this->addOptionToDesc(
-                this->isRequired(),
-                {false},
-                {true},
-                po::bool_switch()
-                );
-    }
 }
 
 #endif //EVGET_OPTIONFLAG_H

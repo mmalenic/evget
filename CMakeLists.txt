@@ -226,6 +226,7 @@ add_program(
     include/CommandLine/OptionValidator.h
     include/CommandLine/OptionFlag.h
     # Sources
+    src/CommandLine/OptionFlag.cpp
     src/CommandLine/Parser.cpp
     src/EventData/Field.cpp
     src/EventData/EventData.cpp

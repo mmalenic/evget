@@ -30,22 +30,22 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-//    CommandLineLinux cmd{argc, argv};
-//    cmd.readArgs();
+//    CommandLineLinux Cmd{argc, argv};
+//    Cmd.readArgs();
 //
-//    spdlog::set_level(cmd.getLogLevel());
+//    spdlog::set_level(Cmd.getLogLevel());
 //
 //    boost::asio::thread_pool pool{};
 //    auto context = pool.get_executor();
 //    Storage<boost::asio::thread_pool::executor_type> storage{context};
 //    EventTransformer<input_event> transformer{};
-//    SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
+//    SystemEventLoopLinux eventLoop{context, Cmd.getMouseDevices(), Cmd.getKeyDevices(), Cmd.getTouchDevices()};
 //
 //    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 //
 //    boost:asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
 //
-//    if (cmd.isListEventDevices()) {
+//    if (Cmd.isListEventDevices()) {
 //        EventDeviceLister lister{};
 //        cout << lister;
 //    }
