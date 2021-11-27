@@ -37,7 +37,7 @@ static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
                                       "Shows events from input devices.\n"
                                       "Written by Marko Malenic 2021.\n\n"
                                       "Options";
-static constexpr char VERSION[] = "1.0";
+static constexpr char VERSION[] = "0.1";
 static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This program comes with ABSOLUTELY NO WARRANTY.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
