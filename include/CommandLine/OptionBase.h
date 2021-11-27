@@ -133,6 +133,12 @@ namespace CommandLine {
         void checkInvariants();
 
         /**
+         * Check if the value is present in the option.
+         * @return
+         */
+        bool isValuePresent();
+
+        /**
          * Get the value from the variables map.
          */
         template<typename U>
@@ -149,7 +155,7 @@ namespace CommandLine {
         bool isOptionPresentAndNotEmpty(po::variables_map &vm);
 
         /**
-         * Check if the value is present in the variables map.
+         * Check if the option is present in the variables map.
          */
         bool isOptionPresent(po::variables_map &vm);
 
@@ -360,6 +366,10 @@ namespace CommandLine {
         return shortName;
     }
 
+    template<typename T>
+    bool OptionBase<T>::isValuePresent() {
+        return _value.has_value();
+    }
 
     template<typename T>
     template<typename U>

@@ -71,7 +71,8 @@ namespace CommandLine {
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
-        if (this->isOptionPresentAndNotEmpty(vm)) {
+        OptionBase<T>::parseValue(vm);
+        if (!this->isValuePresent()) {
             std::optional<T> validatedValue = validator(*this->template getValueFromVm<std::string>(vm));
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);
