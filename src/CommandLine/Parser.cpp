@@ -183,7 +183,6 @@ std::string CommandLine::Parser::logLevelsString() {
         stringOut += i->data();
         stringOut += ", ";
     }
-    stringOut += std::prev(std::begin(SPDLOG_LEVEL_NAMES))->data();
     stringOut += " ]";
 
     return stringOut;
