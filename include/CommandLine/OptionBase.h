@@ -36,14 +36,11 @@ namespace CommandLine {
 
     /**
      * Base class for Option that represents non-template behaviour.
-     * @tparam T _value of command line option
+     * @tparam T value of command line option
      */
     template<typename T>
     class OptionBase {
     public:
-
-        using ParsedOptions = std::function<po::parsed_options()>;
-
         /**
          * Get short name.
          */
@@ -268,6 +265,13 @@ namespace CommandLine {
                     (getShortName() + "," + getLongName()).c_str(),
                     *builder._positionalAmount
             );
+        }
+
+        if (defaultValue.has_value()) {
+            _value = defaultValue;
+        }
+        if (implicitValue.has_value()) {
+            _value = implicitValue;
         }
     }
 

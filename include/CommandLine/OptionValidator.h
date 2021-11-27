@@ -58,7 +58,7 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), std::optional{""}, std::optional{""});
+        this->template addOptionToDesc<std::string>(this->isRequired(), std::nullopt, std::nullopt);
     }
 
     template<typename T>
@@ -66,13 +66,12 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator, const std::string& representation)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), std::optional{""}, std::optional{""}, representation);
+        this->template addOptionToDesc<std::string>(this->isRequired(), std::nullopt, std::nullopt, representation);
     }
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
-        OptionBase<T>::parseValue(vm);
-        if (!this->isValuePresent()) {
+        if (this->isOptionPresentAndNotEmpty(vm) && !this->isValuePresent()) {
             std::optional<T> validatedValue = validator(*this->template getValueFromVm<std::string>(vm));
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);
