@@ -78,3 +78,15 @@ TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
         ASSERT_EQ(1, option.getValue());
     });
 }
+
+TEST(CommandLineOptionTest, Multitoken) { // NOLINT(cert-err58-cpp)
+    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "-a", "2"}, [](po::options_description& desc) {
+        // TODO remove the need for a representation if there is no default or implicit value.
+        return Cmd::OptionBuilder<std::vector<int>>(desc).shortName("a").required().multitoken().build("");
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
+        Cmd::Option<std::vector<int>>::runFor({option}, vm, parser);
+        std::vector<int> values = option.getValue();
+        ASSERT_TRUE(std::find(values.begin(), values.end(), 1) != values.end());
+        ASSERT_TRUE(std::find(values.begin(), values.end(), 2) != values.end());
+    });
+}
