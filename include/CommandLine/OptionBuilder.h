@@ -103,9 +103,10 @@ namespace CommandLine {
         DisableIfBool<OptionBuilder &, U> implicitValue(T implicitValue);
 
         /**
-         * Make this optional a positional value, that takes the specified amount of values.
+         * Make this option a positional value, that takes the specified amount of values. A long name is
+         * required for a positional option.
          */
-        OptionBuilder &positionalValue(int amount, po::positional_options_description &positionalDesc);
+        OptionBuilder &positional(int amount, po::positional_options_description &positionalDesc);
 
         /**
          * State as required option.
@@ -222,7 +223,7 @@ namespace CommandLine {
 
     template<typename T>
     OptionBuilder<T> &
-    OptionBuilder<T>::positionalValue(int amount, po::positional_options_description &positionalDesc) {
+    OptionBuilder<T>::positional(int amount, po::positional_options_description &positionalDesc) {
         _positionalAmount = amount;
         _positionalDesc = positionalDesc;
         return *this;

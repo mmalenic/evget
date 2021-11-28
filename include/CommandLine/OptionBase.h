@@ -221,6 +221,8 @@ namespace CommandLine {
                 std::optional<U> implicitValue,
                 po::typed_value<U>* typedValue = po::value<U>()
         );
+
+        void addPositionalOption(OptionBuilder<T>& builder, std::string name);
     };
 
     template<typename T>
@@ -261,10 +263,11 @@ namespace CommandLine {
         }
 
         if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
-            builder._positionalDesc->get().add(
-                    (getShortName() + "," + getLongName()).c_str(),
-                    *builder._positionalAmount
-            );
+            if (!longName.empty()) {
+                addPositionalOption(builder, longNameKey);
+            } else if (!shortName.empty()) {
+                addPositionalOption(builder, shortNameKey);
+            }
         }
 
         if (defaultValue.has_value()) {
@@ -455,6 +458,15 @@ namespace CommandLine {
             typedValue->implicit_value(*implicitValue);
         }
         return typedValue;
+    }
+
+
+    template<typename T>
+    void OptionBase<T>::addPositionalOption(OptionBuilder<T>& builder, std::string name) {
+        builder._positionalDesc->get().add(
+                (name).c_str(),
+                *builder._positionalAmount
+        );
     }
 
     template<typename T>
