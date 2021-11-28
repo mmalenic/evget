@@ -104,9 +104,14 @@ namespace CommandLine {
         [[nodiscard]] boost::program_options::options_description &getOptionsDesc() const;
 
         /**
-         * Get if _value is required.
+         * Get if value is required.
          */
         [[nodiscard]] bool isRequired() const;
+
+        /**
+         * Get if value is multitoken.
+         */
+        [[nodiscard]] bool isMultitoken() const;
 
         /**
          * Get conflicting options.
@@ -161,6 +166,7 @@ namespace CommandLine {
          */
         template<typename U>
         void addOptionToDesc(bool required,
+                             bool multitoken,
                              std::optional<U> defaultValue,
                              std::optional<U> implicitValue,
                              const std::string& representation,
@@ -171,6 +177,7 @@ namespace CommandLine {
          */
         template<typename U>
         void addOptionToDesc(bool required,
+                             bool multitoken,
                              std::optional<U> defaultValue,
                              std::optional<U> implicitValue,
                              po::typed_value<U>* typedValue = po::value<U>());
@@ -190,6 +197,7 @@ namespace CommandLine {
 
         std::optional<T> defaultValue;
         bool required;
+        bool multitoken;
         std::vector<std::string> conflictsWith;
         std::optional<T> implicitValue;
 
@@ -204,6 +212,7 @@ namespace CommandLine {
         template<typename U>
         static po::typed_value<U>* setTypedValue(
                 bool required,
+                bool multitoken,
                 po::typed_value<U>* typedValue = po::value<U>()
         );
 
@@ -254,6 +263,7 @@ namespace CommandLine {
             description{builder._description},
             defaultValue{builder.value},
             required{builder._required},
+            multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
             _value{builder.value},
@@ -314,6 +324,11 @@ namespace CommandLine {
     template<typename T>
     bool OptionBase<T>::isRequired() const {
         return required;
+    }
+
+    template<typename T>
+    bool OptionBase<T>::isMultitoken() const {
+        return multitoken;
     }
 
     template<typename T>
@@ -392,12 +407,13 @@ namespace CommandLine {
     template<typename U>
     void OptionBase<T>::addOptionToDesc(
             bool required,
+            bool multitoken,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
             const std::string& representation,
             po::typed_value<U>* typedValue
     ) {
-        OptionBase<T>::setTypedValue(required, typedValue);
+        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
         OptionBase<T>::setTypedValue(defaultValue, implicitValue, representation, typedValue);
         this->addOptionToDesc(typedValue);
     }
@@ -406,11 +422,12 @@ namespace CommandLine {
     template<typename U>
     void OptionBase<T>::addOptionToDesc(
             bool required,
+            bool multitoken,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
             po::typed_value<U>* typedValue
     ) {
-        OptionBase<T>::setTypedValue(required, typedValue);
+        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
         OptionBase<T>::setTypedValue(defaultValue, implicitValue, typedValue);
         this->addOptionToDesc(typedValue);
     }
@@ -419,10 +436,14 @@ namespace CommandLine {
     template<typename U>
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             bool required,
+            bool multitoken,
             po::typed_value<U>* typedValue
             ) {
         if (required) {
             typedValue->required();
+        }
+        if (multitoken) {
+            typedValue->multitoken();
         }
         return typedValue;
     }

@@ -54,6 +54,7 @@ namespace CommandLine {
     Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
+                            this->isMultitoken(),
                             this->getDefaultValue(),
                             this->getImplicitValue());
     }
@@ -62,6 +63,7 @@ namespace CommandLine {
     Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : OptionBase<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
+                              this->isMultitoken(),
                               this->getDefaultValue(),
                               this->getImplicitValue(),
                               representation);

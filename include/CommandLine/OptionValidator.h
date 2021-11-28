@@ -58,7 +58,7 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), std::nullopt, std::nullopt);
+        this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), std::nullopt, std::nullopt);
     }
 
     template<typename T>
@@ -66,7 +66,7 @@ namespace CommandLine {
                                         typename OptionBuilder<T>::Validator validator, const std::string& representation)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), std::nullopt, std::nullopt, representation);
+        this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), std::nullopt, std::nullopt, representation);
     }
 
     template<typename T>

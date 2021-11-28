@@ -25,6 +25,7 @@
 CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
     this->addOptionToDesc(
             this->isRequired(),
+            false,
             {false},
             {true},
             po::bool_switch()

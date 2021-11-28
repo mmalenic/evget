@@ -109,9 +109,14 @@ namespace CommandLine {
         OptionBuilder &positional(int amount, po::positional_options_description &positionalDesc);
 
         /**
-         * State as required option.
+         * State as a required option.
          */
         OptionBuilder &required();
+
+        /**
+         * Make option accept multiple values.
+         */
+        OptionBuilder &multitoken();
 
         /**
          * State that the option conflicts with another.
@@ -154,6 +159,7 @@ namespace CommandLine {
         std::string _longName;
         std::string _description;
         bool _required;
+        bool _multitoken;
         std::vector<std::string> _conflictsWith;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
@@ -169,6 +175,7 @@ namespace CommandLine {
             _longName{},
             _description{},
             _required{false},
+            _multitoken{false},
             _conflictsWith{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
@@ -196,6 +203,12 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::required() {
         _required = true;
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::multitoken() {
+        _multitoken = true;
         return *this;
     }
 
