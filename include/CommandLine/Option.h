@@ -47,6 +47,11 @@ namespace CommandLine {
         /**
          * Create from builder.
          */
+        Option(OptionBuilder<T> builder, std::optional<T> defaultValue, std::optional<T> implicitValue);
+
+        /**
+         * Create from builder.
+         */
         explicit Option(OptionBuilder<T> builder, const std::string& representation);
     };
 
@@ -54,9 +59,16 @@ namespace CommandLine {
     Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
-                            this->isMultitoken(),
-                            this->getDefaultValue(),
-                            this->getImplicitValue());
+                            this->isMultitoken());
+    }
+
+    template<typename T>
+    Option<T>::Option(OptionBuilder<T> builder, std::optional<T> defaultValue, std::optional<T> implicitValue) : OptionBase<T>(builder) {
+        this->checkInvariants();
+        this->addOptionToDesc(this->isRequired(),
+                              this->isMultitoken(),
+                              defaultValue,
+                              implicitValue);
     }
 
     template<typename T>
