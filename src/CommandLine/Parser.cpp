@@ -103,8 +103,9 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
+            .representation("sqlite")
             //.validator()
-            .build("sqlite")
+            .build()
     },
     print{
         OptionBuilder<bool>{desc}
