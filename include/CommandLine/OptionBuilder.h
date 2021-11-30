@@ -249,7 +249,7 @@ namespace CommandLine {
 
     template<typename T>
     Option<T> OptionBuilder<T>::build(const std::string& representation) {
-        return Option(*this, representation);
+        return Option(*this, value, _implicitValue, representation);
     }
 
     template<typename T>

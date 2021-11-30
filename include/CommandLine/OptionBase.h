@@ -186,6 +186,14 @@ namespace CommandLine {
          * Add an option to the options description.
          */
         template<typename U>
+        void addOptionToDesc(bool required,
+                             bool multitoken,
+                             po::typed_value<U>* typedValue = po::value<U>());
+
+        /**
+         * Add an option to the options description.
+         */
+        template<typename U>
         void addOptionToDesc(po::typed_value<U>* typedValue);
 
     private:
@@ -401,6 +409,17 @@ namespace CommandLine {
                 typedValue,
                 this->getDescription().c_str()
         );
+    }
+
+    template<typename T>
+    template<typename U>
+    void OptionBase<T>::addOptionToDesc(
+            bool required,
+            bool multitoken,
+            po::typed_value<U>* typedValue
+    ) {
+        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
+        this->addOptionToDesc(typedValue);
     }
 
     template<typename T>

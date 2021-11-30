@@ -52,32 +52,28 @@ namespace CommandLine {
         /**
          * Create from builder.
          */
-        explicit Option(OptionBuilder<T> builder, const std::string& representation);
+        Option(OptionBuilder<T> builder, std::optional<T> defaultValue, std::optional<T> implicitValue, const std::string& representation);
     };
 
     template<typename T>
     Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
         this->checkInvariants();
-        this->addOptionToDesc(this->isRequired(),
-                            this->isMultitoken());
+        this->template addOptionToDesc<T>(this->isRequired(), this->isMultitoken());
     }
 
     template<typename T>
     Option<T>::Option(OptionBuilder<T> builder, std::optional<T> defaultValue, std::optional<T> implicitValue) : OptionBase<T>(builder) {
         this->checkInvariants();
-        this->addOptionToDesc(this->isRequired(),
-                              this->isMultitoken(),
-                              defaultValue,
-                              implicitValue);
+        this->addOptionToDesc(this->isRequired(), this->isMultitoken(), defaultValue, implicitValue);
     }
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : OptionBase<T>(builder) {
+    Option<T>::Option(OptionBuilder<T> builder, std::optional<T> defaultValue, std::optional<T> implicitValue, const std::string& representation) : OptionBase<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
                               this->isMultitoken(),
-                              this->getDefaultValue(),
-                              this->getImplicitValue(),
+                              defaultValue,
+                              implicitValue,
                               representation);
     }
 }
