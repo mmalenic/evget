@@ -28,10 +28,13 @@
  */
 
 #include <boost/program_options.hpp>
+#include <CommandLine/OptionBase.h>
+#include <any>
 
 namespace TestUtilities::CommandLineTestUtilities {
 
     namespace po = boost::program_options;
+    namespace Cmd = CommandLine;
 
     /**
      * Make the command line object.
@@ -63,27 +66,19 @@ namespace TestUtilities::CommandLineTestUtilities {
         auto option = createOption(desc);
 
         TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
-            po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
-            assertCmd(vm, option, parser);
+            po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+            assertCmd(vm, option, parse);
         });
     }
 
-
     /**
-     * Assert on an option.
-     * @param args program args
-     * @param createOption create option object
-     * @param assertCmd assert with option
+     * Store and notify vm and option.
      */
-    void assertOnCmds(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
-        po::options_description desc{};
-        po::variables_map vm{};
-        auto option = createOption(desc);
-
-        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
-            po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
-            assertCmd(vm, parser, option);
-        });
+    template<typename T>
+    void storeAndNotify(Cmd::OptionBase<T>& option, po::command_line_parser& parse, po::variables_map& vm) {
+        store(parse.run(), vm);
+        notify(vm);
+        option.run(vm);
     }
 }
 

@@ -26,6 +26,7 @@
 #include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
+namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionBaseTest, GetShortNameTest) { // NOLINT(cert-err58-cpp)
@@ -64,11 +65,11 @@ TEST(CommandLineOptionBaseTest, PositionalOptionTest) { // NOLINT(cert-err58-cpp
     po::positional_options_description posDesc{};
     po::variables_map vm{};
 
-    auto option = Cmd::OptionBuilder<int>(desc).shortName("n").longName("name").required().positional(1, posDesc).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("n").longName("name").required().positional(1, posDesc).build();
 
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "1"}, [&desc, &posDesc, &vm, &option](int argc, const char** argv) {
-        po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
-        Cmd::Option<int>::runFor({option}, vm, parser);
+    CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &vm, &option](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }

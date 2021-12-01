@@ -25,15 +25,16 @@
 #include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
+namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
             return 2;
         });
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::OptionValidator<int>::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_EQ(2, option.getValue());
     });
 }

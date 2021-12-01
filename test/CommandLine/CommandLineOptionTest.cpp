@@ -25,6 +25,7 @@
 #include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
+namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
@@ -33,27 +34,27 @@ TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::required_option);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        ASSERT_THROW(CmdUtils::storeAndNotify(option, parse, vm), po::required_option);
     });
 }
 
 TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(2).implicitValue(1).build();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::Option<int>::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }
 
 TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        ASSERT_THROW(Cmd::Option<int>::runFor({option}, vm, parser), po::invalid_command_line_syntax);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        ASSERT_THROW(CmdUtils::storeAndNotify(option, parse, vm), po::invalid_command_line_syntax);
     });
 }
 
@@ -64,26 +65,28 @@ TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().build();
 
-    TestUtilities::CommandLineTestUtilities::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
-        po::command_line_parser parser = po::command_line_parser(argc, argv).options(desc);
-        ASSERT_THROW(Cmd::Option<int>::runFor({optionA, optionB}, vm, parser), InvalidCommandLineOption);
+    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &vm, &optionA](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        po::store(parse.run(), vm);
+        po::notify(vm);
+        ASSERT_THROW(optionA.run(vm);, InvalidCommandLineOption);
     });
 }
 
 TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::Option<int>::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }
 
 TEST(CommandLineOptionTest, Multitoken) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a", "1", "2"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a", "1", "2"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<std::vector<int>>(desc).shortName("a").required().multitoken().build();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::Option<std::vector<int>>::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         std::vector<int> values = option.getValue();
         ASSERT_TRUE(std::find(values.begin(), values.end(), 1) != values.end());
         ASSERT_TRUE(std::find(values.begin(), values.end(), 2) != values.end());

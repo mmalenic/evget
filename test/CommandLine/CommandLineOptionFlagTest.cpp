@@ -26,22 +26,23 @@
 #include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
+namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::OptionFlag::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_FALSE(option.getValue());
     });
 }
 
 TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    TestUtilities::CommandLineTestUtilities::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+    CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName("a").buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parser) {
-        Cmd::OptionFlag::runFor({option}, vm, parser);
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotify(option, parse, vm);
         ASSERT_TRUE(option.getValue());
     });
 }
