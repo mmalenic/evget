@@ -87,13 +87,6 @@ namespace CommandLine {
          */
         virtual void parseValue(po::variables_map &vm);
 
-        /**
-         * Performs the after read for all the options, handling exceptions thrown by the
-         * boost program options library.
-         */
-        static void runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options,
-                           std::initializer_list<std::reference_wrapper<po::parsed_options>> parsed, po::variables_map& vm);
-
     protected:
         /**
          * Create from builder.
@@ -509,18 +502,6 @@ namespace CommandLine {
                 (name).c_str(),
                 *builder._positionalAmount
         );
-    }
-
-    template<typename T>
-    void OptionBase<T>::runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options,
-                               std::initializer_list<std::reference_wrapper<po::parsed_options>> parsed, po::variables_map& vm) {
-        for (const auto& parsedOption : parsed) {
-            store(parsedOption, vm);
-            notify(vm);
-        }
-        for (const auto& option : options) {
-            option.run(vm);
-        }
     }
 }
 
