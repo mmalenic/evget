@@ -27,6 +27,7 @@
 #include <boost/program_options.hpp>
 #include <optional>
 #include <fmt/core.h>
+#include <fstream>
 #include "OptionBuilder.h"
 #include "InvalidCommandLineOption.h"
 
@@ -90,7 +91,8 @@ namespace CommandLine {
          * Performs the after read for all the options, handling exceptions thrown by the
          * boost program options library.
          */
-        static void runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser);
+        static void runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options,
+                           std::initializer_list<std::reference_wrapper<po::parsed_options>> parsed, po::variables_map& vm);
 
     protected:
         /**
@@ -510,12 +512,14 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options, po::variables_map& vm, po::command_line_parser& parser) {
-        po::store(parser.run(), vm);
-        po::notify(vm);
-
-        for (auto option : options) {
-            option.get().run(vm);
+    void OptionBase<T>::runFor(std::initializer_list<std::reference_wrapper<OptionBase<T>>> options,
+                               std::initializer_list<std::reference_wrapper<po::parsed_options>> parsed, po::variables_map& vm) {
+        for (const auto& parsedOption : parsed) {
+            store(parsedOption, vm);
+            notify(vm);
+        }
+        for (const auto& option : options) {
+            option.run(vm);
         }
     }
 }

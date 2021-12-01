@@ -29,7 +29,7 @@ namespace CommandLine {
 
     /**
      * A command line option with custom validation.
-     * @tparam T _value type.
+     * @tparam T value type.
      */
     template<typename T>
     class OptionValidator : public OptionBase<T> {
