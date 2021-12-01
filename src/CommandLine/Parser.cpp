@@ -26,6 +26,7 @@
 #include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <utility>
+#include <fmt/core.h>
 
 namespace algorithm = boost::algorithm;
 namespace po = boost::program_options;
@@ -135,7 +136,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
         OptionBuilder<spdlog::level::level_enum>{configDesc}
             .shortName("u")
             .longName("log-level")
-            .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
+            .description("log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
             .build(validateLogLevel)
     }
@@ -188,7 +189,7 @@ CommandLine::fs::path CommandLine::Parser::getFolder() const {
 }
 
 po::options_description& CommandLine::Parser::getDesc() {
-    return cmdDesc;
+    return cmdDesc.add(configDesc);
 }
 
 const po::variables_map& CommandLine::Parser::getVm() const {
@@ -204,15 +205,16 @@ spdlog::level::level_enum CommandLine::Parser::getLogLevel() const {
 }
 
 std::string CommandLine::Parser::logLevelsString() {
-    std::string stringOut;
-    stringOut += "[ ";
-    for (auto i{std::begin(SPDLOG_LEVEL_NAMES)}; i != std::prev(std::begin(SPDLOG_LEVEL_NAMES)); ++i) {
-        stringOut += i->data();
-        stringOut += ", ";
-    }
-    stringOut += " ]";
-
-    return stringOut;
+    return fmt::format(
+            "[ {}, {}, {}, {}, {}, {}, {} ]",
+            spdlog::level::to_string_view(spdlog::level::trace),
+            spdlog::level::to_string_view(spdlog::level::debug),
+            spdlog::level::to_string_view(spdlog::level::info),
+            spdlog::level::to_string_view(spdlog::level::warn),
+            spdlog::level::to_string_view(spdlog::level::err),
+            spdlog::level::to_string_view(spdlog::level::critical),
+            spdlog::level::to_string_view(spdlog::level::off)
+            );
 }
 
 std::optional<spdlog::level::level_enum> CommandLine::Parser::validateLogLevel(std::string logLevel) {
