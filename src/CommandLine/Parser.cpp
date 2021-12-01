@@ -43,6 +43,7 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
                                        "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
+static constexpr char DEFAULT_CONFIG_NAME[] = ".config";
 
 std::ostream& operator<<(std::ostream& os, const CommandLine::Filetype& filetype) {
     switch (filetype) {
@@ -71,26 +72,35 @@ std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
 
 CommandLine::Parser::Parser(std::string platformInformation) :
     platformInformation{std::move(platformInformation)},
-    desc{
+    cmdDesc{
         DESCRIPTION
     },
+    configDesc{},
     vm{},
     help{
-        OptionBuilder<bool>{desc}
+        OptionBuilder<bool>{cmdDesc}
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
             .buildFlag()
     },
     version{
-        OptionBuilder<bool>{desc}
+        OptionBuilder<bool>{cmdDesc}
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
             .buildFlag()
     },
+    config{
+            OptionBuilder<fs::path>{cmdDesc}
+                    .shortName("c")
+                    .longName("config")
+                    .description("Location of config file.")
+                    .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
+                    .build()
+    },
     storageFolder{
-        OptionBuilder<fs::path>{desc}
+        OptionBuilder<fs::path>{configDesc}
             .shortName("o")
             .longName("folder")
             .description("Folder location where events are stored.")
@@ -98,7 +108,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .build()
     },
     filetypes{
-        OptionBuilder<std::vector<Filetype>>{desc}
+        OptionBuilder<std::vector<Filetype>>{configDesc}
             .shortName("t")
             .longName("filetypes")
             .description("Filetypes used to store events.")
@@ -108,21 +118,21 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .build()
     },
     print{
-        OptionBuilder<bool>{desc}
+        OptionBuilder<bool>{configDesc}
             .shortName("p")
             .longName("print")
             .description("Print events.")
             .buildFlag()
     },
     systemEvents{
-        OptionBuilder<bool>{desc}
+        OptionBuilder<bool>{configDesc}
             .shortName("s")
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .buildFlag()
     },
     logLevel{
-        OptionBuilder<spdlog::level::level_enum>{desc}
+        OptionBuilder<spdlog::level::level_enum>{configDesc}
             .shortName("u")
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\n Valid values are:\n" + logLevelsString())
@@ -133,17 +143,15 @@ CommandLine::Parser::Parser(std::string platformInformation) :
 }
 
 bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
-    po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).allow_unregistered().run();
+    po::options_description cmdlineOptions{};
+    cmdlineOptions.add(cmdDesc).add(configDesc);
+
+    po::parsed_options parsed = po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run();
     store(parsed, vm);
     notify(vm);
 
     help.run(vm);
     version.run(vm);
-    storageFolder.run(vm);
-    filetypes.run(vm);
-    print.run(vm);
-    systemEvents.run(vm);
-    logLevel.run(vm);
 
     if (help.getValue()) {
         std::cout << getDesc() << "\n";
@@ -154,6 +162,24 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
         return false;
     }
 
+    config.run(vm);
+
+    po::options_description configOptions{};
+    cmdlineOptions.add(configDesc);
+
+    std::ifstream stream{config.getValue()};
+    stream.exceptions(std::ifstream::failbit);
+    store(po::parse_config_file(stream, configOptions), vm);
+    notify(vm);
+
+    help.run(vm);
+    version.run(vm);
+    storageFolder.run(vm);
+    filetypes.run(vm);
+    print.run(vm);
+    systemEvents.run(vm);
+    logLevel.run(vm);
+
     return true;
 }
 
@@ -162,7 +188,7 @@ CommandLine::fs::path CommandLine::Parser::getFolder() const {
 }
 
 po::options_description& CommandLine::Parser::getDesc() {
-    return desc;
+    return cmdDesc;
 }
 
 const po::variables_map& CommandLine::Parser::getVm() const {

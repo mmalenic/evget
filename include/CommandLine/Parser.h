@@ -121,11 +121,13 @@ namespace CommandLine {
 
     private:
         std::string platformInformation;
-        po::options_description desc;
+        po::options_description cmdDesc;
+        po::options_description configDesc;
         po::variables_map vm;
 
         OptionFlag help;
         OptionFlag version;
+        Option<fs::path> config;
         Option<fs::path> storageFolder;
         Option<std::vector<Filetype>> filetypes;
         OptionFlag print;
