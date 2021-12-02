@@ -27,9 +27,11 @@
 #include <iostream>
 #include <utility>
 #include <fmt/core.h>
+#include <filesystem>
 
 namespace algorithm = boost::algorithm;
 namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
@@ -165,6 +167,12 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     }
 
     config.run(vm);
+
+    if (!fs::exists(config.getValue())) {
+        std::ofstream out(config.getValue());
+        out << formatConfigFile();
+        out.close();
+    }
 
     std::ifstream stream{config.getValue()};
     stream.exceptions(std::ifstream::failbit);
