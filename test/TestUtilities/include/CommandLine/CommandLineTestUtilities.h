@@ -75,7 +75,7 @@ namespace TestUtilities::CommandLineTestUtilities {
      * Store and notify vm and option.
      */
     template<typename T>
-    void storeAndNotify(Cmd::OptionBase<T>& option, po::command_line_parser& parse, po::variables_map& vm) {
+    void storeAndNotifyOption(Cmd::OptionBase<T>& option, po::command_line_parser& parse, po::variables_map& vm) {
         store(parse.run(), vm);
         notify(vm);
         option.run(vm);

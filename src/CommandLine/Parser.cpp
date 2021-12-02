@@ -45,6 +45,7 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
 static constexpr char DEFAULT_CONFIG_NAME[] = ".config";
+static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
 
 std::ostream& operator<<(std::ostream& os, const CommandLine::Filetype& filetype) {
     switch (filetype) {
@@ -147,10 +148,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
 bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     po::options_description cmdlineOptions{};
     cmdlineOptions.add(cmdDesc).add(configDesc);
-
-    po::parsed_options parsed = po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run();
-    store(parsed, vm);
-    notify(vm);
+    storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
 
     help.run(vm);
     version.run(vm);
@@ -166,13 +164,11 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     config.run(vm);
 
-    po::options_description configOptions{};
-    cmdlineOptions.add(configDesc);
-
     std::ifstream stream{config.getValue()};
     stream.exceptions(std::ifstream::failbit);
-    store(po::parse_config_file(stream, configOptions), vm);
-    notify(vm);
+    storeAndNotify(po::parse_config_file(stream, configDesc), vm);
+
+    storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
     help.run(vm);
     version.run(vm);
@@ -228,6 +224,11 @@ std::optional<spdlog::level::level_enum> CommandLine::Parser::validateLogLevel(s
         return std::nullopt;
     }
     return level;
+}
+
+void CommandLine::Parser::storeAndNotify(const boost::program_options::parsed_options &parsedOptions, po::variables_map &vm) {
+    po::store(parsedOptions, vm);
+    po::notify(vm);
 }
 
 std::vector<CommandLine::Filetype> CommandLine::Parser::getFiletype() const {

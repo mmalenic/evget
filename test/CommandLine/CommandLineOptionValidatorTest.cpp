@@ -34,7 +34,7 @@ TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
             return 2;
         });
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
-        CmdUtils::storeAndNotify(option, parse, vm);
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(2, option.getValue());
     });
 }

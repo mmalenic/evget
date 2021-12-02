@@ -144,6 +144,11 @@ namespace CommandLine {
          * Converts the log level string into a log level if possible.
          */
         static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
+
+        /**
+         * Store and notify the variables map.
+         */
+        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
     };
 
 }
