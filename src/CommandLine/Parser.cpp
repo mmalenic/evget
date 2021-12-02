@@ -246,7 +246,7 @@ std::filesystem::path CommandLine::Parser::getConfigFile() const {
 template<typename T>
 std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option) {
     std::ostringstream value{};
-    value << option.getDefaultValue();
+    value << option.getDefaultValue().value();
     return formatConfigOption(option, value.str());
 }
 

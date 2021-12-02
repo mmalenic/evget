@@ -155,13 +155,22 @@ namespace CommandLine {
          */
         static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
+        /**
+         * Format an option.
+         */
         template<typename T>
         static std::string formatConfigOption(const OptionBase<T>& option);
 
+        /**
+        * Format an option.
+        */
         template<typename T>
         static std::string formatConfigOption(const OptionBase<T>& option, const std::string& value);
 
-        std::string formatConfigFile();
+        /**
+         * Format the config file.
+         */
+        virtual std::string formatConfigFile();
     };
 
 }
