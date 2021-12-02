@@ -47,7 +47,7 @@ namespace TestUtilities::CommandLineTestUtilities {
 		const char **argv = vector.data();
 
         if (vector.size() - 1 > std::numeric_limits<int>::max()) {
-            throw std::overflow_error{"Number of args is larger than the maximum int value."};
+            throw std::overflow_error{"Number of args is larger than the maximum int _defaultValue."};
         }
 		int argc = static_cast<int>(vector.size() - 1);
 

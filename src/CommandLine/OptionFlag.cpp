@@ -26,8 +26,8 @@ CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bo
     this->addOptionToDesc(
             this->isRequired(),
             false,
-            {false},
-            {true},
+            this->getDefaultValue(),
+            this->getImplicitValue(),
             po::bool_switch()
     );
 }

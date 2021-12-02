@@ -37,7 +37,7 @@ namespace CommandLine {
 
     /**
      * Base class for Option that represents non-template behaviour.
-     * @tparam T value of command line option
+     * @tparam T _defaultValue of command line option
      */
     template<typename T>
     class OptionBase {
@@ -83,7 +83,7 @@ namespace CommandLine {
         virtual void run(po::variables_map &vm);
 
         /**
-         * Parse value component.
+         * Parse _defaultValue component.
          */
         virtual void parseValue(po::variables_map &vm);
 
@@ -99,12 +99,12 @@ namespace CommandLine {
         [[nodiscard]] boost::program_options::options_description &getOptionsDesc() const;
 
         /**
-         * Get if value is required.
+         * Get if _defaultValue is required.
          */
         [[nodiscard]] bool isRequired() const;
 
         /**
-         * Get if value is multitoken.
+         * Get if _defaultValue is multitoken.
          */
         [[nodiscard]] bool isMultitoken() const;
 
@@ -114,12 +114,12 @@ namespace CommandLine {
         [[nodiscard]] const std::vector<std::string> &getConflicting() const;
 
         /**
-         * Get the optional default value.
+         * Get the optional default _defaultValue.
          */
         const std::optional<T> &getDefaultValue() const;
 
         /**
-         * Get the optional implicit value.
+         * Get the optional implicit _defaultValue.
          */
         const std::optional<T> &getImplicitValue() const;
 
@@ -130,13 +130,13 @@ namespace CommandLine {
         void checkInvariants();
 
         /**
-         * Check if the value is present in the option.
+         * Check if the _defaultValue is present in the option.
          * @return
          */
         bool isValuePresent();
 
         /**
-         * Get the value from the variables map.
+         * Get the _defaultValue from the variables map.
          */
         template<typename U>
         std::optional<U> getValueFromVm(po::variables_map &vm);
@@ -208,7 +208,7 @@ namespace CommandLine {
         std::reference_wrapper<po::options_description> desc;
 
         /**
-         * Create the typed value using default and implicit values.
+         * Create the typed _defaultValue using default and implicit values.
          * Use of raw pointer ensures consistency and a lack of bugs
          * with the boost program options library.
          */
@@ -264,12 +264,12 @@ namespace CommandLine {
             longName{builder._longName},
             longNameKey{builder._longName},
             description{builder._description},
-            defaultValue{builder.value},
+            defaultValue{builder._defaultValue},
             required{builder._required},
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
-            _value{builder.value},
+            _value{builder._defaultValue},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
             throw UnsupportedOperationException("Option should contain at least a short name, or a long name.");

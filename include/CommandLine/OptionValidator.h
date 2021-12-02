@@ -29,7 +29,7 @@ namespace CommandLine {
 
     /**
      * A command line option with custom validation.
-     * @tparam T value type.
+     * @tparam T _value type.
      */
     template<typename T>
     class OptionValidator : public OptionBase<T> {
@@ -40,31 +40,65 @@ namespace CommandLine {
         explicit OptionValidator(OptionBuilder<T> builder,
                                  typename OptionBuilder<T>::Validator validator);
 
+        /**
+         * Create from builder.
+         */
+        explicit OptionValidator(OptionBuilder<T> builder,
+                                 typename OptionBuilder<T>::Validator validator, const std::string& representation);
+
         void parseValue(po::variables_map &vm) override;
 
     private:
         typename OptionBuilder<T>::Validator validator;
+
+        void setOptionDesc(auto&& createRepresentation);
     };
 
 
     template<typename T>
-    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder, typename OptionBuilder<T>::Validator validator)
+    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
+                                        typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
-        this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken());
+        setOptionDesc([](const T& value){
+            std::ostringstream representation{};
+            representation << value;
+            return representation.str();
+        });
+    }
+
+    template<typename T>
+    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
+                                        typename OptionBuilder<T>::Validator validator, const std::string& representation)
+            : OptionBase<T>(builder), validator{validator} {
+        this->checkInvariants();
+        setOptionDesc([&representation](const T& _){ return representation; });
     }
 
     template<typename T>
     void OptionValidator<T>::parseValue(po::variables_map &vm) {
         std::optional<std::string> value = this->template getValueFromVm<std::string>(vm);
-        if (value.has_value()) {
+        if (value.has_value() && !value->empty()) {
             std::optional<T> validatedValue = validator(*value);
             if (validatedValue.has_value()) {
                 this->setValue(*validatedValue);
             } else {
                 throw InvalidCommandLineOption(
-                        fmt::format("Could not parse {} value, incorrect format", this->getName()));
+                        fmt::format("Could not parse {} _defaultValue, incorrect format", this->getName()));
             }
+        }
+    }
+
+    template<typename T>
+    void OptionValidator<T>::setOptionDesc(auto&& createRepresentation) {
+        if (this->getDefaultValue().has_value()) {
+            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), "", std::nullopt, createRepresentation(*this->getDefaultValue()));
+        } else if (this->getImplicitValue().has_value()) {
+            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), std::nullopt, "", createRepresentation(*this->getImplicitValue()));
+        } else if (this->getDefaultValue().has_value() && this->getImplicitValue().has_value()) {
+            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), "", "", createRepresentation(*this->getDefaultValue()));
+        } else {
+            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken());
         }
     }
 }

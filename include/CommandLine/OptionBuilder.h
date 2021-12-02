@@ -51,7 +51,7 @@ namespace CommandLine {
 
     /**
      * Command line option builder.
-     * @tparam T value of option
+     * @tparam T _defaultValue of option
      */
     template<typename T>
     class OptionBuilder {
@@ -60,12 +60,6 @@ namespace CommandLine {
          * Validator is a function that takes a string and returns an optional _value.
          */
         using Validator = std::function<std::optional<T>(std::string)>;
-
-        /**
-         * Disable if bool, returning R.
-         */
-        template<typename R, typename U>
-        using DisableIfBool = std::enable_if_t<sizeof(U) && (!std::is_same<T, bool>::value), R>;
 
         /**
          * Enable if bool, returning R.
@@ -115,17 +109,15 @@ namespace CommandLine {
         /**
          * Set default value, when the option is not present.
          */
-        template<typename U = T>
-        DisableIfBool<OptionBuilder &, U> defaultValue(T defaultValue);
+        OptionBuilder& defaultValue(T defaultValue);
 
         /**
          * Set implicit value, when the option is specified without a value.
          */
-        template<typename U = T>
-        DisableIfBool<OptionBuilder &, U> implicitValue(T implicitValue);
+        OptionBuilder& implicitValue(T implicitValue);
 
         /**
-         * Make this option a positional value, that takes the specified amount of values. A long name is
+         * Make this option a positional _defaultValue, that takes the specified amount of values. A long name is
          * required for a positional option.
          */
         OptionBuilder &positional(int amount, po::positional_options_description &positionalDesc);
@@ -169,7 +161,13 @@ namespace CommandLine {
          * Build Option with validator.
          */
         template<typename U = T>
-        DisableIfBool<OptionValidator<T>, U> build(Validator validator);
+        EnableIfOStreamable<OptionValidator<T>, U> build(Validator validator);
+
+        /**
+         * Build Option with validator.
+         */
+        template<typename U = T>
+        EnableIfNotOStreamable<OptionValidator<T>, U> build(Validator validator);
 
     private:
         std::reference_wrapper<po::options_description> _desc;
@@ -183,7 +181,8 @@ namespace CommandLine {
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
-        std::optional<T> value;
+        bool representationSet;
+        std::optional<T> _defaultValue;
     };
 
     template<typename T>
@@ -199,7 +198,8 @@ namespace CommandLine {
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
-            value{std::nullopt} {
+            representationSet{false},
+            _defaultValue{std::nullopt} {
     }
 
     template<typename T>
@@ -223,6 +223,7 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::representation(std::string representation) {
         _representation = std::move(representation);
+        representationSet = true;
         return *this;
     }
 
@@ -245,17 +246,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    template<typename U>
-    typename OptionBuilder<T>::template DisableIfBool<OptionBuilder<T> &, U>
-    OptionBuilder<T>::defaultValue(T defaultValue) {
-        value = defaultValue;
+    OptionBuilder<T>& OptionBuilder<T>::defaultValue(T defaultValue) {
+        _defaultValue = defaultValue;
         return *this;
     }
 
     template<typename T>
-    template<typename U>
-    typename OptionBuilder<T>::template DisableIfBool<OptionBuilder<T> &, U>
-    OptionBuilder<T>::implicitValue(T implicitValue) {
+    OptionBuilder<T>& OptionBuilder<T>::implicitValue(T implicitValue) {
         _implicitValue = implicitValue;
         return *this;
     }
@@ -272,6 +269,9 @@ namespace CommandLine {
     template<typename U>
     typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U>
     OptionBuilder<T>::build() {
+        if (representationSet) {
+            return Option(*this, _representation);
+        }
         return Option(*this);
     }
 
@@ -290,9 +290,19 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    typename OptionBuilder<T>::template DisableIfBool<OptionValidator<T>, U>
+    typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidator<T>, U>
     OptionBuilder<T>::build(Validator validator) {
+        if (representationSet) {
+            return OptionValidator(*this, validator, _representation);
+        }
         return OptionValidator(*this, validator);
+    }
+
+    template<typename T>
+    template<typename U>
+    typename OptionBuilder<T>::template EnableIfNotOStreamable<OptionValidator<T>, U>
+    OptionBuilder<T>::build(Validator validator) {
+        return OptionValidator(*this, validator, _representation);
     }
 }
 

@@ -138,6 +138,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)
+            .representation("warn")
             .build(validateLogLevel)
     }
 {
