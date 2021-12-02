@@ -58,7 +58,7 @@ namespace CommandLine {
         [[nodiscard]] std::string getDescription() const;
 
         /**
-         * Get _value.
+         * Get value.
          */
         [[nodiscard]] T getValue() const;
 
@@ -74,6 +74,26 @@ namespace CommandLine {
         std::string getName();
 
         /**
+         * Get the optional default value.
+         */
+        const std::optional<T> &getDefaultValue() const;
+
+        /**
+         * Get the optional implicit value.
+         */
+        const std::optional<T> &getImplicitValue() const;
+
+        /**
+         * Get the representation.
+         */
+        [[nodiscard]] const std::string getRepresentation() const;
+
+        /**
+         * Get if _defaultValue is required.
+         */
+        [[nodiscard]] bool isRequired() const;
+
+        /**
          * Check for option conditions after reading command line arguments.
          * This must be called to notify the command line option that options
          * have been read.
@@ -83,7 +103,7 @@ namespace CommandLine {
         virtual void run(po::variables_map &vm);
 
         /**
-         * Parse _defaultValue component.
+         * Parse value component.
          */
         virtual void parseValue(po::variables_map &vm);
 
@@ -99,11 +119,6 @@ namespace CommandLine {
         [[nodiscard]] boost::program_options::options_description &getOptionsDesc() const;
 
         /**
-         * Get if _defaultValue is required.
-         */
-        [[nodiscard]] bool isRequired() const;
-
-        /**
          * Get if _defaultValue is multitoken.
          */
         [[nodiscard]] bool isMultitoken() const;
@@ -112,16 +127,6 @@ namespace CommandLine {
          * Get conflicting options.
          */
         [[nodiscard]] const std::vector<std::string> &getConflicting() const;
-
-        /**
-         * Get the optional default _defaultValue.
-         */
-        const std::optional<T> &getDefaultValue() const;
-
-        /**
-         * Get the optional implicit _defaultValue.
-         */
-        const std::optional<T> &getImplicitValue() const;
 
         /**
          * Checks whether the option is at least, default or required. Throws
@@ -203,6 +208,7 @@ namespace CommandLine {
         bool multitoken;
         std::vector<std::string> conflictsWith;
         std::optional<T> implicitValue;
+        std::string representation;
 
         std::optional<T> _value;
         std::reference_wrapper<po::options_description> desc;
@@ -269,6 +275,7 @@ namespace CommandLine {
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
             implicitValue{builder._implicitValue},
+            representation{builder._representation},
             _value{builder._defaultValue},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
@@ -347,6 +354,11 @@ namespace CommandLine {
     template<typename T>
     const std::optional<T> &OptionBase<T>::getImplicitValue() const {
         return implicitValue;
+    }
+
+    template<typename T>
+    const std::string OptionBase<T>::getRepresentation() const {
+        return representation;
     }
 
     template<typename T>

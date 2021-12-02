@@ -154,6 +154,14 @@ namespace CommandLine {
          * Store and notify the variables map.
          */
         static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
+
+        template<typename T>
+        static std::string formatConfigOption(const OptionBase<T>& option);
+
+        template<typename T>
+        static std::string formatConfigOption(const OptionBase<T>& option, const std::string& value);
+
+        std::string formatConfigFile();
     };
 
 }

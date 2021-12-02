@@ -46,6 +46,8 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
 static constexpr char DEFAULT_CONFIG_NAME[] = ".config";
 static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
+static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evget.\n"
+                                                   "# Commented out values are required to be present, either in the config file or on the command line.";
 
 std::ostream& operator<<(std::ostream& os, const CommandLine::Filetype& filetype) {
     switch (filetype) {
@@ -170,8 +172,6 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
-    help.run(vm);
-    version.run(vm);
     storageFolder.run(vm);
     filetypes.run(vm);
     print.run(vm);
@@ -241,4 +241,39 @@ bool CommandLine::Parser::useSystemEvents() const {
 
 std::filesystem::path CommandLine::Parser::getConfigFile() const {
     return config.getValue();
+}
+
+template<typename T>
+std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option) {
+    std::ostringstream value{};
+    value << option.getDefaultValue();
+    return formatConfigOption(option, value.str());
+}
+
+
+template<typename T>
+std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option, const std::string& value) {
+    std::string out{};
+    if (option.isRequired()) {
+        out += "# ";
+    }
+    out += option.getLongName();
+    out += " = ";
+    out += value;
+    out += "\n";
+    return out;
+}
+
+std::string CommandLine::Parser::formatConfigFile() {
+    std::string out{};
+    out += CONFIG_FILE_COMMENT_LINE;
+    out += "\n\n";
+
+    out += formatConfigOption(storageFolder) + "\n";
+    out += formatConfigOption(filetypes, filetypes.getRepresentation()) + "\n";
+    out += formatConfigOption(print) + "\n";
+    out += formatConfigOption(systemEvents) + "\n";
+    out += formatConfigOption(logLevel, logLevel.getRepresentation()) + "\n";
+
+    return out;
 }
