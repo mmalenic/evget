@@ -64,6 +64,11 @@ namespace CommandLine {
         bool parseCommandLine(int argc, const char *argv[]);
 
         /**
+         * Get config file location.
+         */
+        [[nodiscard]] fs::path getConfigFile() const;
+
+        /**
          * Get the folder.
          */
         [[nodiscard]] fs::path getFolder() const;

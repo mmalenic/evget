@@ -238,3 +238,7 @@ std::vector<CommandLine::Filetype> CommandLine::Parser::getFiletype() const {
 bool CommandLine::Parser::useSystemEvents() const {
     return systemEvents.getValue();
 }
+
+std::filesystem::path CommandLine::Parser::getConfigFile() const {
+    return config.getValue();
+}
