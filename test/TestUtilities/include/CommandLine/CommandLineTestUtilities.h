@@ -43,7 +43,14 @@ namespace TestUtilities::CommandLineTestUtilities {
     class CommandLineTest : public testing::Test {
     protected:
         /**
-         * Removes config file associated with running parser.
+         * Change to a temporary directory.
+         */
+        void SetUp() override {
+            fs::current_path(fs::temp_directory_path());
+        }
+
+        /**
+         * Remove config file associated with running parser.
          */
         void TearDown() override {
             Cmd::Parser parser{""};
