@@ -76,17 +76,17 @@ namespace CommandLine {
         /**
          * Get the optional default value.
          */
-        const std::optional<T> &getDefaultValue() const;
+        [[nodiscard]] virtual std::optional<T> getDefaultValue() const;
 
         /**
          * Get the optional implicit value.
          */
-        const std::optional<T> &getImplicitValue() const;
+        [[nodiscard]] virtual std::optional<T> getImplicitValue() const;
 
         /**
          * Get the representation.
          */
-        [[nodiscard]] const std::string getRepresentation() const;
+        [[nodiscard]] std::string getRepresentation() const;
 
         /**
          * Get if _defaultValue is required.
@@ -347,17 +347,17 @@ namespace CommandLine {
     }
 
     template<typename T>
-    const std::optional<T> &OptionBase<T>::getDefaultValue() const {
+    std::optional<T> OptionBase<T>::getDefaultValue() const {
         return defaultValue;
     }
 
     template<typename T>
-    const std::optional<T> &OptionBase<T>::getImplicitValue() const {
+    std::optional<T> OptionBase<T>::getImplicitValue() const {
         return implicitValue;
     }
 
     template<typename T>
-    const std::string OptionBase<T>::getRepresentation() const {
+    std::string OptionBase<T>::getRepresentation() const {
         return representation;
     }
 

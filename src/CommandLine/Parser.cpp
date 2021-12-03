@@ -46,7 +46,7 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
                                        "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
-static constexpr char DEFAULT_CONFIG_NAME[] = ".config";
+static constexpr char DEFAULT_CONFIG_NAME[] = ".evget_config";
 static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
 static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evget.\n"
                                                    "# Commented out values are required to be present, either in the config file or on the command line.";
@@ -171,12 +171,16 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     if (!fs::exists(config.getValue())) {
         std::ofstream out(config.getValue());
         out << formatConfigFile();
+        out.flush();
         out.close();
     }
 
     std::ifstream stream{config.getValue()};
-    stream.exceptions(std::ifstream::failbit);
-    storeAndNotify(po::parse_config_file(stream, configDesc), vm);
+    if (!stream) {
+        throw std::ios_base::failure{"failed to read config file."};
+    } else {
+        storeAndNotify(po::parse_config_file(stream, configDesc), vm);
+    }
 
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
@@ -254,6 +258,7 @@ std::filesystem::path CommandLine::Parser::getConfigFile() const {
 template<typename T>
 std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option) {
     std::ostringstream value{};
+    value << std::boolalpha;
     value << option.getDefaultValue().value();
     return formatConfigOption(option, value.str());
 }
@@ -277,11 +282,11 @@ std::string CommandLine::Parser::formatConfigFile() {
     out += CONFIG_FILE_COMMENT_LINE;
     out += "\n\n";
 
-    out += formatConfigOption(storageFolder) + "\n";
-    out += formatConfigOption(filetypes, filetypes.getRepresentation()) + "\n";
-    out += formatConfigOption(print) + "\n";
-    out += formatConfigOption(systemEvents) + "\n";
-    out += formatConfigOption(logLevel, logLevel.getRepresentation()) + "\n";
+    out += formatConfigOption(storageFolder);
+    out += formatConfigOption(filetypes, filetypes.getRepresentation());
+    out += formatConfigOption(print);
+    out += formatConfigOption(systemEvents);
+    out += formatConfigOption(logLevel, logLevel.getRepresentation());
 
     return out;
 }

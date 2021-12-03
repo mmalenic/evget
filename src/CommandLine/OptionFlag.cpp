@@ -26,8 +26,16 @@ CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bo
     this->addOptionToDesc(
             this->isRequired(),
             false,
-            this->getDefaultValue(),
-            this->getImplicitValue(),
+            {false},
+            {true},
             po::bool_switch()
     );
+}
+
+std::optional<bool> CommandLine::OptionFlag::getDefaultValue() const {
+    return false;
+}
+
+std::optional<bool> CommandLine::OptionFlag::getImplicitValue() const {
+    return true;
 }

@@ -35,6 +35,10 @@ namespace CommandLine {
          * Create from builder.
          */
         explicit OptionFlag(OptionBuilder<bool> builder);
+
+        [[nodiscard]] std::optional<bool> getDefaultValue() const override;
+
+        [[nodiscard]] std::optional<bool> getImplicitValue() const override;
     };
 }
 
