@@ -29,12 +29,31 @@
 
 #include <boost/program_options.hpp>
 #include <CommandLine/OptionBase.h>
+#include <CommandLine/Parser.h>
 #include <any>
+#include <gtest/gtest.h>
+#include <filesystem>
 
 namespace TestUtilities::CommandLineTestUtilities {
 
     namespace po = boost::program_options;
     namespace Cmd = CommandLine;
+    namespace fs = std::filesystem;
+
+    class CommandLineTest : public testing::Test {
+    protected:
+        /**
+         * Removes config file associated with running parser.
+         */
+        void TearDown() override {
+            Cmd::Parser parser{""};
+            fs::path configFile = parser.getConfigFile();
+
+            if (fs::exists(configFile)) {
+                fs::remove(configFile);
+            }
+        }
+    };
 
     /**
      * Make the command line object.
