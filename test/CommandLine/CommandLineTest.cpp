@@ -29,6 +29,13 @@ namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 
 using CommandLineTest = CmdUtils::CommandLineTest;
 
+TEST_F(CommandLineTest, ParseCommandLine) { // NOLINT(cert-err58-cpp)
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+    });
+}
+
 TEST_F(CommandLineTest, HelpOption) { // NOLINT(cert-err58-cpp)
     Cmd::Parser cmd{""};
     CmdUtils::makeCmd({"program", "-h"}, [&cmd](int argc, const char* argv[]) {
