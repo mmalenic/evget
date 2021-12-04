@@ -46,3 +46,15 @@ TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
         ASSERT_TRUE(option.getValue());
     });
 }
+
+TEST(CommandLineOptionBaseTest, GetOptionalDefaultValueFlag) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::OptionFlag option = Cmd::OptionBuilder<bool>(desc).shortName("name").defaultValue(true).buildFlag();
+    ASSERT_EQ(false, option.getDefaultValue());
+}
+
+TEST(CommandLineOptionBaseTest, GetOptionalImplicitValueFlag) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::OptionFlag option = Cmd::OptionBuilder<bool>(desc).shortName("name").required().implicitValue(false).buildFlag();
+    ASSERT_EQ(true, option.getImplicitValue());
+}
