@@ -102,11 +102,6 @@ namespace CommandLine {
          */
         virtual void run(po::variables_map &vm);
 
-        /**
-         * Parse value component.
-         */
-        virtual void parseValue(po::variables_map &vm);
-
     protected:
         /**
          * Create from builder.
@@ -195,6 +190,11 @@ namespace CommandLine {
          */
         template<typename U>
         void addOptionToDesc(po::typed_value<U>* typedValue);
+
+        /**
+         * Parse value component.
+         */
+        virtual void parseValue(po::variables_map &vm);
 
     private:
         std::string shortName;
