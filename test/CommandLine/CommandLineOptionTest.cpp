@@ -79,7 +79,7 @@ TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
         po::store(parse.run(), vm);
         po::notify(vm);
-        ASSERT_THROW(optionA.run(vm);, InvalidCommandLineOption);
+        ASSERT_THROW(optionA.run(vm), InvalidCommandLineOption);
     });
 }
 
