@@ -77,35 +77,35 @@ std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
 }
 
 CommandLine::Parser::Parser(std::string platformInformation) :
-    platformInformation{std::move(platformInformation)},
-    cmdDesc{
+        platformInformation{std::move(platformInformation)},
+        cmdlineDesc{
         DESCRIPTION
     },
-    configDesc{},
-    vm{},
-    help{
-        OptionBuilder<bool>{cmdDesc}
+        configDesc{},
+        vm{},
+        help{
+        OptionBuilder<bool>{cmdlineDesc}
             .shortName("h")
             .longName("help")
             .description("Produce help message describing program options.")
             .buildFlag()
     },
-    version{
-        OptionBuilder<bool>{cmdDesc}
+        version{
+        OptionBuilder<bool>{cmdlineDesc}
             .shortName("v")
             .longName("version")
             .description("Produce version message.")
             .buildFlag()
     },
-    config{
-            OptionBuilder<fs::path>{cmdDesc}
+        config{
+            OptionBuilder<fs::path>{cmdlineDesc}
                     .shortName("c")
                     .longName("config")
                     .description("Location of config file.")
                     .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
                     .build()
     },
-    storageFolder{
+        storageFolder{
         OptionBuilder<fs::path>{configDesc}
             .shortName("o")
             .longName("folder")
@@ -113,7 +113,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
             .build()
     },
-    filetypes{
+        filetypes{
         OptionBuilder<std::vector<Filetype>>{configDesc}
             .shortName("t")
             .longName("filetypes")
@@ -123,21 +123,21 @@ CommandLine::Parser::Parser(std::string platformInformation) :
             //.validator()
             .build()
     },
-    print{
+        print{
         OptionBuilder<bool>{configDesc}
             .shortName("p")
             .longName("print")
             .description("Print events.")
             .buildFlag()
     },
-    systemEvents{
+        systemEvents{
         OptionBuilder<bool>{configDesc}
             .shortName("s")
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .buildFlag()
     },
-    logLevel{
+        logLevel{
         OptionBuilder<spdlog::level::level_enum>{configDesc}
             .shortName("u")
             .longName("log-level")
@@ -151,7 +151,7 @@ CommandLine::Parser::Parser(std::string platformInformation) :
 
 bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     po::options_description cmdlineOptions{};
-    cmdlineOptions.add(cmdDesc).add(configDesc);
+    cmdlineOptions.add(cmdlineDesc).add(configDesc);
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
 
     if (!parseCmdlineOnlyOptions()) {
@@ -185,8 +185,16 @@ CommandLine::fs::path CommandLine::Parser::getFolder() const {
     return storageFolder.getValue();
 }
 
-po::options_description& CommandLine::Parser::getDesc() {
-    return cmdDesc.add(configDesc);
+po::options_description& CommandLine::Parser::getCombinedDesc() {
+    return cmdlineDesc.add(configDesc);
+}
+
+po::options_description& CommandLine::Parser::getCmdlineDesc() {
+    return cmdlineDesc;
+}
+
+po::options_description& CommandLine::Parser::getConfigDesc() {
+    return configDesc;
 }
 
 const po::variables_map& CommandLine::Parser::getVm() const {
@@ -285,7 +293,7 @@ bool CommandLine::Parser::parseCmdlineOnlyOptions() {
     config.run(vm);
 
     if (help.getValue()) {
-        std::cout << getDesc() << "\n";
+        std::cout << getCombinedDesc() << "\n";
         return false;
     }
     if (version.getValue()) {

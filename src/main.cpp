@@ -51,18 +51,18 @@ int main(int argc, char* argv[]) {
 //    }
 //
 //    pool.join();
-//    po::options_description cmdDesc("Allowed options");
-//    cmdDesc.add_options()
+//    po::options_description cmdlineDesc("Allowed options");
+//    cmdlineDesc.add_options()
 //            ("help", "produce help message")
 //            ("compression", po::_value<int>(), "set compression level")
 //        ;
 //
 //    po::variables_map vm;
-//    po::store(po::parse_command_line(argc, argv, cmdDesc), vm);
+//    po::store(po::parse_command_line(argc, argv, cmdlineDesc), vm);
 //    po::notify(vm);
 //
 //    if (vm.count("help")) {
-//        cout << cmdDesc << "\n";
+//        cout << cmdlineDesc << "\n";
 //        return 1;
 //    }
 //

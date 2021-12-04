@@ -116,7 +116,17 @@ namespace CommandLine {
          * Get description.
          * @return description
          */
-        po::options_description &getDesc();
+        po::options_description &getCombinedDesc();
+
+        /**
+         * Get commandline description.
+         */
+        po::options_description &getCmdlineDesc();
+
+        /**
+         * Get config description.
+         */
+        po::options_description &getConfigDesc();
 
         /**
          * Get the variables map.
@@ -138,7 +148,7 @@ namespace CommandLine {
 
     private:
         std::string platformInformation;
-        po::options_description cmdDesc;
+        po::options_description cmdlineDesc;
         po::options_description configDesc;
         po::variables_map vm;
 

@@ -43,8 +43,8 @@ TEST(CommandLineOptionBaseTest, GetLongNameTest) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionBaseTest, GetDescriptionTest) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().description("cmdDesc").build();
-    ASSERT_EQ("cmdDesc", option.getDescription());
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().description("desc").build();
+    ASSERT_EQ("desc", option.getDescription());
 }
 
 TEST(CommandLineOptionBaseTest, SetValue) { // NOLINT(cert-err58-cpp)
