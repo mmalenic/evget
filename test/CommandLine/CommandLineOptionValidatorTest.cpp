@@ -38,3 +38,15 @@ TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
         ASSERT_EQ(2, option.getValue());
     });
 }
+
+TEST(CommandLineOptionTest, RepresentationValidator) { // NOLINT(cert-err58-cpp)
+    CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName("a").representation("repr").defaultValue(1).build([](const std::string& _) {
+            return 2;
+        });
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+        ASSERT_EQ("repr", option.getRepresentation());
+    });
+}

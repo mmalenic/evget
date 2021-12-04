@@ -58,6 +58,16 @@ TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
+TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
+    CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).representation("repr").build();
+    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+        ASSERT_EQ("repr", option.getRepresentation());
+    });
+}
+
 TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::variables_map vm{};
