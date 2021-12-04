@@ -154,14 +154,7 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     cmdlineOptions.add(cmdDesc).add(configDesc);
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
 
-    parseCmdlineOnlyOptions();
-
-    if (help.getValue()) {
-        std::cout << getDesc() << "\n";
-        return false;
-    }
-    if (version.getValue()) {
-        std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
+    if (!parseCmdlineOnlyOptions()) {
         return false;
     }
 
@@ -181,7 +174,9 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
-    parseFileAndCmdlineOptions();
+    if (!parseFileAndCmdlineOptions()) {
+        return false;
+    }
 
     return true;
 }
@@ -284,16 +279,28 @@ std::string CommandLine::Parser::formatConfigFile() {
     return out;
 }
 
-void CommandLine::Parser::parseCmdlineOnlyOptions() {
+bool CommandLine::Parser::parseCmdlineOnlyOptions() {
     help.run(vm);
     version.run(vm);
     config.run(vm);
+
+    if (help.getValue()) {
+        std::cout << getDesc() << "\n";
+        return false;
+    }
+    if (version.getValue()) {
+        std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
+        return false;
+    }
+    return true;
 }
 
-void CommandLine::Parser::parseFileAndCmdlineOptions() {
+bool CommandLine::Parser::parseFileAndCmdlineOptions() {
     storageFolder.run(vm);
     filetypes.run(vm);
     print.run(vm);
     systemEvents.run(vm);
     logLevel.run(vm);
+
+    return true;
 }

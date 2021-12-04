@@ -125,14 +125,16 @@ namespace CommandLine {
         [[nodiscard]] const po::variables_map &getVm() const;
 
         /**
-         * Parse the command line only options.
+         * Parse the command line only options. Returns true if operation of the
+         * program should continue.
          */
-        virtual void parseCmdlineOnlyOptions();
+        virtual bool parseCmdlineOnlyOptions();
 
         /**
-         * Parse the file and command line options.
+         * Parse the file and command line options. Returns true if operation of
+         * the program should continue.
          */
-        virtual void parseFileAndCmdlineOptions();
+        virtual bool parseFileAndCmdlineOptions();
 
     private:
         std::string platformInformation;
