@@ -43,6 +43,14 @@ TEST_F(CommandLineTest, VersionOption) { // NOLINT(cert-err58-cpp)
     });
 }
 
+TEST_F(CommandLineTest, ConfigOption) { // NOLINT(cert-err58-cpp)
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-c", "config"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(Cmd::fs::path{"config"}, cmd.getConfigFile());
+    });
+}
+
 TEST_F(CommandLineTest, FolderOption) { // NOLINT(cert-err58-cpp)
     Cmd::Parser cmd{""};
     CmdUtils::makeCmd({"program", "-o", "folder"}, [&cmd](int argc, const char* argv[]) {
