@@ -124,6 +124,11 @@ namespace CommandLine {
          */
         [[nodiscard]] const po::variables_map &getVm() const;
 
+        /**
+         * Parse the command line only options.
+         */
+        virtual void parseCmdlineOnlyOptions();
+
     private:
         std::string platformInformation;
         po::options_description cmdDesc;

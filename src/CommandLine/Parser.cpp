@@ -154,8 +154,7 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     cmdlineOptions.add(cmdDesc).add(configDesc);
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
 
-    help.run(vm);
-    version.run(vm);
+    parseCmdlineOnlyOptions();
 
     if (help.getValue()) {
         std::cout << getDesc() << "\n";
@@ -165,8 +164,6 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
         std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
         return false;
     }
-
-    config.run(vm);
 
     if (!fs::exists(config.getValue())) {
         std::ofstream out(config.getValue());
@@ -289,4 +286,10 @@ std::string CommandLine::Parser::formatConfigFile() {
     out += formatConfigOption(logLevel, logLevel.getRepresentation());
 
     return out;
+}
+
+void CommandLine::Parser::parseCmdlineOnlyOptions() {
+    help.run(vm);
+    version.run(vm);
+    config.run(vm);
 }
