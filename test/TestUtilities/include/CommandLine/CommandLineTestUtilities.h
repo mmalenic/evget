@@ -40,6 +40,9 @@ namespace TestUtilities::CommandLineTestUtilities {
     namespace Cmd = CommandLine;
     namespace fs = std::filesystem;
 
+    /**
+     * Set up and tear down command line tests.
+     */
     class CommandLineTest : public testing::Test {
     protected:
         /**
