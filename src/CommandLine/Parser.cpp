@@ -181,11 +181,7 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
-    storageFolder.run(vm);
-    filetypes.run(vm);
-    print.run(vm);
-    systemEvents.run(vm);
-    logLevel.run(vm);
+    parseFileAndCmdlineOptions();
 
     return true;
 }
@@ -292,4 +288,12 @@ void CommandLine::Parser::parseCmdlineOnlyOptions() {
     help.run(vm);
     version.run(vm);
     config.run(vm);
+}
+
+void CommandLine::Parser::parseFileAndCmdlineOptions() {
+    storageFolder.run(vm);
+    filetypes.run(vm);
+    print.run(vm);
+    systemEvents.run(vm);
+    logLevel.run(vm);
 }

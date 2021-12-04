@@ -129,6 +129,11 @@ namespace CommandLine {
          */
         virtual void parseCmdlineOnlyOptions();
 
+        /**
+         * Parse the file and command line options.
+         */
+        virtual void parseFileAndCmdlineOptions();
+
     private:
         std::string platformInformation;
         po::options_description cmdDesc;
