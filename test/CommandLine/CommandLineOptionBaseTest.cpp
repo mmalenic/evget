@@ -84,7 +84,7 @@ TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(true, option.isRequired());
 }
 
-TEST(CommandLineOptionTest, Run) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::variables_map vm{};
 

@@ -27,7 +27,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include "Option.h"
-#include "OptionValidator.h"
+#include "OptionValidated.h"
 #include "OptionFlag.h"
 
 namespace CommandLine {
@@ -159,7 +159,7 @@ namespace CommandLine {
         Option<std::vector<Filetype>> filetypes;
         OptionFlag print;
         OptionFlag systemEvents;
-        OptionValidator<spdlog::level::level_enum> logLevel;
+        OptionValidated<spdlog::level::level_enum> logLevel;
 
         /**
          * Get the valid log levels.

@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_OPTIONVALIDATOR_H
-#define EVGET_OPTIONVALIDATOR_H
+#ifndef EVGET_OPTIONVALIDATED_H
+#define EVGET_OPTIONVALIDATED_H
 
 #include "OptionBase.h"
 
@@ -29,21 +29,21 @@ namespace CommandLine {
 
     /**
      * A command line option with custom validation.
-     * @tparam T _value type.
+     * @tparam T value type.
      */
     template<typename T>
-    class OptionValidator : public OptionBase<T> {
+    class OptionValidated : public OptionBase<T> {
     public:
         /**
          * Create from builder.
          */
-        explicit OptionValidator(OptionBuilder<T> builder,
+        explicit OptionValidated(OptionBuilder<T> builder,
                                  typename OptionBuilder<T>::Validator validator);
 
         /**
          * Create from builder.
          */
-        explicit OptionValidator(OptionBuilder<T> builder,
+        explicit OptionValidated(OptionBuilder<T> builder,
                                  typename OptionBuilder<T>::Validator validator, const std::string& representation);
 
         void parseValue(po::variables_map &vm) override;
@@ -56,7 +56,7 @@ namespace CommandLine {
 
 
     template<typename T>
-    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
+    OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
@@ -68,7 +68,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionValidator<T>::OptionValidator(OptionBuilder<T> builder,
+    OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator, const std::string& representation)
             : OptionBase<T>(builder), validator{validator} {
         this->checkInvariants();
@@ -76,7 +76,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionValidator<T>::parseValue(po::variables_map &vm) {
+    void OptionValidated<T>::parseValue(po::variables_map &vm) {
         std::optional<std::string> value = this->template getValueFromVm<std::string>(vm);
         if (value.has_value() && !value->empty()) {
             std::optional<T> validatedValue = validator(*value);
@@ -90,7 +90,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionValidator<T>::setOptionDesc(auto&& createRepresentation) {
+    void OptionValidated<T>::setOptionDesc(auto&& createRepresentation) {
         if (this->getDefaultValue().has_value()) {
             this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), "", std::nullopt, createRepresentation(*this->getDefaultValue()));
         } else if (this->getImplicitValue().has_value()) {
@@ -102,4 +102,4 @@ namespace CommandLine {
         }
     }
 }
-#endif //EVGET_OPTIONVALIDATOR_H
+#endif //EVGET_OPTIONVALIDATED_H

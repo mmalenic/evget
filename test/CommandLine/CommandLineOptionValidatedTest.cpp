@@ -27,7 +27,7 @@ namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
-TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionValidatedTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
             return 2;
@@ -38,7 +38,7 @@ TEST(CommandLineOptionTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, RepresentationValidator) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").representation("repr").defaultValue(1).build([](const std::string& _) {
             return 2;

@@ -223,7 +223,7 @@ add_program(
     include/InvalidCommandLineOption.h
     include/CommandLine/OptionBuilder.h
     include/CommandLine/OptionBase.h
-    include/CommandLine/OptionValidator.h
+    include/CommandLine/OptionValidated.h
     include/CommandLine/OptionFlag.h
     # Sources
     src/CommandLine/OptionFlag.cpp
@@ -310,7 +310,7 @@ if (BUILD_TESTING)
         test/CommandLine/CommandLineTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBaseTest.cpp
-        test/CommandLine/CommandLineOptionValidatorTest.cpp
+        test/CommandLine/CommandLineOptionValidatedTest.cpp
         test/CommandLine/CommandLineOptionFlagTest.cpp
         # Util Headers
         test/TestUtilities/include/CommandLine/CommandLineTestUtilities.h

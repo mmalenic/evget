@@ -42,7 +42,7 @@ namespace CommandLine {
     class OptionFlag;
 
     template<typename T>
-    class OptionValidator;
+    class OptionValidated;
 
     template<typename U>
     concept OStreamable = requires(std::ostream &os, U value) {
@@ -161,13 +161,13 @@ namespace CommandLine {
          * Build Option with validator.
          */
         template<typename U = T>
-        EnableIfOStreamable<OptionValidator<T>, U> build(Validator validator);
+        EnableIfOStreamable<OptionValidated<T>, U> build(Validator validator);
 
         /**
          * Build Option with validator.
          */
         template<typename U = T>
-        EnableIfNotOStreamable<OptionValidator<T>, U> build(Validator validator);
+        EnableIfNotOStreamable<OptionValidated<T>, U> build(Validator validator);
 
     private:
         std::reference_wrapper<po::options_description> _desc;
@@ -290,19 +290,19 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidator<T>, U>
+    typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidated<T>, U>
     OptionBuilder<T>::build(Validator validator) {
         if (representationSet) {
-            return OptionValidator(*this, validator, _representation);
+            return OptionValidated(*this, validator, _representation);
         }
-        return OptionValidator(*this, validator);
+        return OptionValidated(*this, validator);
     }
 
     template<typename T>
     template<typename U>
-    typename OptionBuilder<T>::template EnableIfNotOStreamable<OptionValidator<T>, U>
+    typename OptionBuilder<T>::template EnableIfNotOStreamable<OptionValidated<T>, U>
     OptionBuilder<T>::build(Validator validator) {
-        return OptionValidator(*this, validator, _representation);
+        return OptionValidated(*this, validator, _representation);
     }
 }
 
