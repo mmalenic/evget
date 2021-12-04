@@ -78,6 +78,12 @@ TEST(CommandLineOptionBaseTest, GetRepresentation) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ("repr", option.getRepresentation());
 }
 
+TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").required().build();
+    ASSERT_EQ(true, option.isRequired());
+}
+
 TEST(CommandLineOptionBaseTest, PositionalOption) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};

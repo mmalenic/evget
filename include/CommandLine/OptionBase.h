@@ -89,7 +89,7 @@ namespace CommandLine {
         [[nodiscard]] std::string getRepresentation() const;
 
         /**
-         * Get if _defaultValue is required.
+         * Get if option is required.
          */
         [[nodiscard]] bool isRequired() const;
 
