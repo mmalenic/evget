@@ -317,7 +317,7 @@ if (BUILD_TESTING)
         # Util Sources
         test/TestUtilities/src/CommandLine/CommandLineTestUtilities.cpp
     )
-    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest)
+    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest)
 
     # Linux tests.
     add_program(
