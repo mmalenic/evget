@@ -30,7 +30,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-//    CommandLineLinux Cmd{argc, argv};
+//    ParserLinux Cmd{argc, argv};
 //    Cmd.readArgs();
 //
 //    spdlog::set_level(Cmd.getLogLevel());

@@ -249,12 +249,12 @@ add_program(
     ${PROJECT_SOURCE_DIR}/src/platform/linux
     SRCS
     # Headers
-    include/platform/linux/CommandLine/CommandLineLinux.h
+    include/platform/linux/CommandLine/ParserLinux.h
     include/platform/linux/EventDevice.h
     include/platform/linux/EventDeviceLister.h
     include/platform/linux/ShutdownHandlerLinux.h
     # Sources
-    src/platform/linux/CommandLine/CommandLineLinux.cpp
+    src/platform/linux/CommandLine/ParserLinux.cpp
     src/platform/linux/EventDevice.cpp
     src/platform/linux/EventDeviceLister.cpp
     src/platform/linux/ShutdownHandlerLinux.cpp

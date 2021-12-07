@@ -76,8 +76,8 @@ std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
     return in;
 }
 
-CommandLine::Parser::Parser(std::string platformInformation) :
-        platformInformation{std::move(platformInformation)},
+CommandLine::Parser::Parser(std::string platform) :
+        platformInformation{std::move(platform)},
         cmdlineDesc{
         DESCRIPTION
     },

@@ -51,9 +51,9 @@ namespace CommandLine {
         /**
          * Create a Parser object.
          *
-         * @param platformInformation platform information string
+         * @param platform platform information string
          */
-        explicit Parser(std::string platformInformation);
+        explicit Parser(std::string platform);
 
         /**
          * Perform the actual command line parsing. Returns true if operation of the program should continue.

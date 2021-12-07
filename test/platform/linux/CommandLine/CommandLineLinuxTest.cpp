@@ -29,7 +29,7 @@
     char arg[] = "-h";
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -38,7 +38,7 @@ TEST(CommandLineTest, HelpOptionLong) { // NOLINT(cert-err58-cpp)
     char arg[] = "--help";
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -47,7 +47,7 @@ TEST(CommandLineTest, VersionOptionShort) { // NOLINT(cert-err58-cpp)
     char arg[] = "-v";
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -56,7 +56,7 @@ TEST(CommandLineTest, VersionOptionLong) { // NOLINT(cert-err58-cpp)
     char arg[] = "--version";
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -66,7 +66,7 @@ TEST(CommandLineTest, IncorrectLogLevel) { // NOLINT(cert-err58-cpp)
     char arg1[] = " ";
     char *argv[] = { &name[0], &arg0[0], &arg1[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -78,7 +78,7 @@ TEST(CommandLineTest, IncorrectFileType) { // NOLINT(cert-err58-cpp)
     char arg3[] = "";
     char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], &arg3[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    EXPECT_EXIT(CommandLineLinux(argc, argv), testing::ExitedWithCode(EXIT_SUCCESS), "");
+    EXPECT_EXIT(ParserLinux(argc, argv), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
 TEST(CommandLineTest, ListEventDevicesExclusive) { // NOLINT(cert-err58-cpp)
@@ -88,7 +88,7 @@ TEST(CommandLineTest, ListEventDevicesExclusive) { // NOLINT(cert-err58-cpp)
     char arg2[] = "/";
     char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }
 
@@ -97,6 +97,6 @@ TEST(CommandLineTest, AtLeastOneEventDevice) { // NOLINT(cert-err58-cpp)
     char arg[] = "";
     char *argv[] = { &name[0], &arg[0], nullptr };
     int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    CommandLineLinux cmd { argc, argv };
+    ParserLinux cmd { argc, argv };
     EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
 }*/
