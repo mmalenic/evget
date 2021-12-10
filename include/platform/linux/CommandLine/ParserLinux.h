@@ -64,15 +64,10 @@ namespace CommandLine {
         // void readArgs() override;
 
     private:
-        std::tuple<std::string, std::string, std::string> mouseDeviceOption;
-        std::tuple<std::string, std::string, std::string> keyDeviceOption;
-        std::tuple<std::string, std::string, std::string> touchDeviceOption;
-        std::tuple<std::string, std::string, std::string> listEventDevicesOption;
-
-        std::vector<fs::path> mouseDevice;
-        std::vector<fs::path> keyDevice;
-        std::vector<fs::path> touchDevice;
-        bool listEventDevices;
+        Option<std::vector<fs::path>> mouseDevices;
+        Option<std::vector<fs::path>> keyDevices;
+        Option<std::vector<fs::path>> touchDevices;
+        OptionFlag listEventDevices;
 
 
         /**
