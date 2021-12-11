@@ -29,7 +29,38 @@
 using namespace std;
 
 CommandLine::ParserLinux::ParserLinux(int argc, char** argv) :
-    Parser{platformInformation()} {
+    Parser{platformInformation()},
+    mouseDevices{
+        OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
+            .shortName("m")
+            .longName("mouse-devices")
+            .description("Set mouse devices.")
+            .required()
+            .build()
+    },
+    keyDevices{
+        OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
+            .shortName("k")
+            .longName("key-devices")
+            .description("Set key devices.")
+            .required()
+            .build()
+    },
+    touchDevices{
+        OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
+        .shortName("t")
+        .longName("touch-devices")
+        .description("Set touch devices.")
+        .required()
+        .build()
+    },
+    listEventDevices{
+        OptionBuilder<bool>{this->getCmdlineDesc()}
+        .shortName("l")
+        .longName("list-devices")
+        .description("list possible devices.")
+        .buildFlag()
+    } {
 }
 
 std::string CommandLine::ParserLinux::platformInformation() {
