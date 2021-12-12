@@ -24,7 +24,8 @@ cmake_minimum_required(VERSION 3.19)
 project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
-set(TEST_EXECUTABLE_NAME "evget-test")
+set(LIBRARY_NAME "libevget")
+set(TEST_EXECUTABLE_NAME "evgettest")
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
@@ -203,7 +204,7 @@ endif()
 
 # Common functionality.
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME} MAKE_LIBRARY
+    TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
@@ -238,13 +239,13 @@ add_program(
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp
 )
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC fmt 8.0.1)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC spdlog 1.9.2)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPONENTS program_options headers)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC boost 1.77 FIND_ALL COMPONENTS program_options headers)
 
 # Linux functionality.
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME}
+    TARGET ${LIBRARY_NAME}
     PLATFORM_GUARD UNIX AND NOT APPLE
     PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
     INCLUDE_DIRS
@@ -265,7 +266,7 @@ add_program(
 
 # OSX functionality
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME}
+    TARGET ${LIBRARY_NAME}
     PLATFORM_GUARD APPLE
     PLATFORM_REQUIRES
     INCLUDE_DIRS
@@ -278,7 +279,7 @@ add_program(
 
 # Windows functionality
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME}
+    TARGET ${LIBRARY_NAME}
     PLATFORM_GUARD WIN32
     PLATFORM_REQUIRES
     INCLUDE_DIRS
@@ -291,13 +292,11 @@ add_program(
 
 # Make executable.
 add_program(
-    TARGET ${CMAKE_PROJECT_NAME}-bin MAKE_EXECUTABLE
+    TARGET ${CMAKE_PROJECT_NAME} MAKE_EXECUTABLE
     SRCS
     ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME}-bin DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
-set_target_properties(${CMAKE_PROJECT_NAME}-bin PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME})
-message(STATUS "Renamed executable ${CMAKE_PROJECT_NAME}-bin to ${CMAKE_PROJECT_NAME}.")
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
 if (BUILD_TESTING)
     # Common tests.
@@ -320,7 +319,7 @@ if (BUILD_TESTING)
         # Util Sources
         test/TestUtilities/src/CommandLine/CommandLineTestUtilities.cpp
     )
-    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest)
+    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
 
     # Linux tests.
     add_program(
@@ -367,7 +366,7 @@ if (BUILD_TESTING)
         # Util Headers
         # Util Sources
     )
-    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${CMAKE_PROJECT_NAME} ONLY_LINK)
+    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
     include(GoogleTest)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
