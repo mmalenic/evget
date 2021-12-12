@@ -61,6 +61,35 @@ function(link_target)
     target_link_libraries(${LINK_TARGET_TARGET} ${LINK_TARGET_VISIBILITY} ${LINK_TARGET_DEP})
 endfunction()
 
+# Links a target if found, with relaxed case.
+function(link_case_relaxed)
+    set(one_value_args RESULT)
+    set(multi_value_args TARGET DEP VISIBILITY)
+    cmake_parse_arguments(LINK_CASE_RELAXED "" "" "${multi_value_args}" ${ARGN})
+
+    string(TOLOWER ${LINK_CASE_RELAXED_DEP} LOWER_DEP)
+    string(TOUPPER ${LINK_CASE_RELAXED_DEP} UPPER_DEP)
+    if (TARGET ${LINK_CASE_RELAXED_DEP})
+        link_target(TARGET ${LINK_CASE_RELAXED_TARGET} VISIBILITY ${LINK_CASE_RELAXED_VISIBILITY} DEP ${LINK_CASE_RELAXED_DEP})
+        set(${LINK_CASE_RELAXED_RESULT} TRUE PARENT_SCOPE)
+    elseif (TARGET ${LOWER_DEP})
+        link_target(TARGET ${LINK_CASE_RELAXED_TARGET} VISIBILITY ${LINK_CASE_RELAXED_VISIBILITY} DEP ${LOWER_DEP})
+        set(${LINK_CASE_RELAXED_RESULT} TRUE PARENT_SCOPE)
+    elseif (TARGET ${UPPER_DEP})
+        link_target(TARGET ${LINK_CASE_RELAXED_TARGET} VISIBILITY ${LINK_CASE_RELAXED_VISIBILITY} DEP ${UPPER_DEP})
+        set(${LINK_CASE_RELAXED_RESULT} TRUE PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Links a found target.
+function(link_target)
+    set(multi_value_args TARGET VISIBILITY DEP)
+    cmake_parse_arguments(LINK_TARGET "" "" "${multi_value_args}" ${ARGN})
+
+    message(STATUS "Found target ${LINK_TARGET_DEP}, linking with ${LINK_TARGET_TARGET}")
+    target_link_libraries(${LINK_TARGET_TARGET} ${LINK_TARGET_VISIBILITY} ${LINK_TARGET_DEP})
+endfunction()
+
 # Adds program dependencies by using find_package and target_link_libraries.
 # DEP can specify arguments: visibility, dependency name, and version.
 # COMPONENTS should specify arguments in pairs of: visibility, and component name.
@@ -126,8 +155,8 @@ function(program_dependencies)
         endif()
 
         # Try to guess components
-        if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS AND TARGET ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
-            link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${DEPENDENCY_NAME} VISIBILITY ${DEPENDENCY_VISIBILITY})
+        if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+            link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${DEPENDENCY_NAME} VISIBILITY ${DEPENDENCY_VISIBILITY})
         elseif (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
             math(EXPR LOOP "${COMPONENTS_LENGTH} - 1")
@@ -135,10 +164,11 @@ function(program_dependencies)
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP)
                 if ("${COMP}" STREQUAL "PUBLIC" OR "${COMP}" STREQUAL "PRIVATE" OR "${COMP}" STREQUAL "INTERFACE")
                     set(DEPENDENCY_VISIBILITY ${COMP})
-                elseif (TARGET ${DEPENDENCY_NAME}::${COMP})
-                    link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
-                elseif (TARGET ${COMP})
-                    link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
+                else()
+                    link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY} RESULT LINKED)
+                    if (NOT LINKED)
+                        link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
+                    endif()
                 endif()
             endforeach()
         else()
@@ -247,7 +277,7 @@ add_program(
 )
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC boost 1.77 FIND_ALL COMPONENTS program_options headers)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPONENTS program_options headers)
 
 # Linux functionality.
 add_program(
