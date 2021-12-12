@@ -52,6 +52,15 @@ function(platform_check)
     unset(REQUIRES CACHE)
 endfunction()
 
+# Links a found target.
+function(link_target)
+    set(multi_value_args TARGET DEP VISIBILITY)
+    cmake_parse_arguments(LINK_TARGET "" "" "${multi_value_args}" ${ARGN})
+
+    message(STATUS "Found target ${LINK_TARGET_DEP}, linking with ${LINK_TARGET_TARGET}")
+    target_link_libraries(${LINK_TARGET_TARGET} ${LINK_TARGET_VISIBILITY} ${LINK_TARGET_DEP})
+endfunction()
+
 # Adds program dependencies by using find_package and target_link_libraries.
 # DEP can specify arguments: visibility, dependency name, and version.
 # COMPONENTS should specify arguments in pairs of: visibility, and component name.
@@ -118,8 +127,7 @@ function(program_dependencies)
 
         # Try to guess components
         if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS AND TARGET ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
-            message(STATUS "Found target ${DEPENDENCY_NAME}::${DEPENDENCY_NAME}, linking with ${PROGRAM_DEPENDENCIES_TARGET}")
-            target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
+            link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${DEPENDENCY_NAME} VISIBILITY ${DEPENDENCY_VISIBILITY})
         elseif (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
             math(EXPR LOOP "${COMPONENTS_LENGTH} - 1")
@@ -128,11 +136,9 @@ function(program_dependencies)
                 if ("${COMP}" STREQUAL "PUBLIC" OR "${COMP}" STREQUAL "PRIVATE" OR "${COMP}" STREQUAL "INTERFACE")
                     set(DEPENDENCY_VISIBILITY ${COMP})
                 elseif (TARGET ${DEPENDENCY_NAME}::${COMP})
-                    message(STATUS "Found target ${DEPENDENCY_NAME}::${COMP}, linking with ${PROGRAM_DEPENDENCIES_TARGET}.")
-                    target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
+                    link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
                 elseif (TARGET ${COMP})
-                    message(STATUS "Found target ${COMP}, linking with ${PROGRAM_DEPENDENCIES_TARGET}.")
-                    target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${COMP})
+                    link_target(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
                 endif()
             endforeach()
         else()
