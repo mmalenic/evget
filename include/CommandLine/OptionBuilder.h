@@ -139,6 +139,11 @@ namespace CommandLine {
         OptionBuilder &conflictsWith(const std::string &name);
 
         /**
+         * State that the option conflicts with another.
+         */
+        OptionBuilder &conflictsWith(std::initializer_list<std::string> names);
+
+        /**
          * Build flag option.
          */
         template<typename U = T>
@@ -242,6 +247,12 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::conflictsWith(const std::string &name) {
         _conflictsWith.emplace_back(name);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::conflictsWith(std::initializer_list<std::string> names) {
+        _conflictsWith.insert(_conflictsWith.end(), names);
         return *this;
     }
 
