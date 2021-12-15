@@ -24,8 +24,8 @@ cmake_minimum_required(VERSION 3.19)
 project(evget)
 
 set(CMAKE_CXX_STANDARD 20)
-set(LIBRARY_NAME "libevget")
-set(TEST_EXECUTABLE_NAME "evgettest")
+set(LIBRARY_NAME libevget)
+set(TEST_EXECUTABLE_NAME evgettest)
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
@@ -34,18 +34,25 @@ INCLUDE(CTest)
 
 # Checks the platform, returning the result true for the current platform.
 function(platform_check)
-    set(one_value_args RESULT PLATFORM_GUARD)
+    set(one_value_args RESULT PLATFORM)
     set(multi_value_args PLATFORM_REQUIRES)
     cmake_parse_arguments(PLATFORM_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
-    
-    if (NOT DEFINED PLATFORM_CHECK_PLATFORM_GUARD OR "${PLATFORM_CHECK_PLATFORM_GUARD}" OR "${${PLATFORM_CHECK_PLATFORM_GUARD}}")
-        if (NOT DEFINED PLATFORM_CHECK_PLATFORM_REQUIRES OR "${PLATFORM_CHECK_PLATFORM_REQUIRES}" STREQUAL "")
-            set(${PLATFORM_CHECK_RESULT} TRUE PARENT_SCOPE)
-        else()
-            CHECK_INCLUDE_FILES("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
-            if (REQUIRES)
-                set(${PLATFORM_CHECK_RESULT} TRUE PARENT_SCOPE)
+
+    get_property(CHECK GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT})
+    if (NOT "${CHECK}" STREQUAL "")
+        message(STATUS "Skipping platform check for ${PLATFORM_CHECK_RESULT}, already checked.")
+        return()
+    endif()
+
+    if (NOT DEFINED PLATFORM_CHECK_PLATFORM OR "${PLATFORM_CHECK_PLATFORM}" OR "${${PLATFORM_CHECK_PLATFORM}}")
+        message("${${PLATFORM_CHECK_PLATFORM_REQUIRES}}")
+        if (NOT DEFINED PLATFORM_CHECK_PLATFORM_REQUIRES OR PLATFORM_CHECK_PLATFORM_REQUIRES STREQUAL "")
+            if (DEFINED PLATFORM_CHECK_RESULT)
+                set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} TRUE)
             endif()
+        else()
+            check_include_files("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
+            set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} ${REQUIRES})
         endif()
     endif()
 
@@ -96,12 +103,16 @@ endfunction()
 # If COMPONENTS is present, visibility from DEP is ignored.
 function(program_dependencies)
     set(options NOT_REQUIRED FIND_ALL ONLY_LINK)
-    set(one_value_args PLATFORM_GUARD)
+    set(one_value_args PLATFORM PLATFORM_CHECK)
     set(multi_value_args TARGET DEP PLATFORM_REQUIRES COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-    
-    platform_check(PLATFORM_GUARD ${PROGRAM_DEPENDENCIES_PLATFORM_GUARD} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT GUARD)
-    if (GUARD AND DEFINED PROGRAM_DEPENDENCIES_DEP)
+
+    if (DEFINED PROGRAM_DEPENDENCIES_PLATFORM_CHECK)
+        platform_check(PLATFORM ${PROGRAM_DEPENDENCIES_PLATFORM} PLATFORM_REQUIRES ${PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES} RESULT ${PROGRAM_DEPENDENCIES_PLATFORM_CHECK})
+        get_property(GUARD GLOBAL PROPERTY ${PROGRAM_DEPENDENCIES_PLATFORM_CHECK})
+    endif()
+
+    if ((NOT DEFINED PROGRAM_DEPENDENCIES_PLATFORM_CHECK OR GUARD) AND DEFINED PROGRAM_DEPENDENCIES_DEP)
         list(LENGTH PROGRAM_DEPENDENCIES_DEP DEP_LENGTH)
         if (${DEP_LENGTH} EQUAL 3)
             list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
@@ -109,7 +120,7 @@ function(program_dependencies)
             list(GET PROGRAM_DEPENDENCIES_DEP 2 DEPENDENCY_VERSION)
         elseif (${DEP_LENGTH} EQUAL 2)
             list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_NAME)
-            if ("${DEPENDENCY_NAME}" STREQUAL "PUBLIC" OR "${DEPENDENCY_NAME}" STREQUAL "PRIVATE" OR "${DEPENDENCY_NAME}" STREQUAL "INTERFACE")
+            if (DEPENDENCY_NAME STREQUAL "PUBLIC" OR DEPENDENCY_NAME STREQUAL "PRIVATE" OR DEPENDENCY_NAME STREQUAL "INTERFACE")
                 list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
                 list(GET PROGRAM_DEPENDENCIES_DEP 1 DEPENDENCY_NAME)
             else()
@@ -132,7 +143,7 @@ function(program_dependencies)
             math(EXPR LOOP "${LIST_LENGTH} - 1")
             foreach(INDEX RANGE ${LOOP})
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP)
-                if ("${COMP}" STREQUAL "PUBLIC" OR "${COMP}" STREQUAL "PRIVATE" OR "${COMP}" STREQUAL "INTERFACE")
+                if (COMP STREQUAL "PUBLIC" OR COMP STREQUAL "PRIVATE" OR COMP STREQUAL "INTERFACE")
                     list(APPEND COMPONENTS ${COMP})
                 endif()
             endforeach()
@@ -162,7 +173,7 @@ function(program_dependencies)
             math(EXPR LOOP "${COMPONENTS_LENGTH} - 1")
             foreach(INDEX RANGE 0 ${LOOP})
                 list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP)
-                if ("${COMP}" STREQUAL "PUBLIC" OR "${COMP}" STREQUAL "PRIVATE" OR "${COMP}" STREQUAL "INTERFACE")
+                if (COMP STREQUAL "PUBLIC" OR COMP STREQUAL "PRIVATE" OR COMP STREQUAL "INTERFACE")
                     set(DEPENDENCY_VISIBILITY ${COMP})
                 else()
                     link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY} RESULT LINKED)
@@ -181,12 +192,16 @@ endfunction()
 # and optionally includes libraries.
 function(add_program)
     set(options MAKE_EXECUTABLE MAKE_LIBRARY)
-    set(one_value_args TARGET PLATFORM_GUARD INCLUDE_VISIBILITY)
+    set(one_value_args TARGET PLATFORM PLATFORM_CHECK INCLUDE_VISIBILITY)
     set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-    
-    platform_check(PLATFORM_GUARD ${ADD_PROGRAM_PLATFORM_GUARD} PLATFORM_REQUIRES ${ADD_PROGRAM_PLATFORM_REQUIRES} RESULT GUARD)
-    if (GUARD)
+
+    if (DEFINED ADD_PROGRAM_PLATFORM_CHECK)
+        platform_check(PLATFORM ${ADD_PROGRAM_PLATFORM} PLATFORM_REQUIRES ${ADD_PROGRAM_PLATFORM_REQUIRES} RESULT ${ADD_PROGRAM_PLATFORM_CHECK})
+        get_property(GUARD GLOBAL PROPERTY ${ADD_PROGRAM_PLATFORM_CHECK})
+    endif()
+
+    if (NOT DEFINED ADD_PROGRAM_PLATFORM_CHECK OR GUARD)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
                 if (ADD_PROGRAM_MAKE_EXECUTABLE)
@@ -280,8 +295,9 @@ program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPO
 # Linux functionality.
 add_program(
     TARGET ${LIBRARY_NAME}
-    PLATFORM_GUARD UNIX AND NOT APPLE
+    PLATFORM UNIX AND NOT APPLE
     PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
+    PLATFORM_CHECK Linux
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/linux
     ${PROJECT_SOURCE_DIR}/src/platform/linux
@@ -301,8 +317,9 @@ add_program(
 # OSX functionality
 add_program(
     TARGET ${LIBRARY_NAME}
-    PLATFORM_GUARD APPLE
+    PLATFORM APPLE
     PLATFORM_REQUIRES
+    PLATFORM_CHECK OSX
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/osx
     ${PROJECT_SOURCE_DIR}/src/platform/osx
@@ -314,8 +331,9 @@ add_program(
 # Windows functionality
 add_program(
     TARGET ${LIBRARY_NAME}
-    PLATFORM_GUARD WIN32
+    PLATFORM WIN32
     PLATFORM_REQUIRES
+    PLATFORM_CHECK Windows
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/win32_64
     ${PROJECT_SOURCE_DIR}/src/platform/win32_64
@@ -358,8 +376,9 @@ if (BUILD_TESTING)
     # Linux tests.
     add_program(
         TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM_GUARD UNIX AND NOT APPLE
+        PLATFORM UNIX AND NOT APPLE
         PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
+        PLATFORM_CHECK Linux
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/linux
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/linux
@@ -376,8 +395,9 @@ if (BUILD_TESTING)
     # OSX tests
     add_program(
         TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM_GUARD APPLE
+        PLATFORM APPLE
         PLATFORM_REQUIRES
+        PLATFORM_CHECK OSX
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/osx
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/osx
@@ -390,8 +410,9 @@ if (BUILD_TESTING)
     # Windows tests
     add_program(
         TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM_GUARD WIN32
-        PLATFORM_REQUIRES
+        PLATFORM WIN32
+        PLATFORM_REQUIRES windows.h
+        PLATFORM_CHECK Windows
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/win32_64
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/win32_64
