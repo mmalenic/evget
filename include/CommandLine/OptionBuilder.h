@@ -144,6 +144,16 @@ namespace CommandLine {
         OptionBuilder &conflictsWith(std::initializer_list<std::string> names);
 
         /**
+         * At least one of the options named should be present, including this option.
+         */
+        OptionBuilder &atLeastOneOf(const std::string &name);
+
+        /**
+         * At least one of the options named should be present, including this option.
+         */
+        OptionBuilder &atLeastOneOf(std::initializer_list<std::string> names);
+
+        /**
          * Build flag option.
          */
         template<typename U = T>
@@ -183,6 +193,7 @@ namespace CommandLine {
         bool _required;
         bool _multitoken;
         std::vector<std::string> _conflictsWith;
+        std::vector<std::string> _atLeastOneOf;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
@@ -200,6 +211,7 @@ namespace CommandLine {
             _required{false},
             _multitoken{false},
             _conflictsWith{},
+            _atLeastOneOf{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
@@ -253,6 +265,18 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::conflictsWith(std::initializer_list<std::string> names) {
         _conflictsWith.insert(_conflictsWith.end(), names);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOneOf(const std::string &name) {
+        _atLeastOneOf.emplace_back(name);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOneOf(std::initializer_list<std::string> names) {
+        _atLeastOneOf.insert(_atLeastOneOf.end(), names);
         return *this;
     }
 
