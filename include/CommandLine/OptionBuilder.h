@@ -144,7 +144,7 @@ namespace CommandLine {
         OptionBuilder &conflictsWith(std::initializer_list<std::string> names);
 
         /**
-         * At least one of the options named should be present, including this option.
+         * Either this option of the one named should be present.
          */
         OptionBuilder &atLeastOneOf(const std::string &name);
 
@@ -152,6 +152,16 @@ namespace CommandLine {
          * At least one of the options named should be present, including this option.
          */
         OptionBuilder &atLeastOneOf(std::initializer_list<std::string> names);
+
+        /**
+         * Options specified in atLeastOneOf do not need to be present if this option is present.
+         */
+        OptionBuilder &except(const std::string &name);
+
+        /**
+         * Options specified in atLeastOneOf do not need to be present if these options are present.
+         */
+        OptionBuilder &except(std::initializer_list<std::string> names);
 
         /**
          * Build flag option.
@@ -194,6 +204,7 @@ namespace CommandLine {
         bool _multitoken;
         std::vector<std::string> _conflictsWith;
         std::vector<std::string> _atLeastOneOf;
+        std::vector<std::string> _except;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
@@ -212,6 +223,7 @@ namespace CommandLine {
             _multitoken{false},
             _conflictsWith{},
             _atLeastOneOf{},
+            _except{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
@@ -277,6 +289,18 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::atLeastOneOf(std::initializer_list<std::string> names) {
         _atLeastOneOf.insert(_atLeastOneOf.end(), names);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::except(const std::string &name) {
+        _except.emplace_back(name);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::except(std::initializer_list<std::string> names) {
+        _except.insert(_except.end(), names);
         return *this;
     }
 
