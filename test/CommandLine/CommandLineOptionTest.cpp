@@ -83,6 +83,23 @@ TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     });
 }
 
+
+TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::variables_map vm{};
+
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith({"b", "c"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().build();
+    auto optionC = Cmd::OptionBuilder<int>(desc).shortName("c").required().build();
+
+    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2", "-c", "3"}, [&desc, &vm, &optionA](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        po::store(parse.run(), vm);
+        po::notify(vm);
+        ASSERT_THROW(optionA.run(vm), InvalidCommandLineOption);
+    });
+}
+
 TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
