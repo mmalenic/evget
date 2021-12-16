@@ -207,6 +207,8 @@ namespace CommandLine {
         bool required;
         bool multitoken;
         std::vector<std::string> conflictsWith;
+        std::vector<std::string> atLeastOneOf;
+        std::vector<std::string> except;
         std::optional<T> implicitValue;
         std::string representation;
 
@@ -274,6 +276,8 @@ namespace CommandLine {
             required{builder._required},
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
+            atLeastOneOf{builder._atLeastOneOf},
+            except{builder._except},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
             _value{builder._defaultValue},
