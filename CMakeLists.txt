@@ -64,7 +64,7 @@ function(link_target)
     set(multi_value_args TARGET DEP VISIBILITY)
     cmake_parse_arguments(LINK_TARGET "" "" "${multi_value_args}" ${ARGN})
 
-    message(STATUS "Found target ${LINK_TARGET_DEP}, linking with ${LINK_TARGET_TARGET}")
+    message(STATUS "Found target ${LINK_TARGET_DEP}, linking with ${LINK_TARGET_TARGET} with ${LINK_TARGET_VISIBILITY} visibility.")
     target_link_libraries(${LINK_TARGET_TARGET} ${LINK_TARGET_VISIBILITY} ${LINK_TARGET_DEP})
 endfunction()
 
@@ -72,7 +72,7 @@ endfunction()
 function(link_case_relaxed)
     set(one_value_args RESULT)
     set(multi_value_args TARGET DEP VISIBILITY)
-    cmake_parse_arguments(LINK_CASE_RELAXED "" "" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments(LINK_CASE_RELAXED "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     string(TOLOWER ${LINK_CASE_RELAXED_DEP} LOWER_DEP)
     string(TOUPPER ${LINK_CASE_RELAXED_DEP} UPPER_DEP)
@@ -86,15 +86,6 @@ function(link_case_relaxed)
         link_target(TARGET ${LINK_CASE_RELAXED_TARGET} VISIBILITY ${LINK_CASE_RELAXED_VISIBILITY} DEP ${UPPER_DEP})
         set(${LINK_CASE_RELAXED_RESULT} TRUE PARENT_SCOPE)
     endif()
-endfunction()
-
-# Links a found target.
-function(link_target)
-    set(multi_value_args TARGET VISIBILITY DEP)
-    cmake_parse_arguments(LINK_TARGET "" "" "${multi_value_args}" ${ARGN})
-
-    message(STATUS "Found target ${LINK_TARGET_DEP}, linking with ${LINK_TARGET_TARGET}")
-    target_link_libraries(${LINK_TARGET_TARGET} ${LINK_TARGET_VISIBILITY} ${LINK_TARGET_DEP})
 endfunction()
 
 # Adds program dependencies by using find_package and target_link_libraries.
@@ -167,6 +158,7 @@ function(program_dependencies)
 
         # Try to guess components
         if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+            message("HERE")
             link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${DEPENDENCY_NAME} VISIBILITY ${DEPENDENCY_VISIBILITY})
         elseif (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
@@ -177,7 +169,7 @@ function(program_dependencies)
                     set(DEPENDENCY_VISIBILITY ${COMP})
                 else()
                     link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY} RESULT LINKED)
-                    if (NOT LINKED)
+                    if (NOT ${LINKED})
                         link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${COMP} VISIBILITY ${DEPENDENCY_VISIBILITY})
                     endif()
                 endif()
@@ -411,7 +403,7 @@ if (BUILD_TESTING)
     add_program(
         TARGET ${TEST_EXECUTABLE_NAME}
         PLATFORM WIN32
-        PLATFORM_REQUIRES windows.h
+        PLATFORM_REQUIRES
         PLATFORM_CHECK Windows
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/win32_64
