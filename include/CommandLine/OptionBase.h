@@ -28,6 +28,7 @@
 #include <optional>
 #include <fmt/core.h>
 #include <fstream>
+#include <fmt/format.h>
 #include "OptionBuilder.h"
 #include "InvalidCommandLineOption.h"
 
@@ -207,7 +208,7 @@ namespace CommandLine {
         bool required;
         bool multitoken;
         std::vector<std::string> conflictsWith;
-        std::vector<std::string> atLeastOneOf;
+        std::vector<std::string> atLeastOne;
         std::vector<std::string> except;
         std::optional<T> implicitValue;
         std::string representation;
@@ -243,6 +244,10 @@ namespace CommandLine {
         );
 
         void addPositionalOption(OptionBuilder<T>& builder, std::string name);
+
+        bool isPresent(const std::string& name, po::variables_map& vm);
+
+        bool checkPresence(const std::vector<std::string>& in, po::variables_map& vm);
     };
 
     template<typename T>
@@ -276,7 +281,7 @@ namespace CommandLine {
             required{builder._required},
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
-            atLeastOneOf{builder._atLeastOneOf},
+            atLeastOne{builder._atLeastOne},
             except{builder._except},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
@@ -308,9 +313,32 @@ namespace CommandLine {
 
         // Check conflicts
         for (const auto &maybeConflict: conflictsWith) {
-            if (vm.count(maybeConflict) || vm.count(fmt::format("-{}", maybeConflict))) {
+            if (isPresent(maybeConflict, vm)) {
                 throw InvalidCommandLineOption(
                         fmt::format("Conflicting options {}, and {} specified", getName(), maybeConflict));
+            }
+        }
+
+        bool exceptPresent = false;
+        for (const auto &maybeExcept : except) {
+            if (isPresent(maybeExcept, vm)) {
+                exceptPresent = true;
+                break;
+            }
+        }
+
+        if (!exceptPresent) {
+            bool atLeastOnePresent = false;
+            for (const auto &maybeOne: atLeastOne) {
+                if (isPresent(maybeOne, vm)) {
+                    atLeastOnePresent = true;
+                    break;
+                }
+            }
+
+            if (!atLeastOnePresent) {
+                throw InvalidCommandLineOption(
+                    fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
             }
         }
 
@@ -518,6 +546,21 @@ namespace CommandLine {
                 (name).c_str(),
                 *builder._positionalAmount
         );
+    }
+
+    template<typename T>
+    bool isPresent(const std::string& name, po::variables_map& vm) {
+        return vm.count(name) || vm.count(fmt::format("-{}", name));
+    }
+
+    template<typename T>
+    bool checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
+        for (const auto &maybePresent : in) {
+            if (isPresent<T>(maybePresent, vm)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

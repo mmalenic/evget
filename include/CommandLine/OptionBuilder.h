@@ -146,20 +146,20 @@ namespace CommandLine {
         /**
          * Either this option of the one named should be present.
          */
-        OptionBuilder &atLeastOneOf(const std::string &name);
+        OptionBuilder &atLeastOne(const std::string &name);
 
         /**
          * At least one of the options named should be present, including this option.
          */
-        OptionBuilder &atLeastOneOf(std::initializer_list<std::string> names);
+        OptionBuilder &atLeastOne(std::initializer_list<std::string> names);
 
         /**
-         * Options specified in atLeastOneOf do not need to be present if this option is present.
+         * Options specified in atLeastOne do not need to be present if this option is present.
          */
         OptionBuilder &except(const std::string &name);
 
         /**
-         * Options specified in atLeastOneOf do not need to be present if these options are present.
+         * Options specified in atLeastOne do not need to be present if these options are present.
          */
         OptionBuilder &except(std::initializer_list<std::string> names);
 
@@ -203,7 +203,7 @@ namespace CommandLine {
         bool _required;
         bool _multitoken;
         std::vector<std::string> _conflictsWith;
-        std::vector<std::string> _atLeastOneOf;
+        std::vector<std::string> _atLeastOne;
         std::vector<std::string> _except;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
@@ -222,7 +222,7 @@ namespace CommandLine {
             _required{false},
             _multitoken{false},
             _conflictsWith{},
-            _atLeastOneOf{},
+            _atLeastOne{},
             _except{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
@@ -281,14 +281,14 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOneOf(const std::string &name) {
-        _atLeastOneOf.emplace_back(name);
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name) {
+        _atLeastOne.emplace_back(name);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOneOf(std::initializer_list<std::string> names) {
-        _atLeastOneOf.insert(_atLeastOneOf.end(), names);
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names) {
+        _atLeastOne.insert(_atLeastOne.end(), names);
         return *this;
     }
 
