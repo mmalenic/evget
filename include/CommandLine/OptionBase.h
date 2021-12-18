@@ -549,14 +549,14 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool isPresent(const std::string& name, po::variables_map& vm) {
+    bool OptionBase<T>::isPresent(const std::string& name, po::variables_map& vm) {
         return vm.count(name) || vm.count(fmt::format("-{}", name));
     }
 
     template<typename T>
-    bool checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
+    bool OptionBase<T>::checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
         for (const auto &maybePresent : in) {
-            if (isPresent<T>(maybePresent, vm)) {
+            if (isPresent(maybePresent, vm)) {
                 return true;
             }
         }
