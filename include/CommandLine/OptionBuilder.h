@@ -62,6 +62,11 @@ namespace CommandLine {
         using Validator = std::function<std::optional<T>(std::string)>;
 
         /**
+         * A function which performs custom logic on the variable map.
+         */
+        using CustomLogic = std::function<void(po::variables_map)>;
+
+        /**
          * Enable if bool, returning R.
          */
         template<typename R, typename U>
@@ -164,6 +169,11 @@ namespace CommandLine {
         OptionBuilder &except(std::initializer_list<std::string> names);
 
         /**
+         * Custom logic option.
+         */
+        OptionBuilder &customLogic(CustomLogic customLogic);
+
+        /**
          * Build flag option.
          */
         template<typename U = T>
@@ -205,6 +215,7 @@ namespace CommandLine {
         std::vector<std::string> _conflictsWith;
         std::vector<std::string> _atLeastOne;
         std::vector<std::string> _except;
+        std::optional<CustomLogic> _customLogic;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
@@ -224,6 +235,7 @@ namespace CommandLine {
             _conflictsWith{},
             _atLeastOne{},
             _except{},
+            _customLogic{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
@@ -301,6 +313,12 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::except(std::initializer_list<std::string> names) {
         _except.insert(_except.end(), names);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::customLogic(CustomLogic customLogic) {
+        _customLogic = std::move(customLogic);
         return *this;
     }
 

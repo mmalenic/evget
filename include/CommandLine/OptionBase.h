@@ -210,6 +210,7 @@ namespace CommandLine {
         std::vector<std::string> conflictsWith;
         std::vector<std::string> atLeastOne;
         std::vector<std::string> except;
+        std::optional<typename OptionBuilder<T>::CustomLogic> customLogic;
         std::optional<T> implicitValue;
         std::string representation;
 
@@ -283,6 +284,7 @@ namespace CommandLine {
             conflictsWith{builder._conflictsWith},
             atLeastOne{builder._atLeastOne},
             except{builder._except},
+            customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
             _value{builder._defaultValue},
@@ -340,6 +342,10 @@ namespace CommandLine {
                 throw InvalidCommandLineOption(
                     fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
             }
+        }
+
+        if (customLogic.has_value()) {
+            customLogic(vm);
         }
 
         // Unsupported use of option.
