@@ -283,7 +283,7 @@ namespace CommandLine {
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
             atLeastOne{builder._atLeastOne},
-            except{builder._except},
+            except{},
             customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
@@ -345,7 +345,7 @@ namespace CommandLine {
         }
 
         if (customLogic.has_value()) {
-            customLogic(vm);
+           // customLogic(vm);
         }
 
         // Unsupported use of option.

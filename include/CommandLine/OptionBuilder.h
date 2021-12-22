@@ -214,7 +214,7 @@ namespace CommandLine {
         bool _multitoken;
         std::vector<std::string> _conflictsWith;
         std::vector<std::string> _atLeastOne;
-        std::vector<std::string> _except;
+        std::vector<std::string> _exceptOption;
         std::optional<CustomLogic> _customLogic;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
@@ -234,7 +234,6 @@ namespace CommandLine {
             _multitoken{false},
             _conflictsWith{},
             _atLeastOne{},
-            _except{},
             _customLogic{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
@@ -306,13 +305,13 @@ namespace CommandLine {
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::except(const std::string &name) {
-        _except.emplace_back(name);
+        _exceptOption.emplace_back(name);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::except(std::initializer_list<std::string> names) {
-        _except.insert(_except.end(), names);
+        _exceptOption.insert(_exceptOption.end(), names);
         return *this;
     }
 
