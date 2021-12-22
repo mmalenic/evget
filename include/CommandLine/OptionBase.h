@@ -345,7 +345,7 @@ namespace CommandLine {
         }
 
         if (customLogic.has_value()) {
-           // customLogic(vm);
+            (*customLogic)(vm);
         }
 
         // Unsupported use of option.
