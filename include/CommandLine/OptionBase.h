@@ -248,7 +248,7 @@ namespace CommandLine {
 
         bool isPresent(const std::string& name, po::variables_map& vm);
 
-        bool checkPresence(const std::vector<std::string>& in, po::variables_map& vm);
+        std::optional<std::string> checkPresence(const std::vector<std::string>& in, po::variables_map& vm);
     };
 
     template<typename T>
@@ -313,35 +313,13 @@ namespace CommandLine {
     void OptionBase<T>::run(po::variables_map &vm) {
         parseValue(vm);
 
-        // Check conflicts
-        for (const auto &maybeConflict: conflictsWith) {
-            if (isPresent(maybeConflict, vm)) {
-                throw InvalidCommandLineOption(
-                        fmt::format("Conflicting options {}, and {} specified", getName(), maybeConflict));
-            }
+        auto conflict = checkPresence(conflictsWith, vm);
+        if (conflict.has_value()) {
+            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getName(), *conflict));
         }
 
-        bool exceptPresent = false;
-        for (const auto &maybeExcept : except) {
-            if (isPresent(maybeExcept, vm)) {
-                exceptPresent = true;
-                break;
-            }
-        }
-
-        if (!exceptPresent) {
-            bool atLeastOnePresent = false;
-            for (const auto &maybeOne: atLeastOne) {
-                if (isPresent(maybeOne, vm)) {
-                    atLeastOnePresent = true;
-                    break;
-                }
-            }
-
-            if (!atLeastOnePresent) {
-                throw InvalidCommandLineOption(
-                    fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
-            }
+        if (!checkPresence(except, vm).has_value() && !checkPresence(atLeastOne, vm).has_value()) {
+            throw InvalidCommandLineOption(fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
         }
 
         if (customLogic.has_value()) {
@@ -560,13 +538,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
+    std::optional<std::string> OptionBase<T>::checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
         for (const auto &maybePresent : in) {
             if (isPresent(maybePresent, vm)) {
-                return true;
+                return maybePresent;
             }
         }
-        return false;
+        return std::nullopt;
     }
 }
 
