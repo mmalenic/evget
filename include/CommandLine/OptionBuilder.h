@@ -151,22 +151,22 @@ namespace CommandLine {
         /**
          * Either this option of the one named should be present.
          */
-        OptionBuilder &atLeastOne(const std::string &name);
+        OptionBuilder &atLeastOne(const std::string &name, const std::string &except);
+
+        /**
+         * Either this option of the one named should be present.
+         */
+        OptionBuilder &atLeastOne(const std::string &name, std::initializer_list<std::string> except);
 
         /**
          * At least one of the options named should be present, including this option.
          */
-        OptionBuilder &atLeastOne(std::initializer_list<std::string> names);
+        OptionBuilder &atLeastOne(std::initializer_list<std::string> names, const std::string &except);
 
         /**
-         * Options specified in atLeastOne do not need to be present if this option is present.
+         * At least one of the options named should be present, including this option.
          */
-        OptionBuilder &except(const std::string &name);
-
-        /**
-         * Options specified in atLeastOne do not need to be present if these options are present.
-         */
-        OptionBuilder &except(std::initializer_list<std::string> names);
+        OptionBuilder &atLeastOne(std::initializer_list<std::string> names, std::initializer_list<std::string> except);
 
         /**
          * Custom logic option.
@@ -219,7 +219,7 @@ namespace CommandLine {
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
-        bool representationSet;
+        bool _representationSet;
         std::optional<T> _defaultValue;
     };
 
@@ -238,7 +238,7 @@ namespace CommandLine {
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
-            representationSet{false},
+            _representationSet{false},
             _defaultValue{std::nullopt} {
     }
 
@@ -263,7 +263,7 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::representation(std::string representation) {
         _representation = std::move(representation);
-        representationSet = true;
+        _representationSet = true;
         return *this;
     }
 
@@ -292,26 +292,30 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name) {
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name, const std::string &except) {
         _atLeastOne.emplace_back(name);
+        _exceptOption.emplace_back(except);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names) {
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name, std::initializer_list<std::string> except) {
+        _atLeastOne.emplace_back(name);
+        _exceptOption.insert(_exceptOption.end(), except);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names, const std::string &except) {
         _atLeastOne.insert(_atLeastOne.end(), names);
+        _exceptOption.emplace_back(except);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::except(const std::string &name) {
-        _exceptOption.emplace_back(name);
-        return *this;
-    }
-
-    template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::except(std::initializer_list<std::string> names) {
-        _exceptOption.insert(_exceptOption.end(), names);
+    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names, std::initializer_list<std::string> except) {
+        _atLeastOne.insert(_atLeastOne.end(), names);
+        _exceptOption.insert(_exceptOption.end(), except);
         return *this;
     }
 
@@ -345,7 +349,7 @@ namespace CommandLine {
     template<typename U>
     typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U>
     OptionBuilder<T>::build() {
-        if (representationSet) {
+        if (_representationSet) {
             return Option(*this, _representation);
         }
         return Option(*this);
@@ -368,7 +372,7 @@ namespace CommandLine {
     template<typename U>
     typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidated<T>, U>
     OptionBuilder<T>::build(Validator validator) {
-        if (representationSet) {
+        if (_representationSet) {
             return OptionValidated(*this, validator, _representation);
         }
         return OptionValidated(*this, validator);
