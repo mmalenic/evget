@@ -319,7 +319,8 @@ namespace CommandLine {
         }
 
         if (!checkPresence(except, vm).has_value() && !checkPresence(atLeastOne, vm).has_value()) {
-            throw InvalidCommandLineOption(fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
+            throw InvalidCommandLineOption(fmt::format("At least one "
+                                                       " out of {} must be present", fmt::join(atLeastOne, ", ")));
         }
 
         if (customLogic.has_value()) {
@@ -379,6 +380,9 @@ namespace CommandLine {
 
     template<typename T>
     void OptionBase<T>::checkInvariants() {
+        if (!this->isRequired() && this->atLeastOne.empty()) {
+            throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
+        }
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
             throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
         }

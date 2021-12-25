@@ -212,9 +212,9 @@ namespace CommandLine {
         std::string _description;
         bool _required;
         bool _multitoken;
-        std::vector<std::string> _conflictsWith;
-        std::vector<std::string> _atLeastOne;
-        std::vector<std::string> _exceptOption;
+        std::set<std::string> _conflictsWith;
+        std::set<std::string> _atLeastOne;
+        std::set<std::string> _exceptOption;
         std::optional<CustomLogic> _customLogic;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
@@ -281,37 +281,37 @@ namespace CommandLine {
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::conflictsWith(const std::string &name) {
-        _conflictsWith.emplace_back(name);
+        _conflictsWith.emplace(name);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::conflictsWith(std::initializer_list<std::string> names) {
-        _conflictsWith.insert(_conflictsWith.end(), names);
+        _conflictsWith.insert(names);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name) {
-        _atLeastOne.emplace_back(name);
+        _atLeastOne.emplace(name);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names) {
-        _atLeastOne.insert(_atLeastOne.end(), names);
+        _atLeastOne.insert(names);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::except(const std::string &name) {
-        _exceptOption.emplace_back(name);
+        _exceptOption.emplace(name);
         return *this;
     }
 
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::except(std::initializer_list<std::string> names) {
-        _exceptOption.insert(_exceptOption.end(), names);
+        _exceptOption.insert(names);
         return *this;
     }
 
