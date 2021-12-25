@@ -149,24 +149,24 @@ namespace CommandLine {
         OptionBuilder &conflictsWith(std::initializer_list<std::string> names);
 
         /**
-         * Either this option of the one named should be present.
+         * Either this option or the one named should be present, except the option specified.
          */
-        OptionBuilder &atLeastOne(const std::string &name, const std::string &except);
+        OptionBuilder &atLeast(const std::string &name, const std::string &except);
 
         /**
-         * Either this option of the one named should be present.
+         * Either this option or the one named should be present, except the options specified.
          */
-        OptionBuilder &atLeastOne(const std::string &name, std::initializer_list<std::string> except);
+        OptionBuilder &atLeast(const std::string &name, std::initializer_list<std::string> except = {});
 
         /**
-         * At least one of the options named should be present, including this option.
+         * At least one of the options named should be present, including this option, except the option specified.
          */
-        OptionBuilder &atLeastOne(std::initializer_list<std::string> names, const std::string &except);
+        OptionBuilder &atLeast(std::initializer_list<std::string> names, const std::string &except);
 
         /**
-         * At least one of the options named should be present, including this option.
+         * At least one of the options named should be present, including this option, except the options specified.
          */
-        OptionBuilder &atLeastOne(std::initializer_list<std::string> names, std::initializer_list<std::string> except);
+        OptionBuilder &atLeast(std::initializer_list<std::string> names, std::initializer_list<std::string> except = {});
 
         /**
          * Custom logic option.
@@ -213,13 +213,13 @@ namespace CommandLine {
         bool _required;
         bool _multitoken;
         std::vector<std::string> _conflictsWith;
-        std::vector<std::string> _atLeastOne;
+        std::vector<std::string> _atLeast;
         std::vector<std::string> _exceptOption;
         std::optional<CustomLogic> _customLogic;
         std::optional<T> _implicitValue;
         std::optional<int> _positionalAmount;
         std::string _representation;
-        bool _representationSet;
+        bool _representationOptionSet;
         std::optional<T> _defaultValue;
     };
 
@@ -233,12 +233,12 @@ namespace CommandLine {
             _required{false},
             _multitoken{false},
             _conflictsWith{},
-            _atLeastOne{},
+            _atLeast{},
             _customLogic{},
             _implicitValue{std::nullopt},
             _positionalAmount{std::nullopt},
             _representation{},
-            _representationSet{false},
+            _representationOptionSet{false},
             _defaultValue{std::nullopt} {
     }
 
@@ -263,7 +263,7 @@ namespace CommandLine {
     template<typename T>
     OptionBuilder<T> &OptionBuilder<T>::representation(std::string representation) {
         _representation = std::move(representation);
-        _representationSet = true;
+        _representationOptionSet = true;
         return *this;
     }
 
@@ -292,29 +292,29 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name, const std::string &except) {
-        _atLeastOne.emplace_back(name);
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(const std::string &name, const std::string &except) {
+        _atLeast.emplace_back(name);
         _exceptOption.emplace_back(except);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(const std::string &name, std::initializer_list<std::string> except) {
-        _atLeastOne.emplace_back(name);
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(const std::string &name, std::initializer_list<std::string> except) {
+        _atLeast.emplace_back(name);
         _exceptOption.insert(_exceptOption.end(), except);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names, const std::string &except) {
-        _atLeastOne.insert(_atLeastOne.end(), names);
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(std::initializer_list<std::string> names, const std::string &except) {
+        _atLeast.insert(_atLeast.end(), names);
         _exceptOption.emplace_back(except);
         return *this;
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeastOne(std::initializer_list<std::string> names, std::initializer_list<std::string> except) {
-        _atLeastOne.insert(_atLeastOne.end(), names);
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(std::initializer_list<std::string> names, std::initializer_list<std::string> except) {
+        _atLeast.insert(_atLeast.end(), names);
         _exceptOption.insert(_exceptOption.end(), except);
         return *this;
     }
@@ -349,7 +349,7 @@ namespace CommandLine {
     template<typename U>
     typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U>
     OptionBuilder<T>::build() {
-        if (_representationSet) {
+        if (_representationOptionSet) {
             return Option(*this, _representation);
         }
         return Option(*this);
@@ -372,7 +372,7 @@ namespace CommandLine {
     template<typename U>
     typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidated<T>, U>
     OptionBuilder<T>::build(Validator validator) {
-        if (_representationSet) {
+        if (_representationOptionSet) {
             return OptionValidated(*this, validator, _representation);
         }
         return OptionValidated(*this, validator);

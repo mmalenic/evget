@@ -282,7 +282,7 @@ namespace CommandLine {
             required{builder._required},
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
-            atLeastOne{builder._atLeastOne},
+            atLeastOne{builder._atLeast},
             except{},
             customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
