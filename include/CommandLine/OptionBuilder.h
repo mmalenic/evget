@@ -149,6 +149,16 @@ namespace CommandLine {
         OptionBuilder &conflictsWith(std::initializer_list<std::string> names);
 
         /**
+         * Either this option or the one named should be present.
+         */
+        OptionBuilder &atLeast(const std::string &name);
+
+        /**
+         * Either this option or the ones named should be present.
+         */
+        OptionBuilder &atLeast(std::initializer_list<std::string> names);
+
+        /**
          * Either this option or the one named should be present, except the option specified.
          */
         OptionBuilder &atLeast(const std::string &name, const std::string &except);
@@ -156,7 +166,7 @@ namespace CommandLine {
         /**
          * Either this option or the one named should be present, except the options specified.
          */
-        OptionBuilder &atLeast(const std::string &name, std::initializer_list<std::string> except = {});
+        OptionBuilder &atLeast(const std::string &name, std::initializer_list<std::string> except);
 
         /**
          * At least one of the options named should be present, including this option, except the option specified.
@@ -166,7 +176,7 @@ namespace CommandLine {
         /**
          * At least one of the options named should be present, including this option, except the options specified.
          */
-        OptionBuilder &atLeast(std::initializer_list<std::string> names, std::initializer_list<std::string> except = {});
+        OptionBuilder &atLeast(std::initializer_list<std::string> names, std::initializer_list<std::string> except);
 
         /**
          * Custom logic option.
@@ -292,9 +302,14 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeast(const std::string &name, const std::string &except) {
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(const std::string &name) {
         _atLeast.emplace_back(name);
-        _exceptOption.emplace_back(except);
+        return *this;
+    }
+
+    template<typename T>
+    OptionBuilder<T> &OptionBuilder<T>::atLeast(std::initializer_list<std::string> names) {
+        _atLeast.insert(_atLeast.end(), names);
         return *this;
     }
 
@@ -302,13 +317,6 @@ namespace CommandLine {
     OptionBuilder<T> &OptionBuilder<T>::atLeast(const std::string &name, std::initializer_list<std::string> except) {
         _atLeast.emplace_back(name);
         _exceptOption.insert(_exceptOption.end(), except);
-        return *this;
-    }
-
-    template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::atLeast(std::initializer_list<std::string> names, const std::string &except) {
-        _atLeast.insert(_atLeast.end(), names);
-        _exceptOption.emplace_back(except);
         return *this;
     }
 
