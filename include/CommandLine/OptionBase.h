@@ -69,8 +69,8 @@ namespace CommandLine {
         void setValue(T newValue);
 
         /**
-         * Return the name of this option, which is the longName if present,
-         * otherwise it is the shortName.
+         * Return the name of this option, which is the long name if present,
+         * otherwise it is the short name.
          */
         std::string getName();
 
@@ -131,8 +131,7 @@ namespace CommandLine {
         void checkInvariants();
 
         /**
-         * Check if the _defaultValue is present in the option.
-         * @return
+         * Check if the value is present in the option.
          */
         bool isValuePresent();
 
@@ -314,7 +313,7 @@ namespace CommandLine {
         parseValue(vm);
 
         auto conflict = checkPresence(conflictsWith, vm);
-        if (conflict.has_value()) {
+        if (conflict.has_value() && isPresent(getName(), vm)) {
             throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getName(), *conflict));
         }
 
