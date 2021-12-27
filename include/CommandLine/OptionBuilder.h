@@ -159,19 +159,9 @@ namespace CommandLine {
         OptionBuilder &atLeast(std::initializer_list<std::string> names);
 
         /**
-         * Either this option or the one named should be present, except the option specified.
-         */
-        OptionBuilder &atLeast(const std::string &name, const std::string &except);
-
-        /**
          * Either this option or the one named should be present, except the options specified.
          */
         OptionBuilder &atLeast(const std::string &name, std::initializer_list<std::string> except);
-
-        /**
-         * At least one of the options named should be present, including this option, except the option specified.
-         */
-        OptionBuilder &atLeast(std::initializer_list<std::string> names, const std::string &except);
 
         /**
          * At least one of the options named should be present, including this option, except the options specified.
