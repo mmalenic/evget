@@ -164,6 +164,17 @@ namespace CommandLine {
                              bool multitoken,
                              std::optional<U> defaultValue,
                              std::optional<U> implicitValue,
+                             const std::string& representation,
+                             po::typed_value<U>* typedValue = po::value<U>());
+
+        /**
+         * Add an option to the options description.
+         */
+        template<typename U>
+        void addOptionToDesc(bool required,
+                             bool multitoken,
+                             std::optional<U> defaultValue,
+                             std::optional<U> implicitValue,
                              po::typed_value<U>* typedValue = po::value<U>());
 
         /**
@@ -184,16 +195,6 @@ namespace CommandLine {
          * Parse value component.
          */
         virtual void parseValue(po::variables_map &vm);
-
-        /**
-         * Parse default value component.
-         */
-        virtual void parseDefaultValue(po::variables_map &vm);
-
-        /**
-         * Parse implicit value component.
-         */
-        virtual void parseImplicitValue(po::variables_map &vm);
 
     private:
         std::string shortName;
@@ -225,6 +226,14 @@ namespace CommandLine {
         static po::typed_value<U>* setTypedValue(
                 bool required,
                 bool multitoken,
+                po::typed_value<U>* typedValue = po::value<U>()
+        );
+
+        template<typename U>
+        static po::typed_value<U>* setTypedValue(
+                std::optional<U> defaultValue,
+                std::optional<U> implicitValue,
+                const std::string& representation,
                 po::typed_value<U>* typedValue = po::value<U>()
         );
 
@@ -279,7 +288,7 @@ namespace CommandLine {
             customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
-            _value{},
+            _value{builder._defaultValue},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
             throw UnsupportedOperationException("Option should contain at least a short name, or a long name.");
@@ -293,6 +302,9 @@ namespace CommandLine {
             }
         }
 
+        if (defaultValue.has_value()) {
+            _value = defaultValue;
+        }
         if (implicitValue.has_value()) {
             _value = implicitValue;
         }
@@ -304,8 +316,6 @@ namespace CommandLine {
 
     template<typename T>
     void OptionBase<T>::run(po::variables_map &vm) {
-        parseDefaultValue(vm);
-        parseImplicitValue(vm);
         parseValue(vm);
 
         auto conflict = checkPresence(conflictsWith, vm);
@@ -333,24 +343,6 @@ namespace CommandLine {
     template<typename T>
     void OptionBase<T>::parseValue(po::variables_map &vm) {
         _value = getValueFromVm<T>(vm);
-    }
-
-    template<typename T>
-    void OptionBase<T>::parseDefaultValue(po::variables_map &vm) {
-        if (defaultValue.has_value()) {
-            _value = defaultValue;
-        }
-    }
-
-    template<typename T>
-    void OptionBase<T>::parseImplicitValue(po::variables_map &vm) {
-        if (isOptionPresentAndEmpty(vm)) {
-            if (implicitValue.has_value()) {
-                _value = implicitValue;
-            } else {
-                throw InvalidCommandLineOption(fmt::format("If specified, {} must have a value", getName()));
-            }
-        }
     }
 
     template<typename T>
@@ -468,6 +460,21 @@ namespace CommandLine {
             bool multitoken,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
+            const std::string& representation,
+            po::typed_value<U>* typedValue
+    ) {
+        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
+        OptionBase<T>::setTypedValue(defaultValue, implicitValue, representation, typedValue);
+        this->addOptionToDesc(typedValue);
+    }
+
+    template<typename T>
+    template<typename U>
+    void OptionBase<T>::addOptionToDesc(
+            bool required,
+            bool multitoken,
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
             po::typed_value<U>* typedValue
     ) {
         OptionBase<T>::setTypedValue(required, multitoken, typedValue);
@@ -496,10 +503,30 @@ namespace CommandLine {
     po::typed_value<U>* OptionBase<T>::setTypedValue(
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
+            const std::string& representation,
             po::typed_value<U>* typedValue
     ) {
+        if (defaultValue.has_value()) {
+            typedValue->default_value(*defaultValue, representation);
+        }
         if (implicitValue.has_value()) {
-            typedValue->zero_tokens();
+            typedValue->implicit_value(*implicitValue, representation);
+        }
+        return typedValue;
+    }
+
+    template<typename T>
+    template<typename U>
+    po::typed_value<U>* OptionBase<T>::setTypedValue(
+            std::optional<U> defaultValue,
+            std::optional<U> implicitValue,
+            po::typed_value<U>* typedValue
+    ) {
+        if (defaultValue.has_value()) {
+            typedValue->default_value(*defaultValue);
+        }
+        if (implicitValue.has_value()) {
+            typedValue->implicit_value(*implicitValue);
         }
         return typedValue;
     }
