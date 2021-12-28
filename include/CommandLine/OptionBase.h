@@ -207,7 +207,8 @@ namespace CommandLine {
         bool required;
         bool multitoken;
         std::vector<std::string> conflictsWith;
-        std::vector<std::string> atLeastOne;
+        std::vector<std::string> atLeast;
+        bool atLeastSet;
         std::vector<std::string> except;
         std::optional<typename OptionBuilder<T>::CustomLogic> customLogic;
         std::optional<T> implicitValue;
@@ -281,7 +282,8 @@ namespace CommandLine {
             required{builder._required},
             multitoken{builder._multitoken},
             conflictsWith{builder._conflictsWith},
-            atLeastOne{builder._atLeast},
+            atLeast{builder._atLeast},
+            atLeastSet{!builder._atLeast.empty()},
             except{},
             customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
@@ -306,6 +308,10 @@ namespace CommandLine {
         if (implicitValue.has_value()) {
             _value = implicitValue;
         }
+
+        if (atLeastSet) {
+            atLeast.emplace_back(getName());
+        }
     }
 
     template<typename T>
@@ -317,8 +323,11 @@ namespace CommandLine {
             throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getName(), *conflict));
         }
 
-        if (!checkPresence(except, vm).has_value() && !checkPresence(atLeastOne, vm).has_value()) {
-            throw InvalidCommandLineOption(fmt::format("At least one option out of {} must be present", fmt::join(atLeastOne, ", ")));
+        if (atLeastSet) {
+            if (!checkPresence(except, vm).has_value() && !checkPresence(atLeast, vm).has_value()) {
+                throw InvalidCommandLineOption(
+                        fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", ")));
+            }
         }
 
         if (customLogic.has_value()) {
