@@ -108,7 +108,7 @@ TEST(CommandLineOptionBaseTest, PositionalOption) { // NOLINT(cert-err58-cpp)
 
     CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &vm, &option](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        CmdUtils::storeAndNotifyOption({std::ref(option)}, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }

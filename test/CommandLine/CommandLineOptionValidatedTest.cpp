@@ -33,7 +33,7 @@ TEST(CommandLineOptionValidatedTest, ParseValidatedValue) { // NOLINT(cert-err58
             return 2;
         });
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        CmdUtils::storeAndNotifyOption({std::ref(option)}, parse, vm);
         ASSERT_EQ(2, option.getValue());
     });
 }
@@ -44,7 +44,7 @@ TEST(CommandLineOptionValidatedTest, RepresentationValidated) { // NOLINT(cert-e
             return 2;
         });
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        CmdUtils::storeAndNotifyOption({std::ref(option)}, parse, vm);
         ASSERT_EQ(1, option.getValue());
         ASSERT_EQ("repr", option.getRepresentation());
     });
