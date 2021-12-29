@@ -157,6 +157,7 @@ TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
         po::notify(vm);
         optionA.run(vm);
         optionB.run(vm);
+        optionD.run(vm);
         ASSERT_EQ(1, optionA.getValue());
         ASSERT_EQ(1, optionB.getValue());
         ASSERT_EQ(2, optionD.getValue());

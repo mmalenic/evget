@@ -286,7 +286,7 @@ namespace CommandLine {
             conflictsWith{builder._conflictsWith},
             atLeast{builder._atLeast},
             atLeastSet{!builder._atLeast.empty()},
-            except{},
+            except{builder._exceptOption},
             customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
