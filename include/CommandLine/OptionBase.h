@@ -244,9 +244,11 @@ namespace CommandLine {
                 po::typed_value<U>* typedValue = po::value<U>()
         );
 
-        void addPositionalOption(OptionBuilder<T>& builder, std::string name);
+        void addPositionalOption(OptionBuilder<T>& builder, const std::string& name);
 
         bool isPresent(const std::string& name, po::variables_map& vm);
+
+        bool isSelfPresent(po::variables_map& vm);
 
         std::optional<std::string> checkPresence(const std::vector<std::string>& in, po::variables_map& vm);
     };
@@ -302,13 +304,6 @@ namespace CommandLine {
             }
         }
 
-        if (defaultValue.has_value()) {
-            _value = defaultValue;
-        }
-        if (implicitValue.has_value()) {
-            _value = implicitValue;
-        }
-
         if (atLeastSet) {
             atLeast.emplace_back(getName());
         }
@@ -319,7 +314,7 @@ namespace CommandLine {
         parseValue(vm);
 
         auto conflict = checkPresence(conflictsWith, vm);
-        if (conflict.has_value() && isPresent(getName(), vm)) {
+        if (conflict.has_value() && isSelfPresent(vm)) {
             throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getName(), *conflict));
         }
 
@@ -533,7 +528,7 @@ namespace CommandLine {
 
 
     template<typename T>
-    void OptionBase<T>::addPositionalOption(OptionBuilder<T>& builder, std::string name) {
+    void OptionBase<T>::addPositionalOption(OptionBuilder<T>& builder, const std::string& name) {
         builder._positionalDesc->get().add(
                 (name).c_str(),
                 *builder._positionalAmount
@@ -542,7 +537,8 @@ namespace CommandLine {
 
     template<typename T>
     bool OptionBase<T>::isPresent(const std::string& name, po::variables_map& vm) {
-        return vm.count(name) || vm.count(fmt::format("-{}", name));
+        std::string nameFmt = fmt::format("-{}", name);
+        return (vm.count(name) && !vm[name].defaulted()) || ((vm.count(nameFmt) && !vm[nameFmt].defaulted()));
     }
 
     template<typename T>
@@ -553,6 +549,14 @@ namespace CommandLine {
             }
         }
         return std::nullopt;
+    }
+
+    template<typename T>
+    bool OptionBase<T>::isSelfPresent(po::variables_map& vm) {
+        if (!longName.empty()) {
+            return isPresent(longName, vm);
+        }
+        return isPresent(shortName, vm);
     }
 }
 
