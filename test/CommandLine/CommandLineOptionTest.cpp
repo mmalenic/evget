@@ -143,6 +143,43 @@ TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
+TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::variables_map vm{};
+
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
+    auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
+
+    CmdUtils::makeCmd({"program", "-d", "2"}, [&desc, &vm, &optionA, &optionB, &optionD](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        po::store(parse.run(), vm);
+        po::notify(vm);
+        optionA.run(vm);
+        optionB.run(vm);
+        ASSERT_EQ(1, optionA.getValue());
+        ASSERT_EQ(1, optionB.getValue());
+        ASSERT_EQ(2, optionD.getValue());
+    });
+}
+
+TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::variables_map vm{};
+
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
+    auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
+
+    CmdUtils::makeCmd({"program"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        po::store(parse.run(), vm);
+        po::notify(vm);
+        ASSERT_THROW(optionA.run(vm), InvalidCommandLineOption);
+        ASSERT_THROW(optionB.run(vm), InvalidCommandLineOption);
+    });
+}
+
 TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
