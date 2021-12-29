@@ -21,3 +21,21 @@
 // SOFTWARE.
 
 #include <CommandLine/CommandLineTestUtilities.h>
+
+void TestUtilities::CommandLineTestUtilities::CommandLineTest::SetUp() {
+    fs::current_path(fs::temp_directory_path());
+}
+
+void TestUtilities::CommandLineTestUtilities::CommandLineTest::TearDown() {
+    Cmd::Parser parser{""};
+    fs::path configFile = parser.getConfigFile();
+
+    if (fs::exists(configFile)) {
+        fs::remove(configFile);
+    }
+}
+
+void TestUtilities::CommandLineTestUtilities::storeAndNotifyOption(po::command_line_parser& parse, po::variables_map& vm) {
+    po::store(parse.run(), vm);
+    po::notify(vm);
+}

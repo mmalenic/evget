@@ -48,21 +48,12 @@ namespace TestUtilities::CommandLineTestUtilities {
         /**
          * Change to a temporary directory.
          */
-        void SetUp() override {
-            fs::current_path(fs::temp_directory_path());
-        }
+        void SetUp() override;
 
         /**
          * Remove config file associated with running parser.
          */
-        void TearDown() override {
-            Cmd::Parser parser{""};
-            fs::path configFile = parser.getConfigFile();
-
-            if (fs::exists(configFile)) {
-                fs::remove(configFile);
-            }
-        }
+        void TearDown() override;
     };
 
     /**
@@ -71,16 +62,16 @@ namespace TestUtilities::CommandLineTestUtilities {
      * @param create_cmd function to create the object
      */
     void makeCmd(std::initializer_list<const char*> args, auto&& createCmd) {
-		std::vector<const char *> vector{args};
-		vector.push_back(nullptr);
-		const char **argv = vector.data();
+        std::vector<const char *> vector{args};
+        vector.push_back(nullptr);
+        const char **argv = vector.data();
 
         if (vector.size() - 1 > std::numeric_limits<int>::max()) {
             throw std::overflow_error{"Number of args is larger than the maximum int _defaultValue."};
         }
-		int argc = static_cast<int>(vector.size() - 1);
+        int argc = static_cast<int>(vector.size() - 1);
 
-		createCmd(argc, argv);
+        createCmd(argc, argv);
     }
 
     /**
@@ -94,10 +85,24 @@ namespace TestUtilities::CommandLineTestUtilities {
         po::variables_map vm{};
         auto option = createOption(desc);
 
-        TestUtilities::CommandLineTestUtilities::makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
+        makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
             po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
             assertCmd(vm, option, parse);
         });
+    }
+
+    /**
+     * Store and notify the vm.
+     */
+    void storeAndNotifyOption(po::command_line_parser& parse, po::variables_map& vm);
+
+    /**
+     * Store and notify vm and option.
+     */
+    template<typename T>
+    void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map& vm) {
+        storeAndNotifyOption(parse, vm);
+        option.run(vm);
     }
 
     /**
@@ -105,8 +110,7 @@ namespace TestUtilities::CommandLineTestUtilities {
      */
     template<typename T>
     void storeAndNotifyOption(std::initializer_list<std::reference_wrapper<T>> options, po::command_line_parser& parse, po::variables_map& vm) {
-        store(parse.run(), vm);
-        notify(vm);
+        storeAndNotifyOption(parse, vm);
         for (T& option : options) {
             option.run(vm);
         }
