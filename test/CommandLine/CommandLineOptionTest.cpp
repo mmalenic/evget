@@ -22,7 +22,6 @@
 
 #include <gtest/gtest.h>
 #include <CommandLine/CommandLineTestUtilities.h>
-#include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
@@ -79,39 +78,33 @@ TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().conflictsWith("a").build();
-    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, vm), InvalidCommandLineOption);
+        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, {}), InvalidCommandLineOption);
     });
 }
 
 TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith({"b", "c"}).build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().conflictsWith({"a", "c"}).build();
 
-    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, vm), InvalidCommandLineOption);
+        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, {}), InvalidCommandLineOption);
     });
 }
 
 TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}).build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}).build();
 
-    CmdUtils::makeCmd({"program", "-b", "2"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, vm);
+        CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, {});
         ASSERT_EQ(1, optionA.getValue());
         ASSERT_EQ(2, optionB.getValue());
     });
@@ -119,28 +112,24 @@ TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}).build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}).build();
 
-    CmdUtils::makeCmd({"program"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, vm), InvalidCommandLineOption);
+        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, {}), InvalidCommandLineOption);
     });
 }
 
 TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
     auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
 
-    CmdUtils::makeCmd({"program", "-d", "2"}, [&desc, &vm, &optionA, &optionB, &optionD](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "-d", "2"}, [&desc, &optionA, &optionB, &optionD](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB), std::ref(optionD)}, parse, vm);
+        CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB), std::ref(optionD)}, parse, {});
         ASSERT_EQ(1, optionA.getValue());
         ASSERT_EQ(1, optionB.getValue());
         ASSERT_EQ(2, optionD.getValue());
@@ -149,15 +138,13 @@ TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
     auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
     auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
 
-    CmdUtils::makeCmd({"program"}, [&desc, &vm, &optionA, &optionB](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, vm), InvalidCommandLineOption);
+        ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, parse, {}), InvalidCommandLineOption);
     });
 }
 

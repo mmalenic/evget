@@ -34,8 +34,3 @@ void TestUtilities::CommandLineTestUtilities::CommandLineTest::TearDown() {
         fs::remove(configFile);
     }
 }
-
-void TestUtilities::CommandLineTestUtilities::storeAndNotifyOption(po::command_line_parser& parse, po::variables_map& vm) {
-    po::store(parse.run(), vm);
-    po::notify(vm);
-}

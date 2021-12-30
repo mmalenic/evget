@@ -57,16 +57,11 @@ namespace TestUtilities::CommandLineTestUtilities {
     };
 
     /**
-     * Store and notify the vm.
-     */
-    void storeAndNotifyOption(po::command_line_parser& parse, po::variables_map& vm);
-
-    /**
      * Store and notify vm and option.
      */
     template<typename T>
     void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map& vm) {
-        storeAndNotifyOption(parse, vm);
+        Cmd::Parser::storeAndNotify(parse.run(), vm);
         option.run(vm);
     }
 
@@ -74,11 +69,27 @@ namespace TestUtilities::CommandLineTestUtilities {
      * Store and notify vm and option.
      */
     template<typename T>
+    void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map&& vm) {
+        storeAndNotifyOption(option, parse, vm);
+    }
+
+    /**
+     * Store and notify vm and option.
+     */
+    template<typename T>
     void storeAndNotifyOption(std::initializer_list<std::reference_wrapper<T>> options, po::command_line_parser& parse, po::variables_map& vm) {
-        storeAndNotifyOption(parse, vm);
+        Cmd::Parser::storeAndNotify(parse.run(), vm);
         for (T& option : options) {
             option.run(vm);
         }
+    }
+
+    /**
+     * Store and notify vm and option.
+     */
+    template<typename T>
+    void storeAndNotifyOption(std::initializer_list<std::reference_wrapper<T>> options, po::command_line_parser& parse, po::variables_map&& vm) {
+        storeAndNotifyOption(options, parse, vm);
     }
 
     /**

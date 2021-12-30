@@ -97,6 +97,11 @@ namespace CommandLine {
          */
         [[nodiscard]] std::vector<Filetype> getFiletype() const;
 
+        /**
+         * Store and notify the variables map.
+         */
+        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
+
         friend std::ostream &operator<<(std::ostream &os, const Filetype &filetype);
 
         friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
@@ -171,11 +176,6 @@ namespace CommandLine {
          * Converts the log level string into a log level if possible.
          */
         static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
-
-        /**
-         * Store and notify the variables map.
-         */
-        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
         /**
          * Format an option.

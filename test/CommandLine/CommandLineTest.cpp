@@ -22,7 +22,6 @@
 
 #include <gmock/gmock.h>
 #include <CommandLine/CommandLineTestUtilities.h>
-#include "CommandLine/Parser.h"
 
 namespace Cmd = CommandLine;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;

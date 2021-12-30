@@ -23,7 +23,6 @@
 #include <gtest/gtest.h>
 #include <CommandLine/Option.h>
 #include <CommandLine/CommandLineTestUtilities.h>
-#include "CommandLine/Parser.h"
 
 namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
@@ -86,15 +85,11 @@ TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    po::variables_map vm{};
-
     auto option = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
 
-    CmdUtils::makeCmd({"program", "-a", "1"}, [&desc, &vm, &option](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "-a", "1"}, [&desc, &option](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        po::store(parse.run(), vm);
-        po::notify(vm);
-        option.run(vm);
+        CmdUtils::storeAndNotifyOption(option, parse, {});
         ASSERT_EQ(1, option.getValue());
     });
 }
@@ -102,13 +97,11 @@ TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionBaseTest, PositionalOption) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};
-    po::variables_map vm{};
-
     Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("n").longName("name").required().positional(1, posDesc).build();
 
-    CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &vm, &option](int argc, const char** argv) {
+    CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &option](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        CmdUtils::storeAndNotifyOption(option, parse, {});
         ASSERT_EQ(1, option.getValue());
     });
 }
