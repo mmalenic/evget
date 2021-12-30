@@ -88,8 +88,7 @@ TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
     auto option = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
 
     CmdUtils::makeCmd({"program", "-a", "1"}, [&desc, &option](int argc, const char** argv) {
-        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        CmdUtils::storeAndNotifyOption(option, parse, {});
+        CmdUtils::storeAndNotifyOption(option, desc, argc, argv);
         ASSERT_EQ(1, option.getValue());
     });
 }
