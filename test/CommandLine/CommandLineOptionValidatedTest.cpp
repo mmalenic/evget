@@ -29,7 +29,7 @@ namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionValidatedTest, ParseValidatedValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build([](const std::string& _) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string& _) {
             return 2;
         });
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
@@ -40,7 +40,7 @@ TEST(CommandLineOptionValidatedTest, ParseValidatedValue) { // NOLINT(cert-err58
 
 TEST(CommandLineOptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").representation("repr").defaultValue(1).build([](const std::string& _) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build([](const std::string& _) {
             return 2;
         });
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {

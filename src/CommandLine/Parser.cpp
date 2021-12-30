@@ -85,21 +85,21 @@ CommandLine::Parser::Parser(std::string platform) :
         vm{},
         help{
         OptionBuilder<bool>{cmdlineDesc}
-            .shortName("h")
+            .shortName('h')
             .longName("help")
             .description("Produce help message describing program options.")
             .buildFlag()
     },
         version{
         OptionBuilder<bool>{cmdlineDesc}
-            .shortName("v")
+            .shortName('v')
             .longName("version")
             .description("Produce version message.")
             .buildFlag()
     },
         config{
             OptionBuilder<fs::path>{cmdlineDesc}
-                    .shortName("c")
+                    .shortName('c')
                     .longName("config")
                     .description("Location of config file.")
                     .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
@@ -107,7 +107,7 @@ CommandLine::Parser::Parser(std::string platform) :
     },
         storageFolder{
         OptionBuilder<fs::path>{configDesc}
-            .shortName("o")
+            .shortName('o')
             .longName("folder")
             .description("Folder location where events are stored.")
             .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
@@ -115,7 +115,7 @@ CommandLine::Parser::Parser(std::string platform) :
     },
         filetypes{
         OptionBuilder<std::vector<Filetype>>{configDesc}
-            .shortName("t")
+            .shortName('t')
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
@@ -125,21 +125,21 @@ CommandLine::Parser::Parser(std::string platform) :
     },
         print{
         OptionBuilder<bool>{configDesc}
-            .shortName("p")
+            .shortName('p')
             .longName("print")
             .description("Print events.")
             .buildFlag()
     },
         systemEvents{
         OptionBuilder<bool>{configDesc}
-            .shortName("s")
+            .shortName('s')
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .buildFlag()
     },
         logLevel{
         OptionBuilder<spdlog::level::level_enum>{configDesc}
-            .shortName("u")
+            .shortName('u')
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString())
             .defaultValue(spdlog::level::warn)

@@ -29,7 +29,7 @@ namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption(option, parse, vm), po::required_option);
     });
@@ -37,7 +37,7 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, DefaultValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(2).build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(2, option.getValue());
@@ -46,7 +46,7 @@ TEST(CommandLineOptionTest, DefaultValue) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(2).implicitValue(1).build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(2).implicitValue(1).build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
@@ -55,7 +55,7 @@ TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption(option, parse, vm), po::invalid_command_line_syntax);
     });
@@ -63,7 +63,7 @@ TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).representation("repr").build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).representation("repr").build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
@@ -73,8 +73,8 @@ TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().conflictsWith("a").build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').required().conflictsWith("b").build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').required().conflictsWith("a").build();
 
     CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, desc, argc, argv), InvalidCommandLineOption);
@@ -83,8 +83,8 @@ TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith({"b", "c"}).build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").required().conflictsWith({"a", "c"}).build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').required().conflictsWith({"b", "c"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').required().conflictsWith({"a", "c"}).build();
 
     CmdUtils::makeCmd({"program", "-a", "1", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, desc, argc, argv), InvalidCommandLineOption);
@@ -93,8 +93,8 @@ TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}).build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}).build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast({"a", "c"}).build();
 
     CmdUtils::makeCmd({"program", "-b", "2"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, desc, argc, argv);
@@ -105,8 +105,8 @@ TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}).build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}).build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast({"a", "c"}).build();
 
     CmdUtils::makeCmd({"program"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, desc, argc, argv), InvalidCommandLineOption);
@@ -115,9 +115,9 @@ TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
-    auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
+    auto optionD = Cmd::OptionBuilder<int>(desc).shortName('d').defaultValue(1).build();
 
     CmdUtils::makeCmd({"program", "-d", "2"}, [&desc, &optionA, &optionB, &optionD](int argc, const char** argv) {
         CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB), std::ref(optionD)}, desc, argc, argv);
@@ -129,9 +129,9 @@ TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto optionA = Cmd::OptionBuilder<int>(desc).shortName("a").defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
-    auto optionB = Cmd::OptionBuilder<int>(desc).shortName("b").defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
-    auto optionD = Cmd::OptionBuilder<int>(desc).shortName("d").defaultValue(1).build();
+    auto optionA = Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}, {"d"}).build();
+    auto optionB = Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast({"a", "c"}, {"d"}).build();
+    auto optionD = Cmd::OptionBuilder<int>(desc).shortName('d').defaultValue(1).build();
 
     CmdUtils::makeCmd({"program"}, [&desc, &optionA, &optionB](int argc, const char** argv) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption({std::ref(optionA), std::ref(optionB)}, desc, argc, argv), InvalidCommandLineOption);
@@ -140,7 +140,7 @@ TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
@@ -149,7 +149,7 @@ TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionTest, Multitoken) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program", "-a", "1", "2"}, [](po::options_description& desc) {
-        return Cmd::OptionBuilder<std::vector<int>>(desc).shortName("a").required().multitoken().build();
+        return Cmd::OptionBuilder<std::vector<int>>(desc).shortName('a').required().multitoken().build();
     }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         std::vector<int> values = option.getValue();

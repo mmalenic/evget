@@ -94,7 +94,7 @@ namespace CommandLine {
         /**
          * Set short name, representing one dash option.
          */
-        OptionBuilder &shortName(std::string shortName);
+        OptionBuilder &shortName(char shortName);
 
         /**
          * Set long name, representing two dash option.
@@ -243,8 +243,8 @@ namespace CommandLine {
     }
 
     template<typename T>
-    OptionBuilder<T> &OptionBuilder<T>::shortName(std::string shortName) {
-        _shortName = std::move(shortName);
+    OptionBuilder<T> &OptionBuilder<T>::shortName(char shortName) {
+        _shortName = shortName;
         return *this;
     }
 
