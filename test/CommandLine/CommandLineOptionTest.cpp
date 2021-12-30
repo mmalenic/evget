@@ -27,11 +27,6 @@ namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
-TEST(CommandLineOptionTest, UnsupportedBuilderUse) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    ASSERT_THROW(Cmd::OptionBuilder<int>(desc).shortName("a").build(), UnsupportedOperationException);
-}
-
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
         return Cmd::OptionBuilder<int>(desc).shortName("a").required().build();

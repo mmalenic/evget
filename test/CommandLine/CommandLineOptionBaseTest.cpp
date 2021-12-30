@@ -46,6 +46,24 @@ TEST(CommandLineOptionBaseTest, GetDescription) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ("desc", option.getDescription());
 }
 
+TEST(CommandLineOptionBaseTest, GetNameShort) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().shortName("name").build();
+    ASSERT_EQ("name", option.getName());
+}
+
+TEST(CommandLineOptionBaseTest, GetNameLong) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().longName("name").build();
+    ASSERT_EQ("name", option.getName());
+}
+
+TEST(CommandLineOptionBaseTest, GetNameBoth) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).required().shortName("n").longName("name").build();
+    ASSERT_EQ("name", option.getName());
+}
+
 TEST(CommandLineOptionBaseTest, SetValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("name").defaultValue(1).build();
@@ -85,7 +103,7 @@ TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
 
 TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    auto option = Cmd::OptionBuilder<int>(desc).shortName("a").required().conflictsWith("b").build();
+    auto option = Cmd::OptionBuilder<int>(desc).shortName("a").required().build();
 
     CmdUtils::makeCmd({"program", "-a", "1"}, [&desc, &option](int argc, const char** argv) {
         CmdUtils::storeAndNotifyOption(option, desc, argc, argv);
@@ -96,11 +114,16 @@ TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
 TEST(CommandLineOptionBaseTest, PositionalOption) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};
-    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("n").longName("name").required().positional(1, posDesc).build();
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName("n").required().positional(1, posDesc).build();
 
     CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &option](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
         CmdUtils::storeAndNotifyOption(option, parse, {});
         ASSERT_EQ(1, option.getValue());
     });
+}
+
+TEST(CommandLineOptionBaseTest, NoDefaultAndNotRequired) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    ASSERT_THROW(Cmd::OptionBuilder<int>(desc).shortName("a").build(), UnsupportedOperationException);
 }
