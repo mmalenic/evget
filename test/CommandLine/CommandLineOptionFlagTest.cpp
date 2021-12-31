@@ -29,18 +29,18 @@ namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::assertOnCmd({"program"}, [](po::options_description& desc) {
+    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName('a').buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_FALSE(option.getValue());
     });
 }
 
 TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::assertOnCmd({"program", "-a"}, [](po::options_description& desc) {
+    CmdUtils::withOption({"program", "-a"}, [](po::options_description &desc) {
         return Cmd::OptionBuilder<bool>(desc).shortName('a').buildFlag();
-    }, [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_TRUE(option.getValue());
     });

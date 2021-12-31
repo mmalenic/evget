@@ -128,16 +128,12 @@ namespace TestUtilities::CommandLineTestUtilities {
         createCmd(argc, argv);
     }
 
+
     /**
-     * Assert on an option.
-     * @param args program args
-     * @param createOption create option object
-     * @param assertCmd assert with option
+     * Perform action with option.
      */
-    void assertOnCmd(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
-        po::options_description desc{};
+    void cmdWithOption(std::initializer_list<const char*> args, po::options_description& desc, auto&& option, auto&& assertCmd) {
         po::variables_map vm{};
-        auto option = createOption(desc);
 
         makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
             po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
@@ -146,19 +142,21 @@ namespace TestUtilities::CommandLineTestUtilities {
     }
 
     /**
+     * Assert on an option.
+     */
+    void withOption(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
+        po::options_description desc{};
+        cmdWithOption(args, desc, createOption(desc), assertCmd);
+    }
+
+    /**
      * Assert on multiple options.
      */
     template<typename T>
-    void assertOnCmdMulti(std::initializer_list<const char*> args, std::vector<Cmd::OptionBuilder<T>> builders, auto&& createOption, auto&& assertCmd) {
+    void withOptionMulti(std::initializer_list<const char*> args, std::vector<Cmd::OptionBuilder<T>> builders, auto&& createOption, auto&& assertCmd) {
         for (auto builder : builders) {
             po::options_description desc{};
-            po::variables_map vm{};
-            auto option = createOption(builder);
-
-            makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
-                po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-                assertCmd(vm, option, parse);
-            });
+            cmdWithOption(args, createOption(desc, builder), assertCmd);
         }
     }
 
