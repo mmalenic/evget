@@ -144,6 +144,36 @@ namespace TestUtilities::CommandLineTestUtilities {
             assertCmd(vm, option, parse);
         });
     }
+
+    /**
+     * Assert on multiple options.
+     */
+    template<typename T>
+    void assertOnCmdMulti(std::initializer_list<const char*> args, std::vector<Cmd::OptionBuilder<T>> builders, auto&& createOption, auto&& assertCmd) {
+        for (auto builder : builders) {
+            po::options_description desc{};
+            po::variables_map vm{};
+            auto option = createOption(builder);
+
+            makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
+                po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+                assertCmd(vm, option, parse);
+            });
+        }
+    }
+
+    template<typename T>
+    std::vector<Cmd::OptionBuilder<T>> generateNameCombinations(Cmd::OptionBuilder<T> builder) {
+        return std::vector{
+            builder.shortName('n'),
+            builder.longName("name"),
+            builder.description("description"),
+            builder.shortName('n').longName("name"),
+            builder.shortName('n').description("description"),
+            builder.longName("name").description("description"),
+            builder.shortName('n').longName("name").description("description")
+        };
+    }
 }
 
 #endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
