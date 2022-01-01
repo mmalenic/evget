@@ -102,11 +102,10 @@ TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
-    po::options_description desc{};
-    auto option = Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
-
-    CmdUtils::makeCmd({"program", "-a", "1"}, [&desc, &option](int argc, const char** argv) {
-        CmdUtils::storeAndNotifyOption(option, desc, argc, argv);
+    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }
