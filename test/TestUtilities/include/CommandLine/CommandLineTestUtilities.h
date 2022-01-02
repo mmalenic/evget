@@ -152,26 +152,33 @@ namespace TestUtilities::CommandLineTestUtilities {
     /**
      * Assert on multiple options.
      */
-    template<typename T>
-    void withOptionMulti(std::initializer_list<const char*> args, std::vector<Cmd::OptionBuilder<T>> builders, auto&& createOption, auto&& assertCmd) {
-        for (auto builder : builders) {
-            po::options_description desc{};
-            cmdWithOption(args, createOption(desc, builder), assertCmd);
+    void withOptionMulti(std::initializer_list<const char*> args, auto&& builders, auto&& createOption, auto&& assertCmd) {
+        po::options_description desc{};
+        for (auto& builder : builders(desc)) {
+            cmdWithOption(args, desc, createOption(builder), assertCmd);
         }
     }
 
+    /**
+     * Assert on multiple options.
+     */
     template<typename T>
-    std::vector<Cmd::OptionBuilder<T>> generateNameCombinations(Cmd::OptionBuilder<T> builder) {
+    void withOptionMulti(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
+        withOptionMulti(args, generateNameCombinations<T>, createOption, assertCmd);
+    }
+
+    template<typename T>
+    std::vector<T> generateNameCombinations(po::options_description& desc) {
         return std::vector{
-            builder.shortName('n'),
-            builder.longName("name"),
-            builder.description("description"),
-            builder.shortName('n').longName("name"),
-            builder.shortName('n').description("description"),
-            builder.longName("name").description("description"),
-            builder.shortName('n').longName("name").description("description")
+            T{desc}.shortName('n'),
+            T{desc}.longName("name"),
+            T{desc}.shortName('n').longName("name"),
+            T{desc}.shortName('n').description("description"),
+            T{desc}.longName("name").description("description"),
+            T{desc}.shortName('n').longName("name").description("description")
         };
     }
 }
+
 
 #endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
