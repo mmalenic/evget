@@ -135,7 +135,6 @@ namespace TestUtilities::CommandLineTestUtilities {
     void cmdWithOption(std::initializer_list<const char *> args, po::options_description &desc, auto &&option,
                        auto &&assertCmd) {
         po::variables_map vm{};
-
         makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char **argv) {
             po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
             assertCmd(vm, option, parse);

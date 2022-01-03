@@ -27,7 +27,16 @@ namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
-TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, RequiredPresent) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionTest, RequiredNotPresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::withOption({"program"}, [](po::options_description &desc) {
         return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -35,7 +44,16 @@ TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, DefaultValue) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, DefaultPresent) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionTest, DefaultNotPresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::withOption({"program"}, [](po::options_description &desc) {
         return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -72,7 +90,20 @@ TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, ConflictingOptions) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionTest, ConflictingOptionsNotPresent) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return std::vector{
+                Cmd::OptionBuilder<int>(desc).shortName('a').required().conflictsWith("b").build(),
+                Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).conflictsWith("a").build()
+        };
+    }, [](po::variables_map &vm, auto &options, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(options, parse, vm);
+        ASSERT_EQ(1, options[0].getValue());
+        ASSERT_EQ(1, options[1].getValue());
+    });
+}
+
+TEST(CommandLineOptionTest, ConflictingOptionsPresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::withOption({"program", "-a", "1", "-b", "2"}, [](po::options_description &desc) {
         return std::vector{
                 Cmd::OptionBuilder<int>(desc).shortName('a').required().conflictsWith("b").build(),

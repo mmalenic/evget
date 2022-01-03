@@ -110,12 +110,24 @@ TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionBaseTest, PositionalOption) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionBaseTest, PositionalOptionPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};
     Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName('n').required().positional(1, posDesc).build();
 
     CmdUtils::makeCmd({"program", "1"}, [&desc, &posDesc, &option](int argc, const char** argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
+        CmdUtils::storeAndNotifyOption(option, parse, {});
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionBaseTest, PositionalOptionNotPresent) { // NOLINT(cert-err58-cpp)
+    po::options_description desc{};
+    po::positional_options_description posDesc{};
+    Cmd::Option<int> option = Cmd::OptionBuilder<int>(desc).shortName('n').defaultValue(1).positional(1, posDesc).build();
+
+    CmdUtils::makeCmd({"program"}, [&desc, &posDesc, &option](int argc, const char** argv) {
         po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc).positional(posDesc);
         CmdUtils::storeAndNotifyOption(option, parse, {});
         ASSERT_EQ(1, option.getValue());
