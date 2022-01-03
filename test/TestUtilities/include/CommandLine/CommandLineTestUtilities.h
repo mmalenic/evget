@@ -74,43 +74,6 @@ namespace TestUtilities::CommandLineTestUtilities {
     }
 
     /**
-     * Store and notify vm and option.
-     */
-    template<typename T>
-    void storeAndNotifyOption(T& option, po::options_description& desc, int argc, const char** argv) {
-        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        storeAndNotifyOption(option, parse, {});
-    }
-
-    /**
-     * Store and notify vm and options.
-     */
-    template<typename T>
-    void storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map& vm) {
-        Cmd::Parser::storeAndNotify(parse.run(), vm);
-        for (T& option : options) {
-            option.run(vm);
-        }
-    }
-
-    /**
-     * Store and notify vm and options.
-     */
-    template<typename T>
-    void storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map&& vm) {
-        storeAndNotifyOption(options, parse, vm);
-    }
-
-    /**
-     * Store and notify vm and options.
-     */
-    template<typename T>
-    void storeAndNotifyOption(std::vector<T>& options, po::options_description& desc, int argc, const char** argv) {
-        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-        storeAndNotifyOption(options, parse, {});
-    }
-
-    /**
      * Make the command line object.
      * @param args args to use
      * @param create_cmd function to create the object
