@@ -210,7 +210,6 @@ namespace CommandLine {
         std::vector<std::string> atLeast;
         bool atLeastSet;
         std::vector<std::string> except;
-        std::optional<typename OptionBuilder<T>::CustomLogic> customLogic;
         std::optional<T> implicitValue;
         std::string representation;
 
@@ -287,7 +286,6 @@ namespace CommandLine {
             atLeast{builder._atLeast},
             atLeastSet{!builder._atLeast.empty()},
             except{builder._exceptOption},
-            customLogic{builder._customLogic},
             implicitValue{builder._implicitValue},
             representation{builder._representation},
             _value{builder._defaultValue},
@@ -323,10 +321,6 @@ namespace CommandLine {
                 throw InvalidCommandLineOption(
                         fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", ")));
             }
-        }
-
-        if (customLogic.has_value()) {
-            (*customLogic)(vm);
         }
 
         // Unsupported use of option.
