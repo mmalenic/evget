@@ -101,9 +101,36 @@ TEST(CommandLineOptionBaseTest, IsRequired) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(true, option.isRequired());
 }
 
-TEST(CommandLineOptionBaseTest, Run) { // NOLINT(cert-err58-cpp)
+TEST(CommandLineOptionBaseTest, RunShortOnly) { // NOLINT(cert-err58-cpp)
     CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionBaseTest, RunLongOnly) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "--name", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).longName("name").required().build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionBaseTest, RunBothShortPresent) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').longName("name").required().build();
+    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        ASSERT_EQ(1, option.getValue());
+    });
+}
+
+TEST(CommandLineOptionBaseTest, RunBothLongPresent) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "--name", "1"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').longName("name").required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
