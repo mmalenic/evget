@@ -149,6 +149,19 @@ TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
+TEST(CommandLineOptionTest, AtLeastNonList) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-a", "2"}, [](po::options_description &desc) {
+        return std::vector{
+                Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast("b").build(),
+                Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast("a").build()
+        };
+    }, [](po::variables_map &vm, auto &options, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(options, parse, vm);
+        ASSERT_EQ(2, options[0].getValue());
+        ASSERT_EQ(1, options[1].getValue());
+    });
+}
+
 TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
     CmdUtils::withOption({"program", "-d", "2"}, [](po::options_description &desc) {
         return std::vector{
@@ -176,12 +189,18 @@ TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, ParseValue) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
-    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
-        ASSERT_EQ(1, option.getValue());
+TEST(CommandLineOptionTest, AtLeastExceptNonList) { // NOLINT(cert-err58-cpp)
+    CmdUtils::withOption({"program", "-d", "2"}, [](po::options_description &desc) {
+        return std::vector{
+                Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast("b", {"d"}).build(),
+                Cmd::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast("a", {"d"}).build(),
+                Cmd::OptionBuilder<int>(desc).shortName('d').defaultValue(1).build()
+        };
+    }, [](po::variables_map &vm, auto &options, po::command_line_parser &parse) {
+        CmdUtils::storeAndNotifyOption(options, parse, vm);
+        ASSERT_EQ(1, options[0].getValue());
+        ASSERT_EQ(1, options[1].getValue());
+        ASSERT_EQ(2, options[2].getValue());
     });
 }
 
