@@ -60,7 +60,7 @@ namespace TestUtilities::CommandLineTestUtilities {
      * Store and notify vm and option.
      */
     template<typename T>
-    void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map& vm) {
+    void storeAndNotifyOption(T &option, po::command_line_parser &parse, po::variables_map &vm) {
         Cmd::Parser::storeAndNotify(parse.run(), vm);
         option.run(vm);
     }
@@ -69,8 +69,45 @@ namespace TestUtilities::CommandLineTestUtilities {
      * Store and notify vm and option.
      */
     template<typename T>
-    void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map&& vm) {
+    void storeAndNotifyOption(T &option, po::command_line_parser &parse, po::variables_map &&vm) {
         storeAndNotifyOption(option, parse, vm);
+    }
+
+    /**
+     * Store and notify vm and option.
+     */
+    template<typename T>
+    void storeAndNotifyOption(T &option, po::options_description &desc, int argc, const char **argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        storeAndNotifyOption(option, parse, {});
+    }
+
+    /**
+     * Store and notify vm and options.
+     */
+    template<typename T>
+    void storeAndNotifyOption(std::vector<T> &options, po::command_line_parser &parse, po::variables_map &vm) {
+        Cmd::Parser::storeAndNotify(parse.run(), vm);
+        for (T &option: options) {
+            option.run(vm);
+        }
+    }
+
+    /**
+     * Store and notify vm and options.
+     */
+    template<typename T>
+    void storeAndNotifyOption(std::vector<T> &options, po::command_line_parser &parse, po::variables_map &&vm) {
+        storeAndNotifyOption(options, parse, vm);
+    }
+
+    /**
+     * Store and notify vm and options.
+     */
+    template<typename T>
+    void storeAndNotifyOption(std::vector<T> &options, po::options_description &desc, int argc, const char **argv) {
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
+        storeAndNotifyOption(options, parse, {});
     }
 
     /**
@@ -78,7 +115,7 @@ namespace TestUtilities::CommandLineTestUtilities {
      * @param args args to use
      * @param create_cmd function to create the object
      */
-    void makeCmd(std::initializer_list<const char*> args, auto&& createCmd) {
+    void makeCmd(std::initializer_list<const char *> args, auto &&createCmd) {
         std::vector<const char *> vector{args};
         vector.push_back(nullptr);
         const char **argv = vector.data();
@@ -95,10 +132,11 @@ namespace TestUtilities::CommandLineTestUtilities {
     /**
      * Perform action with option.
      */
-    void cmdWithOption(std::initializer_list<const char*> args, po::options_description& desc, auto&& option, auto&& assertCmd) {
+    void cmdWithOption(std::initializer_list<const char *> args, po::options_description &desc, auto &&option,
+                       auto &&assertCmd) {
         po::variables_map vm{};
 
-        makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char** argv) {
+        makeCmd(args, [&desc, &vm, &assertCmd, &option](int argc, const char **argv) {
             po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
             assertCmd(vm, option, parse);
         });
@@ -107,10 +145,10 @@ namespace TestUtilities::CommandLineTestUtilities {
     /**
      * Assert on an option.
      */
-    void withOption(std::initializer_list<const char*> args, auto&& createOption, auto&& assertCmd) {
+    void withOption(std::initializer_list<const char *> args, auto &&createOption, auto &&assertCmd) {
         po::options_description desc{};
         cmdWithOption(args, desc, createOption(desc), assertCmd);
     }
-
+}
 
 #endif //EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
