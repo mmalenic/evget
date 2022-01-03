@@ -28,16 +28,16 @@ namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionTest, CheckRequired) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOptionMulti<Cmd::OptionBuilder<int>>({"program"}, [](auto& builder) {
-        return builder.required().build();
+    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
         ASSERT_THROW(CmdUtils::storeAndNotifyOption(option, parse, vm), po::required_option);
     });
 }
 
 TEST(CommandLineOptionTest, DefaultValue) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOptionMulti<Cmd::OptionBuilder<int>>({"program"}, [](auto& builder) {
-        return builder.defaultValue(2).build();
+    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
+        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
         CmdUtils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(2, option.getValue());
