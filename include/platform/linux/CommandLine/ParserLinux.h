@@ -35,7 +35,7 @@ namespace CommandLine {
         /**
          * Create the parser object.
          */
-        ParserLinux(int argc, char* argv[]);
+        ParserLinux();
 
         /**
          * Get mouse devices path.
@@ -61,24 +61,16 @@ namespace CommandLine {
          */
         [[nodiscard]] bool isListEventDevices() const;
 
-        // void readArgs() override;
-
     private:
         Option<std::vector<fs::path>> mouseDevices;
         Option<std::vector<fs::path>> keyDevices;
         Option<std::vector<fs::path>> touchDevices;
         OptionFlag listEventDevices;
 
-
         /**
          * Compute the platform.
          */
         static std::string platformInformation();
-
-        /**
-         * Validates arguments.
-         */
-        void validateArgs();
     };
 }
 

@@ -28,37 +28,46 @@
 
 using namespace std;
 
-CommandLine::ParserLinux::ParserLinux(int argc, char** argv) :
+constexpr char MOUSE_DEVICES_NAME[] = "mouse-devices";
+constexpr char KEY_DEVICES_NAME[] = "key-devices";
+constexpr char TOUCH_DEVICES_NAME[] = "touch-devices";
+constexpr char LIST_DEVICES_NAME[] = "list-devices";
+
+CommandLine::ParserLinux::ParserLinux() :
     Parser{platformInformation()},
     mouseDevices{
         OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
-            .shortName("m")
-            .longName("mouse-devices")
+            .shortName('m')
+            .longName(MOUSE_DEVICES_NAME)
             .description("Set mouse devices.")
-            .required()
+            .defaultValue({})
+            .atLeast({KEY_DEVICES_NAME, TOUCH_DEVICES_NAME}, {LIST_DEVICES_NAME})
             .build()
     },
     keyDevices{
         OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
-            .shortName("k")
-            .longName("key-devices")
+            .shortName('k')
+            .longName(KEY_DEVICES_NAME)
             .description("Set key devices.")
-            .required()
+            .defaultValue({})
+            .atLeast({MOUSE_DEVICES_NAME, TOUCH_DEVICES_NAME}, {LIST_DEVICES_NAME})
             .build()
     },
     touchDevices{
         OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
-        .shortName("t")
-        .longName("touch-devices")
+        .shortName('t')
+        .longName(TOUCH_DEVICES_NAME)
         .description("Set touch devices.")
-        .required()
+        .defaultValue({})
+        .atLeast({MOUSE_DEVICES_NAME, KEY_DEVICES_NAME}, {LIST_DEVICES_NAME})
         .build()
     },
     listEventDevices{
         OptionBuilder<bool>{this->getCmdlineDesc()}
-        .shortName("l")
-        .longName("list-devices")
+        .shortName('l')
+        .longName(LIST_DEVICES_NAME)
         .description("list possible devices.")
+        .conflictsWith({MOUSE_DEVICES_NAME, KEY_DEVICES_NAME, TOUCH_DEVICES_NAME})
         .buildFlag()
     } {
 }
@@ -70,45 +79,3 @@ std::string CommandLine::ParserLinux::platformInformation() {
     }
     return uts.sysname;
 }
-
-//void ParserLinux::readArgs() {
-//    CommandLine::simpleArgs();
-//    CommandLine::readArgs();
-//    validateArgs();
-//}
-//
-//const vector<fs::path>& ParserLinux::getMouseDevices() const {
-//    return mouseDevice;
-//}
-//
-//const vector<fs::path>& ParserLinux::getKeyDevices() const {
-//    return keyDevice;
-//}
-//
-//const vector<fs::path>& ParserLinux::getTouchDevices() const {
-//    return touchDevice;
-//}
-//
-//bool ParserLinux::isListEventDevices() const {
-//    return listEventDevices;
-//}
-//
-//void ParserLinux::validateArgs() {
-//    po::variables_map vm = getVm();
-//    if ((vm.count(get<0>(listEventDevicesOption))) && !vm[get<0>(listEventDevicesOption)].defaulted()
-//        && ((vm.count(get<0>(getFileOption())) && !vm[get<0>(getFileOption())].defaulted())
-//            || (vm.count(get<0>(mouseDeviceOption)) && !vm[get<0>(mouseDeviceOption)].defaulted())
-//            || (vm.count(get<0>(keyDeviceOption)) && !vm[get<0>(keyDeviceOption)].defaulted())
-//            || (vm.count(get<0>(touchDeviceOption)) && !vm[get<0>(touchDeviceOption)].defaulted())
-//            || (vm.count(get<0>(getPrintOption())) && !vm[get<0>(getPrintOption())].defaulted()))) {
-//        cout << "The list-event-devices option can only be specified with non-conflicting options.\n";
-//        cout << getDesc() << "\n";
-//        exit(EXIT_SUCCESS);
-//    }
-//    if (vm[get<0>(listEventDevicesOption)].defaulted() && !vm.count(get<0>(mouseDeviceOption))
-//        && !vm.count(get<0>(keyDeviceOption)) && !vm.count(get<0>(touchDeviceOption))) {
-//        cout << "At least one event device must be specified.\n";
-//        cout << getDesc() << "\n";
-//        exit(EXIT_SUCCESS);
-//    }
-//}
