@@ -26,8 +26,6 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
-using namespace std;
-
 constexpr char MOUSE_DEVICES_NAME[] = "mouse-devices";
 constexpr char KEY_DEVICES_NAME[] = "key-devices";
 constexpr char TOUCH_DEVICES_NAME[] = "touch-devices";
@@ -79,3 +77,20 @@ std::string CommandLine::ParserLinux::platformInformation() {
     }
     return uts.sysname;
 }
+
+std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getMouseDevices() const {
+    return mouseDevices.getValue();
+}
+
+std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getKeyDevices() const {
+    return keyDevices.getValue();
+}
+
+std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getTouchDevices() const {
+    return touchDevices.getValue();
+}
+
+bool CommandLine::ParserLinux::isListEventDevices() const {
+    return listEventDevices.getValue();
+}
+

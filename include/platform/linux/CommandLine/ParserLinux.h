@@ -26,7 +26,6 @@
 #include <CommandLine/Parser.h>
 
 namespace CommandLine {
-
     /**
      * Linux specific command line.
      */
@@ -39,25 +38,21 @@ namespace CommandLine {
 
         /**
          * Get mouse devices path.
-         * @return mouse device path
          */
-        [[nodiscard]] const std::vector<fs::path>& getMouseDevices() const;
+        [[nodiscard]] std::vector<fs::path> getMouseDevices() const;
 
         /**
          * Get key devices path.
-         * @return key device path
          */
-        [[nodiscard]] const std::vector<fs::path>& getKeyDevices() const;
+        [[nodiscard]] std::vector<fs::path> getKeyDevices() const;
 
         /**
          * Get touch devices path.
-         * @return touch device path
          */
-        [[nodiscard]] const std::vector<fs::path>& getTouchDevices() const;
+        [[nodiscard]] std::vector<fs::path> getTouchDevices() const;
 
         /**
          * Get the list event devices option.
-         * @return is list event devices
          */
         [[nodiscard]] bool isListEventDevices() const;
 
