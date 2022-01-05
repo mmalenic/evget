@@ -161,7 +161,6 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
     if (!fs::exists(config.getValue())) {
         std::ofstream out(config.getValue());
         out << formatConfigFile();
-        out.flush();
         out.close();
     }
 
@@ -197,7 +196,7 @@ po::options_description& CommandLine::Parser::getConfigDesc() {
     return configDesc;
 }
 
-const po::variables_map& CommandLine::Parser::getVm() const {
+po::variables_map& CommandLine::Parser::getVm() {
     return vm;
 }
 

@@ -135,9 +135,8 @@ namespace CommandLine {
 
         /**
          * Get the variables map.
-         * @return variables map
          */
-        [[nodiscard]] const po::variables_map &getVm() const;
+        [[nodiscard]] po::variables_map &getVm();
 
         /**
          * Parse the command line only options. Returns true if operation of the

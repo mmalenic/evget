@@ -94,3 +94,16 @@ bool CommandLine::ParserLinux::isListEventDevices() const {
     return listEventDevices.getValue();
 }
 
+bool CommandLine::ParserLinux::parseFileAndCmdlineOptions() {
+    if (!Parser::parseFileAndCmdlineOptions()) {
+        return false;
+    }
+
+    mouseDevices.run(this->getVm());
+    keyDevices.run(this->getVm());
+    touchDevices.run(this->getVm());
+    listEventDevices.run(this->getVm());
+
+    return true;
+}
+

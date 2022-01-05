@@ -56,6 +56,8 @@ namespace CommandLine {
          */
         [[nodiscard]] bool isListEventDevices() const;
 
+        bool parseFileAndCmdlineOptions() override;
+
     private:
         Option<std::vector<fs::path>> mouseDevices;
         Option<std::vector<fs::path>> keyDevices;
