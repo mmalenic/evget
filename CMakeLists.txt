@@ -353,7 +353,7 @@ if (BUILD_TESTING)
         SRCS
         test/EventData/EventDataTest.cpp
         test/EventData/FieldTest.cpp
-        test/CommandLine/CommandLineTest.cpp
+        test/CommandLine/CommandLineParserTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBaseTest.cpp
         test/CommandLine/CommandLineOptionValidatedTest.cpp
@@ -376,7 +376,7 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/linux
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/linux
         SRCS
-        test/platform/linux/CommandLine/CommandLineLinuxTest.cpp
+        test/platform/linux/CommandLine/CommandLineParserLinuxTest.cpp
         test/platform/linux/EventDeviceListerTest.cpp
         test/platform/linux/EventDeviceTest.cpp
         test/platform/linux/ShutdownHandlerLinuxTest.cpp

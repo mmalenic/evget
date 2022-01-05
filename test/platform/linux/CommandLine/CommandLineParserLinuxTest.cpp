@@ -27,9 +27,9 @@
 namespace Cmd = CommandLine;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
 
-using CommandLineLinuxTest = CmdUtils::CommandLineTest;
+using CommandLineParserLinuxTest = CmdUtils::CommandLineTest;
 
-TEST_F(CommandLineLinuxTest, MouseDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, MouseDevicesOptionShort) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-m", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -38,7 +38,7 @@ TEST_F(CommandLineLinuxTest, MouseDevicesOptionShort) { // NOLINT(cert-err58-cpp
     });
 }
 
-TEST_F(CommandLineLinuxTest, MouseDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, MouseDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--mouse-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -47,7 +47,7 @@ TEST_F(CommandLineLinuxTest, MouseDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST_F(CommandLineLinuxTest, KeyDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, KeyDevicesOptionShort) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-k", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -56,7 +56,7 @@ TEST_F(CommandLineLinuxTest, KeyDevicesOptionShort) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST_F(CommandLineLinuxTest, KeyDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, KeyDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--key-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -65,7 +65,7 @@ TEST_F(CommandLineLinuxTest, KeyDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST_F(CommandLineLinuxTest, TouchDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, TouchDevicesOptionShort) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-t", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -74,7 +74,7 @@ TEST_F(CommandLineLinuxTest, TouchDevicesOptionShort) { // NOLINT(cert-err58-cpp
     });
 }
 
-TEST_F(CommandLineLinuxTest, TouchDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, TouchDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--touch-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -83,7 +83,7 @@ TEST_F(CommandLineLinuxTest, TouchDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST_F(CommandLineLinuxTest, ListEventDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, ListEventDevicesOptionShort) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-l"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
@@ -91,7 +91,7 @@ TEST_F(CommandLineLinuxTest, ListEventDevicesOptionShort) { // NOLINT(cert-err58
     });
 }
 
-TEST_F(CommandLineLinuxTest, ListEventDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+TEST_F(CommandLineParserLinuxTest, ListEventDevicesOptionLong) { // NOLINT(cert-err58-cpp)
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--list-devices"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
