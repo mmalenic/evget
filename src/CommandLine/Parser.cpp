@@ -105,7 +105,7 @@ CommandLine::Parser::Parser(std::string platform) :
                     .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
                     .build()
     },
-        storageFolder{
+        folder{
         OptionBuilder<fs::path>{configDesc}
             .shortName('o')
             .longName("folder")
@@ -115,12 +115,11 @@ CommandLine::Parser::Parser(std::string platform) :
     },
         filetypes{
         OptionBuilder<std::vector<Filetype>>{configDesc}
-            .shortName('t')
+            .shortName('f')
             .longName("filetypes")
             .description("Filetypes used to store events.")
             .defaultValue(std::vector{sqlite})
             .representation("sqlite")
-            //.validator()
             .build()
     },
         print{
@@ -181,7 +180,7 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 }
 
 CommandLine::fs::path CommandLine::Parser::getFolder() const {
-    return storageFolder.getValue();
+    return folder.getValue();
 }
 
 po::options_description& CommandLine::Parser::getCombinedDesc() {
@@ -277,7 +276,7 @@ std::string CommandLine::Parser::formatConfigFile() {
     out += CONFIG_FILE_COMMENT_LINE;
     out += "\n\n";
 
-    out += formatConfigOption(storageFolder);
+    out += formatConfigOption(folder);
     out += formatConfigOption(filetypes, filetypes.getRepresentation());
     out += formatConfigOption(print);
     out += formatConfigOption(systemEvents);
@@ -303,7 +302,7 @@ bool CommandLine::Parser::parseCmdlineOnlyOptions() {
 }
 
 bool CommandLine::Parser::parseFileAndCmdlineOptions() {
-    storageFolder.run(vm);
+    folder.run(vm);
     filetypes.run(vm);
     print.run(vm);
     systemEvents.run(vm);

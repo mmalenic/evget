@@ -159,7 +159,7 @@ namespace CommandLine {
         OptionFlag help;
         OptionFlag version;
         Option<fs::path> config;
-        Option<fs::path> storageFolder;
+        Option<fs::path> folder;
         Option<std::vector<Filetype>> filetypes;
         OptionFlag print;
         OptionFlag systemEvents;

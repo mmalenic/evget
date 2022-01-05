@@ -35,120 +35,124 @@ TEST_F(CommandLineTest, ParseCommandLine) { // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-h"}, [](int argc, const char* argv[]) {
-        ASSERT_EQ(false, Cmd::Parser{""}.parseCommandLine(argc, argv));
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-h"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST_F(CommandLineTest, HelpOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--help"}, [](int argc, const char* argv[]) {
-        ASSERT_EQ(false, Cmd::Parser{""}.parseCommandLine(argc, argv));
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--help"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST_F(CommandLineTest, VersionOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-v"}, [](int argc, const char* argv[]) {
-        ASSERT_EQ(false, Cmd::Parser{""}.parseCommandLine(argc, argv));
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-v"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST_F(CommandLineTest, VersionOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--version"}, [](int argc, const char* argv[]) {
-        ASSERT_EQ(false, Cmd::Parser{""}.parseCommandLine(argc, argv));
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--version"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(false, cmd.parseCommandLine(argc, argv));
     });
 }
 
 TEST_F(CommandLineTest, ConfigOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-c", "config"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-c", "config"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(Cmd::fs::path{"config"}, cmd.getConfigFile());
     });
 }
 
 TEST_F(CommandLineTest, ConfigOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--config", "config"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--config", "config"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(Cmd::fs::path{"config"}, cmd.getConfigFile());
     });
 }
 
 TEST_F(CommandLineTest, FolderOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-o", "folder"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-o", "folder"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(Cmd::fs::path{"folder"}, cmd.getFolder());
     });
 }
 
 TEST_F(CommandLineTest, FolderOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--folder", "folder"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--folder", "folder"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(Cmd::fs::path{"folder"}, cmd.getFolder());
     });
 }
 
 TEST_F(CommandLineTest, FiletypesOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-t", "sqlite"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-f", "sqlite"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(std::vector<Cmd::Filetype>{Cmd::sqlite}, cmd.getFiletype());
     });
 }
 
 TEST_F(CommandLineTest, FiletypesOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--filetypes", "sqlite"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--filetypes", "sqlite"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(std::vector<Cmd::Filetype>{Cmd::sqlite}, cmd.getFiletype());
     });
 }
 
 TEST_F(CommandLineTest, PrintOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-p"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-p"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.shouldPrint());
     });
 }
 
 TEST_F(CommandLineTest, PrintOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--print"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--print"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.shouldPrint());
     });
 }
 
 TEST_F(CommandLineTest, SystemEventsOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-s"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-s"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.useSystemEvents());
     });
 }
 
 TEST_F(CommandLineTest, SystemEventsOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--use-system-events"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--use-system-events"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(true, cmd.useSystemEvents());
     });
 }
 
 TEST_F(CommandLineTest, LogLevelOptionShort) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "-u", "err"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "-u", "err"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(spdlog::level::err, cmd.getLogLevel());
     });
 }
 
 TEST_F(CommandLineTest, LogLevelOptionLong) { // NOLINT(cert-err58-cpp)
-    CmdUtils::makeCmd({"program", "--log-level", "err"}, [](int argc, const char* argv[]) {
-        Cmd::Parser cmd{""};
+    Cmd::Parser cmd{""};
+    CmdUtils::makeCmd({"program", "--log-level", "err"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
         ASSERT_EQ(spdlog::level::err, cmd.getLogLevel());
     });

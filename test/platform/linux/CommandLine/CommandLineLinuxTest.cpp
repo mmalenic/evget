@@ -20,83 +20,81 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//#include "CommandLineLinux.h"
-
+#include "CommandLine/ParserLinux.h"
+#include "CommandLine/CommandLineTestUtilities.h"
 #include <gtest/gtest.h>
 
-/*TEST(CommandLineTest, HelpOptionShort) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg[] = "-h";
-    char *argv[] = { &name[0], &arg[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+namespace Cmd = CommandLine;
+namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
+
+using CommandLineLinuxTest = CmdUtils::CommandLineTest;
+
+TEST_F(CommandLineLinuxTest, MouseDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "-m", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getMouseDevices());
+    });
 }
 
-TEST(CommandLineTest, HelpOptionLong) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg[] = "--help";
-    char *argv[] = { &name[0], &arg[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, MouseDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "--mouse-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getMouseDevices());
+    });
 }
 
-TEST(CommandLineTest, VersionOptionShort) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg[] = "-v";
-    char *argv[] = { &name[0], &arg[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, KeyDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "-k", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getKeyDevices());
+    });
 }
 
-TEST(CommandLineTest, VersionOptionLong) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg[] = "--version";
-    char *argv[] = { &name[0], &arg[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, KeyDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "--key-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getKeyDevices());
+    });
 }
 
-TEST(CommandLineTest, IncorrectLogLevel) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg0[] = "-u";
-    char arg1[] = " ";
-    char *argv[] = { &name[0], &arg0[0], &arg1[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, TouchDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "-t", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getTouchDevices());
+    });
 }
 
-TEST(CommandLineTest, IncorrectFileType) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg0[] = "-m";
-    char arg1[] = "/";
-    char arg2[] = "-e";
-    char arg3[] = "";
-    char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], &arg3[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    EXPECT_EXIT(ParserLinux(argc, argv), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, TouchDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "--touch-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        ASSERT_EQ(expected, cmd.getTouchDevices());
+    });
 }
 
-TEST(CommandLineTest, ListEventDevicesExclusive) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg0[] = "--list-event-devices";
-    char arg1[] = "--mouse-device";
-    char arg2[] = "/";
-    char *argv[] = { &name[0], &arg0[0], &arg1[0], &arg2[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
+TEST_F(CommandLineLinuxTest, ListEventDevicesOptionShort) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "-l"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(true, cmd.isListEventDevices());
+    });
 }
 
-TEST(CommandLineTest, AtLeastOneEventDevice) { // NOLINT(cert-err58-cpp)
-    char name[] = "";
-    char arg[] = "";
-    char *argv[] = { &name[0], &arg[0], nullptr };
-    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-    ParserLinux cmd { argc, argv };
-    EXPECT_EXIT(cmd.readArgs(), testing::ExitedWithCode(EXIT_SUCCESS), "");
-}*/
+TEST_F(CommandLineLinuxTest, ListEventDevicesOptionLong) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "--list-devices"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
+        ASSERT_EQ(true, cmd.isListEventDevices());
+    });
+}
