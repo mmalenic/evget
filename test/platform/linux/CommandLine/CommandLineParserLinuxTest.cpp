@@ -98,3 +98,17 @@ TEST_F(CommandLineParserLinuxTest, ListEventDevicesOptionLong) { // NOLINT(cert-
         ASSERT_EQ(true, cmd.isListEventDevices());
     });
 }
+
+TEST_F(CommandLineParserLinuxTest, AtLeastOneDevicePresent) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_THROW(cmd.parseCommandLine(argc, argv), InvalidCommandLineOption);
+    });
+}
+
+TEST_F(CommandLineParserLinuxTest, OnlyListDevicesPresent) { // NOLINT(cert-err58-cpp)
+    Cmd::ParserLinux cmd{};
+    CmdUtils::makeCmd({"program", "-l", "-m", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
+        ASSERT_THROW(cmd.parseCommandLine(argc, argv), InvalidCommandLineOption);
+    });
+}
