@@ -299,6 +299,7 @@ add_program(
     include/platform/linux/EventDevice.h
     include/platform/linux/EventDeviceLister.h
     include/platform/linux/ShutdownHandlerLinux.h
+    include/platform/linux/SystemEventLoopLinux.h
     # Sources
     src/platform/linux/CommandLine/ParserLinux.cpp
     src/platform/linux/EventDevice.cpp
