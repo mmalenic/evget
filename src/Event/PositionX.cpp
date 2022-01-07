@@ -20,37 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
-#define EVGET_INCLUDE_EVENTTRANSFORMER_H
+#include "Event/PositionX.h"
 
-#include "Event/Data.h"
-#include "SystemEvent.h"
-
-/**
- * Transform the data so its usable by storage.
- * @tparam T type of data
- */
-template <typename T>
-class EventTransformer {
-public:
-    /**
-     * Transform the event.
-     * @param event event to transform
-     * @return event event for storage
-     */
-    virtual Data transformEvent(SystemEvent<T> event);
-
-    EventTransformer() = default;
-    virtual ~EventTransformer() = default;
-    EventTransformer(const EventTransformer&) = default;
-    EventTransformer(EventTransformer&&) = default;
-    virtual EventTransformer& operator=(const EventTransformer&) = default;
-    virtual EventTransformer& operator=(EventTransformer&&) = default;
-};
-
-template<typename T>
-Data EventTransformer<T>::transformEvent(SystemEvent<T> event) {
-    return Data{"", {""}};
+Event::Cursor::PositionX::PositionX(std::string entry) : Field{"PositionX", entry} {
 }
-
-#endif //EVGET_INCLUDE_EVENTTRANSFORMER_H

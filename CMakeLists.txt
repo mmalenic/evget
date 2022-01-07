@@ -254,15 +254,16 @@ add_program(
     include/Task.h
     include/CommandLine/Parser.h
     include/EventTransformer.h
-    include/EventData/EventData.h
+    include/Event/Data.h
     include/EventHandler.h
     include/SystemEvent.h
     include/SystemEventLoop.h
     include/ShutdownHandler.h
     include/Storage.h
-    include/EventData/MouseMove.h
+    include/Event/MouseMove.h
+    include/Event/PositionX.h
     include/EventListener.h
-    include/EventData/Field.h
+    include/Event/Field.h
     include/UnsupportedOperationException.h
     include/CommandLine/Option.h
     include/InvalidCommandLineOption.h
@@ -273,9 +274,10 @@ add_program(
     # Sources
     src/CommandLine/OptionFlag.cpp
     src/CommandLine/Parser.cpp
-    src/EventData/Field.cpp
-    src/EventData/EventData.cpp
-    src/EventData/MouseMove.cpp
+    src/Event/Field.cpp
+    src/Event/PositionX.cpp
+    src/Event/Data.cpp
+    src/Event/MouseMove.cpp
     src/ShutdownHandler.cpp
     src/UnsupportedOperationException.cpp
     src/InvalidCommandLineOption.cpp

@@ -22,56 +22,56 @@
 
 #include <tuple>
 #include <UnsupportedOperationException.h>
-#include <EventData/EventData.h>
+#include "Event/Data.h"
 #include <utility>
 
 using namespace std;
 
-EventData::EventData(string name, initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
+Data::Data(string name, initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
 }
 
-EventData::EventData(string name, initializer_list<string> fieldNames) : nFields{fieldNames.size()}, name{std::move(name)}, fields{} {
+Data::Data(string name, initializer_list<string> fieldNames) : nFields{fieldNames.size()}, name{std::move(name)}, fields{} {
     fields.reserve(nFields);
     for (const auto& fieldName : fieldNames) {
         fields.emplace_back(fieldName);
     }
 }
 
-EventData::iterator EventData::begin() noexcept {
+Data::iterator Data::begin() noexcept {
     return fields.begin();
 }
 
-EventData::iterator EventData::end() noexcept {
+Data::iterator Data::end() noexcept {
     return fields.end();
 }
 
-size_t EventData::numberOfFields() const {
+size_t Data::numberOfFields() const {
     return nFields;
 }
 
-Field EventData::getByName(std::string name) {
+Field Data::getByName(std::string name) {
     return getReferenceByName(std::move(name));
 }
 
-Field EventData::getAtPosition(size_t position) {
+Field Data::getAtPosition(size_t position) {
     return getReferenceAtPosition(position);
 }
 
-std::string EventData::getName() const {
+std::string Data::getName() const {
     return name;
 }
 
-void EventData::setForName(std::string name, const std::string& entry) {
+void Data::setForName(std::string name, const std::string& entry) {
     auto& field = getReferenceByName(name);
     field.setEntry(entry);
 }
 
-void EventData::setAtPosition(size_t position, const std::string& entry) {
+void Data::setAtPosition(size_t position, const std::string& entry) {
     auto& field = getReferenceAtPosition(position);
     field.setEntry(entry);
 }
 
-Field& EventData::getReferenceByName(std::string name) {
+Field& Data::getReferenceByName(std::string name) {
     auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
     if (result != end()) {
         return *result;
@@ -79,7 +79,7 @@ Field& EventData::getReferenceByName(std::string name) {
     throw UnsupportedOperationException(name + " not in event data.");
 }
 
-Field& EventData::getReferenceAtPosition(size_t position) {
+Field& Data::getReferenceAtPosition(size_t position) {
     if (position < fields.size()) {
         return fields.at(position);
     }

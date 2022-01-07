@@ -31,9 +31,9 @@
 #include "Field.h"
 
 /**
- * Data container to represent event data.
+ * Event container to represent event data.
  */
-class EventData {
+class Data {
 public:
     using iterator = std::vector<Field>::iterator;
 
@@ -42,14 +42,14 @@ public:
      * @param name name of event data
      * @param fields fields
      */
-    EventData(std::string name, std::initializer_list<Field> fields);
+    Data(std::string name, std::initializer_list<Field> fields);
 
     /**
      * Construct the event data.
      * @param name name of event data
      * @param fieldsNames field names
      */
-    EventData(std::string name, std::initializer_list<std::string> fieldsNames);
+    Data(std::string name, std::initializer_list<std::string> fieldsNames);
 
     /**
      * Iterator begin.
@@ -116,21 +116,5 @@ private:
      */
     Field& getReferenceAtPosition(size_t position);
 };
-
-//class MouseMove : public EventData {
-//public:
-//    static constexpr size_t NUM_FIELDS = 1;
-//    enum class Field {
-//
-//    };
-//
-//    MouseMove();
-//
-//    void includeField(Field field, std::string entry);
-//};
-class MouseClick : public EventData {};
-class MouseWheel : public EventData {};
-class Key : public EventData {};
-class Touch : public EventData {};
 
 #endif //EVGET_INCLUDE_EVENTDATA_H

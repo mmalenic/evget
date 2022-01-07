@@ -20,32 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
-#define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#ifndef EVGET_INCLUDE_EVENT_POSITIONX_H
+#define EVGET_INCLUDE_EVENT_POSITIONX_H
 
-#include "EventData.h"
 #include "Field.h"
 
-/**
- * Represents a mouse move event.
- */
-class MouseMove : public EventData {
-public:
-    class Position : public Field {
-        Position();
+namespace Event::Cursor {
+    class PositionX : public Field {
+    public:
+        explicit PositionX(std::string entry);
     };
+}
 
-    /**
-     * Create event entry.
-     */
-    MouseMove();
-
-    /**
-     * Include a field.
-     * @param field field
-     * @param entry entry
-     */
-    void includeField(Field field, std::string entry);
-};
-
-#endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#endif //EVGET_INCLUDE_EVENT_POSITIONX_H

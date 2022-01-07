@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <EventData/EventData.h>
+#include "Event/Data.h"
 
 #include <utility>
 #include "UnsupportedOperationException.h"
@@ -31,7 +31,7 @@ using namespace std;
 void test_create_and_iterate(auto&& create) {
     string field_name = "field";
     string entry = "entry";
-    EventData eventData = create(field_name, "name");
+    Data eventData = create(field_name, "name");
     eventData.setAtPosition(0, "entry");
 
     auto n = 0;
@@ -44,7 +44,7 @@ void test_create_and_iterate(auto&& create) {
 
 void test_get_and_set(auto&& get, string entry) {
     string field_name = "field";
-    EventData eventData{"name", {field_name}};
+    Data eventData{"name", {field_name}};
     auto field = get(eventData, field_name, 0, entry);
     ASSERT_EQ(field_name, field.getName());
     ASSERT_EQ(entry, field.getEntry());
@@ -52,49 +52,49 @@ void test_get_and_set(auto&& get, string entry) {
 
 TEST(EventDataTest, CreationAndIterationByName) { // NOLINT(cert-err58-cpp)
     test_create_and_iterate([](string field_name, string name) {
-        return EventData{std::move(name), {std::move(field_name)}};
+        return Data{std::move(name), {std::move(field_name)}};
     });
 }
 
 TEST(EventDataTest, CreationAndIterationByField) { // NOLINT(cert-err58-cpp)
     test_create_and_iterate([](string field_name, string name) {
         Field field{std::move(field_name)};
-        return EventData{std::move(name), {field}};
+        return Data{std::move(name), {field}};
     });
 }
 
 TEST(EventDataTest, GetByName) { // NOLINT(cert-err58-cpp)
-    test_get_and_set([](EventData eventData, string field_name, size_t _position, const string& _entry) {
+    test_get_and_set([](Data eventData, string field_name, size_t _position, const string& _entry) {
         return eventData.getByName(std::move(field_name));
     }, "");
 }
 
 TEST(EventDataTest, SetForName) { // NOLINT(cert-err58-cpp)
-    test_get_and_set([](EventData eventData, string field_name, size_t _position, const string& entry) {
+    test_get_and_set([](Data eventData, string field_name, size_t _position, const string& entry) {
         eventData.setForName(field_name, entry);
         return eventData.getByName(std::move(field_name));
     }, "field");
 }
 
 TEST(EventDataTest, GetAtPosition) { // NOLINT(cert-err58-cpp)
-    test_get_and_set([](EventData eventData, const string& _field_name, size_t position, const string& _entry) {
+    test_get_and_set([](Data eventData, const string& _field_name, size_t position, const string& _entry) {
         return eventData.getAtPosition(position);
     }, "");
 }
 
 TEST(EventDataTest, SetAtPosition) { // NOLINT(cert-err58-cpp)
-    test_get_and_set([](EventData eventData, string field_name, size_t position, const string& entry) {
+    test_get_and_set([](Data eventData, string field_name, size_t position, const string& entry) {
         eventData.setAtPosition(position, entry);
         return eventData.getByName(std::move(field_name));
     }, "field");
 }
 
 TEST(EventDataTest, NumberOfFields) { // NOLINT(cert-err58-cpp)
-    EventData eventData{"", {""}};
+    Data eventData{"", {""}};
     ASSERT_EQ(1, eventData.numberOfFields());
 }
 
 TEST(EventDataTest, GetName) { // NOLINT(cert-err58-cpp)
-    EventData eventData{"name", {""}};
+    Data eventData{"name", {""}};
     ASSERT_EQ("name", eventData.getName());
 }

@@ -20,37 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
-#define EVGET_INCLUDE_EVENTTRANSFORMER_H
+#ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 
-#include "Event/Data.h"
-#include "SystemEvent.h"
+#include "Data.h"
+#include "Field.h"
 
 /**
- * Transform the data so its usable by storage.
- * @tparam T type of data
+ * Represents a mouse move event.
  */
-template <typename T>
-class EventTransformer {
+class MouseMove : public Data {
 public:
-    /**
-     * Transform the event.
-     * @param event event to transform
-     * @return event event for storage
-     */
-    virtual Data transformEvent(SystemEvent<T> event);
+    class Position : public Field {
+        Position();
+    };
 
-    EventTransformer() = default;
-    virtual ~EventTransformer() = default;
-    EventTransformer(const EventTransformer&) = default;
-    EventTransformer(EventTransformer&&) = default;
-    virtual EventTransformer& operator=(const EventTransformer&) = default;
-    virtual EventTransformer& operator=(EventTransformer&&) = default;
+    /**
+     * Create event entry.
+     */
+    MouseMove();
 };
 
-template<typename T>
-Data EventTransformer<T>::transformEvent(SystemEvent<T> event) {
-    return Data{"", {""}};
-}
-
-#endif //EVGET_INCLUDE_EVENTTRANSFORMER_H
+#endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
