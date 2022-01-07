@@ -20,21 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <gtest/gtest.h>
 #include "Event/Field.h"
 
-#include <utility>
-
-std::string Field::getEntry() const {
-    return entry;
+TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
+    Field field {"name"};
+    ASSERT_EQ("name", field.getName());
+    ASSERT_EQ("", field.getEntry());
 }
 
-Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
+TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
+    Field field {"name", "entry"};
+    ASSERT_EQ("name", field.getName());
 }
 
-std::string Field::getName() const {
-    return name;
+TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
+    Field field {"name", "entry"};
+    ASSERT_EQ("entry", field.getEntry());
 }
 
-void Field::setEntry(const std::string& entry) {
-    this->entry = entry;
+TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
+    Field field {"name", ""};
+    ASSERT_EQ("", field.getEntry());
+    field.setEntry("entry");
+    ASSERT_EQ("entry", field.getEntry());
 }

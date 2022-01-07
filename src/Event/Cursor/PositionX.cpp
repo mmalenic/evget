@@ -20,16 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_POSITIONX_H
-#define EVGET_INCLUDE_EVENT_POSITIONX_H
+#include "Event/Cursor/PositionX.h"
 
-#include "Field.h"
-
-namespace Event::Cursor {
-    class PositionX : public Field {
-    public:
-        explicit PositionX(std::string entry);
-    };
+Event::Cursor::PositionX::PositionX(std::string entry) : Field{"PositionX", std::move(entry)} {
 }
-
-#endif //EVGET_INCLUDE_EVENT_POSITIONX_H

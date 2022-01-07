@@ -20,28 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "EventData/Field.h"
+#include "Event/Cursor/PositionY.h"
 
-TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
-    Field field {"name"};
-    ASSERT_EQ("name", field.getName());
-    ASSERT_EQ("", field.getEntry());
-}
+#include <utility>
 
-TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("name", field.getName());
-}
-
-TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("entry", field.getEntry());
-}
-
-TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", ""};
-    ASSERT_EQ("", field.getEntry());
-    field.setEntry("entry");
-    ASSERT_EQ("entry", field.getEntry());
+Event::Cursor::PositionY::PositionY(std::string entry) : Field{"PositionY", std::move(entry)} {
 }

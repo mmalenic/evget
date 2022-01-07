@@ -261,7 +261,8 @@ add_program(
     include/ShutdownHandler.h
     include/Storage.h
     include/Event/MouseMove.h
-    include/Event/PositionX.h
+    include/Event/Cursor/PositionX.h
+    include/Event/Cursor/PositionY.h
     include/EventListener.h
     include/Event/Field.h
     include/UnsupportedOperationException.h
@@ -275,7 +276,8 @@ add_program(
     src/CommandLine/OptionFlag.cpp
     src/CommandLine/Parser.cpp
     src/Event/Field.cpp
-    src/Event/PositionX.cpp
+    src/Event/Cursor/PositionX.cpp
+    src/Event/Cursor/PositionY.cpp
     src/Event/Data.cpp
     src/Event/MouseMove.cpp
     src/ShutdownHandler.cpp
@@ -354,8 +356,8 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/src
         SRCS
-        test/EventData/EventDataTest.cpp
-        test/EventData/FieldTest.cpp
+        test/Event/EventDataTest.cpp
+        test/Event/FieldTest.cpp
         test/CommandLine/CommandLineParserTest.cpp
         test/CommandLine/CommandLineOptionTest.cpp
         test/CommandLine/CommandLineOptionBaseTest.cpp

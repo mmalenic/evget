@@ -20,21 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
+#define EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
+
 #include "Event/Field.h"
+#include <string>
 
-#include <utility>
-
-std::string Field::getEntry() const {
-    return entry;
+namespace Event::Cursor {
+    class PositionY: public Field {
+    public:
+        explicit PositionY(std::string entry);
+    };
 }
 
-Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
-}
-
-std::string Field::getName() const {
-    return name;
-}
-
-void Field::setEntry(const std::string& entry) {
-    this->entry = entry;
-}
+#endif //EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
