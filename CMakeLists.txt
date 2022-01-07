@@ -272,18 +272,8 @@ add_program(
     include/CommandLine/OptionBase.h
     include/CommandLine/OptionValidated.h
     include/CommandLine/OptionFlag.h
-    # Sources
-    src/CommandLine/OptionFlag.cpp
-    src/CommandLine/Parser.cpp
-    src/Event/Field.cpp
-    src/Event/Cursor/PositionX.cpp
-    src/Event/Cursor/PositionY.cpp
-    src/Event/Data.cpp
-    src/Event/MouseMove.cpp
-    src/ShutdownHandler.cpp
-    src/UnsupportedOperationException.cpp
-    src/InvalidCommandLineOption.cpp
 )
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPONENTS program_options headers)
