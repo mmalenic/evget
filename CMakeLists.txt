@@ -251,27 +251,27 @@ add_program(
     ${PROJECT_SOURCE_DIR}/src
     SRCS
     # Headers
-    include/Task.h
-    include/CommandLine/Parser.h
-    include/EventTransformer.h
-    include/Event/Data.h
-    include/EventHandler.h
-    include/SystemEvent.h
-    include/SystemEventLoop.h
-    include/ShutdownHandler.h
-    include/Storage.h
-    include/Event/MouseMove.h
-    include/Event/Cursor/PositionX.h
-    include/Event/Cursor/PositionY.h
-    include/EventListener.h
-    include/Event/Field.h
-    include/UnsupportedOperationException.h
-    include/CommandLine/Option.h
-    include/InvalidCommandLineOption.h
-    include/CommandLine/OptionBuilder.h
-    include/CommandLine/OptionBase.h
-    include/CommandLine/OptionValidated.h
-    include/CommandLine/OptionFlag.h
+    include/evget/Task.h
+    include/evget/CommandLine/Parser.h
+    include/evget/EventTransformer.h
+    include/evget/Event/Data.h
+    include/evget/EventHandler.h
+    include/evget/SystemEvent.h
+    include/evget/SystemEventLoop.h
+    include/evget/ShutdownHandler.h
+    include/evget/Storage.h
+    include/evget/Event/MouseMove.h
+    include/evget/Event/Cursor/PositionX.h
+    include/evget/Event/Cursor/PositionY.h
+    include/evget/EventListener.h
+    include/evget/Event/Field.h
+    include/evget/UnsupportedOperationException.h
+    include/evget/CommandLine/Option.h
+    include/evget/InvalidCommandLineOption.h
+    include/evget/CommandLine/OptionBuilder.h
+    include/evget/CommandLine/OptionBase.h
+    include/evget/CommandLine/OptionValidated.h
+    include/evget/CommandLine/OptionFlag.h
 )
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
@@ -286,19 +286,19 @@ add_program(
     PLATFORM_CHECK Linux
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/linux
-    ${PROJECT_SOURCE_DIR}/src/platform/linux
+    platform/linux
     SRCS
     # Headers
-    include/platform/linux/CommandLine/ParserLinux.h
-    include/platform/linux/EventDevice.h
-    include/platform/linux/EventDeviceLister.h
-    include/platform/linux/ShutdownHandlerLinux.h
-    include/platform/linux/SystemEventLoopLinux.h
+    platform/linux/include/evget/CommandLine/ParserLinux.h
+    platform/linux/include/evget/EventDevice.h
+    platform/linux/include/evget/EventDeviceLister.h
+    platform/linux/include/evget/ShutdownHandlerLinux.h
+    platform/linux/include/evget/SystemEventLoopLinux.h
     # Sources
-    src/platform/linux/CommandLine/ParserLinux.cpp
-    src/platform/linux/EventDevice.cpp
-    src/platform/linux/EventDeviceLister.cpp
-    src/platform/linux/ShutdownHandlerLinux.cpp
+    platform/linux/src/CommandLine/ParserLinux.cpp
+    platform/linux/src/EventDevice.cpp
+    platform/linux/src/EventDeviceLister.cpp
+    platform/linux/src/ShutdownHandlerLinux.cpp
 )
 
 # OSX functionality
@@ -309,7 +309,7 @@ add_program(
     PLATFORM_CHECK OSX
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/osx
-    ${PROJECT_SOURCE_DIR}/src/platform/osx
+    platform/osx
     SRCS
     # Headers
     # Sources
@@ -323,7 +323,7 @@ add_program(
     PLATFORM_CHECK Windows
     INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/include/platform/win32_64
-    ${PROJECT_SOURCE_DIR}/src/platform/win32_64
+    platform/win32_64
     SRCS
     # Headers
     # Sources
@@ -371,10 +371,10 @@ if (BUILD_TESTING)
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/linux
         ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/linux
         SRCS
-        test/platform/linux/CommandLine/CommandLineParserLinuxTest.cpp
-        test/platform/linux/EventDeviceListerTest.cpp
-        test/platform/linux/EventDeviceTest.cpp
-        test/platform/linux/ShutdownHandlerLinuxTest.cpp
+        platform/linux/test/CommandLine/CommandLineParserLinuxTest.cpp
+        platform/linux/test/EventDeviceListerTest.cpp
+        platform/linux/test/EventDeviceTest.cpp
+        platform/linux/test/ShutdownHandlerLinuxTest.cpp
         # Util Headers
         # Util Sources
     )
