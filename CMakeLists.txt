@@ -277,60 +277,10 @@ add_program(
     include/evget/CommandLine/OptionFlag.h
 )
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
+
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPONENTS program_options headers)
-
-# Linux functionality.
-add_program(
-    TARGET ${LIBRARY_NAME}
-    PLATFORM UNIX AND NOT APPLE
-    PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
-    PLATFORM_CHECK Linux
-    INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include/platform/linux
-    platform/linux
-    SRCS
-    # Headers
-    platform/linux/include/evget/CommandLine/ParserLinux.h
-    platform/linux/include/evget/EventDevice.h
-    platform/linux/include/evget/EventDeviceLister.h
-    platform/linux/include/evget/ShutdownHandlerLinux.h
-    platform/linux/include/evget/SystemEventLoopLinux.h
-    # Sources
-    platform/linux/src/CommandLine/ParserLinux.cpp
-    platform/linux/src/EventDevice.cpp
-    platform/linux/src/EventDeviceLister.cpp
-    platform/linux/src/ShutdownHandlerLinux.cpp
-)
-
-# OSX functionality
-add_program(
-    TARGET ${LIBRARY_NAME}
-    PLATFORM APPLE
-    PLATFORM_REQUIRES
-    PLATFORM_CHECK OSX
-    INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include/platform/osx
-    platform/osx
-    SRCS
-    # Headers
-    # Sources
-)
-
-# Windows functionality
-add_program(
-    TARGET ${LIBRARY_NAME}
-    PLATFORM WIN32
-    PLATFORM_REQUIRES
-    PLATFORM_CHECK Windows
-    INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include/platform/win32_64
-    platform/win32_64
-    SRCS
-    # Headers
-    # Sources
-)
 
 # Make executable.
 add_program(
@@ -344,55 +294,6 @@ if (BUILD_TESTING)
     add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
     add_subdirectory(test)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
-
-    # Linux tests.
-    add_program(
-        TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM UNIX AND NOT APPLE
-        PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
-        PLATFORM_CHECK Linux
-        INCLUDE_DIRS
-        ${PROJECT_SOURCE_DIR}/test/platform/linux
-        test/TestUtilities/include/TestUtilities/platform/linux
-        test/TestUtilities/platform/linux
-        SRCS
-        platform/linux/test/CommandLine/CommandLineParserLinuxTest.cpp
-        platform/linux/test/EventDeviceListerTest.cpp
-        platform/linux/test/EventDeviceTest.cpp
-        platform/linux/test/ShutdownHandlerLinuxTest.cpp
-        # Util Headers
-        # Util Sources
-    )
-
-    # OSX tests
-    add_program(
-        TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM APPLE
-        PLATFORM_REQUIRES
-        PLATFORM_CHECK OSX
-        INCLUDE_DIRS
-        ${PROJECT_SOURCE_DIR}/test/platform/osx
-        test/TestUtilities/include/TestUtilities/platform/osx
-        test/TestUtilities/platform/osx
-        SRCS
-        # Util Headers
-        # Util Sources
-    )
-
-    # Windows tests
-    add_program(
-        TARGET ${TEST_EXECUTABLE_NAME}
-        PLATFORM WIN32
-        PLATFORM_REQUIRES
-        PLATFORM_CHECK Windows
-        INCLUDE_DIRS
-        ${PROJECT_SOURCE_DIR}/test/platform/win32_64
-        test/TestUtilities/include/TestUtilities/platform/win32_64
-        test/TestUtilities/platform/win32_64
-        SRCS
-        # Util Headers
-        # Util Sources
-    )
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
     include(GoogleTest)
