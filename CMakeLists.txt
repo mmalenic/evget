@@ -197,15 +197,19 @@ function(add_program)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
                 if (ADD_PROGRAM_MAKE_EXECUTABLE)
-                    message(STATUS "Adding executable ${ADD_PROGRAM_TARGET}.")
+                    message(STATUS "Creating executable ${ADD_PROGRAM_TARGET}.")
                     add_executable(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
                 elseif (ADD_PROGRAM_MAKE_LIBRARY)
-                    message(STATUS "Adding library ${ADD_PROGRAM_TARGET}.")
+                    message(STATUS "Creating library ${ADD_PROGRAM_TARGET}.")
                     add_library(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_SRCS})
                 else()
                     message(STATUS "Adding sources to ${ADD_PROGRAM_TARGET}.")
                     target_sources(${ADD_PROGRAM_TARGET} PRIVATE ${ADD_PROGRAM_SRCS})
                 endif()
+            elseif(ADD_PROGRAM_MAKE_EXECUTABLE)
+                message(STATUS "Creating empty executable ${ADD_PROGRAM_TARGET}.")
+                file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/null.cpp "")
+                add_executable(${ADD_PROGRAM_TARGET} ${CMAKE_CURRENT_BINARY_DIR}/null.cpp)
             endif()
 
             if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
@@ -338,26 +342,8 @@ add_program(
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
 if (BUILD_TESTING)
-    # Common tests.
-    add_program(
-        TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-        INCLUDE_DIRS
-        ${PROJECT_SOURCE_DIR}/test
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src
-        SRCS
-        test/Event/EventDataTest.cpp
-        test/Event/FieldTest.cpp
-        test/CommandLine/CommandLineParserTest.cpp
-        test/CommandLine/CommandLineOptionTest.cpp
-        test/CommandLine/CommandLineOptionBaseTest.cpp
-        test/CommandLine/CommandLineOptionValidatedTest.cpp
-        test/CommandLine/CommandLineOptionFlagTest.cpp
-        # Util Headers
-        test/TestUtilities/include/CommandLine/CommandLineTestUtilities.h
-        # Util Sources
-        test/TestUtilities/src/CommandLine/CommandLineTestUtilities.cpp
-    )
+    add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
+    add_subdirectory(test)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
 
     # Linux tests.
@@ -368,8 +354,8 @@ if (BUILD_TESTING)
         PLATFORM_CHECK Linux
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/linux
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/linux
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/linux
+        test/TestUtilities/include/TestUtilities/platform/linux
+        test/TestUtilities/platform/linux
         SRCS
         platform/linux/test/CommandLine/CommandLineParserLinuxTest.cpp
         platform/linux/test/EventDeviceListerTest.cpp
@@ -387,8 +373,8 @@ if (BUILD_TESTING)
         PLATFORM_CHECK OSX
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/osx
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/osx
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/osx
+        test/TestUtilities/include/TestUtilities/platform/osx
+        test/TestUtilities/platform/osx
         SRCS
         # Util Headers
         # Util Sources
@@ -402,8 +388,8 @@ if (BUILD_TESTING)
         PLATFORM_CHECK Windows
         INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/test/platform/win32_64
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/include/platform/win32_64
-        ${PROJECT_SOURCE_DIR}/test/TestUtilities/src/platform/win32_64
+        test/TestUtilities/include/TestUtilities/platform/win32_64
+        test/TestUtilities/platform/win32_64
         SRCS
         # Util Headers
         # Util Sources

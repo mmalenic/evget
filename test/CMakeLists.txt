@@ -1,0 +1,3 @@
+add_subdirectory(CommandLine)
+add_subdirectory(Event)
+add_subdirectory(TestUtilities)
