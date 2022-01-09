@@ -251,8 +251,7 @@ endif()
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include/evget
     SRCS
     # Headers
     include/evget/Task.h
