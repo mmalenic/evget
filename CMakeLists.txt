@@ -223,6 +223,24 @@ function(add_program)
     endif()
 endfunction()
 
+# Add linux specific code.
+function(add_program_linux)
+    set(options MAKE_EXECUTABLE MAKE_LIBRARY)
+    set(one_value_args TARGET INCLUDE_VISIBILITY)
+    set(multi_value_args SRCS INCLUDE_DIRS)
+    cmake_parse_arguments(ADD_PROGRAM_LINUX "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    add_program(
+        TARGET ${ADD_PROGRAM_LINUX_TARGET} ${ADD_PROGRAM_LINUX_MAKE_EXECUTABLE} ${ADD_PROGRAM_LINUX_MAKE_LIBRARY}
+        PLATFORM UNIX AND NOT APPLE
+        PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
+        PLATFORM_CHECK Linux
+        SRCS ${ADD_PROGRAM_LINUX_SRCS}
+        INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
+        INCLUDE_VISIBILITY ${ADD_PROGRAM_LINUX_INCLUDE_VISIBILITY}
+    )
+endfunction()
+
 if (DOWNLOAD_DEPENDENCIES)
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan.")
@@ -251,7 +269,7 @@ endif()
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include/evget
+    include/evget
     SRCS
     # Headers
     include/evget/Task.h
@@ -276,7 +294,8 @@ add_program(
     include/evget/CommandLine/OptionValidated.h
     include/evget/CommandLine/OptionFlag.h
 )
-add_subdirectory(${CMAKE_SOURCE_DIR}/src)
+add_subdirectory(src)
+add_subdirectory(platform/linux)
 
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
@@ -292,6 +311,7 @@ program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LIBRARY_NAME} ONL
 
 if (BUILD_TESTING)
     add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
+
     add_subdirectory(test)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
