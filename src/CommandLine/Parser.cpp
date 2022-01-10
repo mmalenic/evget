@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CommandLine/Parser.h"
+#include "Parser.h"
 
 #include <spdlog/spdlog.h>
 #include <boost/algorithm/string.hpp>

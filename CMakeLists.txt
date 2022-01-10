@@ -272,7 +272,7 @@ add_program(
     SRCS
     # Headers
     include/evget/Task.h
-    include/evget/CommandLine/Parser.h
+    include/evget/Parser.h
     include/evget/EventTransformer.h
     include/evget/Event/Data.h
     include/evget/EventHandler.h
