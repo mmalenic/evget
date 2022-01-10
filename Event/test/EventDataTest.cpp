@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "Event/Data.h"
+#include "../include/Event/Data.h"
 
 #include <utility>
 #include "UnsupportedOperationException.h"

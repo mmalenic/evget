@@ -2,8 +2,8 @@ add_program(
     TARGET ${TEST_EXECUTABLE_NAME}
     SRCS
     CommandLineParserTest.cpp
-    Event/EventDataTest.cpp
-    Event/FieldTest.cpp
+    ../Event/test/EventDataTest.cpp
+    ../Event/test/FieldTest.cpp
 )
 
 add_subdirectory(TestUtilities)

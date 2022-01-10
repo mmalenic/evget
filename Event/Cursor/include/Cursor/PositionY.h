@@ -20,28 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "Event/Field.h"
+#ifndef EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
+#define EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
 
-TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
-    Field field {"name"};
-    ASSERT_EQ("name", field.getName());
-    ASSERT_EQ("", field.getEntry());
+#include "../Field.h"
+#include <string>
+
+namespace Event::Cursor {
+    class PositionY: public Field {
+    public:
+        explicit PositionY(std::string entry);
+    };
 }
 
-TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("name", field.getName());
-}
-
-TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("entry", field.getEntry());
-}
-
-TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", ""};
-    ASSERT_EQ("", field.getEntry());
-    field.setEntry("entry");
-    ASSERT_EQ("entry", field.getEntry());
-}
+#endif //EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
