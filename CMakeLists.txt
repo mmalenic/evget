@@ -265,7 +265,6 @@ if (DOWNLOAD_DEPENDENCIES)
     set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 endif()
 
-# Common functionality.
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
@@ -287,12 +286,12 @@ add_program(
     include/evget/EventListener.h
     include/evget/Event/Field.h
     include/evget/UnsupportedOperationException.h
-    include/evget/CommandLine/Option.h
+    Option/include/Option/Option.h
     include/evget/InvalidCommandLineOption.h
-    include/evget/CommandLine/OptionBuilder.h
-    include/evget/CommandLine/OptionBase.h
-    include/evget/CommandLine/OptionValidated.h
-    include/evget/CommandLine/OptionFlag.h
+    Option/include/Option/OptionBuilder.h
+    Option/include/Option/OptionBase.h
+    Option/include/Option/OptionValidated.h
+    Option/include/Option/OptionFlag.h
 )
 add_subdirectory(src)
 add_subdirectory(platform/linux)
