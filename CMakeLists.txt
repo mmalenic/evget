@@ -139,15 +139,17 @@ function(program_dependencies)
                 endif()
             endforeach()
         endif()
-           
-        if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL))
-            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION})
-        elseif (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} COMPONENTS ${COMPONENTS})
-        elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL)
-            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED)
-        else()
-            find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
+
+        if (NOT TARGET ${DEPENDENCY_NAME})
+            if (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL))
+                find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION})
+            elseif (PROGRAM_DEPENDENCIES_NOT_REQUIRED AND DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+                find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} COMPONENTS ${COMPONENTS})
+            elseif (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS OR PROGRAM_DEPENDENCIES_FIND_ALL)
+                find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED)
+            else()
+                find_package(${DEPENDENCY_NAME} ${DEPENDENCY_VERSION} REQUIRED COMPONENTS ${COMPONENTS})
+            endif()
         endif()
         
         if (DEFINED DEPENDENCY_VERSION)
@@ -158,7 +160,6 @@ function(program_dependencies)
 
         # Try to guess components
         if (NOT DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-            message("HERE")
             link_case_relaxed(TARGET ${PROGRAM_DEPENDENCIES_TARGET} DEP ${DEPENDENCY_NAME}::${DEPENDENCY_NAME} VISIBILITY ${DEPENDENCY_VISIBILITY})
         elseif (DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
             list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
@@ -241,6 +242,12 @@ function(add_program_linux)
     )
 endfunction()
 
+# Sets the variable name with value both locally and in the parent scope.
+macro(set_local_parent NAME VALUE)
+    set(${NAME} ${VALUE})
+    set(${NAME} ${VALUE} PARENT_SCOPE)
+endmacro()
+
 if (DOWNLOAD_DEPENDENCIES)
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan.")
@@ -268,33 +275,18 @@ endif()
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
-    include/evget
+    include
     SRCS
-    # Headers
     include/evget/Task.h
     include/evget/Parser.h
     include/evget/EventTransformer.h
-    Event/include/Event/Data.h
     include/evget/EventHandler.h
     include/evget/SystemEvent.h
     include/evget/SystemEventLoop.h
     include/evget/ShutdownHandler.h
     include/evget/Storage.h
-    Event/include/Event/MouseMove.h
-    Event/Cursor/include/Cursor/PositionX.h
-    Event/Cursor/include/Cursor/PositionY.h
     include/evget/EventListener.h
-    Event/include/Event/Field.h
-    include/evget/UnsupportedOperationException.h
-    Option/include/Option/Option.h
-    include/evget/InvalidCommandLineOption.h
-    Option/include/Option/OptionBuilder.h
-    Option/include/Option/OptionBase.h
-    Option/include/Option/OptionValidated.h
-    Option/include/Option/OptionFlag.h
 )
-add_subdirectory(src)
-add_subdirectory(platform/linux)
 
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
@@ -312,6 +304,7 @@ if (BUILD_TESTING)
     add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
 
     add_subdirectory(test)
+    add_subdirectory(TestUtilities)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
@@ -319,3 +312,9 @@ if (BUILD_TESTING)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     gtest_discover_tests(${TEST_EXECUTABLE_NAME})
 endif()
+
+add_subdirectory(src)
+add_subdirectory(platform/linux)
+
+add_subdirectory(Option)
+add_subdirectory(Event)

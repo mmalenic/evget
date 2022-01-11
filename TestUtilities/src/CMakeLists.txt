@@ -1,5 +1,5 @@
 add_program(
-    TARGET ${TEST_EXECUTABLE_NAME}
+    TARGET ${TESTUTILITIES_LIBRARY_NAME}
     SRCS
     CommandLineTestUtilities.cpp
 )

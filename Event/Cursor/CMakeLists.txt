@@ -1,5 +1,5 @@
-set(CURSOR_LIBRARY_NAME libcursor PARENT_SCOPE)
-set(CURSOR_TEST_NAME cursortest PARENT_SCOPE)
+set_local_parent(CURSOR_LIBRARY_NAME libcursor)
+set_local_parent(CURSOR_TEST_NAME cursortest)
 
 add_program(
     TARGET ${CURSOR_LIBRARY_NAME} MAKE_LIBRARY
@@ -11,4 +11,7 @@ add_program(
 )
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+if (BUILD_TESTING)
+    add_subdirectory(test)
+endif()
