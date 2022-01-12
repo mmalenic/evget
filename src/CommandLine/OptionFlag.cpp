@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/Option/OptionFlag.h"
+#include "CommandLine/OptionFlag.h"
 
 CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
     this->addOptionToDesc(
