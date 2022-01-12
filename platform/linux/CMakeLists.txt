@@ -3,7 +3,7 @@ add_program_linux(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/evget
     SRCS
-    include/evget/ParserLinux.h
+    include/evget/CommandLine/ParserLinux.h
     include/evget/EventDevice.h
     include/evget/EventDeviceLister.h
     include/evget/ShutdownHandlerLinux.h
