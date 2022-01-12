@@ -1,5 +1,5 @@
-set_local_parent(EVENT_LIBRARY_NAME libevent)
-set_local_parent(EVENT_TEST_NAME eventtest)
+set(EVENT_LIBRARY_NAME libevent PARENT_SCOPE)
+set(EVENT_TEST_NAME eventtest PARENT_SCOPE)
 
 add_program(
     TARGET ${EVENT_LIBRARY_NAME} MAKE_LIBRARY
@@ -12,10 +12,7 @@ add_program(
 )
 
 add_subdirectory(src)
-
-if (BUILD_TESTING)
-    add_subdirectory(test)
-endif()
+add_subdirectory(test)
 
 add_subdirectory(Cursor)
 

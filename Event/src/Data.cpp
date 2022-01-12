@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <tuple>
-#include "../../Option/include/Option/UnsupportedOperationException.h"
+#include <UnsupportedOperationException.h>
 #include "Event/Data.h"
 #include <utility>
 

@@ -19,7 +19,7 @@
 #include <atomic>
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
-#include "../../Option/include/Option/UnsupportedOperationException.h"
+#include "UnsupportedOperationException.h"
 #include <optional>
 
 /**

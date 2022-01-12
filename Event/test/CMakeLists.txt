@@ -1,6 +1,8 @@
-add_program(
-    TARGET ${EVENT_TEST_NAME} MAKE_EXECUTABLE
-    SRCS
-    EventDataTest.cpp
-    FieldTest.cpp
-)
+if (BUILD_TESTING)
+    add_program(
+        TARGET ${EVENT_TEST_NAME} MAKE_EXECUTABLE
+        SRCS
+        EventDataTest.cpp
+        FieldTest.cpp
+    )
+endif()
