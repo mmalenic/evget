@@ -274,17 +274,17 @@ add_program(
     include/evget/Task.h
     include/evget/Parser.h
     include/evget/EventTransformer.h
-    Event/include/Event/Data.h
+    include/evget/Event/Data.h
     include/evget/EventHandler.h
     include/evget/SystemEvent.h
     include/evget/SystemEventLoop.h
     include/evget/ShutdownHandler.h
     include/evget/Storage.h
-    Event/include/Event/MouseMove.h
-    Event/Cursor/include/Cursor/PositionX.h
-    Event/Cursor/include/Cursor/PositionY.h
+    include/evget/Event/MouseMove.h
+    include/evget/Event/Cursor/PositionX.h
+    include/evget/Event/Cursor/PositionY.h
     include/evget/EventListener.h
-    Event/include/Event/Field.h
+    include/evget/Event/Field.h
     include/evget/UnsupportedOperationException.h
     Option/include/Option/Option.h
     include/evget/InvalidCommandLineOption.h

@@ -1,5 +1,5 @@
 add_program(
-    TARGET ${CURSOR_LIBRARY_NAME}
+    TARGET ${LIBRARY_NAME}
     SRCS
     PositionX.cpp
     PositionY.cpp
