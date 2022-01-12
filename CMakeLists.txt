@@ -269,7 +269,7 @@ endif()
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
-    include/evget
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
     # Headers
     include/evget/Task.h
