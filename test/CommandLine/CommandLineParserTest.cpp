@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gmock/gmock.h>
-#include <CommandLine/CommandLineTestUtilities.h>
+#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
 
 namespace Cmd = CommandLine;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;

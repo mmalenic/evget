@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CommandLine/ParserLinux.h"
-#include "CommandLine/CommandLineTestUtilities.h"
+#include "evget/CommandLine/ParserLinux.h"
+#include "TestUtilities/CommandLine/CommandLineTestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace Cmd = CommandLine;

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <CommandLine/CommandLineTestUtilities.h>
+#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
 
 void TestUtilities::CommandLineTestUtilities::CommandLineTest::SetUp() {
     fs::current_path(fs::temp_directory_path());

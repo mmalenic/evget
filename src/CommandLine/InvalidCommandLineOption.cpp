@@ -20,4 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Event/MouseMove.h"
+#include "evget/CommandLine/InvalidCommandLineOption.h"
+
+InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message) : po::error{message}, message{message} {
+}
+
+const char* InvalidCommandLineOption::what() const noexcept {
+    return message.c_str();
+}

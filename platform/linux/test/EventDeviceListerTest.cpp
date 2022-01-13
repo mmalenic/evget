@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "EventDeviceLister.h"
+#include "evget/EventDeviceLister.h"
 
 #include <gtest/gtest.h>
 #include <filesystem>

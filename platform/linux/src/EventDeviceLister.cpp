@@ -22,8 +22,8 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <EventDevice.h>
-#include <EventDeviceLister.h>
+#include <evget/EventDevice.h>
+#include <evget/EventDeviceLister.h>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>

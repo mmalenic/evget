@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLine/CommandLineTestUtilities.h>
+#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
 
 namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;

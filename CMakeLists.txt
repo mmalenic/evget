@@ -288,7 +288,7 @@ add_program(
     include/evget/Event/Field.h
     include/evget/UnsupportedOperationException.h
     include/evget/CommandLine/Option.h
-    include/evget/InvalidCommandLineOption.h
+    include/evget/CommandLine/InvalidCommandLineOption.h
     include/evget/CommandLine/OptionBuilder.h
     include/evget/CommandLine/OptionBase.h
     include/evget/CommandLine/OptionValidated.h

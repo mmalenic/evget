@@ -21,10 +21,10 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "Event/Data.h"
+#include "evget/Event/Data.h"
 
 #include <utility>
-#include "UnsupportedOperationException.h"
+#include "evget/UnsupportedOperationException.h"
 
 using namespace std;
 

@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <CommandLine/CommandLineTestUtilities.h>
-#include <CommandLine/OptionFlag.h>
+#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
+#include <evget/CommandLine/OptionFlag.h>
 
 namespace po = boost::program_options;
 namespace CmdUtils = TestUtilities::CommandLineTestUtilities;

@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <tuple>
-#include <UnsupportedOperationException.h>
-#include "Event/Data.h"
+#include <evget/UnsupportedOperationException.h>
+#include "evget/Event/Data.h"
 #include <utility>
 
 using namespace std;

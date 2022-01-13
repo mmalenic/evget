@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
 #define EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
 
-#include "Event/Field.h"
+#include "evget/Event/Field.h"
 #include <string>
 
 namespace Event::Cursor {

@@ -7,8 +7,7 @@ add_program(
     Event/Cursor/PositionY.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/MouseMove.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp
-    InvalidCommandLineOption.cpp
+    CommandLine/InvalidCommandLineOption.cpp
 )
