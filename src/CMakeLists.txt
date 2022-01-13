@@ -3,6 +3,7 @@ add_program(
     SRCS
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
+    Event/Common/Time.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
     Event/Data.cpp

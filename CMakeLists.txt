@@ -282,6 +282,7 @@ add_program(
     include/evget/ShutdownHandler.h
     include/evget/Storage.h
     include/evget/Event/MouseMove.h
+    include/evget/Event/Common/Time.h
     include/evget/Event/Cursor/PositionX.h
     include/evget/Event/Cursor/PositionY.h
     include/evget/EventListener.h
