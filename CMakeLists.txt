@@ -186,10 +186,6 @@ function(add_program)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     set_platform_property(ADD_PROGRAM_PLATFORM ADD_PROGRAM_PLATFORM_CHECK ADD_PROGRAM_PLATFORM_REQUIRES)
-#    if (DEFINED ADD_PROGRAM_PLATFORM_CHECK)
-#        platform_check(PLATFORM ${ADD_PROGRAM_PLATFORM} PLATFORM_REQUIRES ${ADD_PROGRAM_PLATFORM_REQUIRES} RESULT ${ADD_PROGRAM_PLATFORM_CHECK})
-#        get_property(GUARD GLOBAL PROPERTY ${ADD_PROGRAM_PLATFORM_CHECK})
-#    endif()
     if (NOT DEFINED ADD_PROGRAM_PLATFORM_CHECK OR GUARD)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
@@ -312,9 +308,9 @@ add_program(
 )
 add_subdirectory(src)
 
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.1.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.77 FIND_ALL COMPONENTS program_options headers)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options headers)
 
 # Make executable.
 add_program(
