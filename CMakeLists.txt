@@ -186,6 +186,10 @@ function(add_program)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     set_platform_property(ADD_PROGRAM_PLATFORM ADD_PROGRAM_PLATFORM_CHECK ADD_PROGRAM_PLATFORM_REQUIRES)
+#    if (DEFINED ADD_PROGRAM_PLATFORM_CHECK)
+#        platform_check(PLATFORM ${ADD_PROGRAM_PLATFORM} PLATFORM_REQUIRES ${ADD_PROGRAM_PLATFORM_REQUIRES} RESULT ${ADD_PROGRAM_PLATFORM_CHECK})
+#        get_property(GUARD GLOBAL PROPERTY ${ADD_PROGRAM_PLATFORM_CHECK})
+#    endif()
     if (NOT DEFINED ADD_PROGRAM_PLATFORM_CHECK OR GUARD)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
@@ -223,8 +227,9 @@ function(add_program_linux)
     set(multi_value_args SRCS INCLUDE_DIRS)
     cmake_parse_arguments(ADD_PROGRAM_LINUX "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
+    set_mode(ADD_PROGRAM_LINUX_MAKE_EXECUTABLE ADD_PROGRAM_LINUX_MAKE_LIBRARY)
     add_program(
-        TARGET ${ADD_PROGRAM_LINUX_TARGET} ${ADD_PROGRAM_LINUX_MAKE_EXECUTABLE} ${ADD_PROGRAM_LINUX_MAKE_LIBRARY}
+        TARGET ${ADD_PROGRAM_LINUX_TARGET} ${MODE}
         PLATFORM UNIX AND NOT APPLE
         PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
         PLATFORM_CHECK Linux
@@ -234,10 +239,20 @@ function(add_program_linux)
     )
 endfunction()
 
+# Set mode indicating how to add sources.
+macro(set_mode MAKE_EXECUTABLE MAKE_LIBRARY)
+    if (${MAKE_EXECUTABLE})
+        set(MODE MAKE_EXECUTABLE)
+    elseif(${MAKE_LIBRARY})
+        set(MODE MAKE_LIBRARY)
+    endif()
+endmacro()
+
+# Perform platform check and set property.
 macro(set_platform_property PLATFORM PLATFORM_CHECK PLATFORM_REQUIRES)
-    if (DEFINED PLATFORM_CHECK)
-        platform_check(PLATFORM ${PLATFORM} PLATFORM_REQUIRES ${PLATFORM_REQUIRES} RESULT ${PLATFORM_CHECK})
-        get_property(GUARD GLOBAL PROPERTY ${PLATFORM_CHECK})
+    if (DEFINED ${PLATFORM_CHECK})
+        platform_check(PLATFORM ${${PLATFORM}} PLATFORM_REQUIRES ${${PLATFORM_REQUIRES}} RESULT ${${PLATFORM_CHECK}})
+        get_property(GUARD GLOBAL PROPERTY ${${PLATFORM_CHECK}})
     endif()
 endmacro()
 
@@ -296,7 +311,6 @@ add_program(
     include/evget/CommandLine/OptionFlag.h
 )
 add_subdirectory(src)
-add_subdirectory(platform/linux)
 
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
@@ -321,3 +335,5 @@ if (BUILD_TESTING)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     gtest_discover_tests(${TEST_EXECUTABLE_NAME})
 endif()
+
+add_subdirectory(platform/linux)
