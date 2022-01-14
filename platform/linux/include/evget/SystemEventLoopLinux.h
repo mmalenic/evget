@@ -25,8 +25,8 @@
 
 #include <linux/input.h>
 #include <filesystem>
-#include "SystemEventLoop.h"
-#include "SystemEvent.h"
+#include "evget/SystemEventLoop.h"
+#include "evget/SystemEvent.h"
 #include <utility>
 
 /**

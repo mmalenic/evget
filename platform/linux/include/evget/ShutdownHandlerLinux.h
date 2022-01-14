@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 #define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 
-#include "ShutdownHandler.h"
+#include "evget/ShutdownHandler.h"
 
 /**
  * Linux (and unix) specific version of shutdown handler.
