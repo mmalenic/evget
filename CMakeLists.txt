@@ -298,7 +298,9 @@ add_program(
     include/evget/Event/Button/Release.h
     include/evget/Event/Button/Repeat.h
     include/evget/Event/Common/Time.h
-    include/evget/Event/Cursor/Multitouch.h
+    include/evget/Event/Touch/Multitouch.h
+    include/evget/Event/Touch/EllipseMajorInner.h
+    include/evget/Event/Touch/EllipseMinorInner.h
     include/evget/Event/Cursor/PositionX.h
     include/evget/Event/Cursor/PositionY.h
     include/evget/Event/Cursor/WheelDown.h

@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Cursor/Multitouch.h"
+#include "evget/Event/Touch/Multitouch.h"
 
-Event::Cursor::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::move(id)} {
+Event::Touch::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::move(id)} {
 }
 
-Event::Cursor::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
+Event::Touch::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
 }

@@ -20,17 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
-#define EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJORINNER_H
+#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJORINNER_H
 
 #include "evget/Event/Field.h"
 #include <string>
 
-namespace Event::Cursor {
-    class Multitouch : public Field {
+namespace Event::Touch {
+    class EllipseMajorInner : public Field {
     public:
-        explicit Multitouch(std::string id);
-        explicit Multitouch(int id);
+        explicit EllipseMajorInner(std::string width);
+        explicit EllipseMajorInner(int width);
     };
 }
-#endif //EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
+
+#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJORINNER_H
