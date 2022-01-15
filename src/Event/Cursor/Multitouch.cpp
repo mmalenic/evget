@@ -20,18 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_WHEELDOWN_H
-#define EVGET_INCLUDE_EVGET_EVENT_CURSOR_WHEELDOWN_H
+#include "evget/Event/Cursor/Multitouch.h"
 
-#include "evget/Event/Field.h"
-#include <string>
-
-namespace Event::Cursor {
-    class WheelDown : public Field {
-    public:
-        explicit WheelDown(std::string amount);
-        explicit WheelDown(int amount);
-    };
+Event::Cursor::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::move(id)} {
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_CURSOR_WHEELDOWN_H
+Event::Cursor::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
+}

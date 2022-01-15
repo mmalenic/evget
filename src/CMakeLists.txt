@@ -8,6 +8,7 @@ add_program(
     Event/Button/Release.cpp
     Event/Button/Repeat.cpp
     Event/Common/Time.cpp
+    Event/Cursor/Multitouch.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
