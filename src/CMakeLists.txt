@@ -5,6 +5,7 @@ add_program(
     CommandLine/Parser.cpp
     Event/Button/Press.cpp
     Event/Button/Release.cpp
+    Event/Button/Repeat.cpp
     Event/Common/Time.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
