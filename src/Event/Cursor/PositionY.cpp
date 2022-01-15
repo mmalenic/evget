@@ -26,3 +26,6 @@
 
 Event::Cursor::PositionY::PositionY(std::string position) : Field{"PositionY", std::move(position)} {
 }
+
+Event::Cursor::PositionY::PositionY(int position) : PositionY(std::to_string(position)) {
+}

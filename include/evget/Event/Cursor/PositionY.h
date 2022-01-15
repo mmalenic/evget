@@ -30,6 +30,7 @@ namespace Event::Cursor {
     class PositionY: public Field {
     public:
         explicit PositionY(std::string position);
+        explicit PositionY(int position);
     };
 }
 
