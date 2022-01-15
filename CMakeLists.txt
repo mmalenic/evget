@@ -300,6 +300,7 @@ add_program(
     include/evget/Event/Common/Time.h
     include/evget/Event/Cursor/PositionX.h
     include/evget/Event/Cursor/PositionY.h
+    include/evget/Event/Cursor/WheelDown.h
     include/evget/Event/Cursor/WheelUp.h
     include/evget/EventListener.h
     include/evget/Event/Field.h

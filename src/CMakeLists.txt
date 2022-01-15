@@ -10,6 +10,7 @@ add_program(
     Event/Common/Time.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
+    Event/Cursor/WheelDown.cpp
     Event/Cursor/WheelUp.cpp
     Event/Data.cpp
     Event/Field.cpp
