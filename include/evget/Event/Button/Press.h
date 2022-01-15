@@ -29,7 +29,7 @@
 namespace Event::Button {
     class Press : public Field {
     public:
-        explicit Press(std::string entry);
+        explicit Press(std::string button);
     };
 }
 

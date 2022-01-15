@@ -29,7 +29,7 @@
 namespace Event::Cursor {
     class PositionX : public Field {
     public:
-        explicit PositionX(std::string entry);
+        explicit PositionX(std::string position);
     };
 }
 

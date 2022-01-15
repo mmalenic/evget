@@ -22,5 +22,5 @@
 
 #include "evget/Event/Cursor/PositionX.h"
 
-Event::Cursor::PositionX::PositionX(std::string entry) : Field{"PositionX", std::move(entry)} {
+Event::Cursor::PositionX::PositionX(std::string position) : Field{"PositionX", std::move(position)} {
 }

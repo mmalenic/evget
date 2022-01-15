@@ -24,5 +24,5 @@
 
 #include <utility>
 
-Event::Cursor::PositionY::PositionY(std::string entry) : Field{"PositionY", std::move(entry)} {
+Event::Cursor::PositionY::PositionY(std::string position) : Field{"PositionY", std::move(position)} {
 }

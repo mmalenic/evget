@@ -30,8 +30,8 @@
 namespace Event::Common {
     class Time : public Field {
     public:
-        explicit Time(std::string entry);
-        explicit Time(std::chrono::nanoseconds entry);
+        explicit Time(std::string interval);
+        explicit Time(std::chrono::nanoseconds interval);
     };
 }
 

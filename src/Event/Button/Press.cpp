@@ -22,5 +22,5 @@
 
 #include "evget/Event/Button/Press.h"
 
-Event::Button::Press::Press(std::string entry) : Field{"Press", std::move(entry)} {
+Event::Button::Press::Press(std::string button) : Field{"Press", std::move(button)} {
 }
