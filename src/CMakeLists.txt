@@ -3,6 +3,7 @@ add_program(
     SRCS
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
+    Event/Button/Character.cpp
     Event/Button/Press.cpp
     Event/Button/Release.cpp
     Event/Button/Repeat.cpp
