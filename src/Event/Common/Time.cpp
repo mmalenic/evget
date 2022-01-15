@@ -24,3 +24,6 @@
 
 Event::Common::Time::Time(std::string entry) : Field{"Time", std::move(entry)} {
 }
+
+Event::Common::Time::Time(std::chrono::nanoseconds interval) : Time{std::to_string(interval.count())} {
+}

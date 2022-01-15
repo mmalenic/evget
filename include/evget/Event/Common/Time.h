@@ -25,11 +25,13 @@
 
 #include "evget/Event/Field.h"
 #include <string>
+#include <chrono>
 
 namespace Event::Common {
     class Time : public Field {
     public:
         explicit Time(std::string entry);
+        explicit Time(std::chrono::nanoseconds entry);
     };
 }
 
