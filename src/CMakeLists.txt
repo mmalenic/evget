@@ -4,6 +4,7 @@ add_program(
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
     Event/Button/Press.cpp
+    Event/Button/Release.cpp
     Event/Common/Time.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
