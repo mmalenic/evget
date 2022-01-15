@@ -27,7 +27,7 @@
 #include <string>
 
 namespace Event::Cursor {
-    class PositionY: public Field {
+    class PositionY : public Field {
     public:
         explicit PositionY(std::string position);
         explicit PositionY(int position);

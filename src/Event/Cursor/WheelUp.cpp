@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Cursor/PositionX.h"
+#include "evget/Event/Cursor/WheelUp.h"
 
-Event::Cursor::PositionX::PositionX(std::string position) : Field{"PositionX", std::move(position)} {
+Event::Cursor::WheelUp::WheelUp(std::string amount) : Field{"WheelUp", std::move(amount)} {
 }
 
-Event::Cursor::PositionX::PositionX(int position) : PositionX{std::to_string(position)} {
+Event::Cursor::WheelUp::WheelUp(int amount) : WheelUp{std::to_string(amount)} {
 }
