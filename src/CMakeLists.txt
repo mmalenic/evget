@@ -14,6 +14,7 @@ add_program(
     Event/Touch/EllipseMinorInner.cpp
     Event/Touch/EllipseMinorOuter.cpp
     Event/Touch/PositionXOuter.cpp
+    Event/Touch/PositionYOuter.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
