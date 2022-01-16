@@ -28,7 +28,7 @@
 #include "gtest/gtest.h"
 
 namespace TestUtils::EventTestUtils {
-    void test_create_and_iterate(auto&& create) {
+    void create_and_iterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
         Data eventData = create(field_name, "name");
@@ -42,12 +42,18 @@ namespace TestUtils::EventTestUtils {
         ASSERT_EQ(n, 1);
     }
 
-    void test_get_and_set(auto&& get, std::string entry) {
+    void get_and_set(auto&& get, std::string entry) {
         std::string field_name = "field";
         Data eventData{"name", {field_name}};
         auto field = get(eventData, field_name, 0, entry);
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
+    }
+
+    void field_value_and_name(auto&& create, std::string name, std::string expected) {
+        auto field = create();
+        ASSERT_EQ(name, field.getName());
+        ASSERT_EQ(expected, field.getEntry());
     }
 }
 
