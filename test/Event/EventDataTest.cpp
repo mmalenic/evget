@@ -22,7 +22,7 @@
 
 #include <gtest/gtest.h>
 #include "evget/Event/Data.h"
-#include "TestUtils/Event/Event.h"
+#include "TestUtils/Event/EventTestUtils.h"
 
 #include <utility>
 #include "evget/UnsupportedOperationException.h"
