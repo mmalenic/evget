@@ -13,6 +13,7 @@ add_program(
     Event/Touch/EllipseMajorOuter.cpp
     Event/Touch/EllipseMinorInner.cpp
     Event/Touch/EllipseMinorOuter.cpp
+    Event/Touch/PositionXOuter.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp

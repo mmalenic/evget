@@ -303,6 +303,7 @@ add_program(
     include/evget/Event/Touch/EllipseMajorOuter.h
     include/evget/Event/Touch/EllipseMinorInner.h
     include/evget/Event/Touch/EllipseMinorOuter.h
+    include/evget/Event/Touch/PositionXOuter.h
     include/evget/Event/Cursor/PositionX.h
     include/evget/Event/Cursor/PositionY.h
     include/evget/Event/Cursor/WheelDown.h
