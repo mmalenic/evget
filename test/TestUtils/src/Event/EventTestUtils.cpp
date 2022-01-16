@@ -20,29 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "evget/Event/Field.h"
 #include "TestUtils/Event/EventTestUtils.h"
 
-namespace EventTestUtils = TestUtils::EventTestUtils;
-
-TEST(FieldTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(Field{"name"}, "name", "");
-}
-
-TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("name", field.getName());
-}
-
-TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
-    ASSERT_EQ("entry", field.getEntry());
-}
-
-TEST(FieldTest, SetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", ""};
-    ASSERT_EQ("", field.getEntry());
-    field.setEntry("entry");
-    ASSERT_EQ("entry", field.getEntry());
+void TestUtils::EventTestUtils::field_value_and_name(Field&& field, const std::string& name, const std::string& expected) {
+    ASSERT_EQ(name, field.getName());
+    ASSERT_EQ(expected, field.getEntry());
 }

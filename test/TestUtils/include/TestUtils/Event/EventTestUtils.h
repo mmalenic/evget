@@ -50,11 +50,7 @@ namespace TestUtils::EventTestUtils {
         ASSERT_EQ(entry, field.getEntry());
     }
 
-    void field_value_and_name(auto&& create, std::string name, std::string expected) {
-        auto field = create();
-        ASSERT_EQ(name, field.getName());
-        ASSERT_EQ(expected, field.getEntry());
-    }
+    void field_value_and_name(Field&& field, const std::string& name, const std::string& expected);
 }
 
 #endif //EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H

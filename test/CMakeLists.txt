@@ -6,6 +6,7 @@ add_program(
     CommandLine/CommandLineOptionTest.cpp
     CommandLine/CommandLineOptionValidatedTest.cpp
     CommandLine/CommandLineParserTest.cpp
+    Event/Common/TimeTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
