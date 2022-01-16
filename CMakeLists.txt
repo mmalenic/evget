@@ -299,6 +299,7 @@ add_program(
     include/evget/Event/Button/Repeat.h
     include/evget/Event/Common/Time.h
     include/evget/Event/Touch/Multitouch.h
+    include/evget/Event/Touch/Orientation.h
     include/evget/Event/Touch/EllipseMajorInner.h
     include/evget/Event/Touch/EllipseMajorOuter.h
     include/evget/Event/Touch/EllipseMinorInner.h
