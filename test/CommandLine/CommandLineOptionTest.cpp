@@ -21,10 +21,10 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
+#include <TestUtils/CommandLine/CommandLineTestUtils.h>
 
 namespace po = boost::program_options;
-namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
+namespace CmdUtils = TestUtils::CommandLineTestUtils;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionTest, RequiredPresent) { // NOLINT(cert-err58-cpp)

@@ -21,11 +21,11 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
+#include <TestUtils/CommandLine/CommandLineTestUtils.h>
 #include <evget/CommandLine/OptionFlag.h>
 
 namespace po = boost::program_options;
-namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
+namespace CmdUtils = TestUtils::CommandLineTestUtils;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)

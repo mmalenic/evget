@@ -2,7 +2,7 @@ add_program(
     TARGET ${TEST_EXECUTABLE_NAME}
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    include/TestUtilities/CommandLine/CommandLineTestUtilities.h
+    include/TestUtils/CommandLine/CommandLineTestUtils.h
 )
 
 add_subdirectory(src)

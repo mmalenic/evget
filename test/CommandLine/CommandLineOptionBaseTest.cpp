@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include <evget/CommandLine/Option.h>
-#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
+#include <TestUtils/CommandLine/CommandLineTestUtils.h>
 
 namespace po = boost::program_options;
-namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
+namespace CmdUtils = TestUtils::CommandLineTestUtils;
 namespace Cmd = CommandLine;
 
 TEST(CommandLineOptionBaseTest, GetShortName) { // NOLINT(cert-err58-cpp)

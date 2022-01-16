@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <TestUtilities/CommandLine/CommandLineTestUtilities.h>
+#include <TestUtils/CommandLine/CommandLineTestUtils.h>
 
-void TestUtilities::CommandLineTestUtilities::CommandLineTest::SetUp() {
+void TestUtils::CommandLineTestUtils::CommandLineTest::SetUp() {
     fs::current_path(fs::temp_directory_path());
 }
 
-void TestUtilities::CommandLineTestUtilities::CommandLineTest::TearDown() {
+void TestUtils::CommandLineTestUtils::CommandLineTest::TearDown() {
     Cmd::Parser parser{""};
     fs::path configFile = parser.getConfigFile();
 

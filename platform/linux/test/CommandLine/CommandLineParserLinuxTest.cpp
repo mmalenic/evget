@@ -21,11 +21,11 @@
 // SOFTWARE.
 
 #include "evget/CommandLine/ParserLinux.h"
-#include "TestUtilities/CommandLine/CommandLineTestUtilities.h"
+#include "TestUtils/CommandLine/CommandLineTestUtils.h"
 #include <gtest/gtest.h>
 
 namespace Cmd = CommandLine;
-namespace CmdUtils = TestUtilities::CommandLineTestUtilities;
+namespace CmdUtils = TestUtils::CommandLineTestUtils;
 
 using CommandLineParserLinuxTest = CmdUtils::CommandLineTest;
 

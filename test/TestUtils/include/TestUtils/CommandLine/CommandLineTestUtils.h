@@ -34,7 +34,7 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 
-namespace TestUtilities::CommandLineTestUtilities {
+namespace TestUtils::CommandLineTestUtils {
 
     namespace po = boost::program_options;
     namespace Cmd = CommandLine;

@@ -10,4 +10,4 @@ add_program(
     Event/FieldTest.cpp
 )
 
-add_subdirectory(TestUtilities)
+add_subdirectory(TestUtils)
