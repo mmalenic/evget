@@ -27,7 +27,7 @@
 #include <utility>
 #include "evget/UnsupportedOperationException.h"
 
-namespace EventUtils = TestUtils::Event;
+namespace EventUtils = TestUtils::EventTestUtils;
 
 TEST(EventDataTest, CreationAndIterationByName) { // NOLINT(cert-err58-cpp)
     EventUtils::test_create_and_iterate([](std::string field_name, std::string name) {

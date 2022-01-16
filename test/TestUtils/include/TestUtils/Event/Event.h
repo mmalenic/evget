@@ -27,7 +27,7 @@
 #include "evget/Event/Data.h"
 #include "gtest/gtest.h"
 
-namespace TestUtils::Event {
+namespace TestUtils::EventTestUtils {
     void test_create_and_iterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
