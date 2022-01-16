@@ -10,6 +10,7 @@ add_program(
     Event/Common/Time.cpp
     Event/Touch/Multitouch.cpp
     Event/Touch/EllipseMajorInner.cpp
+    Event/Touch/EllipseMajorOuter.cpp
     Event/Touch/EllipseMinorInner.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
