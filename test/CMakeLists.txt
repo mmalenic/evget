@@ -12,6 +12,7 @@ add_program(
     Event/Button/ReleaseTest.cpp
     Event/Button/RepeatTest.cpp
     Event/Cursor/PositionXTest.cpp
+    Event/Cursor/PositionYTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
