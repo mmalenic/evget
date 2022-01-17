@@ -10,6 +10,7 @@ add_program(
     Event/Button/CharacterTest.cpp
     Event/Button/PressTest.cpp
     Event/Button/ReleaseTest.cpp
+    Event/Button/RepeatTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
