@@ -17,6 +17,7 @@ add_program(
     Event/Cursor/WheelUp.cpp
     Event/Touch/EllipseMajorInnerTest.cpp
     Event/Touch/EllipseMajorOuterTest.cpp
+    Event/Touch/EllipseMinorInnerTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
