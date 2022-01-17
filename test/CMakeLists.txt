@@ -8,6 +8,7 @@ add_program(
     CommandLine/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
+    Event/Button/PressTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
