@@ -14,6 +14,7 @@ add_program(
     Event/Cursor/PositionXTest.cpp
     Event/Cursor/PositionYTest.cpp
     Event/Cursor/WheelDown.cpp
+    Event/Cursor/WheelUp.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
