@@ -22,8 +22,8 @@
 
 #include "evget/Event/Touch/PositionYOuter.h"
 
-Event::Cursor::PositionYOuter::PositionYOuter(std::string position) : Field{"PositionYOuter", std::move(position)} {
+Event::Touch::PositionYOuter::PositionYOuter(std::string position) : Field{"PositionYOuter", std::move(position)} {
 }
 
-Event::Cursor::PositionYOuter::PositionYOuter(int position) : PositionYOuter{std::to_string(position)} {
+Event::Touch::PositionYOuter::PositionYOuter(int position) : PositionYOuter{std::to_string(position)} {
 }

@@ -26,7 +26,7 @@
 #include "evget/Event/Field.h"
 #include <string>
 
-namespace Event::Cursor {
+namespace Event::Touch {
     class PositionYOuter : public Field {
     public:
         explicit PositionYOuter(std::string position);

@@ -20,18 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
-#define EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Touch/PositionXOuter.h"
 
-#include "evget/Event/Field.h"
-#include <string>
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-namespace Event::Touch {
-    class PositionXOuter : public Field {
-    public:
-        explicit PositionXOuter(std::string position);
-        explicit PositionXOuter(int position);
-    };
+TEST(PositionXOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name(Event::Touch::PositionXOuter{1}, "PositionXOuter", "1");
 }
-
-#endif //EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
