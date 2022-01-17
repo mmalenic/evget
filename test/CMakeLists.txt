@@ -11,6 +11,7 @@ add_program(
     Event/Button/PressTest.cpp
     Event/Button/ReleaseTest.cpp
     Event/Button/RepeatTest.cpp
+    Event/Cursor/PositionXTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )
