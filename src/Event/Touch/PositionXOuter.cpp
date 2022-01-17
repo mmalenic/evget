@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/PositionXOuter.h"
+#include "evget/Event/Touch/PositionXOuterTest.h"
 
 Event::Touch::PositionXOuter::PositionXOuter(std::string position) : Field{"PositionXOuter", std::move(position)} {
 }
