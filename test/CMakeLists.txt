@@ -20,6 +20,7 @@ add_program(
     Event/Touch/EllipseMinorInnerTest.cpp
     Event/Touch/EllipseMinorOuterTest.cpp
     Event/Touch/MultitouchTest.cpp
+    Event/Touch/OrientationTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )

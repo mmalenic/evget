@@ -22,8 +22,8 @@
 
 #include "evget/Event/Touch/Orientation.h"
 
-Event::Touch::Orientatioon::Orientatioon(std::string orientation) : Field{"Orientatioon", std::move(orientation)} {
+Event::Touch::Orientation::Orientation(std::string orientation) : Field{"Orientation", std::move(orientation)} {
 }
 
-Event::Touch::Orientatioon::Orientatioon(int orientation) : Orientatioon{std::to_string(orientation)} {
+Event::Touch::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {
 }
