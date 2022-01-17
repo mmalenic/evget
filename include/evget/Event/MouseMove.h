@@ -23,13 +23,13 @@
 #ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 #define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 
-#include "Data.h"
+#include "Event.h"
 #include "Field.h"
 
 /**
  * Represents a mouse move event.
  */
-class MouseMove : public Data {
+class MouseMove : public Event {
 public:
     class Position : public Field {
         Position();

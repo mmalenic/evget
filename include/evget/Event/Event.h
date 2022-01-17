@@ -33,7 +33,7 @@
 /**
  * Event container to represent event data.
  */
-class Data {
+class Event {
 public:
     using iterator = std::vector<Field>::iterator;
 
@@ -42,14 +42,14 @@ public:
      * @param name name of event data
      * @param fields fields
      */
-    Data(std::string name, std::initializer_list<Field> fields);
+    Event(std::string name, std::initializer_list<Field> fields);
 
     /**
      * Construct the event data.
      * @param name name of event data
      * @param fieldsNames field names
      */
-    Data(std::string name, std::initializer_list<std::string> fieldsNames);
+    Event(std::string name, std::initializer_list<std::string> fieldsNames);
 
     /**
      * Iterator begin.

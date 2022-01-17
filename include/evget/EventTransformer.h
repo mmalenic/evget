@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
-#include "Event/Data.h"
+#include "Event/Event.h"
 #include "SystemEvent.h"
 
 /**
@@ -38,7 +38,7 @@ public:
      * @param event event to transform
      * @return event event for storage
      */
-    virtual Data transformEvent(SystemEvent<T> event);
+    virtual Event transformEvent(SystemEvent<T> event);
 
     EventTransformer() = default;
     virtual ~EventTransformer() = default;
@@ -49,8 +49,8 @@ public:
 };
 
 template<typename T>
-Data EventTransformer<T>::transformEvent(SystemEvent<T> event) {
-    return Data{"", {""}};
+Event EventTransformer<T>::transformEvent(SystemEvent<T> event) {
+    return Event{"", {""}};
 }
 
 #endif //EVGET_INCLUDE_EVENTTRANSFORMER_H
