@@ -40,6 +40,8 @@ namespace Event {
     public:
         class MouseMoveBuilder {
         public:
+            friend class MouseMove;
+
             MouseMoveBuilder();
 
             /**
@@ -71,7 +73,7 @@ namespace Event {
         /**
          * Create event entry.
          */
-        explicit MouseMove(MouseMoveBuilder builder);
+        explicit MouseMove(const MouseMoveBuilder& builder);
     };
 }
 

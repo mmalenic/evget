@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <variant>
+#include <optional>
 
 #include "Field.h"
 
@@ -43,6 +44,11 @@ public:
      * @param fields fields
      */
     Data(std::string name, std::initializer_list<Field> fields);
+
+    /**
+     * Construct the event data.
+     */
+    Data(std::string name, std::initializer_list<std::optional<Field>> fields);
 
     /**
      * Construct the event data.

@@ -43,3 +43,8 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::position
 Event::MouseMove Event::MouseMove::MouseMoveBuilder::build() {
     return Event::MouseMove(*this);
 }
+
+Event::MouseMove::MouseMove(
+    const Event::MouseMove::MouseMoveBuilder& builder
+) : Data{"MouseMove", {builder._time, builder._positionX, builder._positionY}} {
+}
