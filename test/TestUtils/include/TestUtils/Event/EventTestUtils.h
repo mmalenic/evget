@@ -53,15 +53,20 @@ namespace TestUtils::EventTestUtils {
     void field_value_and_name(Field&& field, const std::string& name, const std::string& expected);
 
     template<typename T>
+    void field_value_and_name(const char* value, const std::string& name, const std::string& expected) {
+        Field field = T{value};
+        field_value_and_name(std::move(field), name, expected);
+
+        Field fieldDefault = T{};
+        field_value_and_name(std::move(fieldDefault), name, "");
+    }
+
+    template<typename T>
     void field_value_and_name(const auto& value, const std::string& name, const std::string& expected) {
         Field field = T{value};
         field_value_and_name(std::move(field), name, expected);
 
-        Field fieldString = T{"value"};
-        field_value_and_name(std::move(fieldString), name, "value");
-
-        Field fieldDefault = T{};
-        field_value_and_name(std::move(fieldDefault), name, "");
+        field_value_and_name<T>("value", name, "value");
     }
 }
 

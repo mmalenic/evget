@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(WheelDownTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(Event::Cursor::WheelDown{1}, "WheelDown", "1");
+    EventTestUtils::field_value_and_name<Event::Cursor::WheelDown>(1, "WheelDown", "1");
 }

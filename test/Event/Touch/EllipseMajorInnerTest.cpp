@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(EllipseMajorInnerTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(Event::Touch::EllipseMajorInner{1}, "EllipseMajorInner", "1");
+    EventTestUtils::field_value_and_name<Event::Touch::EllipseMajorInner>(1, "EllipseMajorInner", "1");
 }
