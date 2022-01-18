@@ -27,3 +27,6 @@ Event::Cursor::WheelUp::WheelUp(std::string amount) : Field{"WheelUp", std::move
 
 Event::Cursor::WheelUp::WheelUp(int amount) : WheelUp{std::to_string(amount)} {
 }
+
+Event::Cursor::WheelUp::WheelUp() : WheelUp{""} {
+}

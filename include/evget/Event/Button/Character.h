@@ -29,6 +29,7 @@
 namespace Event::Button {
     class Character : public Field {
     public:
+        Character();
         explicit Character(std::string character);
         explicit Character(char character);
     };

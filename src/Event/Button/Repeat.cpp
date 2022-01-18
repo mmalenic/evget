@@ -24,3 +24,6 @@
 
 Event::Button::Repeat::Repeat(std::string button) : Field{"Repeat", std::move(button)} {
 }
+
+Event::Button::Repeat::Repeat() : Repeat{""} {
+}

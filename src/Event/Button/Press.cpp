@@ -24,3 +24,6 @@
 
 Event::Button::Press::Press(std::string button) : Field{"Press", std::move(button)} {
 }
+
+Event::Button::Press::Press() : Press{""} {
+}

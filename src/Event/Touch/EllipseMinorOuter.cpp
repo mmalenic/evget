@@ -27,3 +27,6 @@ Event::Touch::EllipseMinorOuter::EllipseMinorOuter(std::string width) : Field{"E
 
 Event::Touch::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {
 }
+
+Event::Touch::EllipseMinorOuter::EllipseMinorOuter() : EllipseMinorOuter{""} {
+}

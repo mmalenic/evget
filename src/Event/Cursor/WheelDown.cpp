@@ -27,3 +27,6 @@ Event::Cursor::WheelDown::WheelDown(std::string amount) : Field{"WheelDown", std
 
 Event::Cursor::WheelDown::WheelDown(int amount) : WheelDown{std::to_string(amount)} {
 }
+
+Event::Cursor::WheelDown::WheelDown() : WheelDown{""} {
+}

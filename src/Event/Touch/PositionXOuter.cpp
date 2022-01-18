@@ -27,3 +27,6 @@ Event::Touch::PositionXOuter::PositionXOuter(std::string position) : Field{"Posi
 
 Event::Touch::PositionXOuter::PositionXOuter(int position) : PositionXOuter{std::to_string(position)} {
 }
+
+Event::Touch::PositionXOuter::PositionXOuter() : PositionXOuter{""} {
+}

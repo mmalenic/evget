@@ -29,6 +29,7 @@
 namespace Event::Touch {
     class Orientation : public Field {
     public:
+        Orientation();
         explicit Orientation(std::string orientation);
         explicit Orientation(int orientation);
     };

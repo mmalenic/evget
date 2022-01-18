@@ -29,6 +29,7 @@
 namespace Event::Touch {
     class PositionXOuter : public Field {
     public:
+        PositionXOuter();
         explicit PositionXOuter(std::string position);
         explicit PositionXOuter(int position);
     };

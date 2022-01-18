@@ -27,3 +27,6 @@ Event::Common::Time::Time(std::string interval) : Field{"Time", std::move(interv
 
 Event::Common::Time::Time(std::chrono::nanoseconds interval) : Time{std::to_string(interval.count())} {
 }
+
+Event::Common::Time::Time() : Time{""} {
+}

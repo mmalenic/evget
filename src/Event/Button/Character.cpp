@@ -22,6 +22,9 @@
 
 #include "evget/Event/Button/Character.h"
 
+Event::Button::Character::Character() : Character{""} {
+}
+
 Event::Button::Character::Character(std::string character) : Field{"Character", std::move(character)} {
 }
 

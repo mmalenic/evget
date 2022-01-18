@@ -27,3 +27,6 @@ Event::Touch::Orientation::Orientation(std::string orientation) : Field{"Orienta
 
 Event::Touch::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {
 }
+
+Event::Touch::Orientation::Orientation() : Orientation{""} {
+}

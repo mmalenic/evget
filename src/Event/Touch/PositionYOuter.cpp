@@ -27,3 +27,6 @@ Event::Touch::PositionYOuter::PositionYOuter(std::string position) : Field{"Posi
 
 Event::Touch::PositionYOuter::PositionYOuter(int position) : PositionYOuter{std::to_string(position)} {
 }
+
+Event::Touch::PositionYOuter::PositionYOuter() : PositionYOuter{""} {
+}

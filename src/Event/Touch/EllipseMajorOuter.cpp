@@ -27,3 +27,6 @@ Event::Touch::EllipseMajorOuter::EllipseMajorOuter(std::string width) : Field{"E
 
 Event::Touch::EllipseMajorOuter::EllipseMajorOuter(int width) : EllipseMajorOuter{std::to_string(width)} {
 }
+
+Event::Touch::EllipseMajorOuter::EllipseMajorOuter() : EllipseMajorOuter{""} {
+}

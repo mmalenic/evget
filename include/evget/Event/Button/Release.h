@@ -29,6 +29,7 @@
 namespace Event::Button {
     class Release : public Field {
     public:
+        Release();
         explicit Release(std::string button);
     };
 }

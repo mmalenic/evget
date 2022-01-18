@@ -29,6 +29,7 @@
 namespace Event::Button {
     class Repeat : public Field {
     public:
+        Repeat();
         explicit Repeat(std::string button);
     };
 }

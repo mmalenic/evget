@@ -29,6 +29,7 @@
 namespace Event::Touch {
     class Multitouch : public Field {
     public:
+        Multitouch();
         explicit Multitouch(std::string id);
         explicit Multitouch(int id);
     };

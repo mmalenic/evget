@@ -29,3 +29,6 @@ Event::Cursor::PositionY::PositionY(std::string position) : Field{"PositionY", s
 
 Event::Cursor::PositionY::PositionY(int position) : PositionY{std::to_string(position)} {
 }
+
+Event::Cursor::PositionY::PositionY() : PositionY{""} {
+}

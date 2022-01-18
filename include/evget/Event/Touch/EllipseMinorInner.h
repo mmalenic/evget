@@ -29,6 +29,7 @@
 namespace Event::Touch {
     class EllipseMinorInner : public Field {
     public:
+        EllipseMinorInner();
         explicit EllipseMinorInner(std::string width);
         explicit EllipseMinorInner(int width);
     };

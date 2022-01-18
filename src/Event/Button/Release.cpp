@@ -24,3 +24,6 @@
 
 Event::Button::Release::Release(std::string button) : Field{"Release", std::move(button)} {
 }
+
+Event::Button::Release::Release() : Release{""} {
+}

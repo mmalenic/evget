@@ -27,3 +27,6 @@ Event::Touch::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::
 
 Event::Touch::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
 }
+
+Event::Touch::Multitouch::Multitouch() : Multitouch{""} {
+}

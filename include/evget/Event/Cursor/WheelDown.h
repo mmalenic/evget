@@ -29,6 +29,7 @@
 namespace Event::Cursor {
     class WheelDown : public Field {
     public:
+        WheelDown();
         explicit WheelDown(std::string amount);
         explicit WheelDown(int amount);
     };
