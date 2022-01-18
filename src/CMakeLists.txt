@@ -20,7 +20,7 @@ add_program(
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
     Event/Cursor/WheelUp.cpp
-    Event/Event.cpp
+    Event/Data.cpp
     Event/Field.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp

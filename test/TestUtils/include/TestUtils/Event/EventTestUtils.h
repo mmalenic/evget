@@ -24,14 +24,14 @@
 #define EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 
 #include <string>
-#include "evget/Event/Event.h"
+#include "evget/Event/Data.h"
 #include "gtest/gtest.h"
 
 namespace TestUtils::EventTestUtils {
     void create_and_iterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
-        Event eventData = create(field_name, "name");
+        Data eventData = create(field_name, "name");
         eventData.setAtPosition(0, "entry");
 
         auto n = 0;
@@ -44,7 +44,7 @@ namespace TestUtils::EventTestUtils {
 
     void get_and_set(auto&& get, std::string entry) {
         std::string field_name = "field";
-        Event eventData{"name", {field_name}};
+        Data eventData{"name", {field_name}};
         auto field = get(eventData, field_name, 0, entry);
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
