@@ -65,9 +65,9 @@ namespace Event {
             MouseMove build();
 
         private:
-            std::optional<Common::Time> _time;
-            std::optional<Cursor::PositionX> _positionX;
-            std::optional<Cursor::PositionY> _positionY;
+            Common::Time _time;
+            Cursor::PositionX _positionX;
+            Cursor::PositionY _positionY;
         };
 
         /**

@@ -22,7 +22,7 @@
 
 #include "evget/Event/MouseMove.h"
 
-Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() : _time{std::nullopt}, _positionX{std::nullopt}, _positionY{std::nullopt} {
+Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() : _time{}, _positionX{}, _positionY{} {
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
