@@ -22,6 +22,7 @@ add_program(
     Event/Cursor/WheelUp.cpp
     Event/Data.cpp
     Event/Field.cpp
+    Event/MouseMove.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp
     CommandLine/InvalidCommandLineOption.cpp

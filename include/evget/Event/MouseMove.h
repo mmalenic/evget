@@ -25,20 +25,54 @@
 
 #include "Data.h"
 #include "Field.h"
+#include <chrono>
+#include <optional>
+#include "evget/Event/Common/Time.h"
+#include "evget/Event/Cursor/PositionX.h"
+#include "evget/Event/Cursor/PositionY.h"
 
-/**
- * Represents a mouse move event.
- */
-class MouseMove : public Data {
-public:
-    class Position : public Field {
-        Position();
-    };
 
+namespace Event {
     /**
-     * Create event entry.
+     * Represents a mouse move event.
      */
-    MouseMove();
-};
+    class MouseMove : public Data {
+    public:
+        class MouseMoveBuilder {
+        public:
+            MouseMoveBuilder();
+
+            /**
+             * Add time in nanoseconds.
+             */
+            MouseMoveBuilder& time(std::chrono::nanoseconds nanoseconds);
+
+            /**
+             * Add position x.
+             */
+            MouseMoveBuilder& positionX(int x);
+
+            /**
+             * Add position y.
+             */
+            MouseMoveBuilder& positionY(int y);
+
+            /**
+             * Build mouse move event.
+             */
+            MouseMove build();
+
+        private:
+            std::optional<Common::Time> _time;
+            std::optional<Cursor::PositionX> _positionX;
+            std::optional<Cursor::PositionY> _positionY;
+        };
+
+        /**
+         * Create event entry.
+         */
+        explicit MouseMove(MouseMoveBuilder builder);
+    };
+}
 
 #endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H

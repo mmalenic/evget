@@ -20,44 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_DATA_FIELD_H
-#define EVGET_INCLUDE_EVENT_DATA_FIELD_H
+#include "evget/Event/MouseMove.h"
 
-#include <string>
+Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() : _time{std::nullopt}, _positionX{std::nullopt}, _positionY{std::nullopt} {
+}
 
-/**
- * Represents a field in an event.
- */
-class Field {
-public:
-    /**
-     * Create the entry.
-     * @param name name
-     * @param entry entry
-     */
-    explicit Field(std::string name, std::string entry = "");
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
+    _time = Common::Time{nanoseconds};
+    return *this;
+}
 
-    /**
-     * Get the entry.
-     * @return entry
-     */
-    [[nodiscard]] std::string getEntry() const;
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionX(int x) {
+    _positionX = Cursor::PositionX{x};
+    return *this;
+}
 
-    /**
-     * Get the name.
-     * @return name
-     */
-    [[nodiscard]] std::string getName() const;
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionY(int y) {
+    _positionY = Cursor::PositionY{y};
+    return *this;
+}
 
-    /**
-     * Set field.
-     * @param entry entry
-     */
-    void setEntry(const std::string& entry);
-
-private:
-    std::string name;
-    std::string entry;
-};
-
-#endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H
+Event::MouseMove Event::MouseMove::MouseMoveBuilder::build() {
+    return Event::MouseMove(*this);
+}
