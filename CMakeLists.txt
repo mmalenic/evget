@@ -294,6 +294,7 @@ add_program(
     include/evget/Storage.h
     include/evget/Event/MouseMove.h
     include/evget/Event/MouseClick.h
+    include/evget/Event/Key.h
     include/evget/Event/Button/Character.h
     include/evget/Event/Button/Press.h
     include/evget/Event/Button/Release.h

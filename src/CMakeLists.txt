@@ -22,6 +22,7 @@ add_program(
     Event/Cursor/WheelUp.cpp
     Event/Data.cpp
     Event/Field.cpp
+    Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp
     ShutdownHandler.cpp
