@@ -20,60 +20,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
-#define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#ifndef EVGET_SRC_EVENT_MOUSECLICK_H
+#define EVGET_SRC_EVENT_MOUSECLICK_H
 
 #include "Data.h"
-#include "Field.h"
-#include <chrono>
-#include <optional>
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/PositionX.h"
 #include "evget/Event/Cursor/PositionY.h"
+#include "evget/Event/Button/Press.h"
+#include "evget/Event/Button/Release.h"
 
 namespace Event {
     /**
-     * Represents a mouse move event.
+     * Represents a mouse click event.
      */
-    class MouseMove : public Data {
+    class MouseClick : public Data {
     public:
-        class MouseMoveBuilder {
+        class MouseClickBuilder {
         public:
-            friend class MouseMove;
+            friend class MouseClick;
 
-            MouseMoveBuilder();
+            MouseClickBuilder();
 
             /**
              * Add time in nanoseconds.
              */
-            MouseMoveBuilder& time(std::chrono::nanoseconds nanoseconds);
+            MouseClickBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
              * Add position x.
              */
-            MouseMoveBuilder& positionX(int x);
+            MouseClickBuilder& positionX(int x);
 
             /**
              * Add position y.
              */
-            MouseMoveBuilder& positionY(int y);
+            MouseClickBuilder& positionY(int y);
+
+            /**
+             * Add press.
+             */
+            MouseClickBuilder& press(std::string button);
+
+            /**
+             * Add release.
+             */
+            MouseClickBuilder& release(std::string button);
 
             /**
              * Build mouse move event.
              */
-            MouseMove build();
+            MouseClick build();
 
         private:
             Common::Time _time;
             Cursor::PositionX _positionX;
             Cursor::PositionY _positionY;
+            Button::Press _press;
+            Button::Release _release;
         };
 
         /**
          * Create event entry.
          */
-        explicit MouseMove(const MouseMoveBuilder& builder);
+        explicit MouseClick(const MouseClickBuilder& builder);
     };
 }
 
-#endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#endif //EVGET_SRC_EVENT_MOUSECLICK_H
