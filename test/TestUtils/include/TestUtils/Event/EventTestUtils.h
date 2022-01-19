@@ -68,6 +68,10 @@ namespace TestUtils::EventTestUtils {
 
         field_value_and_name<T>("value", name, "value");
     }
+
+    void event_entry_at(auto&& event, size_t position, const std::string& expected) {
+        ASSERT_EQ(event.getAtPosition(position).getEntry(), expected);
+    }
 }
 
 #endif //EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H

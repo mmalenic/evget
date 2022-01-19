@@ -20,20 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <gtest/gtest.h>
-#include "evget/Event/MouseMove.h"
+#include "evget/Event/MouseClick.h"
 #include "TestUtils/Event/EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(MouseMoveTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+TEST(MouseClickTest, Time) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(MouseMoveTest, PositionX) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.positionX(1).build(), 1, "1");
+TEST(MouseClickTest, PositionX) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.positionX(1).build(), 1, "1");
 }
 
-TEST(MouseMoveTest, PositionY) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.positionY(1).build(), 2, "1");
+TEST(MouseClickTest, PositionY) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.positionY(1).build(), 2, "1");
+}
+
+TEST(MouseClickTest, Press) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.press("1").build(), 3, "1");
+}
+
+TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.release("1").build(), 4, "1");
 }
