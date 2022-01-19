@@ -44,7 +44,7 @@ namespace TestUtils::EventTestUtils {
 
     void get_and_set(auto&& get, std::string entry) {
         std::string field_name = "field";
-        Data eventData{"name", {field_name}};
+        Data eventData{"name", {Field{field_name}}};
         auto field = get(eventData, field_name, 0, entry);
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());

@@ -29,14 +29,6 @@
 
 namespace EventUtils = TestUtils::EventTestUtils;
 
-TEST(EventDataTest, CreationAndIterationByName) { // NOLINT(cert-err58-cpp)
-    EventUtils::create_and_iterate(
-        [](std::string field_name, std::string name) {
-            return Data{std::move(name), {std::move(field_name)}};
-        }
-    );
-}
-
 TEST(EventDataTest, CreationAndIterationByField) { // NOLINT(cert-err58-cpp)
     EventUtils::create_and_iterate(
         [](std::string field_name, std::string name) {
@@ -81,11 +73,11 @@ TEST(EventDataTest, SetAtPosition) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventDataTest, NumberOfFields) { // NOLINT(cert-err58-cpp)
-    Data eventData{"", {""}};
+    Data eventData{"", {Field{""}}};
     ASSERT_EQ(1, eventData.numberOfFields());
 }
 
 TEST(EventDataTest, GetName) { // NOLINT(cert-err58-cpp)
-    Data eventData{"name", {""}};
+    Data eventData{"name", {Field{""}}};
     ASSERT_EQ("name", eventData.getName());
 }
