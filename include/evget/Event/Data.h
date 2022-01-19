@@ -46,18 +46,6 @@ public:
     Data(std::string name, std::initializer_list<Field> fields);
 
     /**
-     * Construct the event data.
-     */
-    Data(std::string name, std::initializer_list<std::optional<Field>> fields);
-
-    /**
-     * Construct the event data.
-     * @param name name of event data
-     * @param fieldsNames field names
-     */
-    Data(std::string name, std::initializer_list<std::string> fieldsNames);
-
-    /**
      * Iterator begin.
      * @return iterator begin
      */

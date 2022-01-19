@@ -30,22 +30,6 @@ using namespace std;
 Data::Data(string name, initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
 }
 
-Data::Data(string name, initializer_list<std::optional<Field>> fields) : nFields{fields.size()}, name{std::move(name)}, fields{} {
-    this->fields.reserve(nFields);
-    for (const auto& field : fields) {
-        if (field.has_value()) {
-            this->fields.emplace_back(*field);
-        }
-    }
-}
-
-Data::Data(string name, initializer_list<string> fieldNames) : nFields{fieldNames.size()}, name{std::move(name)}, fields{} {
-    fields.reserve(nFields);
-    for (const auto& fieldName : fieldNames) {
-        fields.emplace_back(fieldName);
-    }
-}
-
 Data::iterator Data::begin() noexcept {
     return fields.begin();
 }
