@@ -25,6 +25,7 @@ add_program(
     Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp
+    Event/MouseWheel.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp
     CommandLine/InvalidCommandLineOption.cpp
