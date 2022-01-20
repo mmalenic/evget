@@ -20,13 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/Orientation.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
+#define EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
 
-Event::Touch::Orientation::Orientation(std::string orientation) : Field{"Orientation", std::move(orientation)} {
+#include "evget/Event/Field.h"
+#include <string>
+
+namespace Event::Cursor {
+    class Multitouch : public Field {
+    public:
+        Multitouch();
+        explicit Multitouch(std::string id);
+        explicit Multitouch(int id);
+    };
 }
 
-Event::Touch::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {
-}
-
-Event::Touch::Orientation::Orientation() : Orientation{""} {
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H

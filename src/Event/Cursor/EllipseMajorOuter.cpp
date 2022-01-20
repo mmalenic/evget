@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/EllipseMajorOuter.h"
+#include "evget/Event/Cursor/EllipseMajorOuter.h"
 
-Event::Touch::EllipseMajorOuter::EllipseMajorOuter(std::string width) : Field{"EllipseMajorOuter", std::move(width)} {
+Event::Cursor::EllipseMajorOuter::EllipseMajorOuter(std::string width) : Field{"EllipseMajorOuter", std::move(width)} {
 }
 
-Event::Touch::EllipseMajorOuter::EllipseMajorOuter(int width) : EllipseMajorOuter{std::to_string(width)} {
+Event::Cursor::EllipseMajorOuter::EllipseMajorOuter(int width) : EllipseMajorOuter{std::to_string(width)} {
 }
 
-Event::Touch::EllipseMajorOuter::EllipseMajorOuter() : EllipseMajorOuter{""} {
+Event::Cursor::EllipseMajorOuter::EllipseMajorOuter() : EllipseMajorOuter{""} {
 }

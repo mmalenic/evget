@@ -20,19 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_POSITIONYOUTERTEST_H
-#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_POSITIONYOUTERTEST_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
+#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
 
 #include "evget/Event/Field.h"
 #include <string>
 
-namespace Event::Touch {
-    class PositionYOuter : public Field {
+namespace Event::Cursor {
+    class EllipseMinorOuter : public Field {
     public:
-        PositionYOuter();
-        explicit PositionYOuter(std::string position);
-        explicit PositionYOuter(int position);
+        EllipseMinorOuter();
+        explicit EllipseMinorOuter(std::string width);
+        explicit EllipseMinorOuter(int width);
     };
 }
-
-#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_POSITIONYOUTERTEST_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H

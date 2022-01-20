@@ -20,19 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJOROUTER_H
-#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJOROUTER_H
+#include "evget/Event/Cursor/PositionYOuterTest.h"
 
-#include "evget/Event/Field.h"
-#include <string>
-
-namespace Event::Touch {
-    class EllipseMajorOuter : public Field {
-    public:
-        EllipseMajorOuter();
-        explicit EllipseMajorOuter(std::string width);
-        explicit EllipseMajorOuter(int width);
-    };
+Event::Cursor::PositionYOuter::PositionYOuter(std::string position) : Field{"PositionYOuter", std::move(position)} {
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJOROUTER_H
+Event::Cursor::PositionYOuter::PositionYOuter(int position) : PositionYOuter{std::to_string(position)} {
+}
+
+Event::Cursor::PositionYOuter::PositionYOuter() : PositionYOuter{""} {
+}

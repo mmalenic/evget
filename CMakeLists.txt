@@ -301,18 +301,19 @@ add_program(
     include/evget/Event/Button/Release.h
     include/evget/Event/Button/Repeat.h
     include/evget/Event/Common/Time.h
-    include/evget/Event/Touch/Multitouch.h
-    include/evget/Event/Touch/Orientation.h
-    include/evget/Event/Touch/EllipseMajorInner.h
-    include/evget/Event/Touch/EllipseMajorOuter.h
-    include/evget/Event/Touch/EllipseMinorInner.h
-    include/evget/Event/Touch/EllipseMinorOuter.h
-    include/evget/Event/Touch/PositionXOuterTest.h
-    include/evget/Event/Touch/PositionYOuterTest.h
+    include/evget/Event/Cursor/Multitouch.h
+    include/evget/Event/Cursor/Orientation.h
+    include/evget/Event/Cursor/EllipseMajorInner.h
+    include/evget/Event/Cursor/EllipseMajorOuter.h
+    include/evget/Event/Cursor/EllipseMinorInner.h
+    include/evget/Event/Cursor/EllipseMinorOuter.h
+    include/evget/Event/Cursor/PositionXOuterTest.h
+    include/evget/Event/Cursor/PositionYOuterTest.h
     include/evget/Event/Cursor/PositionX.h
     include/evget/Event/Cursor/PositionY.h
     include/evget/Event/Cursor/WheelDown.h
     include/evget/Event/Cursor/WheelUp.h
+    include/evget/Event/Touch.h
     include/evget/EventListener.h
     include/evget/Event/Field.h
     include/evget/UnsupportedOperationException.h

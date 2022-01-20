@@ -20,13 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/EllipseMinorInner.h"
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Cursor/PositionXOuterTest.h"
 
-Event::Touch::EllipseMinorInner::EllipseMinorInner(std::string width) : Field{"EllipseMinorInner", std::move(width)} {
-}
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-Event::Touch::EllipseMinorInner::EllipseMinorInner(int width) : EllipseMinorInner{std::to_string(width)} {
-}
-
-Event::Touch::EllipseMinorInner::EllipseMinorInner() : EllipseMinorInner{""} {
+TEST(PositionXOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::PositionXOuter>(1, "PositionXOuter", "1");
 }

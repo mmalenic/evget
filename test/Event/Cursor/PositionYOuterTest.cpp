@@ -20,19 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINORINNER_H
-#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINORINNER_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Cursor/PositionYOuterTest.h"
 
-#include "evget/Event/Field.h"
-#include <string>
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-namespace Event::Touch {
-    class EllipseMinorInner : public Field {
-    public:
-        EllipseMinorInner();
-        explicit EllipseMinorInner(std::string width);
-        explicit EllipseMinorInner(int width);
-    };
+TEST(PositionYOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::PositionYOuter>(1, "PositionYOuter", "1");
 }
-
-#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINORINNER_H

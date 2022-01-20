@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Touch/EllipseMinorOuter.h"
+#include "evget/Event/Cursor/Multitouch.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(EllipseMinorOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Touch::EllipseMinorOuter>(1, "EllipseMinorOuter", "1");
+TEST(MultitouchTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::Multitouch>(1, "Multitouch", "1");
 }

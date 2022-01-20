@@ -20,18 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
-#define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Cursor/EllipseMajorInner.h"
 
-#include "evget/Event/Field.h"
-#include <string>
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-namespace Event::Touch {
-    class EllipseMinorOuter : public Field {
-    public:
-        EllipseMinorOuter();
-        explicit EllipseMinorOuter(std::string width);
-        explicit EllipseMinorOuter(int width);
-    };
+TEST(EllipseMajorInnerTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::EllipseMajorInner>(1, "EllipseMajorInner", "1");
 }
-#endif //EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H

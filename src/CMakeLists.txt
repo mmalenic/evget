@@ -8,14 +8,14 @@ add_program(
     Event/Button/Release.cpp
     Event/Button/Repeat.cpp
     Event/Common/Time.cpp
-    Event/Touch/Multitouch.cpp
-    Event/Touch/Orientation.cpp
-    Event/Touch/EllipseMajorInner.cpp
-    Event/Touch/EllipseMajorOuter.cpp
-    Event/Touch/EllipseMinorInner.cpp
-    Event/Touch/EllipseMinorOuter.cpp
-    Event/Touch/PositionXOuter.cpp
-    Event/Touch/PositionYOuter.cpp
+    Event/Cursor/Multitouch.cpp
+    Event/Cursor/Orientation.cpp
+    Event/Cursor/EllipseMajorInner.cpp
+    Event/Cursor/EllipseMajorOuter.cpp
+    Event/Cursor/EllipseMinorInner.cpp
+    Event/Cursor/EllipseMinorOuter.cpp
+    Event/Cursor/PositionXOuter.cpp
+    Event/Cursor/PositionYOuter.cpp
     Event/Cursor/PositionX.cpp
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
@@ -26,6 +26,7 @@ add_program(
     Event/MouseClick.cpp
     Event/MouseMove.cpp
     Event/MouseWheel.cpp
+    Event/Touch.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp
     CommandLine/InvalidCommandLineOption.cpp

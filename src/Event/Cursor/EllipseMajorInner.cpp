@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Touch/Orientation.h"
+#include "evget/Event/Cursor/EllipseMajorInner.h"
 
-namespace EventTestUtils = TestUtils::EventTestUtils;
+Event::Cursor::EllipseMajorInner::EllipseMajorInner(std::string width) : Field{"EllipseMajorInner", std::move(width)} {
+}
 
-TEST(OrientationTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Touch::Orientation>(1, "Orientation", "1");
+Event::Cursor::EllipseMajorInner::EllipseMajorInner(int width) : EllipseMajorInner{std::to_string(width)} {
+}
+
+Event::Cursor::EllipseMajorInner::EllipseMajorInner() : EllipseMajorInner{""} {
 }

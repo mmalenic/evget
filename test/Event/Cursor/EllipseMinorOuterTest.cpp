@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Touch/EllipseMajorOuter.h"
+#include "evget/Event/Cursor/EllipseMinorOuter.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(EllipseMajorOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Touch::EllipseMajorOuter>(1, "EllipseMajorOuter", "1");
+TEST(EllipseMinorOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::EllipseMinorOuter>(1, "EllipseMinorOuter", "1");
 }

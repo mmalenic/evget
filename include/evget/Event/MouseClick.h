@@ -68,7 +68,7 @@ namespace Event {
             MouseClickBuilder& release(std::string button);
 
             /**
-             * Build mouse move event.
+             * Build mouse click event.
              */
             MouseClick build();
 

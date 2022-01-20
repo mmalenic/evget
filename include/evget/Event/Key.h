@@ -69,7 +69,7 @@ namespace Event {
             KeyBuilder& character(char character);
 
             /**
-             * Build mouse move event.
+             * Build key event.
              */
             Key build();
 

@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/EllipseMinorOuter.h"
+#include "evget/Event/Cursor/PositionXOuterTest.h"
 
-Event::Touch::EllipseMinorOuter::EllipseMinorOuter(std::string width) : Field{"EllipseMinorOuter", std::move(width)} {
+Event::Cursor::PositionXOuter::PositionXOuter(std::string position) : Field{"PositionXOuter", std::move(position)} {
 }
 
-Event::Touch::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {
+Event::Cursor::PositionXOuter::PositionXOuter(int position) : PositionXOuter{std::to_string(position)} {
 }
 
-Event::Touch::EllipseMinorOuter::EllipseMinorOuter() : EllipseMinorOuter{""} {
+Event::Cursor::PositionXOuter::PositionXOuter() : PositionXOuter{""} {
 }

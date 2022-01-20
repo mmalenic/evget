@@ -20,13 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/Multitouch.h"
+#ifndef EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
+#define EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
 
-Event::Touch::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::move(id)} {
+#include "evget/Event/Field.h"
+#include <string>
+
+namespace Event::Cursor {
+    class PositionXOuter : public Field {
+    public:
+        PositionXOuter();
+        explicit PositionXOuter(std::string position);
+        explicit PositionXOuter(int position);
+    };
 }
 
-Event::Touch::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
-}
-
-Event::Touch::Multitouch::Multitouch() : Multitouch{""} {
-}
+#endif //EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H

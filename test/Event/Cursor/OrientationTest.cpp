@@ -20,13 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch/PositionXOuterTest.h"
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Cursor/Orientation.h"
 
-Event::Touch::PositionXOuter::PositionXOuter(std::string position) : Field{"PositionXOuter", std::move(position)} {
-}
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-Event::Touch::PositionXOuter::PositionXOuter(int position) : PositionXOuter{std::to_string(position)} {
-}
-
-Event::Touch::PositionXOuter::PositionXOuter() : PositionXOuter{""} {
+TEST(OrientationTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::field_value_and_name<Event::Cursor::Orientation>(1, "Orientation", "1");
 }

@@ -15,18 +15,19 @@ add_program(
     Event/Cursor/PositionYTest.cpp
     Event/Cursor/WheelDown.cpp
     Event/Cursor/WheelUp.cpp
-    Event/Touch/EllipseMajorInnerTest.cpp
-    Event/Touch/EllipseMajorOuterTest.cpp
-    Event/Touch/EllipseMinorInnerTest.cpp
-    Event/Touch/EllipseMinorOuterTest.cpp
-    Event/Touch/MultitouchTest.cpp
-    Event/Touch/OrientationTest.cpp
-    Event/Touch/PositionXOuterTest.cpp
-    Event/Touch/PositionYOuterTest.cpp
+    Event/Cursor/EllipseMajorInnerTest.cpp
+    Event/Cursor/EllipseMajorOuterTest.cpp
+    Event/Cursor/EllipseMinorInnerTest.cpp
+    Event/Cursor/EllipseMinorOuterTest.cpp
+    Event/Cursor/MultitouchTest.cpp
+    Event/Cursor/OrientationTest.cpp
+    Event/Cursor/PositionXOuterTest.cpp
+    Event/Cursor/PositionYOuterTest.cpp
     Event/MouseMoveTest.cpp
     Event/MouseClickTest.cpp
     Event/KeyTest.cpp
     Event/MouseWheelTest.cpp
+    Event/TouchTest.cpp
     Event/EventDataTest.cpp
     Event/FieldTest.cpp
 )

@@ -28,9 +28,10 @@
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/WheelDown.h"
 #include "evget/Event/Cursor/WheelUp.h"
+
 namespace Event {
     /**
-     * Represents a mouse move event.
+     * Represents a mouse wheel event.
      */
     class MouseWheel : public Data {
     public:
@@ -46,17 +47,17 @@ namespace Event {
             MouseWheelBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
-             * Add position x.
+             * Add wheel down.
              */
             MouseWheelBuilder& wheelDown(int amount);
 
             /**
-             * Add position y.
+             * Add wheel up.
              */
             MouseWheelBuilder& wheelUp(int amount);
 
             /**
-             * Build mouse move event.
+             * Build mouse wheel event.
              */
             MouseWheel build();
 

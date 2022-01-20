@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Touch/Multitouch.h"
+#include "evget/Event/Cursor/EllipseMinorOuter.h"
 
-namespace EventTestUtils = TestUtils::EventTestUtils;
+Event::Cursor::EllipseMinorOuter::EllipseMinorOuter(std::string width) : Field{"EllipseMinorOuter", std::move(width)} {
+}
 
-TEST(MultitouchTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Touch::Multitouch>(1, "Multitouch", "1");
+Event::Cursor::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {
+}
+
+Event::Cursor::EllipseMinorOuter::EllipseMinorOuter() : EllipseMinorOuter{""} {
 }
