@@ -85,18 +85,6 @@ private:
     const size_t nFields;
     const std::string name;
     std::vector<Field> fields;
-
-    /**
-     * Get the field.
-     * @param name by name
-     */
-    Field& getReferenceByName(std::string name);
-
-    /**
-     * Get the field.
-     * @param position position
-     */
-    Field& getReferenceAtPosition(size_t position);
 };
 
 #endif //EVGET_INCLUDE_EVENTDATA_H

@@ -43,18 +43,6 @@ size_t Data::numberOfFields() const {
 }
 
 Field Data::getByName(std::string name) {
-    return getReferenceByName(std::move(name));
-}
-
-Field Data::getAtPosition(size_t position) {
-    return getReferenceAtPosition(position);
-}
-
-std::string Data::getName() const {
-    return name;
-}
-
-Field& Data::getReferenceByName(std::string name) {
     auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
     if (result != end()) {
         return *result;
@@ -62,9 +50,13 @@ Field& Data::getReferenceByName(std::string name) {
     throw UnsupportedOperationException(name + " not in event data.");
 }
 
-Field& Data::getReferenceAtPosition(size_t position) {
+Field Data::getAtPosition(size_t position) {
     if (position < fields.size()) {
         return fields.at(position);
     }
     throw UnsupportedOperationException(to_string(position) + " index out of range.");
+}
+
+std::string Data::getName() const {
+    return name;
 }
