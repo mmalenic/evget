@@ -31,8 +31,7 @@ namespace TestUtils::EventTestUtils {
     void create_and_iterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
-        Data eventData = create(field_name, "name");
-        eventData.setAtPosition(0, "entry");
+        Data eventData = create(field_name, "name", "entry");
 
         auto n = 0;
         for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {

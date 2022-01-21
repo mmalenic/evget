@@ -64,22 +64,10 @@ public:
     Field getByName(std::string name);
 
     /**
-     * Set the field.
-     * @param name with name
-     */
-    void setForName(std::string name, const std::string& entry);
-
-    /**
      * Get the field.
      * @param position position
      */
     Field getAtPosition(size_t position);
-
-    /**
-     * Set the field.
-     * @param position with position
-     */
-    void setAtPosition(size_t position, const std::string& entry);
 
     /**
      * Get the number of fields.

@@ -54,16 +54,6 @@ std::string Data::getName() const {
     return name;
 }
 
-void Data::setForName(std::string name, const std::string& entry) {
-    auto& field = getReferenceByName(name);
-    field.setEntry(entry);
-}
-
-void Data::setAtPosition(size_t position, const std::string& entry) {
-    auto& field = getReferenceAtPosition(position);
-    field.setEntry(entry);
-}
-
 Field& Data::getReferenceByName(std::string name) {
     auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
     if (result != end()) {

@@ -30,30 +30,18 @@
  */
 class Field {
 public:
-    /**
-     * Create the entry.
-     * @param name name
-     * @param entry entry
-     */
-    explicit Field(std::string name, std::string entry = "");
+    Field(std::string name, std::string entry);
+    explicit Field(std::string name);
 
     /**
      * Get the entry.
-     * @return entry
      */
     [[nodiscard]] std::string getEntry() const;
 
     /**
      * Get the name.
-     * @return name
      */
     [[nodiscard]] std::string getName() const;
-
-    /**
-     * Set field.
-     * @param entry entry
-     */
-    void setEntry(const std::string& entry);
 
 private:
     std::string name;

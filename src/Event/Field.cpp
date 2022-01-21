@@ -31,10 +31,10 @@ std::string Field::getEntry() const {
 Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-std::string Field::getName() const {
-    return name;
+Field::Field(std::string name) : Field{std::move(name), ""} {
 }
 
-void Field::setEntry(const std::string& entry) {
-    this->entry = entry;
+std::string Field::getName() const {
+    return name;
+
 }

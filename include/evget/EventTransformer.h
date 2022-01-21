@@ -41,11 +41,14 @@ public:
     virtual Data transformEvent(SystemEvent<T> event);
 
     EventTransformer() = default;
+
     virtual ~EventTransformer() = default;
+
+    EventTransformer(EventTransformer&&) noexcept = default;
+    EventTransformer& operator=(EventTransformer&&) noexcept = default;
+
     EventTransformer(const EventTransformer&) = default;
-    EventTransformer(EventTransformer&&) = default;
-    virtual EventTransformer& operator=(const EventTransformer&) = default;
-    virtual EventTransformer& operator=(EventTransformer&&) = default;
+    EventTransformer& operator=(const EventTransformer&) = default;
 };
 
 template<typename T>
