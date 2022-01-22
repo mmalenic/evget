@@ -39,51 +39,44 @@ public:
     using iterator = std::vector<Field>::iterator;
 
     /**
-     * Construct the event data.
-     * @param name name of event data
-     * @param fields fields
+     * List of fields represent the ordered fields in the data.
      */
     Data(std::string name, std::initializer_list<Field> fields);
 
     /**
-     * Iterator begin.
-     * @return iterator begin
-     */
-    [[nodiscard]] iterator begin() noexcept;
-
-    /**
-     * Iterator end.
-     * @return iterator end
-     */
-    [[nodiscard]] iterator end() noexcept;
-
-    /**
      * Get the field.
-     * @param name by name
      */
     Field getByName(std::string name);
 
     /**
      * Get the field.
-     * @param position position
      */
     Field getAtPosition(size_t position);
 
     /**
      * Get the number of fields.
-     * @return number of fields
      */
     [[nodiscard]] size_t numberOfFields() const;
 
     /**
      * Get the name of the data.
-     * @return name
      */
     [[nodiscard]] std::string getName() const;
 
+    [[nodiscard]] iterator begin() noexcept;
+    [[nodiscard]] iterator end() noexcept;
+
+    virtual ~Data() = default;
+
+    Data(Data&&) noexcept = default;
+    Data& operator=(Data&&) noexcept = default;
+
+    Data(const Data&) = default;
+    Data& operator=(const Data&) = default;
+
 private:
-    const size_t nFields;
-    const std::string name;
+    size_t nFields;
+    std::string name;
     std::vector<Field> fields;
 };
 

@@ -20,14 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <tuple>
 #include <evget/UnsupportedOperationException.h>
 #include "evget/Event/Data.h"
 #include <utility>
+#include <fmt/format.h>
 
-using namespace std;
-
-Data::Data(string name, initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
+Data::Data(std::string name, std::initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
 }
 
 Data::iterator Data::begin() noexcept {
@@ -43,18 +41,18 @@ size_t Data::numberOfFields() const {
 }
 
 Field Data::getByName(std::string name) {
-    auto result = find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
+    auto result = std::find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
     if (result != end()) {
         return *result;
     }
-    throw UnsupportedOperationException(name + " not in event data.");
+    throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
 }
 
 Field Data::getAtPosition(size_t position) {
     if (position < fields.size()) {
         return fields.at(position);
     }
-    throw UnsupportedOperationException(to_string(position) + " index out of range.");
+    throw UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
 }
 
 std::string Data::getName() const {

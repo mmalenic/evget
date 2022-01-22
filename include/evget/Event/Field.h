@@ -43,6 +43,14 @@ public:
      */
     [[nodiscard]] std::string getName() const;
 
+    virtual ~Field() = default;
+
+    Field(Field&&) noexcept = default;
+    Field& operator=(Field&&) noexcept = default;
+
+    Field(const Field&) = default;
+    Field& operator=(const Field&) = default;
+
 private:
     std::string name;
     std::string entry;
