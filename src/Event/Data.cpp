@@ -25,7 +25,7 @@
 #include <utility>
 #include <fmt/format.h>
 
-Data::Data(std::string name, std::initializer_list<Field> fields) : nFields{fields.size()}, name{std::move(name)}, fields{fields} {
+Data::Data(std::string name) : name{std::move(name)}, fields{} {
 }
 
 Data::iterator Data::begin() noexcept {
@@ -36,21 +36,17 @@ Data::iterator Data::end() noexcept {
     return fields.end();
 }
 
-size_t Data::numberOfFields() const {
-    return nFields;
-}
-
-Field Data::getByName(std::string name) {
-    auto result = std::find_if(begin(), end(), [&name](const Field& field) { return field.getName() == name; });
+Field& Data::getByName(std::string name) {
+    auto result = std::find_if(begin(), end(), [&name](std::unique_ptr<Field>& field) { return field->getName() == name; });
     if (result != end()) {
-        return *result;
+        return **result;
     }
     throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
 }
 
-Field Data::getAtPosition(size_t position) {
+Field& Data::getAtPosition(size_t position) {
     if (position < fields.size()) {
-        return fields.at(position);
+        return *fields.at(position);
     }
     throw UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
 }

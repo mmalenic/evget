@@ -28,6 +28,7 @@
 #include <string>
 #include <variant>
 #include <optional>
+#include <memory>
 
 #include "Field.h"
 
@@ -36,27 +37,22 @@
  */
 class Data {
 public:
-    using iterator = std::vector<Field>::iterator;
+    using iterator = std::vector<std::unique_ptr<Field>>::iterator;
 
     /**
      * List of fields represent the ordered fields in the data.
      */
-    Data(std::string name, std::initializer_list<Field> fields);
+    explicit Data(std::string name);
 
     /**
      * Get the field.
      */
-    Field getByName(std::string name);
+    Field& getByName(std::string name);
 
     /**
      * Get the field.
      */
-    Field getAtPosition(size_t position);
-
-    /**
-     * Get the number of fields.
-     */
-    [[nodiscard]] size_t numberOfFields() const;
+    Field& getAtPosition(size_t position);
 
     /**
      * Get the name of the data.
@@ -66,7 +62,10 @@ public:
     [[nodiscard]] iterator begin() noexcept;
     [[nodiscard]] iterator end() noexcept;
 
-    virtual ~Data() = default;
+    virtual ~Data() = 0;
+
+protected:
+    std::vector<std::unique_ptr<Field>> fields;
 
     Data(Data&&) noexcept = default;
     Data& operator=(Data&&) noexcept = default;
@@ -75,9 +74,7 @@ public:
     Data& operator=(const Data&) = default;
 
 private:
-    size_t nFields;
     std::string name;
-    std::vector<Field> fields;
 };
 
 #endif //EVGET_INCLUDE_EVENTDATA_H

@@ -22,21 +22,24 @@
 
 #include "evget/Event/MouseWheel.h"
 
-Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() : _time{}, _wheelDown{}, _wheelUp{} {
+Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
+_time{std::make_unique<Common::Time>()},
+_wheelDown{std::make_unique<Cursor::WheelDown>()},
+_wheelUp{std::make_unique<Cursor::WheelUp>()} {
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = Common::Time{nanoseconds};
+    _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelDown(int amount) {
-    _wheelDown = Cursor::WheelDown{amount};
+    _wheelDown = std::make_unique<Cursor::WheelDown>(amount);
     return *this;
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelUp(int amount) {
-    _wheelUp = Cursor::WheelUp{amount};
+    _wheelUp = std::make_unique<Cursor::WheelUp>(amount);
     return *this;
 }
 
@@ -45,6 +48,9 @@ Event::MouseWheel Event::MouseWheel::MouseWheelBuilder::build() {
 }
 
 Event::MouseWheel::MouseWheel(
-    const Event::MouseWheel::MouseWheelBuilder& builder
-) : Data{"MouseWheel", {builder._time, builder._wheelDown, builder._wheelUp}} {
+    Event::MouseWheel::MouseWheelBuilder& builder
+) : Data{"MouseWheel"} {
+    fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._wheelDown));
+    fields.emplace_back(std::move(builder._wheelUp));
 }

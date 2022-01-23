@@ -264,7 +264,7 @@ if (DOWNLOAD_DEPENDENCIES)
     conan_add_remote(
         NAME conancenter
         URL https://center.conan.io
-        VERIFY_SSL True
+        VERIFY_SSL False
     )
     conan_cmake_install(
         PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
@@ -326,7 +326,7 @@ add_program(
 )
 add_subdirectory(src)
 
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.1.1)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options headers)
 

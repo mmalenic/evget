@@ -74,17 +74,17 @@ namespace Event {
             Key build();
 
         private:
-            Common::Time _time;
-            Button::Press _press;
-            Button::Release _release;
-            Button::Repeat _repeat;
-            Button::Character _character;
+            std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Button::Press> _press;
+            std::unique_ptr<Button::Release> _release;
+            std::unique_ptr<Button::Repeat> _repeat;
+            std::unique_ptr<Button::Character> _character;
         };
 
         /**
          * Create event entry.
          */
-        explicit Key(const KeyBuilder& builder);
+        explicit Key(KeyBuilder& builder);
     };
 }
 

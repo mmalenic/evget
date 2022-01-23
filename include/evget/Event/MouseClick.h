@@ -23,6 +23,7 @@
 #ifndef EVGET_SRC_EVENT_MOUSECLICK_H
 #define EVGET_SRC_EVENT_MOUSECLICK_H
 
+#include <memory>
 #include "Data.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/PositionX.h"
@@ -73,17 +74,17 @@ namespace Event {
             MouseClick build();
 
         private:
-            Common::Time _time;
-            Cursor::PositionX _positionX;
-            Cursor::PositionY _positionY;
-            Button::Press _press;
-            Button::Release _release;
+            std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Cursor::PositionX> _positionX;
+            std::unique_ptr<Cursor::PositionY> _positionY;
+            std::unique_ptr<Button::Press> _press;
+            std::unique_ptr<Button::Release> _release;
         };
 
         /**
          * Create event entry.
          */
-        explicit MouseClick(const MouseClickBuilder& builder);
+        explicit MouseClick(MouseClickBuilder& builder);
     };
 }
 

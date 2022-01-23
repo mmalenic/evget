@@ -22,21 +22,24 @@
 
 #include "evget/Event/MouseMove.h"
 
-Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() : _time{}, _positionX{}, _positionY{} {
+Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() :
+_time{std::make_unique<Common::Time>()},
+_positionX{std::make_unique<Cursor::PositionX>()},
+_positionY{std::make_unique<Cursor::PositionY>()} {
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = Common::Time{nanoseconds};
+    _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionX(int x) {
-    _positionX = Cursor::PositionX{x};
+    _positionX = std::make_unique<Cursor::PositionX>(x);
     return *this;
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionY(int y) {
-    _positionY = Cursor::PositionY{y};
+    _positionY = std::make_unique<Cursor::PositionY>(y);
     return *this;
 }
 
@@ -45,6 +48,9 @@ Event::MouseMove Event::MouseMove::MouseMoveBuilder::build() {
 }
 
 Event::MouseMove::MouseMove(
-    const Event::MouseMove::MouseMoveBuilder& builder
-) : Data{"MouseMove", {builder._time, builder._positionX, builder._positionY}} {
+    Event::MouseMove::MouseMoveBuilder& builder
+) : Data{"MouseMove"} {
+    fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._positionX));
+    fields.emplace_back(std::move(builder._positionY));
 }

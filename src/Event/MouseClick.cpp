@@ -24,31 +24,37 @@
 
 #include <utility>
 
-Event::MouseClick::MouseClickBuilder::MouseClickBuilder() : _time{}, _positionX{}, _positionY{}, _press{}, _release{} {
+Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
+    _time{std::make_unique<Common::Time>()},
+    _positionX{std::make_unique<Cursor::PositionX>()},
+    _positionY{std::make_unique<Cursor::PositionY>()},
+    _press{std::make_unique<Button::Press>()},
+    _release{std::make_unique<Button::Release>()}
+{
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = Common::Time{nanoseconds};
+    _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionX(int x) {
-    _positionX = Cursor::PositionX{x};
+    _positionX = std::make_unique<Cursor::PositionX>(x);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionY(int y) {
-    _positionY = Cursor::PositionY{y};
+    _positionY = std::make_unique<Cursor::PositionY>(y);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::press(std::string button) {
-    _press = Button::Press{std::move(button)};
+    _press = std::make_unique<Button::Press>(std::move(button));
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::release(std::string button) {
-    _release = Button::Release{std::move(button)};
+    _release = std::make_unique<Button::Release>(std::move(button));
     return *this;
 }
 
@@ -57,6 +63,11 @@ Event::MouseClick Event::MouseClick::MouseClickBuilder::build() {
 }
 
 Event::MouseClick::MouseClick(
-    const Event::MouseClick::MouseClickBuilder& builder
-) : Data{"MouseClick", {builder._time, builder._positionX, builder._positionY, builder._press, builder._release}} {
+    Event::MouseClick::MouseClickBuilder& builder
+) : Data{"MouseClick"} {
+    fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._positionX));
+    fields.emplace_back(std::move(builder._positionY));
+    fields.emplace_back(std::move(builder._press));
+    fields.emplace_back(std::move(builder._release));
 }

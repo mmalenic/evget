@@ -64,15 +64,15 @@ namespace Event {
             MouseMove build();
 
         private:
-            Common::Time _time;
-            Cursor::PositionX _positionX;
-            Cursor::PositionY _positionY;
+            std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Cursor::PositionX> _positionX;
+            std::unique_ptr<Cursor::PositionY> _positionY;
         };
 
         /**
          * Create event entry.
          */
-        explicit MouseMove(const MouseMoveBuilder& builder);
+        explicit MouseMove(MouseMoveBuilder& builder);
     };
 }
 

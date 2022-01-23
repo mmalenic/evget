@@ -110,23 +110,23 @@ namespace Event {
             Touch build();
 
         private:
-            Common::Time _time;
-            Cursor::PositionX _positionX;
-            Cursor::PositionY _positionY;
-            Cursor::EllipseMajorInner _ellipseMajorInner;
-            Cursor::EllipseMinorInner _ellipseMinorInner;
-            Cursor::Orientation _orientation;
-            Cursor::PositionXOuter _positionXOuter;
-            Cursor::PositionYOuter _positionYOuter;
-            Cursor::EllipseMajorOuter _ellipseMajorOuter;
-            Cursor::EllipseMinorOuter _ellipseMinorOuter;
-            Cursor::Multitouch _multitouch;
+            std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Cursor::PositionX> _positionX;
+            std::unique_ptr<Cursor::PositionY> _positionY;
+            std::unique_ptr<Cursor::EllipseMajorInner> _ellipseMajorInner;
+            std::unique_ptr<Cursor::EllipseMinorInner> _ellipseMinorInner;
+            std::unique_ptr<Cursor::Orientation> _orientation;
+            std::unique_ptr<Cursor::PositionXOuter> _positionXOuter;
+            std::unique_ptr<Cursor::PositionYOuter> _positionYOuter;
+            std::unique_ptr<Cursor::EllipseMajorOuter> _ellipseMajorOuter;
+            std::unique_ptr<Cursor::EllipseMinorOuter> _ellipseMinorOuter;
+            std::unique_ptr<Cursor::Multitouch> _multitouch;
         };
 
         /**
          * Create event entry.
          */
-        explicit Touch(const TouchBuilder& builder);
+        explicit Touch(TouchBuilder& builder);
     };
 }
 

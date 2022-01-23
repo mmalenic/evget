@@ -62,15 +62,15 @@ namespace Event {
             MouseWheel build();
 
         private:
-            Common::Time _time;
-            Cursor::WheelDown _wheelDown;
-            Cursor::WheelUp _wheelUp;
+            std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Cursor::WheelDown> _wheelDown;
+            std::unique_ptr<Cursor::WheelUp> _wheelUp;
         };
 
         /**
          * Create event entry.
          */
-        explicit MouseWheel(const MouseWheelBuilder& builder);
+        explicit MouseWheel(MouseWheelBuilder& builder);
     };
 }
 

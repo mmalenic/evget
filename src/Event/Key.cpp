@@ -22,31 +22,36 @@
 
 #include "evget/Event/Key.h"
 
-Event::Key::KeyBuilder::KeyBuilder() : _time{}, _press{}, _release{}, _repeat{}, _character{} {
+Event::Key::KeyBuilder::KeyBuilder() :
+_time{std::make_unique<Common::Time>()},
+_press{std::make_unique<Button::Press>()},
+_release{std::make_unique<Button::Release>()},
+_repeat{std::make_unique<Button::Repeat>()},
+_character{std::make_unique<Button::Character>()} {
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = Common::Time{nanoseconds};
+    _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::press(std::string button) {
-    _press = Button::Press{std::move(button)};
+    _press = std::make_unique<Button::Press>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::release(std::string button) {
-    _release = Button::Release{std::move(button)};
+    _release = std::make_unique<Button::Release>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::repeat(std::string button) {
-    _repeat = Button::Repeat{std::move(button)};
+    _repeat = std::make_unique<Button::Repeat>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(char character) {
-    _character = Button::Character{character};
+    _character = std::make_unique<Button::Character>(character);
     return *this;
 }
 
@@ -55,6 +60,11 @@ Event::Key Event::Key::KeyBuilder::build() {
 }
 
 Event::Key::Key(
-    const Event::Key::KeyBuilder& builder
-) : Data{"Key", {builder._time, builder._press, builder._release, builder._repeat, builder._character}} {
+    Event::Key::KeyBuilder& builder
+) : Data{"Key"} {
+    fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._press));
+    fields.emplace_back(std::move(builder._release));
+    fields.emplace_back(std::move(builder._repeat));
+    fields.emplace_back(std::move(builder._character));
 }

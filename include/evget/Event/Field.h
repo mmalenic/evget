@@ -43,8 +43,9 @@ public:
      */
     [[nodiscard]] std::string getName() const;
 
-    virtual ~Field() = default;
+    virtual ~Field() = 0;
 
+protected:
     Field(Field&&) noexcept = default;
     Field& operator=(Field&&) noexcept = default;
 
