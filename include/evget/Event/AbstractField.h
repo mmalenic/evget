@@ -20,37 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <evget/UnsupportedOperationException.h>
-#include "evget/Event/Data.h"
-#include <utility>
-#include <fmt/format.h>
+#ifndef EVGET_INCLUDE_EVENT_DATA_FIELD_H
+#define EVGET_INCLUDE_EVENT_DATA_FIELD_H
 
-Data::Data(std::string name) : name{std::move(name)}, fields{} {
+#include <string>
+
+namespace Event {
+/**
+ * Represents a field in an event.
+ */
+    class AbstractField {
+    public:
+        AbstractField(std::string name, std::string entry);
+
+        explicit AbstractField(std::string name);
+
+        /**
+         * Get the entry.
+         */
+        [[nodiscard]] std::string getEntry() const;
+
+        /**
+         * Get the name.
+         */
+        [[nodiscard]] std::string getName() const;
+
+        virtual ~AbstractField() = 0;
+
+    protected:
+        AbstractField(AbstractField &&) noexcept = default;
+
+        AbstractField &operator=(AbstractField &&) noexcept = default;
+
+        AbstractField(const AbstractField &) = default;
+
+        AbstractField &operator=(const AbstractField &) = default;
+
+    private:
+        std::string name;
+        std::string entry;
+    };
 }
 
-Data::iterator Data::begin() noexcept {
-    return fields.begin();
-}
-
-Data::iterator Data::end() noexcept {
-    return fields.end();
-}
-
-Field& Data::getByName(std::string name) {
-    auto result = std::find_if(begin(), end(), [&name](std::unique_ptr<Field>& field) { return field->getName() == name; });
-    if (result != end()) {
-        return **result;
-    }
-    throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
-}
-
-Field& Data::getAtPosition(size_t position) {
-    if (position < fields.size()) {
-        return *fields.at(position);
-    }
-    throw UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
-}
-
-std::string Data::getName() const {
-    return name;
-}
+#endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H

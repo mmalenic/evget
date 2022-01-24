@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_PRESS_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_PRESS_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Button {
-    class Press : public Field {
+    class Press : public AbstractField {
     public:
         Press();
         explicit Press(std::string button);

@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ORIENTATION_H
 #define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ORIENTATION_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class Orientation : public Field {
+    class Orientation : public AbstractField {
     public:
         Orientation();
         explicit Orientation(std::string orientation);

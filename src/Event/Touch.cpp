@@ -98,7 +98,7 @@ Event::Touch Event::Touch::TouchBuilder::build() {
 
 Event::Touch::Touch(
     Event::Touch::TouchBuilder& builder
-) : Data{"Touch"} {
+) : AbstractData{"Touch"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

@@ -22,7 +22,7 @@
 
 #include "evget/Event/Common/Time.h"
 
-Event::Common::Time::Time(std::string interval) : Field{"Time", std::move(interval)} {
+Event::Common::Time::Time(std::string interval) : AbstractField{"Time", std::move(interval)} {
 }
 
 Event::Common::Time::Time(std::chrono::nanoseconds interval) : Time{std::to_string(interval.count())} {

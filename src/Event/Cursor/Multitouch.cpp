@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/Multitouch.h"
 
-Event::Cursor::Multitouch::Multitouch(std::string id) : Field{"Multitouch", std::move(id)} {
+Event::Cursor::Multitouch::Multitouch(std::string id) : AbstractField{"Multitouch", std::move(id)} {
 }
 
 Event::Cursor::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {

@@ -22,7 +22,7 @@
 
 #include "evget/Event/Button/Release.h"
 
-Event::Button::Release::Release(std::string button) : Field{"Release", std::move(button)} {
+Event::Button::Release::Release(std::string button) : AbstractField{"Release", std::move(button)} {
 }
 
 Event::Button::Release::Release() : Release{""} {

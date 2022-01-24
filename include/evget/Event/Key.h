@@ -24,7 +24,7 @@
 #define EVGET_SRC_KEY_H
 
 #include <chrono>
-#include "Data.h"
+#include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Button/Press.h"
 #include "evget/Event/Button/Release.h"
@@ -35,7 +35,7 @@ namespace Event {
     /**
      * Represents a key event.
      */
-    class Key : public Data {
+    class Key : public AbstractData {
     public:
         class KeyBuilder {
         public:

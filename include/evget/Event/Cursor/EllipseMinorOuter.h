@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
 #define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMINOROUTER_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class EllipseMinorOuter : public Field {
+    class EllipseMinorOuter : public AbstractField {
     public:
         EllipseMinorOuter();
         explicit EllipseMinorOuter(std::string width);

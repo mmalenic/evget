@@ -22,7 +22,7 @@
 
 #include "TestUtils/Event/EventTestUtils.h"
 
-void TestUtils::EventTestUtils::field_value_and_name(Field&& field, const std::string& name, const std::string& expected) {
+void TestUtils::EventTestUtils::field_value_and_name(AbstractField&& field, const std::string& name, const std::string& expected) {
     ASSERT_EQ(name, field.getName());
     ASSERT_EQ(expected, field.getEntry());
 }

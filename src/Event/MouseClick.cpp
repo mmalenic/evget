@@ -64,7 +64,7 @@ Event::MouseClick Event::MouseClick::MouseClickBuilder::build() {
 
 Event::MouseClick::MouseClick(
     Event::MouseClick::MouseClickBuilder& builder
-) : Data{"MouseClick"} {
+) : AbstractData{"MouseClick"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

@@ -24,7 +24,7 @@
 #define EVGET_SRC_EVENT_MOUSEWHEEL_H
 
 #include <chrono>
-#include "Data.h"
+#include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/WheelDown.h"
 #include "evget/Event/Cursor/WheelUp.h"
@@ -33,7 +33,7 @@ namespace Event {
     /**
      * Represents a mouse wheel event.
      */
-    class MouseWheel : public Data {
+    class MouseWheel : public AbstractData {
     public:
         class MouseWheelBuilder {
         public:

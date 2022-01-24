@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_WHEELUP_H
 #define EVGET_INCLUDE_EVGET_EVENT_CURSOR_WHEELUP_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class WheelUp : public Field {
+    class WheelUp : public AbstractField {
     public:
         WheelUp();
         explicit WheelUp(std::string amount);

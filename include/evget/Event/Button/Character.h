@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Button {
-    class Character : public Field {
+    class Character : public AbstractField {
     public:
         Character();
         explicit Character(std::string character);

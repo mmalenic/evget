@@ -24,7 +24,7 @@
 #define EVGET_SRC_EVENT_TOUCH_H
 
 #include <chrono>
-#include "Data.h"
+#include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/PositionX.h"
 #include "evget/Event/Cursor/PositionY.h"
@@ -41,7 +41,7 @@ namespace Event {
     /**
      * Represents a key event.
      */
-    class Touch : public Data {
+    class Touch : public AbstractData {
     public:
         class TouchBuilder {
         public:

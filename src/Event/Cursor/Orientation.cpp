@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/Orientation.h"
 
-Event::Cursor::Orientation::Orientation(std::string orientation) : Field{"Orientation", std::move(orientation)} {
+Event::Cursor::Orientation::Orientation(std::string orientation) : AbstractField{"Orientation", std::move(orientation)} {
 }
 
 Event::Cursor::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {

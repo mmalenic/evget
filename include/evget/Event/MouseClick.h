@@ -24,7 +24,7 @@
 #define EVGET_SRC_EVENT_MOUSECLICK_H
 
 #include <memory>
-#include "Data.h"
+#include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/PositionX.h"
 #include "evget/Event/Cursor/PositionY.h"
@@ -35,7 +35,7 @@ namespace Event {
     /**
      * Represents a mouse click event.
      */
-    class MouseClick : public Data {
+    class MouseClick : public AbstractData {
     public:
         class MouseClickBuilder {
         public:

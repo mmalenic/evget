@@ -25,7 +25,7 @@
 Event::Button::Character::Character() : Character{""} {
 }
 
-Event::Button::Character::Character(std::string character) : Field{"Character", std::move(character)} {
+Event::Button::Character::Character(std::string character) : AbstractField{"Character", std::move(character)} {
 }
 
 Event::Button::Character::Character(char character) : Character{std::string{character}} {

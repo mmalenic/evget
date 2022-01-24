@@ -22,7 +22,7 @@
 
 #include "evget/Event/Button/Press.h"
 
-Event::Button::Press::Press(std::string button) : Field{"Press", std::move(button)} {
+Event::Button::Press::Press(std::string button) : AbstractField{"Press", std::move(button)} {
 }
 
 Event::Button::Press::Press() : Press{""} {

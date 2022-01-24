@@ -23,12 +23,12 @@
 #ifndef EVGET_TIME_H
 #define EVGET_TIME_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 #include <chrono>
 
 namespace Event::Common {
-    class Time : public Field {
+    class Time : public AbstractField {
     public:
         Time();
         explicit Time(std::string interval);

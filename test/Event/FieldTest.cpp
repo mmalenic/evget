@@ -21,25 +21,25 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include "TestUtils/Event/EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(FieldTest, ConstructorNoEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(Field{"name"}, "name", "");
+    EventTestUtils::field_value_and_name(AbstractField{"name"}, "name", "");
 }
 
 TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(Field{"name", "entry"}, "name", "entry");
+    EventTestUtils::field_value_and_name(AbstractField{"name", "entry"}, "name", "entry");
 }
 
 TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
+    AbstractField field {"name", "entry"};
     ASSERT_EQ("name", field.getName());
 }
 
 TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    Field field {"name", "entry"};
+    AbstractField field {"name", "entry"};
     ASSERT_EQ("entry", field.getEntry());
 }

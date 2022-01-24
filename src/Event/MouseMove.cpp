@@ -49,7 +49,7 @@ Event::MouseMove Event::MouseMove::MouseMoveBuilder::build() {
 
 Event::MouseMove::MouseMove(
     Event::MouseMove::MouseMoveBuilder& builder
-) : Data{"MouseMove"} {
+) : AbstractData{"MouseMove"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

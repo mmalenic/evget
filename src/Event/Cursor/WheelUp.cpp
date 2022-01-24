@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/WheelUp.h"
 
-Event::Cursor::WheelUp::WheelUp(std::string amount) : Field{"WheelUp", std::move(amount)} {
+Event::Cursor::WheelUp::WheelUp(std::string amount) : AbstractField{"WheelUp", std::move(amount)} {
 }
 
 Event::Cursor::WheelUp::WheelUp(int amount) : WheelUp{std::to_string(amount)} {

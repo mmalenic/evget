@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVENT_POSITIONX_H
 #define EVGET_INCLUDE_EVENT_POSITIONX_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class PositionX : public Field {
+    class PositionX : public AbstractField {
     public:
         PositionX();
         explicit PositionX(std::string position);

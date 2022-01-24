@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/PositionXOuterTest.h"
 
-Event::Cursor::PositionXOuter::PositionXOuter(std::string position) : Field{"PositionXOuter", std::move(position)} {
+Event::Cursor::PositionXOuter::PositionXOuter(std::string position) : AbstractField{"PositionXOuter", std::move(position)} {
 }
 
 Event::Cursor::PositionXOuter::PositionXOuter(int position) : PositionXOuter{std::to_string(position)} {

@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
 #define EVGET_INCLUDE_EVGET_EVENT_CURSOR_MULTITOUCH_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class Multitouch : public Field {
+    class Multitouch : public AbstractField {
     public:
         Multitouch();
         explicit Multitouch(std::string id);

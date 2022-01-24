@@ -49,7 +49,7 @@ Event::MouseWheel Event::MouseWheel::MouseWheelBuilder::build() {
 
 Event::MouseWheel::MouseWheel(
     Event::MouseWheel::MouseWheelBuilder& builder
-) : Data{"MouseWheel"} {
+) : AbstractData{"MouseWheel"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._wheelDown));
     fields.emplace_back(std::move(builder._wheelUp));

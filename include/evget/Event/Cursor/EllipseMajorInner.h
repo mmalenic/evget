@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJORINNER_H
 #define EVGET_INCLUDE_EVGET_EVENT_TOUCH_ELLIPSEMAJORINNER_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class EllipseMajorInner : public Field {
+    class EllipseMajorInner : public AbstractField {
     public:
         EllipseMajorInner();
         explicit EllipseMajorInner(std::string width);

@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/EllipseMinorOuter.h"
 
-Event::Cursor::EllipseMinorOuter::EllipseMinorOuter(std::string width) : Field{"EllipseMinorOuter", std::move(width)} {
+Event::Cursor::EllipseMinorOuter::EllipseMinorOuter(std::string width) : AbstractField{"EllipseMinorOuter", std::move(width)} {
 }
 
 Event::Cursor::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {

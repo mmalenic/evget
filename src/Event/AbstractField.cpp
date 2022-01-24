@@ -20,41 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_DATA_FIELD_H
-#define EVGET_INCLUDE_EVENT_DATA_FIELD_H
+#include "evget/Event/AbstractField.h"
 
-#include <string>
+#include <utility>
 
-/**
- * Represents a field in an event.
- */
-class Field {
-public:
-    Field(std::string name, std::string entry);
-    explicit Field(std::string name);
+std::string Event::AbstractField::getEntry() const {
+    return entry;
+}
 
-    /**
-     * Get the entry.
-     */
-    [[nodiscard]] std::string getEntry() const;
+Event::AbstractField::AbstractField(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
+}
 
-    /**
-     * Get the name.
-     */
-    [[nodiscard]] std::string getName() const;
+Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(name), ""} {
+}
 
-    virtual ~Field() = 0;
+std::string Event::AbstractField::getName() const {
+    return name;
 
-protected:
-    Field(Field&&) noexcept = default;
-    Field& operator=(Field&&) noexcept = default;
-
-    Field(const Field&) = default;
-    Field& operator=(const Field&) = default;
-
-private:
-    std::string name;
-    std::string entry;
-};
-
-#endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H
+}

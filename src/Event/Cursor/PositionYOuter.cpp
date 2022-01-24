@@ -22,7 +22,7 @@
 
 #include "evget/Event/Cursor/PositionYOuterTest.h"
 
-Event::Cursor::PositionYOuter::PositionYOuter(std::string position) : Field{"PositionYOuter", std::move(position)} {
+Event::Cursor::PositionYOuter::PositionYOuter(std::string position) : AbstractField{"PositionYOuter", std::move(position)} {
 }
 
 Event::Cursor::PositionYOuter::PositionYOuter(int position) : PositionYOuter{std::to_string(position)} {

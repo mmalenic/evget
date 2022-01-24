@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_RELEASE_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_RELEASE_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Button {
-    class Release : public Field {
+    class Release : public AbstractField {
     public:
         Release();
         explicit Release(std::string button);

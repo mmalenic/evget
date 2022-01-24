@@ -24,14 +24,14 @@
 #define EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 
 #include <string>
-#include "evget/Event/Data.h"
+#include "evget/Event/AbstractData.h"
 #include "gtest/gtest.h"
 
 namespace TestUtils::EventTestUtils {
     void create_and_iterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
-        Data eventData = create(field_name, "name", "entry");
+        AbstractData eventData = create(field_name, "name", "entry");
 
         auto n = 0;
         for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
@@ -43,26 +43,26 @@ namespace TestUtils::EventTestUtils {
 
     void get_and_set(auto&& get, std::string entry) {
         std::string field_name = "field";
-        Data eventData{"name", {Field{field_name}}};
+        AbstractData eventData{"name", {AbstractField{field_name}}};
         auto field = get(eventData, field_name, 0, entry);
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
     }
 
-    void field_value_and_name(Field&& field, const std::string& name, const std::string& expected);
+    void field_value_and_name(AbstractField&& field, const std::string& name, const std::string& expected);
 
     template<typename T>
     void field_value_and_name(const char* value, const std::string& name, const std::string& expected) {
-        Field field = T{value};
+        AbstractField field = T{value};
         field_value_and_name(std::move(field), name, expected);
 
-        Field fieldDefault = T{};
+        AbstractField fieldDefault = T{};
         field_value_and_name(std::move(fieldDefault), name, "");
     }
 
     template<typename T>
     void field_value_and_name(const auto& value, const std::string& name, const std::string& expected) {
-        Field field = T{value};
+        AbstractField field = T{value};
         field_value_and_name(std::move(field), name, expected);
 
         field_value_and_name<T>("value", name, "value");

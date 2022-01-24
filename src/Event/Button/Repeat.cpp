@@ -22,7 +22,7 @@
 
 #include "evget/Event/Button/Repeat.h"
 
-Event::Button::Repeat::Repeat(std::string button) : Field{"Repeat", std::move(button)} {
+Event::Button::Repeat::Repeat(std::string button) : AbstractField{"Repeat", std::move(button)} {
 }
 
 Event::Button::Repeat::Repeat() : Repeat{""} {

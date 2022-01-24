@@ -23,8 +23,8 @@
 #ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 #define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 
-#include "Data.h"
-#include "Field.h"
+#include "AbstractData.h"
+#include "AbstractField.h"
 #include <chrono>
 #include <optional>
 #include "evget/Event/Common/Time.h"
@@ -35,7 +35,7 @@ namespace Event {
     /**
      * Represents a mouse move event.
      */
-    class MouseMove : public Data {
+    class MouseMove : public AbstractData {
     public:
         class MouseMoveBuilder {
         public:

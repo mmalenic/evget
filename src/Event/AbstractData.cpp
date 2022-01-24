@@ -20,61 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENTDATA_H
-#define EVGET_INCLUDE_EVENTDATA_H
+#include <evget/UnsupportedOperationException.h>
+#include "evget/Event/AbstractData.h"
+#include <utility>
+#include <fmt/format.h>
 
-#include <any>
-#include <vector>
-#include <string>
-#include <variant>
-#include <optional>
-#include <memory>
+Event::AbstractData::AbstractData(std::string name) : fields{}, name{std::move(name)} {
+}
 
-#include "Field.h"
+Event::AbstractData::iterator Event::AbstractData::begin() noexcept {
+    return fields.begin();
+}
 
-/**
- * Event container to represent event data.
- */
-class Data {
-public:
-    using iterator = std::vector<std::unique_ptr<Field>>::iterator;
+Event::AbstractData::iterator Event::AbstractData::end() noexcept {
+    return fields.end();
+}
 
-    /**
-     * List of fields represent the ordered fields in the data.
-     */
-    explicit Data(std::string name);
+Event::AbstractField& Event::AbstractData::getByName(std::string name) {
+    auto result = std::find_if(begin(), end(), [&name](std::unique_ptr<AbstractField>& field) { return field->getName() == name; });
+    if (result != end()) {
+        return **result;
+    }
+    throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
+}
 
-    /**
-     * Get the field.
-     */
-    Field& getByName(std::string name);
+Event::AbstractField& Event::AbstractData::getAtPosition(size_t position) {
+    if (position < fields.size()) {
+        return *fields.at(position);
+    }
+    throw UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
+}
 
-    /**
-     * Get the field.
-     */
-    Field& getAtPosition(size_t position);
-
-    /**
-     * Get the name of the data.
-     */
-    [[nodiscard]] std::string getName() const;
-
-    [[nodiscard]] iterator begin() noexcept;
-    [[nodiscard]] iterator end() noexcept;
-
-    virtual ~Data() = 0;
-
-protected:
-    std::vector<std::unique_ptr<Field>> fields;
-
-    Data(Data&&) noexcept = default;
-    Data& operator=(Data&&) noexcept = default;
-
-    Data(const Data&) = default;
-    Data& operator=(const Data&) = default;
-
-private:
-    std::string name;
-};
-
-#endif //EVGET_INCLUDE_EVENTDATA_H
+std::string Event::AbstractData::getName() const {
+    return name;
+}

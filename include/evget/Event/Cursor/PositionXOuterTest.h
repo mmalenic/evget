@@ -23,11 +23,11 @@
 #ifndef EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
 #define EVGET_SRC_EVENT_TOUCH_POSITIONXOUTER_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Cursor {
-    class PositionXOuter : public Field {
+    class PositionXOuter : public AbstractField {
     public:
         PositionXOuter();
         explicit PositionXOuter(std::string position);

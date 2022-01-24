@@ -61,7 +61,7 @@ Event::Key Event::Key::KeyBuilder::build() {
 
 Event::Key::Key(
     Event::Key::KeyBuilder& builder
-) : Data{"Key"} {
+) : AbstractData{"Key"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._press));
     fields.emplace_back(std::move(builder._release));

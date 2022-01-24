@@ -20,8 +20,8 @@ add_program(
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
     Event/Cursor/WheelUp.cpp
-    Event/Data.cpp
-    Event/Field.cpp
+    Event/AbstractData.cpp
+    Event/AbstractField.cpp
     Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp

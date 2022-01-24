@@ -23,11 +23,11 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_REPEAT_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_REPEAT_H
 
-#include "evget/Event/Field.h"
+#include "evget/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Button {
-    class Repeat : public Field {
+    class Repeat : public AbstractField {
     public:
         Repeat();
         explicit Repeat(std::string button);
