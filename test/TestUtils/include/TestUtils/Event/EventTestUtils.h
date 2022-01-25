@@ -24,48 +24,52 @@
 #define EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 
 #include <string>
-#include "evget/Event/AbstractData.h"
 #include "gtest/gtest.h"
+#include "evget/Event/Data.h"
+#include "evget/Event/Field.h"
 
 namespace TestUtils::EventTestUtils {
-    void create_and_iterate(auto&& create) {
+    void createAndIterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
-        AbstractData eventData = create(field_name, "name", "entry");
+        Event::Data eventData = create(field_name, "name", "entry");
 
         auto n = 0;
         for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-            ASSERT_EQ(field_name, i->getName());
-            ASSERT_EQ(entry, i->getEntry());
+            ASSERT_EQ(field_name, (*i)->getName());
+            ASSERT_EQ(entry, (*i)->getEntry());
         }
         ASSERT_EQ(n, 1);
     }
 
-    void get_and_set(auto&& get, std::string entry) {
+    std::vector<std::unique_ptr<Event::AbstractField>> allocateFields(const std::string& name, const std::string& entry);
+
+    void getAndSet(auto&& get, std::string entry) {
         std::string field_name = "field";
-        AbstractData eventData{"name", {AbstractField{field_name}}};
-        auto field = get(eventData, field_name, 0, entry);
+        Event::Data eventData{"name", allocateFields(field_name, entry)};
+        const auto& field = get(eventData, field_name, 0);
+
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
     }
 
-    void field_value_and_name(AbstractField&& field, const std::string& name, const std::string& expected);
+    void fieldValueAndName(const Event::AbstractField& field, const std::string& name, const std::string& expected);
 
     template<typename T>
-    void field_value_and_name(const char* value, const std::string& name, const std::string& expected) {
-        AbstractField field = T{value};
-        field_value_and_name(std::move(field), name, expected);
+    void fieldValueAndName(const char* value, const std::string& name, const std::string& expected) {
+        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(value);
+        fieldValueAndName(*field, name, expected);
 
-        AbstractField fieldDefault = T{};
-        field_value_and_name(std::move(fieldDefault), name, "");
+        std::unique_ptr<Event::AbstractField> fieldDefault = std::make_unique<T>();
+        fieldValueAndName(*fieldDefault, name, "");
     }
 
     template<typename T>
-    void field_value_and_name(const auto& value, const std::string& name, const std::string& expected) {
-        AbstractField field = T{value};
-        field_value_and_name(std::move(field), name, expected);
+    void fieldValueAndName(const auto& value, const std::string& name, const std::string& expected) {
+        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(value);
+        fieldValueAndName(*field, name, expected);
 
-        field_value_and_name<T>("value", name, "value");
+        fieldValueAndName<T>("value", name, "value");
     }
 
     void event_entry_at(auto&& event, size_t position, const std::string& expected) {

@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(OrientationTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Cursor::Orientation>(1, "Orientation", "1");
+    EventTestUtils::fieldValueAndName<Event::Cursor::Orientation>(1, "Orientation", "1");
 }

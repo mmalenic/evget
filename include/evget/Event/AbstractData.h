@@ -48,12 +48,12 @@ namespace Event {
         /**
          * Get the field.
          */
-        AbstractField &getByName(std::string name);
+        [[nodiscard]] const AbstractField &getByName(std::string name) const;
 
         /**
          * Get the field.
          */
-        AbstractField &getAtPosition(size_t position);
+        [[nodiscard]] const AbstractField &getAtPosition(size_t position) const;
 
         /**
          * Get the name of the data.

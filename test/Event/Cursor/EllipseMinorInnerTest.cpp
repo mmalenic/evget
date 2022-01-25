@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(EllipseMinorInnerTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Cursor::EllipseMinorInner>(1, "EllipseMinorInner", "1");
+    EventTestUtils::fieldValueAndName<Event::Cursor::EllipseMinorInner>(1, "EllipseMinorInner", "1");
 }

@@ -27,19 +27,19 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(FieldTest, ConstructorNoEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(AbstractField{"name"}, "name", "");
+    EventTestUtils::fieldValueAndName(Event::Field{"name"}, "name", "");
 }
 
 TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name(AbstractField{"name", "entry"}, "name", "entry");
+    EventTestUtils::fieldValueAndName(Event::Field{"name", "entry"}, "name", "entry");
 }
 
 TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    AbstractField field {"name", "entry"};
+    Event::Field field{"name", "entry"};
     ASSERT_EQ("name", field.getName());
 }
 
 TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    AbstractField field {"name", "entry"};
+    Event::Field field{"name", "entry"};
     ASSERT_EQ("entry", field.getEntry());
 }

@@ -25,6 +25,8 @@
 #include <utility>
 #include <fmt/format.h>
 
+Event::AbstractData::~AbstractData() = default;
+
 Event::AbstractData::AbstractData(std::string name) : fields{}, name{std::move(name)} {
 }
 
@@ -36,15 +38,16 @@ Event::AbstractData::iterator Event::AbstractData::end() noexcept {
     return fields.end();
 }
 
-Event::AbstractField& Event::AbstractData::getByName(std::string name) {
-    auto result = std::find_if(begin(), end(), [&name](std::unique_ptr<AbstractField>& field) { return field->getName() == name; });
-    if (result != end()) {
-        return **result;
+const Event::AbstractField& Event::AbstractData::getByName(std::string name) const {
+    for (const auto& field : fields) {
+        if (field->getName() == name) {
+            return *field;
+        }
     }
     throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
 }
 
-Event::AbstractField& Event::AbstractData::getAtPosition(size_t position) {
+const Event::AbstractField& Event::AbstractData::getAtPosition(size_t position) const {
     if (position < fields.size()) {
         return *fields.at(position);
     }

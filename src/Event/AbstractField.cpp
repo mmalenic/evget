@@ -23,6 +23,9 @@
 #include "evget/Event/AbstractField.h"
 
 #include <utility>
+#include <memory>
+
+Event::AbstractField::~AbstractField() = default;
 
 std::string Event::AbstractField::getEntry() const {
     return entry;
@@ -36,5 +39,4 @@ Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(
 
 std::string Event::AbstractField::getName() const {
     return name;
-
 }

@@ -31,12 +31,12 @@
  * Storage class represents storing event data.
  */
 template<boost::asio::execution::executor E>
-class Storage : Task<E>, EventListener<AbstractData> {
+class Storage : Task<E>, EventListener<std::unique_ptr<Event::AbstractData>> {
 public:
     explicit Storage(E& context);
 
     boost::asio::awaitable<void> start() override;
-    void notify(AbstractData event) override;
+    void notify(std::unique_ptr<Event::AbstractData> event) override;
 
     virtual ~Storage() = default;
     Storage(const Storage&) = default;
@@ -56,7 +56,7 @@ boost::asio::awaitable<void> Storage<E>::start(){
 }
 
 template<boost::asio::execution::executor E>
-void Storage<E>::notify(AbstractData event) {
+void Storage<E>::notify(std::unique_ptr<Event::AbstractData> event) {
 }
 
 #endif //EVGET_INCLUDE_STORAGE_H

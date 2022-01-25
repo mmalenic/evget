@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(PositionYOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Cursor::PositionYOuter>(1, "PositionYOuter", "1");
+    EventTestUtils::fieldValueAndName<Event::Cursor::PositionYOuter>(1, "PositionYOuter", "1");
 }

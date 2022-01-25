@@ -22,7 +22,13 @@
 
 #include "TestUtils/Event/EventTestUtils.h"
 
-void TestUtils::EventTestUtils::field_value_and_name(AbstractField&& field, const std::string& name, const std::string& expected) {
+void TestUtils::EventTestUtils::fieldValueAndName(const Event::AbstractField& field, const std::string& name, const std::string& expected) {
     ASSERT_EQ(name, field.getName());
     ASSERT_EQ(expected, field.getEntry());
+}
+
+std::vector<std::unique_ptr<Event::AbstractField>> TestUtils::EventTestUtils::allocateFields(const std::string& name, const std::string& entry) {
+    std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+    fields.emplace_back(std::make_unique<Event::Field>(name, entry));
+    return fields;
 }

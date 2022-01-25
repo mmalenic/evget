@@ -30,36 +30,32 @@
 namespace EventUtils = TestUtils::EventTestUtils;
 
 TEST(EventDataTest, CreationAndIterationByField) { // NOLINT(cert-err58-cpp)
-    EventUtils::create_and_iterate(
+    EventUtils::createAndIterate(
         [](std::string field_name, std::string name, std::string entry) {
-            AbstractField field{std::move(field_name), std::move(entry)};
-            return AbstractData{std::move(name), {field}};
+            std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+            fields.emplace_back(std::make_unique<Event::Field>(std::move(field_name), std::move(entry)));
+            return Event::Data{std::move(name), std::move(fields)};
         }
     );
 }
 
 TEST(EventDataTest, GetByName) { // NOLINT(cert-err58-cpp)
-    EventUtils::get_and_set(
-        [](AbstractData eventData, std::string field_name, size_t _position, const std::string& _entry) {
+    EventUtils::getAndSet(
+        [](Event::Data& eventData, std::string field_name, size_t _position) -> const auto& {
             return eventData.getByName(std::move(field_name));
         }, ""
     );
 }
 
 TEST(EventDataTest, GetAtPosition) { // NOLINT(cert-err58-cpp)
-    EventUtils::get_and_set(
-        [](AbstractData eventData, const std::string& _field_name, size_t position, const std::string& _entry) {
+    EventUtils::getAndSet(
+        [](Event::Data& eventData, const std::string& _field_name, size_t position) -> const auto& {
             return eventData.getAtPosition(position);
         }, ""
     );
 }
 
-TEST(EventDataTest, NumberOfFields) { // NOLINT(cert-err58-cpp)
-    AbstractData eventData{"", {AbstractField{""}}};
-    ASSERT_EQ(1, eventData.numberOfFields());
-}
-
 TEST(EventDataTest, GetName) { // NOLINT(cert-err58-cpp)
-    AbstractData eventData{"name", {AbstractField{""}}};
+    Event::Data eventData{"name", EventUtils::allocateFields("", "")};
     ASSERT_EQ("name", eventData.getName());
 }

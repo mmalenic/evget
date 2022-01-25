@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(RepeatTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::field_value_and_name<Event::Button::Repeat>("a", "Repeat", "a");
+    EventTestUtils::fieldValueAndName<Event::Button::Repeat>("a", "Repeat", "a");
 }
