@@ -86,6 +86,15 @@ public:
      */
     virtual boost::asio::awaitable<void> start();
 
+    virtual ~Task() = default;
+
+protected:
+    Task(Task&&) noexcept = default;
+    Task& operator=(Task&&) noexcept = default;
+
+    Task(const Task&) = default;
+    Task& operator=(const Task&) = default;
+    
 private:
     E& executionContext;
 

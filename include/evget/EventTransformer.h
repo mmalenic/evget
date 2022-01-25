@@ -44,11 +44,11 @@ public:
 
     virtual ~EventTransformer() = default;
 
-    EventTransformer(EventTransformer&&) noexcept = default;
-    EventTransformer& operator=(EventTransformer&&) noexcept = default;
+    EventTransformer(EventTransformer&&) noexcept = delete;
+    EventTransformer& operator=(EventTransformer&&) noexcept = delete;
 
-    EventTransformer(const EventTransformer&) = default;
-    EventTransformer& operator=(const EventTransformer&) = default;
+    EventTransformer(const EventTransformer&) = delete;
+    EventTransformer& operator=(const EventTransformer&) = delete;
 };
 
 template<typename T>

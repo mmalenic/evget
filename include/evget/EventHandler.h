@@ -48,12 +48,6 @@ public:
     void notify(SystemEvent<T> event) override;
     boost::asio::awaitable<void> start() override;
 
-    virtual ~EventHandler() = default;
-    EventHandler(const EventHandler&) = default;
-    EventHandler(EventHandler&&) noexcept = default;
-    EventHandler& operator=(const EventHandler&) = default;
-    EventHandler& operator=(EventHandler&&) noexcept = default;
-
 private:
     Storage<E>& storage;
     EventTransformer<T>& transformer;

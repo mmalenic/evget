@@ -37,12 +37,6 @@ public:
 
     boost::asio::awaitable<void> start() override;
     void notify(std::unique_ptr<Event::AbstractData> event) override;
-
-    virtual ~Storage() = default;
-    Storage(const Storage&) = default;
-    Storage(Storage&&) = default;
-    virtual Storage& operator=(const Storage&) = default;
-    virtual Storage& operator=(Storage&&) = default;
 };
 
 template<boost::asio::execution::executor E>

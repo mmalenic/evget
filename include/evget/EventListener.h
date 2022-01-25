@@ -37,10 +37,13 @@ public:
     virtual void notify(T event) = 0;
 
     EventListener() = default;
-    EventListener(const EventListener&) = default;
-    EventListener(EventListener&&) noexcept = default;
-    EventListener& operator=(const EventListener&) = default;
-    EventListener& operator=(EventListener&&) noexcept = default;
+
+    virtual ~EventListener() = default;
+
+    EventListener(const EventListener&) = delete;
+    EventListener(EventListener&&) noexcept = delete;
+    EventListener& operator=(const EventListener&) = delete;
+    EventListener& operator=(EventListener&&) noexcept = delete;
 };
 
 #endif //EVGET_INCLUDE_EVENTLISTENER_H

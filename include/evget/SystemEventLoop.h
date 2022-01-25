@@ -67,10 +67,13 @@ public:
     void notify(SystemEvent<T> event) override;
 
     virtual ~SystemEventLoop() = default;
-    SystemEventLoop(const SystemEventLoop&) = default;
+
+protected:
     SystemEventLoop(SystemEventLoop&&) noexcept = default;
-    SystemEventLoop& operator=(const SystemEventLoop&) = default;
     SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
+
+    SystemEventLoop(const SystemEventLoop&) = default;
+    SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
 private:
     const size_t nDevices;
