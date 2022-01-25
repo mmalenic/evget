@@ -292,6 +292,8 @@ add_program(
     include/evget/SystemEventLoop.h
     include/evget/ShutdownHandler.h
     include/evget/Storage.h
+    include/evget/Event/Data.h
+    include/evget/Event/Field.h
     include/evget/Event/MouseMove.h
     include/evget/Event/MouseClick.h
     include/evget/Event/Key.h

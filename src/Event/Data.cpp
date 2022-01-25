@@ -20,45 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENT_DATA_FIELD_H
-#define EVGET_INCLUDE_EVENT_DATA_FIELD_H
+#include "evget/Event/Data.h"
+#include <utility>
 
-#include <string>
-
-namespace Event {
-/**
- * Represents a field in an event.
- */
-    class AbstractField {
-    public:
-        AbstractField(std::string name, std::string entry);
-        explicit AbstractField(std::string name);
-
-        /**
-         * Get the entry.
-         */
-        [[nodiscard]] std::string getEntry() const;
-
-        /**
-         * Get the name.
-         */
-        [[nodiscard]] std::string getName() const;
-
-        virtual ~AbstractField() = 0;
-
-    protected:
-        AbstractField(AbstractField &&) noexcept = default;
-
-        AbstractField &operator=(AbstractField &&) noexcept = default;
-
-        AbstractField(const AbstractField &) = default;
-
-        AbstractField &operator=(const AbstractField &) = default;
-
-    private:
-        std::string name;
-        std::string entry;
-    };
+Event::Data::Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields) : AbstractData{std::move(name)} {
+    for (auto& field : fields) {
+        this->fields.emplace_back(std::move(field));
+    }
 }
-
-#endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H
