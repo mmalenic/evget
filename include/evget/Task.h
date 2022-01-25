@@ -86,7 +86,7 @@ public:
      */
     virtual boost::asio::awaitable<void> start();
 
-    virtual ~Task() = default;
+    virtual ~Task() = 0;
 
 protected:
     Task(Task&&) noexcept = default;
@@ -112,6 +112,9 @@ template<boost::asio::execution::executor E>
 void Task<E>::cancel() {
     cancelled.store(true);
 }
+
+template<boost::asio::execution::executor E>
+Task<E>::~Task() = default;
 
 template<boost::asio::execution::executor E>
 Task<E>::Task(E& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {

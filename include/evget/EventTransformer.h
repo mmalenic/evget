@@ -38,7 +38,7 @@ public:
      * @param event event to transform
      * @return event event for storage
      */
-    virtual std::unique_ptr<Event::AbstractData> transformEvent(SystemEvent<T> event);
+    virtual std::unique_ptr<Event::AbstractData> transformEvent(SystemEvent<T> event) = 0;
 
     EventTransformer() = default;
 
@@ -50,10 +50,5 @@ public:
     EventTransformer(const EventTransformer&) = delete;
     EventTransformer& operator=(const EventTransformer&) = delete;
 };
-
-template<typename T>
-std::unique_ptr<Event::AbstractData> EventTransformer<T>::transformEvent(SystemEvent<T> event) {
-    //return AbstractData{"", {""}};
-}
 
 #endif //EVGET_INCLUDE_EVENTTRANSFORMER_H
