@@ -106,17 +106,15 @@ namespace CommandLine {
 
         friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
 
-        virtual ~Parser() = default;
-
-        Parser(const Parser &) = default;
-
-        Parser(Parser &&) = default;
+        virtual ~Parser() = 0;
 
         Parser &operator=(const Parser &) = delete;
-
         Parser &operator=(Parser &&) = delete;
 
     protected:
+        Parser(const Parser &) = default;
+        Parser(Parser &&) = default;
+
         /**
          * Get description.
          * @return description
@@ -180,13 +178,13 @@ namespace CommandLine {
          * Format an option.
          */
         template<typename T>
-        static std::string formatConfigOption(const OptionBase<T>& option);
+        static std::string formatConfigOption(const AbstractOption<T>& option);
 
         /**
         * Format an option.
         */
         template<typename T>
-        static std::string formatConfigOption(const OptionBase<T>& option, const std::string& value);
+        static std::string formatConfigOption(const AbstractOption<T>& option, const std::string& value);
 
         /**
          * Format the config file.

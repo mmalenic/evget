@@ -28,7 +28,7 @@
 #include <optional>
 #include <fmt/core.h>
 #include "InvalidCommandLineOption.h"
-#include "OptionBase.h"
+#include "AbstractOption.h"
 
 namespace CommandLine {
 
@@ -37,7 +37,7 @@ namespace CommandLine {
      * @tparam T _value of command line option
      */
     template<typename T>
-    class Option : public OptionBase<T> {
+    class Option : public AbstractOption<T> {
     public:
         /**
          * Create from builder.
@@ -51,13 +51,13 @@ namespace CommandLine {
     };
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : OptionBase<T>(builder) {
+    Option<T>::Option(OptionBuilder<T> builder) : AbstractOption<T>(builder) {
         this->checkInvariants();
         this->template addOptionToDesc<T>(this->isRequired(), this->isMultitoken(), this->getDefaultValue(), this->getImplicitValue());
     }
 
     template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : OptionBase<T>(builder) {
+    Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : AbstractOption<T>(builder) {
         this->checkInvariants();
         this->addOptionToDesc(this->isRequired(),
                               this->isMultitoken(),

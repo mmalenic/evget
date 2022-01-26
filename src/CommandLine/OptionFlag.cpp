@@ -22,7 +22,7 @@
 
 #include "evget/CommandLine/OptionFlag.h"
 
-CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : OptionBase<bool>(std::move(builder)) {
+CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : AbstractOption<bool>(std::move(builder)) {
     this->addOptionToDesc(
             this->isRequired(),
             false,

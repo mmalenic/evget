@@ -27,10 +27,13 @@ void TestUtils::CommandLineTestUtils::CommandLineTest::SetUp() {
 }
 
 void TestUtils::CommandLineTestUtils::CommandLineTest::TearDown() {
-    Cmd::Parser parser{""};
+    MockParser parser{};
     fs::path configFile = parser.getConfigFile();
 
     if (fs::exists(configFile)) {
         fs::remove(configFile);
     }
+}
+
+TestUtils::CommandLineTestUtils::MockParser::MockParser() : Parser{""} {
 }

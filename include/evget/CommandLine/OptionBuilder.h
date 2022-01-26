@@ -34,7 +34,7 @@ namespace CommandLine {
 
     // Forward declare required classes.
     template<typename T>
-    class OptionBase;
+    class AbstractOption;
 
     template<typename T>
     class Option;
@@ -79,7 +79,7 @@ namespace CommandLine {
         template<typename R, typename U>
         using EnableIfNotOStreamable = std::enable_if_t<sizeof(U) && !OStreamable<T>, R>;
 
-        friend class OptionBase<T>;
+        friend class AbstractOption<T>;
 
         /**
          * Create OptionBuilder.

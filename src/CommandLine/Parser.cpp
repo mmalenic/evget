@@ -76,6 +76,8 @@ std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
     return in;
 }
 
+CommandLine::Parser::~Parser() = default;
+
 CommandLine::Parser::Parser(std::string platform) :
         platformInformation{std::move(platform)},
         cmdlineDesc{
@@ -250,7 +252,7 @@ std::filesystem::path CommandLine::Parser::getConfigFile() const {
 }
 
 template<typename T>
-std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option) {
+std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& option) {
     std::ostringstream value{};
     value << std::boolalpha;
     value << option.getDefaultValue().value();
@@ -259,7 +261,7 @@ std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option)
 
 
 template<typename T>
-std::string CommandLine::Parser::formatConfigOption(const OptionBase<T>& option, const std::string& value) {
+std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& option, const std::string& value) {
     std::string out{};
     if (option.isRequired()) {
         out += "# ";

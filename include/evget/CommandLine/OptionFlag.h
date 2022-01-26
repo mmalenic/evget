@@ -25,11 +25,11 @@
 #ifndef EVGET_OPTIONFLAG_H
 #define EVGET_OPTIONFLAG_H
 
-#include "OptionBase.h"
+#include "AbstractOption.h"
 
 namespace CommandLine {
 
-    class OptionFlag : public OptionBase<bool> {
+    class OptionFlag : public AbstractOption<bool> {
     public:
         /**
          * Create from builder.

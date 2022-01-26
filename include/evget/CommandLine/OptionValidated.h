@@ -23,7 +23,7 @@
 #ifndef EVGET_OPTIONVALIDATED_H
 #define EVGET_OPTIONVALIDATED_H
 
-#include "OptionBase.h"
+#include "AbstractOption.h"
 
 namespace CommandLine {
 
@@ -32,7 +32,7 @@ namespace CommandLine {
      * @tparam T value type.
      */
     template<typename T>
-    class OptionValidated : public OptionBase<T> {
+    class OptionValidated : public AbstractOption<T> {
     public:
         /**
          * Create from builder.
@@ -58,7 +58,7 @@ namespace CommandLine {
     template<typename T>
     OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator)
-            : OptionBase<T>(builder), validator{validator} {
+            : AbstractOption<T>(builder), validator{validator} {
         this->checkInvariants();
         setOptionDesc([](const T& value){
             std::ostringstream representation{};
@@ -70,7 +70,7 @@ namespace CommandLine {
     template<typename T>
     OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
                                         typename OptionBuilder<T>::Validator validator, const std::string& representation)
-            : OptionBase<T>(builder), validator{validator} {
+            : AbstractOption<T>(builder), validator{validator} {
         this->checkInvariants();
         setOptionDesc([&representation](const T& _){ return representation; });
     }

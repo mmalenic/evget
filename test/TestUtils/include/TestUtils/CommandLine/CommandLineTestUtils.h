@@ -28,7 +28,7 @@
  */
 
 #include <boost/program_options.hpp>
-#include <evget/CommandLine/OptionBase.h>
+#include <evget/CommandLine/AbstractOption.h>
 #include <evget/CommandLine/Parser.h>
 #include <any>
 #include <gtest/gtest.h>
@@ -54,6 +54,14 @@ namespace TestUtils::CommandLineTestUtils {
          * Remove config file associated with running parser.
          */
         void TearDown() override;
+    };
+
+    /**
+     * Mock parser object.
+     */
+    class MockParser : public Cmd::Parser {
+    public:
+        MockParser();
     };
 
     /**

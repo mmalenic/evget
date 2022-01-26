@@ -41,7 +41,7 @@ namespace CommandLine {
      * @tparam T _defaultValue of command line option
      */
     template<typename T>
-    class OptionBase {
+    class AbstractOption {
     public:
         /**
          * Get short name.
@@ -103,11 +103,19 @@ namespace CommandLine {
          */
         virtual void run(po::variables_map &vm);
 
+        virtual ~AbstractOption() = 0;
+
     protected:
+        AbstractOption(AbstractOption &&) noexcept = default;
+        AbstractOption &operator=(AbstractOption &&) noexcept = default;
+
+        AbstractOption(const AbstractOption &) = default;
+        AbstractOption &operator=(const AbstractOption &) = default;
+
         /**
          * Create from builder.
          */
-        explicit OptionBase(OptionBuilder<T> builder);
+        explicit AbstractOption(OptionBuilder<T> builder);
 
         /**
          * Get the program options description.
@@ -253,27 +261,30 @@ namespace CommandLine {
     };
 
     template<typename T>
-    std::string OptionBase<T>::getShortName() const {
+    std::string AbstractOption<T>::getShortName() const {
         return shortName;
     }
 
     template<typename T>
-    std::string OptionBase<T>::getLongName() const {
+    std::string AbstractOption<T>::getLongName() const {
         return longName;
     }
 
     template<typename T>
-    std::string OptionBase<T>::getDescription() const {
+    std::string AbstractOption<T>::getDescription() const {
         return description;
     }
 
     template<typename T>
-    T OptionBase<T>::getValue() const {
+    T AbstractOption<T>::getValue() const {
         return _value.value();
     }
 
     template<typename T>
-    OptionBase<T>::OptionBase(OptionBuilder<T> builder) :
+    AbstractOption<T>::~AbstractOption() = default;
+
+    template<typename T>
+    AbstractOption<T>::AbstractOption(OptionBuilder<T> builder) :
             shortName{builder._shortName},
             shortNameKey{fmt::format("-{}", shortName)},
             longName{builder._longName},
@@ -308,7 +319,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::run(po::variables_map &vm) {
+    void AbstractOption<T>::run(po::variables_map &vm) {
         parseValue(vm);
 
         auto conflict = checkPresence(conflictsWith, vm);
@@ -330,52 +341,52 @@ namespace CommandLine {
     }
 
     template<typename T>
-    void OptionBase<T>::parseValue(po::variables_map &vm) {
+    void AbstractOption<T>::parseValue(po::variables_map &vm) {
         _value = getValueFromVm<T>(vm);
     }
 
     template<typename T>
-    void OptionBase<T>::setValue(T value) {
+    void AbstractOption<T>::setValue(T value) {
         _value = value;
     }
 
     template<typename T>
-    boost::program_options::options_description &OptionBase<T>::getOptionsDesc() const {
+    boost::program_options::options_description &AbstractOption<T>::getOptionsDesc() const {
         return desc;
     }
 
     template<typename T>
-    bool OptionBase<T>::isRequired() const {
+    bool AbstractOption<T>::isRequired() const {
         return required;
     }
 
     template<typename T>
-    bool OptionBase<T>::isMultitoken() const {
+    bool AbstractOption<T>::isMultitoken() const {
         return multitoken;
     }
 
     template<typename T>
-    const std::vector<std::string> &OptionBase<T>::getConflicting() const {
+    const std::vector<std::string> &AbstractOption<T>::getConflicting() const {
         return conflictsWith;
     }
 
     template<typename T>
-    std::optional<T> OptionBase<T>::getDefaultValue() const {
+    std::optional<T> AbstractOption<T>::getDefaultValue() const {
         return defaultValue;
     }
 
     template<typename T>
-    std::optional<T> OptionBase<T>::getImplicitValue() const {
+    std::optional<T> AbstractOption<T>::getImplicitValue() const {
         return implicitValue;
     }
 
     template<typename T>
-    std::string OptionBase<T>::getRepresentation() const {
+    std::string AbstractOption<T>::getRepresentation() const {
         return representation;
     }
 
     template<typename T>
-    void OptionBase<T>::checkInvariants() {
+    void AbstractOption<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
             throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
         }
@@ -383,7 +394,7 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    std::optional<U> OptionBase<T>::getValueFromVm(po::variables_map &vm) {
+    std::optional<U> AbstractOption<T>::getValueFromVm(po::variables_map &vm) {
         if (vm.count(longNameKey) && !vm.at(longNameKey).empty()) {
             return vm[longNameKey].template as<U>();
         }
@@ -394,22 +405,22 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::isOptionPresent(po::variables_map &vm) {
+    bool AbstractOption<T>::isOptionPresent(po::variables_map &vm) {
         return vm.count(longNameKey) || vm.count(shortNameKey);
     }
 
     template<typename T>
-    bool OptionBase<T>::isOptionPresentAndEmpty(po::variables_map &vm) {
+    bool AbstractOption<T>::isOptionPresentAndEmpty(po::variables_map &vm) {
         return (vm.count(longNameKey) && vm.at(longNameKey).empty()) || (vm.count(shortNameKey) && vm.at(shortNameKey).empty());
     }
 
     template<typename T>
-    bool OptionBase<T>::isOptionPresentAndNotEmpty(po::variables_map &vm) {
+    bool AbstractOption<T>::isOptionPresentAndNotEmpty(po::variables_map &vm) {
         return (vm.count(longNameKey) && !vm.at(longNameKey).empty()) || (vm.count(shortNameKey) && !vm.at(shortNameKey).empty());
     }
 
     template<typename T>
-    std::string OptionBase<T>::getName() {
+    std::string AbstractOption<T>::getName() {
         if (!longName.empty()) {
             return longName;
         }
@@ -417,13 +428,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::isValuePresent() {
+    bool AbstractOption<T>::isValuePresent() {
         return _value.has_value();
     }
 
     template<typename T>
     template<typename U>
-    void OptionBase<T>::addOptionToDesc(po::typed_value<U>* typedValue) {
+    void AbstractOption<T>::addOptionToDesc(po::typed_value<U>* typedValue) {
         this->getOptionsDesc().add_options()(
                 (this->getLongName() + "," + this->getShortName()).c_str(),
                 typedValue,
@@ -433,18 +444,18 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    void OptionBase<T>::addOptionToDesc(
+    void AbstractOption<T>::addOptionToDesc(
             bool required,
             bool multitoken,
             po::typed_value<U>* typedValue
     ) {
-        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
+        AbstractOption<T>::setTypedValue(required, multitoken, typedValue);
         this->addOptionToDesc(typedValue);
     }
 
     template<typename T>
     template<typename U>
-    void OptionBase<T>::addOptionToDesc(
+    void AbstractOption<T>::addOptionToDesc(
             bool required,
             bool multitoken,
             std::optional<U> defaultValue,
@@ -452,28 +463,28 @@ namespace CommandLine {
             const std::string& representation,
             po::typed_value<U>* typedValue
     ) {
-        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
-        OptionBase<T>::setTypedValue(defaultValue, implicitValue, representation, typedValue);
+        AbstractOption<T>::setTypedValue(required, multitoken, typedValue);
+        AbstractOption<T>::setTypedValue(defaultValue, implicitValue, representation, typedValue);
         this->addOptionToDesc(typedValue);
     }
 
     template<typename T>
     template<typename U>
-    void OptionBase<T>::addOptionToDesc(
+    void AbstractOption<T>::addOptionToDesc(
             bool required,
             bool multitoken,
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
             po::typed_value<U>* typedValue
     ) {
-        OptionBase<T>::setTypedValue(required, multitoken, typedValue);
-        OptionBase<T>::setTypedValue(defaultValue, implicitValue, typedValue);
+        AbstractOption<T>::setTypedValue(required, multitoken, typedValue);
+        AbstractOption<T>::setTypedValue(defaultValue, implicitValue, typedValue);
         this->addOptionToDesc(typedValue);
     }
 
     template<typename T>
     template<typename U>
-    po::typed_value<U>* OptionBase<T>::setTypedValue(
+    po::typed_value<U>* AbstractOption<T>::setTypedValue(
             bool required,
             bool multitoken,
             po::typed_value<U>* typedValue
@@ -489,7 +500,7 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    po::typed_value<U>* OptionBase<T>::setTypedValue(
+    po::typed_value<U>* AbstractOption<T>::setTypedValue(
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
             const std::string& representation,
@@ -506,7 +517,7 @@ namespace CommandLine {
 
     template<typename T>
     template<typename U>
-    po::typed_value<U>* OptionBase<T>::setTypedValue(
+    po::typed_value<U>* AbstractOption<T>::setTypedValue(
             std::optional<U> defaultValue,
             std::optional<U> implicitValue,
             po::typed_value<U>* typedValue
@@ -522,7 +533,7 @@ namespace CommandLine {
 
 
     template<typename T>
-    void OptionBase<T>::addPositionalOption(OptionBuilder<T>& builder, const std::string& name) {
+    void AbstractOption<T>::addPositionalOption(OptionBuilder<T>& builder, const std::string& name) {
         builder._positionalDesc->get().add(
                 (name).c_str(),
                 *builder._positionalAmount
@@ -530,13 +541,13 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::isPresent(const std::string& name, po::variables_map& vm) {
+    bool AbstractOption<T>::isPresent(const std::string& name, po::variables_map& vm) {
         std::string nameFmt = fmt::format("-{}", name);
         return (vm.count(name) && !vm[name].defaulted()) || ((vm.count(nameFmt) && !vm[nameFmt].defaulted()));
     }
 
     template<typename T>
-    std::optional<std::string> OptionBase<T>::checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
+    std::optional<std::string> AbstractOption<T>::checkPresence(const std::vector<std::string>& in, po::variables_map& vm) {
         for (const auto &maybePresent : in) {
             if (isPresent(maybePresent, vm)) {
                 return maybePresent;
@@ -546,7 +557,7 @@ namespace CommandLine {
     }
 
     template<typename T>
-    bool OptionBase<T>::isSelfPresent(po::variables_map& vm) {
+    bool AbstractOption<T>::isSelfPresent(po::variables_map& vm) {
         if (!longName.empty()) {
             return isPresent(longName, vm);
         }

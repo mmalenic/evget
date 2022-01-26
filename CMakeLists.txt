@@ -322,7 +322,7 @@ add_program(
     include/evget/CommandLine/Option.h
     include/evget/CommandLine/InvalidCommandLineOption.h
     include/evget/CommandLine/OptionBuilder.h
-    include/evget/CommandLine/OptionBase.h
+    include/evget/CommandLine/AbstractOption.h
     include/evget/CommandLine/OptionValidated.h
     include/evget/CommandLine/OptionFlag.h
 )
