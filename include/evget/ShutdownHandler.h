@@ -23,11 +23,10 @@
 #ifndef EVGET_INCLUDE_SHUTDOWNHANDLER_H
 #define EVGET_INCLUDE_SHUTDOWNHANDLER_H
 
-#include <csignal>
 #include <vector>
+#include <atomic>
 
 namespace evget {
-
     /**
      * Represents the shutdown handler which intercepts program termination.
      */
@@ -35,15 +34,13 @@ namespace evget {
     public:
         /**
          * Whether the program should shutdown.
-         * @return should shutdown.
          */
-        [[nodiscard]] static bool shouldShutdown();
+        [[nodiscard]] bool static shouldShutdown();
 
         /**
-         * Set the shutdown flag.
-         * @param flag shutdown flag
+         * Set the shutdown flag to true.
          */
-        static void setShutdownFlag(bool flag);
+        void static shutdown();
 
         /**
          * Set the interrupt handler.
@@ -54,15 +51,14 @@ namespace evget {
 
         virtual ~ShutdownHandler() = default;
 
-    protected:
-        ShutdownHandler(ShutdownHandler&&) noexcept = default;
-        ShutdownHandler& operator=(ShutdownHandler&&) noexcept = default;
+        ShutdownHandler(ShutdownHandler&&) noexcept = delete;
+        ShutdownHandler& operator=(ShutdownHandler&&) noexcept = delete;
 
-        ShutdownHandler(const ShutdownHandler&) = default;
-        ShutdownHandler& operator=(const ShutdownHandler&) = default;
+        ShutdownHandler(const ShutdownHandler&) = delete;
+        ShutdownHandler& operator=(const ShutdownHandler&) = delete;
 
     private:
-        static sig_atomic_t shutdown;
+        static std::atomic_flag _shutdown;
     };
 }
 

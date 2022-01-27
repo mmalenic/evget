@@ -29,5 +29,5 @@ void evget::ShutdownHandlerLinux::registerInterruptHandler() {
 }
 
 void evget::ShutdownHandlerLinux::activateShutdown([[maybe_unused]] int _) {
-    setShutdownFlag(true);
+    shutdown();
 }

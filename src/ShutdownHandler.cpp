@@ -15,13 +15,12 @@
 
 #include "evget/ShutdownHandler.h"
 
-
-sig_atomic_t evget::ShutdownHandler::shutdown = false;
+std::atomic_flag evget::ShutdownHandler::_shutdown{};
 
 bool evget::ShutdownHandler::shouldShutdown() {
-    return shutdown;
+    return _shutdown.test();
 }
 
-void evget::ShutdownHandler::setShutdownFlag(bool flag) {
-    shutdown = flag;
+void evget::ShutdownHandler::shutdown() {
+    _shutdown.test_and_set();
 }
