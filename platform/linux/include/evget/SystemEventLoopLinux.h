@@ -55,7 +55,7 @@ namespace evget {
         /**
          * Run the event loop for a single type.
          */
-        boost::asio::awaitable<bool> eventLoopForDevice(
+        boost::asio::awaitable<void> eventLoopForDevice(
             SystemEvent<input_event>::Type type,
             std::filesystem::path path
         );
@@ -82,35 +82,30 @@ namespace evget {
         const std::vector<std::filesystem::path>& mouseDevices,
         const std::vector<std::filesystem::path>& keyDevices,
         const std::vector<std::filesystem::path>& touchDevices
-    ) : SystemEventLoop<E, input_event>{context, mouseDevices.size() + keyDevices.size() + touchDevices.size()},
+    ) : SystemEventLoop<E, input_event>{context},
         mouseDevices{mouseDevices},
         keyDevices{keyDevices},
         touchDevices{touchDevices} {
     }
 
     template<boost::asio::execution::executor E>
-    boost::asio::awaitable<bool> SystemEventLoopLinux<E>::eventLoopForDevice(
+    boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoopForDevice(
         SystemEvent<input_event>::Type type,
         std::filesystem::path path
     ) {
         int fd = open(path.c_str(), O_RDONLY);
         if (fd == -1) {
-            std::string err = strerror(errno);
-            spdlog::warn("Could not open type to read events: " + err);
-            co_return false;
+            std::string err = fmt::format("Could not open type to read events: {}", strerror(errno));
+            spdlog::error(err);
+            throw UnsupportedOperationException(err);
         }
 
         asio::posix::stream_descriptor stream{this->getContext(), fd};
         while (!this->isCancelled()) {
             struct input_event event{};
-            size_t n = co_await stream.async_read_some(asio::buffer(&event, sizeof(event)), asio::use_awaitable);
+            size_t n = co_await asio::async_read(stream, asio::buffer(&event, sizeof(event)), asio::use_awaitable);
             printf("%d\n", event.time);
-            spdlog::trace("Event read in event loop.");
-
-            if (n != sizeof(event)) {
-                spdlog::warn("Incorrect bytes read for input event.");
-                continue;
-            }
+            spdlog::trace(fmt::format("{} bytes event read in event loop.", n));
 
             auto systemEvent = SystemEvent(type, event);
             this->notify(systemEvent);
@@ -118,7 +113,7 @@ namespace evget {
 
         stream.cancel();
         stream.close();
-        co_return true;
+        co_return;
     }
 
     template<boost::asio::execution::executor E>
@@ -149,12 +144,10 @@ namespace evget {
         SystemEvent<input_event>::Type type,
         std::vector<std::filesystem::path> paths
     ) {
-        for (auto path: paths) {
-            this->template spawn<bool>(
+        for (const auto& path: paths) {
+            this->spawn(
                 [this, type, path]() {
                     return eventLoopForDevice(type, path);
-                }, [this](std::exception_ptr e, bool result) {
-                    this->submitOutcome(result);
                 }
             );
         }

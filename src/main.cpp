@@ -26,20 +26,22 @@
 #include <atomic>
 #include <evget/EventHandler.h>
 #include <boost/program_options.hpp>
+#include <linux/input.h>
+#include "evget/CommandLine/ParserLinux.h"
+#include "evget/SystemEventLoopLinux.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-//    ParserLinux Cmd{argc, argv};
-//    Cmd.readArgs();
-//
-//    spdlog::set_level(Cmd.getLogLevel());
-//
-//    boost::asio::thread_pool pool{};
-//    auto context = pool.get_executor();
-//    Storage<boost::asio::thread_pool::executor_type> storage{context};
-//    EventTransformer<input_event> transformer{};
-//    SystemEventLoopLinux eventLoop{context, Cmd.getMouseDevices(), Cmd.getKeyDevices(), Cmd.getTouchDevices()};
+    CommandLine::ParserLinux Cmd{};
+
+    spdlog::set_level(Cmd.getLogLevel());
+
+    boost::asio::thread_pool pool{};
+    auto context = pool.get_executor();
+    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
+    //evget::EventTransformer<input_event> transformer{};
+    evget::SystemEventLoopLinux eventLoop{context, Cmd.getMouseDevices(), Cmd.getKeyDevices(), Cmd.getTouchDevices()};
 //
 //    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 //

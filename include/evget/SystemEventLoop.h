@@ -46,20 +46,13 @@ namespace evget {
     public:
         /**
          * Create the system events class.
-         * @param nDevices number of devices tracked
          */
-        SystemEventLoop(E& context, size_t nDevices);
+        SystemEventLoop(E& context);
 
         /**
          * Set up and run the event loop.
          */
         virtual asio::awaitable<void> eventLoop() = 0;
-
-        /**
-         * Submit the result of a coroutine.
-         * @param result result to submit
-         */
-        virtual void submitOutcome(bool result);
 
         /**
          * Register listeners to notify.
@@ -80,8 +73,6 @@ namespace evget {
         SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
     private:
-        const size_t nDevices;
-        std::vector<bool> results;
         std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
     };
 
@@ -95,7 +86,7 @@ namespace evget {
 
     template<asio::execution::executor E, typename T>
     void SystemEventLoop<E, T>::notify(SystemEvent<T> event) {
-        for (auto listener: eventListeners) {
+        for (const auto& listener : eventListeners) {
             listener.get().notify(event);
         }
     }
@@ -106,18 +97,7 @@ namespace evget {
     }
 
     template<asio::execution::executor E, typename T>
-    void SystemEventLoop<E, T>::submitOutcome(bool result) {
-        results.push_back(result);
-        if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
-            spdlog::error("No devices were set.");
-            throw UnsupportedOperationException();
-        }
-    }
-
-    template<asio::execution::executor E, typename T>
-    SystemEventLoop<E, T>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context},
-        nDevices{nDevices},
-        results{},
+    SystemEventLoop<E, T>::SystemEventLoop(E& context) : Task<E>{context},
         eventListeners{} {
     }
 }
