@@ -38,11 +38,6 @@ namespace evget {
         [[nodiscard]] bool static shouldShutdown();
 
         /**
-         * Set the shutdown flag to true.
-         */
-        void static shutdown();
-
-        /**
          * Set the interrupt handler.
          */
         virtual void registerInterruptHandler() = 0;
@@ -56,6 +51,12 @@ namespace evget {
 
         ShutdownHandler(const ShutdownHandler&) = delete;
         ShutdownHandler& operator=(const ShutdownHandler&) = delete;
+
+    protected:
+        /**
+         * Set the shutdown flag to true.
+         */
+        void static shutdown();
 
     private:
         static std::atomic_flag _shutdown;
