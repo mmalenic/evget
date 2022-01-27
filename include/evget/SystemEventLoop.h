@@ -33,85 +33,93 @@
 #include "SystemEvent.h"
 #include "EventListener.h"
 
-/**
- * Class represents processing the system events.
- * @tparam T type of events to process
- */
-template <boost::asio::execution::executor E, typename T>
-class SystemEventLoop : public Task<E>, public EventListener<SystemEvent<T>> {
-public:
+namespace evget {
+    
+    namespace asio = boost::asio;
+    
     /**
-     * Create the system events class.
-     * @param nDevices number of devices tracked
+     * Class represents processing the system events.
+     * @tparam T type of events to process
      */
-    SystemEventLoop(E& context, size_t nDevices);
+    template<asio::execution::executor E, typename T>
+    class SystemEventLoop : public Task<E>, public EventListener<SystemEvent<T>> {
+    public:
+        /**
+         * Create the system events class.
+         * @param nDevices number of devices tracked
+         */
+        SystemEventLoop(E& context, size_t nDevices);
 
-    /**
-     * Set up and run the event loop.
-     */
-    virtual boost::asio::awaitable<void> eventLoop() = 0;
+        /**
+         * Set up and run the event loop.
+         */
+        virtual asio::awaitable<void> eventLoop() = 0;
 
-    /**
-     * Submit the result of a coroutine.
-     * @param result result to submit
-     */
-    virtual void submitOutcome(bool result);
+        /**
+         * Submit the result of a coroutine.
+         * @param result result to submit
+         */
+        virtual void submitOutcome(bool result);
 
-    /**
-     * Register listeners to notify.
-     * @param systemEventListener lister
-     */
-    void registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener);
+        /**
+         * Register listeners to notify.
+         * @param systemEventListener lister
+         */
+        void registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener);
 
-    boost::asio::awaitable<void> start() override;
-    void notify(SystemEvent<T> event) override;
+        asio::awaitable<void> start() override;
+        void notify(SystemEvent<T> event) override;
 
-    virtual ~SystemEventLoop() = default;
+        virtual ~SystemEventLoop() = default;
 
-protected:
-    SystemEventLoop(SystemEventLoop&&) noexcept = default;
-    SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
+    protected:
+        SystemEventLoop(SystemEventLoop&&) noexcept = default;
+        SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
 
-    SystemEventLoop(const SystemEventLoop&) = default;
-    SystemEventLoop& operator=(const SystemEventLoop&) = default;
+        SystemEventLoop(const SystemEventLoop&) = default;
+        SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
-private:
-    const size_t nDevices;
-    std::vector<bool> results;
-    std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
-};
+    private:
+        const size_t nDevices;
+        std::vector<bool> results;
+        std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
+    };
 
-template <boost::asio::execution::executor E, typename T>
-boost::asio::awaitable<void> SystemEventLoop<E, T>::start() {
-    co_await Task<E>::start();
-    co_await eventLoop();
-    this->stop();
-    co_return;
-}
-
-template <boost::asio::execution::executor E, typename T>
-void SystemEventLoop<E, T>::notify(SystemEvent<T> event) {
-    for (auto listener : eventListeners) {
-        listener.get().notify(event);
+    template<asio::execution::executor E, typename T>
+    asio::awaitable<void> SystemEventLoop<E, T>::start() {
+        co_await Task<E>::start();
+        co_await eventLoop();
+        this->stop();
+        co_return;
     }
-}
 
-template <boost::asio::execution::executor E, typename T>
-void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
-    eventListeners.push_back(systemEventListener);
-}
-
-template <boost::asio::execution::executor E, typename T>
-void SystemEventLoop<E, T>::submitOutcome(bool result) {
-    results.push_back(result);
-    if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
-        spdlog::error("No devices were set.");
-        throw UnsupportedOperationException();
+    template<asio::execution::executor E, typename T>
+    void SystemEventLoop<E, T>::notify(SystemEvent<T> event) {
+        for (auto listener: eventListeners) {
+            listener.get().notify(event);
+        }
     }
-}
 
-template <boost::asio::execution::executor E, typename T>
-SystemEventLoop<E, T>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context}, nDevices{nDevices}, results{}, eventListeners{} {
+    template<asio::execution::executor E, typename T>
+    void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
+        eventListeners.push_back(systemEventListener);
+    }
+
+    template<asio::execution::executor E, typename T>
+    void SystemEventLoop<E, T>::submitOutcome(bool result) {
+        results.push_back(result);
+        if (results.size() == nDevices && none_of(results.begin(), results.end(), [](bool v) { return v; })) {
+            spdlog::error("No devices were set.");
+            throw UnsupportedOperationException();
+        }
+    }
+
+    template<asio::execution::executor E, typename T>
+    SystemEventLoop<E, T>::SystemEventLoop(E& context, size_t nDevices) : Task<E>{context},
+        nDevices{nDevices},
+        results{},
+        eventListeners{} {
+    }
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H

@@ -31,69 +31,71 @@
 #include <string>
 #include <vector>
 
-class EventDeviceLister {
-public:
-    /**
-     * Create an event device lister.
-     */
-    EventDeviceLister();
+namespace evget {
+    class EventDeviceLister {
+    public:
+        /**
+         * Create an event device lister.
+         */
+        EventDeviceLister();
 
-    /**
-     * list event devices.
-     * @return event devices list
-     */
-    std::vector<EventDevice> listEventDevices();
+        /**
+         * list event devices.
+         * @return event devices list
+         */
+        std::vector<EventDevice> listEventDevices();
 
-    /**
-     * Get event devices.
-     * @return event devices
-     */
-    [[nodiscard]] const std::vector<EventDevice>& getEventDevices() const;
+        /**
+         * Get event devices.
+         * @return event devices
+         */
+        [[nodiscard]] const std::vector<EventDevice>& getEventDevices() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const EventDeviceLister& deviceLister);
+        friend std::ostream& operator<<(std::ostream& os, const EventDeviceLister& deviceLister);
 
-private:
-    const fs::path inputDirectory;
-    const fs::path byId;
-    const fs::path byPath;
-    const fs::path sysClass;
-    const fs::path namePath;
-    const std::map<int, std::string> eventCodeToName;
+    private:
+        const fs::path inputDirectory;
+        const fs::path byId;
+        const fs::path byPath;
+        const fs::path sysClass;
+        const fs::path namePath;
+        const std::map<int, std::string> eventCodeToName;
 
-    size_t maxNameSize;
-    size_t maxPathSize;
-    std::vector<EventDevice> eventDevices;
+        size_t maxNameSize;
+        size_t maxPathSize;
+        std::vector<EventDevice> eventDevices;
 
-    /**
-     * Check the symlink in path to see if they point to entry.
-     * @param entry
-     * @param path
-     * @param msg
-     * @return
-     */
-    static std::optional<fs::path> checkSymlink(
-        const fs::path& entry,
-        const fs::path& path,
-        const std::string& msg
-    ) noexcept;
+        /**
+         * Check the symlink in path to see if they point to entry.
+         * @param entry
+         * @param path
+         * @param msg
+         * @return
+         */
+        static std::optional<fs::path> checkSymlink(
+            const fs::path& entry,
+            const fs::path& path,
+            const std::string& msg
+        ) noexcept;
 
-    /**
-     * Create the event codes to name map.
-     * @return event codes to name map
-     */
-    [[nodiscard]] static std::map<int, std::string> getEventCodeToName();
+        /**
+         * Create the event codes to name map.
+         * @return event codes to name map
+         */
+        [[nodiscard]] static std::map<int, std::string> getEventCodeToName();
 
-    /**
-     * Get name.
-     * @return name
-     */
-    [[nodiscard]] std::string getName(const fs::path& device);
+        /**
+         * Get name.
+         * @return name
+         */
+        [[nodiscard]] std::string getName(const fs::path& device);
 
-    /**
-     * Get capabilities. The underlying ioctl calls require elevated privileges.
-     * @return name
-     */
-    [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
-};
+        /**
+         * Get capabilities. The underlying ioctl calls require elevated privileges.
+         * @return name
+         */
+        [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
+    };
+}
 
 #endif // INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H

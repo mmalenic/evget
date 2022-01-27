@@ -28,14 +28,14 @@
 using namespace std;
 
 TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
-    EventDevice lt{
+    evget::EventDevice lt{
         "/dev/input/event3",
         "",
         "",
         "",
         {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
     };
-    EventDevice gt{
+    evget::EventDevice gt{
         "/dev/input/event0",
         {},
         {},
@@ -46,14 +46,14 @@ TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
-    EventDevice lt{
+    evget::EventDevice lt{
         "/dev/input/event3",
         "",
         "",
         "",
         {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
     };
-    EventDevice gt{
+    evget::EventDevice gt{
         "/dev/input/event4",
         "",
         "",
@@ -64,14 +64,14 @@ TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
-    EventDevice lt{
+    evget::EventDevice lt{
         "/dev/input/event3",
         {},
         {},
         "",
         {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
     };
-    EventDevice gt{
+    evget::EventDevice gt{
         "/dev/input/event4",
         {},
         {},

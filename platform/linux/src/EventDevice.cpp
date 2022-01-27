@@ -26,7 +26,6 @@
 #include <utility>
 #include <regex>
 
-using namespace std;
 
 namespace algorithm = boost::algorithm;
 
@@ -35,103 +34,103 @@ static constexpr size_t SPACE_FOR_SYMLINK = 4;
 static constexpr char BY_ID[] = "by-id";
 static constexpr char BY_PATH[] = "by-path";
 
-size_t EventDevice::maxNameSize = 0;
-size_t EventDevice::maxPathSize = 0;
+size_t evget::EventDevice::maxNameSize = 0;
+size_t evget::EventDevice::maxPathSize = 0;
 
-const fs::path& EventDevice::getDevice() const {
+const fs::path& evget::EventDevice::getDevice() const {
     return device;
 }
 
-EventDevice::EventDevice(
+evget::EventDevice::EventDevice(
     fs::path device,
-    const optional<string>& byId,
-    const optional<string>& byPath,
-    const optional<string>& name,
-    const vector<string>& capabilities
-) : device{move(device)}, byId{byId}, byPath{byPath}, name{name}, capabilities{capabilities} {
+    std::optional<std::string>  byId,
+    std::optional<std::string>  byPath,
+    std::optional<std::string>  name,
+    std::vector<std::string>  capabilities
+) : device{std::move(device)}, byId{std::move(byId)}, byPath{std::move(byPath)}, name{std::move(name)}, capabilities{std::move(capabilities)} {
 }
 
-const optional<string>& EventDevice::getById() const {
+const std::optional<std::string>& evget::EventDevice::getById() const {
     return byId;
 }
 
-const std::optional<string>& EventDevice::getByPath() const {
+const std::optional<std::string>& evget::EventDevice::getByPath() const {
     return byPath;
 }
 
-const std::optional<string>& EventDevice::getName() const {
+const std::optional<std::string>& evget::EventDevice::getName() const {
     return name;
 }
 
-const std::vector<string>& EventDevice::getCapabilities() const {
+const std::vector<std::string>& evget::EventDevice::getCapabilities() const {
     return capabilities;
 }
 
-size_t EventDevice::getMaxNameSize() {
+size_t evget::EventDevice::getMaxNameSize() {
     return maxNameSize;
 }
 
-void EventDevice::setMaxNameSize(size_t newMaxNameSize) {
+void evget::EventDevice::setMaxNameSize(size_t newMaxNameSize) {
     EventDevice::maxNameSize = newMaxNameSize;
 }
 
-size_t EventDevice::getMaxPathSize() {
+size_t evget::EventDevice::getMaxPathSize() {
     return maxPathSize;
 }
 
-void EventDevice::setMaxPathSize(size_t newMaxPathSize) {
+void evget::EventDevice::setMaxPathSize(size_t newMaxPathSize) {
     EventDevice::maxPathSize = newMaxPathSize;
 }
 
-partial_ordering EventDevice::operator<=>(const EventDevice& eventDevice) const {
+std::partial_ordering evget::EventDevice::operator<=>(const EventDevice& eventDevice) const {
     if ((byId.has_value() && !eventDevice.byId.has_value())
         || (byPath.has_value() && !eventDevice.byPath.has_value())) {
-        return partial_ordering::less;
+        return std::partial_ordering::less;
     }
     if ((!byId.has_value() && eventDevice.byId.has_value()) ||
         (!byPath.has_value() && eventDevice.byPath.has_value())) {
-        return partial_ordering::greater;
+        return std::partial_ordering::greater;
     }
-    string s1 = algorithm::to_lower_copy(device.string());
-    string s2 = algorithm::to_lower_copy(eventDevice.device.string());
+    std::string s1 = algorithm::to_lower_copy(device.string());
+    std:: string s2 = algorithm::to_lower_copy(eventDevice.device.string());
 
-    regex numOrAlpha{R"(\d+|\D+)"};
-    string nums = "0123456789";
-    auto beginS1 = sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
-    auto endS1 = sregex_iterator();
+    std::regex numOrAlpha{R"(\d+|\D+)"};
+    std::string nums = "0123456789";
+    auto beginS1 = std::sregex_iterator(s1.begin(), s1.end(), numOrAlpha);
+    auto endS1 = std::sregex_iterator();
 
     auto beginS2 = std::sregex_iterator(s2.begin(), s2.end(), numOrAlpha);
     auto endS2 = std::sregex_iterator();
 
-    for (pair i{beginS1, beginS2}; i.first != endS1 && i.second != endS2; ++i.first, ++i.second) {
-        string matchS1 = ((smatch) *i.first).str();
-        string matchS2 = ((smatch) *i.second).str();
+    for (std::pair i{beginS1, beginS2}; i.first != endS1 && i.second != endS2; ++i.first, ++i.second) {
+        std::string matchS1 = ((std::smatch) *i.first).str();
+        std::string matchS2 = ((std::smatch) *i.second).str();
 
-        if (matchS1.find_first_of(nums) != string::npos && matchS2.find_first_of(nums) != string::npos) {
+        if (matchS1.find_first_of(nums) != std::string::npos && matchS2.find_first_of(nums) != std::string::npos) {
             if (stol(matchS1) < stol(matchS2)) {
-                return partial_ordering::less;
+                return std::partial_ordering::less;
             }
         } else {
             if (matchS1 < matchS2) {
-                return partial_ordering::less;
+                return std::partial_ordering::less;
             }
         }
     }
 
-    return partial_ordering::unordered;
+    return std::partial_ordering::unordered;
 }
 
-ostream& operator<<(ostream& os, const EventDevice& eventDevice) {
+std::ostream& evget::operator<<(std::ostream& os, const evget::EventDevice& eventDevice) {
     size_t deviceNameLength = 0;
     size_t devicePathLength = eventDevice.device.string().length();
     if (eventDevice.name.has_value()) {
         os << eventDevice.name.value();
         deviceNameLength = eventDevice.name->length();
     }
-    auto totalName = MIN_SPACE_GAP + EventDevice::maxNameSize;
+    auto totalName = MIN_SPACE_GAP + evget::EventDevice::maxNameSize;
     auto spacesName = totalName - deviceNameLength;
-    auto spacesPath = (MIN_SPACE_GAP + EventDevice::maxPathSize) - devicePathLength;
-    os << string(spacesName, ' ') << eventDevice.device.string() << string(spacesPath, ' ');
+    auto spacesPath = (MIN_SPACE_GAP + evget::EventDevice::maxPathSize) - devicePathLength;
+    os << std::string(spacesName, ' ') << eventDevice.device.string() << std::string(spacesPath, ' ');
 
     if (!eventDevice.capabilities.empty()) {
         os << "capabilities = [";
@@ -144,11 +143,11 @@ ostream& operator<<(ostream& os, const EventDevice& eventDevice) {
 
     if (eventDevice.byId.has_value()) {
         auto spacesById = totalName - (sizeof(BY_ID) / sizeof(*BY_ID)) + SPACE_FOR_SYMLINK;
-        os << BY_ID << string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
+        os << BY_ID << std::string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
     }
     if (eventDevice.byPath.has_value()) {
         auto spacesByPath = totalName - (sizeof(BY_PATH) / sizeof(*BY_PATH)) + SPACE_FOR_SYMLINK;
-        os << BY_PATH << string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
+        os << BY_PATH << std::string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
     }
     return os;
 }

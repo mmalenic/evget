@@ -26,14 +26,12 @@
 #include <filesystem>
 #include <fstream>
 
-using namespace std;
-
 TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
-    vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
+    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
 
-    vector<bool> results {};
+    std::vector<bool> results {};
     for (auto& entry : fs::directory_iterator("/dev/input")) {
-        if (entry.is_character_file() && entry.path().filename().string().find("event") != string::npos) {
+        if (entry.is_character_file() && entry.path().filename().string().find("event") != std::string::npos) {
             auto i{devices.begin()};
             for (; i != devices.end(); ++i) {
                 if ((*i).getDevice().string() == entry.path().string()) {
@@ -50,9 +48,9 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
-    vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
+    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
 
-    vector<bool> results {};
+    std::vector<bool> results {};
     for (auto& device : devices) {
         if (device.getById().has_value()) {
             fs::path path {device.getById().value()};
@@ -63,9 +61,9 @@ TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err5
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
-    vector<EventDevice> devices = EventDeviceLister{}.listEventDevices();
+    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
 
-    vector<bool> results {};
+    std::vector<bool> results {};
     for (auto& device : devices) {
         if (device.getByPath().has_value()) {
             fs::path path {device.getByPath().value()};

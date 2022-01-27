@@ -18,20 +18,22 @@
 
 #include <string>
 
-/**
- * Exception used for an unsupported operation.
- */
-class UnsupportedOperationException : public std::exception {
-public:
+namespace evget {
     /**
-     * Create exception with message.
-     * @param message message
+     * Exception used for an unsupported operation.
      */
-    explicit UnsupportedOperationException(std::string message = "Unsupported Operation");
-    [[nodiscard]] const char* what() const noexcept override;
+    class UnsupportedOperationException : public std::exception {
+    public:
+        /**
+         * Create exception with message.
+         * @param message message
+         */
+        explicit UnsupportedOperationException(std::string message = "Unsupported Operation");
+        [[nodiscard]] const char* what() const noexcept override;
 
-private:
-    std::string message;
-};
+    private:
+        std::string message;
+    };
+}
 
 #endif //EVGET_INCLUDE_UNSUPPORTEDOPERATIONEXCEPTION_H

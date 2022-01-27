@@ -34,9 +34,7 @@
 #define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
 
-using namespace std;
-
-EventDeviceLister::EventDeviceLister() :
+evget::EventDeviceLister::EventDeviceLister() :
     inputDirectory{"/dev/input"},
     byId{inputDirectory / "by-id"},
     byPath{inputDirectory / "by-path"},
@@ -48,10 +46,10 @@ EventDeviceLister::EventDeviceLister() :
     eventDevices{listEventDevices()} {
 }
 
-vector<EventDevice> EventDeviceLister::listEventDevices() {
-    vector<EventDevice> devices{};
+std::vector<evget::EventDevice> evget::EventDeviceLister::listEventDevices() {
+    std::vector<EventDevice> devices{};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
-        if (entry.is_character_file() && entry.path().filename().string().find("event") != string::npos) {
+        if (entry.is_character_file() && entry.path().filename().string().find("event") != std::string::npos) {
             auto name = getName(entry.path());
             EventDevice device = {
                 entry.path(),
@@ -76,12 +74,12 @@ vector<EventDevice> EventDeviceLister::listEventDevices() {
     return devices;
 }
 
-const vector<EventDevice>& EventDeviceLister::getEventDevices() const {
+const std::vector<evget::EventDevice>& evget::EventDeviceLister::getEventDevices() const {
     return eventDevices;
 }
 
-optional<fs::path>
-EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const string& msg) noexcept {
+std::optional<fs::path>
+evget::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
     try {
         for (auto& symEntry : fs::directory_iterator(path)) {
             if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
@@ -94,7 +92,7 @@ EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, con
     return {};
 }
 
-ostream& operator<<(ostream& os, const EventDeviceLister& deviceLister) {
+std::ostream& evget::operator<<(std::ostream& os, const evget::EventDeviceLister& deviceLister) {
     if (!deviceLister.eventDevices.empty()) {
         os << "Event devices with path or id symbolic links: \n";
     }
@@ -114,21 +112,21 @@ ostream& operator<<(ostream& os, const EventDeviceLister& deviceLister) {
     return os;
 }
 
-vector<string> EventDeviceLister::getCapabilities(const fs::path& device) {
+std::vector<std::string> evget::EventDeviceLister::getCapabilities(const fs::path& device) {
     unsigned long bit[EV_MAX];
 
     memset(bit, 0, sizeof(bit));
     int fd = open(device.string().c_str(), O_RDONLY);
 
     if (fd == -1) {
-        string err = strerror(errno);
+        std::string err = strerror(errno);
         spdlog::warn("Could not open device to read capabilities: " + err);
         return {};
     }
 
     ioctl(fd, EVIOCGBIT(0, EV_MAX), &bit);
 
-    vector<string> vec{};
+    std::vector<std::string> vec{};
     for (const auto& type : eventCodeToName) {
         if (!!(bit[type.first / ULONG_BITS] & (1uL << (type.first % ULONG_BITS)))) {
             vec.push_back(type.second);
@@ -139,10 +137,10 @@ vector<string> EventDeviceLister::getCapabilities(const fs::path& device) {
     return vec;
 }
 
-string EventDeviceLister::getName(const fs::path& device) {
+std::string evget::EventDeviceLister::getName(const fs::path& device) {
     fs::path fullPath = sysClass / device.filename() / namePath;
-    ifstream file{fullPath};
-    string name{(istreambuf_iterator<char>(file)), istreambuf_iterator<char>()};
+    std::ifstream file{fullPath};
+    std::string name{(std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()};
     name.erase(remove(name.begin(), name.end(), '\n'), name.end());
 
     if (name.length() > maxNameSize) {
@@ -152,7 +150,7 @@ string EventDeviceLister::getName(const fs::path& device) {
     return name;
 }
 
-map<int, string> EventDeviceLister::getEventCodeToName() {
+std::map<int, std::string> evget::EventDeviceLister::getEventCodeToName() {
     return {
         {EV_SYN,       STRINGIFY(EV_SYN)},
         {EV_KEY,       STRINGIFY(EV_KEY)},

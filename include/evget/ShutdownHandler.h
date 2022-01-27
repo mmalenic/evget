@@ -26,41 +26,44 @@
 #include <csignal>
 #include <vector>
 
-/**
- * Represents the shutdown handler which intercepts program termination.
- */
-class ShutdownHandler {
-public:
-    /**
-     * Whether the program should shutdown.
-     * @return should shutdown.
-     */
-    [[nodiscard]] static bool shouldShutdown();
+namespace evget {
 
     /**
-     * Set the shutdown flag.
-     * @param flag shutdown flag
+     * Represents the shutdown handler which intercepts program termination.
      */
-    static void setShutdownFlag(bool flag);
+    class ShutdownHandler {
+    public:
+        /**
+         * Whether the program should shutdown.
+         * @return should shutdown.
+         */
+        [[nodiscard]] static bool shouldShutdown();
 
-    /**
-     * Set the interrupt handler.
-     */
-    virtual void registerInterruptHandler() = 0;
+        /**
+         * Set the shutdown flag.
+         * @param flag shutdown flag
+         */
+        static void setShutdownFlag(bool flag);
 
-    ShutdownHandler() = default;
+        /**
+         * Set the interrupt handler.
+         */
+        virtual void registerInterruptHandler() = 0;
 
-    virtual ~ShutdownHandler() = default;
+        ShutdownHandler() = default;
 
-protected:
-    ShutdownHandler(ShutdownHandler&&) noexcept = default;
-    ShutdownHandler& operator=(ShutdownHandler&&) noexcept = default;
+        virtual ~ShutdownHandler() = default;
 
-    ShutdownHandler(const ShutdownHandler&) = default;
-    ShutdownHandler& operator=(const ShutdownHandler&) = default;
+    protected:
+        ShutdownHandler(ShutdownHandler&&) noexcept = default;
+        ShutdownHandler& operator=(ShutdownHandler&&) noexcept = default;
 
-private:
-    static sig_atomic_t shutdown;
-};
+        ShutdownHandler(const ShutdownHandler&) = default;
+        ShutdownHandler& operator=(const ShutdownHandler&) = default;
+
+    private:
+        static sig_atomic_t shutdown;
+    };
+}
 
 #endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H

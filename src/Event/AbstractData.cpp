@@ -44,14 +44,14 @@ const Event::AbstractField& Event::AbstractData::getByName(std::string name) con
             return *field;
         }
     }
-    throw UnsupportedOperationException(fmt::format("{} not in event data.", name));
+    throw evget::UnsupportedOperationException(fmt::format("{} not in event data.", name));
 }
 
 const Event::AbstractField& Event::AbstractData::getAtPosition(size_t position) const {
     if (position < fields.size()) {
         return *fields.at(position);
     }
-    throw UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
+    throw evget::UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
 }
 
 std::string Event::AbstractData::getName() const {

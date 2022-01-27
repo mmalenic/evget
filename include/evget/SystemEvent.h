@@ -23,78 +23,81 @@
 #ifndef EVGET_INCLUDE_SYSTEMEVENT_H
 #define EVGET_INCLUDE_SYSTEMEVENT_H
 
-/**
- * Defines the type of events that system events can take.
- * @tparam T the type of event
- */
-template <typename T>
-class SystemEvent {
-public:
+namespace evget {
+
     /**
-     * Possible types.
+     * Defines the type of events that system events can take.
+     * @tparam T the type of event
      */
-    enum class Type {
-        mouseDevice,
-        keyDevice,
-        touchDevice
+    template<typename T>
+    class SystemEvent {
+    public:
+        /**
+         * Possible types.
+         */
+        enum class Type {
+            mouseDevice,
+            keyDevice,
+            touchDevice
+        };
+
+        /**
+         * Get the type.
+         * @return type
+         */
+        Type getType() const;
+
+        /**
+         * Get the data.
+         * @return data
+         */
+        T getData() const;
+
+        /**
+         * Create the device.
+         * @param type type
+         * @param data data
+         */
+        SystemEvent(Type type, T data);
+
+        explicit operator Type() const;
+        bool operator==(const SystemEvent& b) const;
+        bool operator==(const Type& b) const;
+        operator bool() = delete;
+
+    private:
+        Type type;
+        T data;
     };
 
-    /**
-     * Get the type.
-     * @return type
-     */
-    Type getType() const;
+    template<typename T>
+    SystemEvent<T>::SystemEvent(SystemEvent::Type type, T data) : type{type}, data{data} {
+    }
 
-    /**
-     * Get the data.
-     * @return data
-     */
-    T getData() const;
+    template<typename T>
+    SystemEvent<T>::operator Type() const {
+        return type;
+    }
 
-    /**
-     * Create the device.
-     * @param type type
-     * @param data data
-     */
-    SystemEvent(Type type, T data);
+    template<typename T>
+    bool SystemEvent<T>::operator==(const SystemEvent& b) const {
+        return type == b.type;
+    }
 
-    explicit operator Type() const;
-    bool operator ==(const SystemEvent &b) const;
-    bool operator ==(const Type &b) const;
-    operator bool() = delete;
+    template<typename T>
+    bool SystemEvent<T>::operator==(const SystemEvent::Type& b) const {
+        return type == b;
+    }
 
-private:
-    Type type;
-    T data;
-};
+    template<typename T>
+    T SystemEvent<T>::getData() const {
+        return data;
+    }
 
-template<typename T>
-SystemEvent<T>::SystemEvent(SystemEvent::Type type, T data) : type{type}, data{data} {
-}
-
-template<typename T>
-SystemEvent<T>::operator Type() const {
-    return type;
-}
-
-template<typename T>
-bool SystemEvent<T>::operator==(const SystemEvent& b) const {
-    return type == b.type;
-}
-
-template<typename T>
-bool SystemEvent<T>::operator==(const SystemEvent::Type& b) const {
-    return type == b;
-}
-
-template<typename T>
-T SystemEvent<T>::getData() const {
-    return data;
-}
-
-template<typename T>
-typename SystemEvent<T>::Type SystemEvent<T>::getType() const {
-    return type;
+    template<typename T>
+    typename SystemEvent<T>::Type SystemEvent<T>::getType() const {
+        return type;
+    }
 }
 
 #endif //EVGET_INCLUDE_SYSTEMEVENT_H

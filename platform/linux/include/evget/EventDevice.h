@@ -29,92 +29,94 @@
 
 namespace fs = std::filesystem;
 
+namespace evget {
 /**
  * Store the paths for event devices.
  */
-class EventDevice {
-public:
-    /**
-     * Create event device.
-     * @param device device path
-     * @param byId by id path
-     * @param byPath by path path
-     * @param name device name
-     * @param capabilities capabilities
-     */
-    EventDevice(
-        fs::path device,
-        const std::optional<std::string>& byId,
-        const std::optional<std::string>& byPath,
-        const std::optional<std::string>& name,
-        const std::vector<std::string>& capabilities
-    );
+    class EventDevice {
+    public:
+        /**
+         * Create event device.
+         * @param device device path
+         * @param byId by id path
+         * @param byPath by path path
+         * @param name device name
+         * @param capabilities capabilities
+         */
+        EventDevice(
+            fs::path device,
+            std::optional<std::string>  byId,
+            std::optional<std::string>  byPath,
+            std::optional<std::string>  name,
+            std::vector<std::string>  capabilities
+        );
 
-    /**
-     * Get device.
-     * @return device
-     */
-    [[nodiscard]] const fs::path& getDevice() const;
+        /**
+         * Get device.
+         * @return device
+         */
+        [[nodiscard]] const fs::path& getDevice() const;
 
-    /**
-     * Get by id.
-     * @return by id
-     */
-    [[nodiscard]] const std::optional<std::string>& getById() const;
+        /**
+         * Get by id.
+         * @return by id
+         */
+        [[nodiscard]] const std::optional<std::string>& getById() const;
 
-    /**
-     * Get by path.
-     * @return by path
-     */
-    [[nodiscard]] const std::optional<std::string>& getByPath() const;
+        /**
+         * Get by path.
+         * @return by path
+         */
+        [[nodiscard]] const std::optional<std::string>& getByPath() const;
 
-    /**
-     * Get name.
-     * @return name
-     */
-    [[nodiscard]] const std::optional<std::string>& getName() const;
+        /**
+         * Get name.
+         * @return name
+         */
+        [[nodiscard]] const std::optional<std::string>& getName() const;
 
-    /**
-     * Get capabilities.
-     * @return capabilities
-     */
-    [[nodiscard]] const std::vector<std::string>& getCapabilities() const;
+        /**
+         * Get capabilities.
+         * @return capabilities
+         */
+        [[nodiscard]] const std::vector<std::string>& getCapabilities() const;
 
-    /**
-     * Get max name size.
-     * @return max name size
-     */
-    static size_t getMaxNameSize();
+        /**
+         * Get max name size.
+         * @return max name size
+         */
+        static size_t getMaxNameSize();
 
-    /**
-     * Set max name size.
-     * @param newMaxNameSize max name size
-     */
-    static void setMaxNameSize(size_t newMaxNameSize);
+        /**
+         * Set max name size.
+         * @param newMaxNameSize max name size
+         */
+        static void setMaxNameSize(size_t newMaxNameSize);
 
-    /**
-     * Get max path size.
-     * @return max path size
-     */
-    static size_t getMaxPathSize();
+        /**
+         * Get max path size.
+         * @return max path size
+         */
+        static size_t getMaxPathSize();
 
-    /**
-     * Set max path size.
-     * @param newMaxPathSize max path size
-     */
-    static void setMaxPathSize(size_t newMaxPathSize);
+        /**
+         * Set max path size.
+         * @param newMaxPathSize max path size
+         */
+        static void setMaxPathSize(size_t newMaxPathSize);
 
-    std::partial_ordering operator<=>(const EventDevice& eventDevice) const;
-    friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
+        std::partial_ordering operator<=>(const EventDevice& eventDevice) const;
+        friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
 
-private:
-    fs::path device;
-    std::optional<std::string> byId;
-    std::optional<std::string> byPath;
-    std::optional<std::string> name;
-    std::vector<std::string> capabilities;
-    static size_t maxNameSize;
-    static size_t maxPathSize;
-};
+    private:
+        fs::path device;
+        std::optional<std::string> byId;
+        std::optional<std::string> byPath;
+        std::optional<std::string> name;
+        std::vector<std::string> capabilities;
+        static size_t maxNameSize;
+        static size_t maxPathSize;
+    };
+}
 
 #endif //INPUT_EVENT_RECORDER_EVENTDEVICE_H

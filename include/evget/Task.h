@@ -22,152 +22,167 @@
 #include "UnsupportedOperationException.h"
 #include <optional>
 
-/**
- * Task class.
- */
-template<boost::asio::execution::executor E>
-class Task {
-public:
-    /**
-     * Create task object.
-     */
-    explicit Task(E& context);
-
-    /**
-     * Cancel the task.
-     */
-    void cancel();
-
-    /**
-     * Stop the task.
-     */
-    void stop();
-
-    /**
-     * Get context.
-     * @return context
-     */
-    [[nodiscard]] E& getContext() const;
-
-    /**
-     * Check if started.
-     * @return has started
-     */
-    [[nodiscard]] bool isStarted() const;
-
-    /**
-     * Check if cancelled.
-     * @return is cancelled.
-     */
-    [[nodiscard]] bool isCancelled() const;
-
-    /**
-     * Check if stopped normally.
-     * @return is stopped.
-     */
-    [[nodiscard]] bool isStopped() const;
-
-    /**
-     * Spawn a task.
-     */
-    template<typename R>
-    void spawn(std::function<boost::asio::awaitable<R>()> f,
-        std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { });
-
-     /**
-     * Spawn a task with void return.
-     */
-     void spawn(
-         std::function<boost::asio::awaitable<void>()> f,
-         std::function<void(std::exception_ptr)>  callback = [](std::exception_ptr e) { });
-
-    /**
-     * Start the task.
-     */
-    virtual boost::asio::awaitable<void> start();
-
-    virtual ~Task() = 0;
-
-protected:
-    Task(Task&&) noexcept = default;
-    Task& operator=(Task&&) noexcept = default;
-
-    Task(const Task&) = default;
-    Task& operator=(const Task&) = default;
+namespace evget {
     
-private:
-    E& executionContext;
+    namespace asio = boost::asio;
+    
+    /**
+     * Task class.
+     */
+    template<asio::execution::executor E>
+    class Task {
+    public:
+        /**
+         * Create task object.
+         */
+        explicit Task(E& context);
 
-    std::atomic<bool> started;
-    std::atomic<bool> cancelled;
-    std::atomic<bool> stopped;
-};
+        /**
+         * Cancel the task.
+         */
+        void cancel();
 
-template<boost::asio::execution::executor E>
-bool Task<E>::isCancelled() const {
-    return cancelled.load();
-}
+        /**
+         * Stop the task.
+         */
+        void stop();
 
-template<boost::asio::execution::executor E>
-void Task<E>::cancel() {
-    cancelled.store(true);
-}
+        /**
+         * Get context.
+         * @return context
+         */
+        [[nodiscard]] E& getContext() const;
 
-template<boost::asio::execution::executor E>
-Task<E>::~Task() = default;
+        /**
+         * Check if started.
+         * @return has started
+         */
+        [[nodiscard]] bool isStarted() const;
 
-template<boost::asio::execution::executor E>
-Task<E>::Task(E& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {
-}
+        /**
+         * Check if cancelled.
+         * @return is cancelled.
+         */
+        [[nodiscard]] bool isCancelled() const;
 
-template<boost::asio::execution::executor E>
-bool Task<E>::isStarted() const {
-    return started.load();
-}
+        /**
+         * Check if stopped normally.
+         * @return is stopped.
+         */
+        [[nodiscard]] bool isStopped() const;
 
-template<boost::asio::execution::executor E>
-bool Task<E>::isStopped() const {
-    return started.load();
-}
+        /**
+         * Spawn a task.
+         */
+        template<typename R>
+        void spawn(
+            std::function<asio::awaitable<R>()> f,
+            std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) { }
+        );
 
-template<boost::asio::execution::executor E>
-boost::asio::awaitable<void> Task<E>::start() {
-    started.store(true);
-    co_return;
-}
+        /**
+        * Spawn a task with void return.
+        */
+        void spawn(
+            std::function<asio::awaitable<void>()> f,
+            std::function<void(std::exception_ptr)> callback = [](std::exception_ptr e) { }
+        );
 
-template<boost::asio::execution::executor E>
-void Task<E>::stop() {
-    stopped.store(true);
-}
+        /**
+         * Start the task.
+         */
+        virtual asio::awaitable<void> start();
 
-template<boost::asio::execution::executor E>
-E& Task<E>::getContext() const {
-    return executionContext;
-}
+        virtual ~Task() = 0;
 
-template<boost::asio::execution::executor E>
-template<typename R>
-void Task<E>::spawn(std::function<boost::asio::awaitable<R>()> f,
-    std::function<void(std::exception_ptr, R)> callback) {
-    co_spawn(getContext(), f, [callback](std::exception_ptr e, R result) {
-            if (e) {
-                spdlog::info("Exception occurred in coroutine callback");
+    protected:
+        Task(Task&&) noexcept = default;
+        Task& operator=(Task&&) noexcept = default;
+
+        Task(const Task&) = default;
+        Task& operator=(const Task&) = default;
+
+    private:
+        E& executionContext;
+
+        std::atomic<bool> started;
+        std::atomic<bool> cancelled;
+        std::atomic<bool> stopped;
+    };
+
+    template<asio::execution::executor E>
+    bool Task<E>::isCancelled() const {
+        return cancelled.load();
+    }
+
+    template<asio::execution::executor E>
+    void Task<E>::cancel() {
+        cancelled.store(true);
+    }
+
+    template<asio::execution::executor E>
+    Task<E>::~Task() = default;
+
+    template<asio::execution::executor E>
+    Task<E>::Task(E& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {
+    }
+
+    template<asio::execution::executor E>
+    bool Task<E>::isStarted() const {
+        return started.load();
+    }
+
+    template<asio::execution::executor E>
+    bool Task<E>::isStopped() const {
+        return started.load();
+    }
+
+    template<asio::execution::executor E>
+    asio::awaitable<void> Task<E>::start() {
+        started.store(true);
+        co_return;
+    }
+
+    template<asio::execution::executor E>
+    void Task<E>::stop() {
+        stopped.store(true);
+    }
+
+    template<asio::execution::executor E>
+    E& Task<E>::getContext() const {
+        return executionContext;
+    }
+
+    template<asio::execution::executor E>
+    template<typename R>
+    void Task<E>::spawn(
+        std::function<asio::awaitable<R>()> f,
+        std::function<void(std::exception_ptr, R)> callback
+    ) {
+        co_spawn(
+            getContext(), f, [callback](std::exception_ptr e, R result) {
+                if (e) {
+                    spdlog::info("Exception occurred in coroutine callback");
+                }
+                callback(e, result);
             }
-            callback(e, result);
-        });
-}
+        );
+    }
 
-template<boost::asio::execution::executor E>
-void Task<E>::spawn(
-    std::function<boost::asio::awaitable<void>()> f,
-    std::function<void(std::exception_ptr)> callback) {
-    co_spawn(getContext(), f, [callback](std::exception_ptr e) {
-            if (e) {
-                spdlog::info("Exception occurred in coroutine callback");
+    template<asio::execution::executor E>
+    void Task<E>::spawn(
+        std::function<asio::awaitable<void>()> f,
+        std::function<void(std::exception_ptr)> callback
+    ) {
+        co_spawn(
+            getContext(), f, [callback](std::exception_ptr e) {
+                if (e) {
+                    spdlog::info("Exception occurred in coroutine callback");
+                }
+                callback(e);
             }
-            callback(e);
-        });
+        );
+    }
 }
 
 #endif //EVGET_INCLUDE_TASK_H

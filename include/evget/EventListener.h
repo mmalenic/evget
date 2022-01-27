@@ -23,27 +23,30 @@
 #ifndef EVGET_INCLUDE_EVENTLISTENER_H
 #define EVGET_INCLUDE_EVENTLISTENER_H
 
-/**
- * Represents event listeners.
- * @tparam T event type
- */
-template<typename T>
-class EventListener {
-public:
+namespace evget {
+
     /**
-     * Notify if an event.
-     * @param event event
+     * Represents event listeners.
+     * @tparam T event type
      */
-    virtual void notify(T event) = 0;
+    template<typename T>
+    class EventListener {
+    public:
+        /**
+         * Notify if an event.
+         * @param event event
+         */
+        virtual void notify(T event) = 0;
 
-    EventListener() = default;
+        EventListener() = default;
 
-    virtual ~EventListener() = default;
+        virtual ~EventListener() = default;
 
-    EventListener(const EventListener&) = delete;
-    EventListener(EventListener&&) noexcept = delete;
-    EventListener& operator=(const EventListener&) = delete;
-    EventListener& operator=(EventListener&&) noexcept = delete;
-};
+        EventListener(const EventListener&) = delete;
+        EventListener(EventListener&&) noexcept = delete;
+        EventListener& operator=(const EventListener&) = delete;
+        EventListener& operator=(EventListener&&) noexcept = delete;
+    };
+}
 
 #endif //EVGET_INCLUDE_EVENTLISTENER_H

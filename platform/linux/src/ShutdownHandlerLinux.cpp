@@ -24,10 +24,10 @@
 
 #include <csignal>
 
-void ShutdownHandlerLinux::registerInterruptHandler() {
+void evget::ShutdownHandlerLinux::registerInterruptHandler() {
     signal(SIGINT, activateShutdown);
 }
 
-void ShutdownHandlerLinux::activateShutdown([[maybe_unused]] int _) {
+void evget::ShutdownHandlerLinux::activateShutdown([[maybe_unused]] int _) {
     setShutdownFlag(true);
 }

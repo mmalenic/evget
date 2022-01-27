@@ -16,12 +16,10 @@
 #include <gtest/gtest.h>
 #include <evget/ShutdownHandlerLinux.h>
 
-using namespace std;
-
 TEST(ShutdownHandlerLinuxTest, HandleSIGINT) { // NOLINT(cert-err58-cpp)
-    ShutdownHandlerLinux shutdownHandler{};
+    evget::ShutdownHandlerLinux shutdownHandler{};
     shutdownHandler.registerInterruptHandler();
-    ASSERT_FALSE(ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_FALSE(evget::ShutdownHandlerLinux::shouldShutdown());
     raise(SIGINT);
-    ASSERT_TRUE(ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_TRUE(evget::ShutdownHandlerLinux::shouldShutdown());
 }

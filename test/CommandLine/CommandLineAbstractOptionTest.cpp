@@ -163,5 +163,5 @@ TEST(CommandLineAbstractOptionTest, PositionalOptionNotPresent) { // NOLINT(cert
 
 TEST(CommandLineAbstractOptionTest, NoDefaultAndNotRequired) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    ASSERT_THROW(Cmd::OptionBuilder<int>(desc).shortName('a').build(), UnsupportedOperationException);
+    ASSERT_THROW(Cmd::OptionBuilder<int>(desc).shortName('a').build(), evget::UnsupportedOperationException);
 }

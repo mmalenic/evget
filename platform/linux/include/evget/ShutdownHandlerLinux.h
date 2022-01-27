@@ -25,18 +25,20 @@
 
 #include "evget/ShutdownHandler.h"
 
-/**
- * Linux (and unix) specific version of shutdown handler.
- */
-class ShutdownHandlerLinux : public ShutdownHandler {
-public:
+namespace evget {
     /**
-     * Activate the shutdown process.
-     * @param signal signal
+     * Linux (and unix) specific version of shutdown handler.
      */
-    static void activateShutdown([[maybe_unused]] int _);
+    class ShutdownHandlerLinux : public ShutdownHandler {
+    public:
+        /**
+         * Activate the shutdown process.
+         * @param signal signal
+         */
+        static void activateShutdown([[maybe_unused]] int _);
 
-    void registerInterruptHandler() override;
-};
+        void registerInterruptHandler() override;
+    };
+}
 
 #endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H

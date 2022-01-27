@@ -30,47 +30,62 @@
 #include "Storage.h"
 #include "EventListener.h"
 
-/**
- * Class represents a listener for events.
- * @tparam T type of data
- */
-template <boost::asio::execution::executor E, typename T>
-class EventHandler : Task<E>, EventListener<SystemEvent<T>> {
-public:
+namespace evget {
+
+    namespace asio = boost::asio;
+    
     /**
-     * Create the event listener with storage.
-     * @param storage storage
-     * @param transformer transformer
-     * @param rawEvents systemEvents
+     * Class represents a listener for events.
+     * @tparam T type of data
      */
-    EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, SystemEventLoop<E, T>& eventLoop);
+    template<asio::execution::executor E, typename T>
+    class EventHandler : Task<E>, EventListener<SystemEvent<T>> {
+    public:
+        /**
+         * Create the event listener with storage.
+         * @param storage storage
+         * @param transformer transformer
+         * @param rawEvents systemEvents
+         */
+        EventHandler(
+            E& context,
+            Storage<E>& storage,
+            EventTransformer<T>& transformer,
+            SystemEventLoop<E, T>& eventLoop
+        );
 
-    void notify(SystemEvent<T> event) override;
-    boost::asio::awaitable<void> start() override;
+        void notify(SystemEvent<T> event) override;
+        asio::awaitable<void> start() override;
 
-private:
-    Storage<E>& storage;
-    EventTransformer<T>& transformer;
-    SystemEventLoop<E, T>& eventLoop;
-};
+    private:
+        Storage<E>& storage;
+        EventTransformer<T>& transformer;
+        SystemEventLoop<E, T>& eventLoop;
+    };
 
-template <boost::asio::execution::executor E, typename T>
-boost::asio::awaitable<void> EventHandler<E, T>::start() {
-    co_await Task<E>::start();
-    co_await storage.start();
-    co_await eventLoop.start();
-    co_return;
-}
+    template<asio::execution::executor E, typename T>
+    asio::awaitable<void> EventHandler<E, T>::start() {
+        co_await Task<E>::start();
+        co_await storage.start();
+        co_await eventLoop.start();
+        co_return;
+    }
 
-template <boost::asio::execution::executor E, typename T>
-EventHandler<E, T>::EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, SystemEventLoop<E, T>& eventLoop) : Task<E>{context},
-    storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
-    eventLoop.registerSystemEventListener(*this);
-}
+    template<asio::execution::executor E, typename T>
+    EventHandler<E, T>::EventHandler(
+        E& context,
+        Storage<E>& storage,
+        EventTransformer<T>& transformer,
+        SystemEventLoop<E, T>& eventLoop
+    ) : Task<E>{context},
+        storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
+        eventLoop.registerSystemEventListener(*this);
+    }
 
-template <boost::asio::execution::executor E, typename T>
-void EventHandler<E, T>::notify(SystemEvent<T> event) {
-    storage.notify(transformer.transformEvent(event));
+    template<asio::execution::executor E, typename T>
+    void EventHandler<E, T>::notify(SystemEvent<T> event) {
+        storage.notify(transformer.transformEvent(event));
+    }
 }
 
 #endif //EVGET_INCLUDE_EVENTHANDLER_H

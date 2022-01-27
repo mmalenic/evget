@@ -26,29 +26,32 @@
 #include "Event/AbstractData.h"
 #include "SystemEvent.h"
 
-/**
- * Transform the data so its usable by storage.
- * @tparam T type of data
- */
-template <typename T>
-class EventTransformer {
-public:
+namespace evget {
+
     /**
-     * Transform the event.
-     * @param event event to transform
-     * @return event event for storage
+     * Transform the data so its usable by storage.
+     * @tparam T type of data
      */
-    virtual std::unique_ptr<Event::AbstractData> transformEvent(SystemEvent<T> event) = 0;
+    template<typename T>
+    class EventTransformer {
+    public:
+        /**
+         * Transform the event.
+         * @param event event to transform
+         * @return event event for storage
+         */
+        virtual std::unique_ptr<Event::AbstractData> transformEvent(SystemEvent<T> event) = 0;
 
-    EventTransformer() = default;
+        EventTransformer() = default;
 
-    virtual ~EventTransformer() = default;
+        virtual ~EventTransformer() = default;
 
-    EventTransformer(EventTransformer&&) noexcept = delete;
-    EventTransformer& operator=(EventTransformer&&) noexcept = delete;
+        EventTransformer(EventTransformer&&) noexcept = delete;
+        EventTransformer& operator=(EventTransformer&&) noexcept = delete;
 
-    EventTransformer(const EventTransformer&) = delete;
-    EventTransformer& operator=(const EventTransformer&) = delete;
-};
+        EventTransformer(const EventTransformer&) = delete;
+        EventTransformer& operator=(const EventTransformer&) = delete;
+    };
+}
 
 #endif //EVGET_INCLUDE_EVENTTRANSFORMER_H

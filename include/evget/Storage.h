@@ -27,30 +27,34 @@
 #include "EventListener.h"
 #include "Task.h"
 
-/**
- * Storage class represents storing event data.
- */
-template<boost::asio::execution::executor E>
-class Storage : Task<E>, EventListener<std::unique_ptr<Event::AbstractData>> {
-public:
-    explicit Storage(E& context);
+namespace evget {
+    namespace asio = boost::asio;
 
-    boost::asio::awaitable<void> start() override;
-    void notify(std::unique_ptr<Event::AbstractData> event) override;
-};
+    /**
+     * Storage class represents storing event data.
+     */
+    template<asio::execution::executor E>
+    class Storage : Task<E>, EventListener<std::unique_ptr<Event::AbstractData>> {
+    public:
+        explicit Storage(E& context);
 
-template<boost::asio::execution::executor E>
-Storage<E>::Storage(E& context) : Task<E>{context} {
-}
+        asio::awaitable<void> start() override;
+        void notify(std::unique_ptr<Event::AbstractData> event) override;
+    };
 
-template<boost::asio::execution::executor E>
-boost::asio::awaitable<void> Storage<E>::start(){
-    Task<E>::start();
-    co_return;
-}
+    template<asio::execution::executor E>
+    Storage<E>::Storage(E& context) : Task<E>{context} {
+    }
 
-template<boost::asio::execution::executor E>
-void Storage<E>::notify(std::unique_ptr<Event::AbstractData> event) {
+    template<asio::execution::executor E>
+    boost::asio::awaitable<void> Storage<E>::start() {
+        Task<E>::start();
+        co_return;
+    }
+
+    template<asio::execution::executor E>
+    void Storage<E>::notify(std::unique_ptr<Event::AbstractData> event) {
+    }
 }
 
 #endif //EVGET_INCLUDE_STORAGE_H

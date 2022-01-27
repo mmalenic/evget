@@ -302,7 +302,7 @@ namespace CommandLine {
             _value{builder._defaultValue},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
-            throw UnsupportedOperationException("Option should contain at least a short name, or a long name.");
+            throw evget::UnsupportedOperationException("Option should contain at least a short name, or a long name.");
         }
 
         if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
@@ -336,7 +336,7 @@ namespace CommandLine {
 
         // Unsupported use of option.
         if (!_value.has_value()) {
-            throw UnsupportedOperationException("Unsupported use of option.");
+            throw evget::UnsupportedOperationException("Unsupported use of option.");
         }
     }
 
@@ -388,7 +388,7 @@ namespace CommandLine {
     template<typename T>
     void AbstractOption<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
-            throw UnsupportedOperationException{"Value must at least be required, or have a default specified."};
+            throw evget::UnsupportedOperationException{"Value must at least be required, or have a default specified."};
         }
     }
 
