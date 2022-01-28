@@ -94,7 +94,7 @@ namespace evget {
          * Get capabilities. The underlying ioctl calls require elevated privileges.
          * @return name
          */
-        [[nodiscard]] std::vector<std::string> getCapabilities(const fs::path& device);
+        [[nodiscard]] std::vector<std::pair<int, std::string>> getCapabilities(const fs::path& device);
     };
 }
 

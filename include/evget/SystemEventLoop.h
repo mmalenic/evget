@@ -47,7 +47,7 @@ namespace evget {
         /**
          * Create the system events class.
          */
-        SystemEventLoop(E& context);
+        explicit SystemEventLoop(E& context);
 
         /**
          * Set up and run the event loop.

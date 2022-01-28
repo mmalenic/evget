@@ -112,7 +112,7 @@ std::ostream& evget::operator<<(std::ostream& os, const evget::EventDeviceLister
     return os;
 }
 
-std::vector<std::string> evget::EventDeviceLister::getCapabilities(const fs::path& device) {
+std::vector<std::pair<int, std::string>> evget::EventDeviceLister::getCapabilities(const fs::path& device) {
     unsigned long bit[EV_MAX];
 
     memset(bit, 0, sizeof(bit));
@@ -120,16 +120,16 @@ std::vector<std::string> evget::EventDeviceLister::getCapabilities(const fs::pat
 
     if (fd == -1) {
         std::string err = strerror(errno);
-        spdlog::warn("Could not open device to read capabilities: " + err);
+        spdlog::warn(fmt::format("Could not open device to read capabilities: {}", err));
         return {};
     }
 
     ioctl(fd, EVIOCGBIT(0, EV_MAX), &bit);
 
-    std::vector<std::string> vec{};
+    std::vector<std::pair<int, std::string>> vec{};
     for (const auto& type : eventCodeToName) {
         if (!!(bit[type.first / ULONG_BITS] & (1uL << (type.first % ULONG_BITS)))) {
-            vec.push_back(type.second);
+            vec.emplace_back(type);
         }
     }
 

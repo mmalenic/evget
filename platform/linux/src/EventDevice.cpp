@@ -25,12 +25,12 @@
 #include <boost/algorithm/string.hpp>
 #include <utility>
 #include <regex>
-
+#include <fmt/format.h>
 
 namespace algorithm = boost::algorithm;
 
 static constexpr size_t MIN_SPACE_GAP = 4;
-static constexpr size_t SPACE_FOR_SYMLINK = 4;
+static constexpr size_t SPACE_FOR_SYMLINK = 2;
 static constexpr char BY_ID[] = "by-id";
 static constexpr char BY_PATH[] = "by-path";
 
@@ -46,7 +46,7 @@ evget::EventDevice::EventDevice(
     std::optional<std::string>  byId,
     std::optional<std::string>  byPath,
     std::optional<std::string>  name,
-    std::vector<std::string>  capabilities
+    std::vector<std::pair<int, std::string>>  capabilities
 ) : device{std::move(device)}, byId{std::move(byId)}, byPath{std::move(byPath)}, name{std::move(name)}, capabilities{std::move(capabilities)} {
 }
 
@@ -62,7 +62,7 @@ const std::optional<std::string>& evget::EventDevice::getName() const {
     return name;
 }
 
-const std::vector<std::string>& evget::EventDevice::getCapabilities() const {
+const std::vector<std::pair<int, std::string>>& evget::EventDevice::getCapabilities() const {
     return capabilities;
 }
 
@@ -92,7 +92,7 @@ std::partial_ordering evget::EventDevice::operator<=>(const EventDevice& eventDe
         return std::partial_ordering::greater;
     }
     std::string s1 = algorithm::to_lower_copy(device.string());
-    std:: string s2 = algorithm::to_lower_copy(eventDevice.device.string());
+    std::string s2 = algorithm::to_lower_copy(eventDevice.device.string());
 
     std::regex numOrAlpha{R"(\d+|\D+)"};
     std::string nums = "0123456789";
@@ -103,17 +103,12 @@ std::partial_ordering evget::EventDevice::operator<=>(const EventDevice& eventDe
     auto endS2 = std::sregex_iterator();
 
     for (std::pair i{beginS1, beginS2}; i.first != endS1 && i.second != endS2; ++i.first, ++i.second) {
-        std::string matchS1 = ((std::smatch) *i.first).str();
-        std::string matchS2 = ((std::smatch) *i.second).str();
+        std::string matchS1 = i.first->str();
+        std::string matchS2 = i.second->str();
 
-        if (matchS1.find_first_of(nums) != std::string::npos && matchS2.find_first_of(nums) != std::string::npos) {
-            if (stol(matchS1) < stol(matchS2)) {
-                return std::partial_ordering::less;
-            }
-        } else {
-            if (matchS1 < matchS2) {
-                return std::partial_ordering::less;
-            }
+        if ((matchS1.find_first_of(nums) != std::string::npos && matchS2.find_first_of(nums) != std::string::npos
+            && stol(matchS1) < stol(matchS2)) || ((matchS1 < matchS2))) {
+            return std::partial_ordering::less;
         }
     }
 
@@ -135,19 +130,19 @@ std::ostream& evget::operator<<(std::ostream& os, const evget::EventDevice& even
     if (!eventDevice.capabilities.empty()) {
         os << "capabilities = [";
         for (auto i{eventDevice.capabilities.begin()}; i != --eventDevice.capabilities.end(); ++i) {
-            os << *i << ", ";
+            os << "(" << i->first << "; " << i->second << "), ";
         }
-        os << eventDevice.capabilities.back() << "]";
+        os << "(" << eventDevice.capabilities.back().first << "; " << eventDevice.capabilities.back().second << ")]";
     }
     os << "\n";
 
     if (eventDevice.byId.has_value()) {
         auto spacesById = totalName - (sizeof(BY_ID) / sizeof(*BY_ID)) + SPACE_FOR_SYMLINK;
-        os << BY_ID << std::string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
+        os << "  " << BY_ID << std::string(spacesById, ' ') << "<- " << eventDevice.byId.value() << "\n";
     }
     if (eventDevice.byPath.has_value()) {
         auto spacesByPath = totalName - (sizeof(BY_PATH) / sizeof(*BY_PATH)) + SPACE_FOR_SYMLINK;
-        os << BY_PATH << std::string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
+        os << "  " << BY_PATH << std::string(spacesByPath, ' ') << "<- " << eventDevice.byPath.value() << "\n";
     }
     return os;
 }

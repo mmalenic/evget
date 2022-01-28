@@ -48,7 +48,7 @@ namespace evget {
             std::optional<std::string>  byId,
             std::optional<std::string>  byPath,
             std::optional<std::string>  name,
-            std::vector<std::string>  capabilities
+            std::vector<std::pair<int, std::string>>  capabilities
         );
 
         /**
@@ -79,7 +79,7 @@ namespace evget {
          * Get capabilities.
          * @return capabilities
          */
-        [[nodiscard]] const std::vector<std::string>& getCapabilities() const;
+        [[nodiscard]] const std::vector<std::pair<int, std::string>>& getCapabilities() const;
 
         /**
          * Get max name size.
@@ -113,7 +113,7 @@ namespace evget {
         std::optional<std::string> byId;
         std::optional<std::string> byPath;
         std::optional<std::string> name;
-        std::vector<std::string> capabilities;
+        std::vector<std::pair<int, std::string>> capabilities;
         static size_t maxNameSize;
         static size_t maxPathSize;
     };

@@ -29,6 +29,7 @@
 #include <linux/input.h>
 #include "evget/CommandLine/ParserLinux.h"
 #include "evget/SystemEventLoopLinux.h"
+#include "evget/EventDeviceLister.h"
 
 using namespace std;
 
@@ -42,6 +43,12 @@ int main(int argc, char* argv[]) {
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
     //evget::EventTransformer<input_event> transformer{};
     evget::SystemEventLoopLinux eventLoop{context, Cmd.getMouseDevices(), Cmd.getKeyDevices(), Cmd.getTouchDevices()};
+
+    evget::EventDeviceLister lister{};
+    for (const auto& device : lister.listEventDevices()) {
+        std::cout << device;
+    }
+
 //
 //    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
 //
