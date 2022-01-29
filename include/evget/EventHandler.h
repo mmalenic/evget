@@ -50,7 +50,7 @@ namespace evget {
         EventHandler(
             E& context,
             Storage<E>& storage,
-            EventTransformer<T>& transformer,
+            //EventTransformer<T>& transformer,
             SystemEventLoop<E, T>& eventLoop
         );
 
@@ -59,7 +59,7 @@ namespace evget {
 
     private:
         Storage<E>& storage;
-        EventTransformer<T>& transformer;
+        //EventTransformer<T>& transformer;
         SystemEventLoop<E, T>& eventLoop;
     };
 
@@ -75,16 +75,16 @@ namespace evget {
     EventHandler<E, T>::EventHandler(
         E& context,
         Storage<E>& storage,
-        EventTransformer<T>& transformer,
+        //EventTransformer<T>& transformer,
         SystemEventLoop<E, T>& eventLoop
     ) : Task<E>{context},
-        storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
+        storage{storage}, eventLoop{eventLoop} {
         eventLoop.registerSystemEventListener(*this);
     }
 
     template<asio::execution::executor E, typename T>
     void EventHandler<E, T>::notify(SystemEvent<T> event) {
-        storage.notify(transformer.transformEvent(event));
+        //storage.notify(transformer.transformEvent(event));
     }
 }
 

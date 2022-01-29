@@ -47,9 +47,9 @@ namespace evget {
          */
         SystemEventLoopLinux(
             E& context,
-            const std::vector<std::filesystem::path>& mouseDevices,
-            const std::vector<std::filesystem::path>& keyDevices,
-            const std::vector<std::filesystem::path>& touchDevices
+            std::vector<std::filesystem::path> mouseDevices,
+            std::vector<std::filesystem::path> keyDevices,
+            std::vector<std::filesystem::path> touchDevices
         );
 
         /**
@@ -71,21 +71,21 @@ namespace evget {
         boost::asio::awaitable<void> eventLoop() override;
 
     private:
-        const std::vector<std::filesystem::path>& mouseDevices;
-        const std::vector<std::filesystem::path>& keyDevices;
-        const std::vector<std::filesystem::path>& touchDevices;
+        std::vector<std::filesystem::path> mouseDevices;
+        std::vector<std::filesystem::path> keyDevices;
+        std::vector<std::filesystem::path> touchDevices;
     };
 
     template<boost::asio::execution::executor E>
     SystemEventLoopLinux<E>::SystemEventLoopLinux(
         E& context,
-        const std::vector<std::filesystem::path>& mouseDevices,
-        const std::vector<std::filesystem::path>& keyDevices,
-        const std::vector<std::filesystem::path>& touchDevices
+        std::vector<std::filesystem::path> mouseDevices,
+        std::vector<std::filesystem::path> keyDevices,
+        std::vector<std::filesystem::path> touchDevices
     ) : SystemEventLoop<E, input_event>{context},
-        mouseDevices{mouseDevices},
-        keyDevices{keyDevices},
-        touchDevices{touchDevices} {
+        mouseDevices{std::move(mouseDevices)},
+        keyDevices{std::move(keyDevices)},
+        touchDevices{std::move(touchDevices)} {
     }
 
     template<boost::asio::execution::executor E>
@@ -95,7 +95,7 @@ namespace evget {
     ) {
         int fd = open(path.c_str(), O_RDONLY);
         if (fd == -1) {
-            std::string err = fmt::format("Could not open type to read events: {}", strerror(errno));
+            std::string err = fmt::format("Could not open path to read events: {}", strerror(errno));
             spdlog::error(err);
             throw UnsupportedOperationException(err);
         }

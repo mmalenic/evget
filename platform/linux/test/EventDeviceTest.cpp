@@ -33,14 +33,14 @@ TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
         "",
         "",
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     evget::EventDevice gt{
         "/dev/input/event0",
         {},
         {},
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     ASSERT_LT(lt, gt);
 }
@@ -51,14 +51,14 @@ TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
         "",
         "",
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     evget::EventDevice gt{
         "/dev/input/event4",
         "",
         "",
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     ASSERT_LT(lt, gt);
 }
@@ -69,14 +69,14 @@ TEST(EventDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
         {},
         {},
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     evget::EventDevice gt{
         "/dev/input/event4",
         {},
         {},
         "",
-        {to_string(EV_SYN), to_string(EV_KEY), to_string(EV_REL), to_string(EV_MSC)}
+        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
     };
     ASSERT_LT(lt, gt);
 }

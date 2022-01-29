@@ -34,32 +34,29 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CommandLine::ParserLinux Cmd{};
+    CommandLine::ParserLinux cmd{};
+    cmd.parseCommandLine(argc, (const char**) argv);
 
-    spdlog::set_level(Cmd.getLogLevel());
+    spdlog::set_level(cmd.getLogLevel());
 
     boost::asio::thread_pool pool{};
     auto context = pool.get_executor();
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
-    //evget::EventTransformer<input_event> transformer{};
-    evget::SystemEventLoopLinux eventLoop{context, Cmd.getMouseDevices(), Cmd.getKeyDevices(), Cmd.getTouchDevices()};
+//    evget::EventTransformer<input_event> transformer{};
+    evget::SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
 
-    evget::EventDeviceLister lister{};
-    for (const auto& device : lister.listEventDevices()) {
-        std::cout << device;
+
+
+    evget::EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, eventLoop};
+
+    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+
+    if (cmd.isListEventDevices()) {
+        evget::EventDeviceLister lister{};
+        cout << lister;
     }
 
-//
-//    EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, transformer, eventLoop};
-//
-//    boost:asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
-//
-//    if (Cmd.isListEventDevices()) {
-//        EventDeviceLister lister{};
-//        cout << lister;
-//    }
-//
-//    pool.join();
+    pool.join();
 //    po::options_description cmdlineDesc("Allowed options");
 //    cmdlineDesc.add_options()
 //            ("help", "produce help message")

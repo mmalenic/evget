@@ -5,4 +5,5 @@ add_program_linux(
     EventDevice.cpp
     EventDeviceLister.cpp
     ShutdownHandlerLinux.cpp
+    XInputHandler.cpp
 )

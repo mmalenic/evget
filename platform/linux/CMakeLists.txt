@@ -12,6 +12,8 @@ add_program_linux(
 
 add_subdirectory(src)
 
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC X11 COMPONENTS X11 Xi)
+
 if (BUILD_TESTING)
     add_subdirectory(test)
 endif()
