@@ -34,5 +34,14 @@ evget::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : display{std:
     }
 }
 
+int evget::XInputEvent::getEventType() const {
+    return cookie->evtype;
+}
+
+template<typename T>
+const T* evget::XInputEvent::viewData() const {
+    return static_cast<T>(cookie->data);
+}
+
 evget::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {
 }

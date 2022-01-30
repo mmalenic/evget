@@ -45,6 +45,14 @@ namespace evget {
 
         explicit XInputEvent(std::shared_ptr<Display> display);
 
+        [[nodiscard]] int getEventType() const;
+
+        /**
+         * A non owning reference to the data in the event cookie.
+         */
+        template<typename T>
+        const T* viewData() const;
+
     private:
         std::shared_ptr<Display> display;
 
