@@ -25,18 +25,38 @@
 
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>
+#include <memory>
 
 namespace evget {
 
     class XInputHandler {
     public:
+        class XEventCookieDeleter {
+        public:
+            explicit XEventCookieDeleter(Display* display);
+
+            void operator()(XGenericEventCookie *pointer) const {
+                XFreeEventData(display, pointer);
+            }
+        private:
+            Display* display;
+        };
+
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+
         XInputHandler();
+
+        /**
+         * Get the next event.
+         */
+        XEventPointer getEvent();
 
     private:
         Display* display = XOpenDisplay(nullptr);
+        // No need to destroy root window.
         Window window = DefaultRootWindow(display);
 
-        static void setMask(Display* display, Window window);
+        static void setMask(Display* display, Window& window);
     };
 }
 
