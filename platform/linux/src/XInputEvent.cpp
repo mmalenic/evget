@@ -20,39 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
-#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#include "evget/XInputEvent.h"
 
-#include <X11/X.h>
-#include <X11/extensions/XInput2.h>
-#include <memory>
-#include "XInputEvent.h"
+#include <utility>
+#include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
-namespace evget {
-
-    class XInputHandler {
-    public:
-        class XDisplayDeleter {
-        public:
-            void operator()(Display *pointer) const {
-                XCloseDisplay(pointer);
-            }
-        };
-
-        using XDisplayPointer = std::shared_ptr<Display>;
-
-        XInputHandler();
-
-        /**
-         * Get the next event.
-         */
-        XInputEvent getEvent();
-
-    private:
-        XDisplayPointer display{XOpenDisplay(nullptr), XDisplayDeleter{}};
-
-        static void setMask(XDisplayPointer display);
-    };
+evget::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : display{std::move(display)} {
+    XNextEvent(display.get(), &event);
+    if (XGetEventData(display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
+        cookie.reset(&event.xcookie);
+    }
 }
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+evget::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {
+}

@@ -5,4 +5,7 @@ add_program_linux(
     EventDeviceListerTest.cpp
     EventDeviceTest.cpp
     ShutdownHandlerLinuxTest.cpp
+    XInputHandlerTest.cpp
 )
+
+program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)

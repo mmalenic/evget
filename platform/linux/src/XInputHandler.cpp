@@ -21,13 +21,15 @@
 // SOFTWARE.
 
 #include <spdlog/spdlog.h>
+
+#include <utility>
 #include "evget/XInputHandler.h"
 
 evget::XInputHandler::XInputHandler() {
-    setMask(display, window);
+    setMask(display);
 }
 
-void evget::XInputHandler::setMask(Display* display, Window& window) {
+void evget::XInputHandler::setMask(XDisplayPointer display) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
 
@@ -53,20 +55,10 @@ void evget::XInputHandler::setMask(Display* display, Window& window) {
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;
 
-    XISelectEvents(display, window, &mask, 1);
-    XSync(display, false);
+    XISelectEvents(display.get(), XDefaultRootWindow(display.get()), &mask, 1);
+    XSync(display.get(), false);
 }
 
-evget::XInputHandler::XEventPointer evget::XInputHandler::getEvent() {
-    XEvent event;
-
-    XNextEvent(display, &event);
-    if (XGetEventData(display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
-        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {&event.xcookie, XEventCookieDeleter(display)};
-    }
-    return {nullptr, XEventCookieDeleter(display)};
-}
-
-evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(Display* display) : display{display} {
+evget::XInputEvent evget::XInputHandler::getEvent() {
+    return XInputEvent{display};
 }
