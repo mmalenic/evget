@@ -39,7 +39,7 @@ namespace evget {
      * @tparam T type of data
      */
     template<asio::execution::executor E, typename T>
-    class EventHandler : Task<E>, EventListener<SystemEvent<T>> {
+    class EventHandler : Task<E>, EventListener<T> {
     public:
         /**
          * Create the event listener with storage.
@@ -54,7 +54,7 @@ namespace evget {
             SystemEventLoop<E, T>& eventLoop
         );
 
-        void notify(SystemEvent<T> event) override;
+        void notify(T event) override;
         asio::awaitable<void> start() override;
 
     private:
@@ -83,7 +83,7 @@ namespace evget {
     }
 
     template<asio::execution::executor E, typename T>
-    void EventHandler<E, T>::notify(SystemEvent<T> event) {
+    void EventHandler<E, T>::notify(T event) {
         //storage.notify(transformer.transformEvent(event));
     }
 }

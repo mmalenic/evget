@@ -46,11 +46,9 @@ int main(int argc, char* argv[]) {
     auto context = pool.get_executor();
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
 //    evget::EventTransformer<input_event> transformer{};
-    evget::SystemEventLoopLinux eventLoop{context, cmd.getMouseDevices(), cmd.getKeyDevices(), cmd.getTouchDevices()};
+    evget::SystemEventLoopLinux eventLoop{context};
 
-
-
-    evget::EventHandler<boost::asio::thread_pool::executor_type, input_event> handler{context, storage, eventLoop};
+    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputHandler::XInputEvent> handler{context, storage, eventLoop};
 
     boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
 

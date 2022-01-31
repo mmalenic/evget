@@ -61,9 +61,7 @@ namespace evget {
              * A non owning reference to the data in the event cookie.
              */
             template<typename T>
-            const T& viewData() const {
-                return *static_cast<T*>(cookie->data);
-            }
+            const T& viewData() const;
 
         private:
             explicit XInputEvent(std::shared_ptr<Display> display);
@@ -85,6 +83,11 @@ namespace evget {
 
         static void setMask(Display& display);
     };
+
+    template<typename T>
+    const T& evget::XInputHandler::XInputEvent::viewData() const {
+        return *static_cast<T*>(cookie->data);
+    }
 }
 
 #endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H

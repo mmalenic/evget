@@ -42,7 +42,7 @@ namespace evget {
      * @tparam T type of events to process
      */
     template<asio::execution::executor E, typename T>
-    class SystemEventLoop : public Task<E>, public EventListener<SystemEvent<T>> {
+    class SystemEventLoop : public Task<E>, public EventListener<T> {
     public:
         /**
          * Create the system events class.
@@ -58,10 +58,10 @@ namespace evget {
          * Register listeners to notify.
          * @param systemEventListener lister
          */
-        void registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener);
+        void registerSystemEventListener(EventListener<T>& systemEventListener);
 
         asio::awaitable<void> start() override;
-        void notify(SystemEvent<T> event) override;
+        void notify(T event) override;
 
         virtual ~SystemEventLoop() = default;
 
@@ -73,7 +73,7 @@ namespace evget {
         SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
     private:
-        std::vector<std::reference_wrapper<EventListener<SystemEvent<T>>>> eventListeners;
+        std::vector<std::reference_wrapper<EventListener<T>>> eventListeners;
     };
 
     template<asio::execution::executor E, typename T>
@@ -85,14 +85,14 @@ namespace evget {
     }
 
     template<asio::execution::executor E, typename T>
-    void SystemEventLoop<E, T>::notify(SystemEvent<T> event) {
+    void SystemEventLoop<E, T>::notify(T event) {
         for (const auto& listener : eventListeners) {
-            listener.get().notify(event);
+            listener.get().notify(std::move(event));
         }
     }
 
     template<asio::execution::executor E, typename T>
-    void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<SystemEvent<T>>& systemEventListener) {
+    void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<T>& systemEventListener) {
         eventListeners.push_back(systemEventListener);
     }
 
