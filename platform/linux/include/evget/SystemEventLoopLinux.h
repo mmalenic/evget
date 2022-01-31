@@ -41,7 +41,7 @@ namespace evget {
         /**
          * Create the system events.
          */
-        explicit SystemEventLoopLinux(E& context);
+        explicit SystemEventLoopLinux(E& context, XInputHandler xInputHandler);
 
         boost::asio::awaitable<void> eventLoop() override;
 
@@ -51,9 +51,10 @@ namespace evget {
 
     template<boost::asio::execution::executor E>
     SystemEventLoopLinux<E>::SystemEventLoopLinux(
-        E& context
+        E& context,
+        XInputHandler xInputHandler
     ) : SystemEventLoop<E, XInputHandler::XInputEvent>{context},
-        handler{XInputHandler{}} {
+        handler{xInputHandler} {
     }
 
     template<boost::asio::execution::executor E>

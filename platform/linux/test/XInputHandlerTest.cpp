@@ -25,8 +25,8 @@
 #include "evget/XInputHandler.h"
 
 TEST(XInputHandlerTest, TestEvent) { // NOLINT(cert-err58-cpp)
-    evget::XInputHandler handler{};
     Display* display = XOpenDisplay(nullptr);
+    evget::XInputHandler handler{*display};
     XSync(display, true);
     XTestFakeMotionEvent(display, -1, 0, 0, CurrentTime);
     XSync(display, true);

@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
     auto context = pool.get_executor();
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
 //    evget::EventTransformer<input_event> transformer{};
-    evget::SystemEventLoopLinux eventLoop{context};
+    Display* display = XOpenDisplay(nullptr);
+    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
 
     evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputHandler::XInputEvent> handler{context, storage, eventLoop};
 
