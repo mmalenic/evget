@@ -41,7 +41,7 @@ namespace evget {
         /**
          * Create the system events.
          */
-        SystemEventLoopLinux(E& context);
+        explicit SystemEventLoopLinux(E& context);
 
         boost::asio::awaitable<void> eventLoop() override;
 

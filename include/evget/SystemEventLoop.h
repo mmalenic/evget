@@ -73,7 +73,7 @@ namespace evget {
         SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
     private:
-        std::vector<std::reference_wrapper<EventListener<T>>> eventListeners;
+        std::optional<std::reference_wrapper<EventListener<T>>> eventListener;
     };
 
     template<asio::execution::executor E, typename T>
@@ -86,19 +86,19 @@ namespace evget {
 
     template<asio::execution::executor E, typename T>
     void SystemEventLoop<E, T>::notify(T event) {
-        for (const auto& listener : eventListeners) {
-            listener.get().notify(std::move(event));
+        if (eventListener.has_value()) {
+            eventListener->get().notify(std::move(event));
         }
     }
 
     template<asio::execution::executor E, typename T>
     void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<T>& systemEventListener) {
-        eventListeners.push_back(systemEventListener);
+        eventListener = systemEventListener;
     }
 
     template<asio::execution::executor E, typename T>
     SystemEventLoop<E, T>::SystemEventLoop(E& context) : Task<E>{context},
-        eventListeners{} {
+        eventListener{std::nullopt} {
     }
 }
 
