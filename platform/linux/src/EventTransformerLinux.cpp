@@ -23,10 +23,12 @@
 #include "evget/EventTransformerLinux.h"
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::transformEvent(evget::XInputHandler::XInputEvent event) {
-
     return std::unique_ptr<Event::AbstractData>();
 }
 
 void evget::EventTransformerLinux::setDeviceIds() {
-    
+
+}
+evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
+
 }

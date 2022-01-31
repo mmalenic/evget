@@ -30,11 +30,14 @@ namespace evget {
 
     class EventTransformerLinux : EventTransformer<XInputHandler::XInputEvent> {
     public:
+        explicit EventTransformerLinux(Display& display);
+
         std::unique_ptr<Event::AbstractData> transformEvent(XInputHandler::XInputEvent event) override;
 
     private:
         void setDeviceIds();
 
+        std::reference_wrapper<Display> display;
         std::vector<int> mouseIds{};
         std::vector<int> keyboardIds{};
         std::vector<int> touchscreenIds{};

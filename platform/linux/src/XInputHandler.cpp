@@ -77,5 +77,5 @@ evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(Display& display)
 }
 
 void evget::XInputHandler::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
-    XFreeEventData(&display, pointer);
+    XFreeEventData(&display.get(), pointer);
 }

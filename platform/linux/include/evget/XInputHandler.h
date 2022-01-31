@@ -38,7 +38,7 @@ namespace evget {
             void operator()(XGenericEventCookie *pointer) const;
 
         private:
-            Display& display;
+            std::reference_wrapper<Display> display;
         };
 
         class XInputEvent {
@@ -71,7 +71,7 @@ namespace evget {
         XInputEvent getEvent();
 
     private:
-        Display& display;
+        std::reference_wrapper<Display> display;
 
         static void setMask(Display& display);
     };
