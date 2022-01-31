@@ -21,12 +21,10 @@
 // SOFTWARE.
 
 #include <spdlog/spdlog.h>
-
-#include <utility>
 #include "evget/XInputHandler.h"
 
-evget::XInputHandler::XInputHandler() {
-    setMask(*display);
+evget::XInputHandler::XInputHandler(Display& display) : display{display} {
+    setMask(display);
 }
 
 void evget::XInputHandler::setMask(Display& display) {
@@ -63,9 +61,9 @@ evget::XInputHandler::XInputEvent evget::XInputHandler::getEvent() {
     return XInputEvent{display};
 }
 
-evget::XInputHandler::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : cookie{nullptr, XEventCookieDeleter{display}} {
-    XNextEvent(display.get(), &event);
-    if (XGetEventData(display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+evget::XInputHandler::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
+    XNextEvent(&display, &event);
+    if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         cookie.reset(&event.xcookie);
     }
@@ -75,5 +73,9 @@ int evget::XInputHandler::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {
+evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
+}
+
+void evget::XInputHandler::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
+    XFreeEventData(&display, pointer);
 }

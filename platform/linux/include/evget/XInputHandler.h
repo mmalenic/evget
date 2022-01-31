@@ -31,22 +31,14 @@ namespace evget {
 
     class XInputHandler {
     public:
-        class XDisplayDeleter {
-        public:
-            void operator()(Display *pointer) const {
-                XCloseDisplay(pointer);
-            }
-        };
-
         class XEventCookieDeleter {
         public:
-            explicit XEventCookieDeleter(std::shared_ptr<Display> display);
+            explicit XEventCookieDeleter(Display& display);
 
-            void operator()(XGenericEventCookie *pointer) const {
-                XFreeEventData(display.get(), pointer);
-            }
+            void operator()(XGenericEventCookie *pointer) const;
+
         private:
-            std::shared_ptr<Display> display;
+            Display& display;
         };
 
         class XInputEvent {
@@ -64,14 +56,14 @@ namespace evget {
             const T& viewData() const;
 
         private:
-            explicit XInputEvent(std::shared_ptr<Display> display);
+            explicit XInputEvent(Display& display);
 
             XEvent event{};
             XEventPointer cookie;
         };
 
 
-        XInputHandler();
+        explicit XInputHandler(Display& display);
 
         /**
          * Get the next event.
@@ -79,7 +71,7 @@ namespace evget {
         XInputEvent getEvent();
 
     private:
-        std::shared_ptr<Display> display{XOpenDisplay(nullptr), XDisplayDeleter{}};
+        Display& display;
 
         static void setMask(Display& display);
     };

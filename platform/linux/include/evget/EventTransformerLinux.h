@@ -20,38 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
-#define EVGET_INCLUDE_EVENTTRANSFORMER_H
+#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
+#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
-#include "Event/AbstractData.h"
-#include "SystemEvent.h"
+#include "XInputHandler.h"
+#include "evget/EventTransformer.h"
 
 namespace evget {
 
-    /**
-     * Transform the data so its usable by storage.
-     * @tparam T type of data
-     */
-    template<typename T>
-    class EventTransformer {
+    class EventTransformerLinux : EventTransformer<XInputHandler::XInputEvent> {
     public:
-        /**
-         * Transform the event.
-         * @param event event to transform
-         * @return event event for storage
-         */
-        virtual std::unique_ptr<Event::AbstractData> transformEvent(T event) = 0;
+        std::unique_ptr<Event::AbstractData> transformEvent(XInputHandler::XInputEvent event) override;
 
-        EventTransformer() = default;
+    private:
+        void setDeviceIds();
 
-        virtual ~EventTransformer() = default;
-
-        EventTransformer(EventTransformer&&) noexcept = delete;
-        EventTransformer& operator=(EventTransformer&&) noexcept = delete;
-
-        EventTransformer(const EventTransformer&) = delete;
-        EventTransformer& operator=(const EventTransformer&) = delete;
+        std::vector<int> mouseIds{};
+        std::vector<int> keyboardIds{};
+        std::vector<int> touchscreenIds{};
+        std::vector<int> touchpadIds{};
     };
 }
 
-#endif //EVGET_INCLUDE_EVENTTRANSFORMER_H
+#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H

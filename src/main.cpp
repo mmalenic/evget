@@ -40,8 +40,6 @@ int main(int argc, char* argv[]) {
 
     spdlog::set_level(cmd.getLogLevel());
 
-    evget::XInputHandler h{};
-
     boost::asio::thread_pool pool{};
     auto context = pool.get_executor();
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
