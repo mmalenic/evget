@@ -26,7 +26,6 @@
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>
 #include <memory>
-#include "XInputEvent.h"
 
 namespace evget {
 
@@ -39,7 +38,38 @@ namespace evget {
             }
         };
 
-        using XDisplayPointer = std::shared_ptr<Display>;
+        class XEventCookieDeleter {
+        public:
+            explicit XEventCookieDeleter(std::shared_ptr<Display> display);
+
+            void operator()(XGenericEventCookie *pointer) const {
+                XFreeEventData(display.get(), pointer);
+            }
+        private:
+            std::shared_ptr<Display> display;
+        };
+
+        class XInputEvent {
+        public:
+            friend class XInputHandler;
+
+            using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+
+            [[nodiscard]] int getEventType() const;
+
+            /**
+             * A non owning reference to the data in the event cookie.
+             */
+            template<typename T>
+            const T& viewData() const;
+
+        private:
+            explicit XInputEvent(std::shared_ptr<Display> display);
+
+            XEvent event{};
+            XEventPointer cookie;
+        };
+
 
         XInputHandler();
 
@@ -49,9 +79,9 @@ namespace evget {
         XInputEvent getEvent();
 
     private:
-        XDisplayPointer display{XOpenDisplay(nullptr), XDisplayDeleter{}};
+        std::shared_ptr<Display> display{XOpenDisplay(nullptr), XDisplayDeleter{}};
 
-        static void setMask(XDisplayPointer display);
+        static void setMask(Display& display);
     };
 }
 

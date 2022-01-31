@@ -26,10 +26,10 @@
 #include "evget/XInputHandler.h"
 
 evget::XInputHandler::XInputHandler() {
-    setMask(display);
+    setMask(*display);
 }
 
-void evget::XInputHandler::setMask(XDisplayPointer display) {
+void evget::XInputHandler::setMask(Display& display) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
 
@@ -55,10 +55,30 @@ void evget::XInputHandler::setMask(XDisplayPointer display) {
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;
 
-    XISelectEvents(display.get(), XDefaultRootWindow(display.get()), &mask, 1);
-    XSync(display.get(), false);
+    XISelectEvents(&display, XDefaultRootWindow(&display), &mask, 1);
+    XSync(&display, false);
 }
 
-evget::XInputEvent evget::XInputHandler::getEvent() {
+evget::XInputHandler::XInputEvent evget::XInputHandler::getEvent() {
     return XInputEvent{display};
+}
+
+evget::XInputHandler::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : cookie{nullptr, XEventCookieDeleter{std::move(display)}} {
+    XNextEvent(display.get(), &event);
+    if (XGetEventData(display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
+        cookie.reset(&event.xcookie);
+    }
+}
+
+int evget::XInputHandler::XInputEvent::getEventType() const {
+    return cookie->evtype;
+}
+
+template<typename T>
+const T& evget::XInputHandler::XInputEvent::viewData() const {
+    return static_cast<T>(cookie->data);
+}
+
+evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {
 }
