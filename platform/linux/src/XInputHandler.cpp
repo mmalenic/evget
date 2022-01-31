@@ -63,7 +63,7 @@ evget::XInputHandler::XInputEvent evget::XInputHandler::getEvent() {
     return XInputEvent{display};
 }
 
-evget::XInputHandler::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : cookie{nullptr, XEventCookieDeleter{std::move(display)}} {
+evget::XInputHandler::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : cookie{nullptr, XEventCookieDeleter{display}} {
     XNextEvent(display.get(), &event);
     if (XGetEventData(display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
@@ -73,11 +73,6 @@ evget::XInputHandler::XInputEvent::XInputEvent(std::shared_ptr<Display> display)
 
 int evget::XInputHandler::XInputEvent::getEventType() const {
     return cookie->evtype;
-}
-
-template<typename T>
-const T& evget::XInputHandler::XInputEvent::viewData() const {
-    return static_cast<T>(cookie->data);
 }
 
 evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {

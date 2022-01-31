@@ -20,28 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/XInputEvent.h"
+#include <gtest/gtest.h>
+#include <X11/extensions/XTest.h>
+#include "evget/XInputHandler.h"
 
-#include <utility>
-#include <fmt/format.h>
-#include <spdlog/spdlog.h>
+TEST(XInputHandlerTest, TestEvent) { // NOLINT(cert-err58-cpp)
+    evget::XInputHandler handler{};
+    Display* display = XOpenDisplay(nullptr);
+    XSync(display, true);
+    XTestFakeMotionEvent(display, -1, 0, 0, CurrentTime);
+    XSync(display, true);
 
-evget::XInputEvent::XInputEvent(std::shared_ptr<Display> display) : display{std::move(display)} {
-    XNextEvent(display.get(), &event);
-    if (XGetEventData(display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
-        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        cookie.reset(&event.xcookie);
-    }
-}
-
-int evget::XInputEvent::getEventType() const {
-    return cookie->evtype;
-}
-
-template<typename T>
-const T* evget::XInputEvent::viewData() const {
-    return static_cast<T>(cookie->data);
-}
-
-evget::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(std::shared_ptr<Display> display) : display{std::move(display)} {
+    auto event = handler.getEvent();
+    ASSERT_EQ(event.getEventType(), XI_Motion);
 }
