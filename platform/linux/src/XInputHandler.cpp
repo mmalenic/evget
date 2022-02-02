@@ -57,25 +57,6 @@ void evget::XInputHandler::setMask(Display& display) {
     XSync(&display, false);
 }
 
-evget::XInputHandler::XInputEvent evget::XInputHandler::getEvent() {
+evget::XInputEvent evget::XInputHandler::getEvent() {
     return XInputEvent{display};
-}
-
-evget::XInputHandler::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
-    XNextEvent(&display, &event);
-    if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
-        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        cookie.reset(&event.xcookie);
-    }
-}
-
-int evget::XInputHandler::XInputEvent::getEventType() const {
-    return cookie->evtype;
-}
-
-evget::XInputHandler::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
-}
-
-void evget::XInputHandler::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
-    XFreeEventData(&display.get(), pointer);
 }

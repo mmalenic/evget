@@ -20,15 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+
 #include "evget/EventTransformerLinux.h"
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::transformEvent(evget::XInputHandler::XInputEvent event) {
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     return std::unique_ptr<Event::AbstractData>();
 }
 
 void evget::EventTransformerLinux::setDeviceIds() {
+    int num_devices;
+    auto info = std::unique_ptr<XIDeviceInfo, decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &num_devices),
+        XIFreeDeviceInfo);
 
+    for (int i = 0; i < num_devices; i++) {
+        XIDeviceInfo* device = &(info.get())[i];
+    }
 }
-evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
 
+evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
+    setDeviceIds();
 }

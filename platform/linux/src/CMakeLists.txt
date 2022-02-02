@@ -7,4 +7,5 @@ add_program_linux(
     ShutdownHandlerLinux.cpp
     XInputHandler.cpp
     EventTransformerLinux.cpp
+    XInputEvent.cpp
 )

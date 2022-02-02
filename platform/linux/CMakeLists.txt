@@ -10,6 +10,7 @@ add_program_linux(
     include/evget/SystemEventLoopLinux.h
     include/evget/XInputHandler.h
     include/evget/EventTransformerLinux.h
+    include/evget/XInputEvent.h
 )
 
 add_subdirectory(src)

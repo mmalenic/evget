@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     Display* display = XOpenDisplay(nullptr);
     evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
 
-    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputHandler::XInputEvent> handler{context, storage, eventLoop};
+    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage, eventLoop};
 
     boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
 

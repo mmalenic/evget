@@ -20,29 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
-#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
+#include <fmt/format.h>
+#include <spdlog/spdlog.h>
+#include "evget/XInputEvent.h"
 
-#include "XInputHandler.h"
-#include "evget/EventTransformer.h"
-
-namespace evget {
-
-    class EventTransformerLinux : EventTransformer<XInputEvent> {
-    public:
-        explicit EventTransformerLinux(Display& display);
-
-        std::unique_ptr<Event::AbstractData> transformEvent(XInputEvent event) override;
-
-    private:
-        void setDeviceIds();
-
-        std::reference_wrapper<Display> display;
-        std::vector<int> mouseIds{};
-        std::vector<int> keyboardIds{};
-        std::vector<int> touchscreenIds{};
-        std::vector<int> touchpadIds{};
-    };
+evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
+    XNextEvent(&display, &event);
+    if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
+        cookie.reset(&event.xcookie);
+    }
 }
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
+int evget::XInputEvent::getEventType() const {
+    return cookie->evtype;
+}
+
+evget::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
+}
+
+void evget::XInputEvent::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
+    XFreeEventData(&display.get(), pointer);
+}

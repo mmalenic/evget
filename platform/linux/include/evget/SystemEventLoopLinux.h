@@ -36,7 +36,7 @@ namespace evget {
      * Class represents processing linux system events.
      */
     template<boost::asio::execution::executor E>
-    class SystemEventLoopLinux : public SystemEventLoop<E, XInputHandler::XInputEvent> {
+    class SystemEventLoopLinux : public SystemEventLoop<E, XInputEvent> {
     public:
         /**
          * Create the system events.
@@ -53,7 +53,7 @@ namespace evget {
     SystemEventLoopLinux<E>::SystemEventLoopLinux(
         E& context,
         XInputHandler xInputHandler
-    ) : SystemEventLoop<E, XInputHandler::XInputEvent>{context},
+    ) : SystemEventLoop<E, XInputEvent>{context},
         handler{xInputHandler} {
     }
 

@@ -20,29 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
-#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
+#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H
+#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H
 
-#include "XInputHandler.h"
-#include "evget/EventTransformer.h"
+#include <memory>
+#include <X11/Xlib.h>
 
 namespace evget {
-
-    class EventTransformerLinux : EventTransformer<XInputEvent> {
+    class XInputEvent {
     public:
-        explicit EventTransformerLinux(Display& display);
+        class XEventCookieDeleter {
+        public:
+            explicit XEventCookieDeleter(Display& display);
 
-        std::unique_ptr<Event::AbstractData> transformEvent(XInputEvent event) override;
+            void operator()(XGenericEventCookie *pointer) const;
+
+        private:
+            std::reference_wrapper<Display> display;
+        };
+
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+
+        /**
+         * Create the XInputEvent by getting the next event from the display. Events received depend on
+         * the event mask set on the display.
+         */
+        explicit XInputEvent(Display& display);
+
+        [[nodiscard]] int getEventType() const;
+
+        /**
+         * A non owning reference to the data in the event cookie.
+         */
+        template<typename T>
+        const T& viewData() const;
 
     private:
-        void setDeviceIds();
-
-        std::reference_wrapper<Display> display;
-        std::vector<int> mouseIds{};
-        std::vector<int> keyboardIds{};
-        std::vector<int> touchscreenIds{};
-        std::vector<int> touchpadIds{};
+        XEvent event{};
+        XEventPointer cookie;
     };
 }
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
+#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H

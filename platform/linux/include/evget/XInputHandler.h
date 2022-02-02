@@ -26,43 +26,12 @@
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>
 #include <memory>
+#include "XInputEvent.h"
 
 namespace evget {
 
     class XInputHandler {
     public:
-        class XEventCookieDeleter {
-        public:
-            explicit XEventCookieDeleter(Display& display);
-
-            void operator()(XGenericEventCookie *pointer) const;
-
-        private:
-            std::reference_wrapper<Display> display;
-        };
-
-        class XInputEvent {
-        public:
-            friend class XInputHandler;
-
-            using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
-
-            [[nodiscard]] int getEventType() const;
-
-            /**
-             * A non owning reference to the data in the event cookie.
-             */
-            template<typename T>
-            const T& viewData() const;
-
-        private:
-            explicit XInputEvent(Display& display);
-
-            XEvent event{};
-            XEventPointer cookie;
-        };
-
-
         explicit XInputHandler(Display& display);
 
         /**
@@ -77,7 +46,7 @@ namespace evget {
     };
 
     template<typename T>
-    const T& evget::XInputHandler::XInputEvent::viewData() const {
+    const T& evget::XInputEvent::viewData() const {
         return *static_cast<T*>(cookie->data);
     }
 }
