@@ -58,5 +58,5 @@ void evget::XInputHandler::setMask(Display& display) {
 }
 
 evget::XInputEvent evget::XInputHandler::getEvent() {
-    return XInputEvent{display};
+    return XInputEvent::nextEvent(display);
 }

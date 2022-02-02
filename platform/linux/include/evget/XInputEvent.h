@@ -41,12 +41,6 @@ namespace evget {
 
         using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
 
-        /**
-         * Create the XInputEvent by getting the next event from the display. Events received depend on
-         * the event mask set on the display.
-         */
-        explicit XInputEvent(Display& display);
-
         [[nodiscard]] int getEventType() const;
 
         /**
@@ -55,7 +49,16 @@ namespace evget {
         template<typename T>
         const T& viewData() const;
 
+        /**
+         * Create a XInputEvent by getting the next event from the display. Events received depend on
+         * the event mask set on the display. This function will block if there are no events on the event
+         * queue.
+         */
+        static XInputEvent nextEvent(Display& display);
+
     private:
+        explicit XInputEvent(Display& display);
+
         XEvent event{};
         XEventPointer cookie;
     };
