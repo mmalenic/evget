@@ -46,9 +46,10 @@ void evget::XInputHandler::setMask(Display& display) {
 #ifdef XI_TouchEnd
     XISetMask(eventMask, XI_TouchEnd);
 #endif
-#ifdef XI_TouchOwnership
-    XISetMask(eventMask, XI_TouchOwnership);
-#endif
+
+    // Special events
+    XISetMask(eventMask, XI_HierarchyChanged);
+    XISetMask(eventMask, XI_DeviceChanged);
 
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;
