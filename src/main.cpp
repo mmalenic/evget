@@ -29,6 +29,7 @@
 #include <linux/input.h>
 #include "evget/CommandLine/ParserLinux.h"
 #include "evget/XInputHandler.h"
+#include "evget/EventTransformerLinux.h"
 #include "evget/SystemEventLoopLinux.h"
 #include "evget/EventDeviceLister.h"
 
@@ -43,8 +44,8 @@ int main(int argc, char* argv[]) {
     boost::asio::thread_pool pool{};
     auto context = pool.get_executor();
     evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
-//    evget::EventTransformer<input_event> transformer{};
     Display* display = XOpenDisplay(nullptr);
+    evget::EventTransformerLinux transformer{*display};
     evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
 
     evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage, eventLoop};
