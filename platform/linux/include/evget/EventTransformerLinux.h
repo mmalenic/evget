@@ -23,6 +23,7 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
+#include <set>
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
 
@@ -35,13 +36,13 @@ namespace evget {
         std::unique_ptr<Event::AbstractData> transformEvent(XInputEvent event) override;
 
     private:
-        void setDeviceIds();
+        void refreshDeviceIds();
 
         std::reference_wrapper<Display> display;
-        std::vector<int> mouseIds{};
-        std::vector<int> keyboardIds{};
-        std::vector<int> touchscreenIds{};
-        std::vector<int> touchpadIds{};
+        std::set<std::pair<int, std::string>> mouseIds{};
+        std::set<std::pair<int, std::string>> keyboardIds{};
+        std::set<std::pair<int, std::string>> touchscreenIds{};
+        std::set<std::pair<int, std::string>> touchpadIds{};
     };
 }
 
