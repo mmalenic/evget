@@ -22,13 +22,27 @@
 
 #include "evget/Event/TableData.h"
 
-Event::TableData::TableData(std::unique_ptr<AbstractData> genericData, std::unique_ptr<AbstractData> systemData) : genericData{std::move(genericData)}, systemData{std::move(systemData)} {
+Event::TableData::TableData(Event::TableData::TableDataBuilder& builder) : genericData{std::move(builder._genericData)}, systemData{std::move(builder._systemData)} {
 }
 
-const Event::AbstractData& Event::TableData::getGenericData() const {
-    return *genericData;
+Event::TableData::TableDataBuilder& Event::TableData::TableDataBuilder::genericData(std::unique_ptr<AbstractData> genericData) {
+    _genericData = std::move(genericData);
+    return *this;
 }
 
-const Event::AbstractData& Event::TableData::getSystemData() const {
-    return *systemData;
+Event::TableData::TableDataBuilder& Event::TableData::TableDataBuilder::systemData(std::unique_ptr<AbstractData> systemData) {
+    _systemData = std::move(systemData);
+    return *this;
+}
+
+Event::TableData Event::TableData::TableDataBuilder::build() {
+    return Event::TableData{*this};
+}
+
+const Event::AbstractData* Event::TableData::getGenericData() const {
+    return genericData.get();
+}
+
+const Event::AbstractData* Event::TableData::getSystemData() const {
+    return systemData.get();
 }

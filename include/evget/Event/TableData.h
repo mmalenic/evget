@@ -29,11 +29,45 @@
 namespace Event {
     class TableData {
     public:
-        TableData(std::unique_ptr<AbstractData> genericData, std::unique_ptr<AbstractData> systemData);
+        class TableDataBuilder {
+        public:
+            friend class TableData;
 
-        [[nodiscard]] const AbstractData& getGenericData() const;
-        [[nodiscard]] const AbstractData& getSystemData() const;
+            TableDataBuilder() = default;
+
+            /**
+             * Add generic data.
+             */
+            TableDataBuilder& genericData(std::unique_ptr<AbstractData>);
+
+            /**
+             * Add system data.
+             */
+            TableDataBuilder& systemData(std::unique_ptr<AbstractData>);
+
+            /**
+             * Build table data.
+             */
+            TableData build();
+
+        private:
+            std::unique_ptr<AbstractData> _genericData{};
+            std::unique_ptr<AbstractData> _systemData{};
+        };
+
+        /**
+         * Non owning reference to generic data.
+         */
+        [[nodiscard]] const AbstractData* getGenericData() const;
+
+        /**
+         * Non owning reference to system data.
+         */
+        [[nodiscard]] const AbstractData* getSystemData() const;
+
     private:
+        explicit TableData(TableDataBuilder& builder);
+
         std::unique_ptr<AbstractData> genericData;
         std::unique_ptr<AbstractData> systemData;
     };
