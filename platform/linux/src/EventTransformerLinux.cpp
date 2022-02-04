@@ -24,8 +24,8 @@
 #include <spdlog/spdlog.h>
 #include "evget/EventTransformerLinux.h"
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
-    return std::unique_ptr<Event::AbstractData>();
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
+    return std::unique_ptr<Event::TableData>();
 }
 
 void evget::EventTransformerLinux::refreshDeviceIds() {
@@ -34,7 +34,7 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
         XIFreeDeviceInfo);
 
     for (int i = 0; i < num_devices; i++) {
-        XIDeviceInfo device = info[i];
+        XIDeviceInfo& device = info[i];
 
         if (device.enabled && (device.use == XISlavePointer || device.use == XISlaveKeyboard || device.use == XIFloatingSlave)) {
             bool deviceSet = false;

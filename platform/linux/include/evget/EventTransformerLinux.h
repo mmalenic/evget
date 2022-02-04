@@ -26,6 +26,7 @@
 #include <set>
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
+#include "evget/Event/TableData.h"
 
 namespace evget {
 
@@ -33,7 +34,7 @@ namespace evget {
     public:
         explicit EventTransformerLinux(Display& display);
 
-        std::unique_ptr<Event::AbstractData> transformEvent(XInputEvent event) override;
+        std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
         void refreshDeviceIds();
