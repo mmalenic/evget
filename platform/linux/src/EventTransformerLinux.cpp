@@ -22,9 +22,43 @@
 
 
 #include <spdlog/spdlog.h>
+#include <X11/extensions/XInput.h>
 #include "evget/EventTransformerLinux.h"
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
+    const auto& deviceEvent = event.viewData<XIDeviceEvent>();
+
+    switch (deviceEvent.evtype) {
+    case XI_ButtonPress:
+        break;
+    case XI_KeyPress:
+        break;
+    case XI_KeyRelease:
+        break;
+    case XI_Motion:
+        break;
+#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
+    case XI_TouchBegin:
+        break;
+    case XI_TouchUpdate:
+        break;
+    case XI_TouchEnd:
+        break;
+#endif
+    case XI_HierarchyChanged:
+    case XI_DeviceChanged:
+        refreshDeviceIds();
+        break;
+    default:
+        spdlog::info("Unsupported event with type '{}' from device with id '{}' passed to event transformer.", deviceEvent.evtype, deviceEvent.deviceid);
+        return {};
+    }
+}
+
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event) {
+    if (mouseIds.contains(event.deviceid)) {
+
+    }
     return std::unique_ptr<Event::TableData>();
 }
 
@@ -32,7 +66,6 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
     int num_devices;
     auto info = std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &num_devices),
         XIFreeDeviceInfo);
-
     for (int i = 0; i < num_devices; i++) {
         XIDeviceInfo& device = info[i];
 
@@ -46,18 +79,18 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
                 XIAnyClassInfo* classInfo = device.classes[j];
 
                 if (classInfo->type == XIKeyClass) {
-                    keyboardIds.insert({device.deviceid, device.name});
+                    keyboardIds.emplace(device.deviceid, device.name);
                     deviceSet = true;
                     break;
                 } else if (classInfo->type == XITouchClass) {
                     auto* touchInfo = reinterpret_cast<XITouchClassInfo*>(classInfo);
 
                     if (touchInfo->mode == XIDirectTouch) {
-                        touchscreenIds.insert({device.deviceid, device.name});
+                        touchscreenIds.emplace(device.deviceid, device.name);
                         deviceSet = true;
                         break;
                     } else if (touchInfo->mode == XIDependentTouch) {
-                        touchpadIds.insert({device.deviceid, device.name});
+                        touchpadIds.emplace(device.deviceid, device.name);
                         deviceSet = true;
                         break;
                     }
@@ -75,7 +108,7 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
             }
 
             if (!deviceSet && hasButton && hasValuator && hasScroll) {
-                mouseIds.insert({device.deviceid, device.name});
+                mouseIds.emplace(device.deviceid, device.name);
                 break;
             }
             if (!deviceSet) {

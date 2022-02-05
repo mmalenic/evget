@@ -37,13 +37,9 @@ void evget::XInputHandler::setMask(Display& display) {
     XISetMask(eventMask, XI_KeyPress);
     XISetMask(eventMask, XI_KeyRelease);
     XISetMask(eventMask, XI_Motion);
-#ifdef XI_TouchBegin
+#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
     XISetMask(eventMask, XI_TouchBegin);
-#endif
-#ifdef XI_TouchUpdate
     XISetMask(eventMask, XI_TouchUpdate);
-#endif
-#ifdef XI_TouchEnd
     XISetMask(eventMask, XI_TouchEnd);
 #endif
 
