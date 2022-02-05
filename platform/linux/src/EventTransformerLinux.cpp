@@ -23,7 +23,10 @@
 
 #include <spdlog/spdlog.h>
 #include <X11/extensions/XInput.h>
+#include <boost/algorithm/string/case_conv.hpp>
 #include "evget/EventTransformerLinux.h"
+
+namespace algorithm = boost::algorithm;
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     const auto& deviceEvent = event.viewData<XIDeviceEvent>();
@@ -73,7 +76,6 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
             bool deviceSet = false;
             bool hasButton = false;
             bool hasValuator = false;
-            bool hasScroll = false;
 
             for (int j = 0; j < device.num_classes; j++) {
                 XIAnyClassInfo* classInfo = device.classes[j];
@@ -100,15 +102,19 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
                     hasButton = true;
                 } else if (classInfo->type == XIValuatorClass) {
                     hasValuator = true;
-                } else if (classInfo->type == XIScrollClass) {
-                    hasScroll = true;
                 } else {
                     spdlog::info("Unsupported class type '{}' from XIDeviceInfo for device '{}' with id {}.", classInfo->type, device.name, device.deviceid);
                 }
             }
 
-            if (!deviceSet && hasButton && hasValuator && hasScroll) {
-                mouseIds.emplace(device.deviceid, device.name);
+            if (!deviceSet && hasButton && hasValuator) {
+                std::string lowerName = algorithm::to_lower_copy(device.name);
+                // There should be a better way to do this.
+                if ((lowerName.find("pad") != std::string::npos)) {
+                    touchpadIds.emplace(device.deviceid, device.name);
+                } else {
+                    mouseIds.emplace(device.deviceid, device.name);
+                }
                 break;
             }
             if (!deviceSet) {
