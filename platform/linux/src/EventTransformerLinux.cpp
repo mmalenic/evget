@@ -83,22 +83,20 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
                 if (classInfo->type == XIKeyClass) {
                     keyboardIds.emplace(device.deviceid, device.name);
                     deviceSet = true;
-                    break;
                 } else if (classInfo->type == XITouchClass) {
                     auto* touchInfo = reinterpret_cast<XITouchClassInfo*>(classInfo);
 
                     if (touchInfo->mode == XIDirectTouch) {
                         touchscreenIds.emplace(device.deviceid, device.name);
                         deviceSet = true;
-                        break;
                     } else if (touchInfo->mode == XIDependentTouch) {
                         touchpadIds.emplace(device.deviceid, device.name);
                         deviceSet = true;
-                        break;
                     }
 
                     spdlog::info("Unsupported touch class info mode '{}' for device '{}' with id {}.", touchInfo->mode, device.name, device.deviceid);
                 } else if (classInfo->type == XIButtonClass) {
+                    setButtonMap();
                     hasButton = true;
                 } else if (classInfo->type == XIValuatorClass) {
                     hasValuator = true;
@@ -107,7 +105,7 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
                 }
             }
 
-            if (!deviceSet && hasButton && hasValuator) {
+            if (!deviceSet && (hasButton || hasValuator)) {
                 std::string lowerName = algorithm::to_lower_copy(device.name);
                 // There should be a better way to do this.
                 if ((lowerName.find("pad") != std::string::npos)) {
@@ -115,13 +113,16 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
                 } else {
                     mouseIds.emplace(device.deviceid, device.name);
                 }
-                break;
             }
             if (!deviceSet) {
                 spdlog::info("Device '{}' with id {} not being used", device.name, device.deviceid);
             }
         }
     }
+}
+
+void evget::EventTransformerLinux::setButtonMap() {
+
 }
 
 evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {

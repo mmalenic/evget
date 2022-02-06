@@ -40,8 +40,10 @@ namespace evget {
         std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event);
 
         void refreshDeviceIds();
+        void setButtonMap();
 
         std::reference_wrapper<Display> display;
+        std::map<int, std::string> buttonMap{};
         std::map<int, std::string> mouseIds{};
         std::map<int, std::string> keyboardIds{};
         std::map<int, std::string> touchscreenIds{};
