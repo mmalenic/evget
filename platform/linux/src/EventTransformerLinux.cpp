@@ -67,55 +67,27 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDe
 
 void evget::EventTransformerLinux::refreshDeviceIds() {
     int num_devices;
-    auto info = std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &num_devices),
-        XIFreeDeviceInfo);
+    // See caveats about mixing XI1 calls with XI2 code:
+    // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
+    // This should capture all devices with ids in the range 0-128.
+    auto info = std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>(XListInputDevices(&display.get(), &num_devices),
+        XFreeDeviceList);
     for (int i = 0; i < num_devices; i++) {
-        XIDeviceInfo& device = info[i];
+        XDeviceInfo& device = info[i];
 
-        if (device.enabled && (device.use == XISlavePointer || device.use == XISlaveKeyboard || device.use == XIFloatingSlave)) {
-            bool deviceSet = false;
-            bool hasButton = false;
-            bool hasValuator = false;
+        if (device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
+            auto type = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), device.type), XFree);
 
-            for (int j = 0; j < device.num_classes; j++) {
-                XIAnyClassInfo* classInfo = device.classes[j];
-
-                if (classInfo->type == XIKeyClass) {
-                    keyboardIds.emplace(device.deviceid, device.name);
-                    deviceSet = true;
-                } else if (classInfo->type == XITouchClass) {
-                    auto* touchInfo = reinterpret_cast<XITouchClassInfo*>(classInfo);
-
-                    if (touchInfo->mode == XIDirectTouch) {
-                        touchscreenIds.emplace(device.deviceid, device.name);
-                        deviceSet = true;
-                    } else if (touchInfo->mode == XIDependentTouch) {
-                        touchpadIds.emplace(device.deviceid, device.name);
-                        deviceSet = true;
-                    }
-
-                    spdlog::info("Unsupported touch class info mode '{}' for device '{}' with id {}.", touchInfo->mode, device.name, device.deviceid);
-                } else if (classInfo->type == XIButtonClass) {
-                    setButtonMap();
-                    hasButton = true;
-                } else if (classInfo->type == XIValuatorClass) {
-                    hasValuator = true;
-                } else {
-                    spdlog::info("Unsupported class type '{}' from XIDeviceInfo for device '{}' with id {}.", classInfo->type, device.name, device.deviceid);
-                }
-            }
-
-            if (!deviceSet && (hasButton || hasValuator)) {
-                std::string lowerName = algorithm::to_lower_copy(device.name);
-                // There should be a better way to do this.
-                if ((lowerName.find("pad") != std::string::npos)) {
-                    touchpadIds.emplace(device.deviceid, device.name);
-                } else {
-                    mouseIds.emplace(device.deviceid, device.name);
-                }
-            }
-            if (!deviceSet) {
-                spdlog::info("Device '{}' with id {} not being used", device.name, device.deviceid);
+            if (strcmp(type.get(), XI_MOUSE) == 0) {
+                mouseIds.emplace(device.id, device.name);
+            } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
+                keyboardIds.emplace(device.id, device.name);
+            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
+                touchscreenIds.emplace(device.id, device.name);
+            } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
+                touchpadIds.emplace(device.id, device.name);
+            } else {
+                spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
             }
         }
     }
