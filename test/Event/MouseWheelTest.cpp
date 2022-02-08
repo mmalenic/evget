@@ -37,3 +37,7 @@ TEST(MouseWheelTest, WheelDown) { // NOLINT(cert-err58-cpp)
 TEST(MouseWheelTest, WheelUp) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelUp(1).build(), 2, "1");
 }
+
+TEST(MouseWheelTest, TouchPad) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.touchPad(true).build(), 3, "1");
+}

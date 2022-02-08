@@ -48,3 +48,7 @@ TEST(MouseClickTest, Press) { // NOLINT(cert-err58-cpp)
 TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.release("1").build(), 4, "1");
 }
+
+TEST(MouseClickTest, TouchPad) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.touchPad(true).build(), 5, "1");
+}

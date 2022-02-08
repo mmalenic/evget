@@ -37,3 +37,7 @@ TEST(MouseMoveTest, PositionX) { // NOLINT(cert-err58-cpp)
 TEST(MouseMoveTest, PositionY) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.positionY(1).build(), 2, "1");
 }
+
+TEST(MouseMoveTest, TouchPad) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.touchPad(true).build(), 3, "1");
+}

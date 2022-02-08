@@ -29,7 +29,8 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _positionX{std::make_unique<Cursor::PositionX>()},
     _positionY{std::make_unique<Cursor::PositionY>()},
     _press{std::make_unique<Button::Press>()},
-    _release{std::make_unique<Button::Release>()}
+    _release{std::make_unique<Button::Release>()},
+    _isTouchPad{std::make_unique<Cursor::IsTouchPad>()}
 {
 }
 
@@ -58,6 +59,11 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::rele
     return *this;
 }
 
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::touchPad(bool isTouchPad) {
+    _isTouchPad = std::make_unique<Cursor::IsTouchPad>(isTouchPad);
+    return *this;
+}
+
 Event::MouseClick Event::MouseClick::MouseClickBuilder::build() {
     return Event::MouseClick(*this);
 }
@@ -69,5 +75,6 @@ Event::MouseClick::MouseClick(
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._press));
-    fields.emplace_back(std::move(builder._release));
+    fields.emplace_back(std::move(builder._release)),
+    fields.emplace_back(std::move(builder._isTouchPad));
 }

@@ -30,6 +30,7 @@
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/PositionX.h"
 #include "evget/Event/Cursor/PositionY.h"
+#include "evget/Event/Cursor/IsTouchPad.h"
 
 namespace Event {
     /**
@@ -59,6 +60,11 @@ namespace Event {
             MouseMoveBuilder& positionY(int y);
 
             /**
+             * Mouse is a touchpad device.
+             */
+            MouseMoveBuilder& touchPad(bool isTouchPad);
+
+            /**
              * Build mouse move event.
              */
             MouseMove build();
@@ -67,6 +73,7 @@ namespace Event {
             std::unique_ptr<Common::Time> _time;
             std::unique_ptr<Cursor::PositionX> _positionX;
             std::unique_ptr<Cursor::PositionY> _positionY;
+            std::unique_ptr<Cursor::IsTouchPad> _isTouchPad;
         };
 
         /**

@@ -25,7 +25,8 @@
 Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
 _time{std::make_unique<Common::Time>()},
 _wheelDown{std::make_unique<Cursor::WheelDown>()},
-_wheelUp{std::make_unique<Cursor::WheelUp>()} {
+_wheelUp{std::make_unique<Cursor::WheelUp>()},
+_isTouchPad{std::make_unique<Cursor::IsTouchPad>()} {
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -43,6 +44,11 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::whee
     return *this;
 }
 
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::touchPad(bool isTouchPad) {
+    _isTouchPad = std::make_unique<Cursor::IsTouchPad>(isTouchPad);
+    return *this;
+}
+
 Event::MouseWheel Event::MouseWheel::MouseWheelBuilder::build() {
     return Event::MouseWheel(*this);
 }
@@ -53,4 +59,5 @@ Event::MouseWheel::MouseWheel(
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._wheelDown));
     fields.emplace_back(std::move(builder._wheelUp));
+    fields.emplace_back(std::move(builder._isTouchPad));
 }
