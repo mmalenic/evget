@@ -57,7 +57,7 @@ namespace TestUtils::EventTestUtils {
 
     template<typename T>
     void fieldValueAndName(const char* value, const std::string& name, const std::string& expected) {
-        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(value);
+        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(std::string{value});
         fieldValueAndName(*field, name, expected);
 
         std::unique_ptr<Event::AbstractField> fieldDefault = std::make_unique<T>();

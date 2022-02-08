@@ -23,6 +23,7 @@ add_program(
     Event/Cursor/OrientationTest.cpp
     Event/Cursor/PositionXOuterTest.cpp
     Event/Cursor/PositionYOuterTest.cpp
+    Event/Cursor/IsTouchPadTest.cpp
     Event/TableDataTest.cpp
     Event/MouseMoveTest.cpp
     Event/MouseClickTest.cpp
