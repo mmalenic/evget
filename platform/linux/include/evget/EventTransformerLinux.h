@@ -24,6 +24,7 @@
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
 #include <map>
+#include <X11/extensions/XInput.h>
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
 #include "evget/Event/TableData.h"
@@ -40,10 +41,11 @@ namespace evget {
         std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event);
 
         void refreshDeviceIds();
-        void setButtonMap();
+        void setButtonMap(const XIDeviceInfo& info);
+        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<Display> display;
-        std::map<int, std::string> buttonMap{};
+        std::map<int, std::map<int, std::string>> buttonMap{};
         std::map<int, std::string> mouseIds{};
         std::map<int, std::string> keyboardIds{};
         std::map<int, std::string> touchscreenIds{};
