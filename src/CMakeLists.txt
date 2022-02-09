@@ -22,7 +22,7 @@ add_program(
     Event/Cursor/PositionY.cpp
     Event/Cursor/WheelDown.cpp
     Event/Cursor/WheelUp.cpp
-    Event/Cursor/IsTouchPad.cpp
+    Event/Common/Type.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp
     Event/AbstractField.cpp

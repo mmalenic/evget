@@ -21,13 +21,23 @@
 // SOFTWARE.
 
 #include <fmt/format.h>
-#include "evget/Event/Cursor/IsTouchPad.h"
+#include "evget/Event/Common/Type.h"
 
-Event::Cursor::IsTouchPad::IsTouchPad(std::string isTouchPad) : AbstractField{"IsTouchPad", std::move(isTouchPad)} {
+Event::Common::Type::Type(std::string type) : AbstractField{"Type", std::move(type)} {
 }
 
-Event::Cursor::IsTouchPad::IsTouchPad(bool isTouchPad) : IsTouchPad{fmt::format("{:d}", isTouchPad)} {
+Event::Common::Type::Type() : Type{{}} {
 }
 
-Event::Cursor::IsTouchPad::IsTouchPad() : IsTouchPad{std::string{}} {
+std::unique_ptr<Event::Common::Type> Event::Common::Type::createType(DeviceType deviceType) {
+    switch (deviceType) {
+    case DeviceType::Mouse:
+        return std::make_unique<Type>("Mouse");;
+    case DeviceType::Keyboard:
+        return std::make_unique<Type>("Keyboard");
+    case DeviceType::Touchpad:
+        return std::make_unique<Type>("Touchpad");
+    case DeviceType::Touchscreen:
+        return std::make_unique<Type>("Touchscreen");
+    }
 }

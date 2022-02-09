@@ -25,12 +25,23 @@
 
 #include "evget/Event/AbstractField.h"
 
-namespace Event::Cursor {
-    class IsTouchPad : public AbstractField {
+namespace Event::Common {
+    class Type : public AbstractField {
     public:
-        IsTouchPad();
-        explicit IsTouchPad(std::string isTouchPad);
-        explicit IsTouchPad(bool isTouchPad);
+        enum class DeviceType {
+            Mouse,
+            Keyboard,
+            Touchpad,
+            Touchscreen
+        };
+
+        /**
+         * Create a type based on the device type enum.
+         */
+        static std::unique_ptr<Type> createType(DeviceType deviceType);
+
+        Type();
+        explicit Type(std::string type);
     };
 }
 
