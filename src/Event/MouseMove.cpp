@@ -24,9 +24,9 @@
 
 Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() :
 _time{std::make_unique<Common::Time>()},
+_type{std::make_unique<Common::Type>()},
 _positionX{std::make_unique<Cursor::PositionX>()},
-_positionY{std::make_unique<Cursor::PositionY>()},
-_isTouchPad{std::make_unique<Cursor::IsTouchPad>()} {
+_positionY{std::make_unique<Cursor::PositionY>()} {
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -44,8 +44,8 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::position
     return *this;
 }
 
-Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::touchPad(bool isTouchPad) {
-    _isTouchPad = std::make_unique<Cursor::IsTouchPad>(isTouchPad);
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Event::Common::Type::Device device) {
+    _type = Event::Common::Type::createType(device);
     return *this;
 }
 
@@ -57,7 +57,7 @@ Event::MouseMove::MouseMove(
     Event::MouseMove::MouseMoveBuilder& builder
 ) : AbstractData{"MouseMove"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._type));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
-    fields.emplace_back(std::move(builder._isTouchPad));
 }

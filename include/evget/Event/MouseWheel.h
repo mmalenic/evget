@@ -28,7 +28,7 @@
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Cursor/WheelDown.h"
 #include "evget/Event/Cursor/WheelUp.h"
-#include "evget/Event/Cursor/IsTouchPad.h"
+#include "evget/Event/Common/Type.h"
 
 namespace Event {
     /**
@@ -58,9 +58,9 @@ namespace Event {
             MouseWheelBuilder& wheelUp(int amount);
 
             /**
-             * Mouse is a touchpad device.
+             * Mouse type.
              */
-            MouseWheelBuilder& touchPad(bool isTouchPad);
+            MouseWheelBuilder& type(Event::Common::Type::Device device);
 
             /**
              * Build mouse wheel event.
@@ -69,9 +69,9 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Common::Type> _type;
             std::unique_ptr<Cursor::WheelDown> _wheelDown;
             std::unique_ptr<Cursor::WheelUp> _wheelUp;
-            std::unique_ptr<Cursor::IsTouchPad> _isTouchPad;
         };
 
         /**

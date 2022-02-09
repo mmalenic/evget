@@ -24,9 +24,9 @@
 
 Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
 _time{std::make_unique<Common::Time>()},
+_type{std::make_unique<Common::Type>()},
 _wheelDown{std::make_unique<Cursor::WheelDown>()},
-_wheelUp{std::make_unique<Cursor::WheelUp>()},
-_isTouchPad{std::make_unique<Cursor::IsTouchPad>()} {
+_wheelUp{std::make_unique<Cursor::WheelUp>()} {
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -44,8 +44,8 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::whee
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::touchPad(bool isTouchPad) {
-    _isTouchPad = std::make_unique<Cursor::IsTouchPad>(isTouchPad);
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type(Event::Common::Type::Device device) {
+    _type = Event::Common::Type::createType(device);
     return *this;
 }
 
@@ -57,7 +57,7 @@ Event::MouseWheel::MouseWheel(
     Event::MouseWheel::MouseWheelBuilder& builder
 ) : AbstractData{"MouseWheel"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._type));
     fields.emplace_back(std::move(builder._wheelDown));
     fields.emplace_back(std::move(builder._wheelUp));
-    fields.emplace_back(std::move(builder._isTouchPad));
 }

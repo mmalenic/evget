@@ -27,6 +27,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include "evget/EventTransformerLinux.h"
 #include "evget/UnsupportedOperationException.h"
+#include "evget/Event/MouseClick.h"
 
 namespace algorithm = boost::algorithm;
 
@@ -61,8 +62,13 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event) {
-    if (mouseIds.contains(event.deviceid)) {
+    int positionX = event.root_x;
+    int positionY = event.root_y;
 
+
+    if (mouseIds.contains(event.deviceid)) {
+        //Event::MouseClick::MouseClickBuilder{}.
+        //MouseEven
     }
     return std::unique_ptr<Event::TableData>();
 }

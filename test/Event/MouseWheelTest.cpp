@@ -30,14 +30,14 @@ TEST(MouseWheelTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
+TEST(MouseWheelTest, Type) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.type(Event::Common::Type::Device::Mouse).build(), 1, "Mouse");
+}
+
 TEST(MouseWheelTest, WheelDown) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelDown(1).build(), 1, "1");
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelDown(1).build(), 2, "1");
 }
 
 TEST(MouseWheelTest, WheelUp) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelUp(1).build(), 2, "1");
-}
-
-TEST(MouseWheelTest, TouchPad) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.touchPad(true).build(), 3, "1");
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelUp(1).build(), 3, "1");
 }

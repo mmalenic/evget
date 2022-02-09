@@ -30,7 +30,7 @@
 #include "evget/Event/Cursor/PositionY.h"
 #include "evget/Event/Button/Press.h"
 #include "evget/Event/Button/Release.h"
-#include "evget/Event/Cursor/IsTouchPad.h"
+#include "evget/Event/Common/Type.h"
 
 namespace Event {
     /**
@@ -70,9 +70,9 @@ namespace Event {
             MouseClickBuilder& release(std::string button);
 
             /**
-             * Mouse is a touchpad device.
+             * Mouse type.
              */
-            MouseClickBuilder& touchPad(bool isTouchPad);
+            MouseClickBuilder& type(Event::Common::Type::Device device);
 
             /**
              * Build mouse click event.
@@ -81,11 +81,11 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
+            std::unique_ptr<Common::Type> _type;
             std::unique_ptr<Cursor::PositionX> _positionX;
             std::unique_ptr<Cursor::PositionY> _positionY;
             std::unique_ptr<Button::Press> _press;
             std::unique_ptr<Button::Release> _release;
-            std::unique_ptr<Cursor::IsTouchPad> _isTouchPad;
         };
 
         /**
