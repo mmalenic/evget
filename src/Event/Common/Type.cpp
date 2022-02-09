@@ -29,15 +29,15 @@ Event::Common::Type::Type(std::string type) : AbstractField{"Type", std::move(ty
 Event::Common::Type::Type() : Type{{}} {
 }
 
-std::unique_ptr<Event::Common::Type> Event::Common::Type::createType(DeviceType deviceType) {
-    switch (deviceType) {
-    case DeviceType::Mouse:
+std::unique_ptr<Event::Common::Type> Event::Common::Type::createType(Device device) {
+    switch (device) {
+    case Device::Mouse:
         return std::make_unique<Type>("Mouse");;
-    case DeviceType::Keyboard:
+    case Device::Keyboard:
         return std::make_unique<Type>("Keyboard");
-    case DeviceType::Touchpad:
+    case Device::Touchpad:
         return std::make_unique<Type>("Touchpad");
-    case DeviceType::Touchscreen:
+    case Device::Touchscreen:
         return std::make_unique<Type>("Touchscreen");
     }
 }

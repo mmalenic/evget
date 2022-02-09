@@ -28,7 +28,7 @@
 namespace Event::Common {
     class Type : public AbstractField {
     public:
-        enum class DeviceType {
+        enum class Device {
             Mouse,
             Keyboard,
             Touchpad,
@@ -38,7 +38,7 @@ namespace Event::Common {
         /**
          * Create a type based on the device type enum.
          */
-        static std::unique_ptr<Type> createType(DeviceType deviceType);
+        static std::unique_ptr<Type> createType(Device device);
 
         Type();
         explicit Type(std::string type);

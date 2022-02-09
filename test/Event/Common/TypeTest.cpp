@@ -22,10 +22,34 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Cursor/IsTouchPad.h"
+#include "evget/Event/Common/Type.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(IsTouchPadTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Cursor::IsTouchPad>(false, "IsTouchPad", "0");
+TEST(TypeTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Common::Type>("Type", "Type", "Type");
+}
+
+TEST(TypeTest, Mouse) { // NOLINT(cert-err58-cpp)
+    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Mouse);
+    ASSERT_EQ("Type", type->getName());
+    ASSERT_EQ("Mouse", type->getEntry());
+}
+
+TEST(TypeTest, Keyboard) { // NOLINT(cert-err58-cpp)
+    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Keyboard);
+    ASSERT_EQ("Type", type->getName());
+    ASSERT_EQ("Keyboard", type->getEntry());
+}
+
+TEST(TypeTest, Touchpad) { // NOLINT(cert-err58-cpp)
+    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Touchpad);
+    ASSERT_EQ("Type", type->getName());
+    ASSERT_EQ("Touchpad", type->getEntry());
+}
+
+TEST(TypeTest, Touchscreen) { // NOLINT(cert-err58-cpp)
+    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Touchscreen);
+    ASSERT_EQ("Type", type->getName());
+    ASSERT_EQ("Touchscreen", type->getEntry());
 }
