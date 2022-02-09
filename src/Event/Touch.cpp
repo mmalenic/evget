@@ -92,8 +92,8 @@ Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::multitouch(int id) {
     return *this;
 }
 
-Event::Touch Event::Touch::TouchBuilder::build() {
-    return Event::Touch(*this);
+std::unique_ptr<Event::Touch> Event::Touch::TouchBuilder::build() {
+    return std::make_unique<Event::Touch>(*this);
 }
 
 Event::Touch::Touch(

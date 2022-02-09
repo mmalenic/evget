@@ -55,8 +55,8 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(char character) {
     return *this;
 }
 
-Event::Key Event::Key::KeyBuilder::build() {
-    return Event::Key(*this);
+std::unique_ptr<Event::Key> Event::Key::KeyBuilder::build() {
+    return std::make_unique<Event::Key>(*this);
 }
 
 Event::Key::Key(

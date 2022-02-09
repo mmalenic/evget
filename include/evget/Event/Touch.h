@@ -107,7 +107,7 @@ namespace Event {
             /**
              * Build touch event.
              */
-            Touch build();
+            std::unique_ptr<Touch> build();
 
         private:
             std::unique_ptr<Common::Time> _time;

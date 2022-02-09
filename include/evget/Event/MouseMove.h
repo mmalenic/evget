@@ -67,7 +67,7 @@ namespace Event {
             /**
              * Build mouse move event.
              */
-            MouseMove build();
+            std::unique_ptr<MouseMove> build();
 
         private:
             std::unique_ptr<Common::Time> _time;

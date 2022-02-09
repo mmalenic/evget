@@ -65,7 +65,7 @@ namespace Event {
             /**
              * Build mouse wheel event.
              */
-            MouseWheel build();
+            std::unique_ptr<MouseWheel> build();
 
         private:
             std::unique_ptr<Common::Time> _time;

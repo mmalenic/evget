@@ -64,8 +64,8 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::type
     return *this;
 }
 
-Event::MouseClick Event::MouseClick::MouseClickBuilder::build() {
-    return Event::MouseClick(*this);
+std::unique_ptr<Event::MouseClick> Event::MouseClick::MouseClickBuilder::build() {
+    return std::make_unique<Event::MouseClick>(*this);
 }
 
 Event::MouseClick::MouseClick(

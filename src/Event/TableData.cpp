@@ -35,8 +35,8 @@ Event::TableData::TableDataBuilder& Event::TableData::TableDataBuilder::systemDa
     return *this;
 }
 
-Event::TableData Event::TableData::TableDataBuilder::build() {
-    return Event::TableData{*this};
+std::unique_ptr<Event::TableData> Event::TableData::TableDataBuilder::build() {
+    return std::make_unique<Event::TableData>(*this);
 }
 
 const Event::AbstractData* Event::TableData::getGenericData() const {

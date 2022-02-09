@@ -49,8 +49,8 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type
     return *this;
 }
 
-Event::MouseWheel Event::MouseWheel::MouseWheelBuilder::build() {
-    return Event::MouseWheel(*this);
+std::unique_ptr<Event::MouseWheel> Event::MouseWheel::MouseWheelBuilder::build() {
+    return std::make_unique<Event::MouseWheel>(*this);
 }
 
 Event::MouseWheel::MouseWheel(

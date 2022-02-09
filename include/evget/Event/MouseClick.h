@@ -77,7 +77,7 @@ namespace Event {
             /**
              * Build mouse click event.
              */
-            MouseClick build();
+            std::unique_ptr<MouseClick> build();
 
         private:
             std::unique_ptr<Common::Time> _time;

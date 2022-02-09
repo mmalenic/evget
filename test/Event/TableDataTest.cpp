@@ -24,19 +24,19 @@
 #include "evget/Event/TableData.h"
 
 TEST(TableDataTest, NoData) { // NOLINT(cert-err58-cpp)
-    Event::TableData data = Event::TableData::TableDataBuilder{}.build();
-    ASSERT_FALSE(data.getGenericData());
-    ASSERT_FALSE(data.getSystemData());
+    auto data = Event::TableData::TableDataBuilder{}.build();
+    ASSERT_FALSE(data->getGenericData());
+    ASSERT_FALSE(data->getSystemData());
 }
 
 TEST(TableDataTest, GenericData) { // NOLINT(cert-err58-cpp)
-    Event::TableData data = Event::TableData::TableDataBuilder{}.genericData(std::make_unique<Event::Data>(Event::Data{"genericData", {}})).build();
-    ASSERT_EQ("genericData", data.getGenericData()->getName());
-    ASSERT_FALSE(data.getSystemData());
+    auto data = Event::TableData::TableDataBuilder{}.genericData(std::make_unique<Event::Data>(Event::Data{"genericData", {}})).build();
+    ASSERT_EQ("genericData", data->getGenericData()->getName());
+    ASSERT_FALSE(data->getSystemData());
 }
 
 TEST(TableDataTest, SystemData) { // NOLINT(cert-err58-cpp)
-    Event::TableData data = Event::TableData::TableDataBuilder{}.systemData(std::make_unique<Event::Data>(Event::Data{"systemData", {}})).build();
-    ASSERT_FALSE(data.getGenericData());
-    ASSERT_EQ("systemData", data.getSystemData()->getName());
+    auto data = Event::TableData::TableDataBuilder{}.systemData(std::make_unique<Event::Data>(Event::Data{"systemData", {}})).build();
+    ASSERT_FALSE(data->getGenericData());
+    ASSERT_EQ("systemData", data->getSystemData()->getName());
 }

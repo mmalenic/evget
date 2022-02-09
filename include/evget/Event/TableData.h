@@ -48,7 +48,7 @@ namespace Event {
             /**
              * Build table data.
              */
-            TableData build();
+            std::unique_ptr<TableData> build();
 
         private:
             std::unique_ptr<AbstractData> _genericData{};
@@ -65,9 +65,9 @@ namespace Event {
          */
         [[nodiscard]] const AbstractData* getSystemData() const;
 
-    private:
         explicit TableData(TableDataBuilder& builder);
 
+    private:
         std::unique_ptr<AbstractData> genericData;
         std::unique_ptr<AbstractData> systemData;
     };

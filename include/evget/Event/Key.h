@@ -71,7 +71,7 @@ namespace Event {
             /**
              * Build key event.
              */
-            Key build();
+            std::unique_ptr<Key> build();
 
         private:
             std::unique_ptr<Common::Time> _time;

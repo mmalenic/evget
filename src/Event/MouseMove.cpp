@@ -49,8 +49,8 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Eve
     return *this;
 }
 
-Event::MouseMove Event::MouseMove::MouseMoveBuilder::build() {
-    return Event::MouseMove(*this);
+std::unique_ptr<Event::MouseMove> Event::MouseMove::MouseMoveBuilder::build() {
+    return std::make_unique<Event::MouseMove>(*this);
 }
 
 Event::MouseMove::MouseMove(

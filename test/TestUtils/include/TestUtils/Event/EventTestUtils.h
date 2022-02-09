@@ -73,7 +73,7 @@ namespace TestUtils::EventTestUtils {
     }
 
     void event_entry_at(auto&& event, size_t position, const std::string& expected) {
-        ASSERT_EQ(event.getAtPosition(position).getEntry(), expected);
+        ASSERT_EQ(event->getAtPosition(position).getEntry(), expected);
     }
 }
 
