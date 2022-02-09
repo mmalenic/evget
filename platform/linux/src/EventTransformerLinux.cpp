@@ -62,14 +62,33 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event) {
-    int positionX = event.root_x;
-    int positionY = event.root_y;
+    auto& builder = Event::MouseClick::MouseClickBuilder{}
+        .time(std::chrono::milliseconds{event.time})
+        .positionX(event.root_x)
+        .positionY(event.root_y);
 
+    if (event.type == XI_ButtonPress) {
+        builder.press(std::to_string(event.detail));
+    } else if (event.type == XI_ButtonRelease) {
+        builder.release(std::to_string(event.detail));
+    } else {
+        spdlog::warn("Non button event passed to button event function.");
+        return {};
+    }
 
     if (mouseIds.contains(event.deviceid)) {
-        //Event::MouseClick::MouseClickBuilder{}.
-        //MouseEven
+        builder.type(Event::Common::Type::Device::Mouse);
+    } else if (keyboardIds.contains(event.deviceid)) {
+        builder.type(Event::Common::Type::Device::Keyboard);
+    } else if (touchpadIds.contains(event.deviceid)) {
+        builder.type(Event::Common::Type::Device::Touchpad);
+    } else if (touchscreenIds.contains(event.deviceid)) {
+        builder.type(Event::Common::Type::Device::Touchscreen);
+    } else {
+        spdlog::warn("Device id '{}' not found in supported devices.", event.deviceid);
+        return {};
     }
+
     return std::unique_ptr<Event::TableData>();
 }
 
