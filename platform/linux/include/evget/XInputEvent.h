@@ -41,11 +41,12 @@ namespace evget {
         };
 
         using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+        using Timestamp = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
 
         /**
          * Get the timestamp of the event.
          */
-        [[nodiscard]] std::chrono::nanoseconds getTimestamp() const;
+        [[nodiscard]] Timestamp getTimestamp() const;
 
         /**
          * Check if viewData and getEventType is safe to call.
@@ -75,7 +76,7 @@ namespace evget {
         explicit XInputEvent(Display& display);
 
         XEvent event{};
-        std::chrono::nanoseconds timestamp{};
+        Timestamp timestamp{};
         XEventPointer cookie;
     };
 

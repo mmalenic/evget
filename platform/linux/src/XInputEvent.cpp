@@ -26,7 +26,7 @@
 
 evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
     XNextEvent(&display, &event);
-    timestamp = std::chrono::steady_clock::now().time_since_epoch();
+    timestamp = std::chrono::steady_clock::now();
     if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         cookie.reset(&event.xcookie);
@@ -52,6 +52,6 @@ evget::XInputEvent evget::XInputEvent::nextEvent(Display& display) {
     return XInputEvent{display};
 }
 
-std::chrono::nanoseconds evget::XInputEvent::getTimestamp() const {
+evget::XInputEvent::Timestamp evget::XInputEvent::getTimestamp() const {
     return timestamp;
 }
