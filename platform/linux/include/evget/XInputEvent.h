@@ -42,13 +42,22 @@ namespace evget {
 
         using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
 
+        /**
+         * Must check if data is available first with hasData.
+         */
         [[nodiscard]] int getEventType() const;
 
         /**
-         * A non owning reference to the data in the event cookie.
+         * A non owning reference to the data in the event cookie. Must check if data is available first
+         * with hasData.
          */
         template<typename T>
         const T& viewData() const;
+
+        /**
+         * Check if viewData is safe to call.
+         */
+        [[nodiscard]] bool hasData() const;
 
         /**
          * Create a XInputEvent by getting the next event from the display. Events received depend on

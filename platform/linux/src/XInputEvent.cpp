@@ -32,6 +32,10 @@ evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookie
     }
 }
 
+bool evget::XInputEvent::hasData() const {
+    return cookie != nullptr;
+}
+
 int evget::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
