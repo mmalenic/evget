@@ -52,12 +52,12 @@ namespace Event {
             /**
              * Add position x.
              */
-            MouseMoveBuilder& positionX(int x);
+            MouseMoveBuilder& positionX(double x);
 
             /**
              * Add position y.
              */
-            MouseMoveBuilder& positionY(int y);
+            MouseMoveBuilder& positionY(double y);
 
             /**
              * Mouse type.

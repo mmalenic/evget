@@ -50,12 +50,12 @@ namespace Event {
             /**
              * Add wheel down.
              */
-            MouseWheelBuilder& wheelDown(int amount);
+            MouseWheelBuilder& wheelDown(double amount);
 
             /**
              * Add wheel up.
              */
-            MouseWheelBuilder& wheelUp(int amount);
+            MouseWheelBuilder& wheelUp(double amount);
 
             /**
              * Mouse type.

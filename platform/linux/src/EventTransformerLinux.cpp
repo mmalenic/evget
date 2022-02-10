@@ -89,7 +89,7 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDe
         return {};
     }
 
-    return std::unique_ptr<Event::TableData>();
+    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).build();
 }
 
 void evget::EventTransformerLinux::refreshDeviceIds() {

@@ -31,7 +31,7 @@ namespace Event::Cursor {
     public:
         PositionYOuter();
         explicit PositionYOuter(std::string position);
-        explicit PositionYOuter(int position);
+        explicit PositionYOuter(double position);
     };
 }
 

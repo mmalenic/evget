@@ -34,12 +34,12 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelDown(int amount) {
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelDown(double amount) {
     _wheelDown = std::make_unique<Cursor::WheelDown>(amount);
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelUp(int amount) {
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelUp(double amount) {
     _wheelUp = std::make_unique<Cursor::WheelUp>(amount);
     return *this;
 }

@@ -25,7 +25,7 @@
 Event::Cursor::PositionXOuter::PositionXOuter(std::string position) : AbstractField{"PositionXOuter", std::move(position)} {
 }
 
-Event::Cursor::PositionXOuter::PositionXOuter(int position) : PositionXOuter{std::to_string(position)} {
+Event::Cursor::PositionXOuter::PositionXOuter(double position) : PositionXOuter{std::to_string(position)} {
 }
 
 Event::Cursor::PositionXOuter::PositionXOuter() : PositionXOuter{""} {

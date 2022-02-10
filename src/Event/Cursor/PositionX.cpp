@@ -25,7 +25,7 @@
 Event::Cursor::PositionX::PositionX(std::string position) : AbstractField{"PositionX", std::move(position)} {
 }
 
-Event::Cursor::PositionX::PositionX(int position) : PositionX{std::to_string(position)} {
+Event::Cursor::PositionX::PositionX(double position) : PositionX{std::to_string(position)} {
 }
 
 Event::Cursor::PositionX::PositionX() : PositionX{""} {

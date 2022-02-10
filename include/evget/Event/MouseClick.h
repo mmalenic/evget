@@ -52,12 +52,12 @@ namespace Event {
             /**
              * Add position x.
              */
-            MouseClickBuilder& positionX(int x);
+            MouseClickBuilder& positionX(double x);
 
             /**
              * Add position y.
              */
-            MouseClickBuilder& positionY(int y);
+            MouseClickBuilder& positionY(double y);
 
             /**
              * Add press.

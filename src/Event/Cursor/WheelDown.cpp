@@ -25,7 +25,7 @@
 Event::Cursor::WheelDown::WheelDown(std::string amount) : AbstractField{"WheelDown", std::move(amount)} {
 }
 
-Event::Cursor::WheelDown::WheelDown(int amount) : WheelDown{std::to_string(amount)} {
+Event::Cursor::WheelDown::WheelDown(double amount) : WheelDown{std::to_string(amount)} {
 }
 
 Event::Cursor::WheelDown::WheelDown() : WheelDown{""} {

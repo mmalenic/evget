@@ -31,7 +31,7 @@ namespace Event::Cursor {
     public:
         WheelDown();
         explicit WheelDown(std::string amount);
-        explicit WheelDown(int amount);
+        explicit WheelDown(double amount);
     };
 }
 

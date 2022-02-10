@@ -34,12 +34,12 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std
     return *this;
 }
 
-Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionX(int x) {
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionX(double x) {
     _positionX = std::make_unique<Cursor::PositionX>(x);
     return *this;
 }
 
-Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionY(int y) {
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionY(double y) {
     _positionY = std::make_unique<Cursor::PositionY>(y);
     return *this;
 }

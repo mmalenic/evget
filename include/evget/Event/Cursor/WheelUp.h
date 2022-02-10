@@ -31,7 +31,7 @@ namespace Event::Cursor {
     public:
         WheelUp();
         explicit WheelUp(std::string amount);
-        explicit WheelUp(int amount);
+        explicit WheelUp(double amount);
     };
 }
 
