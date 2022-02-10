@@ -38,18 +38,21 @@ namespace evget {
         std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
-        std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event);
+        std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
         void setButtonMap(const XIDeviceInfo& info);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<Display> display;
+
         std::map<int, std::map<int, std::string>> buttonMap{};
         std::map<int, std::string> mouseIds{};
         std::map<int, std::string> keyboardIds{};
         std::map<int, std::string> touchscreenIds{};
         std::map<int, std::string> touchpadIds{};
+
+        std::optional<XInputEvent::Timestamp> start{std::nullopt};
     };
 }
 

@@ -33,6 +33,11 @@ namespace algorithm = boost::algorithm;
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
+        if (!start.has_value()) {
+            start = event.getTimestamp();
+        }
+        std::chrono::nanoseconds time = event.getTimestamp() - *start;
+
         const auto& deviceEvent = event.viewData<XIDeviceEvent>();
 
         switch (deviceEvent.evtype) {
@@ -60,9 +65,9 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
     return {};
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event) {
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time) {
     auto& builder = Event::MouseClick::MouseClickBuilder{}
-        .time(std::chrono::milliseconds{event.time})
+        .time(time)
         .positionX(event.root_x)
         .positionY(event.root_y);
 
