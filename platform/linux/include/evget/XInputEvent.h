@@ -25,6 +25,7 @@
 
 #include <memory>
 #include <X11/Xlib.h>
+#include <chrono>
 
 namespace evget {
     class XInputEvent {
@@ -60,8 +61,14 @@ namespace evget {
         explicit XInputEvent(Display& display);
 
         XEvent event{};
+        std::chrono::nanoseconds timestamp{};
         XEventPointer cookie;
     };
+
+    template<typename T>
+    const T& evget::XInputEvent::viewData() const {
+        return *static_cast<T*>(cookie->data);
+    }
 }
 
 #endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H

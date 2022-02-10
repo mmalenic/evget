@@ -44,11 +44,6 @@ namespace evget {
 
         static void setMask(Display& display);
     };
-
-    template<typename T>
-    const T& evget::XInputEvent::viewData() const {
-        return *static_cast<T*>(cookie->data);
-    }
 }
 
 #endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
