@@ -43,6 +43,11 @@ namespace evget {
         using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
 
         /**
+         * Get the timestamp of the event.
+         */
+        [[nodiscard]] std::chrono::nanoseconds getTimestamp() const;
+
+        /**
          * Must check if data is available first with hasData.
          */
         [[nodiscard]] int getEventType() const;
