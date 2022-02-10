@@ -32,33 +32,32 @@
 namespace algorithm = boost::algorithm;
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
-    const auto& deviceEvent = event.viewData<XIDeviceEvent>();
+    if (event.hasData()) {
+        const auto& deviceEvent = event.viewData<XIDeviceEvent>();
 
-    switch (deviceEvent.evtype) {
-    case XI_ButtonPress:
-        break;
-    case XI_KeyPress:
-        break;
-    case XI_KeyRelease:
-        break;
-    case XI_Motion:
-        break;
+        switch (deviceEvent.evtype) {
+        case XI_ButtonPress:break;
+        case XI_KeyPress:break;
+        case XI_KeyRelease:break;
+        case XI_Motion:break;
 #if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
-    case XI_TouchBegin:
-        break;
-    case XI_TouchUpdate:
-        break;
-    case XI_TouchEnd:
-        break;
+        case XI_TouchBegin:break;
+        case XI_TouchUpdate:break;
+        case XI_TouchEnd:break;
 #endif
-    case XI_HierarchyChanged:
-    case XI_DeviceChanged:
-        refreshDeviceIds();
-        break;
-    default:
-        spdlog::info("Unsupported event with type '{}' from device with id '{}' passed to event transformer.", deviceEvent.evtype, deviceEvent.deviceid);
-        return {};
+        case XI_HierarchyChanged:
+        case XI_DeviceChanged:refreshDeviceIds();
+            break;
+        default:
+            spdlog::info(
+                "Unsupported event with type '{}' from device with id '{}' passed to event transformer.",
+                deviceEvent.evtype,
+                deviceEvent.deviceid
+            );
+            return {};
+        }
     }
+    return {};
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event) {

@@ -48,6 +48,11 @@ namespace evget {
         [[nodiscard]] std::chrono::nanoseconds getTimestamp() const;
 
         /**
+         * Check if viewData and getEventType is safe to call.
+         */
+        [[nodiscard]] bool hasData() const;
+
+        /**
          * Must check if data is available first with hasData.
          */
         [[nodiscard]] int getEventType() const;
@@ -58,11 +63,6 @@ namespace evget {
          */
         template<typename T>
         const T& viewData() const;
-
-        /**
-         * Check if viewData is safe to call.
-         */
-        [[nodiscard]] bool hasData() const;
 
         /**
          * Create a XInputEvent by getting the next event from the display. Events received depend on
