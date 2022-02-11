@@ -23,13 +23,11 @@
 
 #include <spdlog/spdlog.h>
 #include <X11/extensions/XInput.h>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include "evget/EventTransformerLinux.h"
 #include "evget/UnsupportedOperationException.h"
 #include "evget/Event/MouseClick.h"
-
-namespace algorithm = boost::algorithm;
+#include "evget/Event/Field.h"
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
@@ -66,34 +64,80 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time) {
-    auto& builder = Event::MouseClick::MouseClickBuilder{}
-        .time(time)
-        .positionX(event.root_x)
-        .positionY(event.root_y);
+    auto genericBuilder = Event::MouseClick::MouseClickBuilder{};
+    genericBuilder.time(time).positionX(event.root_x).positionY(event.root_y);
 
     if (event.type == XI_ButtonPress) {
-        builder.press(std::to_string(event.detail));
+        genericBuilder.press(std::to_string(event.detail));
     } else if (event.type == XI_ButtonRelease) {
-        builder.release(std::to_string(event.detail));
+        genericBuilder.release(std::to_string(event.detail));
     } else {
         spdlog::warn("Non button event passed to button event function.");
         return {};
     }
 
+    std::string deviceName{};
     if (mouseIds.contains(event.deviceid)) {
-        builder.type(Event::Common::Type::Device::Mouse);
+        genericBuilder.type(Event::Common::Type::Device::Mouse);
+        deviceName = mouseIds[event.deviceid];
     } else if (keyboardIds.contains(event.deviceid)) {
-        builder.type(Event::Common::Type::Device::Keyboard);
+        genericBuilder.type(Event::Common::Type::Device::Keyboard);
+        deviceName = keyboardIds[event.deviceid];
     } else if (touchpadIds.contains(event.deviceid)) {
-        builder.type(Event::Common::Type::Device::Touchpad);
+        genericBuilder.type(Event::Common::Type::Device::Touchpad);
+        deviceName = touchpadIds[event.deviceid];
     } else if (touchscreenIds.contains(event.deviceid)) {
-        builder.type(Event::Common::Type::Device::Touchscreen);
+        genericBuilder.type(Event::Common::Type::Device::Touchscreen);
+        deviceName = touchscreenIds[event.deviceid];
     } else {
         spdlog::warn("Device id '{}' not found in supported devices.", event.deviceid);
         return {};
     }
 
-    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).build();
+    return Event::TableData::TableDataBuilder{}.genericData(genericBuilder.build()).systemData(createSystemData(event, "MouseClickSystemData", deviceName)).build();
+}
+
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(XIDeviceEvent& event, const std::string& name, const std::string& deviceName) {
+    std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceName", deviceName));
+    fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("Flags", std::to_string(event.flags)));
+
+    auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
+    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", fmt::format("[{}]", fmt::join(buttonState, ", "))));
+
+    auto valuatorState = getMask(event.valuators.mask_len, event.valuators.mask);
+    auto values = event.valuators.values;
+    std::vector<int> valuatorValues{};
+    if (!valuatorState.empty()) {
+        valuatorValues.insert(valuatorValues.end(), &values[0], &values[valuatorState.size()]);
+    }
+    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsSet", fmt::format("[{}]", fmt::join(valuatorState, ", "))));
+    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsValues", fmt::format("[{}]", fmt::join(valuatorValues, ", "))));
+
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", std::to_string(event.mods.base)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", std::to_string(event.mods.effective)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLatched", std::to_string(event.mods.latched)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLocked", std::to_string(event.mods.locked)));
+
+    fields.emplace_back(std::make_unique<Event::Field>("GroupBase", std::to_string(event.group.base)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupEffective", std::to_string(event.group.effective)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupLatched", std::to_string(event.group.latched)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupLocked", std::to_string(event.group.locked)));
+
+    return std::make_unique<Event::Data>(name, std::move(fields));
+}
+
+std::vector<int> evget::EventTransformerLinux::getMask(int maskLen, const unsigned char* mask) {
+    std::vector<int> masksSet{};
+    for (int i = 0; i < maskLen * 8; i++) {
+        if (XIMaskIsSet(mask, i)) {
+            masksSet.emplace_back(i);
+        }
+    }
+    return masksSet;
 }
 
 void evget::EventTransformerLinux::refreshDeviceIds() {

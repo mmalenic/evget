@@ -38,6 +38,9 @@ namespace evget {
         std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
+        static std::unique_ptr<Event::AbstractData> createSystemData(XIDeviceEvent& event, const std::string& data, const std::string& deviceName);
+        static std::vector<int> getMask(int maskLen, const unsigned char* mask);
+
         std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
