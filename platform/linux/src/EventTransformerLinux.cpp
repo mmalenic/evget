@@ -103,10 +103,10 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
     fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
     fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
-    fields.emplace_back(std::make_unique<Event::Field>("Flags", std::to_string(event.flags)));
+    fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
 
     auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
-    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", fmt::format("[{}]", fmt::join(buttonState, ", "))));
+    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState))));
 
     auto valuatorState = getMask(event.valuators.mask_len, event.valuators.mask);
     auto values = event.valuators.values;
@@ -114,20 +114,28 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     if (!valuatorState.empty()) {
         valuatorValues.insert(valuatorValues.end(), &values[0], &values[valuatorState.size()]);
     }
-    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsSet", fmt::format("[{}]", fmt::join(valuatorState, ", "))));
-    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsValues", fmt::format("[{}]", fmt::join(valuatorValues, ", "))));
+    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsSet", formatValue(valuatorState)));
+    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsValues", formatValue(valuatorValues)));
 
-    fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", std::to_string(event.mods.base)));
-    fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", std::to_string(event.mods.effective)));
-    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLatched", std::to_string(event.mods.latched)));
-    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLocked", std::to_string(event.mods.locked)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", formatValue(event.mods.base)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", formatValue(event.mods.effective)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLatched", formatValue(event.mods.latched)));
+    fields.emplace_back(std::make_unique<Event::Field>("ModifiersLocked", formatValue(event.mods.locked)));
 
-    fields.emplace_back(std::make_unique<Event::Field>("GroupBase", std::to_string(event.group.base)));
-    fields.emplace_back(std::make_unique<Event::Field>("GroupEffective", std::to_string(event.group.effective)));
-    fields.emplace_back(std::make_unique<Event::Field>("GroupLatched", std::to_string(event.group.latched)));
-    fields.emplace_back(std::make_unique<Event::Field>("GroupLocked", std::to_string(event.group.locked)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupBase", formatValue(event.group.base)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupEffective", formatValue(event.group.effective)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupLatched", formatValue(event.group.latched)));
+    fields.emplace_back(std::make_unique<Event::Field>("GroupLocked", formatValue(event.group.locked)));
 
     return std::make_unique<Event::Data>(name, std::move(fields));
+}
+
+std::string evget::EventTransformerLinux::formatValue(int value) {
+    return value != 0 ? std::to_string(value) : "";
+}
+
+std::string evget::EventTransformerLinux::formatValue(std::vector<int> values) {
+    return !values.empty() ? fmt::format("[{}]", fmt::join(values, ", ")) : "";
 }
 
 std::vector<int> evget::EventTransformerLinux::getMask(int maskLen, const unsigned char* mask) {

@@ -40,6 +40,8 @@ namespace evget {
     private:
         static std::unique_ptr<Event::AbstractData> createSystemData(XIDeviceEvent& event, const std::string& data, const std::string& deviceName);
         static std::vector<int> getMask(int maskLen, const unsigned char* mask);
+        static std::string formatValue(int value);
+        static std::string formatValue(std::vector<int> values);
 
         std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time);
 
