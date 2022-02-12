@@ -64,17 +64,18 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time) {
-    auto genericBuilder = Event::MouseClick::MouseClickBuilder{};
-    genericBuilder.time(time).positionX(event.root_x).positionY(event.root_y);
-
+    Event::MouseClick::MouseClickBuilder genericBuilder;
     if (event.type == XI_ButtonPress) {
+        genericBuilder = Event::MouseClick::MouseClickBuilder{};
         genericBuilder.press(std::to_string(event.detail));
     } else if (event.type == XI_ButtonRelease) {
+        genericBuilder = Event::MouseClick::MouseClickBuilder{};
         genericBuilder.release(std::to_string(event.detail));
     } else {
-        spdlog::warn("Non button event passed to button event function.");
         return {};
     }
+
+    genericBuilder.time(time).positionX(event.root_x).positionY(event.root_y);
 
     std::string deviceName{};
     if (mouseIds.contains(event.deviceid)) {
@@ -106,7 +107,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
 
     auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
-    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState))));
+    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState)));
 
     auto valuatorState = getMask(event.valuators.mask_len, event.valuators.mask);
     auto values = event.valuators.values;
@@ -199,17 +200,25 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
 
 void evget::EventTransformerLinux::setButtonMap(const XIDeviceInfo& info) {
     const XIButtonClassInfo* buttonInfo = nullptr;
+    std::vector<const XIScrollClassInfo*> scrollInfos{};
     for (int i = 0; i < info.num_classes; i++) {
         const auto* classInfo = info.classes[i];
 
         if (classInfo->type == ButtonClass) {
             buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
-            break;
+        }
+        if (classInfo->type == XIScrollClass) {
+            scrollInfos.emplace_back(reinterpret_cast<const XIScrollClassInfo*>(classInfo));
         }
     }
 
     if (buttonInfo && buttonInfo->num_buttons > 0) {
         setButtonMap(*buttonInfo, info.deviceid);
+    }
+    if (!scrollInfos.empty()) {
+        for (auto scrollInfo : scrollInfos) {
+            scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
+        }
     }
 }
 

@@ -52,6 +52,8 @@ namespace evget {
         std::reference_wrapper<Display> display;
 
         std::map<int, std::map<int, std::string>> buttonMap{};
+        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+        bool downScrollNegative{false};
         std::map<int, std::string> mouseIds{};
         std::map<int, std::string> keyboardIds{};
         std::map<int, std::string> touchscreenIds{};
