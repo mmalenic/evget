@@ -44,7 +44,7 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::position
     return *this;
 }
 
-Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Event::Common::Type::Device device) {
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Event::Common::Device device) {
     _type = Event::Common::Type::createType(device);
     return *this;
 }

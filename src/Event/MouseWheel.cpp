@@ -44,7 +44,7 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::whee
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type(Event::Common::Type::Device device) {
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type(Event::Common::Device device) {
     _type = Event::Common::Type::createType(device);
     return *this;
 }

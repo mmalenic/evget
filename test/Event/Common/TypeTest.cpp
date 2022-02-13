@@ -31,25 +31,25 @@ TEST(TypeTest, Constructor) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(TypeTest, Mouse) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Mouse);
+    auto type = Event::Common::Type::createType(Event::Common::Device::Mouse);
     ASSERT_EQ("Type", type->getName());
     ASSERT_EQ("Mouse", type->getEntry());
 }
 
 TEST(TypeTest, Keyboard) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Keyboard);
+    auto type = Event::Common::Type::createType(Event::Common::Device::Keyboard);
     ASSERT_EQ("Type", type->getName());
     ASSERT_EQ("Keyboard", type->getEntry());
 }
 
 TEST(TypeTest, Touchpad) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Touchpad);
+    auto type = Event::Common::Type::createType(Event::Common::Device::Touchpad);
     ASSERT_EQ("Type", type->getName());
     ASSERT_EQ("Touchpad", type->getEntry());
 }
 
 TEST(TypeTest, Touchscreen) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Common::Type::createType(Event::Common::Type::Device::Touchscreen);
+    auto type = Event::Common::Type::createType(Event::Common::Device::Touchscreen);
     ASSERT_EQ("Type", type->getName());
     ASSERT_EQ("Touchscreen", type->getEntry());
 }

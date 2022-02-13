@@ -31,7 +31,7 @@ TEST(MouseMoveTest, Time) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(MouseMoveTest, Type) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.type(Event::Common::Type::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.type(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
 TEST(MouseMoveTest, PositionX) { // NOLINT(cert-err58-cpp)

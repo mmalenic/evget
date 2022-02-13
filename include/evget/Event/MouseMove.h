@@ -62,7 +62,7 @@ namespace Event {
             /**
              * Mouse type.
              */
-            MouseMoveBuilder& type(Event::Common::Type::Device device);
+            MouseMoveBuilder& type(Event::Common::Device device);
 
             /**
              * Build mouse move event.

@@ -60,7 +60,7 @@ namespace Event {
             /**
              * Mouse type.
              */
-            MouseWheelBuilder& type(Event::Common::Type::Device device);
+            MouseWheelBuilder& type(Event::Common::Device device);
 
             /**
              * Build mouse wheel event.

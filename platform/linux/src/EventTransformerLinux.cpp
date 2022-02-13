@@ -31,12 +31,15 @@
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
+        const auto& deviceEvent = event.viewData<XIDeviceEvent>();
+        if (!devices.contains(deviceEvent.deviceid)) {
+            spdlog::trace("Event from unsupported device: {}", deviceEvent.deviceid);
+            return {};
+        }
         if (!start.has_value()) {
             start = event.getTimestamp();
         }
         std::chrono::nanoseconds time = event.getTimestamp() - *start;
-
-        const auto& deviceEvent = event.viewData<XIDeviceEvent>();
 
         switch (deviceEvent.evtype) {
         case XI_ButtonPress:break;
@@ -76,26 +79,9 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(XIDe
     }
 
     genericBuilder.time(time).positionX(event.root_x).positionY(event.root_y);
+    genericBuilder.type(devices[event.deviceid]);
 
-    std::string deviceName{};
-    if (mouseIds.contains(event.deviceid)) {
-        genericBuilder.type(Event::Common::Type::Device::Mouse);
-        deviceName = mouseIds[event.deviceid];
-    } else if (keyboardIds.contains(event.deviceid)) {
-        genericBuilder.type(Event::Common::Type::Device::Keyboard);
-        deviceName = keyboardIds[event.deviceid];
-    } else if (touchpadIds.contains(event.deviceid)) {
-        genericBuilder.type(Event::Common::Type::Device::Touchpad);
-        deviceName = touchpadIds[event.deviceid];
-    } else if (touchscreenIds.contains(event.deviceid)) {
-        genericBuilder.type(Event::Common::Type::Device::Touchscreen);
-        deviceName = touchscreenIds[event.deviceid];
-    } else {
-        spdlog::warn("Device id '{}' not found in supported devices.", event.deviceid);
-        return {};
-    }
-
-    return Event::TableData::TableDataBuilder{}.genericData(genericBuilder.build()).systemData(createSystemData(event, "MouseClickSystemData", deviceName)).build();
+    return Event::TableData::TableDataBuilder{}.genericData(genericBuilder.build()).systemData(createSystemData(event, "MouseClickSystemData", idToName[event.deviceid])).build();
 }
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(XIDeviceEvent& event, const std::string& name, const std::string& deviceName) {
@@ -182,23 +168,25 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
             auto type = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), device.type), XFree);
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
-                mouseIds.emplace(id, device.name);
+                devices.emplace(id, Event::Common::Device::Mouse);
             } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                keyboardIds.emplace(id, device.name);
-            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                touchscreenIds.emplace(id, device.name);
+                devices.emplace(id, Event::Common::Device::Keyboard);
             } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                touchpadIds.emplace(id, device.name);
+                devices.emplace(id, Event::Common::Device::Touchscreen);
+            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
+                devices.emplace(id, Event::Common::Device::Touchpad);
             } else {
                 spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
+                continue;
             }
 
-            setButtonMap(xi2Devices.at(id).get());
+            idToName.emplace(id, device.name);
+            setInfo(xi2Devices.at(id).get());
         }
     }
 }
 
-void evget::EventTransformerLinux::setButtonMap(const XIDeviceInfo& info) {
+void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
     const XIButtonClassInfo* buttonInfo = nullptr;
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     for (int i = 0; i < info.num_classes; i++) {

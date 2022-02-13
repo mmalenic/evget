@@ -20,23 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_CURSOR_ISTOUCHPAD_H
-#define EVGET_INCLUDE_EVGET_EVENT_CURSOR_ISTOUCHPAD_H
-
-#include "evget/Event/AbstractField.h"
-#include "Device.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
+#define EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 
 namespace Event::Common {
-    class Type : public AbstractField {
-    public:
-        /**
-         * Create a type based on the device type enum.
-         */
-        static std::unique_ptr<Type> createType(Device device);
-
-        Type();
-        explicit Type(std::string type);
+    enum class Device {
+        Mouse,
+        Keyboard,
+        Touchpad,
+        Touchscreen
     };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_CURSOR_ISTOUCHPAD_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H

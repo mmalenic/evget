@@ -59,7 +59,7 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::rele
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::type(Event::Common::Type::Device device) {
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::type(Event::Common::Device device) {
     _type = Event::Common::Type::createType(device);
     return *this;
 }

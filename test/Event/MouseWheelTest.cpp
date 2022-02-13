@@ -31,7 +31,7 @@ TEST(MouseWheelTest, Time) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(MouseWheelTest, Type) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.type(Event::Common::Type::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.type(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
 TEST(MouseWheelTest, WheelDown) { // NOLINT(cert-err58-cpp)

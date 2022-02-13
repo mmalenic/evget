@@ -25,9 +25,11 @@
 
 #include <map>
 #include <X11/extensions/XInput.h>
+#include <set>
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
 #include "evget/Event/TableData.h"
+#include "evget/Event/Common/Type.h"
 
 namespace evget {
 
@@ -46,7 +48,7 @@ namespace evget {
         std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
-        void setButtonMap(const XIDeviceInfo& info);
+        void setInfo(const XIDeviceInfo& info);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<Display> display;
@@ -54,11 +56,9 @@ namespace evget {
         std::map<int, std::map<int, std::string>> buttonMap{};
         std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
         bool downScrollNegative{false};
-        std::map<int, std::string> mouseIds{};
-        std::map<int, std::string> keyboardIds{};
-        std::map<int, std::string> touchscreenIds{};
-        std::map<int, std::string> touchpadIds{};
 
+        std::map<int, Event::Common::Device> devices{};
+        std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
     };
 }
