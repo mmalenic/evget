@@ -10,6 +10,7 @@ add_program(
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
+    Event/Button/ButtonType.cpp
     Event/Cursor/Multitouch.cpp
     Event/Cursor/Orientation.cpp
     Event/Cursor/EllipseMajorInner.cpp

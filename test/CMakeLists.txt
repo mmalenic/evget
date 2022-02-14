@@ -21,6 +21,7 @@ add_program(
     Event/Cursor/EllipseMinorOuterTest.cpp
     Event/Cursor/MultitouchTest.cpp
     Event/Cursor/OrientationTest.cpp
+    Event/Button/ButtonTypeTest.cpp
     Event/Cursor/PositionXOuterTest.cpp
     Event/Cursor/PositionYOuterTest.cpp
     Event/Common/TypeTest.cpp
