@@ -44,6 +44,7 @@ void evget::XInputHandler::setMask(Display& display) {
 #endif
 
     // Special events
+    XISetMask(eventMask, XI_RawMotion);
     XISetMask(eventMask, XI_HierarchyChanged);
     XISetMask(eventMask, XI_DeviceChanged);
 

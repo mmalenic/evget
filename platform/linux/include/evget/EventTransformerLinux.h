@@ -40,12 +40,15 @@ namespace evget {
         std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
-        static std::unique_ptr<Event::AbstractData> createSystemData(XIDeviceEvent& event, const std::string& data, const std::string& deviceName);
+        static std::unique_ptr<Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& data, const std::string& deviceName);
         static std::vector<int> getMask(int maskLen, const unsigned char* mask);
         static std::string formatValue(int value);
         static std::string formatValue(std::vector<int> values);
 
-        std::unique_ptr<Event::TableData> buttonEvent(XIDeviceEvent& event, std::chrono::nanoseconds time);
+        std::chrono::nanoseconds getTime(evget::XInputEvent& event);
+
+        std::unique_ptr<Event::TableData> buttonEvent(evget::XInputEvent& event);
+        std::unique_ptr<Event::TableData> scrollEvent(evget::XInputEvent& event);
 
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
