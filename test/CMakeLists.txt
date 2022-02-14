@@ -9,6 +9,7 @@ add_program(
     Event/Common/TimeTest.cpp
     Event/Pressable/CharacterTest.cpp
     Event/Pointer/WheelDirectionTest.cpp
+    Event/Pointer/WheelAmountTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
     Event/Pointer/WheelDown.cpp

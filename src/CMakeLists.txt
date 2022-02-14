@@ -11,6 +11,7 @@ add_program(
     Event/Pressable/Button.cpp
     Event/Pointer/Multitouch.cpp
     Event/Pointer/WheelDirection.cpp
+    Event/Pointer/WheelAmount.cpp
     Event/Pointer/Orientation.cpp
     Event/Pointer/EllipseMajorInner.cpp
     Event/Pointer/EllipseMajorOuter.cpp

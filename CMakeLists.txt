@@ -300,6 +300,7 @@ add_program(
     include/evget/Event/Pressable/Character.h
     include/evget/Event/Pointer/WheelDirection.h
     include/evget/Event/Pointer/Direction.h
+    include/evget/Event/Pointer/WheelAmount.h
     include/evget/Event/Common/Time.h
     include/evget/Event/Pointer/Multitouch.h
     include/evget/Event/Pointer/Orientation.h
