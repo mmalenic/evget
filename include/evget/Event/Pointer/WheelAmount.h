@@ -30,7 +30,7 @@ namespace Event::Pointer {
     public:
         WheelAmount();
         explicit WheelAmount(std::string amount);
-        explicit WheelAmount(int amount);
+        explicit WheelAmount(double amount);
     };
 }
 

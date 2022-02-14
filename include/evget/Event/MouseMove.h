@@ -50,6 +50,11 @@ namespace Event {
             MouseMoveBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
+             * Mouse device.
+             */
+            MouseMoveBuilder& device(Event::Common::Device device);
+
+            /**
              * Add position x.
              */
             MouseMoveBuilder& positionX(double x);
@@ -60,18 +65,13 @@ namespace Event {
             MouseMoveBuilder& positionY(double y);
 
             /**
-             * Mouse type.
-             */
-            MouseMoveBuilder& type(Event::Common::Device device);
-
-            /**
              * Build mouse move event.
              */
             std::unique_ptr<MouseMove> build();
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Common::DeviceType> _type;
+            std::unique_ptr<Common::DeviceType> _device;
             std::unique_ptr<Pointer::PositionX> _positionX;
             std::unique_ptr<Pointer::PositionY> _positionY;
         };

@@ -27,7 +27,7 @@
 
 Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _time{std::make_unique<Common::Time>()},
-    _type{std::make_unique<Common::DeviceType>()},
+    _device{std::make_unique<Common::DeviceType>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
     _buttonType{std::make_unique<Pressable::ButtonAction>()},
@@ -61,7 +61,7 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::butt
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::device(Event::Common::Device device) {
-    _type = Event::Common::DeviceType::createType(device);
+    _device = Event::Common::DeviceType::createType(device);
     return *this;
 }
 
@@ -73,7 +73,7 @@ Event::MouseClick::MouseClick(
     Event::MouseClick::MouseClickBuilder& builder
 ) : AbstractData{"MouseClick"} {
     fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._type));
+    fields.emplace_back(std::move(builder._device));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._buttonType));

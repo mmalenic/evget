@@ -21,8 +21,6 @@ add_program(
     Event/Pointer/PositionYOuter.cpp
     Event/Pointer/PositionX.cpp
     Event/Pointer/PositionY.cpp
-    Event/Pointer/WheelDown.cpp
-    Event/Pointer/WheelUp.cpp
     Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp

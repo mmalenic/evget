@@ -25,7 +25,7 @@
 Event::Pointer::WheelAmount::WheelAmount(std::string amount) : AbstractField{"WheelAmount", std::move(amount)} {
 }
 
-Event::Pointer::WheelAmount::WheelAmount(int amount) : WheelAmount{std::to_string(amount)} {
+Event::Pointer::WheelAmount::WheelAmount(double amount) : WheelAmount{std::to_string(amount)} {
 }
 
 Event::Pointer::WheelAmount::WheelAmount() : WheelAmount{""} {

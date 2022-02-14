@@ -24,7 +24,7 @@
 
 Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() :
 _time{std::make_unique<Common::Time>()},
-_type{std::make_unique<Common::DeviceType>()},
+_device{std::make_unique<Common::DeviceType>()},
 _positionX{std::make_unique<Pointer::PositionX>()},
 _positionY{std::make_unique<Pointer::PositionY>()} {
 }
@@ -44,8 +44,8 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::position
     return *this;
 }
 
-Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Event::Common::Device device) {
-    _type = Event::Common::DeviceType::createType(device);
+Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::device(Event::Common::Device device) {
+    _device = Event::Common::DeviceType::createType(device);
     return *this;
 }
 
@@ -57,7 +57,7 @@ Event::MouseMove::MouseMove(
     Event::MouseMove::MouseMoveBuilder& builder
 ) : AbstractData{"MouseMove"} {
     fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._type));
+    fields.emplace_back(std::move(builder._device));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
 }

@@ -92,8 +92,8 @@ namespace CommandLine {
         [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
         /**
-         * Get the file type.
-         * @return file type
+         * Get the file device.
+         * @return file device
          */
         [[nodiscard]] std::vector<Filetype> getFiletype() const;
 

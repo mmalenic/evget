@@ -24,9 +24,9 @@
 
 Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
 _time{std::make_unique<Common::Time>()},
-_type{std::make_unique<Common::DeviceType>()},
-_wheelDown{std::make_unique<Pointer::WheelDown>()},
-_wheelUp{std::make_unique<Pointer::WheelUp>()} {
+_device{std::make_unique<Common::DeviceType>()},
+_direction{std::make_unique<Pointer::WheelDirection>()},
+_amount{std::make_unique<Pointer::WheelAmount>()} {
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -34,18 +34,18 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelDown(double amount) {
-    _wheelDown = std::make_unique<Pointer::WheelDown>(amount);
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::direction(Pointer::Direction direction) {
+    _direction = Event::Pointer::WheelDirection::createWheelDirection(direction);
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelUp(double amount) {
-    _wheelUp = std::make_unique<Pointer::WheelUp>(amount);
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::amount(double amount) {
+    _amount = std::make_unique<Pointer::WheelAmount>(amount);
     return *this;
 }
 
-Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type(Event::Common::Device device) {
-    _type = Event::Common::DeviceType::createType(device);
+Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::device(Event::Common::Device device) {
+    _device = Event::Common::DeviceType::createType(device);
     return *this;
 }
 
@@ -57,7 +57,7 @@ Event::MouseWheel::MouseWheel(
     Event::MouseWheel::MouseWheelBuilder& builder
 ) : AbstractData{"MouseWheel"} {
     fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._type));
-    fields.emplace_back(std::move(builder._wheelDown));
-    fields.emplace_back(std::move(builder._wheelUp));
+    fields.emplace_back(std::move(builder._device));
+    fields.emplace_back(std::move(builder._direction));
+    fields.emplace_back(std::move(builder._amount));
 }

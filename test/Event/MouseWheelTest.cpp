@@ -31,13 +31,13 @@ TEST(MouseWheelTest, Time) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(MouseWheelTest, Type) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.type(Event::Common::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
-TEST(MouseWheelTest, WheelDown) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelDown(1).build(), 2, "1");
+TEST(MouseWheelTest, Direction) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.direction(Event::Pointer::Direction::Up).build(), 2, "Up");
 }
 
-TEST(MouseWheelTest, WheelUp) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.wheelUp(1).build(), 3, "1");
+TEST(MouseWheelTest, Amount) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.amount(1).build(), 3, "1");
 }

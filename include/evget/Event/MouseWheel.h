@@ -29,6 +29,8 @@
 #include "evget/Event/Pointer/WheelDown.h"
 #include "evget/Event/Pointer/WheelUp.h"
 #include "evget/Event/Common/DeviceType.h"
+#include "evget/Event/Pointer/WheelDirection.h"
+#include "evget/Event/Pointer/WheelAmount.h"
 
 namespace Event {
     /**
@@ -48,19 +50,19 @@ namespace Event {
             MouseWheelBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
+             * Mouse device.
+             */
+            MouseWheelBuilder& device(Event::Common::Device device);
+
+            /**
              * Add wheel down.
              */
-            MouseWheelBuilder& wheelDown(double amount);
+            MouseWheelBuilder& direction(Pointer::Direction direction);
 
             /**
              * Add wheel up.
              */
-            MouseWheelBuilder& wheelUp(double amount);
-
-            /**
-             * Mouse type.
-             */
-            MouseWheelBuilder& type(Event::Common::Device device);
+            MouseWheelBuilder& amount(double amount);
 
             /**
              * Build mouse wheel event.
@@ -69,9 +71,9 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Common::DeviceType> _type;
-            std::unique_ptr<Pointer::WheelDown> _wheelDown;
-            std::unique_ptr<Pointer::WheelUp> _wheelUp;
+            std::unique_ptr<Common::DeviceType> _device;
+            std::unique_ptr<Pointer::WheelDirection> _direction;
+            std::unique_ptr<Pointer::WheelAmount> _amount;
         };
 
         /**

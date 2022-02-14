@@ -312,8 +312,6 @@ add_program(
     include/evget/Event/Pointer/PositionYOuterTest.h
     include/evget/Event/Pointer/PositionX.h
     include/evget/Event/Pointer/PositionY.h
-    include/evget/Event/Pointer/WheelDown.h
-    include/evget/Event/Pointer/WheelUp.h
     include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
     include/evget/Event/Pressable/ButtonAction.h
