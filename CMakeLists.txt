@@ -298,9 +298,6 @@ add_program(
     include/evget/Event/MouseClick.h
     include/evget/Event/MouseWheel.h
     include/evget/Event/Pressable/Character.h
-    include/evget/Event/Pressable/Press.h
-    include/evget/Event/Pressable/Release.h
-    include/evget/Event/Pressable/Repeat.h
     include/evget/Event/Common/Time.h
     include/evget/Event/Pointer/Multitouch.h
     include/evget/Event/Pointer/Orientation.h

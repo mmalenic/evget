@@ -4,9 +4,6 @@ add_program(
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
     Event/Pressable/Character.cpp
-    Event/Pressable/Press.cpp
-    Event/Pressable/Release.cpp
-    Event/Pressable/Repeat.cpp
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
