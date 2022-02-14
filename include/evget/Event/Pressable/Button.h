@@ -30,8 +30,8 @@ namespace Event::Pressable {
     class Button : public AbstractField {
     public:
         Button();
-        explicit Button(std::string buttonId);
-        explicit Button(int buttonId);
+        explicit Button(std::string button);
+        explicit Button(int button);
     };
 }
 

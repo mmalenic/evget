@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evget/Event/MouseClick.h"
+#include "evget/Event/Pressable/ButtonType.h"
 
 #include <utility>
 
@@ -29,8 +30,8 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _type{std::make_unique<Common::DeviceType>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
-    _press{std::make_unique<Pressable::Press>()},
-    _release{std::make_unique<Pressable::Release>()}
+    _buttonType{std::make_unique<Pressable::ButtonType>()},
+    _button{std::make_unique<Pressable::Button>()}
 {
 }
 
@@ -49,17 +50,17 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::posi
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::press(std::string button) {
-    _press = std::make_unique<Pressable::Press>(std::move(button));
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::action(Pressable::Action action) {
+    _buttonType = Event::Pressable::ButtonType::createButtonType(action);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::release(std::string button) {
-    _release = std::make_unique<Pressable::Release>(std::move(button));
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(std::string button) {
+    _button = std::make_unique<Pressable::Button>(std::move(button));
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::type(Event::Common::Device device) {
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::device(Event::Common::Device device) {
     _type = Event::Common::DeviceType::createType(device);
     return *this;
 }
@@ -75,6 +76,6 @@ Event::MouseClick::MouseClick(
     fields.emplace_back(std::move(builder._type));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
-    fields.emplace_back(std::move(builder._press));
-    fields.emplace_back(std::move(builder._release));
+    fields.emplace_back(std::move(builder._buttonType));
+    fields.emplace_back(std::move(builder._button));
 }

@@ -31,6 +31,9 @@
 #include "evget/Event/Pressable/Press.h"
 #include "evget/Event/Pressable/Release.h"
 #include "evget/Event/Common/DeviceType.h"
+#include "evget/Event/Pressable/Action.h"
+#include "evget/Event/Pressable/ButtonType.h"
+#include "evget/Event/Pressable/Button.h"
 
 namespace Event {
     /**
@@ -60,19 +63,19 @@ namespace Event {
             MouseClickBuilder& positionY(double y);
 
             /**
-             * Add press.
+             * Add action.
              */
-            MouseClickBuilder& press(std::string button);
+            MouseClickBuilder& action(Pressable::Action action);
 
             /**
-             * Add release.
+             * Add id.
              */
-            MouseClickBuilder& release(std::string button);
+            MouseClickBuilder& button(std::string button);
 
             /**
              * Mouse type.
              */
-            MouseClickBuilder& type(Event::Common::Device device);
+            MouseClickBuilder& device(Event::Common::Device device);
 
             /**
              * Build mouse click event.
@@ -84,8 +87,8 @@ namespace Event {
             std::unique_ptr<Common::DeviceType> _type;
             std::unique_ptr<Pointer::PositionX> _positionX;
             std::unique_ptr<Pointer::PositionY> _positionY;
-            std::unique_ptr<Pressable::Press> _press;
-            std::unique_ptr<Pressable::Release> _release;
+            std::unique_ptr<Pressable::ButtonType> _buttonType;
+            std::unique_ptr<Pressable::Button> _button;
         };
 
         /**

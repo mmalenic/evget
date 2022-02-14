@@ -21,12 +21,12 @@
 // SOFTWARE.
 
 #include "evget/Event/Key.h"
+#include "evget/Event/Pressable/ButtonType.h"
 
 Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
-_press{std::make_unique<Pressable::Press>()},
-_release{std::make_unique<Pressable::Release>()},
-_repeat{std::make_unique<Pressable::Repeat>()},
+_buttonType{std::make_unique<Pressable::ButtonType>()},
+_button{std::make_unique<Pressable::Button>()},
 _character{std::make_unique<Pressable::Character>()} {
 }
 
@@ -35,18 +35,13 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds na
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::press(std::string button) {
-    _press = std::make_unique<Pressable::Press>(std::move(button));
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Pressable::Action action) {
+    _buttonType = Event::Pressable::ButtonType::createButtonType(action);
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::release(std::string button) {
-    _release = std::make_unique<Pressable::Release>(std::move(button));
-    return *this;
-}
-
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::repeat(std::string button) {
-    _repeat = std::make_unique<Pressable::Repeat>(std::move(button));
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::button(std::string button) {
+    _button = std::make_unique<Pressable::Button>(std::move(button));
     return *this;
 }
 
@@ -63,8 +58,7 @@ Event::Key::Key(
     Event::Key::KeyBuilder& builder
 ) : AbstractData{"Key"} {
     fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._press));
-    fields.emplace_back(std::move(builder._release));
-    fields.emplace_back(std::move(builder._repeat));
+    fields.emplace_back(std::move(builder._buttonType));
+    fields.emplace_back(std::move(builder._button));
     fields.emplace_back(std::move(builder._character));
 }

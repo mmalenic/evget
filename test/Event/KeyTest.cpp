@@ -30,18 +30,14 @@ TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(KeyTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.press("1").build(), 1, "1");
+TEST(KeyTest, Action) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Pressable::Action::Press).build(), 1, "Press");
 }
 
-TEST(KeyTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.release("1").build(), 2, "1");
-}
-
-TEST(KeyTest, Repeat) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.repeat("1").build(), 3, "1");
+TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.button("1").build(), 2, "1");
 }
 
 TEST(KeyTest, Character) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character('a').build(), 4, "a");
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character('a').build(), 3, "a");
 }

@@ -32,6 +32,7 @@
 #include "evget/Event/Pressable/Character.h"
 #include "evget/Event/Pressable/Action.h"
 #include "evget/Event/Pressable/Button.h"
+#include "evget/Event/Pressable/ButtonType.h"
 
 namespace Event {
     /**
@@ -58,7 +59,7 @@ namespace Event {
             /**
              * Add id.
              */
-            KeyBuilder& keyId(std::string id);
+            KeyBuilder& button(std::string button);
 
             /**
              * Add character.
@@ -72,8 +73,8 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Pressable::Action> _action;
-            std::unique_ptr<Pressable::Button> _id;
+            std::unique_ptr<Pressable::ButtonType> _buttonType;
+            std::unique_ptr<Pressable::Button> _button;
             std::unique_ptr<Pressable::Character> _character;
         };
 

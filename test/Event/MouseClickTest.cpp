@@ -34,7 +34,7 @@ TEST(MouseClickTest, Time) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(MouseClickTest, Type) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.type(Event::Common::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
 TEST(MouseClickTest, PositionX) { // NOLINT(cert-err58-cpp)
@@ -45,10 +45,10 @@ TEST(MouseClickTest, PositionY) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.positionY(1).build(), 3, "1");
 }
 
-TEST(MouseClickTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.press("1").build(), 4, "1");
+TEST(MouseClickTest, Action) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.action(Event::Pressable::Action::Press).build(), 4, "Press");
 }
 
 TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.release("1").build(), 5, "1");
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.button("1").build(), 5, "1");
 }

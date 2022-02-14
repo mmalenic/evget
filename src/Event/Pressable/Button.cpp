@@ -22,10 +22,10 @@
 
 #include "evget/Event/Pressable/Button.h"
 
-Event::Pressable::Button::Button(std::string buttonId) : AbstractField{"Button", std::move(buttonId)} {
+Event::Pressable::Button::Button(std::string button) : AbstractField{"Button", std::move(button)} {
 }
 
-Event::Pressable::Button::Button(int buttonId) : Button{std::to_string(buttonId)} {
+Event::Pressable::Button::Button(int button) : Button{std::to_string(button)} {
 }
 
 Event::Pressable::Button::Button() : Button{""} {
