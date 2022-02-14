@@ -24,7 +24,7 @@
 
 Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() :
 _time{std::make_unique<Common::Time>()},
-_type{std::make_unique<Common::Type>()},
+_type{std::make_unique<Common::DeviceType>()},
 _positionX{std::make_unique<Cursor::PositionX>()},
 _positionY{std::make_unique<Cursor::PositionY>()} {
 }
@@ -45,7 +45,7 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::position
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::type(Event::Common::Device device) {
-    _type = Event::Common::Type::createType(device);
+    _type = Event::Common::DeviceType::createType(device);
     return *this;
 }
 

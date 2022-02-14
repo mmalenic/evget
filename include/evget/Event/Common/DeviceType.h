@@ -27,15 +27,15 @@
 #include "Device.h"
 
 namespace Event::Common {
-    class Type : public AbstractField {
+    class DeviceType : public AbstractField {
     public:
         /**
          * Create a type based on the device type enum.
          */
-        static std::unique_ptr<Type> createType(Device device);
+        static std::unique_ptr<DeviceType> createType(Device device);
 
-        Type();
-        explicit Type(std::string type);
+        DeviceType();
+        explicit DeviceType(std::string type);
     };
 }
 

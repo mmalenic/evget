@@ -29,7 +29,7 @@
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
 #include "evget/Event/TableData.h"
-#include "evget/Event/Common/Type.h"
+#include "evget/Event/Common/DeviceType.h"
 
 namespace evget {
 

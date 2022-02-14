@@ -24,7 +24,7 @@
 
 Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
 _time{std::make_unique<Common::Time>()},
-_type{std::make_unique<Common::Type>()},
+_type{std::make_unique<Common::DeviceType>()},
 _wheelDown{std::make_unique<Cursor::WheelDown>()},
 _wheelUp{std::make_unique<Cursor::WheelUp>()} {
 }
@@ -45,7 +45,7 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::whee
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::type(Event::Common::Device device) {
-    _type = Event::Common::Type::createType(device);
+    _type = Event::Common::DeviceType::createType(device);
     return *this;
 }
 

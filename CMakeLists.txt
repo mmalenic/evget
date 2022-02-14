@@ -315,7 +315,7 @@ add_program(
     include/evget/Event/Cursor/PositionY.h
     include/evget/Event/Cursor/WheelDown.h
     include/evget/Event/Cursor/WheelUp.h
-    include/evget/Event/Common/Type.h
+    include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
     include/evget/Event/Button/ButtonType.h
     include/evget/Event/Button/ButtonAction.h

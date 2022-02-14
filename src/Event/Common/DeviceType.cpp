@@ -21,23 +21,23 @@
 // SOFTWARE.
 
 #include <fmt/format.h>
-#include "evget/Event/Common/Type.h"
+#include "evget/Event/Common/DeviceType.h"
 
-Event::Common::Type::Type(std::string type) : AbstractField{"Type", std::move(type)} {
+Event::Common::DeviceType::DeviceType(std::string type) : AbstractField{"DeviceType", std::move(type)} {
 }
 
-Event::Common::Type::Type() : Type{{}} {
+Event::Common::DeviceType::DeviceType() : DeviceType{""} {
 }
 
-std::unique_ptr<Event::Common::Type> Event::Common::Type::createType(Device device) {
+std::unique_ptr<Event::Common::DeviceType> Event::Common::DeviceType::createType(Device device) {
     switch (device) {
     case Device::Mouse:
-        return std::make_unique<Type>("Mouse");;
+        return std::make_unique<DeviceType>("Mouse");;
     case Device::Keyboard:
-        return std::make_unique<Type>("Keyboard");
+        return std::make_unique<DeviceType>("Keyboard");
     case Device::Touchpad:
-        return std::make_unique<Type>("Touchpad");
+        return std::make_unique<DeviceType>("Touchpad");
     case Device::Touchscreen:
-        return std::make_unique<Type>("Touchscreen");
+        return std::make_unique<DeviceType>("Touchscreen");
     }
 }
