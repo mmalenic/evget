@@ -26,8 +26,6 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Pointer/WheelDown.h"
-#include "evget/Event/Pointer/WheelUp.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Pointer/WheelDirection.h"
 #include "evget/Event/Pointer/WheelAmount.h"

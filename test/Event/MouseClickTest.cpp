@@ -33,7 +33,7 @@ TEST(MouseClickTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(MouseClickTest, Type) { // NOLINT(cert-err58-cpp)
+TEST(MouseClickTest, Device) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 

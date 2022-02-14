@@ -26,9 +26,6 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Pressable/Press.h"
-#include "evget/Event/Pressable/Release.h"
-#include "evget/Event/Pressable/Repeat.h"
 #include "evget/Event/Pressable/Character.h"
 #include "evget/Event/Pressable/Action.h"
 #include "evget/Event/Pressable/Button.h"

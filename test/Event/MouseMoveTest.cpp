@@ -30,7 +30,7 @@ TEST(MouseMoveTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(MouseMoveTest, Type) { // NOLINT(cert-err58-cpp)
+TEST(MouseMoveTest, Device) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 

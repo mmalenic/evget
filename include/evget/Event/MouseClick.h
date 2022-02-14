@@ -28,8 +28,6 @@
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Pointer/PositionX.h"
 #include "evget/Event/Pointer/PositionY.h"
-#include "evget/Event/Pressable/Press.h"
-#include "evget/Event/Pressable/Release.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Pressable/Action.h"
 #include "evget/Event/Pressable/ButtonAction.h"

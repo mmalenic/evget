@@ -33,46 +33,32 @@
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
         auto type = event.getEventType();
-        if (type == XI_HierarchyChanged || type == XI_DeviceChanged) {
+
+        switch (type) {
+        case XI_ButtonPress:
+            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Pressable::Action::Press);
+        case XI_ButtonRelease:
+            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Pressable::Action::Release);
+        case XI_KeyPress:break;
+        case XI_KeyRelease:break;
+        case XI_Motion:break;
+        case XI_RawMotion:break;
+#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
+        case XI_TouchBegin:break;
+        case XI_TouchUpdate:break;
+        case XI_TouchEnd:break;
+#endif
+        case XI_HierarchyChanged:
+        case XI_DeviceChanged:
             refreshDeviceIds();
+            break;
+        default:
+            spdlog::info(
+                "Unsupported event with type '{}' passed to event transformer.",
+                type
+            );
             return {};
         }
-        if (type == XI_RawMotion) {
-            const auto& rawEvent = event.viewData<XIRawEvent>();
-        } else {
-            const auto& deviceEvent = event.viewData<XIDeviceEvent>();
-            if (!devices.contains(deviceEvent.deviceid)) {
-                spdlog::trace("Event from unsupported device: {}", deviceEvent.deviceid);
-                return {};
-            }
-        }
-
-        if (!start.has_value()) {
-            start = event.getTimestamp();
-        }
-        std::chrono::nanoseconds time = event.getTimestamp() - *start;
-
-//        switch (deviceEvent.evtype) {
-//        case XI_ButtonPress:break;
-//        case XI_KeyPress:break;
-//        case XI_KeyRelease:break;
-//        case XI_Motion:break;
-//#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
-//        case XI_TouchBegin:break;
-//        case XI_TouchUpdate:break;
-//        case XI_TouchEnd:break;
-//#endif
-//        case XI_HierarchyChanged:
-//        case XI_DeviceChanged:refreshDeviceIds();
-//            break;
-//        default:
-//            spdlog::info(
-//                "Unsupported event with type '{}' from device with id '{}' passed to event transformer.",
-//                deviceEvent.evtype,
-//                deviceEvent.deviceid
-//            );
-//            return {};
-//        }
     }
     return {};
 }
@@ -84,25 +70,14 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(evget::XInputEven
     return event.getTimestamp() - *start;
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(evget::XInputEvent& event) {
-    Event::MouseClick::MouseClickBuilder builder;
-    const XIDeviceEvent* deviceEvent;
-    if (event.getEventType() == XI_ButtonPress) {
-        deviceEvent = &event.viewData<XIDeviceEvent>();
-        builder = Event::MouseClick::MouseClickBuilder{};
-        builder.press(std::to_string(deviceEvent->detail));
-    } else if (event.getEventType() == XI_ButtonRelease) {
-        deviceEvent = &event.viewData<XIDeviceEvent>();
-        builder = Event::MouseClick::MouseClickBuilder{};
-        builder.release(std::to_string(deviceEvent->detail));
-    } else {
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Pressable::Action action) {
+    if (!devices.contains(event.deviceid)) {
         return {};
     }
 
-    builder.time(getTime(event)).positionX(deviceEvent->root_x).positionY(deviceEvent->root_y);
-    builder.device(devices[deviceEvent->deviceid]);
-
-    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(*deviceEvent, "MouseClickSystemData", idToName[deviceEvent->deviceid])).build();
+    Event::MouseClick::MouseClickBuilder builder{};
+    builder.time(time).action(action).positionX(event.root_x).positionY(event.root_y).device(devices[event.deviceid]);
+    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(event, "MouseClickSystemData", idToName[event.deviceid])).build();
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
