@@ -32,13 +32,13 @@ TEST(ButtonTypeTest, Constructor) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(ButtonTypeTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Press), "ButtonType", "Press");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::Action::Press), "ButtonType", "Press");
 }
 
 TEST(ButtonTypeTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Release), "ButtonType", "Release");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::Action::Release), "ButtonType", "Release");
 }
 
 TEST(ButtonTypeTest, Repeat) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Repeat), "ButtonType", "Repeat");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::Action::Repeat), "ButtonType", "Repeat");
 }

@@ -28,13 +28,13 @@ Event::Button::ButtonType::ButtonType(std::string type) : AbstractField{"ButtonT
 Event::Button::ButtonType::ButtonType() : ButtonType{""} {
 }
 
-std::unique_ptr<Event::Button::ButtonType> Event::Button::ButtonType::createButtonType(ButtonAction action) {
+std::unique_ptr<Event::Button::ButtonType> Event::Button::ButtonType::createButtonType(Action action) {
     switch (action) {
-    case ButtonAction::Press:
+    case Action::Press:
         return std::make_unique<ButtonType>("Press");;
-    case ButtonAction::Release:
+    case Action::Release:
         return std::make_unique<ButtonType>("Release");
-    case ButtonAction::Repeat:
+    case Action::Repeat:
         return std::make_unique<ButtonType>("Repeat");
     }
 }

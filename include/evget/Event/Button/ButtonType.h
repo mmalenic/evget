@@ -25,7 +25,7 @@
 
 #include <memory>
 #include "evget/Event/AbstractField.h"
-#include "ButtonAction.h"
+#include "Action.h"
 
 namespace Event::Button {
     class ButtonType : public AbstractField {
@@ -33,7 +33,7 @@ namespace Event::Button {
         /**
          * Create a type based on the device type enum.
          */
-        static std::unique_ptr<ButtonType> createButtonType(ButtonAction action);
+        static std::unique_ptr<ButtonType> createButtonType(Action action);
 
         ButtonType();
         explicit ButtonType(std::string type);

@@ -318,7 +318,7 @@ add_program(
     include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
     include/evget/Event/Button/ButtonType.h
-    include/evget/Event/Button/ButtonAction.h
+    include/evget/Event/Button/Action.h
     include/evget/Event/Button/ButtonId.h
     include/evget/Event/TableData.h
     include/evget/Event/Touch.h
