@@ -3,27 +3,27 @@ add_program(
     SRCS
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
-    Event/Button/Character.cpp
-    Event/Button/Press.cpp
-    Event/Button/Release.cpp
-    Event/Button/Repeat.cpp
+    Event/Pressable/Character.cpp
+    Event/Pressable/Press.cpp
+    Event/Pressable/Release.cpp
+    Event/Pressable/Repeat.cpp
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/Button/ButtonType.cpp
-    Event/Button/ButtonId.cpp
-    Event/Cursor/Multitouch.cpp
-    Event/Cursor/Orientation.cpp
-    Event/Cursor/EllipseMajorInner.cpp
-    Event/Cursor/EllipseMajorOuter.cpp
-    Event/Cursor/EllipseMinorInner.cpp
-    Event/Cursor/EllipseMinorOuter.cpp
-    Event/Cursor/PositionXOuter.cpp
-    Event/Cursor/PositionYOuter.cpp
-    Event/Cursor/PositionX.cpp
-    Event/Cursor/PositionY.cpp
-    Event/Cursor/WheelDown.cpp
-    Event/Cursor/WheelUp.cpp
+    Event/Pressable/ButtonType.cpp
+    Event/Pressable/Button.cpp
+    Event/Pointer/Multitouch.cpp
+    Event/Pointer/Orientation.cpp
+    Event/Pointer/EllipseMajorInner.cpp
+    Event/Pointer/EllipseMajorOuter.cpp
+    Event/Pointer/EllipseMinorInner.cpp
+    Event/Pointer/EllipseMinorOuter.cpp
+    Event/Pointer/PositionXOuter.cpp
+    Event/Pointer/PositionYOuter.cpp
+    Event/Pointer/PositionX.cpp
+    Event/Pointer/PositionY.cpp
+    Event/Pointer/WheelDown.cpp
+    Event/Pointer/WheelUp.cpp
     Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp

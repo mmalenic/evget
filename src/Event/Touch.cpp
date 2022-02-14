@@ -24,16 +24,16 @@
 
 Event::Touch::TouchBuilder::TouchBuilder() :
     _time{std::make_unique<Common::Time>()},
-    _positionX{std::make_unique<Cursor::PositionX>()},
-    _positionY{std::make_unique<Cursor::PositionY>()},
-    _ellipseMajorInner{std::make_unique<Cursor::EllipseMajorInner>()},
-    _ellipseMinorInner{std::make_unique<Cursor::EllipseMinorInner>()},
-    _orientation{std::make_unique<Cursor::Orientation>()},
-    _positionXOuter{std::make_unique<Cursor::PositionXOuter>()},
-    _positionYOuter{std::make_unique<Cursor::PositionYOuter>()},
-    _ellipseMajorOuter{std::make_unique<Cursor::EllipseMajorOuter>()},
-    _ellipseMinorOuter{std::make_unique<Cursor::EllipseMinorOuter>()},
-    _multitouch{std::make_unique<Cursor::Multitouch>()}
+    _positionX{std::make_unique<Pointer::PositionX>()},
+    _positionY{std::make_unique<Pointer::PositionY>()},
+    _ellipseMajorInner{std::make_unique<Pointer::EllipseMajorInner>()},
+    _ellipseMinorInner{std::make_unique<Pointer::EllipseMinorInner>()},
+    _orientation{std::make_unique<Pointer::Orientation>()},
+    _positionXOuter{std::make_unique<Pointer::PositionXOuter>()},
+    _positionYOuter{std::make_unique<Pointer::PositionYOuter>()},
+    _ellipseMajorOuter{std::make_unique<Pointer::EllipseMajorOuter>()},
+    _ellipseMinorOuter{std::make_unique<Pointer::EllipseMinorOuter>()},
+    _multitouch{std::make_unique<Pointer::Multitouch>()}
     {
 }
 
@@ -43,52 +43,52 @@ Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::time(std::chrono::nanose
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionX(int x) {
-    _positionX = std::make_unique<Cursor::PositionX>(x);
+    _positionX = std::make_unique<Pointer::PositionX>(x);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionY(int y) {
-    _positionY = std::make_unique<Cursor::PositionY>(y);
+    _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMajorInner(int width) {
-    _ellipseMajorInner = std::make_unique<Cursor::EllipseMajorInner>(width);
+    _ellipseMajorInner = std::make_unique<Pointer::EllipseMajorInner>(width);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMinorInner(int width) {
-    _ellipseMinorInner = std::make_unique<Cursor::EllipseMinorInner>(width);
+    _ellipseMinorInner = std::make_unique<Pointer::EllipseMinorInner>(width);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::orientation(int orientation) {
-    _orientation = std::make_unique<Cursor::Orientation>(orientation);
+    _orientation = std::make_unique<Pointer::Orientation>(orientation);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionXOuter(int x) {
-    _positionXOuter = std::make_unique<Cursor::PositionXOuter>(x);
+    _positionXOuter = std::make_unique<Pointer::PositionXOuter>(x);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionYOuter(int y) {
-    _positionYOuter = std::make_unique<Cursor::PositionYOuter>(y);
+    _positionYOuter = std::make_unique<Pointer::PositionYOuter>(y);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMajorOuter(int width) {
-    _ellipseMajorOuter = std::make_unique<Cursor::EllipseMajorOuter>(width);
+    _ellipseMajorOuter = std::make_unique<Pointer::EllipseMajorOuter>(width);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMinorOuter(int width) {
-    _ellipseMinorOuter = std::make_unique<Cursor::EllipseMinorOuter>(width);
+    _ellipseMinorOuter = std::make_unique<Pointer::EllipseMinorOuter>(width);
     return *this;
 }
 
 Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::multitouch(int id) {
-    _multitouch = std::make_unique<Cursor::Multitouch>(id);
+    _multitouch = std::make_unique<Pointer::Multitouch>(id);
     return *this;
 }
 

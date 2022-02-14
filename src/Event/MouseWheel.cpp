@@ -25,8 +25,8 @@
 Event::MouseWheel::MouseWheelBuilder::MouseWheelBuilder() :
 _time{std::make_unique<Common::Time>()},
 _type{std::make_unique<Common::DeviceType>()},
-_wheelDown{std::make_unique<Cursor::WheelDown>()},
-_wheelUp{std::make_unique<Cursor::WheelUp>()} {
+_wheelDown{std::make_unique<Pointer::WheelDown>()},
+_wheelUp{std::make_unique<Pointer::WheelUp>()} {
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -35,12 +35,12 @@ Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::time
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelDown(double amount) {
-    _wheelDown = std::make_unique<Cursor::WheelDown>(amount);
+    _wheelDown = std::make_unique<Pointer::WheelDown>(amount);
     return *this;
 }
 
 Event::MouseWheel::MouseWheelBuilder& Event::MouseWheel::MouseWheelBuilder::wheelUp(double amount) {
-    _wheelUp = std::make_unique<Cursor::WheelUp>(amount);
+    _wheelUp = std::make_unique<Pointer::WheelUp>(amount);
     return *this;
 }
 

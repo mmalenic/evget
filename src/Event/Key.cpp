@@ -24,10 +24,10 @@
 
 Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
-_press{std::make_unique<Button::Press>()},
-_release{std::make_unique<Button::Release>()},
-_repeat{std::make_unique<Button::Repeat>()},
-_character{std::make_unique<Button::Character>()} {
+_press{std::make_unique<Pressable::Press>()},
+_release{std::make_unique<Pressable::Release>()},
+_repeat{std::make_unique<Pressable::Repeat>()},
+_character{std::make_unique<Pressable::Character>()} {
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -36,22 +36,22 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds na
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::press(std::string button) {
-    _press = std::make_unique<Button::Press>(std::move(button));
+    _press = std::make_unique<Pressable::Press>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::release(std::string button) {
-    _release = std::make_unique<Button::Release>(std::move(button));
+    _release = std::make_unique<Pressable::Release>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::repeat(std::string button) {
-    _repeat = std::make_unique<Button::Repeat>(std::move(button));
+    _repeat = std::make_unique<Pressable::Repeat>(std::move(button));
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(char character) {
-    _character = std::make_unique<Button::Character>(character);
+    _character = std::make_unique<Pressable::Character>(character);
     return *this;
 }
 

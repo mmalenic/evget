@@ -25,8 +25,8 @@
 Event::MouseMove::MouseMoveBuilder::MouseMoveBuilder() :
 _time{std::make_unique<Common::Time>()},
 _type{std::make_unique<Common::DeviceType>()},
-_positionX{std::make_unique<Cursor::PositionX>()},
-_positionY{std::make_unique<Cursor::PositionY>()} {
+_positionX{std::make_unique<Pointer::PositionX>()},
+_positionY{std::make_unique<Pointer::PositionY>()} {
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
@@ -35,12 +35,12 @@ Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::time(std
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionX(double x) {
-    _positionX = std::make_unique<Cursor::PositionX>(x);
+    _positionX = std::make_unique<Pointer::PositionX>(x);
     return *this;
 }
 
 Event::MouseMove::MouseMoveBuilder& Event::MouseMove::MouseMoveBuilder::positionY(double y) {
-    _positionY = std::make_unique<Cursor::PositionY>(y);
+    _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 

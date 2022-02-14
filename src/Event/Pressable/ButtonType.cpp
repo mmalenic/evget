@@ -1,0 +1,40 @@
+// MIT License
+//
+// Copyright (c) 2021 Marko Malenic
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include "evget/Event/Pressable/ButtonType.h"
+
+Event::Pressable::ButtonType::ButtonType(std::string type) : AbstractField{"ButtonType", std::move(type)} {
+}
+
+Event::Pressable::ButtonType::ButtonType() : ButtonType{""} {
+}
+
+std::unique_ptr<Event::Pressable::ButtonType> Event::Pressable::ButtonType::createButtonType(Action action) {
+    switch (action) {
+    case Action::Press:
+        return std::make_unique<ButtonType>("Press");;
+    case Action::Release:
+        return std::make_unique<ButtonType>("Release");
+    case Action::Repeat:
+        return std::make_unique<ButtonType>("Repeat");
+    }
+}

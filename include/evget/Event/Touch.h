@@ -26,16 +26,16 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Cursor/PositionX.h"
-#include "evget/Event/Cursor/PositionY.h"
-#include "evget/Event/Cursor/EllipseMajorInner.h"
-#include "evget/Event/Cursor/EllipseMinorInner.h"
-#include "evget/Event/Cursor/PositionXOuterTest.h"
-#include "evget/Event/Cursor/PositionYOuterTest.h"
-#include "evget/Event/Cursor/EllipseMajorOuter.h"
-#include "evget/Event/Cursor/EllipseMinorOuter.h"
-#include "evget/Event/Cursor/Orientation.h"
-#include "evget/Event/Cursor/Multitouch.h"
+#include "evget/Event/Pointer/PositionX.h"
+#include "evget/Event/Pointer/PositionY.h"
+#include "evget/Event/Pointer/EllipseMajorInner.h"
+#include "evget/Event/Pointer/EllipseMinorInner.h"
+#include "evget/Event/Pointer/PositionXOuterTest.h"
+#include "evget/Event/Pointer/PositionYOuterTest.h"
+#include "evget/Event/Pointer/EllipseMajorOuter.h"
+#include "evget/Event/Pointer/EllipseMinorOuter.h"
+#include "evget/Event/Pointer/Orientation.h"
+#include "evget/Event/Pointer/Multitouch.h"
 
 namespace Event {
     /**
@@ -111,16 +111,16 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Cursor::PositionX> _positionX;
-            std::unique_ptr<Cursor::PositionY> _positionY;
-            std::unique_ptr<Cursor::EllipseMajorInner> _ellipseMajorInner;
-            std::unique_ptr<Cursor::EllipseMinorInner> _ellipseMinorInner;
-            std::unique_ptr<Cursor::Orientation> _orientation;
-            std::unique_ptr<Cursor::PositionXOuter> _positionXOuter;
-            std::unique_ptr<Cursor::PositionYOuter> _positionYOuter;
-            std::unique_ptr<Cursor::EllipseMajorOuter> _ellipseMajorOuter;
-            std::unique_ptr<Cursor::EllipseMinorOuter> _ellipseMinorOuter;
-            std::unique_ptr<Cursor::Multitouch> _multitouch;
+            std::unique_ptr<Pointer::PositionX> _positionX;
+            std::unique_ptr<Pointer::PositionY> _positionY;
+            std::unique_ptr<Pointer::EllipseMajorInner> _ellipseMajorInner;
+            std::unique_ptr<Pointer::EllipseMinorInner> _ellipseMinorInner;
+            std::unique_ptr<Pointer::Orientation> _orientation;
+            std::unique_ptr<Pointer::PositionXOuter> _positionXOuter;
+            std::unique_ptr<Pointer::PositionYOuter> _positionYOuter;
+            std::unique_ptr<Pointer::EllipseMajorOuter> _ellipseMajorOuter;
+            std::unique_ptr<Pointer::EllipseMinorOuter> _ellipseMinorOuter;
+            std::unique_ptr<Pointer::Multitouch> _multitouch;
         };
 
         /**

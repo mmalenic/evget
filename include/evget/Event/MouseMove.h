@@ -28,8 +28,8 @@
 #include <chrono>
 #include <optional>
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Cursor/PositionX.h"
-#include "evget/Event/Cursor/PositionY.h"
+#include "evget/Event/Pointer/PositionX.h"
+#include "evget/Event/Pointer/PositionY.h"
 #include "evget/Event/Common/DeviceType.h"
 
 namespace Event {
@@ -72,8 +72,8 @@ namespace Event {
         private:
             std::unique_ptr<Common::Time> _time;
             std::unique_ptr<Common::DeviceType> _type;
-            std::unique_ptr<Cursor::PositionX> _positionX;
-            std::unique_ptr<Cursor::PositionY> _positionY;
+            std::unique_ptr<Pointer::PositionX> _positionX;
+            std::unique_ptr<Pointer::PositionY> _positionY;
         };
 
         /**

@@ -27,10 +27,10 @@
 Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _time{std::make_unique<Common::Time>()},
     _type{std::make_unique<Common::DeviceType>()},
-    _positionX{std::make_unique<Cursor::PositionX>()},
-    _positionY{std::make_unique<Cursor::PositionY>()},
-    _press{std::make_unique<Button::Press>()},
-    _release{std::make_unique<Button::Release>()}
+    _positionX{std::make_unique<Pointer::PositionX>()},
+    _positionY{std::make_unique<Pointer::PositionY>()},
+    _press{std::make_unique<Pressable::Press>()},
+    _release{std::make_unique<Pressable::Release>()}
 {
 }
 
@@ -40,22 +40,22 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::time
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionX(double x) {
-    _positionX = std::make_unique<Cursor::PositionX>(x);
+    _positionX = std::make_unique<Pointer::PositionX>(x);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionY(double y) {
-    _positionY = std::make_unique<Cursor::PositionY>(y);
+    _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::press(std::string button) {
-    _press = std::make_unique<Button::Press>(std::move(button));
+    _press = std::make_unique<Pressable::Press>(std::move(button));
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::release(std::string button) {
-    _release = std::make_unique<Button::Release>(std::move(button));
+    _release = std::make_unique<Pressable::Release>(std::move(button));
     return *this;
 }
 

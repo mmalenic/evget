@@ -26,8 +26,8 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Cursor/WheelDown.h"
-#include "evget/Event/Cursor/WheelUp.h"
+#include "evget/Event/Pointer/WheelDown.h"
+#include "evget/Event/Pointer/WheelUp.h"
 #include "evget/Event/Common/DeviceType.h"
 
 namespace Event {
@@ -70,8 +70,8 @@ namespace Event {
         private:
             std::unique_ptr<Common::Time> _time;
             std::unique_ptr<Common::DeviceType> _type;
-            std::unique_ptr<Cursor::WheelDown> _wheelDown;
-            std::unique_ptr<Cursor::WheelUp> _wheelUp;
+            std::unique_ptr<Pointer::WheelDown> _wheelDown;
+            std::unique_ptr<Pointer::WheelUp> _wheelUp;
         };
 
         /**

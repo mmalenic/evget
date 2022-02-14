@@ -296,30 +296,29 @@ add_program(
     include/evget/Event/Field.h
     include/evget/Event/MouseMove.h
     include/evget/Event/MouseClick.h
-    include/evget/Event/Key.h
     include/evget/Event/MouseWheel.h
-    include/evget/Event/Button/Character.h
-    include/evget/Event/Button/Press.h
-    include/evget/Event/Button/Release.h
-    include/evget/Event/Button/Repeat.h
+    include/evget/Event/Pressable/Character.h
+    include/evget/Event/Pressable/Press.h
+    include/evget/Event/Pressable/Release.h
+    include/evget/Event/Pressable/Repeat.h
     include/evget/Event/Common/Time.h
-    include/evget/Event/Cursor/Multitouch.h
-    include/evget/Event/Cursor/Orientation.h
-    include/evget/Event/Cursor/EllipseMajorInner.h
-    include/evget/Event/Cursor/EllipseMajorOuter.h
-    include/evget/Event/Cursor/EllipseMinorInner.h
-    include/evget/Event/Cursor/EllipseMinorOuter.h
-    include/evget/Event/Cursor/PositionXOuterTest.h
-    include/evget/Event/Cursor/PositionYOuterTest.h
-    include/evget/Event/Cursor/PositionX.h
-    include/evget/Event/Cursor/PositionY.h
-    include/evget/Event/Cursor/WheelDown.h
-    include/evget/Event/Cursor/WheelUp.h
+    include/evget/Event/Pointer/Multitouch.h
+    include/evget/Event/Pointer/Orientation.h
+    include/evget/Event/Pointer/EllipseMajorInner.h
+    include/evget/Event/Pointer/EllipseMajorOuter.h
+    include/evget/Event/Pointer/EllipseMinorInner.h
+    include/evget/Event/Pointer/EllipseMinorOuter.h
+    include/evget/Event/Pointer/PositionXOuterTest.h
+    include/evget/Event/Pointer/PositionYOuterTest.h
+    include/evget/Event/Pointer/PositionX.h
+    include/evget/Event/Pointer/PositionY.h
+    include/evget/Event/Pointer/WheelDown.h
+    include/evget/Event/Pointer/WheelUp.h
     include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
-    include/evget/Event/Button/ButtonType.h
-    include/evget/Event/Button/Action.h
-    include/evget/Event/Button/ButtonId.h
+    include/evget/Event/Pressable/ButtonType.h
+    include/evget/Event/Pressable/Action.h
+    include/evget/Event/Pressable/Button.h
     include/evget/Event/TableData.h
     include/evget/Event/Touch.h
     include/evget/EventListener.h

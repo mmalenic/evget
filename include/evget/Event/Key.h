@@ -26,10 +26,12 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Button/Press.h"
-#include "evget/Event/Button/Release.h"
-#include "evget/Event/Button/Repeat.h"
-#include "evget/Event/Button/Character.h"
+#include "evget/Event/Pressable/Press.h"
+#include "evget/Event/Pressable/Release.h"
+#include "evget/Event/Pressable/Repeat.h"
+#include "evget/Event/Pressable/Character.h"
+#include "evget/Event/Pressable/Action.h"
+#include "evget/Event/Pressable/Button.h"
 
 namespace Event {
     /**
@@ -49,19 +51,14 @@ namespace Event {
             KeyBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
-             * Add press.
+             * Add action.
              */
-            KeyBuilder& press(std::string button);
+            KeyBuilder& action(Pressable::Action action);
 
             /**
-             * Add release.
+             * Add id.
              */
-            KeyBuilder& release(std::string button);
-
-            /**
-             * Add repeat.
-             */
-            KeyBuilder& repeat(std::string button);
+            KeyBuilder& keyId(std::string id);
 
             /**
              * Add character.
@@ -75,10 +72,9 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Button::Press> _press;
-            std::unique_ptr<Button::Release> _release;
-            std::unique_ptr<Button::Repeat> _repeat;
-            std::unique_ptr<Button::Character> _character;
+            std::unique_ptr<Pressable::Action> _action;
+            std::unique_ptr<Pressable::Button> _id;
+            std::unique_ptr<Pressable::Character> _character;
         };
 
         /**

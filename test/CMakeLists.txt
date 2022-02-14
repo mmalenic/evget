@@ -7,24 +7,24 @@ add_program(
     CommandLine/CommandLineOptionValidatedTest.cpp
     CommandLine/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
-    Event/Button/CharacterTest.cpp
-    Event/Button/PressTest.cpp
-    Event/Button/ReleaseTest.cpp
-    Event/Button/RepeatTest.cpp
-    Event/Cursor/PositionXTest.cpp
-    Event/Cursor/PositionYTest.cpp
-    Event/Cursor/WheelDown.cpp
-    Event/Cursor/WheelUp.cpp
-    Event/Cursor/EllipseMajorInnerTest.cpp
-    Event/Cursor/EllipseMajorOuterTest.cpp
-    Event/Cursor/EllipseMinorInnerTest.cpp
-    Event/Cursor/EllipseMinorOuterTest.cpp
-    Event/Cursor/MultitouchTest.cpp
-    Event/Cursor/OrientationTest.cpp
-    Event/Button/ButtonTypeTest.cpp
-    Event/Button/ButtonIdTest.cpp
-    Event/Cursor/PositionXOuterTest.cpp
-    Event/Cursor/PositionYOuterTest.cpp
+    Event/Pressable/CharacterTest.cpp
+    Event/Pressable/PressTest.cpp
+    Event/Pressable/ReleaseTest.cpp
+    Event/Pressable/RepeatTest.cpp
+    Event/Pointer/PositionXTest.cpp
+    Event/Pointer/PositionYTest.cpp
+    Event/Pointer/WheelDown.cpp
+    Event/Pointer/WheelUp.cpp
+    Event/Pointer/EllipseMajorInnerTest.cpp
+    Event/Pointer/EllipseMajorOuterTest.cpp
+    Event/Pointer/EllipseMinorInnerTest.cpp
+    Event/Pointer/EllipseMinorOuterTest.cpp
+    Event/Pointer/MultitouchTest.cpp
+    Event/Pointer/OrientationTest.cpp
+    Event/Pressable/ButtonTypeTest.cpp
+    Event/Pressable/ButtonTest.cpp
+    Event/Pointer/PositionXOuterTest.cpp
+    Event/Pointer/PositionYOuterTest.cpp
     Event/Common/TypeTest.cpp
     Event/TableDataTest.cpp
     Event/MouseMoveTest.cpp
