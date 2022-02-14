@@ -7,9 +7,10 @@ add_program(
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/Pressable/ButtonType.cpp
+    Event/Pressable/ButtonAction.cpp
     Event/Pressable/Button.cpp
     Event/Pointer/Multitouch.cpp
+    Event/Pointer/WheelDirection.cpp
     Event/Pointer/Orientation.cpp
     Event/Pointer/EllipseMajorInner.cpp
     Event/Pointer/EllipseMajorOuter.cpp

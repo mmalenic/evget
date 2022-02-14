@@ -298,6 +298,8 @@ add_program(
     include/evget/Event/MouseClick.h
     include/evget/Event/MouseWheel.h
     include/evget/Event/Pressable/Character.h
+    include/evget/Event/Pointer/WheelDirection.h
+    include/evget/Event/Pointer/Direction.h
     include/evget/Event/Common/Time.h
     include/evget/Event/Pointer/Multitouch.h
     include/evget/Event/Pointer/Orientation.h
@@ -313,7 +315,7 @@ add_program(
     include/evget/Event/Pointer/WheelUp.h
     include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
-    include/evget/Event/Pressable/ButtonType.h
+    include/evget/Event/Pressable/ButtonAction.h
     include/evget/Event/Pressable/Action.h
     include/evget/Event/Pressable/Button.h
     include/evget/Event/TableData.h

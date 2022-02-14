@@ -20,15 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_ACTION_H
-#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_ACTION_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Pressable/ButtonAction.h"
 
-namespace Event::Pressable {
-    enum class Action {
-        Press,
-        Release,
-        Repeat
-    };
+namespace EventTestUtils = TestUtils::EventTestUtils;
+
+TEST(ButtonActionTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Pressable::ButtonAction>("Press", "ButtonAction", "Press");
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_ACTION_H
+TEST(ButtonActionTest, Press) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Press), "ButtonAction", "Press");
+}
+
+TEST(ButtonActionTest, Release) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Release), "ButtonAction", "Release");
+}
+
+TEST(ButtonActionTest, Repeat) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Repeat), "ButtonAction", "Repeat");
+}

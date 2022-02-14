@@ -32,7 +32,7 @@
 #include "evget/Event/Pressable/Character.h"
 #include "evget/Event/Pressable/Action.h"
 #include "evget/Event/Pressable/Button.h"
-#include "evget/Event/Pressable/ButtonType.h"
+#include "evget/Event/Pressable/ButtonAction.h"
 
 namespace Event {
     /**
@@ -73,7 +73,7 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Pressable::ButtonType> _buttonType;
+            std::unique_ptr<Pressable::ButtonAction> _buttonType;
             std::unique_ptr<Pressable::Button> _button;
             std::unique_ptr<Pressable::Character> _character;
         };

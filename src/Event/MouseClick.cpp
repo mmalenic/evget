@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include "evget/Event/MouseClick.h"
-#include "evget/Event/Pressable/ButtonType.h"
+#include "evget/Event/Pressable/ButtonAction.h"
 
 #include <utility>
 
@@ -30,7 +30,7 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _type{std::make_unique<Common::DeviceType>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
-    _buttonType{std::make_unique<Pressable::ButtonType>()},
+    _buttonType{std::make_unique<Pressable::ButtonAction>()},
     _button{std::make_unique<Pressable::Button>()}
 {
 }
@@ -51,7 +51,7 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::posi
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::action(Pressable::Action action) {
-    _buttonType = Event::Pressable::ButtonType::createButtonType(action);
+    _buttonType = Event::Pressable::ButtonAction::createButtonAction(action);
     return *this;
 }
 

@@ -20,24 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H
-#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELDIRECTION_H
+#define EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELDIRECTION_H
 
 #include <memory>
 #include "evget/Event/AbstractField.h"
-#include "Action.h"
+#include "evget/Event/Pointer/Direction.h"
 
-namespace Event::Pressable {
-    class ButtonType : public AbstractField {
+namespace Event::Pointer {
+    class WheelDirection : public AbstractField {
     public:
         /**
-         * Create a type based on the device type enum.
+         * Create a WheelDirection based on Direction enum.
          */
-        static std::unique_ptr<ButtonType> createButtonType(Action action);
+        static std::unique_ptr<WheelDirection> createWheelDirection(Direction direction);
 
-        ButtonType();
-        explicit ButtonType(std::string type);
+        WheelDirection();
+        explicit WheelDirection(std::string direction);
     };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELDIRECTION_H

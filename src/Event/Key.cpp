@@ -21,11 +21,11 @@
 // SOFTWARE.
 
 #include "evget/Event/Key.h"
-#include "evget/Event/Pressable/ButtonType.h"
+#include "evget/Event/Pressable/ButtonAction.h"
 
 Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
-_buttonType{std::make_unique<Pressable::ButtonType>()},
+_buttonType{std::make_unique<Pressable::ButtonAction>()},
 _button{std::make_unique<Pressable::Button>()},
 _character{std::make_unique<Pressable::Character>()} {
 }
@@ -36,7 +36,7 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds na
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Pressable::Action action) {
-    _buttonType = Event::Pressable::ButtonType::createButtonType(action);
+    _buttonType = Event::Pressable::ButtonAction::createButtonAction(action);
     return *this;
 }
 

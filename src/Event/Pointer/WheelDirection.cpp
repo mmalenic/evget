@@ -20,21 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pressable/ButtonType.h"
+#include "evget/Event/Pointer/WheelDirection.h"
 
-Event::Pressable::ButtonType::ButtonType(std::string type) : AbstractField{"ButtonType", std::move(type)} {
+Event::Pointer::WheelDirection::WheelDirection(std::string direction) : AbstractField{"WheelDirection", std::move(direction)} {
 }
 
-Event::Pressable::ButtonType::ButtonType() : ButtonType{""} {
+Event::Pointer::WheelDirection::WheelDirection() : WheelDirection{""} {
 }
 
-std::unique_ptr<Event::Pressable::ButtonType> Event::Pressable::ButtonType::createButtonType(Action action) {
-    switch (action) {
-    case Action::Press:
-        return std::make_unique<ButtonType>("Press");;
-    case Action::Release:
-        return std::make_unique<ButtonType>("Release");
-    case Action::Repeat:
-        return std::make_unique<ButtonType>("Repeat");
+std::unique_ptr<Event::Pointer::WheelDirection> Event::Pointer::WheelDirection::createWheelDirection(Direction direction) {
+    switch (direction) {
+    case Direction::Up:
+        return std::make_unique<WheelDirection>("Up");;
+    case Direction::Down:
+        return std::make_unique<WheelDirection>("Down");
+    case Direction::Left:
+        return std::make_unique<WheelDirection>("Left");
+    case Direction::Right:
+        return std::make_unique<WheelDirection>("Right");
     }
 }

@@ -20,25 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
+#define EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 
-#include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pressable/ButtonType.h"
-
-namespace EventTestUtils = TestUtils::EventTestUtils;
-
-TEST(ButtonTypeTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pressable::ButtonType>("Press", "ButtonType", "Press");
+namespace Event::Pointer {
+    enum class Direction {
+        Up,
+        Down,
+        Left,
+        Right
+    };
 }
 
-TEST(ButtonTypeTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonType::createButtonType(Event::Pressable::Action::Press), "ButtonType", "Press");
-}
-
-TEST(ButtonTypeTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonType::createButtonType(Event::Pressable::Action::Release), "ButtonType", "Release");
-}
-
-TEST(ButtonTypeTest, Repeat) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonType::createButtonType(Event::Pressable::Action::Repeat), "ButtonType", "Repeat");
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H

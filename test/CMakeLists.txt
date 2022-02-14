@@ -8,6 +8,7 @@ add_program(
     CommandLine/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
     Event/Pressable/CharacterTest.cpp
+    Event/Pointer/WheelDirectionTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
     Event/Pointer/WheelDown.cpp
@@ -18,7 +19,7 @@ add_program(
     Event/Pointer/EllipseMinorOuterTest.cpp
     Event/Pointer/MultitouchTest.cpp
     Event/Pointer/OrientationTest.cpp
-    Event/Pressable/ButtonTypeTest.cpp
+    Event/Pressable/ButtonActionTest.cpp
     Event/Pressable/ButtonTest.cpp
     Event/Pointer/PositionXOuterTest.cpp
     Event/Pointer/PositionYOuterTest.cpp
