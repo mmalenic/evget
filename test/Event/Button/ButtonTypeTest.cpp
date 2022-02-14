@@ -28,23 +28,17 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ButtonTypeTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Button::ButtonType>("Button", "ButtonType", "Button");
+    EventTestUtils::fieldValueAndName<Event::Button::ButtonType>("Press", "ButtonType", "Press");
 }
 
 TEST(ButtonTypeTest, Press) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Press);
-    ASSERT_EQ("ButtonType", type->getName());
-    ASSERT_EQ("Press", type->getEntry());
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Press), "ButtonType", "Press");
 }
 
 TEST(ButtonTypeTest, Release) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Release);
-    ASSERT_EQ("ButtonType", type->getName());
-    ASSERT_EQ("Release", type->getEntry());
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Release), "ButtonType", "Release");
 }
 
 TEST(ButtonTypeTest, Repeat) { // NOLINT(cert-err58-cpp)
-    auto type = Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Repeat);
-    ASSERT_EQ("ButtonType", type->getName());
-    ASSERT_EQ("Repeat", type->getEntry());
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonType::createButtonType(Event::Button::ButtonAction::Repeat), "ButtonType", "Repeat");
 }
