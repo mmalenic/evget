@@ -11,6 +11,7 @@ add_program(
     Event/Data.cpp
     Event/Field.cpp
     Event/Button/ButtonType.cpp
+    Event/Button/ButtonId.cpp
     Event/Cursor/Multitouch.cpp
     Event/Cursor/Orientation.cpp
     Event/Cursor/EllipseMajorInner.cpp

@@ -22,6 +22,7 @@ add_program(
     Event/Cursor/MultitouchTest.cpp
     Event/Cursor/OrientationTest.cpp
     Event/Button/ButtonTypeTest.cpp
+    Event/Button/ButtonIdTest.cpp
     Event/Cursor/PositionXOuterTest.cpp
     Event/Cursor/PositionYOuterTest.cpp
     Event/Common/TypeTest.cpp
