@@ -20,13 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pressable/Button.h"
+#include "evget/Event/Button/ButtonAction.h"
 
-Event::Pressable::Button::Button(std::string button) : AbstractField{"Button", std::move(button)} {
+Event::Button::ButtonAction::ButtonAction(std::string type) : AbstractField{"ButtonAction", std::move(type)} {
 }
 
-Event::Pressable::Button::Button(int button) : Button{std::to_string(button)} {
+Event::Button::ButtonAction::ButtonAction() : ButtonAction{""} {
 }
 
-Event::Pressable::Button::Button() : Button{""} {
+std::unique_ptr<Event::Button::ButtonAction> Event::Button::ButtonAction::createButtonAction(Action action) {
+    switch (action) {
+    case Action::Press:
+        return std::make_unique<ButtonAction>("Press");;
+    case Action::Release:
+        return std::make_unique<ButtonAction>("Release");
+    case Action::Repeat:
+        return std::make_unique<ButtonAction>("Repeat");
+    }
 }

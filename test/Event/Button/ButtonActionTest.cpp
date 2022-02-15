@@ -22,22 +22,22 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pressable/ButtonAction.h"
+#include "evget/Event/Button/ButtonAction.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ButtonActionTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pressable::ButtonAction>("Press", "ButtonAction", "Press");
+    EventTestUtils::fieldValueAndName<Event::Button::ButtonAction>("Press", "ButtonAction", "Press");
 }
 
 TEST(ButtonActionTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Press), "ButtonAction", "Press");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonAction::createButtonAction(Event::Button::Action::Press), "ButtonAction", "Press");
 }
 
 TEST(ButtonActionTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Release), "ButtonAction", "Release");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonAction::createButtonAction(Event::Button::Action::Release), "ButtonAction", "Release");
 }
 
 TEST(ButtonActionTest, Repeat) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Pressable::ButtonAction::createButtonAction(Event::Pressable::Action::Repeat), "ButtonAction", "Repeat");
+    EventTestUtils::fieldValueAndName(*Event::Button::ButtonAction::createButtonAction(Event::Button::Action::Repeat), "ButtonAction", "Repeat");
 }

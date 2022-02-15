@@ -3,12 +3,12 @@ add_program(
     SRCS
     CommandLine/OptionFlag.cpp
     CommandLine/Parser.cpp
-    Event/Pressable/Character.cpp
+    Event/Button/Character.cpp
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/Pressable/ButtonAction.cpp
-    Event/Pressable/Button.cpp
+    Event/Button/ButtonAction.cpp
+    Event/Button/ButtonId.cpp
     Event/Pointer/Multitouch.cpp
     Event/Pointer/WheelDirection.cpp
     Event/Pointer/WheelAmount.cpp
@@ -21,7 +21,7 @@ add_program(
     Event/Pointer/PositionYOuter.cpp
     Event/Pointer/PositionX.cpp
     Event/Pointer/PositionY.cpp
-    Event/Pressable/ButtonName.cpp
+    Event/Button/ButtonName.cpp
     Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp

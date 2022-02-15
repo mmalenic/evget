@@ -26,10 +26,10 @@
 #include <chrono>
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
-#include "evget/Event/Pressable/Character.h"
-#include "evget/Event/Pressable/Action.h"
-#include "evget/Event/Pressable/Button.h"
-#include "evget/Event/Pressable/ButtonAction.h"
+#include "evget/Event/Button/Character.h"
+#include "evget/Event/Button/Action.h"
+#include "evget/Event/Button/ButtonId.h"
+#include "evget/Event/Button/ButtonAction.h"
 
 namespace Event {
     /**
@@ -51,7 +51,7 @@ namespace Event {
             /**
              * Add action.
              */
-            KeyBuilder& action(Pressable::Action action);
+            KeyBuilder& action(Button::Action action);
 
             /**
              * Add id.
@@ -70,9 +70,9 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Pressable::ButtonAction> _buttonType;
-            std::unique_ptr<Pressable::Button> _button;
-            std::unique_ptr<Pressable::Character> _character;
+            std::unique_ptr<Button::ButtonAction> _buttonType;
+            std::unique_ptr<Button::ButtonId> _button;
+            std::unique_ptr<Button::Character> _character;
         };
 
         /**

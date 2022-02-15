@@ -46,7 +46,7 @@ TEST(MouseClickTest, PositionY) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(MouseClickTest, Action) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.action(Event::Pressable::Action::Press).build(), 4, "Press");
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.action(Event::Button::Action::Press).build(), 4, "Press");
 }
 
 TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)

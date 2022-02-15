@@ -30,7 +30,7 @@
 #include "evget/EventTransformer.h"
 #include "evget/Event/TableData.h"
 #include "evget/Event/Common/DeviceType.h"
-#include "evget/Event/Pressable/Action.h"
+#include "evget/Event/Button/Action.h"
 
 namespace evget {
 
@@ -48,7 +48,7 @@ namespace evget {
 
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
 
-        std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Pressable::Action action);
+        std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
         std::unique_ptr<Event::TableData> scrollEvent(evget::XInputEvent& event);
 
         void refreshDeviceIds();

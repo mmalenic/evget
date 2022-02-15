@@ -36,9 +36,9 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(e
 
         switch (type) {
         case XI_ButtonPress:
-            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Pressable::Action::Press);
+            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Button::Action::Press);
         case XI_ButtonRelease:
-            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Pressable::Action::Release);
+            return buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Button::Action::Release);
         case XI_KeyPress:break;
         case XI_KeyRelease:break;
         case XI_Motion:break;
@@ -70,7 +70,7 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(evget::XInputEven
     return event.getTimestamp() - *start;
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Pressable::Action action) {
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action) {
     if (!devices.contains(event.deviceid)) {
         return {};
     }

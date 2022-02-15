@@ -20,10 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pressable/ButtonName.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
+#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
 
-Event::Pressable::ButtonName::ButtonName(std::string button) : AbstractField{"ButtonName", std::move(button)} {
+#include "evget/Event/AbstractField.h"
+#include <string>
+
+namespace Event::Button {
+    class Character : public AbstractField {
+    public:
+        Character();
+        explicit Character(std::string character);
+        explicit Character(char character);
+    };
 }
 
-Event::Pressable::ButtonName::ButtonName() : ButtonName{""} {
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H

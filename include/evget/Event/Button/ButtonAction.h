@@ -20,18 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H
-#define EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H
+#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H
 
+#include <memory>
 #include "evget/Event/AbstractField.h"
-#include <string>
+#include "Action.h"
 
-namespace Event::Pressable {
-    class ButtonName : public AbstractField {
+namespace Event::Button {
+    class ButtonAction : public AbstractField {
     public:
-        ButtonName();
-        explicit ButtonName(std::string button);
+        /**
+         * Create a ButtonAction based on Action enum.
+         */
+        static std::unique_ptr<ButtonAction> createButtonAction(Action action);
+
+        ButtonAction();
+        explicit ButtonAction(std::string type);
     };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONTYPE_H

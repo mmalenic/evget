@@ -31,7 +31,7 @@ TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(KeyTest, Action) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Pressable::Action::Press).build(), 1, "Press");
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Button::Action::Press).build(), 1, "Press");
 }
 
 TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)

@@ -20,19 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
-#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Button/ButtonId.h"
 
-#include "evget/Event/AbstractField.h"
-#include <string>
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-namespace Event::Pressable {
-    class Character : public AbstractField {
-    public:
-        Character();
-        explicit Character(std::string character);
-        explicit Character(char character);
-    };
+TEST(ButtonIdTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Button::ButtonId>(1, "ButtonId", "1");
 }
-
-#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_CHARACTER_H

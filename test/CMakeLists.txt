@@ -7,20 +7,20 @@ add_program(
     CommandLine/CommandLineOptionValidatedTest.cpp
     CommandLine/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
-    Event/Pressable/CharacterTest.cpp
+    Event/Button/CharacterTest.cpp
     Event/Pointer/WheelDirectionTest.cpp
     Event/Pointer/WheelAmountTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
-    Event/Pressable/ButtonNameTest.cpp
+    Event/Button/ButtonNameTest.cpp
     Event/Pointer/EllipseMajorInnerTest.cpp
     Event/Pointer/EllipseMajorOuterTest.cpp
     Event/Pointer/EllipseMinorInnerTest.cpp
     Event/Pointer/EllipseMinorOuterTest.cpp
     Event/Pointer/MultitouchTest.cpp
     Event/Pointer/OrientationTest.cpp
-    Event/Pressable/ButtonActionTest.cpp
-    Event/Pressable/ButtonTest.cpp
+    Event/Button/ButtonActionTest.cpp
+    Event/Button/ButtonIdTest.cpp
     Event/Pointer/PositionXOuterTest.cpp
     Event/Pointer/PositionYOuterTest.cpp
     Event/Common/TypeTest.cpp

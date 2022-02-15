@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pressable/ButtonName.h"
+#include "evget/Event/Button/ButtonName.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ButtonNameTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pressable::ButtonName>("name", "ButtonName", "name");
+    EventTestUtils::fieldValueAndName<Event::Button::ButtonName>("name", "ButtonName", "name");
 }

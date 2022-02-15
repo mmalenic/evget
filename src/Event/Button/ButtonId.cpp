@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pressable/Character.h"
+#include "evget/Event/Button/ButtonId.h"
 
-Event::Pressable::Character::Character() : Character{""} {
+Event::Button::ButtonId::ButtonId(std::string button) : AbstractField{"ButtonId", std::move(button)} {
 }
 
-Event::Pressable::Character::Character(std::string character) : AbstractField{"Character", std::move(character)} {
+Event::Button::ButtonId::ButtonId(int button) : ButtonId{std::to_string(button)} {
 }
 
-Event::Pressable::Character::Character(char character) : Character{std::string{character}} {
+Event::Button::ButtonId::ButtonId() : ButtonId{""} {
 }

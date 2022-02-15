@@ -20,12 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pressable/Character.h"
+#include "evget/Event/Button/ButtonName.h"
 
-namespace EventTestUtils = TestUtils::EventTestUtils;
+Event::Button::ButtonName::ButtonName(std::string button) : AbstractField{"ButtonName", std::move(button)} {
+}
 
-TEST(CharacterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pressable::Character>('a', "Character", "a");
+Event::Button::ButtonName::ButtonName() : ButtonName{""} {
 }
