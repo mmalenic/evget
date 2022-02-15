@@ -76,7 +76,7 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
     }
 
     Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail);
+    builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
     return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(event, "MouseClickSystemData", idToName[event.deviceid])).build();
 }
 
@@ -226,8 +226,6 @@ void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonI
 
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
             if (!buttonInfo.labels[i]) {
-                buttonMap[id][map[i]] = "None";
-            } else {
                 auto name = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), buttonInfo.labels[i]), XFree);
                 if (name) {
                     buttonMap[id][map[i]] = name.get();
