@@ -49,6 +49,10 @@ TEST(MouseClickTest, Action) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.action(Event::Button::Action::Press).build(), 4, "Press");
 }
 
-TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)
+TEST(MouseClickTest, Button) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.button(1).build(), 5, "1");
+}
+
+TEST(MouseClickTest, Name) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.name("name").build(), 6, "name");
 }

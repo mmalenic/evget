@@ -32,6 +32,7 @@
 #include "evget/Event/Button/Action.h"
 #include "evget/Event/Button/ButtonAction.h"
 #include "evget/Event/Button/ButtonId.h"
+#include "evget/Event/Button/ButtonName.h"
 
 namespace Event {
     /**
@@ -76,6 +77,11 @@ namespace Event {
             MouseClickBuilder& button(int button);
 
             /**
+             * Add name.
+             */
+            MouseClickBuilder& name(std::string name);
+
+            /**
              * Build mouse click event.
              */
             std::unique_ptr<MouseClick> build();
@@ -86,7 +92,8 @@ namespace Event {
             std::unique_ptr<Pointer::PositionX> _positionX;
             std::unique_ptr<Pointer::PositionY> _positionY;
             std::unique_ptr<Button::ButtonAction> _buttonType;
-            std::unique_ptr<Button::ButtonId> _button;
+            std::unique_ptr<Button::ButtonId> _buttonId;
+            std::unique_ptr<Button::ButtonName> _buttonName;
         };
 
         /**

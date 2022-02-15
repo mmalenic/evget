@@ -31,7 +31,8 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
     _buttonType{std::make_unique<Button::ButtonAction>()},
-    _button{std::make_unique<Button::ButtonId>()}
+    _buttonId{std::make_unique<Button::ButtonId>()},
+    _buttonName{std::make_unique<Button::ButtonName>()}
 {
 }
 
@@ -56,9 +57,15 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::acti
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(int button) {
-    _button = std::make_unique<Button::ButtonId>(button);
+    _buttonId = std::make_unique<Button::ButtonId>(button);
     return *this;
 }
+
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::name(std::string name) {
+    _buttonName = std::make_unique<Button::ButtonName>(name);
+    return *this;
+}
+
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::device(Event::Common::Device device) {
     _device = Event::Common::DeviceType::createType(device);
@@ -77,5 +84,5 @@ Event::MouseClick::MouseClick(
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._buttonType));
-    fields.emplace_back(std::move(builder._button));
+    fields.emplace_back(std::move(builder._buttonId));
 }
