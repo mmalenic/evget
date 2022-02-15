@@ -73,7 +73,7 @@ namespace Event {
             /**
              * Add id.
              */
-            MouseClickBuilder& button(std::string button);
+            MouseClickBuilder& button(int button);
 
             /**
              * Build mouse click event.

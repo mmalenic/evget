@@ -12,6 +12,7 @@ add_program(
     Event/Pointer/WheelAmountTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
+    Event/Pressable/ButtonNameTest.cpp
     Event/Pointer/EllipseMajorInnerTest.cpp
     Event/Pointer/EllipseMajorOuterTest.cpp
     Event/Pointer/EllipseMinorInnerTest.cpp

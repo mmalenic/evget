@@ -55,8 +55,8 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::acti
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(std::string button) {
-    _button = std::make_unique<Pressable::Button>(std::move(button));
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(int button) {
+    _button = std::make_unique<Pressable::Button>(button);
     return *this;
 }
 

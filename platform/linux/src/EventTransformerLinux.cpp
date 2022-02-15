@@ -76,7 +76,7 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
     }
 
     Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(time).action(action).positionX(event.root_x).positionY(event.root_y).device(devices[event.deviceid]);
+    builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail);
     return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(event, "MouseClickSystemData", idToName[event.deviceid])).build();
 }
 

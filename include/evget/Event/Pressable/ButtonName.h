@@ -20,20 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_SRC_EVENT_FIELD_H
-#define EVGET_SRC_EVENT_FIELD_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H
+#define EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H
 
-#include "AbstractField.h"
+#include "evget/Event/AbstractField.h"
+#include <string>
 
-namespace Event {
-    /**
-     * Generic implementation of abstract field.
-     */
-    class Field : public AbstractField {
+namespace Event::Pressable {
+    class ButtonName : public AbstractField {
     public:
-        explicit Field(std::string name);
-        Field(std::string name, std::string entry);
+        ButtonName();
+        explicit ButtonName(std::string button);
     };
 }
 
-#endif //EVGET_SRC_EVENT_FIELD_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_PRESSABLE_BUTTONNAME_H

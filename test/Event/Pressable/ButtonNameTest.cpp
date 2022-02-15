@@ -20,35 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include <gtest/gtest.h>
-#include "evget/Event/MouseClick.h"
 #include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Pressable/ButtonName.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(MouseClickTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
-}
-
-TEST(MouseClickTest, Device) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
-}
-
-TEST(MouseClickTest, PositionX) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.positionX(1).build(), 2, "1");
-}
-
-TEST(MouseClickTest, PositionY) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.positionY(1).build(), 3, "1");
-}
-
-TEST(MouseClickTest, Action) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.action(Event::Pressable::Action::Press).build(), 4, "Press");
-}
-
-TEST(MouseClickTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseClick::MouseClickBuilder{}.button(1).build(), 5, "1");
+TEST(ButtonNameTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Pressable::ButtonName>("name", "ButtonName", "name");
 }
