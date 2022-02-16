@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evget/Event/Field.h"
+#include "evget/Event/AbstractData.h"
 
 #include <utility>
 
@@ -28,4 +29,7 @@ Event::Field::Field(std::string name) : AbstractField{std::move(name)} {
 }
 
 Event::Field::Field(std::string name, std::string entry) : AbstractField{std::move(name), std::move(entry)} {
+}
+
+Event::Field::Field(std::string name, std::unique_ptr<AbstractData> entry) : AbstractField{std::move(name), std::move(entry) } {
 }

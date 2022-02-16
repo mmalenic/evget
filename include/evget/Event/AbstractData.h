@@ -29,10 +29,10 @@
 #include <variant>
 #include <optional>
 #include <memory>
-
 #include "AbstractField.h"
 
 namespace Event {
+
     /**
      * Event container to represent event data.
      */

@@ -44,6 +44,8 @@ namespace TestUtils::EventTestUtils {
 
     std::vector<std::unique_ptr<Event::AbstractField>> allocateFields(const std::string& name, const std::string& entry);
 
+    Event::Field constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
+
     void getAndSet(auto&& get, std::string entry) {
         std::string field_name = "field";
         Event::Data eventData{"name", allocateFields(field_name, entry)};

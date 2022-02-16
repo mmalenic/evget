@@ -24,20 +24,43 @@
 #define EVGET_INCLUDE_EVENT_DATA_FIELD_H
 
 #include <string>
+#include <variant>
+#include <memory>
 
 namespace Event {
-/**
- * Represents a field in an event.
- */
+
+    class AbstractData;
+
+    /**
+     * Represents a field in an event.
+     */
     class AbstractField {
     public:
+        using EntryOrData = std::variant<std::string, std::unique_ptr<AbstractData>>;
+
+        AbstractField(std::string name, std::unique_ptr<AbstractData> entry);
         AbstractField(std::string name, std::string entry);
         explicit AbstractField(std::string name);
+
+        /**
+         * Check if variant is the entry.
+         */
+        constexpr bool isEntry();
+
+        /**
+         * Check if variant is more data.
+         */
+        constexpr bool isData();
 
         /**
          * Get the entry.
          */
         [[nodiscard]] std::string getEntry() const;
+
+        /**
+         * Get the data.
+         */
+        [[nodiscard]] const AbstractData& getData() const;
 
         /**
          * Get the name.
@@ -46,19 +69,27 @@ namespace Event {
 
         virtual ~AbstractField() = 0;
 
+        AbstractField(const AbstractField &) = delete;
+
+        AbstractField &operator=(const AbstractField &) = delete;
+
     protected:
         AbstractField(AbstractField &&) noexcept = default;
 
         AbstractField &operator=(AbstractField &&) noexcept = default;
 
-        AbstractField(const AbstractField &) = default;
-
-        AbstractField &operator=(const AbstractField &) = default;
-
     private:
         std::string name;
-        std::string entry;
+        EntryOrData entry;
     };
+
+    constexpr bool Event::AbstractField::isEntry() {
+        return std::holds_alternative<std::string>(entry);
+    }
+
+    constexpr bool Event::AbstractField::isData() {
+        return std::holds_alternative<std::unique_ptr<AbstractData>>(entry);
+    }
 }
 
 #endif //EVGET_INCLUDE_EVENT_DATA_FIELD_H

@@ -34,6 +34,15 @@ TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
     EventTestUtils::fieldValueAndName(Event::Field{"name", "entry"}, "name", "entry");
 }
 
+TEST(FieldTest, ConstructorData) { // NOLINT(cert-err58-cpp)
+    auto field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
+
+    ASSERT_EQ("InnerField", field.getData().getAtPosition(0).getName());
+    ASSERT_EQ("InnerEntry", field.getData().getAtPosition(0).getEntry());
+    ASSERT_EQ("InnerData", field.getData().getName());
+    ASSERT_EQ("OuterField", field.getName());
+}
+
 TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
     Event::Field field{"name", "entry"};
     ASSERT_EQ("name", field.getName());
@@ -42,4 +51,16 @@ TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
 TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
     Event::Field field{"name", "entry"};
     ASSERT_EQ("entry", field.getEntry());
+}
+
+TEST(FieldTest, IsEntry) { // NOLINT(cert-err58-cpp)
+    Event::Field field{"name", "entry"};
+    ASSERT_TRUE(field.isEntry());
+    ASSERT_FALSE(field.isData());
+}
+
+TEST(FieldTest, IsData) { // NOLINT(cert-err58-cpp)
+    Event::Field field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
+    ASSERT_TRUE(field.isData());
+    ASSERT_FALSE(field.isEntry());
 }

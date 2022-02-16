@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evget/Event/AbstractField.h"
+#include "evget/Event/AbstractData.h"
 
 #include <utility>
 #include <memory>
@@ -28,7 +29,7 @@
 Event::AbstractField::~AbstractField() = default;
 
 std::string Event::AbstractField::getEntry() const {
-    return entry;
+    return std::get<std::string>(entry);
 }
 
 Event::AbstractField::AbstractField(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
@@ -37,6 +38,13 @@ Event::AbstractField::AbstractField(std::string name, std::string entry) : name{
 Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(name), ""} {
 }
 
+Event::AbstractField::AbstractField(std::string name, std::unique_ptr<AbstractData> entry) : name{std::move(name)}, entry{std::move(entry)} {
+}
+
 std::string Event::AbstractField::getName() const {
     return name;
+}
+
+const Event::AbstractData& Event::AbstractField::getData() const {
+    return *std::get<std::unique_ptr<AbstractData>>(entry);
 }
