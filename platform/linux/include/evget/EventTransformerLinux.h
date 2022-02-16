@@ -41,7 +41,9 @@ namespace evget {
         std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
-        static std::unique_ptr<Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& data, const std::string& deviceName);
+        std::unique_ptr<Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
+        static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
+
         static std::vector<int> getMask(int maskLen, const unsigned char* mask);
         static std::string formatValue(int value);
         static std::string formatValue(std::vector<int> values);

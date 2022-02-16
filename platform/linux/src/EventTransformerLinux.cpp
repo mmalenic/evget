@@ -77,7 +77,7 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
 
     Event::MouseClick::MouseClickBuilder builder{};
     builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
-    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(event, "MouseClickSystemData", idToName[event.deviceid])).build();
+    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemData(event, "MouseClickSystemData")).build();
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
@@ -87,25 +87,19 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
     return std::unique_ptr<Event::TableData>();
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name, const std::string& deviceName) {
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
-    fields.emplace_back(std::make_unique<Event::Field>("DeviceName", deviceName));
+
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
     fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
     fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
     fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
     fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
 
-    auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
-    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState)));
+    //auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
+    //fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState)));
 
-    auto valuatorState = getMask(event.valuators.mask_len, event.valuators.mask);
-    auto values = event.valuators.values;
-    std::vector<int> valuatorValues{};
-    if (!valuatorState.empty()) {
-        valuatorValues.insert(valuatorValues.end(), &values[0], &values[valuatorState.size()]);
-    }
-    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsSet", formatValue(valuatorState)));
-    fields.emplace_back(std::make_unique<Event::Field>("ValuatorsValues", formatValue(valuatorValues)));
+    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event, excludeValuators)));
 
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", formatValue(event.mods.base)));
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", formatValue(event.mods.effective)));
@@ -120,22 +114,29 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     return std::make_unique<Event::Data>(name, std::move(fields));
 }
 
+Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude) {
+    std::vector<std::unique_ptr<Event::AbstractData>> data{};
+
+    auto* values = event.valuators.values;
+    for (int i = 0; i < event.valuators.mask_len * 8; i++) {
+        if (XIMaskIsSet(event.valuators.mask, i) && std::find(exclude.begin(), exclude.end(), i) == exclude.end()) {
+            std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+            fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(i)));
+            fields.emplace_back(std::make_unique<Event::Field>("Value", std::to_string(*values++)));
+
+            data.emplace_back(std::make_unique<Event::Data>("Valuators", std::move(fields)));
+        }
+    }
+
+    return data;
+}
+
 std::string evget::EventTransformerLinux::formatValue(int value) {
     return value != 0 ? std::to_string(value) : "";
 }
 
 std::string evget::EventTransformerLinux::formatValue(std::vector<int> values) {
     return !values.empty() ? fmt::format("[{}]", fmt::join(values, ", ")) : "";
-}
-
-std::vector<int> evget::EventTransformerLinux::getMask(int maskLen, const unsigned char* mask) {
-    std::vector<int> masksSet{};
-    for (int i = 0; i < maskLen * 8; i++) {
-        if (XIMaskIsSet(mask, i)) {
-            masksSet.emplace_back(i);
-        }
-    }
-    return masksSet;
 }
 
 void evget::EventTransformerLinux::refreshDeviceIds() {
