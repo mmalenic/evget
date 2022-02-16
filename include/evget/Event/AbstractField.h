@@ -26,6 +26,7 @@
 #include <string>
 #include <variant>
 #include <memory>
+#include <vector>
 
 namespace Event {
 
@@ -36,9 +37,11 @@ namespace Event {
      */
     class AbstractField {
     public:
-        using EntryOrData = std::variant<std::string, std::unique_ptr<AbstractData>>;
+        using Entries = std::vector<std::unique_ptr<AbstractData>>;
+        using Iterator = Entries::const_iterator;
+        using EntryOrData = std::variant<std::string, Entries>;
 
-        AbstractField(std::string name, std::unique_ptr<AbstractData> entry);
+        AbstractField(std::string name, Entries entries);
         AbstractField(std::string name, std::string entry);
         explicit AbstractField(std::string name);
 
@@ -58,14 +61,13 @@ namespace Event {
         [[nodiscard]] std::string getEntry() const;
 
         /**
-         * Get the data.
-         */
-        [[nodiscard]] const AbstractData& getData() const;
-
-        /**
          * Get the name.
          */
         [[nodiscard]] std::string getName() const;
+
+        [[nodiscard]] Iterator begin() const noexcept;
+
+        [[nodiscard]] Iterator end() const noexcept;
 
         virtual ~AbstractField() = 0;
 
@@ -88,7 +90,7 @@ namespace Event {
     }
 
     constexpr bool Event::AbstractField::isData() {
-        return std::holds_alternative<std::unique_ptr<AbstractData>>(entry);
+        return std::holds_alternative<Entries>(entry);
     }
 }
 

@@ -38,7 +38,7 @@ namespace Event {
      */
     class AbstractData {
     public:
-        using iterator = std::vector<std::unique_ptr<AbstractField>>::iterator;
+        using Iterator = std::vector<std::unique_ptr<AbstractField>>::const_iterator;
 
         /**
          * List of fields represent the ordered fields in the data.
@@ -60,9 +60,9 @@ namespace Event {
          */
         [[nodiscard]] std::string getName() const;
 
-        [[nodiscard]] iterator begin() noexcept;
+        [[nodiscard]] Iterator begin() const noexcept;
 
-        [[nodiscard]] iterator end() noexcept;
+        [[nodiscard]] Iterator end() const noexcept;
 
         virtual ~AbstractData() = 0;
 

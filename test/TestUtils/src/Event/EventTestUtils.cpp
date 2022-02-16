@@ -34,7 +34,9 @@ std::vector<std::unique_ptr<Event::AbstractField>> TestUtils::EventTestUtils::al
 }
 
 Event::Field TestUtils::EventTestUtils::constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
+    Event::AbstractField::Entries entries{};
     std::vector<std::unique_ptr<Event::AbstractField>> fields = TestUtils::EventTestUtils::allocateFields(innerName, innerEntry);
     auto data = std::make_unique<Event::Data>(innerDataName, std::move(fields));
-    return Event::Field{outerName, std::move(data)};
+    entries.emplace_back(std::move(data));
+    return Event::Field{outerName, std::move(entries)};
 }

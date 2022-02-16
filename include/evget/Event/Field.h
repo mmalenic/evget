@@ -32,7 +32,7 @@ namespace Event {
     class Field : public AbstractField {
     public:
         explicit Field(std::string name);
-        Field(std::string name, std::unique_ptr<AbstractData> entry);
+        Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
     };
 }

@@ -30,11 +30,11 @@ Event::AbstractData::~AbstractData() = default;
 Event::AbstractData::AbstractData(std::string name) : fields{}, name{std::move(name)} {
 }
 
-Event::AbstractData::iterator Event::AbstractData::begin() noexcept {
+Event::AbstractData::Iterator Event::AbstractData::begin() const noexcept {
     return fields.begin();
 }
 
-Event::AbstractData::iterator Event::AbstractData::end() noexcept {
+Event::AbstractData::Iterator Event::AbstractData::end() const noexcept {
     return fields.end();
 }
 

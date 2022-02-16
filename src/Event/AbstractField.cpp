@@ -38,13 +38,17 @@ Event::AbstractField::AbstractField(std::string name, std::string entry) : name{
 Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(name), ""} {
 }
 
-Event::AbstractField::AbstractField(std::string name, std::unique_ptr<AbstractData> entry) : name{std::move(name)}, entry{std::move(entry)} {
+Event::AbstractField::AbstractField(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
 }
 
 std::string Event::AbstractField::getName() const {
     return name;
 }
 
-const Event::AbstractData& Event::AbstractField::getData() const {
-    return *std::get<std::unique_ptr<AbstractData>>(entry);
+Event::AbstractField::Iterator Event::AbstractField::begin() const noexcept {
+    return std::get<Entries>(entry).begin();
+}
+
+Event::AbstractField::Iterator Event::AbstractField::end() const noexcept {
+    return std::get<Entries>(entry).end();
 }

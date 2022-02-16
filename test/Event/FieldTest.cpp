@@ -37,9 +37,9 @@ TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
 TEST(FieldTest, ConstructorData) { // NOLINT(cert-err58-cpp)
     auto field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
 
-    ASSERT_EQ("InnerField", field.getData().getAtPosition(0).getName());
-    ASSERT_EQ("InnerEntry", field.getData().getAtPosition(0).getEntry());
-    ASSERT_EQ("InnerData", field.getData().getName());
+    ASSERT_EQ("InnerField", (*field.begin())->getAtPosition(0).getName());
+    ASSERT_EQ("InnerEntry", (*field.begin())->getAtPosition(0).getEntry());
+    ASSERT_EQ("InnerData", (*field.begin())->getName());
     ASSERT_EQ("OuterField", field.getName());
 }
 

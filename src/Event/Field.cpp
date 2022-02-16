@@ -28,8 +28,8 @@
 Event::Field::Field(std::string name) : AbstractField{std::move(name)} {
 }
 
-Event::Field::Field(std::string name, std::string entry) : AbstractField{std::move(name), std::move(entry)} {
+Event::Field::Field(std::string name, std::string entries) : AbstractField{std::move(name), std::move(entries)} {
 }
 
-Event::Field::Field(std::string name, std::unique_ptr<AbstractData> entry) : AbstractField{std::move(name), std::move(entry) } {
+Event::Field::Field(std::string name, Entries entry) : AbstractField{std::move(name), std::move(entry) } {
 }
