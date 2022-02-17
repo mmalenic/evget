@@ -87,13 +87,22 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
     return std::unique_ptr<Event::TableData>();
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators) {
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name, bool includeRootPosition, std::initializer_list<int> excludeValuators) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
     fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
     fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
     fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
+
+    if (includeRootPosition) {
+        fields.emplace_back(std::make_unique<Event::Field>("RootX", std::to_string(event.root_x)));
+        fields.emplace_back(std::make_unique<Event::Field>("RootY", std::to_string(event.root_y)));
+    } else {
+        fields.emplace_back(std::make_unique<Event::Field>("RootX", ""));
+        fields.emplace_back(std::make_unique<Event::Field>("RootY", ""));
+    }
+
     fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
 
     fields.emplace_back(std::make_unique<Event::Field>("ButtonState", createButtonEntries(event)));
