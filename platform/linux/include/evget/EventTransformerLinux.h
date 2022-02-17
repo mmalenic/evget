@@ -43,6 +43,7 @@ namespace evget {
     private:
         std::unique_ptr<Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
+        static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static std::vector<int> getMask(int maskLen, const unsigned char* mask);
         static std::string formatValue(int value);

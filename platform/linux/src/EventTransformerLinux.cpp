@@ -96,8 +96,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
     fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
 
-    //auto buttonState = getMask(event.buttons.mask_len, event.buttons.mask);
-    //fields.emplace_back(std::make_unique<Event::Field>("ButtonState", formatValue(buttonState)));
+    fields.emplace_back(std::make_unique<Event::Field>("ButtonState", createButtonEntries(event)));
 
     fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event, excludeValuators)));
 
@@ -112,6 +111,21 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     fields.emplace_back(std::make_unique<Event::Field>("GroupLocked", formatValue(event.group.locked)));
 
     return std::make_unique<Event::Data>(name, std::move(fields));
+}
+
+Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
+    std::vector<std::unique_ptr<Event::AbstractData>> data{};
+
+    for (int i = 0; i < event.buttons.mask_len * 8; i++) {
+        if (XIMaskIsSet(event.buttons.mask, i)) {
+            std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+            fields.emplace_back(std::make_unique<Event::Field>("ButtonActive", std::to_string(i)));
+
+            data.emplace_back(std::make_unique<Event::Data>("ButtonState", std::move(fields)));
+        }
+    }
+
+    return data;
 }
 
 Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude) {
