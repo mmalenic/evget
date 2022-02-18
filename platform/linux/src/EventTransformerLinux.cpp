@@ -23,6 +23,7 @@
 
 #include <spdlog/spdlog.h>
 #include <X11/extensions/XInput.h>
+#include <xorg/xserver-properties.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include "evget/EventTransformerLinux.h"
 #include "evget/UnsupportedOperationException.h"
@@ -71,7 +72,11 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(evget::XInputEven
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action) {
-    if (!devices.contains(event.deviceid)) {
+    if (!devices.contains(event.deviceid) ||
+        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
+        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
+        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
+        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return {};
     }
 
