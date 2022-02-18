@@ -41,7 +41,9 @@ namespace evget {
         std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
 
     private:
-        std::unique_ptr<Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& name, bool includeRootPosition = false, std::initializer_list<int> excludeValuators = {});
+        std::unique_ptr<Event::AbstractData> createSystemDataNoRoot(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
+        std::unique_ptr<Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
+        std::vector<std::unique_ptr<Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators);
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
