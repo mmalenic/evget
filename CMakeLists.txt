@@ -321,6 +321,7 @@ add_program(
     include/evget/Event/TableData.h
     include/evget/Event/Touch.h
     include/evget/EventListener.h
+    include/evget/Util.h
     include/evget/Event/AbstractField.h
     include/evget/UnsupportedOperationException.h
     include/evget/CommandLine/Option.h

@@ -30,6 +30,7 @@
 #include "XInputHandler.h"
 #include "evget/EventTransformer.h"
 #include "evget/Event/TableData.h"
+#include "evget/Util.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Button/Action.h"
 
@@ -48,7 +49,7 @@ namespace evget {
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        static void getMasks(const unsigned char* mask, int maskLen, std::invocable<int> auto function);
+        static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
         static std::string formatValue(int value);
         static std::string formatValue(std::vector<int> values);
 
@@ -74,7 +75,7 @@ namespace evget {
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
     };
 
-    void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, std::invocable<int> auto function) {
+    void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
         for (int i = 0; i < maskLen * 8; i++) {
             if (XIMaskIsSet(mask, i)) {
                 function(i);
