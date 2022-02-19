@@ -47,14 +47,15 @@ namespace evget {
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        static std::vector<int> getMask(int maskLen, const unsigned char* mask);
+        static std::vector<int> getMasks(const unsigned char* mask, int maskLen);
         static std::string formatValue(int value);
         static std::string formatValue(std::vector<int> values);
 
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
-        std::unique_ptr<Event::TableData> scrollEvent(evget::XInputEvent& event);
+        std::unique_ptr<Event::TableData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
+        std::unique_ptr<Event::TableData> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
@@ -64,6 +65,7 @@ namespace evget {
 
         std::map<int, std::map<int, std::string>> buttonMap{};
         std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+
         bool downScrollNegative{false};
 
         std::map<int, Event::Common::Device> devices{};

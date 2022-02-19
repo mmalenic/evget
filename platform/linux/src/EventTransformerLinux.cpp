@@ -86,10 +86,28 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
-    evget::XInputEvent& event
+    const XIRawEvent& event,
+    std::chrono::nanoseconds time
 ) {
-    Event::MouseWheel::MouseWheelBuilder builder;
+    if (!devices.contains(event.sourceid) || event.valuators.mask_len <= 0) {
+        return {};
+    }
+
+//    for (const auto& [valuatorNumber, info] : scrollMap[event.sourceid]) {
+//        if (XIMaskIsSet(event.valuators.mask, valuatorNumber)) {
+//            if (info.type == XIScrollTypeVertical) {
+//                if (info.increment * event.val)
+//            } else {
+//
+//            }
+//        }
+//    }
     return std::unique_ptr<Event::TableData>();
+}
+
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {
+    Event::MouseWheel::MouseWheelBuilder builder;
+    return {};
 }
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithRoot(
@@ -171,6 +189,16 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntrie
     }
 
     return data;
+}
+
+std::vector<int> evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen) {
+    std::vector<int> masks{};
+    for (int i = 0; i < maskLen * 8; i++) {
+        if (XIMaskIsSet(mask, i)) {
+            masks.emplace_back(i);
+        }
+    }
+    return masks;
 }
 
 std::string evget::EventTransformerLinux::formatValue(int value) {
