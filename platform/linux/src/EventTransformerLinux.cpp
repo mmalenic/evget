@@ -191,10 +191,6 @@ std::string evget::EventTransformerLinux::formatValue(int value) {
     return value != 0 ? std::to_string(value) : "";
 }
 
-std::string evget::EventTransformerLinux::formatValue(std::vector<int> values) {
-    return !values.empty() ? fmt::format("[{}]", fmt::join(values, ", ")) : "";
-}
-
 void evget::EventTransformerLinux::refreshDeviceIds() {
     int nDevices;
     int xi2NDevices;

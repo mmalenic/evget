@@ -51,7 +51,6 @@ namespace evget {
 
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
         static std::string formatValue(int value);
-        static std::string formatValue(std::vector<int> values);
 
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
 
