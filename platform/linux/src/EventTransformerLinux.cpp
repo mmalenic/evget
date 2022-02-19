@@ -105,6 +105,15 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
     return std::unique_ptr<Event::TableData>();
 }
 
+std::map<int, int> evget::EventTransformerLinux::getValuatorValues(XIValuatorState& valuatorState) {
+    std::map<int, int> valuatorValues{};
+    auto* values = valuatorState.values;
+    getMasks(valuatorState.mask, valuatorState.mask_len, [&valuatorValues, &values](int mask) {
+        valuatorValues.emplace(mask, *values++);
+    });
+    return valuatorValues;
+}
+
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {
     Event::MouseWheel::MouseWheelBuilder builder;
     return {};

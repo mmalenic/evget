@@ -50,6 +50,7 @@ namespace evget {
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
+        static std::map<int, int> getValuatorValues(XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
