@@ -191,11 +191,11 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntrie
     return data;
 }
 
-std::vector<int> evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen) {
-    std::vector<int> masks{};
+std::map<int, int> evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, double* values) {
+    std::map<int, int> masks{};
     for (int i = 0; i < maskLen * 8; i++) {
         if (XIMaskIsSet(mask, i)) {
-            masks.emplace_back(i);
+            masks.emplace(i, values ? *values++ : 0);
         }
     }
     return masks;

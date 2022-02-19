@@ -47,7 +47,7 @@ namespace evget {
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        static std::vector<int> getMasks(const unsigned char* mask, int maskLen);
+        static std::map<int, int> getMasks(const unsigned char* mask, int maskLen, double* values = nullptr);
         static std::string formatValue(int value);
         static std::string formatValue(std::vector<int> values);
 
