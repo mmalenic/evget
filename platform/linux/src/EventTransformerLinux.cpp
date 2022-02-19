@@ -162,14 +162,11 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
 Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
-    for (int i = 0; i < event.buttons.mask_len * 8; i++) {
-        if (XIMaskIsSet(event.buttons.mask, i)) {
-            std::vector<std::unique_ptr<Event::AbstractField>> fields{};
-            fields.emplace_back(std::make_unique<Event::Field>("ButtonActive", std::to_string(i)));
-
-            data.emplace_back(std::make_unique<Event::Data>("ButtonState", std::move(fields)));
-        }
-    }
+    getMasks(event.buttons.mask, event.buttons.mask_len, [&data](int mask) {
+        std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+        fields.emplace_back(std::make_unique<Event::Field>("ButtonActive", std::to_string(mask)));
+        data.emplace_back(std::make_unique<Event::Data>("ButtonState", std::move(fields)));
+    });
 
     return data;
 }
@@ -178,15 +175,14 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntrie
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
     auto* values = event.valuators.values;
-    for (int i = 0; i < event.valuators.mask_len * 8; i++) {
-        if (XIMaskIsSet(event.valuators.mask, i) && std::find(exclude.begin(), exclude.end(), i) == exclude.end()) {
+    getMasks(event.buttons.mask, event.buttons.mask_len, [&data, &exclude, &values](int mask) {
+        if (std::find(exclude.begin(), exclude.end(), mask) == exclude.end()) {
             std::vector<std::unique_ptr<Event::AbstractField>> fields{};
-            fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(i)));
+            fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(mask)));
             fields.emplace_back(std::make_unique<Event::Field>("Value", std::to_string(*values++)));
-
             data.emplace_back(std::make_unique<Event::Data>("Valuators", std::move(fields)));
         }
-    }
+    });
 
     return data;
 }
