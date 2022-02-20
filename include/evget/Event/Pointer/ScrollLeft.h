@@ -20,13 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/WheelAmount.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_SROLLLEFT_H
+#define EVGET_INCLUDE_EVGET_EVENT_POINTER_SROLLLEFT_H
 
-Event::Pointer::WheelAmount::WheelAmount(std::string amount) : AbstractField{"WheelAmount", std::move(amount)} {
+#include "evget/Event/AbstractField.h"
+
+namespace Event::Pointer {
+    class ScrollLeft : public AbstractField {
+    public:
+        ScrollLeft();
+        explicit ScrollLeft(std::string amount);
+        explicit ScrollLeft(double amount);
+    };
 }
 
-Event::Pointer::WheelAmount::WheelAmount(double amount) : WheelAmount{std::to_string(amount)} {
-}
-
-Event::Pointer::WheelAmount::WheelAmount() : WheelAmount{""} {
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_SROLLLEFT_H

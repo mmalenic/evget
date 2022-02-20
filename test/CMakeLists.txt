@@ -9,7 +9,10 @@ add_program(
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
     Event/Pointer/WheelDirectionTest.cpp
-    Event/Pointer/WheelAmountTest.cpp
+    Event/Pointer/ScrollUpTest.cpp
+    Event/Pointer/ScrollDownTest.cpp
+    Event/Pointer/ScrollLeftTest.cpp
+    Event/Pointer/ScrollRightTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
     Event/Button/ButtonNameTest.cpp

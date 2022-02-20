@@ -20,18 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELAMOUNT_H
-#define EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELAMOUNT_H
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Pointer/ScrollUp.h"
 
-#include "evget/Event/AbstractField.h"
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-namespace Event::Pointer {
-    class WheelAmount : public AbstractField {
-    public:
-        WheelAmount();
-        explicit WheelAmount(std::string amount);
-        explicit WheelAmount(double amount);
-    };
+TEST(ScrollUpTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Pointer::ScrollUp>(1, "ScrollUp", "1");
 }
-
-#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_WHEELAMOUNT_H

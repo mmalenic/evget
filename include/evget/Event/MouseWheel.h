@@ -28,7 +28,7 @@
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Pointer/WheelDirection.h"
-#include "evget/Event/Pointer/WheelAmount.h"
+#include "evget/Event/Pointer/ScrollUp.h"
 
 namespace Event {
     /**
