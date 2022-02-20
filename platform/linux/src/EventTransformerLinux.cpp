@@ -87,31 +87,44 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
     const XIRawEvent& event,
-    std::chrono::nanoseconds time
+    std::chrono::nanoseconds time,
+    std::map<int, int>& valuators
 ) {
-    if (!devices.contains(event.sourceid) || event.valuators.mask_len <= 0) {
+    if (!devices.contains(event.sourceid) || !scrollMap.contains(event.sourceid)) {
         return {};
     }
+    Event::MouseWheel::MouseWheelBuilder builder{};
+    for (const auto& [valuatorNumber, info] : scrollMap[event.sourceid]) {
+        if (!valuators.contains(valuatorNumber)) {
+            continue;
+        }
+        if (info.type == XIScrollTypeVertical) {
+            if (info.increment * valuators[valuatorNumber] >= 0) {
+                builder.direction(Event::Pointer::Direction::Down);
+            } else {
+                builder.direction(Event::Pointer::Direction::Up);
+            }
+        } else {
+            if (info.increment * valuators[valuatorNumber] >= 0) {
+                builder.direction(Event::Pointer::Direction::Left);
+            } else {
+                builder.direction(Event::Pointer::Direction::Right);
+            }
+        }
+        wheelEvent = builder.amount(valuators[valuatorNumber]).time(time).device(devices[event.sourceid]).build();
+    }
 
-//    for (const auto& [valuatorNumber, info] : scrollMap[event.sourceid]) {
-//        if (XIMaskIsSet(event.valuators.mask, valuatorNumber)) {
-//            if (info.type == XIScrollTypeVertical) {
-//                if (info.increment * event.val)
-//            } else {
-//
-//            }
-//        }
-//    }
+    builder.time(time).device(devices[event.sourceid]);
     return std::unique_ptr<Event::TableData>();
 }
 
-std::map<int, int> evget::EventTransformerLinux::getValuatorValues(XIValuatorState& valuatorState) {
-    std::map<int, int> valuatorValues{};
+std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorState& valuatorState) {
+    std::map<int, int> valuators{};
     auto* values = valuatorState.values;
-    getMasks(valuatorState.mask, valuatorState.mask_len, [&valuatorValues, &values](int mask) {
-        valuatorValues.emplace(mask, *values++);
+    getMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
+        valuators.emplace(mask, *values++);
     });
-    return valuatorValues;
+    return valuators;
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {

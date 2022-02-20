@@ -33,6 +33,7 @@
 #include "evget/Util.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Button/Action.h"
+#include "evget/Event/MouseWheel.h"
 
 namespace evget {
 
@@ -50,14 +51,14 @@ namespace evget {
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
-        static std::map<int, int> getValuatorValues(XIValuatorState& valuatorState);
+        static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
         std::unique_ptr<Event::TableData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
-        std::unique_ptr<Event::TableData> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
+        std::unique_ptr<Event::TableData> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time, std::map<int, int>& valuators);
 
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
@@ -66,9 +67,10 @@ namespace evget {
         std::reference_wrapper<Display> display;
 
         std::map<int, std::map<int, std::string>> buttonMap{};
-        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
 
-        bool downScrollNegative{false};
+        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+        bool exceptingComplimentaryScrollEvent{false};
+        std::unique_ptr<Event::MouseWheel> wheelEvent{};
 
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
