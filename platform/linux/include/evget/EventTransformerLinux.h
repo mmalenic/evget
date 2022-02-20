@@ -33,7 +33,7 @@
 #include "evget/Util.h"
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Button/Action.h"
-#include "evget/Event/MouseWheel.h"
+#include "evget/Event/MouseScroll.h"
 
 namespace evget {
 
@@ -70,7 +70,7 @@ namespace evget {
 
         std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
         bool exceptingComplimentaryScrollEvent{false};
-        std::unique_ptr<Event::MouseWheel> wheelEvent{};
+        std::unique_ptr<Event::MouseScroll> wheelEvent{};
 
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};

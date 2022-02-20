@@ -296,7 +296,7 @@ add_program(
     include/evget/Event/Field.h
     include/evget/Event/MouseMove.h
     include/evget/Event/MouseClick.h
-    include/evget/Event/MouseWheel.h
+    include/evget/Event/MouseScroll.h
     include/evget/Event/Button/Character.h
     include/evget/Event/Pointer/WheelDirection.h
     include/evget/Event/Pointer/Direction.h

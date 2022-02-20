@@ -32,7 +32,7 @@ add_program(
     Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp
-    Event/MouseWheel.cpp
+    Event/MouseScroll.cpp
     Event/Touch.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp

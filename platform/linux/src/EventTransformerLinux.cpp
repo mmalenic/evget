@@ -29,7 +29,7 @@
 #include "evget/UnsupportedOperationException.h"
 #include "evget/Event/MouseClick.h"
 #include "evget/Event/Field.h"
-#include "evget/Event/MouseWheel.h"
+#include "evget/Event/MouseScroll.h"
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
@@ -93,7 +93,7 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
     if (!devices.contains(event.sourceid) || !scrollMap.contains(event.sourceid)) {
         return {};
     }
-    Event::MouseWheel::MouseWheelBuilder builder{};
+    Event::MouseScroll::MouseScrollBuilder builder{};
     for (const auto& [valuatorNumber, info] : scrollMap[event.sourceid]) {
         if (!valuators.contains(valuatorNumber)) {
             continue;
@@ -128,7 +128,7 @@ std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorSt
 }
 
 std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {
-    Event::MouseWheel::MouseWheelBuilder builder;
+    Event::MouseScroll::MouseScrollBuilder builder;
     return {};
 }
 

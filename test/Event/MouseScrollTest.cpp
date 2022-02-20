@@ -21,23 +21,31 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/MouseWheel.h"
+#include "evget/Event/MouseScroll.h"
 #include "TestUtils/Event/EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(MouseWheelTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+TEST(MouseScrollTest, Time) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(MouseWheelTest, Device) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
+TEST(MouseScrollTest, Device) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
-TEST(MouseWheelTest, Direction) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.direction(Event::Pointer::Direction::Up).build(), 2, "Up");
+TEST(MouseScrollTest, Up) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.up(1).build(), 2, "1");
 }
 
-TEST(MouseWheelTest, Amount) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseWheel::MouseWheelBuilder{}.amount(1).build(), 3, "1");
+TEST(MouseScrollTest, Down) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.down(1).build(), 3, "1");
+}
+
+TEST(MouseScrollTest, Left) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.left(1).build(), 4, "1");
+}
+
+TEST(MouseScrollTest, Right) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::MouseScroll::MouseScrollBuilder{}.right(1).build(), 5, "1");
 }

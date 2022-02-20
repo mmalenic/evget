@@ -29,55 +29,70 @@
 #include "evget/Event/Common/DeviceType.h"
 #include "evget/Event/Pointer/WheelDirection.h"
 #include "evget/Event/Pointer/ScrollUp.h"
+#include "evget/Event/Pointer/ScrollDown.h"
+#include "evget/Event/Pointer/ScrollLeft.h"
+#include "evget/Event/Pointer/ScrollRight.h"
 
 namespace Event {
     /**
      * Represents a mouse wheel event.
      */
-    class MouseWheel : public AbstractData {
+    class MouseScroll : public AbstractData {
     public:
-        class MouseWheelBuilder {
+        class MouseScrollBuilder {
         public:
-            friend class MouseWheel;
+            friend class MouseScroll;
 
-            MouseWheelBuilder();
+            MouseScrollBuilder();
 
             /**
              * Add time in nanoseconds.
              */
-            MouseWheelBuilder& time(std::chrono::nanoseconds nanoseconds);
+            MouseScrollBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
              * Mouse device.
              */
-            MouseWheelBuilder& device(Event::Common::Device device);
+            MouseScrollBuilder& device(Event::Common::Device device);
 
             /**
-             * Add wheel down.
+             * Add scroll up.
              */
-            MouseWheelBuilder& direction(Pointer::Direction direction);
+            MouseScrollBuilder& up(double amount);
 
             /**
-             * Add wheel up.
+             * Add scroll down.
              */
-            MouseWheelBuilder& amount(double amount);
+            MouseScrollBuilder& down(double amount);
+
+            /**
+             * Add scroll left.
+             */
+            MouseScrollBuilder& left(double amount);
+
+            /**
+             * Add scroll right.
+             */
+            MouseScrollBuilder& right(double amount);
 
             /**
              * Build mouse wheel event.
              */
-            std::unique_ptr<MouseWheel> build();
+            std::unique_ptr<MouseScroll> build();
 
         private:
             std::unique_ptr<Common::Time> _time;
             std::unique_ptr<Common::DeviceType> _device;
-            std::unique_ptr<Pointer::WheelDirection> _direction;
-            std::unique_ptr<Pointer::WheelAmount> _amount;
+            std::unique_ptr<Pointer::ScrollUp> _up;
+            std::unique_ptr<Pointer::ScrollDown> _down;
+            std::unique_ptr<Pointer::ScrollLeft> _left;
+            std::unique_ptr<Pointer::ScrollRight> _right;
         };
 
         /**
          * Create event entry.
          */
-        explicit MouseWheel(MouseWheelBuilder& builder);
+        explicit MouseScroll(MouseScrollBuilder& builder);
     };
 }
 
