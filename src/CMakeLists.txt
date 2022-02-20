@@ -10,7 +10,6 @@ add_program(
     Event/Button/ButtonAction.cpp
     Event/Button/ButtonId.cpp
     Event/Pointer/Multitouch.cpp
-    Event/Pointer/WheelDirection.cpp
     Event/Pointer/ScrollUp.cpp
     Event/Pointer/ScrollDown.cpp
     Event/Pointer/ScrollLeft.cpp

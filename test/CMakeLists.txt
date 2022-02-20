@@ -8,7 +8,6 @@ add_program(
     CommandLine/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
-    Event/Pointer/WheelDirectionTest.cpp
     Event/Pointer/ScrollUpTest.cpp
     Event/Pointer/ScrollDownTest.cpp
     Event/Pointer/ScrollLeftTest.cpp

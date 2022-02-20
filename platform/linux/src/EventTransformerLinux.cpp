@@ -100,21 +100,20 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(
         }
         if (info.type == XIScrollTypeVertical) {
             if (info.increment * valuators[valuatorNumber] >= 0) {
-                builder.direction(Event::Pointer::Direction::Down);
+                builder.down(valuators[valuatorNumber]);
             } else {
-                builder.direction(Event::Pointer::Direction::Up);
+                builder.up(valuators[valuatorNumber]);
             }
         } else {
             if (info.increment * valuators[valuatorNumber] >= 0) {
-                builder.direction(Event::Pointer::Direction::Left);
+                builder.left(valuators[valuatorNumber]);
             } else {
-                builder.direction(Event::Pointer::Direction::Right);
+                builder.right(valuators[valuatorNumber]);
             }
         }
-        wheelEvent = builder.amount(valuators[valuatorNumber]).time(time).device(devices[event.sourceid]).build();
+        wheelEvent = builder.time(time).device(devices[event.sourceid]).build();
     }
 
-    builder.time(time).device(devices[event.sourceid]);
     return std::unique_ptr<Event::TableData>();
 }
 
