@@ -36,6 +36,16 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
         std::vector<std::unique_ptr<Event::TableData>> data{};
         auto type = event.getEventType();
 
+        if (rawScrollEvent) {
+            auto systemScrollEvent = scrollEvent(event.viewData<XIDeviceEvent>(), getTime(event));
+            if (systemScrollEvent) {
+                data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).systemData(std::move(systemScrollEvent)).build());
+            } else {
+                spdlog::warn("Missing complimentary scroll event after XIRawEvent.");
+                data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).build());
+            }
+        }
+
         switch (type) {
         case XI_ButtonPress:
             data.emplace_back(buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Button::Action::Press));
@@ -44,7 +54,9 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
         case XI_KeyPress:break;
         case XI_KeyRelease:break;
         case XI_Motion:break;
-        case XI_RawMotion:break;
+        case XI_RawMotion:
+            rawScrollEvent = scrollEvent(event.viewData<XIRawEvent>(), getTime(event));
+            break;
 #if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
         case XI_TouchBegin:break;
         case XI_TouchUpdate:break;
@@ -61,6 +73,7 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
             );
             return {};
         }
+        return data;
     }
     return {};
 }
@@ -88,14 +101,14 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
     const XIRawEvent& event,
-    std::chrono::nanoseconds time,
-    std::map<int, int>& valuators
+    std::chrono::nanoseconds time
 ) {
     if (!devices.contains(event.sourceid) || !scrollMap.contains(event.sourceid)) {
         return {};
     }
 
     Event::MouseScroll::MouseScrollBuilder builder{};
+    auto valuators = getValuators(event.valuators);
     bool isScrollEvent = false;
     for (const auto& [valuatorNumber, info] : scrollMap[event.sourceid]) {
         if (!valuators.contains(valuatorNumber)) {
@@ -129,7 +142,7 @@ std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorSt
     return valuators;
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time) {
     Event::MouseScroll::MouseScrollBuilder builder;
     return {};
 }

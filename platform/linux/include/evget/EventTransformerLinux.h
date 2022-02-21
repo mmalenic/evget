@@ -57,8 +57,8 @@ namespace evget {
         std::chrono::nanoseconds getTime(evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
-        std::unique_ptr<Event::TableData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
-        std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time, std::map<int, int>& valuators);
+        std::unique_ptr<Event::AbstractData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
+        std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
@@ -69,8 +69,7 @@ namespace evget {
         std::map<int, std::map<int, std::string>> buttonMap{};
 
         std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
-        bool exceptingComplimentaryScrollEvent{false};
-        std::unique_ptr<Event::MouseScroll> wheelEvent{};
+        std::unique_ptr<Event::MouseScroll> rawScrollEvent{};
 
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
