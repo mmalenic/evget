@@ -41,7 +41,7 @@ namespace evget {
          * @param event event to transform
          * @return event event for storage
          */
-        virtual std::unique_ptr<Event::TableData> transformEvent(T event) = 0;
+        virtual std::vector<std::unique_ptr<Event::TableData>> transformEvent(T event) = 0;
 
         EventTransformer() = default;
 

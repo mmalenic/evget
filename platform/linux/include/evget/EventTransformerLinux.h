@@ -41,7 +41,7 @@ namespace evget {
     public:
         explicit EventTransformerLinux(Display& display);
 
-        std::unique_ptr<Event::TableData> transformEvent(XInputEvent event) override;
+        std::vector<std::unique_ptr<Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
         std::unique_ptr<Event::AbstractData> createSystemDataNoRoot(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
@@ -58,7 +58,7 @@ namespace evget {
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
         std::unique_ptr<Event::TableData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
-        std::unique_ptr<Event::TableData> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time, std::map<int, int>& valuators);
+        std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time, std::map<int, int>& valuators);
 
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
