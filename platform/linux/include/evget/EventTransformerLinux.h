@@ -54,10 +54,11 @@ namespace evget {
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
-        std::chrono::nanoseconds getTime(evget::XInputEvent& event);
+        std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
         std::unique_ptr<Event::AbstractData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
+        bool setScrollEventData(const evget::XInputEvent& event, std::unique_ptr<Event::MouseScroll>, std::vector<std::unique_ptr<Event::TableData>>& data);
         std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
