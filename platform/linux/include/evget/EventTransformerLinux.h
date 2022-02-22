@@ -72,6 +72,9 @@ namespace evget {
         std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
         std::unique_ptr<Event::MouseScroll> rawScrollEvent{};
 
+        std::optional<int> valuatorX{};
+        std::optional<int> valuatorY{};
+
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};

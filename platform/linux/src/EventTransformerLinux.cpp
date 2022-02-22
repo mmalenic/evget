@@ -308,23 +308,33 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
 void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
     const XIButtonClassInfo* buttonInfo = nullptr;
     std::vector<const XIScrollClassInfo*> scrollInfos{};
+    std::vector<const XIValuatorClassInfo*> valuatorInfos{};
     for (int i = 0; i < info.num_classes; i++) {
         const auto* classInfo = info.classes[i];
 
-        if (classInfo->type == ButtonClass) {
+        if (classInfo->type == XIButtonClass) {
             buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
-        }
-        if (classInfo->type == XIScrollClass) {
+        } else if (classInfo->type == XIScrollClass) {
             scrollInfos.emplace_back(reinterpret_cast<const XIScrollClassInfo*>(classInfo));
+        } else if (classInfo->type == XIValuatorClass) {
+            valuatorInfos.emplace_back(reinterpret_cast<const XIValuatorClassInfo*>(classInfo));
         }
     }
 
     if (buttonInfo && buttonInfo->num_buttons > 0) {
         setButtonMap(*buttonInfo, info.deviceid);
     }
-    if (!scrollInfos.empty()) {
-        for (auto scrollInfo : scrollInfos) {
-            scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
+    for (auto scrollInfo : scrollInfos) {
+        scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
+    }
+    for (auto valuatorInfo : valuatorInfos) {
+        auto name = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), valuatorInfo->label), XFree);
+        if (name) {
+            if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
+                valuatorX = valuatorInfo->number;
+            } else if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
+                valuatorY = valuatorInfo->number;
+            }
         }
     }
 }
