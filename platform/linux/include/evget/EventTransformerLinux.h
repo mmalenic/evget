@@ -54,6 +54,8 @@ namespace evget {
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
+        std::unique_ptr<char[], decltype(&XFree)> getAtomName(Atom atom);
+
         std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);

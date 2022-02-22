@@ -284,7 +284,7 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
         const auto& xi2Device = xi2Devices.at(id).get();
 
         if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
-            auto type = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), device.type), XFree);
+            auto type = getAtomName(device.type);
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
                 devices.emplace(id, Event::Common::Device::Mouse);
@@ -328,7 +328,7 @@ void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
         scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
     }
     for (auto valuatorInfo : valuatorInfos) {
-        auto name = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), valuatorInfo->label), XFree);
+        auto name = getAtomName(valuatorInfo->label);
         if (name) {
             if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
                 valuatorX = valuatorInfo->number;
@@ -352,7 +352,7 @@ void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonI
 
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
             if (!buttonInfo.labels[i]) {
-                auto name = std::unique_ptr<char[], decltype(&XFree)>(XGetAtomName(&display.get(), buttonInfo.labels[i]), XFree);
+                auto name = getAtomName(buttonInfo.labels[i]);
                 if (name) {
                     buttonMap[id][map[i]] = name.get();
                 }
@@ -363,4 +363,8 @@ void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonI
 
 evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
     refreshDeviceIds();
+}
+
+std::unique_ptr<char[], decltype(&XFree)> evget::EventTransformerLinux::getAtomName(Atom atom) {
+    return {XGetAtomName(&display.get(), atom), XFree};
 }
