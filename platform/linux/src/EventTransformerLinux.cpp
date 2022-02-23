@@ -46,10 +46,10 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
             rawScrollEvent = scrollEvent(event);
             break;
         case XI_ButtonPress:
-            data.emplace_back(buttonEvent(event, Event::Button::Action::Press));
+            buttonEvent(event, data, Event::Button::Action::Press);
             break;
         case XI_ButtonRelease:
-            data.emplace_back(buttonEvent(event, Event::Button::Action::Release));
+            buttonEvent(event, data, Event::Button::Action::Release);
             break;
         case XI_KeyPress:break;
         case XI_KeyRelease:break;
@@ -81,24 +81,24 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(const evget::XInp
     return event.getTimestamp() - *start;
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, Event::Button::Action action) {
+void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::Action action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
-        return {};
+        return;
     }
 
     Event::MouseClick::MouseClickBuilder builder{};
     builder.time(getTime(event)).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
     .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
-    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
+    data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
         createSystemDataWithoutRoot(
             deviceEvent,
             "MouseClickSystemData"
-        )).build();
+        )).build());
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
