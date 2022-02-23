@@ -59,8 +59,7 @@ namespace evget {
         std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
-        std::unique_ptr<Event::AbstractData> scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time);
-        bool setScrollEventData(const evget::XInputEvent& event, std::unique_ptr<Event::MouseScroll>, std::vector<std::unique_ptr<Event::TableData>>& data);
+        bool scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, std::unique_ptr<Event::MouseScroll> rawEvent, std::vector<std::unique_ptr<Event::TableData>>& data);
         std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
