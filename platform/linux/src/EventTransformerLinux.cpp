@@ -30,6 +30,7 @@
 #include "evget/Event/MouseClick.h"
 #include "evget/Event/Field.h"
 #include "evget/Event/MouseScroll.h"
+#include "evget/Event/MouseMove.h"
 
 std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {
@@ -88,7 +89,11 @@ std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(cons
 
     Event::MouseClick::MouseClickBuilder builder{};
     builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
-    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(createSystemDataNoRoot(event, "MouseClickSystemData")).build();
+    return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
+        createSystemDataWithoutRoot(
+            event,
+            "MouseClickSystemData"
+        )).build();
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
@@ -143,6 +148,16 @@ void evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::
             scrollMap.contains(event.deviceid) ? scrollMap[event.deviceid] : std::map<int, XIScrollClassInfo>{};
         for (const auto& [valuator, value]: valuators) {
             if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
+                Event::MouseMove::MouseMoveBuilder builder{};
+                builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y);
+                data.emplace_back(
+                    Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
+                        createSystemDataWithoutRoot(
+                            event,
+                            "MouseMoveSystemData"
+                        )
+                    ).build()
+                );
                 hasMotion = true;
             } else if (!hasScroll) {
                 hasScroll = scrollEvent(event, data, scrollValuators, valuator);
@@ -187,7 +202,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     return std::make_unique<Event::Data>(name, std::move(fields));
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataNoRoot(
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithoutRoot(
     const XIDeviceEvent& event,
     const std::string& name,
     std::initializer_list<int> excludeValuators
