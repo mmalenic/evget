@@ -158,20 +158,30 @@ bool evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::
             if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
                 hasMotion = true;
             } else if (!hasScroll) {
-                for (const auto& [scrollValuator, _]: scrollValuators) {
-                    if (valuator == scrollValuator) {
-                        data.emplace_back(
-                            Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).systemData(
-                                createSystemDataWithRoot(
-                                    event,
-                                    "MouseScrollSystemData"
-                                )
-                            ).build()
-                        );
-                        hasScroll = true;
-                    }
-                }
+                hasScroll = scrollEvent(event, data, scrollValuators, valuator);
             }
+        }
+    }
+    return hasScroll;
+}
+bool evget::EventTransformerLinux::scrollEvent(
+    const XIDeviceEvent& event,
+    std::vector<std::unique_ptr<Event::TableData>>& data,
+    const std::map<int, XIScrollClassInfo>& scrollValuators,
+    const int valuator
+) {
+    bool hasScroll = false;
+    for (const auto& [scrollValuator, _]: scrollValuators) {
+        if (valuator == scrollValuator) {
+            data.emplace_back(
+                Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).systemData(
+                    createSystemDataWithRoot(
+                        event,
+                        "MouseScrollSystemData"
+                    )
+                ).build()
+            );
+            hasScroll = true;
         }
     }
     return hasScroll;

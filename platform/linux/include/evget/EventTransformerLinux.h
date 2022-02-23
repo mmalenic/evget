@@ -79,6 +79,12 @@ namespace evget {
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
+        bool scrollEvent(
+            const XIDeviceEvent& event,
+            std::vector<std::unique_ptr<Event::TableData>>& data,
+            const std::map<int, XIScrollClassInfo>& scrollValuators,
+            const int valuator
+        );
     };
 
     void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
