@@ -59,7 +59,8 @@ namespace evget {
         std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
 
         std::unique_ptr<Event::TableData> buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action);
-        bool scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, std::unique_ptr<Event::MouseScroll> rawEvent, std::vector<std::unique_ptr<Event::TableData>>& data);
+        void scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, std::vector<std::unique_ptr<Event::TableData>>& data);
+        bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
         std::unique_ptr<Event::MouseScroll> scrollEvent(const XIRawEvent& event, std::chrono::nanoseconds time);
 
         void refreshDeviceIds();
@@ -79,12 +80,6 @@ namespace evget {
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
-        bool scrollEvent(
-            const XIDeviceEvent& event,
-            std::vector<std::unique_ptr<Event::TableData>>& data,
-            const std::map<int, XIScrollClassInfo>& scrollValuators,
-            const int valuator
-        );
     };
 
     void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
