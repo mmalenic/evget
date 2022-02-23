@@ -37,7 +37,7 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
         std::vector<std::unique_ptr<Event::TableData>> data{};
         auto type = event.getEventType();
 
-        scrollEvent(event.viewData<XIDeviceEvent>(), getTime(event), data);
+        motionEvent(event, type, data);
         switch (type) {
         case XI_RawMotion:
             rawScrollEvent = scrollEvent(event.viewData<XIRawEvent>(), getTime(event));
@@ -139,34 +139,49 @@ std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorSt
     return valuators;
 }
 
-void evget::EventTransformerLinux::scrollEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, std::vector<std::unique_ptr<Event::TableData>>& data) {
-    bool hasScroll = false;
-    bool hasMotion = false;
-    if (event.evtype == XI_Motion && devices.contains(event.deviceid)) {
-        auto valuators = getValuators(event.valuators);
-        const auto& scrollValuators =
-            scrollMap.contains(event.deviceid) ? scrollMap[event.deviceid] : std::map<int, XIScrollClassInfo>{};
-        for (const auto& [valuator, value]: valuators) {
-            if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
-                Event::MouseMove::MouseMoveBuilder builder{};
-                builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y);
-                data.emplace_back(
-                    Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
-                        createSystemDataWithoutRoot(
-                            event,
-                            "MouseMoveSystemData"
-                        )
-                    ).build()
-                );
-                hasMotion = true;
-            } else if (!hasScroll) {
-                hasScroll = scrollEvent(event, data, scrollValuators, valuator);
-            }
+void evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data) {
+    if (type == XI_Motion) {
+        auto deviceEvent = event.viewData<XIDeviceEvent>();
+        if (devices.contains(deviceEvent.deviceid)) {
+            motionEvent(getTime(event), data, deviceEvent);
         }
     }
+
     if (rawScrollEvent) {
         spdlog::warn("Missing complimentary scroll event after XIRawEvent.");
         data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).build());
+    }
+}
+
+void evget::EventTransformerLinux::motionEvent(
+    std::chrono::nanoseconds time,
+    std::vector<std::unique_ptr<Event::TableData>>& data,
+    const XIDeviceEvent& deviceEvent
+) {
+    auto valuators = getValuators(deviceEvent.valuators);
+    const auto& scrollValuators =
+        scrollMap.contains(deviceEvent.deviceid) ? scrollMap[deviceEvent.deviceid] : std::map<int, XIScrollClassInfo>{};
+
+    bool hasScroll = false;
+    bool hasMotion = false;
+    for (const auto& [valuator, value]: valuators) {
+        if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
+            Event::MouseMove::MouseMoveBuilder builder{};
+            builder.time(time).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+
+            data.emplace_back(
+                Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
+                    createSystemDataWithoutRoot(
+                        deviceEvent,
+                        "MouseMoveSystemData"
+                    )
+                ).build()
+            );
+
+            hasMotion = true;
+        } else if (!hasScroll) {
+            hasScroll = scrollEvent(deviceEvent, data, scrollValuators, valuator);
+        }
     }
 }
 bool evget::EventTransformerLinux::scrollEvent(
