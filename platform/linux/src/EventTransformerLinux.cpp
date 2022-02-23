@@ -37,7 +37,10 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
         std::vector<std::unique_ptr<Event::TableData>> data{};
         auto type = event.getEventType();
 
-        motionEvent(event, type, data);
+        if (motionEvent(event, type, data)) {
+            return data;
+        }
+
         switch (type) {
         case XI_RawMotion:
             rawScrollEvent = scrollEvent(event.viewData<XIRawEvent>(), getTime(event));
@@ -139,7 +142,7 @@ std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorSt
     return valuators;
 }
 
-void evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data) {
+bool evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data) {
     if (type == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
         if (devices.contains(deviceEvent.deviceid)) {
@@ -151,6 +154,8 @@ void evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int typ
         spdlog::warn("Missing complimentary scroll event after XIRawEvent.");
         data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).build());
     }
+
+    return type == XI_Motion;
 }
 
 void evget::EventTransformerLinux::motionEvent(
