@@ -43,13 +43,13 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
 
         switch (type) {
         case XI_RawMotion:
-            rawScrollEvent = scrollEvent(event.viewData<XIRawEvent>(), getTime(event));
+            rawScrollEvent = scrollEvent(event);
             break;
         case XI_ButtonPress:
-            data.emplace_back(buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Button::Action::Press));
+            data.emplace_back(buttonEvent(event, Event::Button::Action::Press));
             break;
         case XI_ButtonRelease:
-            data.emplace_back(buttonEvent(event.viewData<XIDeviceEvent>(), getTime(event), Event::Button::Action::Release));
+            data.emplace_back(buttonEvent(event, Event::Button::Action::Release));
             break;
         case XI_KeyPress:break;
         case XI_KeyRelease:break;
@@ -81,36 +81,38 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(const evget::XInp
     return event.getTimestamp() - *start;
 }
 
-std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds time, Event::Button::Action action) {
-    if (!devices.contains(event.deviceid) ||
-        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
-        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
-        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
-        buttonMap[event.deviceid][event.detail] == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
+std::unique_ptr<Event::TableData> evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, Event::Button::Action action) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (!devices.contains(deviceEvent.deviceid) ||
+        buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
+        buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
+        buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
+        buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return {};
     }
 
     Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(time).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
+    builder.time(getTime(event)).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
+    .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
     return Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
         createSystemDataWithoutRoot(
-            event,
+            deviceEvent,
             "MouseClickSystemData"
         )).build();
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
-    const XIRawEvent& event,
-    std::chrono::nanoseconds time
+    const XInputEvent& event
 ) {
-    if (!devices.contains(event.sourceid) || !scrollMap.contains(event.sourceid)) {
+    auto rawEvent = event.viewData<XIRawEvent>();
+    if (!devices.contains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid)) {
         return {};
     }
 
     Event::MouseScroll::MouseScrollBuilder builder{};
-    auto valuators = getValuators(event.valuators);
+    auto valuators = getValuators(rawEvent.valuators);
     bool isScrollEvent = false;
-    for (const auto& [valuator, info] : scrollMap[event.sourceid]) {
+    for (const auto& [valuator, info] : scrollMap[rawEvent.sourceid]) {
         if (!valuators.contains(valuator)) {
             continue;
         }
@@ -130,7 +132,7 @@ std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
         isScrollEvent = true;
     }
 
-    return isScrollEvent ? builder.time(time).device(devices[event.sourceid]).build() : nullptr;
+    return isScrollEvent ? builder.time(getTime(event)).device(devices[rawEvent.sourceid]).build() : nullptr;
 }
 
 std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorState& valuatorState) {
