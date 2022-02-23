@@ -22,10 +22,22 @@
 
 #include <gtest/gtest.h>
 #include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Button/ButtonId.h"
+#include "evget/Event/Button/Action.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(ButtonIdTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Button::ButtonId>(1, "ButtonId", "1");
+TEST(ButtonActionTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Button::Action>("Press", "Action", "Press");
+}
+
+TEST(ButtonActionTest, Press) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Press), "Action", "Press");
+}
+
+TEST(ButtonActionTest, Release) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Release), "Action", "Release");
+}
+
+TEST(ButtonActionTest, Repeat) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Repeat), "Action", "Repeat");
 }

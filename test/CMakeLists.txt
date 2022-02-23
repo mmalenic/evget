@@ -14,15 +14,15 @@ add_program(
     Event/Pointer/ScrollRightTest.cpp
     Event/Pointer/PositionXTest.cpp
     Event/Pointer/PositionYTest.cpp
-    Event/Button/ButtonNameTest.cpp
+    Event/Button/NameTest.cpp
     Event/Pointer/EllipseMajorInnerTest.cpp
     Event/Pointer/EllipseMajorOuterTest.cpp
     Event/Pointer/EllipseMinorInnerTest.cpp
     Event/Pointer/EllipseMinorOuterTest.cpp
     Event/Pointer/MultitouchTest.cpp
     Event/Pointer/OrientationTest.cpp
-    Event/Button/ButtonActionTest.cpp
-    Event/Button/ButtonIdTest.cpp
+    Event/Button/ActionTest.cpp
+    Event/Button/IdentifierTest.cpp
     Event/Pointer/PositionXOuterTest.cpp
     Event/Pointer/PositionYOuterTest.cpp
     Event/Common/TypeTest.cpp

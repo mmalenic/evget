@@ -30,8 +30,8 @@ TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(KeyTest, Action) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Button::Action::Press).build(), 1, "Press");
+TEST(KeyTest, ButtonAction) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Button::ButtonAction::Press).build(), 1, "Press");
 }
 
 TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)

@@ -7,8 +7,8 @@ add_program(
     Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/Button/ButtonAction.cpp
-    Event/Button/ButtonId.cpp
+    Event/Button/Action.cpp
+    Event/Button/Identifier.cpp
     Event/Pointer/Multitouch.cpp
     Event/Pointer/ScrollUp.cpp
     Event/Pointer/ScrollDown.cpp
@@ -23,7 +23,7 @@ add_program(
     Event/Pointer/PositionYOuter.cpp
     Event/Pointer/PositionX.cpp
     Event/Pointer/PositionY.cpp
-    Event/Button/ButtonName.cpp
+    Event/Button/Name.cpp
     Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp

@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include "evget/Event/MouseClick.h"
-#include "evget/Event/Button/ButtonAction.h"
+#include "evget/Event/Button/Action.h"
 
 #include <utility>
 
@@ -30,9 +30,9 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _device{std::make_unique<Common::DeviceType>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
-    _buttonType{std::make_unique<Button::ButtonAction>()},
-    _buttonId{std::make_unique<Button::ButtonId>()},
-    _buttonName{std::make_unique<Button::ButtonName>()}
+    _buttonType{std::make_unique<Button::Action>()},
+    _buttonId{std::make_unique<Button::Identifier>()},
+    _buttonName{std::make_unique<Button::Name>()}
 {
 }
 
@@ -51,18 +51,18 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::posi
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::action(Button::Action action) {
-    _buttonType = Event::Button::ButtonAction::createButtonAction(action);
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::action(Button::ButtonAction action) {
+    _buttonType = Event::Button::Action::createAction(action);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(int button) {
-    _buttonId = std::make_unique<Button::ButtonId>(button);
+    _buttonId = std::make_unique<Button::Identifier>(button);
     return *this;
 }
 
 Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::name(const std::string& name) {
-    _buttonName = std::make_unique<Button::ButtonName>(name);
+    _buttonName = std::make_unique<Button::Name>(name);
     return *this;
 }
 

@@ -20,13 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Button/ButtonId.h"
+#include <gtest/gtest.h>
+#include "TestUtils/Event/EventTestUtils.h"
+#include "evget/Event/Button/Name.h"
 
-Event::Button::ButtonId::ButtonId(std::string button) : AbstractField{"ButtonId", std::move(button)} {
-}
+namespace EventTestUtils = TestUtils::EventTestUtils;
 
-Event::Button::ButtonId::ButtonId(int button) : ButtonId{std::to_string(button)} {
-}
-
-Event::Button::ButtonId::ButtonId() : ButtonId{""} {
+TEST(ButtonNameTest, Constructor) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::fieldValueAndName<Event::Button::Name>("name", "Name", "name");
 }

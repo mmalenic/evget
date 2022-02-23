@@ -46,10 +46,10 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
             rawScrollEvent = scrollEvent(event);
             break;
         case XI_ButtonPress:
-            buttonEvent(event, data, Event::Button::Action::Press);
+            buttonEvent(event, data, Event::Button::ButtonAction::Press);
             break;
         case XI_ButtonRelease:
-            buttonEvent(event, data, Event::Button::Action::Release);
+            buttonEvent(event, data, Event::Button::ButtonAction::Release);
             break;
         case XI_KeyPress:break;
         case XI_KeyRelease:break;
@@ -81,7 +81,7 @@ std::chrono::nanoseconds evget::EventTransformerLinux::getTime(const evget::XInp
     return event.getTimestamp() - *start;
 }
 
-void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::Action action) {
+void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||

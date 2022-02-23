@@ -27,10 +27,10 @@
 #include "AbstractData.h"
 #include "evget/Event/Common/Time.h"
 #include "evget/Event/Button/Character.h"
-#include "evget/Event/Button/Action.h"
-#include "evget/Event/Button/ButtonId.h"
 #include "evget/Event/Button/ButtonAction.h"
-#include "evget/Event/Button/ButtonName.h"
+#include "evget/Event/Button/Identifier.h"
+#include "evget/Event/Button/Action.h"
+#include "evget/Event/Button/Name.h"
 
 namespace Event {
     /**
@@ -52,7 +52,7 @@ namespace Event {
             /**
              * Add action.
              */
-            KeyBuilder& action(Button::Action action);
+            KeyBuilder& action(Button::ButtonAction action);
 
             /**
              * Add id.
@@ -76,9 +76,9 @@ namespace Event {
 
         private:
             std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Button::ButtonAction> _buttonType;
-            std::unique_ptr<Button::ButtonId> _button;
-            std::unique_ptr<Button::ButtonName> _name;
+            std::unique_ptr<Button::Action> _buttonType;
+            std::unique_ptr<Button::Identifier> _button;
+            std::unique_ptr<Button::Name> _name;
             std::unique_ptr<Button::Character> _character;
         };
 

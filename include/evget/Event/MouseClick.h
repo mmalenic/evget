@@ -29,10 +29,10 @@
 #include "evget/Event/Pointer/PositionX.h"
 #include "evget/Event/Pointer/PositionY.h"
 #include "evget/Event/Common/DeviceType.h"
-#include "evget/Event/Button/Action.h"
 #include "evget/Event/Button/ButtonAction.h"
-#include "evget/Event/Button/ButtonId.h"
-#include "evget/Event/Button/ButtonName.h"
+#include "evget/Event/Button/Action.h"
+#include "evget/Event/Button/Identifier.h"
+#include "evget/Event/Button/Name.h"
 
 namespace Event {
     /**
@@ -69,7 +69,7 @@ namespace Event {
             /**
              * Add action.
              */
-            MouseClickBuilder& action(Button::Action action);
+            MouseClickBuilder& action(Button::ButtonAction action);
 
             /**
              * Add id.
@@ -91,9 +91,9 @@ namespace Event {
             std::unique_ptr<Common::DeviceType> _device;
             std::unique_ptr<Pointer::PositionX> _positionX;
             std::unique_ptr<Pointer::PositionY> _positionY;
-            std::unique_ptr<Button::ButtonAction> _buttonType;
-            std::unique_ptr<Button::ButtonId> _buttonId;
-            std::unique_ptr<Button::ButtonName> _buttonName;
+            std::unique_ptr<Button::Action> _buttonType;
+            std::unique_ptr<Button::Identifier> _buttonId;
+            std::unique_ptr<Button::Name> _buttonName;
         };
 
         /**

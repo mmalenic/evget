@@ -20,10 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Button/ButtonName.h"
+#include "evget/Event/Button/Action.h"
 
-Event::Button::ButtonName::ButtonName(std::string button) : AbstractField{"ButtonName", std::move(button)} {
+Event::Button::Action::Action(std::string type) : AbstractField{"Action", std::move(type)} {
 }
 
-Event::Button::ButtonName::ButtonName() : ButtonName{""} {
+Event::Button::Action::Action() : Action{""} {
+}
+
+std::unique_ptr<Event::Button::Action> Event::Button::Action::createAction(ButtonAction action) {
+    switch (action) {
+    case ButtonAction::Press:
+        return std::make_unique<Action>("Press");;
+    case ButtonAction::Release:
+        return std::make_unique<Action>("Release");
+    case ButtonAction::Repeat:
+        return std::make_unique<Action>("Repeat");
+    }
 }

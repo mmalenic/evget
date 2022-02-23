@@ -313,12 +313,12 @@ add_program(
     include/evget/Event/Pointer/PositionYOuterTest.h
     include/evget/Event/Pointer/PositionX.h
     include/evget/Event/Pointer/PositionY.h
-    include/evget/Event/Button/ButtonName.h
+    include/evget/Event/Button/Name.h
     include/evget/Event/Common/DeviceType.h
     include/evget/Event/Common/Device.h
-    include/evget/Event/Button/ButtonAction.h
     include/evget/Event/Button/Action.h
-    include/evget/Event/Button/ButtonId.h
+    include/evget/Event/Button/ButtonAction.h
+    include/evget/Event/Button/Identifier.h
     include/evget/Event/TableData.h
     include/evget/Event/Touch.h
     include/evget/EventListener.h

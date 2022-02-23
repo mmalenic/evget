@@ -21,13 +21,13 @@
 // SOFTWARE.
 
 #include "evget/Event/Key.h"
-#include "evget/Event/Button/ButtonAction.h"
+#include "evget/Event/Button/Action.h"
 
 Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
-_buttonType{std::make_unique<Button::ButtonAction>()},
-_button{std::make_unique<Button::ButtonId>()},
-_name{std::make_unique<Button::ButtonName>()},
+_buttonType{std::make_unique<Button::Action>()},
+_button{std::make_unique<Button::Identifier>()},
+_name{std::make_unique<Button::Name>()},
 _character{std::make_unique<Button::Character>()} {
 }
 
@@ -36,18 +36,18 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds na
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Button::Action action) {
-    _buttonType = Event::Button::ButtonAction::createButtonAction(action);
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Button::ButtonAction action) {
+    _buttonType = Event::Button::Action::createAction(action);
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::button(int button) {
-    _button = std::make_unique<Button::ButtonId>(button);
+    _button = std::make_unique<Button::Identifier>(button);
     return *this;
 }
 
 Event::Key::KeyBuilder& Event::Key::KeyBuilder::name(std::string name) {
-    _name = std::make_unique<Button::ButtonName>(std::move(name));
+    _name = std::make_unique<Button::Name>(std::move(name));
     return *this;
 }
 
