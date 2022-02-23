@@ -27,6 +27,7 @@ Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
 _buttonType{std::make_unique<Button::ButtonAction>()},
 _button{std::make_unique<Button::ButtonId>()},
+_name{std::make_unique<Button::ButtonName>()},
 _character{std::make_unique<Button::Character>()} {
 }
 
@@ -40,8 +41,13 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Button::Action action) {
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::button(std::string button) {
-    _button = std::make_unique<Button::ButtonId>(std::move(button));
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::button(int button) {
+    _button = std::make_unique<Button::ButtonId>(button);
+    return *this;
+}
+
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::name(std::string name) {
+    _name = std::make_unique<Button::ButtonName>(std::move(name));
     return *this;
 }
 
@@ -60,5 +66,6 @@ Event::Key::Key(
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._buttonType));
     fields.emplace_back(std::move(builder._button));
+    fields.emplace_back(std::move(builder._name));
     fields.emplace_back(std::move(builder._character));
 }

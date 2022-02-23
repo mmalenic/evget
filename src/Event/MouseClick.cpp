@@ -61,7 +61,7 @@ Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::butt
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::name(std::string name) {
+Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::name(const std::string& name) {
     _buttonName = std::make_unique<Button::ButtonName>(name);
     return *this;
 }
@@ -85,4 +85,5 @@ Event::MouseClick::MouseClick(
     fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._buttonType));
     fields.emplace_back(std::move(builder._buttonId));
+    fields.emplace_back(std::move(builder._buttonName));
 }

@@ -30,6 +30,7 @@
 #include "evget/Event/Button/Action.h"
 #include "evget/Event/Button/ButtonId.h"
 #include "evget/Event/Button/ButtonAction.h"
+#include "evget/Event/Button/ButtonName.h"
 
 namespace Event {
     /**
@@ -56,7 +57,12 @@ namespace Event {
             /**
              * Add id.
              */
-            KeyBuilder& button(std::string button);
+            KeyBuilder& button(int button);
+
+            /**
+             * Add id.
+             */
+            KeyBuilder& name(std::string name);
 
             /**
              * Add character.
@@ -72,6 +78,7 @@ namespace Event {
             std::unique_ptr<Common::Time> _time;
             std::unique_ptr<Button::ButtonAction> _buttonType;
             std::unique_ptr<Button::ButtonId> _button;
+            std::unique_ptr<Button::ButtonName> _name;
             std::unique_ptr<Button::Character> _character;
         };
 

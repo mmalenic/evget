@@ -35,9 +35,13 @@ TEST(KeyTest, Action) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.button("1").build(), 2, "1");
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.button(1).build(), 2, "1");
+}
+
+TEST(KeyTest, Name) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.name("1").build(), 3, "1");
 }
 
 TEST(KeyTest, Character) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character('a').build(), 3, "a");
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character('a').build(), 4, "a");
 }

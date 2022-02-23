@@ -79,7 +79,7 @@ namespace Event {
             /**
              * Add name.
              */
-            MouseClickBuilder& name(std::string name);
+            MouseClickBuilder& name(const std::string& name);
 
             /**
              * Build mouse click event.
