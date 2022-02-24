@@ -103,6 +103,33 @@ void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::ve
 }
 
 void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (!devices.contains(deviceEvent.deviceid)) {
+        return;
+    }
+
+    // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms.
+    // Seems a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
+    // Relationship. Besides, XLookupString only uses the display, keycode and state anyway:
+    // https://github.com/freedesktop/xorg-libX11/blob/582dc6f89e1f9288710a55cb2b8fbf2af99d7616/src/xkb/XKBBind.c#L686
+    XKeyEvent keyEvent{
+        .type = action == Event::Button::ButtonAction::Release ? ButtonRelease : ButtonPress,
+        .serial = deviceEvent.serial,
+        .send_event = deviceEvent.send_event,
+        .display = deviceEvent.display,
+        .window = deviceEvent.event,
+        .root = deviceEvent.root,
+        .subwindow = deviceEvent.child,
+        .time = deviceEvent.time,
+        .x = static_cast<int>(deviceEvent.event_x),
+        .y = static_cast<int>(deviceEvent.event_y),
+        .x_root = static_cast<int>(deviceEvent.root_x),
+        .y_root = static_cast<int>(deviceEvent.root_y),
+        .state = static_cast<unsigned int>(deviceEvent.mods.effective),
+        .keycode = static_cast<unsigned int>(deviceEvent.detail),
+        .same_screen = true
+    };
+
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
