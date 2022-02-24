@@ -23,6 +23,7 @@
 
 #include <spdlog/spdlog.h>
 #include <X11/extensions/XInput.h>
+#include <X11/XKBlib.h>
 #include <xorg/xserver-properties.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include "evget/EventTransformerLinux.h"
@@ -99,6 +100,9 @@ void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::ve
             deviceEvent,
             "MouseClickSystemData"
         )).build());
+}
+
+void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action) {
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
@@ -391,7 +395,7 @@ void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonI
         XGetDeviceButtonMapping(&display.get(), device.get(), map.get(), buttonInfo.num_buttons);
 
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
-            if (!buttonInfo.labels[i]) {
+            if (buttonInfo.labels[i]) {
                 auto name = getAtomName(buttonInfo.labels[i]);
                 if (name) {
                     buttonMap[id][map[i]] = name.get();
