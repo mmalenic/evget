@@ -79,6 +79,9 @@ namespace evget {
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
 
+        XIM xim = XOpenIM(&display.get(), nullptr, nullptr, nullptr);
+        XIC xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, nullptr);
+
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};

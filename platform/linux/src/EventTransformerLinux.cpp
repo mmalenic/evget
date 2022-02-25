@@ -24,6 +24,7 @@
 #include <spdlog/spdlog.h>
 #include <X11/extensions/XInput.h>
 #include <X11/XKBlib.h>
+#include <X11/Xutil.h>
 #include <xorg/xserver-properties.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include "evget/EventTransformerLinux.h"
@@ -110,8 +111,7 @@ void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vecto
 
     // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms.
     // Seems a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
-    // Relationship. Besides, XLookupString only uses the display, keycode and state anyway:
-    // https://github.com/freedesktop/xorg-libX11/blob/582dc6f89e1f9288710a55cb2b8fbf2af99d7616/src/xkb/XKBBind.c#L686
+    // relationship.
     XKeyEvent keyEvent{
         .type = action == Event::Button::ButtonAction::Release ? ButtonRelease : ButtonPress,
         .serial = deviceEvent.serial,
@@ -129,6 +129,7 @@ void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vecto
         .keycode = static_cast<unsigned int>(deviceEvent.detail),
         .same_screen = true
     };
+
 
 }
 
