@@ -35,6 +35,11 @@
 #include "evget/Event/MouseMove.h"
 
 std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
+
+    auto ptr = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
+    XIM xim = XOpenIM(&display.get(), nullptr, nullptr, nullptr);
+
+
     if (event.hasData()) {
         std::vector<std::unique_ptr<Event::TableData>> data{};
         auto type = event.getEventType();
@@ -439,4 +444,27 @@ evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{
 
 std::unique_ptr<char[], decltype(&XFree)> evget::EventTransformerLinux::getAtomName(Atom atom) {
     return {XGetAtomName(&display.get(), atom), XFree};
+}
+
+std::unique_ptr<_XIC, decltype(&XDestroyIC)> evget::EventTransformerLinux::createIC(Display& display, XIM xim) {
+    if (xim) {
+        XIMStyles* xim_styles;
+        auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
+        if (values || !xim_styles) {
+            spdlog::warn("The input method does not support any styles, falling back to encoding key events in ISO Latin-1.");
+            return {nullptr, XDestroyIC};
+        }
+
+        for (int i = 0;  i < xim_styles->count_styles;  i++) {
+            if (xim_styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing)) {
+                XFree(xim_styles);
+                Window window = XDefaultRootWindow(&display);
+                return {XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window, XNFocusWindow, window, nullptr), XDestroyIC};
+            }
+        }
+
+        spdlog::warn("The input method does not support the PreeditNothing and StatusNothing style, falling back to encoding key events in ISO Latin-1.");
+        XFree (xim_styles);
+        return {nullptr, XDestroyIC};
+    }
 }

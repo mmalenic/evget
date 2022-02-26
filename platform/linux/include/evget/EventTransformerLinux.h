@@ -69,6 +69,8 @@ namespace evget {
         void setInfo(const XIDeviceInfo& info);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
+        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
+
         std::reference_wrapper<Display> display;
 
         std::map<int, std::map<int, std::string>> buttonMap{};
@@ -79,8 +81,8 @@ namespace evget {
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
 
-        XIM xim = XOpenIM(&display.get(), nullptr, nullptr, nullptr);
-        XIC xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, nullptr);
+        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
+        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
 
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
