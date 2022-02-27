@@ -56,9 +56,9 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
             buttonEvent(event, data, Event::Button::ButtonAction::Release);
             break;
         case XI_KeyPress:
-            keyEventPress(event, data);
+        case XI_KeyRelease:
+            keyEvent(event, data);
             break;
-        case XI_KeyRelease:break;
 #if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
         case XI_TouchBegin:break;
         case XI_TouchUpdate:break;
@@ -108,7 +108,7 @@ void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::ve
         )).build());
 }
 
-void evget::EventTransformerLinux::keyEventPress(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data) {
+void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid)) {
         return;
@@ -134,12 +134,12 @@ void evget::EventTransformerLinux::keyEventPress(const XInputEvent& event, std::
         .same_screen = true
     };
 
-    std::string character;
+    std::string character{};
     KeySym keySym;
 
-    int bytes = 0;
+    int bytes;
     std::array<char, utf8MaxBytes + 1> array{};
-    if (xic) {
+    if (xic && deviceEvent.evtype != XI_KeyRelease) {
         Status status;
         bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
         if (status == XBufferOverflow) {
@@ -150,19 +150,20 @@ void evget::EventTransformerLinux::keyEventPress(const XInputEvent& event, std::
         bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
     }
 
-    array[bytes] = '\0';
-    character = std::string{array.data()};
+    Event::Button::ButtonAction action = Event::Button::ButtonAction::Release;
+    if (deviceEvent.evtype != XI_KeyRelease) {
+        action = (deviceEvent.flags & XIKeyRepeat) ? Event::Button::ButtonAction::Repeat : Event::Button::ButtonAction::Press;
+        array[bytes] = '\0';
+        character = std::string{array.data()};
+    }
 
     std::string name{};
     if (keySym != NoSymbol) {
         name = XKeysymToString(keySym);
     }
 
-
-
     Event::Key::KeyBuilder builder{};
-    builder.time(getTime(event)).action((deviceEvent.flags & XIKeyRepeat) ? Event::Button::ButtonAction::Repeat : Event::Button::ButtonAction::Press)
-    .button(deviceEvent.detail).character(character).name(name);
+    builder.time(getTime(event)).action(action).button(deviceEvent.detail).character(character).name(name);
 
     data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
         createSystemDataWithRoot(
