@@ -43,5 +43,5 @@ TEST(KeyTest, Name) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(KeyTest, Character) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character('a').build(), 4, "a");
+    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character("a").build(), 4, "a");
 }

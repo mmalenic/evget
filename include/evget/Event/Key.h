@@ -67,7 +67,7 @@ namespace Event {
             /**
              * Add character.
              */
-            KeyBuilder& character(char character);
+            KeyBuilder& character(const std::string& character);
 
             /**
              * Build key event.

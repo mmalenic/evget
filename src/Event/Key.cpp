@@ -51,7 +51,7 @@ Event::Key::KeyBuilder& Event::Key::KeyBuilder::name(std::string name) {
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(char character) {
+Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(const std::string& character) {
     _character = std::make_unique<Button::Character>(character);
     return *this;
 }
