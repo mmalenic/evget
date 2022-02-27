@@ -59,7 +59,7 @@ namespace evget {
         std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
 
         void buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action);
-        void keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action);
+        void keyEventPress(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data);
         void motionEvent(std::chrono::nanoseconds time, std::vector<std::unique_ptr<Event::TableData>>& data, const XIDeviceEvent& deviceEvent);
         bool motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data);
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
@@ -70,6 +70,8 @@ namespace evget {
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
+
+        static constexpr int utf8MaxBytes = 4;
 
         std::reference_wrapper<Display> display;
 
