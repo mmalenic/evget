@@ -139,7 +139,7 @@ void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vecto
 
     int bytes;
     std::array<char, utf8MaxBytes + 1> array{};
-    if (xic && deviceEvent.evtype != XI_KeyRelease) {
+    if (xic) {
         Status status;
         bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
         if (status == XBufferOverflow) {
