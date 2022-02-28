@@ -272,10 +272,9 @@ void evget::EventTransformerLinux::addTableData(
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithRoot(
     const XIDeviceEvent& event,
-    const std::string& name,
-    std::initializer_list<int> excludeValuators
+    const std::string& name
 ) {
-    std::vector<std::unique_ptr<Event::AbstractField>> fields = createSystemData(event, name, excludeValuators);
+    std::vector<std::unique_ptr<Event::AbstractField>> fields = createSystemData(event, name);
     fields.emplace_back(std::make_unique<Event::Field>("RootX", std::to_string(event.root_x)));
     fields.emplace_back(std::make_unique<Event::Field>("RootY", std::to_string(event.root_y)));
     return std::make_unique<Event::Data>(name, std::move(fields));
@@ -283,16 +282,15 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithoutRoot(
     const XIDeviceEvent& event,
-    const std::string& name,
-    std::initializer_list<int> excludeValuators
+    const std::string& name
 ) {
-    std::vector<std::unique_ptr<Event::AbstractField>> fields = createSystemData(event, name, excludeValuators);
+    std::vector<std::unique_ptr<Event::AbstractField>> fields = createSystemData(event, name);
     fields.emplace_back(std::make_unique<Event::Field>("RootX"));
     fields.emplace_back(std::make_unique<Event::Field>("RootY"));
     return std::make_unique<Event::Data>(name, std::move(fields));
 }
 
-std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators) {
+std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
@@ -304,7 +302,7 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
 
     fields.emplace_back(std::make_unique<Event::Field>("ButtonState", createButtonEntries(event)));
 
-    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event, excludeValuators)));
+    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event)));
 
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", formatValue(event.mods.base)));
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", formatValue(event.mods.effective)));
@@ -331,17 +329,15 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(
     return data;
 }
 
-Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude) {
+Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
     auto* values = event.valuators.values;
-    getMasks(event.buttons.mask, event.buttons.mask_len, [&data, &exclude, &values](int mask) {
-        if (std::find(exclude.begin(), exclude.end(), mask) == exclude.end()) {
-            std::vector<std::unique_ptr<Event::AbstractField>> fields{};
-            fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(mask)));
-            fields.emplace_back(std::make_unique<Event::Field>("Value", std::to_string(*values++)));
-            data.emplace_back(std::make_unique<Event::Data>("Valuators", std::move(fields)));
-        }
+    getMasks(event.buttons.mask, event.buttons.mask_len, [&data, &values](int mask) {
+        std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+        fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(mask)));
+        fields.emplace_back(std::make_unique<Event::Field>("Value", std::to_string(*values++)));
+        data.emplace_back(std::make_unique<Event::Data>("Valuators", std::move(fields)));
     });
 
     return data;

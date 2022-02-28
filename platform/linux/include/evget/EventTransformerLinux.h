@@ -43,10 +43,10 @@ namespace evget {
         std::vector<std::unique_ptr<Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
-        std::unique_ptr<Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
-        std::unique_ptr<Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators = {});
-        std::vector<std::unique_ptr<Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name, std::initializer_list<int> excludeValuators);
-        static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
+        std::unique_ptr<Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& name);
+        std::unique_ptr<Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& name);
+        std::vector<std::unique_ptr<Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name);
+        static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static void addTableData(std::vector<std::unique_ptr<Event::TableData>>& data, std::unique_ptr<Event::AbstractData> genericData, std::unique_ptr<Event::AbstractData> systemData);
