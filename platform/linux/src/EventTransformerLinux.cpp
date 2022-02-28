@@ -101,11 +101,7 @@ void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::ve
     builder.time(getTime(event)).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
     .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
 
-    data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
-        createSystemDataWithoutRoot(
-            deviceEvent,
-            "MouseClickSystemData"
-        )).build());
+    addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent,"MouseClickSystemData"));
 }
 
 void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data) {
@@ -165,11 +161,7 @@ void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vecto
     Event::Key::KeyBuilder builder{};
     builder.time(getTime(event)).action(action).button(deviceEvent.detail).character(character).name(name);
 
-    data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
-        createSystemDataWithRoot(
-            deviceEvent,
-            "KeySystemData"
-        )).build());
+    addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
 }
 
 std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
@@ -247,15 +239,7 @@ void evget::EventTransformerLinux::motionEvent(
             Event::MouseMove::MouseMoveBuilder builder{};
             builder.time(time).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
 
-            data.emplace_back(
-                Event::TableData::TableDataBuilder{}.genericData(builder.build()).systemData(
-                    createSystemDataWithoutRoot(
-                        deviceEvent,
-                        "MouseMoveSystemData"
-                    )
-                ).build()
-            );
-
+            addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent, "MouseMoveSystemData"));
             hasMotion = true;
         } else if (!hasScroll) {
             hasScroll = scrollEvent(deviceEvent, data, scrollValuators, valuator);
@@ -270,19 +254,21 @@ bool evget::EventTransformerLinux::scrollEvent(
 ) {
     for (const auto& [scrollValuator, _]: scrollValuators) {
         if (valuator == scrollValuator) {
-            data.emplace_back(
-                Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).systemData(
-                    createSystemDataWithRoot(
-                        event,
-                        "MouseScrollSystemData"
-                    )
-                ).build()
-            );
+            addTableData(data, std::move(rawScrollEvent), createSystemDataWithRoot(event, "MouseScrollSystemData"));
             return true;
         }
     }
     return false;
 }
+
+void evget::EventTransformerLinux::addTableData(
+    std::vector<std::unique_ptr<Event::TableData>>& data,
+    std::unique_ptr<Event::AbstractData> genericData,
+    std::unique_ptr<Event::AbstractData> systemData
+) {
+    data.emplace_back(Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
+}
+
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithRoot(
     const XIDeviceEvent& event,

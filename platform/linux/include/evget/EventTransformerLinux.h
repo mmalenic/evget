@@ -36,7 +36,6 @@
 #include "evget/Event/MouseScroll.h"
 
 namespace evget {
-
     class EventTransformerLinux : EventTransformer<XInputEvent> {
     public:
         explicit EventTransformerLinux(Display& display);
@@ -50,6 +49,7 @@ namespace evget {
         static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event, std::initializer_list<int> exclude);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
+        static void addTableData(std::vector<std::unique_ptr<Event::TableData>>& data, std::unique_ptr<Event::AbstractData> genericData, std::unique_ptr<Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
