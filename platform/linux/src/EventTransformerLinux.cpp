@@ -302,7 +302,7 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
 
     fields.emplace_back(std::make_unique<Event::Field>("ButtonState", createButtonEntries(event)));
 
-    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event)));
+    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event.valuators)));
 
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersBase", formatValue(event.mods.base)));
     fields.emplace_back(std::make_unique<Event::Field>("ModifiersEffective", formatValue(event.mods.effective)));
@@ -317,6 +317,26 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
     return fields;
 }
 
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData(
+    const XIRawEvent& event,
+    const std::string& name
+) {
+    std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.sourceid]));
+    fields.emplace_back(std::make_unique<Event::Field>("EventType", std::to_string(event.evtype)));
+    fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("Detail", std::to_string(event.detail)));
+
+    fields.emplace_back(std::make_unique<Event::Field>("Flags", formatValue(event.flags)));
+
+    fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event.valuators)));
+
+    return std::make_unique<Event::Data>(name, std::move(fields));
+}
+
 Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
@@ -329,11 +349,11 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(
     return data;
 }
 
-Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIDeviceEvent& event) {
+Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIValuatorState& valuatorState) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
-    auto* values = event.valuators.values;
-    getMasks(event.buttons.mask, event.buttons.mask_len, [&data, &values](int mask) {
+    auto values = valuatorState.values;
+    getMasks(valuatorState.mask, valuatorState.mask_len, [&data, &values](int mask) {
         std::vector<std::unique_ptr<Event::AbstractField>> fields{};
         fields.emplace_back(std::make_unique<Event::Field>("Valuator", std::to_string(mask)));
         fields.emplace_back(std::make_unique<Event::Field>("Value", std::to_string(*values++)));

@@ -46,8 +46,10 @@ namespace evget {
         std::unique_ptr<Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& name);
         std::unique_ptr<Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& name);
         std::vector<std::unique_ptr<Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name);
-        static Event::AbstractField::Entries createValuatorEntries(const XIDeviceEvent& event);
+        static Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
+
+        std::unique_ptr<Event::AbstractData> createRawData(const XIRawEvent& event, const std::string& name);
 
         static void addTableData(std::vector<std::unique_ptr<Event::TableData>>& data, std::unique_ptr<Event::AbstractData> genericData, std::unique_ptr<Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
