@@ -22,9 +22,23 @@
 
 #include <spdlog/spdlog.h>
 #include "evget/XInputHandler.h"
+#include "evget/UnsupportedOperationException.h"
 
 evget::XInputHandler::XInputHandler(Display& display) : display{display} {
+    announceVersion(display);
     setMask(display);
+}
+
+void evget::XInputHandler::announceVersion(Display& display) {
+    int major = versionMajor;
+    int minor = versionMinor;
+
+    Status status = XIQueryVersion(&display, &major, &minor);
+    if (status == Success) {
+        spdlog::info("XI2 is supported with version {}.{}", major, minor);
+    } else {
+        throw UnsupportedOperationException(fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor));
+    }
 }
 
 void evget::XInputHandler::setMask(Display& display) {

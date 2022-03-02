@@ -40,9 +40,14 @@ namespace evget {
         XInputEvent getEvent();
 
     private:
+        static constexpr int versionMajor = 2;
+        static constexpr int versionMinor = 2;
+
         std::reference_wrapper<Display> display;
 
         static void setMask(Display& display);
+
+        static void announceVersion(Display& display);
     };
 }
 
