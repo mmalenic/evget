@@ -318,8 +318,7 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
 }
 
 std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData(
-    const XIRawEvent& event,
-    const std::string& name
+    const XIRawEvent& event
 ) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
 
@@ -334,7 +333,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData
 
     fields.emplace_back(std::make_unique<Event::Field>("Valuators", createValuatorEntries(event.valuators)));
 
-    return std::make_unique<Event::Data>(name, std::move(fields));
+    return std::make_unique<Event::Data>("RawEvent", std::move(fields));
 }
 
 Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
@@ -448,6 +447,7 @@ void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
             } else if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
                 valuatorY = valuatorInfo->number;
             }
+            valuatorNames.emplace(valuatorInfo->number, name.get());
         }
     }
 }
@@ -503,4 +503,36 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> evget::EventTransformerLinux::creat
         XFree (xim_styles);
         return {nullptr, XDestroyIC};
     }
+}
+
+std::map<int, std::string> evget::EventTransformerLinux::typeToName() {
+    std::map<int, std::string> map{};
+
+    map.emplace(XI_DeviceChanged, "DeviceChanged");
+    map.emplace(XI_KeyPress, "KeyPress");
+    map.emplace(XI_KeyRelease, "KeyRelease");
+    map.emplace(XI_ButtonPress, "ButtonPress");
+    map.emplace(XI_ButtonRelease, "ButtonRelease");
+    map.emplace(XI_Motion, "Motion");
+    map.emplace(XI_Enter, "Enter");
+    map.emplace(XI_Leave, "Leave");
+    map.emplace(XI_FocusIn, "FocusIn");
+    map.emplace(XI_FocusOut, "FocusOut");
+    map.emplace(XI_HierarchyChanged, "HierarchyChanged");
+    map.emplace(XI_PropertyEvent, "PropertyEvent");
+    map.emplace(XI_RawKeyPress, "RawKeyPress");
+    map.emplace(XI_RawKeyRelease, "RawKeyRelease");
+    map.emplace(XI_RawButtonPress, "RawButtonPress");
+    map.emplace(XI_RawButtonRelease, "RawButtonRelease");
+    map.emplace(XI_RawMotion, "RawMotion");
+#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
+    map.emplace(XI_TouchBegin, "TouchBegin");
+    map.emplace(XI_TouchUpdate, "TouchUpdate");
+    map.emplace(XI_TouchEnd, "TouchEnd");
+    map.emplace(XI_RawTouchBegin, "RawTouchBegin");
+    map.emplace(XI_RawTouchUpdate, "RawTouchUpdate");
+    map.emplace(XI_RawTouchEnd, "RawTouchEnd");
+#endif
+
+    return map;
 }

@@ -49,10 +49,12 @@ namespace evget {
         static Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        std::unique_ptr<Event::AbstractData> createRawData(const XIRawEvent& event, const std::string& name);
+        std::unique_ptr<Event::AbstractData> createRawData(const XIRawEvent& event);
 
         static void addTableData(std::vector<std::unique_ptr<Event::TableData>>& data, std::unique_ptr<Event::AbstractData> genericData, std::unique_ptr<Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);
+        static std::map<int, std::string> typeToName();
+
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
@@ -84,6 +86,7 @@ namespace evget {
 
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
+        std::map<int, std::string> valuatorNames{};
 
         std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
         std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
@@ -91,6 +94,8 @@ namespace evget {
         std::map<int, Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
+
+        std::map<int, std::string> types = typeToName();
     };
 
     void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
