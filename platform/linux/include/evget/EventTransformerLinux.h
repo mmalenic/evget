@@ -50,6 +50,7 @@ namespace evget {
         static Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         std::unique_ptr<Event::AbstractData> createRawData(const XIRawEvent& event);
+        std::unique_ptr<Event::AbstractData> createDeviceChangedEvent(const XIDeviceChangedEvent& event);
 
         static void addTableData(std::vector<std::unique_ptr<Event::TableData>>& data, std::unique_ptr<Event::AbstractData> genericData, std::unique_ptr<Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function);

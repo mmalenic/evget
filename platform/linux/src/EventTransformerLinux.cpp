@@ -336,6 +336,19 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData
     return std::make_unique<Event::Data>("RawEvent", std::move(fields));
 }
 
+std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createDeviceChangedEvent(const XIDeviceChangedEvent& event) {
+    std::vector<std::unique_ptr<Event::AbstractField>> fields{};
+
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
+    fields.emplace_back(std::make_unique<Event::Field>("XInputTime", std::to_string(event.time)));
+    fields.emplace_back(std::make_unique<Event::Field>("DeviceId", std::to_string(event.deviceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("SourceId", std::to_string(event.sourceid)));
+    fields.emplace_back(std::make_unique<Event::Field>("Reason", std::to_string(event.reason)));
+    fields.emplace_back(std::make_unique<Event::Field>("ReasonName", (event.reason == XISlaveSwitch) ? "SlaveSwitch" : "DeviceChanged"));
+
+    return std::make_unique<Event::Data>("DeviceChangedEvent", std::move(fields));
+}
+
 Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
