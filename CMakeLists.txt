@@ -30,6 +30,7 @@ set(TEST_EXECUTABLE_NAME evgettest)
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
 INCLUDE(CheckIncludeFiles)
+include(CheckCXXSymbolExists)
 INCLUDE(CTest)
 
 # Checks the platform, returning the result true for the current platform.
@@ -51,12 +52,12 @@ function(platform_check)
                 set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} TRUE)
             endif()
         else()
-            check_include_files("${PLATFORM_CHECK_PLATFORM_REQUIRES}" REQUIRES)
-            set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} ${REQUIRES})
+            check_include_files("${PLATFORM_CHECK_PLATFORM_REQUIRES}" PLATFORM_CHECK_REQUIRES)
+            set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} ${PLATFORM_CHECK_REQUIRES})
         endif()
     endif()
 
-    unset(REQUIRES CACHE)
+    unset(PLATFORM_CHECK_REQUIRES CACHE)
 endfunction()
 
 # Links a found target.
@@ -233,6 +234,40 @@ function(add_program_linux)
         INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
         INCLUDE_VISIBILITY ${ADD_PROGRAM_LINUX_INCLUDE_VISIBILITY}
     )
+endfunction()
+
+# Checks for the existence of symbols in files. By default all symbols must be present.
+# If the ANY option is set, then any of the symbols can be present.
+function(find_symbols)
+    set(options ANY)
+    set(one_value_args RESULT)
+    set(multi_value_args SYMBOLS FILES)
+    cmake_parse_arguments(FIND_SYMBOLS "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    list(LENGTH FIND_SYMBOLS_SYMBOLS SYMBOLS_LENGTH)
+    math(EXPR LOOP "${SYMBOLS_LENGTH} - 1")
+    foreach(INDEX RANGE 0 ${LOOP})
+        list(GET FIND_SYMBOLS_SYMBOLS ${INDEX} SYMBOL)
+        check_cxx_symbol_exists(${SYMBOL} ${FIND_SYMBOLS_FILES} FIND_SYMBOLS_HAS_SYMBOL)
+
+        if (FIND_SYMBOLS_ANY AND FIND_SYMBOLS_HAS_SYMBOL)
+            set(${FIND_SYMBOLS_RESULT} TRUE PARENT_SCOPE)
+            unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
+            return()
+        elseif(NOT FIND_SYMBOLS_ANY AND NOT FIND_SYMBOLS_HAS_SYMBOL)
+            set(${FIND_SYMBOLS_RESULT} FALSE PARENT_SCOPE)
+            unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
+            return()
+        endif()
+
+        unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
+    endforeach()
+
+    if (FIND_SYMBOLS_ANY)
+        set(${FIND_SYMBOLS_RESULT} FALSE PARENT_SCOPE)
+    else()
+        set(${FIND_SYMBOLS_RESULT} TRUE PARENT_SCOPE)
+    endif()
 endfunction()
 
 # Set mode indicating how to add sources.
