@@ -236,11 +236,11 @@ function(add_program_linux)
     )
 endfunction()
 
-# Checks for the existence of symbols in files. By default all symbols must be present.
-# If the ANY option is set, then any of the symbols can be present.
+# Checks for the existence of symbols in files, and sets a compilation definition if present. By default all
+# symbols must be present. If the ANY option is set, then only one of the symbols needs to be present.
 function(find_symbols)
     set(options ANY)
-    set(one_value_args RESULT)
+    set(one_value_args TARGET VISIBILITY NAME)
     set(multi_value_args SYMBOLS FILES)
     cmake_parse_arguments(FIND_SYMBOLS "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -251,11 +251,10 @@ function(find_symbols)
         check_cxx_symbol_exists(${SYMBOL} ${FIND_SYMBOLS_FILES} FIND_SYMBOLS_HAS_SYMBOL)
 
         if (FIND_SYMBOLS_ANY AND FIND_SYMBOLS_HAS_SYMBOL)
-            set(${FIND_SYMBOLS_RESULT} TRUE PARENT_SCOPE)
+            target_compile_definitions(${FIND_SYMBOLS_TARGET} ${FIND_SYMBOLS_VISIBILITY} ${FIND_SYMBOLS_NAME})
             unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
             return()
         elseif(NOT FIND_SYMBOLS_ANY AND NOT FIND_SYMBOLS_HAS_SYMBOL)
-            set(${FIND_SYMBOLS_RESULT} FALSE PARENT_SCOPE)
             unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
             return()
         endif()
@@ -263,10 +262,8 @@ function(find_symbols)
         unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
     endforeach()
 
-    if (FIND_SYMBOLS_ANY)
-        set(${FIND_SYMBOLS_RESULT} FALSE PARENT_SCOPE)
-    else()
-        set(${FIND_SYMBOLS_RESULT} TRUE PARENT_SCOPE)
+    if (NOT FIND_SYMBOLS_ANY)
+        target_compile_definitions(${FIND_SYMBOLS_TARGET} ${FIND_SYMBOLS_VISIBILITY} ${FIND_SYMBOLS_NAME})
     endif()
 endfunction()
 
