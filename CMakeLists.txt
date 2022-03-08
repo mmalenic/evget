@@ -46,7 +46,6 @@ function(platform_check)
     endif()
 
     if (NOT DEFINED PLATFORM_CHECK_PLATFORM OR "${PLATFORM_CHECK_PLATFORM}" OR "${${PLATFORM_CHECK_PLATFORM}}")
-        message("${${PLATFORM_CHECK_PLATFORM_REQUIRES}}")
         if (NOT DEFINED PLATFORM_CHECK_PLATFORM_REQUIRES OR PLATFORM_CHECK_PLATFORM_REQUIRES STREQUAL "")
             if (DEFINED PLATFORM_CHECK_RESULT)
                 set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} TRUE)
@@ -182,7 +181,7 @@ endfunction()
 # and optionally includes libraries.
 function(add_program)
     set(options MAKE_EXECUTABLE MAKE_LIBRARY)
-    set(one_value_args TARGET PLATFORM PLATFORM_CHECK INCLUDE_VISIBILITY)
+    set(one_value_args TARGET PLATFORM PLATFORM_CHECK PLATFORM_VISIBILITY INCLUDE_VISIBILITY)
     set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -200,10 +199,26 @@ function(add_program)
                     message(STATUS "Adding sources to ${ADD_PROGRAM_TARGET}.")
                     target_sources(${ADD_PROGRAM_TARGET} PRIVATE ${ADD_PROGRAM_SRCS})
                 endif()
+
+                if (GUARD AND DEFINED ADD_PROGRAM_PLATFORM_CHECK AND DEFINED ADD_PROGRAM_PLATFORM_REQUIRES)
+                    if (DEFINED ADD_PROGRAM_PLATFORM_VISIBILITY)
+                        target_compile_definitions(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_PLATFORM_VISIBILITY} ${ADD_PROGRAM_PLATFORM_CHECK})
+                    else()
+                        target_compile_definitions(${ADD_PROGRAM_TARGET} PUBLIC ${ADD_PROGRAM_PLATFORM_CHECK})
+                    endif()
+                endif()
             elseif(ADD_PROGRAM_MAKE_EXECUTABLE)
                 message(STATUS "Creating empty executable ${ADD_PROGRAM_TARGET}.")
                 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/null.cpp "")
                 add_executable(${ADD_PROGRAM_TARGET} ${CMAKE_CURRENT_BINARY_DIR}/null.cpp)
+
+                if (GUARD AND DEFINED ADD_PROGRAM_PLATFORM_CHECK AND DEFINED ADD_PROGRAM_PLATFORM_REQUIRES)
+                    if (DEFINED ADD_PROGRAM_PLATFORM_VISIBILITY)
+                        target_compile_definitions(${ADD_PROGRAM_TARGET} ${ADD_PROGRAM_PLATFORM_VISIBILITY} ${ADD_PROGRAM_PLATFORM_CHECK})
+                    else()
+                        target_compile_definitions(${ADD_PROGRAM_TARGET} PUBLIC ${ADD_PROGRAM_PLATFORM_CHECK})
+                    endif()
+                endif()
             endif()
 
             if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
@@ -227,9 +242,8 @@ function(add_program_linux)
     set_mode(ADD_PROGRAM_LINUX_MAKE_EXECUTABLE ADD_PROGRAM_LINUX_MAKE_LIBRARY)
     add_program(
         TARGET ${ADD_PROGRAM_LINUX_TARGET} ${MODE}
-        PLATFORM UNIX AND NOT APPLE
         PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
-        PLATFORM_CHECK Linux
+        PLATFORM_CHECK EVGET_HAS_LINUX_INPUT
         SRCS ${ADD_PROGRAM_LINUX_SRCS}
         INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
         INCLUDE_VISIBILITY ${ADD_PROGRAM_LINUX_INCLUDE_VISIBILITY}
@@ -251,6 +265,7 @@ function(find_symbols)
         check_cxx_symbol_exists(${SYMBOL} ${FIND_SYMBOLS_FILES} FIND_SYMBOLS_HAS_SYMBOL)
 
         if (FIND_SYMBOLS_ANY AND FIND_SYMBOLS_HAS_SYMBOL)
+            message(STATUS "Adding compilation target ${FIND_SYMBOLS_NAME} for ${FIND_SYMBOLS_TARGET} with ${FIND_SYMBOLS_VISIBILITY} visibility.")
             target_compile_definitions(${FIND_SYMBOLS_TARGET} ${FIND_SYMBOLS_VISIBILITY} ${FIND_SYMBOLS_NAME})
             unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
             return()
@@ -263,6 +278,7 @@ function(find_symbols)
     endforeach()
 
     if (NOT FIND_SYMBOLS_ANY)
+        message(STATUS "Adding compilation target ${FIND_SYMBOLS_NAME} for ${FIND_SYMBOLS_TARGET} with ${FIND_SYMBOLS_VISIBILITY} visibility.")
         target_compile_definitions(${FIND_SYMBOLS_TARGET} ${FIND_SYMBOLS_VISIBILITY} ${FIND_SYMBOLS_NAME})
     endif()
 endfunction()
