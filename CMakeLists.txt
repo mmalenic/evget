@@ -29,34 +29,34 @@ set(TEST_EXECUTABLE_NAME evgettest)
 
 option(DOWNLOAD_DEPENDENCIES "Download dependencies if they are missing." ON)
 
-INCLUDE(CheckIncludeFiles)
+include(CheckIncludeFiles)
 include(CheckCXXSymbolExists)
-INCLUDE(CTest)
+include(CTest)
 
-# Checks the platform, returning the result true for the current platform.
-function(platform_check)
-    set(one_value_args RESULT PLATFORM)
-    set(multi_value_args PLATFORM_REQUIRES)
-    cmake_parse_arguments(PLATFORM_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+# Checks the feature, returning the result true for the current feature.
+function(feature_check)
+    set(one_value_args RESULT FEATURE)
+    set(multi_value_args FEATURE_REQUIRES)
+    cmake_parse_arguments(FEATURE_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    get_property(CHECK GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT})
+    get_property(CHECK GLOBAL PROPERTY ${FEATURE_CHECK_RESULT})
     if (NOT "${CHECK}" STREQUAL "")
-        message(STATUS "Skipping platform check for ${PLATFORM_CHECK_RESULT}, already checked.")
+        message(STATUS "Skipping  check for ${FEATURE_CHECK_RESULT}, already checked.")
         return()
     endif()
 
-    if (NOT DEFINED PLATFORM_CHECK_PLATFORM OR "${PLATFORM_CHECK_PLATFORM}" OR "${${PLATFORM_CHECK_PLATFORM}}")
-        if (NOT DEFINED PLATFORM_CHECK_PLATFORM_REQUIRES OR PLATFORM_CHECK_PLATFORM_REQUIRES STREQUAL "")
-            if (DEFINED PLATFORM_CHECK_RESULT)
-                set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} TRUE)
+    if (NOT DEFINED FEATURE_CHECK_FEATURE OR "${FEATURE_CHECK_FEATURE}" OR "${${FEATURE_CHECK_FEATURE}}")
+        if (NOT DEFINED FEATURE_CHECK_FEATURE_REQUIRES OR FEATURE_CHECK_FEATURE_REQUIRES STREQUAL "")
+            if (DEFINED FEATURE_CHECK_RESULT)
+                set_property(GLOBAL PROPERTY ${FEATURE_CHECK_RESULT} TRUE)
             endif()
         else()
-            check_include_files("${PLATFORM_CHECK_PLATFORM_REQUIRES}" PLATFORM_CHECK_REQUIRES)
-            set_property(GLOBAL PROPERTY ${PLATFORM_CHECK_RESULT} ${PLATFORM_CHECK_REQUIRES})
+            check_include_files("${FEATURE_CHECK_FEATURE_REQUIRES}" FEATURE_CHECK_REQUIRES)
+            set_property(GLOBAL PROPERTY ${FEATURE_CHECK_RESULT} ${FEATURE_CHECK_REQUIRES})
         endif()
     endif()
 
-    unset(PLATFORM_CHECK_REQUIRES CACHE)
+    unset(FEATURE_CHECK_REQUIRES CACHE)
 endfunction()
 
 # Links a found target.
@@ -94,12 +94,12 @@ endfunction()
 # If COMPONENTS is present, visibility from DEP is ignored.
 function(program_dependencies)
     set(options NOT_REQUIRED FIND_ALL ONLY_LINK)
-    set(one_value_args PLATFORM PLATFORM_CHECK)
-    set(multi_value_args TARGET DEP PLATFORM_REQUIRES COMPONENTS)
+    set(one_value_args FEATURE FEATURE_CHECK)
+    set(multi_value_args TARGET DEP FEATURE_REQUIRES COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    set_platform_property(PROGRAM_DEPENDENCIES_PLATFORM PROGRAM_DEPENDENCIES_PLATFORM_CHECK PROGRAM_DEPENDENCIES_PLATFORM_REQUIRES)
-    if ((NOT DEFINED PROGRAM_DEPENDENCIES_PLATFORM_CHECK OR GUARD) AND DEFINED PROGRAM_DEPENDENCIES_DEP)
+    set_feature_property(PROGRAM_DEPENDENCIES_FEATURE PROGRAM_DEPENDENCIES_FEATURE_CHECK PROGRAM_DEPENDENCIES_FEATURE_REQUIRES)
+    if ((NOT DEFINED PROGRAM_DEPENDENCIES_FEATURE_CHECK OR GUARD) AND DEFINED PROGRAM_DEPENDENCIES_DEP)
         list(LENGTH PROGRAM_DEPENDENCIES_DEP DEP_LENGTH)
         if (${DEP_LENGTH} EQUAL 3)
             list(GET PROGRAM_DEPENDENCIES_DEP 0 DEPENDENCY_VISIBILITY)
@@ -181,12 +181,12 @@ endfunction()
 # and optionally includes libraries.
 function(add_program)
     set(options MAKE_EXECUTABLE MAKE_LIBRARY)
-    set(one_value_args TARGET PLATFORM PLATFORM_CHECK PLATFORM_VISIBILITY INCLUDE_VISIBILITY)
-    set(multi_value_args SRCS INCLUDE_DIRS PLATFORM_REQUIRES)
+    set(one_value_args TARGET FEATURE FEATURE_CHECK FEATURE_VISIBILITY INCLUDE_VISIBILITY)
+    set(multi_value_args SRCS INCLUDE_DIRS FEATURE_REQUIRES)
     cmake_parse_arguments(ADD_PROGRAM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    set_platform_property(ADD_PROGRAM_PLATFORM ADD_PROGRAM_PLATFORM_CHECK ADD_PROGRAM_PLATFORM_REQUIRES)
-    if (NOT DEFINED ADD_PROGRAM_PLATFORM_CHECK OR GUARD)
+    set_feature_property(ADD_PROGRAM_FEATURE ADD_PROGRAM_FEATURE_CHECK ADD_PROGRAM_FEATURE_REQUIRES)
+    if (NOT DEFINED ADD_PROGRAM_FEATURE_CHECK OR GUARD)
         if (DEFINED ADD_PROGRAM_TARGET)
             if (DEFINED ADD_PROGRAM_SRCS)
                 if (ADD_PROGRAM_MAKE_EXECUTABLE)
@@ -200,13 +200,13 @@ function(add_program)
                     target_sources(${ADD_PROGRAM_TARGET} PRIVATE ${ADD_PROGRAM_SRCS})
                 endif()
 
-                add_compile_definitions(GUARD ADD_PROGRAM_TARGET ADD_PROGRAM_PLATFORM_CHECK ADD_PROGRAM_PLATFORM_REQUIRES ADD_PROGRAM_PLATFORM_VISIBILITY)
+                add_compile_definitions(GUARD ADD_PROGRAM_TARGET ADD_PROGRAM_FEATURE_CHECK ADD_PROGRAM_FEATURE_REQUIRES ADD_PROGRAM_FEATURE_VISIBILITY)
             elseif(ADD_PROGRAM_MAKE_EXECUTABLE)
                 message(STATUS "Creating empty executable ${ADD_PROGRAM_TARGET}.")
                 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/null.cpp "")
                 add_executable(${ADD_PROGRAM_TARGET} ${CMAKE_CURRENT_BINARY_DIR}/null.cpp)
 
-                add_compile_definitions(GUARD ADD_PROGRAM_TARGET ADD_PROGRAM_PLATFORM_CHECK ADD_PROGRAM_PLATFORM_REQUIRES ADD_PROGRAM_PLATFORM_VISIBILITY)
+                add_compile_definitions(GUARD ADD_PROGRAM_TARGET ADD_PROGRAM_FEATURE_CHECK ADD_PROGRAM_FEATURE_REQUIRES ADD_PROGRAM_FEATURE_VISIBILITY)
             endif()
 
             if (DEFINED ADD_PROGRAM_INCLUDE_DIRS)
@@ -230,8 +230,8 @@ function(add_program_linux)
     set_mode(ADD_PROGRAM_LINUX_MAKE_EXECUTABLE ADD_PROGRAM_LINUX_MAKE_LIBRARY)
     add_program(
         TARGET ${ADD_PROGRAM_LINUX_TARGET} ${MODE}
-        PLATFORM_REQUIRES fcntl.h linux/input.h sys/utsname.h
-        PLATFORM_CHECK EVGET_HAS_LINUX_INPUT
+        FEATURE_REQUIRES fcntl.h linux/input.h sys/utsname.h
+        FEATURE_CHECK EVGET_HAS_LINUX_INPUT
         SRCS ${ADD_PROGRAM_LINUX_SRCS}
         INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
         INCLUDE_VISIBILITY ${ADD_PROGRAM_LINUX_INCLUDE_VISIBILITY}
@@ -272,14 +272,14 @@ function(find_symbols)
 endfunction()
 
 # Add compile definitons
-macro(add_compile_definitions GUARD TARGET PLATFORM_CHECK PLATFORM_REQUIRES PLATFORM_VISIBILITY)
-    if (${GUARD} AND DEFINED ${PLATFORM_CHECK} AND DEFINED ${PLATFORM_REQUIRES})
-        if (NOT DEFINED ${PLATFORM_VISIBILITY})
-            set(${PLATFORM_VISIBILITY} PUBLIC)
+macro(add_compile_definitions GUARD TARGET FEATURE_CHECK FEATURE_REQUIRES FEATURE_VISIBILITY)
+    if (${GUARD} AND DEFINED ${FEATURE_CHECK} AND DEFINED ${FEATURE_REQUIRES})
+        if (NOT DEFINED ${FEATURE_VISIBILITY})
+            set(${FEATURE_VISIBILITY} PUBLIC)
         endif()
 
-        message(STATUS "Adding compilation target ${${PLATFORM_CHECK}} for ${${TARGET}} with ${${PLATFORM_VISIBILITY}} visibility.")
-        target_compile_definitions(${${TARGET}} ${${PLATFORM_VISIBILITY}} ${${PLATFORM_CHECK}})
+        message(STATUS "Adding compilation target ${${FEATURE_CHECK}} for ${${TARGET}} with ${${FEATURE_VISIBILITY}} visibility.")
+        target_compile_definitions(${${TARGET}} ${${FEATURE_VISIBILITY}} ${${FEATURE_CHECK}})
     endif()
 endmacro()
 
@@ -292,11 +292,11 @@ macro(set_mode MAKE_EXECUTABLE MAKE_LIBRARY)
     endif()
 endmacro()
 
-# Perform platform check and set property.
-macro(set_platform_property PLATFORM PLATFORM_CHECK PLATFORM_REQUIRES)
-    if (DEFINED ${PLATFORM_CHECK})
-        platform_check(PLATFORM ${${PLATFORM}} PLATFORM_REQUIRES ${${PLATFORM_REQUIRES}} RESULT ${${PLATFORM_CHECK}})
-        get_property(GUARD GLOBAL PROPERTY ${${PLATFORM_CHECK}})
+# Perform feature check and set property.
+macro(set_feature_property FEATURE FEATURE_CHECK FEATURE_REQUIRES)
+    if (DEFINED ${FEATURE_CHECK})
+        feature_check(FEATURE ${${FEATURE}} FEATURE_REQUIRES ${${FEATURE_REQUIRES}} RESULT ${${FEATURE_CHECK}})
+        get_property(GUARD GLOBAL PROPERTY ${${FEATURE_CHECK}})
     endif()
 endmacro()
 
