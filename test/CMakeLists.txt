@@ -1,11 +1,6 @@
 add_program(
     TARGET ${TEST_EXECUTABLE_NAME}
     SRCS
-    ../CommandLine/test/CommandLineAbstractOptionTest.cpp
-    ../CommandLine/test/CommandLineOptionFlagTest.cpp
-    ../CommandLine/test/CommandLineOptionTest.cpp
-    ../CommandLine/test/CommandLineOptionValidatedTest.cpp
-    ../CommandLine/test/CommandLineParserTest.cpp
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
     Event/Pointer/ScrollUpTest.cpp

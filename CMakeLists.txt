@@ -119,6 +119,9 @@ function(program_dependencies)
             message(FATAL_ERROR "Required argument to DEP unspecified.")
         endif()
 
+        message("${DEPENDENCY_NAME}")
+        message("${DEPENDENCY_VERSION}")
+        message("${DEPENDENCY_VISIBILITY}")
         if (PROGRAM_DEPENDENCIES_ONLY_LINK AND TARGET ${DEPENDENCY_NAME})
             message(STATUS "Linking ${DEPENDENCY_NAME} with ${PROGRAM_DEPENDENCIES_TARGET}.")
             target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME})
@@ -300,6 +303,12 @@ macro(set_feature_property FEATURE FEATURE_CHECK FEATURE_REQUIRES)
     endif()
 endmacro()
 
+# Sets a variable in local and parent scope.
+macro(set_variable NAME VALUE)
+    set(${NAME} ${VALUE})
+    set(${NAME} ${VALUE} PARENT_SCOPE)
+endmacro()
+
 if (DOWNLOAD_DEPENDENCIES)
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan.")
@@ -332,7 +341,6 @@ add_program(
     SRCS
     # Headers
     include/evget/Task.h
-    CommandLine/include/CommandLine/Parser.h
     include/evget/EventTransformer.h
     include/evget/Event/AbstractData.h
     include/evget/EventHandler.h
@@ -373,18 +381,15 @@ add_program(
     include/evget/Util.h
     include/evget/Event/AbstractField.h
     include/evget/UnsupportedOperationException.h
-    CommandLine/include/CommandLine/Option.h
-    CommandLine/include/CommandLine/InvalidCommandLineOption.h
-    CommandLine/include/CommandLine/OptionBuilder.h
-    CommandLine/include/CommandLine/AbstractOption.h
-    CommandLine/include/CommandLine/OptionValidated.h
-    CommandLine/include/CommandLine/OptionFlag.h
 )
 add_subdirectory(src)
 
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options headers)
+
+add_subdirectory(clioption)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
 
 # Make executable.
 add_program(

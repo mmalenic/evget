@@ -1,8 +1,6 @@
 add_program(
     TARGET ${LIBRARY_NAME}
     SRCS
-    ../CommandLine/src/OptionFlag.cpp
-    ../CommandLine/src/Parser.cpp
     Event/Button/Character.cpp
     Event/Common/Time.cpp
     Event/Data.cpp
@@ -35,5 +33,4 @@ add_program(
     Event/Touch.cpp
     ShutdownHandler.cpp
     UnsupportedOperationException.cpp
-    ../CommandLine/src/InvalidCommandLineOption.cpp
 )
