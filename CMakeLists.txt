@@ -332,7 +332,7 @@ add_program(
     SRCS
     # Headers
     include/evget/Task.h
-    include/evget/CommandLine/Parser.h
+    CommandLine/include/CommandLine/Parser.h
     include/evget/EventTransformer.h
     include/evget/Event/AbstractData.h
     include/evget/EventHandler.h
@@ -373,12 +373,12 @@ add_program(
     include/evget/Util.h
     include/evget/Event/AbstractField.h
     include/evget/UnsupportedOperationException.h
-    include/evget/CommandLine/Option.h
-    include/evget/CommandLine/InvalidCommandLineOption.h
-    include/evget/CommandLine/OptionBuilder.h
-    include/evget/CommandLine/AbstractOption.h
-    include/evget/CommandLine/OptionValidated.h
-    include/evget/CommandLine/OptionFlag.h
+    CommandLine/include/CommandLine/Option.h
+    CommandLine/include/CommandLine/InvalidCommandLineOption.h
+    CommandLine/include/CommandLine/OptionBuilder.h
+    CommandLine/include/CommandLine/AbstractOption.h
+    CommandLine/include/CommandLine/OptionValidated.h
+    CommandLine/include/CommandLine/OptionFlag.h
 )
 add_subdirectory(src)
 

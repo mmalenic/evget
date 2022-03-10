@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/CommandLine/InvalidCommandLineOption.h"
+#include "../include/CommandLine/InvalidCommandLineOption.h"
 
 InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message) : po::error{message}, message{message} {
 }

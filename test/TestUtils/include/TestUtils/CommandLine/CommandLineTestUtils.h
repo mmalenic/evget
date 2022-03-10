@@ -28,8 +28,8 @@
  */
 
 #include <boost/program_options.hpp>
-#include <evget/CommandLine/AbstractOption.h>
-#include <evget/CommandLine/Parser.h>
+#include "../../../../../CommandLine/include/CommandLine/AbstractOption.h"
+#include "../../../../../CommandLine/include/CommandLine/Parser.h"
 #include <any>
 #include <gtest/gtest.h>
 #include <filesystem>
