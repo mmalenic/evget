@@ -41,7 +41,7 @@ function(feature_check)
 
     get_property(CHECK GLOBAL PROPERTY ${FEATURE_CHECK_RESULT})
     if (NOT "${CHECK}" STREQUAL "")
-        message(STATUS "Skipping  check for ${FEATURE_CHECK_RESULT}, already checked.")
+        message(STATUS "Skipping check for ${FEATURE_CHECK_RESULT}, already checked.")
         return()
     endif()
 
@@ -119,9 +119,6 @@ function(program_dependencies)
             message(FATAL_ERROR "Required argument to DEP unspecified.")
         endif()
 
-        message("${DEPENDENCY_NAME}")
-        message("${DEPENDENCY_VERSION}")
-        message("${DEPENDENCY_VISIBILITY}")
         if (PROGRAM_DEPENDENCIES_ONLY_LINK AND TARGET ${DEPENDENCY_NAME})
             message(STATUS "Linking ${DEPENDENCY_NAME} with ${PROGRAM_DEPENDENCIES_TARGET}.")
             target_link_libraries(${PROGRAM_DEPENDENCIES_TARGET} ${DEPENDENCY_VISIBILITY} ${DEPENDENCY_NAME})
@@ -381,6 +378,7 @@ add_program(
     include/evget/Util.h
     include/evget/Event/AbstractField.h
     include/evget/UnsupportedOperationException.h
+    include/evget/Parser.h
 )
 add_subdirectory(src)
 

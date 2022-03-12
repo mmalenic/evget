@@ -12,7 +12,6 @@ add_program(
     include/clioption/OptionBuilder.h
     include/clioption/OptionFlag.h
     include/clioption/OptionValidated.h
-    include/clioption/Parser.h
 )
 
 add_subdirectory(src)

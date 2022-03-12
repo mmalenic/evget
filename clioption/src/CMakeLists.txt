@@ -3,5 +3,4 @@ add_program_linux(
     SRCS
     InvalidCommandLineOption.cpp
     OptionFlag.cpp
-    Parser.cpp
 )

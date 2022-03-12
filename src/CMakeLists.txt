@@ -25,6 +25,7 @@ add_program(
     Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp
+    Parser.cpp
     Event/AbstractField.cpp
     Event/Key.cpp
     Event/MouseClick.cpp
