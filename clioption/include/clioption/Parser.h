@@ -20,16 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSERCOMPONENT_H
-#define EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSERCOMPONENT_H
+#ifndef EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
+#define EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
 
 #include <boost/program_options.hpp>
+#include "AbstractOption.h"
+
 namespace CliOption {
     namespace po = boost::program_options;
 
-    class ParserComponent {
+    class Parser {
     public:
-        ParserComponent() = default;
+        Parser() = default;
 
         /**
          * Perform the actual command line parsing. Returns true if operation of the program should continue.
@@ -40,17 +42,14 @@ namespace CliOption {
          */
         virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm) = 0;
 
-        virtual ~ParserComponent() = 0;
+        virtual ~Parser() = 0;
 
     protected:
-        ParserComponent &operator=(const ParserComponent &) = default;
-        ParserComponent &operator=(ParserComponent &&) = default;
-        ParserComponent(const ParserComponent &) = default;
-        ParserComponent(ParserComponent &&) = default;
-
-    private:
-        std::map<std::string, std::unique_ptr<CliOption::AbstractOption>> options{};
+        Parser &operator=(const Parser &) = default;
+        Parser &operator=(Parser &&) = default;
+        Parser(const Parser &) = default;
+        Parser(Parser &&) = default;
     };
 }
 
-#endif //EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSERCOMPONENT_H
+#endif //EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H

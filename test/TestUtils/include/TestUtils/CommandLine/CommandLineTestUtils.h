@@ -24,7 +24,7 @@
 #define EVGET_TEST_INCLUDE_MOCKCOMMANDLINE_H
 
 /**
- * Parser test utilities.
+ * CoreParser test utilities.
  */
 
 #include <boost/program_options.hpp>

@@ -20,6 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "clioption/ParserComponent.h"
+#include "clioption/Parser.h"
 
-CliOption::ParserComponent::~ParserComponent() = default;
+CliOption::Parser::~Parser() = default;

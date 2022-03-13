@@ -378,7 +378,7 @@ add_program(
     include/evget/Util.h
     include/evget/Event/AbstractField.h
     include/evget/UnsupportedOperationException.h
-    include/evget/Parser.h
+    include/evget/CoreParser.h
 )
 add_subdirectory(src)
 

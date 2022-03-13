@@ -20,8 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/CommandLine/Parser.h"
+#include "evget/CoreParser.h"
 
+#include <clioption/OptionBuilder.h>
 #include <spdlog/spdlog.h>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
@@ -31,7 +32,6 @@
 
 namespace algorithm = boost::algorithm;
 namespace po = boost::program_options;
-namespace fs = std::filesystem;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
@@ -51,56 +51,53 @@ static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
 static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evget.\n"
                                                    "# Commented out values are required to be present, either in the config file or on the command line.";
 
-std::ostream& operator<<(std::ostream& os, const CommandLine::Filetype& filetype) {
+std::ostream& operator<<(std::ostream& os, const Evget::Filetype& filetype) {
     switch (filetype) {
-    case CommandLine::Filetype::sqlite:os << SQLITE_STRING;
+    case Evget::Filetype::sqlite:os << SQLITE_STRING;
         break;
-    case CommandLine::csv:os << CSV_STRING;
+    case Evget::csv:os << CSV_STRING;
         break;
     }
     return os;
 }
 
-std::istream& operator>>(std::istream& in, CommandLine::Filetype& algorithm) {
+std::istream& operator>>(std::istream& in, Evget::Filetype& algorithm) {
     std::string token{};
     in >> token;
     algorithm::to_lower(token);
 
     if (token == SQLITE_STRING) {
-        algorithm = CommandLine::Filetype::sqlite;
+        algorithm = Evget::Filetype::sqlite;
     } else if (token == CSV_STRING) {
-        algorithm = CommandLine::Filetype::csv;
+        algorithm = Evget::Filetype::csv;
     } else {
         throw po::validation_error(po::validation_error::invalid_option_value, "filetype", token);
     }
     return in;
 }
 
-CommandLine::Parser::~Parser() = default;
-
-CommandLine::Parser::Parser(std::string platform) :
+Evget::CoreParser::CoreParser(std::string platform) :
         platformInformation{std::move(platform)},
         cmdlineDesc{
         DESCRIPTION
     },
         configDesc{},
-        vm{},
         help{
-        OptionBuilder<bool>{cmdlineDesc}
+        CliOption::OptionBuilder<bool>{cmdlineDesc}
             .shortName('h')
             .longName("help")
             .description("Produce help message describing program options.")
             .buildFlag()
     },
         version{
-        OptionBuilder<bool>{cmdlineDesc}
+            CliOption::OptionBuilder<bool>{cmdlineDesc}
             .shortName('v')
             .longName("version")
             .description("Produce version message.")
             .buildFlag()
     },
         config{
-            OptionBuilder<fs::path>{cmdlineDesc}
+            CliOption::OptionBuilder<fs::path>{cmdlineDesc}
                     .shortName('c')
                     .longName("config")
                     .description("Location of config file.")
@@ -108,7 +105,7 @@ CommandLine::Parser::Parser(std::string platform) :
                     .build()
     },
         folder{
-        OptionBuilder<fs::path>{configDesc}
+            CliOption::OptionBuilder<fs::path>{configDesc}
             .shortName('o')
             .longName("folder")
             .description("Folder location where events are stored.")
@@ -116,7 +113,7 @@ CommandLine::Parser::Parser(std::string platform) :
             .build()
     },
         filetypes{
-        OptionBuilder<std::vector<Filetype>>{configDesc}
+            CliOption::OptionBuilder<std::vector<Filetype>>{configDesc}
             .shortName('f')
             .longName("filetypes")
             .description("Filetypes used to store events.")
@@ -125,21 +122,21 @@ CommandLine::Parser::Parser(std::string platform) :
             .build()
     },
         print{
-        OptionBuilder<bool>{configDesc}
+            CliOption::OptionBuilder<bool>{configDesc}
             .shortName('p')
             .longName("print")
             .description("Print events.")
             .buildFlag()
     },
         systemEvents{
-        OptionBuilder<bool>{configDesc}
+            CliOption::OptionBuilder<bool>{configDesc}
             .shortName('s')
             .longName("use-system-events")
             .description("Capture raw system events as well as cross platform events.")
             .buildFlag()
     },
         logLevel{
-        OptionBuilder<spdlog::level::level_enum>{configDesc}
+            CliOption::OptionBuilder<spdlog::level::level_enum>{configDesc}
             .shortName('u')
             .longName("log-level")
             .description("log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString())
@@ -150,12 +147,21 @@ CommandLine::Parser::Parser(std::string platform) :
 {
 }
 
-bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
+bool Evget::CoreParser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
     po::options_description cmdlineOptions{};
     cmdlineOptions.add(cmdlineDesc).add(configDesc);
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
 
-    if (!parseCmdlineOnlyOptions()) {
+    help.run(vm);
+    version.run(vm);
+    config.run(vm);
+
+    if (help.getValue()) {
+        std::cout << getCombinedDesc() << "\n";
+        return false;
+    }
+    if (version.getValue()) {
+        std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
         return false;
     }
 
@@ -174,42 +180,40 @@ bool CommandLine::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
-    if (!parseFileAndCmdlineOptions()) {
-        return false;
-    }
+    folder.run(vm);
+    filetypes.run(vm);
+    print.run(vm);
+    systemEvents.run(vm);
+    logLevel.run(vm);
 
     return true;
 }
 
-CommandLine::fs::path CommandLine::Parser::getFolder() const {
+Evget::fs::path Evget::CoreParser::getFolder() const {
     return folder.getValue();
 }
 
-po::options_description& CommandLine::Parser::getCombinedDesc() {
+po::options_description& Evget::CoreParser::getCombinedDesc() {
     return cmdlineDesc.add(configDesc);
 }
 
-po::options_description& CommandLine::Parser::getCmdlineDesc() {
+po::options_description& Evget::CoreParser::getCmdlineDesc() {
     return cmdlineDesc;
 }
 
-po::options_description& CommandLine::Parser::getConfigDesc() {
+po::options_description& Evget::CoreParser::getConfigDesc() {
     return configDesc;
 }
 
-po::variables_map& CommandLine::Parser::getVm() {
-    return vm;
-}
-
-bool CommandLine::Parser::shouldPrint() const {
+bool Evget::CoreParser::shouldPrint() const {
     return print.getValue();
 }
 
-spdlog::level::level_enum CommandLine::Parser::getLogLevel() const {
+spdlog::level::level_enum Evget::CoreParser::getLogLevel() const {
     return logLevel.getValue();
 }
 
-std::string CommandLine::Parser::logLevelsString() {
+std::string Evget::CoreParser::logLevelsString() {
     return fmt::format(
             "[ {}, {}, {}, {}, {}, {}, {} ]",
             spdlog::level::to_string_view(spdlog::level::trace),
@@ -222,7 +226,7 @@ std::string CommandLine::Parser::logLevelsString() {
             );
 }
 
-std::optional<spdlog::level::level_enum> CommandLine::Parser::validateLogLevel(std::string logLevel) {
+std::optional<spdlog::level::level_enum> Evget::CoreParser::validateLogLevel(std::string logLevel) {
 	algorithm::to_lower(logLevel);
     if (logLevel == "off" || logLevel == "o") {
 		return spdlog::level::off;
@@ -234,25 +238,25 @@ std::optional<spdlog::level::level_enum> CommandLine::Parser::validateLogLevel(s
     return level;
 }
 
-void CommandLine::Parser::storeAndNotify(const boost::program_options::parsed_options &parsedOptions, po::variables_map &vm) {
+void Evget::CoreParser::storeAndNotify(const boost::program_options::parsed_options &parsedOptions, po::variables_map &vm) {
     po::store(parsedOptions, vm);
     po::notify(vm);
 }
 
-std::vector<CommandLine::Filetype> CommandLine::Parser::getFiletype() const {
+std::vector<Evget::Filetype> Evget::CoreParser::getFiletype() const {
     return filetypes.getValue();
 }
 
-bool CommandLine::Parser::useSystemEvents() const {
+bool Evget::CoreParser::useSystemEvents() const {
     return systemEvents.getValue();
 }
 
-std::filesystem::path CommandLine::Parser::getConfigFile() const {
+std::filesystem::path Evget::CoreParser::getConfigFile() const {
     return config.getValue();
 }
 
 template<typename T>
-std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& option) {
+std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option) {
     std::ostringstream value{};
     value << std::boolalpha;
     value << option.getDefaultValue().value();
@@ -261,7 +265,7 @@ std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& opt
 
 
 template<typename T>
-std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& option, const std::string& value) {
+std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value) {
     std::string out{};
     if (option.isRequired()) {
         out += "# ";
@@ -273,7 +277,7 @@ std::string CommandLine::Parser::formatConfigOption(const AbstractOption<T>& opt
     return out;
 }
 
-std::string CommandLine::Parser::formatConfigFile() {
+std::string Evget::CoreParser::formatConfigFile() {
     std::string out{};
     out += CONFIG_FILE_COMMENT_LINE;
     out += "\n\n";
@@ -285,30 +289,4 @@ std::string CommandLine::Parser::formatConfigFile() {
     out += formatConfigOption(logLevel, logLevel.getRepresentation());
 
     return out;
-}
-
-bool CommandLine::Parser::parseCmdlineOnlyOptions() {
-    help.run(vm);
-    version.run(vm);
-    config.run(vm);
-
-    if (help.getValue()) {
-        std::cout << getCombinedDesc() << "\n";
-        return false;
-    }
-    if (version.getValue()) {
-        std::cout << PROJECT_NAME << " (" << platformInformation << ") " << VERSION << ".\n\n" << LICENSE_INFO << "\n";
-        return false;
-    }
-    return true;
-}
-
-bool CommandLine::Parser::parseFileAndCmdlineOptions() {
-    folder.run(vm);
-    filetypes.run(vm);
-    print.run(vm);
-    systemEvents.run(vm);
-    logLevel.run(vm);
-
-    return true;
 }

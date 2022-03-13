@@ -26,11 +26,12 @@
 #include <boost/program_options.hpp>
 #include <filesystem>
 #include <spdlog/spdlog.h>
-#include "Option.h"
-#include "OptionValidated.h"
-#include "OptionFlag.h"
+#include <clioption/Parser.h>
+#include <clioption/Option.h>
+#include <clioption/OptionValidated.h>
+#include <clioption/OptionFlag.h>
 
-namespace CliOption {
+namespace Evget {
 
     namespace po = boost::program_options;
     namespace fs = std::filesystem;
@@ -44,24 +45,16 @@ namespace CliOption {
     };
 
     /**
-     * The Parser class controls command line options.
+     * The CoreParser class controls command line options.
      */
-    class Parser {
+    class CoreParser : CliOption::Parser {
     public:
         /**
-         * Create a Parser object.
+         * Create a CoreParser object.
          *
          * @param platform platform information string
          */
-        explicit Parser(std::string platform);
-
-        /**
-         * Perform the actual command line parsing. Returns true if operation of the program should continue.
-         *
-         * @param argc from main
-         * @param argv from main
-         */
-        bool parseCommandLine(int argc, const char *argv[]);
+        explicit CoreParser(std::string platform);
 
         /**
          * Get config file location.
@@ -102,18 +95,13 @@ namespace CliOption {
          */
         static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
+        bool parseCommandLine(int argc, const char **argv, po::variables_map &vm) override;
+
         friend std::ostream &operator<<(std::ostream &os, const Filetype &filetype);
 
         friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
 
-        virtual ~Parser() = 0;
-
-        Parser &operator=(const Parser &) = delete;
-        Parser &operator=(Parser &&) = delete;
-
     protected:
-        Parser(const Parser &) = default;
-        Parser(Parser &&) = default;
 
         /**
          * Get description.
@@ -131,37 +119,19 @@ namespace CliOption {
          */
         po::options_description &getConfigDesc();
 
-        /**
-         * Get the variables map.
-         */
-        [[nodiscard]] po::variables_map &getVm();
-
-        /**
-         * Parse the command line only options. Returns true if operation of the
-         * program should continue.
-         */
-        virtual bool parseCmdlineOnlyOptions();
-
-        /**
-         * Parse the file and command line options. Returns true if operation of
-         * the program should continue.
-         */
-        virtual bool parseFileAndCmdlineOptions();
-
     private:
         std::string platformInformation;
         po::options_description cmdlineDesc;
         po::options_description configDesc;
-        po::variables_map vm;
 
-        OptionFlag help;
-        OptionFlag version;
-        Option<fs::path> config;
-        Option<fs::path> folder;
-        Option<std::vector<Filetype>> filetypes;
-        OptionFlag print;
-        OptionFlag systemEvents;
-        OptionValidated<spdlog::level::level_enum> logLevel;
+        CliOption::OptionFlag help;
+        CliOption::OptionFlag version;
+        CliOption::Option<fs::path> config;
+        CliOption::Option<fs::path> folder;
+        CliOption::Option<std::vector<Filetype>> filetypes;
+        CliOption::OptionFlag print;
+        CliOption::OptionFlag systemEvents;
+        CliOption::OptionValidated<spdlog::level::level_enum> logLevel;
 
         /**
          * Get the valid log levels.
@@ -178,13 +148,13 @@ namespace CliOption {
          * Format an option.
          */
         template<typename T>
-        static std::string formatConfigOption(const AbstractOption<T>& option);
+        static std::string formatConfigOption(const CliOption::AbstractOption<T>& option);
 
         /**
         * Format an option.
         */
         template<typename T>
-        static std::string formatConfigOption(const AbstractOption<T>& option, const std::string& value);
+        static std::string formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value);
 
         /**
          * Format the config file.
