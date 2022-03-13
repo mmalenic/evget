@@ -2,8 +2,8 @@ add_program_linux(
     TARGET ${LIBRARY_NAME}
     SRCS
     CommandLine/ParserLinux.cpp
-    EventDevice.cpp
-    EventDeviceLister.cpp
+    ../../../checkinput/src/EventDevice.cpp
+    ../../../checkinput/src/EventDeviceLister.cpp
     ShutdownHandlerLinux.cpp
     XInputHandler.cpp
     EventTransformerLinux.cpp

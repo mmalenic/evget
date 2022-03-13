@@ -31,7 +31,7 @@
 #include "evget/XInputHandler.h"
 #include "evget/EventTransformerLinux.h"
 #include "evget/SystemEventLoopLinux.h"
-#include "evget/EventDeviceLister.h"
+#include "../checkinput/include/checkinput/EventDeviceLister.h"
 
 using namespace std;
 

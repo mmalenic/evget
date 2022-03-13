@@ -4,8 +4,8 @@ add_program_linux(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
     include/evget/CommandLine/ParserLinux.h
-    include/evget/EventDevice.h
-    include/evget/EventDeviceLister.h
+    ../../checkinput/include/checkinput/EventDevice.h
+    ../../checkinput/include/checkinput/EventDeviceLister.h
     include/evget/ShutdownHandlerLinux.h
     include/evget/SystemEventLoopLinux.h
     include/evget/XInputHandler.h
