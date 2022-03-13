@@ -31,7 +31,7 @@ constexpr char KEY_DEVICES_NAME[] = "key-devices";
 constexpr char TOUCH_DEVICES_NAME[] = "touch-devices";
 constexpr char LIST_DEVICES_NAME[] = "list-devices";
 
-CommandLine::ParserLinux::ParserLinux() :
+CliOption::ParserLinux::ParserLinux() :
     Parser{platformInformation()},
     mouseDevices{
         OptionBuilder<std::vector<fs::path>>{this->getCmdlineDesc()}
@@ -70,7 +70,7 @@ CommandLine::ParserLinux::ParserLinux() :
     } {
 }
 
-std::string CommandLine::ParserLinux::platformInformation() {
+std::string CliOption::ParserLinux::platformInformation() {
     struct utsname uts{};
     if ((uname(&uts)) == -1) {
         return "unknown";
@@ -78,23 +78,23 @@ std::string CommandLine::ParserLinux::platformInformation() {
     return uts.sysname;
 }
 
-std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getMouseDevices() const {
+std::vector<CliOption::fs::path> CliOption::ParserLinux::getMouseDevices() const {
     return mouseDevices.getValue();
 }
 
-std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getKeyDevices() const {
+std::vector<CliOption::fs::path> CliOption::ParserLinux::getKeyDevices() const {
     return keyDevices.getValue();
 }
 
-std::vector<CommandLine::fs::path> CommandLine::ParserLinux::getTouchDevices() const {
+std::vector<CliOption::fs::path> CliOption::ParserLinux::getTouchDevices() const {
     return touchDevices.getValue();
 }
 
-bool CommandLine::ParserLinux::isListEventDevices() const {
+bool CliOption::ParserLinux::isListEventDevices() const {
     return listEventDevices.getValue();
 }
 
-bool CommandLine::ParserLinux::parseFileAndCmdlineOptions() {
+bool CliOption::ParserLinux::parseFileAndCmdlineOptions() {
     if (!Parser::parseFileAndCmdlineOptions()) {
         return false;
     }

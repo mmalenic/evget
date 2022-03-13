@@ -24,7 +24,7 @@
 #include "TestUtils/CommandLine/CommandLineTestUtils.h"
 #include <gtest/gtest.h>
 
-namespace Cmd = CommandLine;
+namespace Cmd = CliOption;
 namespace CmdUtils = TestUtils::CommandLineTestUtils;
 
 using CommandLineParserLinuxTest = CmdUtils::CommandLineTest;
@@ -33,7 +33,7 @@ TEST_F(CommandLineParserLinuxTest, MouseDevicesOptionShort) { // NOLINT(cert-err
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-m", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getMouseDevices());
     });
 }
@@ -42,7 +42,7 @@ TEST_F(CommandLineParserLinuxTest, MouseDevicesOptionLong) { // NOLINT(cert-err5
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--mouse-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getMouseDevices());
     });
 }
@@ -51,7 +51,7 @@ TEST_F(CommandLineParserLinuxTest, KeyDevicesOptionShort) { // NOLINT(cert-err58
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-k", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getKeyDevices());
     });
 }
@@ -60,7 +60,7 @@ TEST_F(CommandLineParserLinuxTest, KeyDevicesOptionLong) { // NOLINT(cert-err58-
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--key-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getKeyDevices());
     });
 }
@@ -69,7 +69,7 @@ TEST_F(CommandLineParserLinuxTest, TouchDevicesOptionShort) { // NOLINT(cert-err
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "-t", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getTouchDevices());
     });
 }
@@ -78,7 +78,7 @@ TEST_F(CommandLineParserLinuxTest, TouchDevicesOptionLong) { // NOLINT(cert-err5
     Cmd::ParserLinux cmd{};
     CmdUtils::makeCmd({"program", "--touch-devices", "/dev/input/event0"}, [&cmd](int argc, const char* argv[]) {
         ASSERT_EQ(true, cmd.parseCommandLine(argc, argv));
-        std::vector<CommandLine::fs::path> expected = {{"/dev/input/event0"}};
+        std::vector<CliOption::fs::path> expected = {{"/dev/input/event0"}};
         ASSERT_EQ(expected, cmd.getTouchDevices());
     });
 }

@@ -32,7 +32,7 @@
 #include "OptionBuilder.h"
 #include "InvalidCommandLineOption.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     namespace po = boost::program_options;
 

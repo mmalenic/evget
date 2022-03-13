@@ -27,7 +27,7 @@
 
 #include "AbstractOption.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     class OptionFlag : public AbstractOption<bool> {
     public:

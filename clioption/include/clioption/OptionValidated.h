@@ -25,7 +25,7 @@
 
 #include "AbstractOption.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     /**
      * A command line option with custom validation.

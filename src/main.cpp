@@ -36,7 +36,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CommandLine::ParserLinux cmd{};
+    CliOption::ParserLinux cmd{};
     cmd.parseCommandLine(argc, (const char**) argv);
 
     spdlog::set_level(cmd.getLogLevel());

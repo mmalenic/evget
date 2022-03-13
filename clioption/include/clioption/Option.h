@@ -30,7 +30,7 @@
 #include "InvalidCommandLineOption.h"
 #include "AbstractOption.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     /**
      * Represents a command line option.

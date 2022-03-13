@@ -25,7 +25,7 @@
 
 #include "../../../../../CommandLine/include/CommandLine/Parser.h"
 
-namespace CommandLine {
+namespace CliOption {
     /**
      * Linux specific command line.
      */

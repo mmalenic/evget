@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/CommandLine/OptionFlag.h"
+#include "clioption/OptionFlag.h"
 
-CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : AbstractOption<bool>(std::move(builder)) {
+CliOption::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : AbstractOption<bool>(std::move(builder)) {
     this->addOptionToDesc(
             this->isRequired(),
             false,
@@ -32,10 +32,10 @@ CommandLine::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : AbstractOptio
     );
 }
 
-std::optional<bool> CommandLine::OptionFlag::getDefaultValue() const {
+std::optional<bool> CliOption::OptionFlag::getDefaultValue() const {
     return false;
 }
 
-std::optional<bool> CommandLine::OptionFlag::getImplicitValue() const {
+std::optional<bool> CliOption::OptionFlag::getImplicitValue() const {
     return true;
 }

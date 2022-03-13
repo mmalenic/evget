@@ -30,7 +30,7 @@
 #include "OptionValidated.h"
 #include "OptionFlag.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     namespace po = boost::program_options;
     namespace fs = std::filesystem;

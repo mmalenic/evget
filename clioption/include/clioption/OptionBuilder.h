@@ -28,7 +28,7 @@
 #include <utility>
 #include "evget/UnsupportedOperationException.h"
 
-namespace CommandLine {
+namespace CliOption {
 
     namespace po = boost::program_options;
 
