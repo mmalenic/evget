@@ -34,7 +34,7 @@
 #define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
 
-evget::EventDeviceLister::EventDeviceLister() :
+CheckInput::EventDeviceLister::EventDeviceLister() :
     inputDirectory{"/dev/input"},
     byId{inputDirectory / "by-id"},
     byPath{inputDirectory / "by-path"},
@@ -46,7 +46,7 @@ evget::EventDeviceLister::EventDeviceLister() :
     eventDevices{listEventDevices()} {
 }
 
-std::vector<evget::EventDevice> evget::EventDeviceLister::listEventDevices() {
+std::vector<CheckInput::EventDevice> CheckInput::EventDeviceLister::listEventDevices() {
     std::vector<EventDevice> devices{};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
         if (entry.is_character_file() && entry.path().filename().string().find("event") != std::string::npos) {
@@ -74,12 +74,12 @@ std::vector<evget::EventDevice> evget::EventDeviceLister::listEventDevices() {
     return devices;
 }
 
-const std::vector<evget::EventDevice>& evget::EventDeviceLister::getEventDevices() const {
+const std::vector<CheckInput::EventDevice>& CheckInput::EventDeviceLister::getEventDevices() const {
     return eventDevices;
 }
 
-std::optional<fs::path>
-evget::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
+std::optional<CheckInput::fs::path>
+CheckInput::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
     try {
         for (auto& symEntry : fs::directory_iterator(path)) {
             if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
@@ -92,7 +92,7 @@ evget::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& pa
     return {};
 }
 
-std::ostream& evget::operator<<(std::ostream& os, const evget::EventDeviceLister& deviceLister) {
+std::ostream& CheckInput::operator<<(std::ostream& os, const CheckInput::EventDeviceLister& deviceLister) {
     if (!deviceLister.eventDevices.empty()) {
         os << "Event devices with path or id symbolic links: \n";
     }
@@ -112,7 +112,7 @@ std::ostream& evget::operator<<(std::ostream& os, const evget::EventDeviceLister
     return os;
 }
 
-std::vector<std::pair<int, std::string>> evget::EventDeviceLister::getCapabilities(const fs::path& device) {
+std::vector<std::pair<int, std::string>> CheckInput::EventDeviceLister::getCapabilities(const fs::path& device) {
     unsigned long bit[EV_MAX];
 
     memset(bit, 0, sizeof(bit));
@@ -137,7 +137,7 @@ std::vector<std::pair<int, std::string>> evget::EventDeviceLister::getCapabiliti
     return vec;
 }
 
-std::string evget::EventDeviceLister::getName(const fs::path& device) {
+std::string CheckInput::EventDeviceLister::getName(const fs::path& device) {
     fs::path fullPath = sysClass / device.filename() / namePath;
     std::ifstream file{fullPath};
     std::string name{(std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()};
@@ -150,7 +150,7 @@ std::string evget::EventDeviceLister::getName(const fs::path& device) {
     return name;
 }
 
-std::map<int, std::string> evget::EventDeviceLister::getEventCodeToName() {
+std::map<int, std::string> CheckInput::EventDeviceLister::getEventCodeToName() {
     return {
         {EV_SYN,       STRINGIFY(EV_SYN)},
         {EV_KEY,       STRINGIFY(EV_KEY)},

@@ -34,14 +34,14 @@ static constexpr size_t SPACE_FOR_SYMLINK = 2;
 static constexpr char BY_ID[] = "by-id";
 static constexpr char BY_PATH[] = "by-path";
 
-size_t evget::EventDevice::maxNameSize = 0;
-size_t evget::EventDevice::maxPathSize = 0;
+size_t CheckInput::EventDevice::maxNameSize = 0;
+size_t CheckInput::EventDevice::maxPathSize = 0;
 
-const fs::path& evget::EventDevice::getDevice() const {
+const CheckInput::fs::path& CheckInput::EventDevice::getDevice() const {
     return device;
 }
 
-evget::EventDevice::EventDevice(
+CheckInput::EventDevice::EventDevice(
     fs::path device,
     std::optional<std::string>  byId,
     std::optional<std::string>  byPath,
@@ -50,39 +50,39 @@ evget::EventDevice::EventDevice(
 ) : device{std::move(device)}, byId{std::move(byId)}, byPath{std::move(byPath)}, name{std::move(name)}, capabilities{std::move(capabilities)} {
 }
 
-const std::optional<std::string>& evget::EventDevice::getById() const {
+const std::optional<std::string>& CheckInput::EventDevice::getById() const {
     return byId;
 }
 
-const std::optional<std::string>& evget::EventDevice::getByPath() const {
+const std::optional<std::string>& CheckInput::EventDevice::getByPath() const {
     return byPath;
 }
 
-const std::optional<std::string>& evget::EventDevice::getName() const {
+const std::optional<std::string>& CheckInput::EventDevice::getName() const {
     return name;
 }
 
-const std::vector<std::pair<int, std::string>>& evget::EventDevice::getCapabilities() const {
+const std::vector<std::pair<int, std::string>>& CheckInput::EventDevice::getCapabilities() const {
     return capabilities;
 }
 
-size_t evget::EventDevice::getMaxNameSize() {
+size_t CheckInput::EventDevice::getMaxNameSize() {
     return maxNameSize;
 }
 
-void evget::EventDevice::setMaxNameSize(size_t newMaxNameSize) {
+void CheckInput::EventDevice::setMaxNameSize(size_t newMaxNameSize) {
     EventDevice::maxNameSize = newMaxNameSize;
 }
 
-size_t evget::EventDevice::getMaxPathSize() {
+size_t CheckInput::EventDevice::getMaxPathSize() {
     return maxPathSize;
 }
 
-void evget::EventDevice::setMaxPathSize(size_t newMaxPathSize) {
+void CheckInput::EventDevice::setMaxPathSize(size_t newMaxPathSize) {
     EventDevice::maxPathSize = newMaxPathSize;
 }
 
-std::partial_ordering evget::EventDevice::operator<=>(const EventDevice& eventDevice) const {
+std::partial_ordering CheckInput::EventDevice::operator<=>(const EventDevice& eventDevice) const {
     if ((byId.has_value() && !eventDevice.byId.has_value())
         || (byPath.has_value() && !eventDevice.byPath.has_value())) {
         return std::partial_ordering::less;
@@ -115,16 +115,16 @@ std::partial_ordering evget::EventDevice::operator<=>(const EventDevice& eventDe
     return std::partial_ordering::unordered;
 }
 
-std::ostream& evget::operator<<(std::ostream& os, const evget::EventDevice& eventDevice) {
+std::ostream& CheckInput::operator<<(std::ostream& os, const CheckInput::EventDevice& eventDevice) {
     size_t deviceNameLength = 0;
     size_t devicePathLength = eventDevice.device.string().length();
     if (eventDevice.name.has_value()) {
         os << eventDevice.name.value();
         deviceNameLength = eventDevice.name->length();
     }
-    auto totalName = MIN_SPACE_GAP + evget::EventDevice::maxNameSize;
+    auto totalName = MIN_SPACE_GAP + CheckInput::EventDevice::maxNameSize;
     auto spacesName = totalName - deviceNameLength;
-    auto spacesPath = (MIN_SPACE_GAP + evget::EventDevice::maxPathSize) - devicePathLength;
+    auto spacesPath = (MIN_SPACE_GAP + CheckInput::EventDevice::maxPathSize) - devicePathLength;
     os << std::string(spacesName, ' ') << eventDevice.device.string() << std::string(spacesPath, ' ');
 
     if (!eventDevice.capabilities.empty()) {

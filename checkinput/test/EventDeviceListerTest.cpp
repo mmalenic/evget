@@ -26,8 +26,10 @@
 #include <filesystem>
 #include <fstream>
 
+namespace fs = std::filesystem;
+
 TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
-    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
+    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
 
     std::vector<bool> results {};
     for (auto& entry : fs::directory_iterator("/dev/input")) {
@@ -48,7 +50,7 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
-    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
+    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
 
     std::vector<bool> results {};
     for (auto& device : devices) {
@@ -61,7 +63,7 @@ TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err5
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
-    std::vector<evget::EventDevice> devices = evget::EventDeviceLister{}.listEventDevices();
+    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
 
     std::vector<bool> results {};
     for (auto& device : devices) {

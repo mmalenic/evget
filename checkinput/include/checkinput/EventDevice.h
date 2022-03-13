@@ -27,12 +27,12 @@
 #include <optional>
 #include <vector>
 
-namespace fs = std::filesystem;
+namespace CheckInput {
+    namespace fs = std::filesystem;
 
-namespace evget {
-/**
- * Store the paths for event devices.
- */
+    /**
+     * Store the paths for event devices.
+     */
     class EventDevice {
     public:
         /**
