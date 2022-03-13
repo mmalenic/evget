@@ -302,7 +302,7 @@ namespace CliOption {
             _value{builder._defaultValue},
             desc{builder._desc} {
         if (shortName.empty() && longName.empty()) {
-            throw evget::UnsupportedOperationException("Option should contain at least a short name, or a long name.");
+            throw InvalidCommandLineOption("Option should contain at least a short name, or a long name.");
         }
 
         if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
@@ -324,19 +324,19 @@ namespace CliOption {
 
         auto conflict = checkPresence(conflictsWith, vm);
         if (conflict.has_value() && isSelfPresent(vm)) {
-            throw InvalidCommandLineOption(fmt::format("Conflicting options {}, and {} specified", getName(), *conflict));
+            throw InvalidCommandLineOption{fmt::format("Conflicting options {}, and {} specified", getName(), *conflict)};
         }
 
         if (atLeastSet) {
             if (!checkPresence(except, vm).has_value() && !checkPresence(atLeast, vm).has_value()) {
-                throw InvalidCommandLineOption(
-                        fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", ")));
+                throw InvalidCommandLineOption{
+                        fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", "))};
             }
         }
 
         // Unsupported use of option.
         if (!_value.has_value()) {
-            throw evget::UnsupportedOperationException("Unsupported use of option.");
+            throw InvalidCommandLineOption{"Unsupported use of option."};
         }
     }
 
@@ -388,7 +388,7 @@ namespace CliOption {
     template<typename T>
     void AbstractOption<T>::checkInvariants() {
         if (!this->getDefaultValue().has_value() && !this->isRequired()) {
-            throw evget::UnsupportedOperationException{"Value must at least be required, or have a default specified."};
+            throw InvalidCommandLineOption{"Value must at least be required, or have a default specified."};
         }
     }
 

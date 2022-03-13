@@ -26,7 +26,6 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <utility>
-#include "evget/UnsupportedOperationException.h"
 
 namespace CliOption {
 

@@ -28,7 +28,7 @@
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(CommandLineOptionTest, RequiredPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, RequiredPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -37,7 +37,7 @@ TEST(CommandLineOptionTest, RequiredPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, RequiredNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, RequiredNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -45,7 +45,7 @@ TEST(CommandLineOptionTest, RequiredNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, DefaultPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, DefaultPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -54,7 +54,7 @@ TEST(CommandLineOptionTest, DefaultPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, DefaultNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, DefaultNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(2).build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -63,7 +63,7 @@ TEST(CommandLineOptionTest, DefaultNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(2).implicitValue(1).build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -72,7 +72,7 @@ TEST(CommandLineOptionTest, ImplicitValuePresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -81,7 +81,7 @@ TEST(CommandLineOptionTest, ImplicitValueNotPresent) { // NOLINT(cert-err58-cpp)
 
 }
 
-TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).representation("repr").build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -91,7 +91,7 @@ TEST(CommandLineOptionTest, RepresentationOption) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, ConflictingOptionsNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, ConflictingOptionsNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').required().conflictsWith("b").build(),
@@ -104,7 +104,7 @@ TEST(CommandLineOptionTest, ConflictingOptionsNotPresent) { // NOLINT(cert-err58
     });
 }
 
-TEST(CommandLineOptionTest, ConflictingOptionsPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, ConflictingOptionsPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1", "-b", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').required().conflictsWith("b").build(),
@@ -115,7 +115,7 @@ TEST(CommandLineOptionTest, ConflictingOptionsPresent) { // NOLINT(cert-err58-cp
     });
 }
 
-TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1", "-b", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').required().conflictsWith({"b", "c"}).build(),
@@ -126,7 +126,7 @@ TEST(CommandLineOptionTest, ConflictingOptionsList) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-b", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}).build(),
@@ -139,7 +139,7 @@ TEST(CommandLineOptionTest, AtLeastPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}).build(),
@@ -150,7 +150,7 @@ TEST(CommandLineOptionTest, AtLeastNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastNonList) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastNonList) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast("b").build(),
@@ -163,7 +163,7 @@ TEST(CommandLineOptionTest, AtLeastNonList) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-d", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}, {"d"}).build(),
@@ -178,7 +178,7 @@ TEST(CommandLineOptionTest, AtLeastExceptPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return std::vector{
             CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast({"b", "c"}, {"d"}).build(),
@@ -190,7 +190,7 @@ TEST(CommandLineOptionTest, AtLeastExceptNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, AtLeastExceptNonList) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, AtLeastExceptNonList) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-d", "2"}, [](po::options_description &desc) {
         return std::vector{
                 CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).atLeast("b", {"d"}).build(),
@@ -205,7 +205,7 @@ TEST(CommandLineOptionTest, AtLeastExceptNonList) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionTest, Multitoken) { // NOLINT(cert-err58-cpp)
+TEST(OptionTest, Multitoken) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1", "2"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<std::vector<int>>(desc).shortName('a').required().multitoken().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {

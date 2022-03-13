@@ -20,41 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
-#define EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
+#include <gtest/gtest.h>
+#include "clioption/Parser.h"
+#include "clioption/Option.h"
+#include "utils/CliOptionTestUtils.h"
 
-#include <boost/program_options.hpp>
-#include "AbstractOption.h"
+namespace po = boost::program_options;
+namespace Utils = CliOptionTestUtils;
 
-namespace CliOption {
-    namespace po = boost::program_options;
+TEST(ParserTest, StoreAndNotify) { // NOLINT(cert-err58-cpp)
+    Utils::makeCmd({"program", "-a", "1"}, [](int argc, const char **argv) {
+        auto desc = po::options_description{};
+        auto vm = po::variables_map{};
+        auto option = CliOption::OptionBuilder<int>(desc).shortName('a').required().build();
+        po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
 
-    class Parser {
-    public:
-        Parser() = default;
+        CliOption::Parser::storeAndNotify(parse.run(), vm);
 
-        /**
-         * Perform the actual command line parsing. Returns true if operation of the program should continue.
-         *
-         * @param argc from main
-         * @param argv from main
-         * @param vm variables map
-         */
-        virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm) = 0;
-
-        virtual ~Parser() = 0;
-
-        /**
-         * Store and notify the variables map.
-         */
-        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
-
-    protected:
-        Parser &operator=(const Parser &) = default;
-        Parser &operator=(Parser &&) = default;
-        Parser(const Parser &) = default;
-        Parser(Parser &&) = default;
-    };
+        option.run(vm);
+        ASSERT_EQ(option.getValue(), 1);
+    });
 }
-
-#endif //EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H

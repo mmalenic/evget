@@ -27,7 +27,7 @@
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(CommandLineOptionValidatedTest, ValidatedValuePresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionValidatedTest, ValidatedValuePresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string &_) {
             return 2;
@@ -38,7 +38,7 @@ TEST(CommandLineOptionValidatedTest, ValidatedValuePresent) { // NOLINT(cert-err
     });
 }
 
-TEST(CommandLineOptionValidatedTest, ValidatedValueNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionValidatedTest, ValidatedValueNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).build([](const std::string &_) {
             return 2;
@@ -49,7 +49,7 @@ TEST(CommandLineOptionValidatedTest, ValidatedValueNotPresent) { // NOLINT(cert-
     });
 }
 
-TEST(CommandLineOptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
+TEST(OptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build(
                 [](const std::string &_) {

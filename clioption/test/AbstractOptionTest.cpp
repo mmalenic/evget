@@ -27,80 +27,80 @@
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(CommandLineAbstractOptionTest, GetShortName) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetShortName) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).required().shortName('n').build();
     ASSERT_EQ("n", option.getShortName());
 }
 
-TEST(CommandLineAbstractOptionTest, GetLongName) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetLongName) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).required().longName("name").build();
     ASSERT_EQ("name", option.getLongName());
 }
 
-TEST(CommandLineAbstractOptionTest, GetDescription) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetDescription) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').required().description("desc").build();
     ASSERT_EQ("desc", option.getDescription());
 }
 
-TEST(CommandLineAbstractOptionTest, GetNameShort) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetNameShort) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).required().shortName('n').build();
     ASSERT_EQ("n", option.getName());
 }
 
-TEST(CommandLineAbstractOptionTest, GetNameLong) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetNameLong) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).required().longName("name").build();
     ASSERT_EQ("name", option.getName());
 }
 
-TEST(CommandLineAbstractOptionTest, GetNameBoth) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetNameBoth) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).required().shortName('n').longName("name").build();
     ASSERT_EQ("name", option.getName());
 }
 
-TEST(CommandLineAbstractOptionTest, SetValue) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, SetValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').defaultValue(1).build();
     option.setValue(2);
     ASSERT_EQ(2, option.getValue());
 }
 
-TEST(CommandLineAbstractOptionTest, GetDefaultValue) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetDefaultValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').defaultValue(1).build();
     ASSERT_EQ(1, option.getValue());
 }
 
-TEST(CommandLineAbstractOptionTest, GetOptionalDefaultValue) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetOptionalDefaultValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').defaultValue(1).build();
     ASSERT_EQ(1, option.getDefaultValue());
 }
 
-TEST(CommandLineAbstractOptionTest, GetOptionalImplicitValue) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetOptionalImplicitValue) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').required().implicitValue(1).build();
     ASSERT_EQ(1, option.getImplicitValue());
 }
 
-TEST(CommandLineAbstractOptionTest, GetRepresentation) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, GetRepresentation) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').required().representation("repr").build();
     ASSERT_EQ("repr", option.getRepresentation());
 }
 
-TEST(CommandLineAbstractOptionTest, IsRequired) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, IsRequired) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').required().build();
     ASSERT_EQ(true, option.isRequired());
 }
 
-TEST(CommandLineAbstractOptionTest, RunShortOnly) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, RunShortOnly) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -109,7 +109,7 @@ TEST(CommandLineAbstractOptionTest, RunShortOnly) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineAbstractOptionTest, RunLongOnly) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, RunLongOnly) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "--name", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).longName("name").required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -118,7 +118,7 @@ TEST(CommandLineAbstractOptionTest, RunLongOnly) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineAbstractOptionTest, RunBothShortPresent) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, RunBothShortPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').longName("name").required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -127,7 +127,7 @@ TEST(CommandLineAbstractOptionTest, RunBothShortPresent) { // NOLINT(cert-err58-
     });
 }
 
-TEST(CommandLineAbstractOptionTest, RunBothLongPresent) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, RunBothLongPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "--name", "1"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<int>(desc).shortName('a').longName("name").required().build();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -136,7 +136,7 @@ TEST(CommandLineAbstractOptionTest, RunBothLongPresent) { // NOLINT(cert-err58-c
     });
 }
 
-TEST(CommandLineAbstractOptionTest, PositionalOptionPresent) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, PositionalOptionPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').required().positional(1, posDesc).build();
@@ -148,7 +148,7 @@ TEST(CommandLineAbstractOptionTest, PositionalOptionPresent) { // NOLINT(cert-er
     });
 }
 
-TEST(CommandLineAbstractOptionTest, PositionalOptionNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, PositionalOptionNotPresent) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     po::positional_options_description posDesc{};
     CliOption::Option<int> option = CliOption::OptionBuilder<int>(desc).shortName('n').defaultValue(1).positional(1, posDesc).build();
@@ -160,7 +160,7 @@ TEST(CommandLineAbstractOptionTest, PositionalOptionNotPresent) { // NOLINT(cert
     });
 }
 
-TEST(CommandLineAbstractOptionTest, NoDefaultAndNotRequired) { // NOLINT(cert-err58-cpp)
+TEST(AbstractOptionTest, NoDefaultAndNotRequired) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     ASSERT_THROW(CliOption::OptionBuilder<int>(desc).shortName('a').build(), CliOption::InvalidCommandLineOption);
 }

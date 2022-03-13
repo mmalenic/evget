@@ -27,7 +27,7 @@
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<bool>(desc).shortName('a').buildFlag();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -36,7 +36,7 @@ TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
+TEST(OptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
     Utils::withOption({"program", "-a"}, [](po::options_description &desc) {
         return CliOption::OptionBuilder<bool>(desc).shortName('a').buildFlag();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
@@ -45,13 +45,13 @@ TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
     });
 }
 
-TEST(CommandLineOptionFlagTest, GetOptionalDefaultValueFlag) { // NOLINT(cert-err58-cpp)
+TEST(OptionFlagTest, GetOptionalDefaultValueFlag) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::OptionFlag option = CliOption::OptionBuilder<bool>(desc).shortName('n').defaultValue(true).buildFlag();
     ASSERT_EQ(false, option.getDefaultValue());
 }
 
-TEST(CommandLineOptionFlagTest, GetOptionalImplicitValueFlag) { // NOLINT(cert-err58-cpp)
+TEST(OptionFlagTest, GetOptionalImplicitValueFlag) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
     CliOption::OptionFlag option = CliOption::OptionBuilder<bool>(desc).shortName('n').required().implicitValue(false).buildFlag();
     ASSERT_EQ(true, option.getImplicitValue());
