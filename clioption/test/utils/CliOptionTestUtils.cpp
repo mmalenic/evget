@@ -19,21 +19,3 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-#include <TestUtils/CommandLine/CommandLineTestUtils.h>
-
-void TestUtils::CommandLineTestUtils::CommandLineTest::SetUp() {
-    fs::current_path(fs::temp_directory_path());
-}
-
-void TestUtils::CommandLineTestUtils::CommandLineTest::TearDown() {
-    MockParser parser{};
-    fs::path configFile = parser.getConfigFile();
-
-    if (fs::exists(configFile)) {
-        fs::remove(configFile);
-    }
-}
-
-TestUtils::CommandLineTestUtils::MockParser::MockParser() : Parser{""} {
-}

@@ -23,3 +23,8 @@
 #include "clioption/Parser.h"
 
 CliOption::Parser::~Parser() = default;
+
+void CliOption::Parser::storeAndNotify(const boost::program_options::parsed_options &parsedOptions, CliOption::po::variables_map &vm) {
+    po::store(parsedOptions, vm);
+    po::notify(vm);
+}

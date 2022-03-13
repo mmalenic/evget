@@ -45,6 +45,12 @@ namespace CliOption {
         virtual ~Parser() = 0;
 
     protected:
+        /**
+         * Store and notify the variables map.
+         */
+        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
+
+
         Parser &operator=(const Parser &) = default;
         Parser &operator=(Parser &&) = default;
         Parser(const Parser &) = default;

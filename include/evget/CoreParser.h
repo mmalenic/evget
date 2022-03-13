@@ -90,11 +90,6 @@ namespace Evget {
          */
         [[nodiscard]] std::vector<Filetype> getFiletype() const;
 
-        /**
-         * Store and notify the variables map.
-         */
-        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
-
         bool parseCommandLine(int argc, const char **argv, po::variables_map &vm) override;
 
         friend std::ostream &operator<<(std::ostream &os, const Filetype &filetype);

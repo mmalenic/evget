@@ -21,39 +21,38 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/CommandLine/CommandLineTestUtils.h"
-#include "../include/CommandLine/OptionFlag.h"
+#include "clioption/OptionFlag.h"
+#include "utils/CliOptionTestUtils.h"
 
 namespace po = boost::program_options;
-namespace CmdUtils = TestUtils::CommandLineTestUtils;
-namespace Cmd = CommandLine;
+namespace Utils = CliOptionTestUtils;
 
 TEST(CommandLineOptionFlagTest, FlagNotPresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName('a').buildFlag();
+    Utils::withOption({"program"}, [](po::options_description &desc) {
+        return CliOption::OptionBuilder<bool>(desc).shortName('a').buildFlag();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        Utils::storeAndNotifyOption(option, parse, vm);
         ASSERT_FALSE(option.getValue());
     });
 }
 
 TEST(CommandLineOptionFlagTest, FlagPresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program", "-a"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<bool>(desc).shortName('a').buildFlag();
+    Utils::withOption({"program", "-a"}, [](po::options_description &desc) {
+        return CliOption::OptionBuilder<bool>(desc).shortName('a').buildFlag();
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        Utils::storeAndNotifyOption(option, parse, vm);
         ASSERT_TRUE(option.getValue());
     });
 }
 
 TEST(CommandLineOptionFlagTest, GetOptionalDefaultValueFlag) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::OptionFlag option = Cmd::OptionBuilder<bool>(desc).shortName('n').defaultValue(true).buildFlag();
+    CliOption::OptionFlag option = CliOption::OptionBuilder<bool>(desc).shortName('n').defaultValue(true).buildFlag();
     ASSERT_EQ(false, option.getDefaultValue());
 }
 
 TEST(CommandLineOptionFlagTest, GetOptionalImplicitValueFlag) { // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    Cmd::OptionFlag option = Cmd::OptionBuilder<bool>(desc).shortName('n').required().implicitValue(false).buildFlag();
+    CliOption::OptionFlag option = CliOption::OptionBuilder<bool>(desc).shortName('n').required().implicitValue(false).buildFlag();
     ASSERT_EQ(true, option.getImplicitValue());
 }

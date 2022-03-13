@@ -1,9 +1,10 @@
-add_program_linux(
+add_program(
     TARGET ${CLIOPTION_TEST_EXECUTABLE_NAME}
     SRCS
-    CommandLineAbstractOptionTest.cpp
-    CommandLineOptionFlagTest.cpp
-    CommandLineOptionTest.cpp
-    CommandLineOptionValidatedTest.cpp
-    CommandLineParserTest.cpp
+    AbstractOptionTest.cpp
+    OptionFlagTest.cpp
+    OptionTest.cpp
+    OptionValidatedTest.cpp
+    utils/CliOptionTestUtils.cpp
+    utils/CliOptionTestUtils.h
 )

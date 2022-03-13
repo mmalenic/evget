@@ -28,48 +28,23 @@
  */
 
 #include <boost/program_options.hpp>
-#include "../../../../../CommandLine/include/CommandLine/AbstractOption.h"
-#include "../../../../../CommandLine/include/CommandLine/Parser.h"
+#include "clioption/AbstractOption.h"
+#include "clioption/Parser.h"
 #include <any>
 #include <gtest/gtest.h>
 #include <filesystem>
 
-namespace TestUtils::CommandLineTestUtils {
+namespace CliOptionTestUtils {
 
     namespace po = boost::program_options;
-    namespace Cmd = CommandLine;
     namespace fs = std::filesystem;
-
-    /**
-     * Set up and tear down command line tests.
-     */
-    class CommandLineTest : public testing::Test {
-    protected:
-        /**
-         * Change to a temporary directory.
-         */
-        void SetUp() override;
-
-        /**
-         * Remove config file associated with running parser.
-         */
-        void TearDown() override;
-    };
-
-    /**
-     * Mock parser object.
-     */
-    class MockParser : public Cmd::Parser {
-    public:
-        MockParser();
-    };
 
     /**
      * Store and notify vm and option.
      */
     template<typename T>
     void storeAndNotifyOption(T &option, po::command_line_parser &parse, po::variables_map &vm) {
-        Cmd::Parser::storeAndNotify(parse.run(), vm);
+        CliOption::Parser::storeAndNotify(parse.run(), vm);
         option.run(vm);
     }
 
@@ -95,7 +70,7 @@ namespace TestUtils::CommandLineTestUtils {
      */
     template<typename T>
     void storeAndNotifyOption(std::vector<T> &options, po::command_line_parser &parse, po::variables_map &vm) {
-        Cmd::Parser::storeAndNotify(parse.run(), vm);
+        CliOption::Parser::storeAndNotify(parse.run(), vm);
         for (T &option: options) {
             option.run(vm);
         }

@@ -1,4 +1,4 @@
-add_program_linux(
+add_program(
     TARGET ${CLIOPTION_LIBRARY_NAME}
     SRCS
     InvalidCommandLineOption.cpp

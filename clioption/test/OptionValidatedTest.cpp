@@ -21,42 +21,42 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/CommandLine/CommandLineTestUtils.h"
+#include "clioption/OptionValidated.h"
+#include "utils/CliOptionTestUtils.h"
 
 namespace po = boost::program_options;
-namespace CmdUtils = TestUtils::CommandLineTestUtils;
-namespace Cmd = CommandLine;
+namespace Utils = CliOptionTestUtils;
 
 TEST(CommandLineOptionValidatedTest, ValidatedValuePresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string &_) {
+    Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
+        return CliOption::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string &_) {
             return 2;
         });
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        Utils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(2, option.getValue());
     });
 }
 
 TEST(CommandLineOptionValidatedTest, ValidatedValueNotPresent) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName('a').defaultValue(1).build([](const std::string &_) {
+    Utils::withOption({"program"}, [](po::options_description &desc) {
+        return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).build([](const std::string &_) {
             return 2;
         });
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        Utils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
     });
 }
 
 TEST(CommandLineOptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
-    CmdUtils::withOption({"program"}, [](po::options_description &desc) {
-        return Cmd::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build(
+    Utils::withOption({"program"}, [](po::options_description &desc) {
+        return CliOption::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build(
                 [](const std::string &_) {
                     return 2;
                 });
     }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        CmdUtils::storeAndNotifyOption(option, parse, vm);
+        Utils::storeAndNotifyOption(option, parse, vm);
         ASSERT_EQ(1, option.getValue());
         ASSERT_EQ("repr", option.getRepresentation());
     });

@@ -238,11 +238,6 @@ std::optional<spdlog::level::level_enum> Evget::CoreParser::validateLogLevel(std
     return level;
 }
 
-void Evget::CoreParser::storeAndNotify(const boost::program_options::parsed_options &parsedOptions, po::variables_map &vm) {
-    po::store(parsedOptions, vm);
-    po::notify(vm);
-}
-
 std::vector<Evget::Filetype> Evget::CoreParser::getFiletype() const {
     return filetypes.getValue();
 }
