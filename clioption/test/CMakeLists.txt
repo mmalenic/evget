@@ -6,6 +6,5 @@ add_program(
     OptionTest.cpp
     OptionValidatedTest.cpp
     ParserTest.cpp
-    utils/CliOptionTestUtils.cpp
     utils/CliOptionTestUtils.h
 )

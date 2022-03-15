@@ -220,7 +220,7 @@ function(add_program)
     endif()
 endfunction()
 
-# Add linux specific code.
+# Add evgetx11 specific code.
 function(add_program_linux)
     set(options MAKE_EXECUTABLE MAKE_LIBRARY)
     set(one_value_args TARGET INCLUDE_VISIBILITY)
@@ -230,7 +230,7 @@ function(add_program_linux)
     set_mode(ADD_PROGRAM_LINUX_MAKE_EXECUTABLE ADD_PROGRAM_LINUX_MAKE_LIBRARY)
     add_program(
         TARGET ${ADD_PROGRAM_LINUX_TARGET} ${MODE}
-        FEATURE_REQUIRES fcntl.h linux/input.h sys/utsname.h
+        FEATURE_REQUIRES fcntl.h evgetx11/input.h sys/utsname.h
         FEATURE_CHECK EVGET_HAS_LINUX_INPUT
         SRCS ${ADD_PROGRAM_LINUX_SRCS}
         INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
@@ -411,4 +411,5 @@ if (BUILD_TESTING)
     gtest_discover_tests(${TEST_EXECUTABLE_NAME})
 endif()
 
-add_subdirectory(platform/linux)
+add_subdirectory(evgetx11)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${EVGETX11_LIBRARY_NAME} ONLY_LINK)

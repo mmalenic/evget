@@ -33,7 +33,7 @@ namespace evget {
     namespace asio = boost::asio;
 
     /**
-     * Class represents processing linux system events.
+     * Class represents processing evgetx11 system events.
      */
     template<boost::asio::execution::executor E>
     class SystemEventLoopLinux : public SystemEventLoop<E, XInputEvent> {

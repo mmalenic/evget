@@ -3,6 +3,6 @@ add_program(
     SRCS
     EventDeviceListerTest.cpp
     EventDeviceTest.cpp
-    utils/ListInputDevicesTestUtil.h
-    utils/ListInputDevicesTestUtil.cpp
+    utils/ListInputDevicesTestUtils.h
+    utils/ListInputDevicesTestUtils.cpp
 )
