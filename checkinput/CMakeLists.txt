@@ -16,9 +16,10 @@ add_subdirectory(src)
 
 program_dependencies(TARGET ${CHECKINPUT_LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${CHECKINPUT_LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
+program_dependencies(TARGET ${CHECKINPUT_LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS headers)
 
 if (BUILD_TESTING)
-    add_program(TARGET ${CLIOPTION_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
+    add_program(TARGET ${CHECKINPUT_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
 
     add_subdirectory(test)
     program_dependencies(TARGET ${CHECKINPUT_TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)

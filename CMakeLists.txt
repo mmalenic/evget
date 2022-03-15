@@ -388,6 +388,8 @@ program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPO
 
 add_subdirectory(clioption)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
+add_subdirectory(checkinput)
+program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${CHECKINPUT_LIBRARY_NAME} ONLY_LINK)
 
 # Make executable.
 add_program(

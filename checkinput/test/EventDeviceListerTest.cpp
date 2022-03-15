@@ -20,7 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/checkinput/EventDeviceLister.h"
+#include "checkinput/EventDeviceLister.h"
+#include "utils/CheckInputTestUtils.h"
 
 #include <gtest/gtest.h>
 #include <filesystem>
@@ -50,27 +51,13 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
-    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
-
-    std::vector<bool> results {};
-    for (auto& device : devices) {
-        if (device.getById().has_value()) {
-            fs::path path {device.getById().value()};
-            results.push_back(fs::is_symlink(path) && fs::read_symlink(path).filename() == device.getDevice().filename());
-        }
-    }
-    ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
+    CheckInputTestUtils::checkDevices([](auto& device) {
+        return device.getById();
+    });
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
-    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
-
-    std::vector<bool> results {};
-    for (auto& device : devices) {
-        if (device.getByPath().has_value()) {
-            fs::path path {device.getByPath().value()};
-            results.push_back(fs::is_symlink(path) && fs::read_symlink(path).filename() == device.getDevice().filename());
-        }
-    }
-    ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
+    CheckInputTestUtils::checkDevices([](auto& device) {
+        return device.getByPath();
+    });
 }
