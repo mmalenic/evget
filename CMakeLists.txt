@@ -334,53 +334,53 @@ endif()
 add_program(
     TARGET ${LIBRARY_NAME} MAKE_LIBRARY
     INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    evgetcore/include
     SRCS
     # Headers
-    include/evget/Task.h
-    include/evget/EventTransformer.h
-    include/evget/Event/AbstractData.h
-    include/evget/EventHandler.h
-    include/evget/SystemEvent.h
-    include/evget/SystemEventLoop.h
-    include/evget/ShutdownHandler.h
-    include/evget/Storage.h
-    include/evget/Event/Data.h
-    include/evget/Event/Field.h
-    include/evget/Event/MouseMove.h
-    include/evget/Event/MouseClick.h
-    include/evget/Event/MouseScroll.h
-    include/evget/Event/Button/Character.h
-    include/evget/Event/Pointer/ScrollUp.h
-    include/evget/Event/Pointer/ScrollDown.h
-    include/evget/Event/Pointer/ScrollLeft.h
-    include/evget/Event/Pointer/ScrollRight.h
-    include/evget/Event/Common/Time.h
-    include/evget/Event/Pointer/Multitouch.h
-    include/evget/Event/Pointer/Orientation.h
-    include/evget/Event/Pointer/EllipseMajorInner.h
-    include/evget/Event/Pointer/EllipseMajorOuter.h
-    include/evget/Event/Pointer/EllipseMinorInner.h
-    include/evget/Event/Pointer/EllipseMinorOuter.h
-    include/evget/Event/Pointer/PositionXOuterTest.h
-    include/evget/Event/Pointer/PositionYOuterTest.h
-    include/evget/Event/Pointer/PositionX.h
-    include/evget/Event/Pointer/PositionY.h
-    include/evget/Event/Button/Name.h
-    include/evget/Event/Common/DeviceType.h
-    include/evget/Event/Common/Device.h
-    include/evget/Event/Button/Action.h
-    include/evget/Event/Button/ButtonAction.h
-    include/evget/Event/Button/Identifier.h
-    include/evget/Event/TableData.h
-    include/evget/Event/Touch.h
-    include/evget/EventListener.h
-    include/evget/Util.h
-    include/evget/Event/AbstractField.h
-    include/evget/UnsupportedOperationException.h
-    include/evget/CoreParser.h
+    evgetcore/include/evgetcore/Task.h
+    evgetcore/include/evgetcore/EventTransformer.h
+    evgetcore/include/evgetcore/Event/AbstractData.h
+    evgetcore/include/evgetcore/EventHandler.h
+    evgetcore/include/evgetcore/SystemEvent.h
+    evgetcore/include/evgetcore/SystemEventLoop.h
+    evgetcore/include/evgetcore/ShutdownHandler.h
+    evgetcore/include/evgetcore/Storage.h
+    evgetcore/include/evgetcore/Event/Data.h
+    evgetcore/include/evgetcore/Event/Field.h
+    evgetcore/include/evgetcore/Event/MouseMove.h
+    evgetcore/include/evgetcore/Event/MouseClick.h
+    evgetcore/include/evgetcore/Event/MouseScroll.h
+    evgetcore/include/evgetcore/Event/Button/Character.h
+    evgetcore/include/evgetcore/Event/Pointer/ScrollUp.h
+    evgetcore/include/evgetcore/Event/Pointer/ScrollDown.h
+    evgetcore/include/evgetcore/Event/Pointer/ScrollLeft.h
+    evgetcore/include/evgetcore/Event/Pointer/ScrollRight.h
+    evgetcore/include/evgetcore/Event/Common/Time.h
+    evgetcore/include/evgetcore/Event/Pointer/Multitouch.h
+    evgetcore/include/evgetcore/Event/Pointer/Orientation.h
+    evgetcore/include/evgetcore/Event/Pointer/EllipseMajorInner.h
+    evgetcore/include/evgetcore/Event/Pointer/EllipseMajorOuter.h
+    evgetcore/include/evgetcore/Event/Pointer/EllipseMinorInner.h
+    evgetcore/include/evgetcore/Event/Pointer/EllipseMinorOuter.h
+    evgetcore/include/evgetcore/Event/Pointer/PositionXOuterTest.h
+    evgetcore/include/evgetcore/Event/Pointer/PositionYOuterTest.h
+    evgetcore/include/evgetcore/Event/Pointer/PositionX.h
+    evgetcore/include/evgetcore/Event/Pointer/PositionY.h
+    evgetcore/include/evgetcore/Event/Button/Name.h
+    evgetcore/include/evgetcore/Event/Common/DeviceType.h
+    evgetcore/include/evgetcore/Event/Common/Device.h
+    evgetcore/include/evgetcore/Event/Button/Action.h
+    evgetcore/include/evgetcore/Event/Button/ButtonAction.h
+    evgetcore/include/evgetcore/Event/Button/Identifier.h
+    evgetcore/include/evgetcore/Event/TableData.h
+    evgetcore/include/evgetcore/Event/Touch.h
+    evgetcore/include/evgetcore/EventListener.h
+    evgetcore/include/evgetcore/Util.h
+    evgetcore/include/evgetcore/Event/AbstractField.h
+    evgetcore/include/evgetcore/UnsupportedOperationException.h
+    evgetcore/include/evgetcore/CoreParser.h
 )
-add_subdirectory(src)
+add_subdirectory(evgetcore/src)
 
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
@@ -395,14 +395,14 @@ program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRAR
 add_program(
     TARGET ${CMAKE_PROJECT_NAME} MAKE_EXECUTABLE
     SRCS
-    ${PROJECT_SOURCE_DIR}/src/main.cpp
+    evgetcore/src/main.cpp
 )
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
 if (BUILD_TESTING)
     add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
 
-    add_subdirectory(test)
+    add_subdirectory(evgetcore/test)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
     program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 

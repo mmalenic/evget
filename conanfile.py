@@ -25,7 +25,7 @@ from conans import ConanFile, CMake
 
 
 class App(ConanFile):
-    name = 'evget'
+    name = 'evgetcore'
     version = '0.1'
     description = 'Shows events from input devices.'
     url = 'https://github.com/mmalenic/evget.git'

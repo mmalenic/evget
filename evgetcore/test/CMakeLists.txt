@@ -29,6 +29,8 @@ add_program(
     Event/TouchTest.cpp
     Event/DataTest.cpp
     Event/FieldTest.cpp
+    utils/EventTestUtils.h
+    utils/EventTestUtils.cpp
 )
 
 add_subdirectory(TestUtils)

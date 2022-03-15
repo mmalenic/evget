@@ -6,13 +6,14 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
-    include/evget/ParserLinux.h
-    include/evget/ShutdownHandlerLinux.h
-    include/evget/SystemEventLoopLinux.h
-    include/evget/XInputHandler.h
-    include/evget/EventTransformerLinux.h
-    include/evget/XInputEvent.h
+    include/evgetx11/ParserLinux.h
+    include/evgetx11/ShutdownHandlerLinux.h
+    include/evgetx11/SystemEventLoopLinux.h
+    include/evgetx11/XInputHandler.h
+    include/evgetx11/EventTransformerLinux.h
+    include/evgetx11/XInputEvent.h
 )
+set_target_properties(${EVGETX11_LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 add_subdirectory(src)
 
 program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC X11 COMPONENTS X11 Xi Xkb)

@@ -35,8 +35,8 @@ namespace po = boost::program_options;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
-static constexpr char PROJECT_NAME[] = "evget";
-static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
+static constexpr char PROJECT_NAME[] = "evgetx11";
+static constexpr char DESCRIPTION[] = "Usage: evgetx11 [OPTION]...\n"
                                       "Shows events from input devices.\n"
                                       "Written by Marko Malenic 2021.\n\n"
                                       "Options";
@@ -45,10 +45,10 @@ static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
                                        "This program comes with ABSOLUTELY NO WARRANTY.\n"
                                        "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
                                        "Written by Marko Malenic 2021.";
-static constexpr char DEFAULT_FOLDER_NAME[] = ".evget";
+static constexpr char DEFAULT_FOLDER_NAME[] = ".evgetx11";
 static constexpr char DEFAULT_CONFIG_NAME[] = ".evget_config";
 static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
-static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evget.\n"
+static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evgetx11.\n"
                                                    "# Commented out values are required to be present, either in the config file or on the command line.";
 
 std::ostream& operator<<(std::ostream& os, const Evget::Filetype& filetype) {
