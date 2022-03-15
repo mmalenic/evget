@@ -36,7 +36,7 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
     for (auto& entry : fs::directory_iterator("/dev/input")) {
         if (entry.is_character_file() && entry.path().filename().string().find("event") != std::string::npos) {
             auto i{devices.begin()};
-            for (; i != devices.end(); ++i) {
+            for (; i != devices.end(); i++) {
                 if ((*i).getDevice().string() == entry.path().string()) {
                     results.push_back(true);
                     break;

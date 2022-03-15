@@ -20,12 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "../include/checkinput/EventDevice.h"
+#include "checkinput/EventDevice.h"
+#include "utils/CheckInputTestUtils.h"
 
 #include <gtest/gtest.h>
-#include <linux/input-event-codes.h>
-
-using namespace std;
 
 TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
     CheckInput::EventDevice lt{
@@ -33,14 +31,14 @@ TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
         "",
         "",
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     CheckInput::EventDevice gt{
         "/dev/input/event0",
         {},
         {},
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }
@@ -51,14 +49,14 @@ TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
         "",
         "",
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     CheckInput::EventDevice gt{
         "/dev/input/event4",
         "",
         "",
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }
@@ -69,14 +67,14 @@ TEST(EventDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
         {},
         {},
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     CheckInput::EventDevice gt{
         "/dev/input/event4",
         {},
         {},
         "",
-        {std::make_pair(EV_SYN, to_string(EV_SYN)), std::make_pair(EV_KEY, to_string(EV_KEY)), std::make_pair(EV_REL, to_string(EV_REL)), std::make_pair(EV_MSC, to_string(EV_MSC))}
+        CheckInputTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }

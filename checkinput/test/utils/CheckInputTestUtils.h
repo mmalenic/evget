@@ -44,6 +44,8 @@ namespace CheckInputTestUtils {
         }
         ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
     }
+
+    std::vector<std::pair<int, std::string>> createCapabilities();
 }
 
 #endif //EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
