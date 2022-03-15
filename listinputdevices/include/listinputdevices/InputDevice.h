@@ -27,13 +27,13 @@
 #include <optional>
 #include <vector>
 
-namespace CheckInput {
+namespace ListInputDevices {
     namespace fs = std::filesystem;
 
     /**
      * Store the paths for event devices.
      */
-    class EventDevice {
+    class InputDevice {
     public:
         /**
          * Create event device.
@@ -43,7 +43,7 @@ namespace CheckInput {
          * @param name device name
          * @param capabilities capabilities
          */
-        EventDevice(
+        InputDevice(
             fs::path device,
             std::optional<std::string>  byId,
             std::optional<std::string>  byPath,
@@ -105,8 +105,8 @@ namespace CheckInput {
          */
         static void setMaxPathSize(size_t newMaxPathSize);
 
-        std::partial_ordering operator<=>(const EventDevice& eventDevice) const;
-        friend std::ostream& operator<<(std::ostream& os, const EventDevice& deviceLister);
+        std::partial_ordering operator<=>(const InputDevice& eventDevice) const;
+        friend std::ostream& operator<<(std::ostream& os, const InputDevice& deviceLister);
 
     private:
         fs::path device;

@@ -20,14 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <linux/input.h>
-#include "CheckInputTestUtils.h"
+#ifndef EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
+#define EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
 
-std::vector<std::pair<int, std::string>> CheckInputTestUtils::createCapabilities() {
-    return {
-        std::make_pair(EV_SYN, std::to_string(EV_SYN)),
-        std::make_pair(EV_KEY, std::to_string(EV_KEY)),
-        std::make_pair(EV_REL, std::to_string(EV_REL)),
-        std::make_pair(EV_MSC, std::to_string(EV_MSC))
-    };
+#include "listinputdevices/InputDevice.h"
+#include "listinputdevices/InputDeviceLister.h"
+#include <gtest/gtest.h>
+
+namespace ListInputDeviceTestUtils {
+
+    namespace fs = std::filesystem;
+
+    void checkDevices(auto&& getDevice) {
+        std::vector<ListInputDevices::InputDevice> devices = ListInputDevices::InputDeviceLister{}.listInputDevices();
+
+        std::vector<bool> results{};
+        for (auto& device : devices) {
+            auto name = getDevice(device);
+            if (name.has_value()) {
+                fs::path path{name.value()};
+                results.push_back(fs::is_symlink(path) && fs::read_symlink(path).filename() == device.getDevice().filename());
+            }
+        }
+        ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
+    }
+
+    std::vector<std::pair<int, std::string>> createCapabilities();
 }
+
+#endif //EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H

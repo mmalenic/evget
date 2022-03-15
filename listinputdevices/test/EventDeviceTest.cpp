@@ -20,61 +20,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "checkinput/EventDevice.h"
-#include "utils/CheckInputTestUtils.h"
+#include "listinputdevices/InputDevice.h"
+#include "utils/ListInputDevicesTestUtil.h"
 
 #include <gtest/gtest.h>
 
 TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
-    CheckInput::EventDevice lt{
+    ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         "",
         "",
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
-    CheckInput::EventDevice gt{
+    ListInputDevices::InputDevice gt{
         "/dev/input/event0",
         {},
         {},
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }
 
 TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
-    CheckInput::EventDevice lt{
+    ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         "",
         "",
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
-    CheckInput::EventDevice gt{
+    ListInputDevices::InputDevice gt{
         "/dev/input/event4",
         "",
         "",
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }
 
 TEST(EventDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
-    CheckInput::EventDevice lt{
+    ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         {},
         {},
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
-    CheckInput::EventDevice gt{
+    ListInputDevices::InputDevice gt{
         "/dev/input/event4",
         {},
         {},
         "",
-        CheckInputTestUtils::createCapabilities()
+        ListInputDeviceTestUtils::createCapabilities()
     };
     ASSERT_LT(lt, gt);
 }

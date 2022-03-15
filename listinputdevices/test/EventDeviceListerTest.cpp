@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "checkinput/EventDeviceLister.h"
-#include "utils/CheckInputTestUtils.h"
+#include "listinputdevices/InputDeviceLister.h"
+#include "utils/ListInputDevicesTestUtil.h"
 
 #include <gtest/gtest.h>
 #include <filesystem>
@@ -30,7 +30,7 @@
 namespace fs = std::filesystem;
 
 TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
-    std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
+    std::vector<ListInputDevices::InputDevice> devices = ListInputDevices::InputDeviceLister{}.listInputDevices();
 
     std::vector<bool> results {};
     for (auto& entry : fs::directory_iterator("/dev/input")) {
@@ -51,13 +51,13 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
-    CheckInputTestUtils::checkDevices([](auto& device) {
+    ListInputDeviceTestUtils::checkDevices([](auto& device) {
         return device.getById();
     });
 }
 
 TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
-    CheckInputTestUtils::checkDevices([](auto& device) {
+    ListInputDeviceTestUtils::checkDevices([](auto& device) {
         return device.getByPath();
     });
 }

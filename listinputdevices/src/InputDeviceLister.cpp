@@ -22,8 +22,8 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include "checkinput/EventDevice.h"
-#include "checkinput/EventDeviceLister.h"
+#include "listinputdevices/InputDevice.h"
+#include "listinputdevices/EventDeviceLister.h"
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
@@ -34,7 +34,7 @@
 #define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
 
-CheckInput::EventDeviceLister::EventDeviceLister() :
+ListInputDevices::EventDeviceLister::EventDeviceLister() :
     inputDirectory{"/dev/input"},
     byId{inputDirectory / "by-id"},
     byPath{inputDirectory / "by-path"},
@@ -46,12 +46,12 @@ CheckInput::EventDeviceLister::EventDeviceLister() :
     eventDevices{listEventDevices()} {
 }
 
-std::vector<CheckInput::EventDevice> CheckInput::EventDeviceLister::listEventDevices() {
-    std::vector<EventDevice> devices{};
+std::vector<ListInputDevices::InputDevice> ListInputDevices::EventDeviceLister::listEventDevices() {
+    std::vector<InputDevice> devices{};
     for (auto& entry : fs::directory_iterator(inputDirectory)) {
         if (entry.is_character_file() && entry.path().filename().string().find("event") != std::string::npos) {
             auto name = getName(entry.path());
-            EventDevice device = {
+            InputDevice device = {
                 entry.path(),
                 checkSymlink(entry, byId, "Could not read by-id directory: "),
                 checkSymlink(entry, byPath, "Could not read by-path directory: "),
@@ -59,11 +59,11 @@ std::vector<CheckInput::EventDevice> CheckInput::EventDeviceLister::listEventDev
                 getCapabilities(entry.path())
             };
 
-            if (name.length() > EventDevice::getMaxNameSize()) {
-                EventDevice::setMaxNameSize(name.length());
+            if (name.length() > InputDevice::getMaxNameSize()) {
+                InputDevice::setMaxNameSize(name.length());
             }
-            if (entry.path().string().length() > EventDevice::getMaxPathSize()) {
-                EventDevice::setMaxPathSize(entry.path().string().length());
+            if (entry.path().string().length() > InputDevice::getMaxPathSize()) {
+                InputDevice::setMaxPathSize(entry.path().string().length());
             }
 
             devices.push_back(device);
@@ -74,12 +74,12 @@ std::vector<CheckInput::EventDevice> CheckInput::EventDeviceLister::listEventDev
     return devices;
 }
 
-const std::vector<CheckInput::EventDevice>& CheckInput::EventDeviceLister::getEventDevices() const {
+const std::vector<ListInputDevices::InputDevice>& ListInputDevices::EventDeviceLister::getEventDevices() const {
     return eventDevices;
 }
 
-std::optional<CheckInput::fs::path>
-CheckInput::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
+std::optional<ListInputDevices::fs::path>
+ListInputDevices::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
     try {
         for (auto& symEntry : fs::directory_iterator(path)) {
             if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
@@ -92,27 +92,27 @@ CheckInput::EventDeviceLister::checkSymlink(const fs::path& entry, const fs::pat
     return {};
 }
 
-std::ostream& CheckInput::operator<<(std::ostream& os, const CheckInput::EventDeviceLister& deviceLister) {
-    if (!deviceLister.eventDevices.empty()) {
+std::ostream& ListInputDevices::operator<<(std::ostream& os, const ListInputDevices::EventDeviceLister& deviceLister) {
+    if (!deviceLister.inputDevices.empty()) {
         os << "Event devices with path or id symbolic links: \n";
     }
-    auto i = deviceLister.eventDevices.begin();
-    for (; i != deviceLister.eventDevices.end(); i++) {
+    auto i = deviceLister.inputDevices.begin();
+    for (; i != deviceLister.inputDevices.end(); i++) {
         if (!(*i).getById().has_value() && !(*i).getById().has_value()) {
             break;
         }
         os << *i << "\n";
     }
-    if (i != deviceLister.eventDevices.end()) {
+    if (i != deviceLister.inputDevices.end()) {
         os << "Event devices without path or id symbolic links: \n";
     }
-    for (; i != deviceLister.eventDevices.end(); i++) {
+    for (; i != deviceLister.inputDevices.end(); i++) {
         os << *i;
     }
     return os;
 }
 
-std::vector<std::pair<int, std::string>> CheckInput::EventDeviceLister::getCapabilities(const fs::path& device) {
+std::vector<std::pair<int, std::string>> ListInputDevices::EventDeviceLister::getCapabilities(const fs::path& device) {
     unsigned long bit[EV_MAX];
 
     memset(bit, 0, sizeof(bit));
@@ -137,7 +137,7 @@ std::vector<std::pair<int, std::string>> CheckInput::EventDeviceLister::getCapab
     return vec;
 }
 
-std::string CheckInput::EventDeviceLister::getName(const fs::path& device) {
+std::string ListInputDevices::EventDeviceLister::getName(const fs::path& device) {
     fs::path fullPath = sysClass / device.filename() / namePath;
     std::ifstream file{fullPath};
     std::string name{(std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()};
@@ -150,7 +150,7 @@ std::string CheckInput::EventDeviceLister::getName(const fs::path& device) {
     return name;
 }
 
-std::map<int, std::string> CheckInput::EventDeviceLister::getEventCodeToName() {
+std::map<int, std::string> ListInputDevices::EventDeviceLister::getEventCodeToName() {
     return {
         {EV_SYN,       STRINGIFY(EV_SYN)},
         {EV_KEY,       STRINGIFY(EV_KEY)},

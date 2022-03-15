@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "checkinput/EventDevice.h"
+#include "listinputdevices/InputDevice.h"
 
 #include <boost/algorithm/string.hpp>
 #include <utility>
@@ -34,14 +34,14 @@ static constexpr size_t SPACE_FOR_SYMLINK = 2;
 static constexpr char BY_ID[] = "by-id";
 static constexpr char BY_PATH[] = "by-path";
 
-size_t CheckInput::EventDevice::maxNameSize = 0;
-size_t CheckInput::EventDevice::maxPathSize = 0;
+size_t ListInputDevices::InputDevice::maxNameSize = 0;
+size_t ListInputDevices::InputDevice::maxPathSize = 0;
 
-const CheckInput::fs::path& CheckInput::EventDevice::getDevice() const {
+const ListInputDevices::fs::path& ListInputDevices::InputDevice::getDevice() const {
     return device;
 }
 
-CheckInput::EventDevice::EventDevice(
+ListInputDevices::InputDevice::InputDevice(
     fs::path device,
     std::optional<std::string>  byId,
     std::optional<std::string>  byPath,
@@ -50,39 +50,39 @@ CheckInput::EventDevice::EventDevice(
 ) : device{std::move(device)}, byId{std::move(byId)}, byPath{std::move(byPath)}, name{std::move(name)}, capabilities{std::move(capabilities)} {
 }
 
-const std::optional<std::string>& CheckInput::EventDevice::getById() const {
+const std::optional<std::string>& ListInputDevices::InputDevice::getById() const {
     return byId;
 }
 
-const std::optional<std::string>& CheckInput::EventDevice::getByPath() const {
+const std::optional<std::string>& ListInputDevices::InputDevice::getByPath() const {
     return byPath;
 }
 
-const std::optional<std::string>& CheckInput::EventDevice::getName() const {
+const std::optional<std::string>& ListInputDevices::InputDevice::getName() const {
     return name;
 }
 
-const std::vector<std::pair<int, std::string>>& CheckInput::EventDevice::getCapabilities() const {
+const std::vector<std::pair<int, std::string>>& ListInputDevices::InputDevice::getCapabilities() const {
     return capabilities;
 }
 
-size_t CheckInput::EventDevice::getMaxNameSize() {
+size_t ListInputDevices::InputDevice::getMaxNameSize() {
     return maxNameSize;
 }
 
-void CheckInput::EventDevice::setMaxNameSize(size_t newMaxNameSize) {
-    EventDevice::maxNameSize = newMaxNameSize;
+void ListInputDevices::InputDevice::setMaxNameSize(size_t newMaxNameSize) {
+    InputDevice::maxNameSize = newMaxNameSize;
 }
 
-size_t CheckInput::EventDevice::getMaxPathSize() {
+size_t ListInputDevices::InputDevice::getMaxPathSize() {
     return maxPathSize;
 }
 
-void CheckInput::EventDevice::setMaxPathSize(size_t newMaxPathSize) {
-    EventDevice::maxPathSize = newMaxPathSize;
+void ListInputDevices::InputDevice::setMaxPathSize(size_t newMaxPathSize) {
+    InputDevice::maxPathSize = newMaxPathSize;
 }
 
-std::partial_ordering CheckInput::EventDevice::operator<=>(const EventDevice& eventDevice) const {
+std::partial_ordering ListInputDevices::InputDevice::operator<=>(const InputDevice& eventDevice) const {
     if ((byId.has_value() && !eventDevice.byId.has_value())
         || (byPath.has_value() && !eventDevice.byPath.has_value())) {
         return std::partial_ordering::less;
@@ -115,16 +115,16 @@ std::partial_ordering CheckInput::EventDevice::operator<=>(const EventDevice& ev
     return std::partial_ordering::unordered;
 }
 
-std::ostream& CheckInput::operator<<(std::ostream& os, const CheckInput::EventDevice& eventDevice) {
+std::ostream& ListInputDevices::operator<<(std::ostream& os, const ListInputDevices::InputDevice& eventDevice) {
     size_t deviceNameLength = 0;
     size_t devicePathLength = eventDevice.device.string().length();
     if (eventDevice.name.has_value()) {
         os << eventDevice.name.value();
         deviceNameLength = eventDevice.name->length();
     }
-    auto totalName = MIN_SPACE_GAP + CheckInput::EventDevice::maxNameSize;
+    auto totalName = MIN_SPACE_GAP + ListInputDevices::InputDevice::maxNameSize;
     auto spacesName = totalName - deviceNameLength;
-    auto spacesPath = (MIN_SPACE_GAP + CheckInput::EventDevice::maxPathSize) - devicePathLength;
+    auto spacesPath = (MIN_SPACE_GAP + ListInputDevices::InputDevice::maxPathSize) - devicePathLength;
     os << std::string(spacesName, ' ') << eventDevice.device.string() << std::string(spacesPath, ' ');
 
     if (!eventDevice.capabilities.empty()) {

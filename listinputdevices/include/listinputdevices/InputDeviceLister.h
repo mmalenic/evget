@@ -23,7 +23,7 @@
 #ifndef INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
 #define INPUT_EVENT_RECORDER_EVENTDEVICELISTER_H
 
-#include "EventDevice.h"
+#include "InputDevice.h"
 
 #include <filesystem>
 #include <map>
@@ -31,27 +31,27 @@
 #include <string>
 #include <vector>
 
-namespace CheckInput {
-    class EventDeviceLister {
+namespace ListInputDevices {
+    class InputDeviceLister {
     public:
         /**
          * Create an event device lister.
          */
-        EventDeviceLister();
+        InputDeviceLister();
 
         /**
-         * list event devices.
-         * @return event devices list
+         * list input devices.
+         * @return input devices list
          */
-        std::vector<EventDevice> listEventDevices();
+        std::vector<InputDevice> listInputDevices();
 
         /**
          * Get event devices.
          * @return event devices
          */
-        [[nodiscard]] const std::vector<EventDevice>& getEventDevices() const;
+        [[nodiscard]] const std::vector<InputDevice>& getInputDevices() const;
 
-        friend std::ostream& operator<<(std::ostream& os, const EventDeviceLister& deviceLister);
+        friend std::ostream& operator<<(std::ostream& os, const InputDeviceLister& deviceLister);
 
     private:
         const fs::path inputDirectory;
@@ -63,7 +63,7 @@ namespace CheckInput {
 
         size_t maxNameSize;
         size_t maxPathSize;
-        std::vector<EventDevice> eventDevices;
+        std::vector<InputDevice> inputDevices;
 
         /**
          * Check the symlink in path to see if they point to entry.

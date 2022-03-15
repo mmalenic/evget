@@ -2,8 +2,8 @@ add_program_linux(
     TARGET ${TEST_EXECUTABLE_NAME}
     SRCS
     CommandLine/CommandLineParserLinuxTest.cpp
-    ../../../checkinput/test/EventDeviceListerTest.cpp
-    ../../../checkinput/test/EventDeviceTest.cpp
+    ../../../listinputdevices/test/EventDeviceListerTest.cpp
+    ../../../listinputdevices/test/EventDeviceTest.cpp
     ShutdownHandlerLinuxTest.cpp
     XInputHandlerTest.cpp
 )

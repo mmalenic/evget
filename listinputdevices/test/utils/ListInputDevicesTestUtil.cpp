@@ -20,32 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
-#define EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
+#include <linux/input.h>
+#include "ListInputDevicesTestUtil.h"
 
-#include "checkinput/EventDevice.h"
-#include "checkinput/EventDeviceLister.h"
-#include <gtest/gtest.h>
-
-namespace CheckInputTestUtils {
-
-    namespace fs = std::filesystem;
-
-    void checkDevices(auto&& getDevice) {
-        std::vector<CheckInput::EventDevice> devices = CheckInput::EventDeviceLister{}.listEventDevices();
-
-        std::vector<bool> results{};
-        for (auto& device : devices) {
-            auto name = getDevice(device);
-            if (name.has_value()) {
-                fs::path path{name.value()};
-                results.push_back(fs::is_symlink(path) && fs::read_symlink(path).filename() == device.getDevice().filename());
-            }
-        }
-        ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
-    }
-
-    std::vector<std::pair<int, std::string>> createCapabilities();
+std::vector<std::pair<int, std::string>> ListInputDeviceTestUtils::createCapabilities() {
+    return {
+        std::make_pair(EV_SYN, std::to_string(EV_SYN)),
+        std::make_pair(EV_KEY, std::to_string(EV_KEY)),
+        std::make_pair(EV_REL, std::to_string(EV_REL)),
+        std::make_pair(EV_MSC, std::to_string(EV_MSC))
+    };
 }
-
-#endif //EVGET_CHECKINPUT_TEST_UTILS_CHECKINPUTTESTUTILS_H
