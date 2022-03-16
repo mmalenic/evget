@@ -1,5 +1,5 @@
 add_program(
-    TARGET ${LIBRARY_NAME}
+    TARGET ${EVGETCORE_LIBRARY_NAME}
     SRCS
     Event/Button/Character.cpp
     Event/Common/Time.cpp

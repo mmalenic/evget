@@ -1,5 +1,5 @@
 add_program(
-    TARGET ${TEST_EXECUTABLE_NAME}
+    TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME}
     SRCS
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
@@ -32,5 +32,3 @@ add_program(
     utils/EventTestUtils.h
     utils/EventTestUtils.cpp
 )
-
-add_subdirectory(TestUtils)

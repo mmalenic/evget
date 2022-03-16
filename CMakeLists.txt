@@ -330,86 +330,18 @@ if (DOWNLOAD_DEPENDENCIES)
     set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 endif()
 
-# Common functionality.
-add_program(
-    TARGET ${LIBRARY_NAME} MAKE_LIBRARY
-    INCLUDE_DIRS
-    evgetcore/include
-    SRCS
-    # Headers
-    evgetcore/include/evgetcore/Task.h
-    evgetcore/include/evgetcore/EventTransformer.h
-    evgetcore/include/evgetcore/Event/AbstractData.h
-    evgetcore/include/evgetcore/EventHandler.h
-    evgetcore/include/evgetcore/SystemEvent.h
-    evgetcore/include/evgetcore/SystemEventLoop.h
-    evgetcore/include/evgetcore/ShutdownHandler.h
-    evgetcore/include/evgetcore/Storage.h
-    evgetcore/include/evgetcore/Event/Data.h
-    evgetcore/include/evgetcore/Event/Field.h
-    evgetcore/include/evgetcore/Event/MouseMove.h
-    evgetcore/include/evgetcore/Event/MouseClick.h
-    evgetcore/include/evgetcore/Event/MouseScroll.h
-    evgetcore/include/evgetcore/Event/Button/Character.h
-    evgetcore/include/evgetcore/Event/Pointer/ScrollUp.h
-    evgetcore/include/evgetcore/Event/Pointer/ScrollDown.h
-    evgetcore/include/evgetcore/Event/Pointer/ScrollLeft.h
-    evgetcore/include/evgetcore/Event/Pointer/ScrollRight.h
-    evgetcore/include/evgetcore/Event/Common/Time.h
-    evgetcore/include/evgetcore/Event/Pointer/Multitouch.h
-    evgetcore/include/evgetcore/Event/Pointer/Orientation.h
-    evgetcore/include/evgetcore/Event/Pointer/EllipseMajorInner.h
-    evgetcore/include/evgetcore/Event/Pointer/EllipseMajorOuter.h
-    evgetcore/include/evgetcore/Event/Pointer/EllipseMinorInner.h
-    evgetcore/include/evgetcore/Event/Pointer/EllipseMinorOuter.h
-    evgetcore/include/evgetcore/Event/Pointer/PositionXOuterTest.h
-    evgetcore/include/evgetcore/Event/Pointer/PositionYOuterTest.h
-    evgetcore/include/evgetcore/Event/Pointer/PositionX.h
-    evgetcore/include/evgetcore/Event/Pointer/PositionY.h
-    evgetcore/include/evgetcore/Event/Button/Name.h
-    evgetcore/include/evgetcore/Event/Common/DeviceType.h
-    evgetcore/include/evgetcore/Event/Common/Device.h
-    evgetcore/include/evgetcore/Event/Button/Action.h
-    evgetcore/include/evgetcore/Event/Button/ButtonAction.h
-    evgetcore/include/evgetcore/Event/Button/Identifier.h
-    evgetcore/include/evgetcore/Event/TableData.h
-    evgetcore/include/evgetcore/Event/Touch.h
-    evgetcore/include/evgetcore/EventListener.h
-    evgetcore/include/evgetcore/Util.h
-    evgetcore/include/evgetcore/Event/AbstractField.h
-    evgetcore/include/evgetcore/UnsupportedOperationException.h
-    evgetcore/include/evgetcore/CoreParser.h
-)
-add_subdirectory(evgetcore/src)
-
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options headers)
-
-add_subdirectory(clioption)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
-add_subdirectory(listinputdevices)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRARY_NAME} ONLY_LINK)
-
 # Make executable.
 add_program(
     TARGET ${CMAKE_PROJECT_NAME} MAKE_EXECUTABLE
     SRCS
     evgetcore/src/main.cpp
 )
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
 
-if (BUILD_TESTING)
-    add_program(TARGET ${TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
-
-    add_subdirectory(evgetcore/test)
-    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
-    program_dependencies(TARGET ${TEST_EXECUTABLE_NAME} DEP PUBLIC ${LIBRARY_NAME} ONLY_LINK)
-
-    include(GoogleTest)
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    gtest_discover_tests(${TEST_EXECUTABLE_NAME})
-endif()
-
+add_subdirectory(evgetcore)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
+add_subdirectory(clioption)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
+add_subdirectory(listinputdevices)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRARY_NAME} ONLY_LINK)
 add_subdirectory(evgetx11)
-program_dependencies(TARGET ${LIBRARY_NAME} DEP PUBLIC ${EVGETX11_LIBRARY_NAME} ONLY_LINK)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETX11_LIBRARY_NAME} ONLY_LINK)
