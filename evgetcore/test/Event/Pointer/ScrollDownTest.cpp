@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pointer/ScrollDown.h"
+#include "EventTestUtils.h"
+#include "evgetcore/Event/Pointer/ScrollDown.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/AbstractField.h"
-#include "TestUtils/Event/EventTestUtils.h"
+#include "evgetcore/Event/AbstractField.h"
+#include "EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

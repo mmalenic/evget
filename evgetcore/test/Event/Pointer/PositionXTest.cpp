@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pointer/PositionX.h"
+#include "EventTestUtils.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/MouseScroll.h"
+#include "evgetcore/Event/MouseScroll.h"
 
 Event::MouseScroll::MouseScrollBuilder::MouseScrollBuilder() :
 _time{std::make_unique<Common::Time>()},

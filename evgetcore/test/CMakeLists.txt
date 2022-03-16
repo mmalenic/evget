@@ -1,5 +1,7 @@
 add_program(
     TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME}
+    INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils
     SRCS
     Event/Common/TimeTest.cpp
     Event/Button/CharacterTest.cpp
@@ -29,6 +31,6 @@ add_program(
     Event/TouchTest.cpp
     Event/DataTest.cpp
     Event/FieldTest.cpp
-    utils/EventTestUtils.h
-    utils/EventTestUtils.cpp
+    EventTestUtils.h
+    EventTestUtils.cpp
 )

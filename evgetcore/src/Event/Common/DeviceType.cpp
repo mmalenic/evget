@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <fmt/format.h>
-#include "evget/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Common/DeviceType.h"
 
 Event::Common::DeviceType::DeviceType(std::string type) : AbstractField{"DeviceType", std::move(type)} {
 }

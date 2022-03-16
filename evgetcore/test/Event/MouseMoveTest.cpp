@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/MouseMove.h"
-#include "TestUtils/Event/EventTestUtils.h"
+#include "evgetcore/Event/MouseMove.h"
+#include "EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

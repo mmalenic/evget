@@ -15,7 +15,7 @@
 
 #include <string>
 #include <utility>
-#include "evget/UnsupportedOperationException.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 evget::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {
 }

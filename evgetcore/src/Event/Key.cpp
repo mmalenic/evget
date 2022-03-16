@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Key.h"
-#include "evget/Event/Button/Action.h"
+#include "evgetcore/Event/Key.h"
+#include "evgetcore/Event/Button/Action.h"
 
 Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},

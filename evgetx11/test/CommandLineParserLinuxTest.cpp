@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/CommandLine/ParserLinux.h"
+#include "evgetcore/CommandLine/ParserLinux.h"
 #include "TestUtils/CommandLine/CommandLineTestUtils.h"
 #include <gtest/gtest.h>
 

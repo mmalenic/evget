@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/TableData.h"
+#include "evgetcore/Event/TableData.h"
 
 TEST(TableDataTest, NoData) { // NOLINT(cert-err58-cpp)
     auto data = Event::TableData::TableDataBuilder{}.build();

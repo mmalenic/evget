@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <spdlog/spdlog.h>
-#include "evget/XInputHandler.h"
-#include "evget/UnsupportedOperationException.h"
+#include "evgetx11/XInputHandler.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 evget::XInputHandler::XInputHandler(Display& display) : display{display} {
     announceVersion(display);

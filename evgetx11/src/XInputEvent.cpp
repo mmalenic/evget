@@ -22,7 +22,7 @@
 
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
-#include "evget/XInputEvent.h"
+#include "evgetx11/XInputEvent.h"
 
 evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
     XNextEvent(&display, &event);

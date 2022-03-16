@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/EllipseMinorInner.h"
+#include "evgetcore/Event/Pointer/EllipseMinorInner.h"
 
 Event::Pointer::EllipseMinorInner::EllipseMinorInner(std::string width) : AbstractField{"EllipseMinorInner", std::move(width)} {
 }

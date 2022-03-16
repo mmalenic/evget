@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
 #define EVGET_INCLUDE_EVENT_CURSOR_POSITIONY_H
 
-#include "evget/Event/AbstractField.h"
+#include "evgetcore/Event/AbstractField.h"
 #include <string>
 
 namespace Event::Pointer {

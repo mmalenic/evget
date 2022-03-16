@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Touch.h"
+#include "evgetcore/Event/Touch.h"
 
 Event::Touch::TouchBuilder::TouchBuilder() :
     _time{std::make_unique<Common::Time>()},

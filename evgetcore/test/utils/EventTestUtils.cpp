@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "TestUtils/Event/EventTestUtils.h"
+#include "EventTestUtils.h"
 
 void TestUtils::EventTestUtils::fieldValueAndName(const Event::AbstractField& field, const std::string& name, const std::string& expected) {
     ASSERT_EQ(name, field.getName());

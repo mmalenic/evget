@@ -25,14 +25,14 @@
 
 #include <memory>
 #include "AbstractData.h"
-#include "evget/Event/Common/Time.h"
-#include "evget/Event/Pointer/PositionX.h"
-#include "evget/Event/Pointer/PositionY.h"
-#include "evget/Event/Common/DeviceType.h"
-#include "evget/Event/Button/ButtonAction.h"
-#include "evget/Event/Button/Action.h"
-#include "evget/Event/Button/Identifier.h"
-#include "evget/Event/Button/Name.h"
+#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
+#include "evgetcore/Event/Pointer/PositionY.h"
+#include "evgetcore/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Button/ButtonAction.h"
+#include "evgetcore/Event/Button/Action.h"
+#include "evgetcore/Event/Button/Identifier.h"
+#include "evgetcore/Event/Button/Name.h"
 
 namespace Event {
     /**

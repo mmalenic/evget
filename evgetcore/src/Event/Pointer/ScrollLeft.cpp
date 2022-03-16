@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/ScrollLeft.h"
+#include "evgetcore/Event/Pointer/ScrollLeft.h"
 
 Event::Pointer::ScrollLeft::ScrollLeft(std::string amount) : AbstractField{"ScrollLeft", std::move(amount)} {
 }

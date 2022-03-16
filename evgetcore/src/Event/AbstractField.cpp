@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/AbstractField.h"
-#include "evget/Event/AbstractData.h"
+#include "evgetcore/Event/AbstractField.h"
+#include "evgetcore/Event/AbstractData.h"
 
 #include <utility>
 #include <memory>

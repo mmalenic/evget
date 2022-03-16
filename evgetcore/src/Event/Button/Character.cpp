@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Button/Character.h"
+#include "evgetcore/Event/Button/Character.h"
 
 Event::Button::Character::Character() : Character{""} {
 }

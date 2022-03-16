@@ -21,11 +21,11 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evget/Event/AbstractData.h"
-#include "TestUtils/Event/EventTestUtils.h"
+#include "evgetcore/Event/AbstractData.h"
+#include "EventTestUtils.h"
 
 #include <utility>
-#include "evget/UnsupportedOperationException.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 namespace EventUtils = TestUtils::EventTestUtils;
 

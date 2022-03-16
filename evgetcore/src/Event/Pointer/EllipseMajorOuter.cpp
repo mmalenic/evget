@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/EllipseMajorOuter.h"
+#include "evgetcore/Event/Pointer/EllipseMajorOuter.h"
 
 Event::Pointer::EllipseMajorOuter::EllipseMajorOuter(std::string width) : AbstractField{"EllipseMajorOuter", std::move(width)} {
 }

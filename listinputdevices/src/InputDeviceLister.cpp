@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include "listinputdevices/InputDevice.h"
-#include "listinputdevices/EventDeviceLister.h"
+#include "listinputdevices/InputDeviceLister.h"
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>

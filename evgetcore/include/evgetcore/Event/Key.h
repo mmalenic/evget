@@ -25,12 +25,12 @@
 
 #include <chrono>
 #include "AbstractData.h"
-#include "evget/Event/Common/Time.h"
-#include "evget/Event/Button/Character.h"
-#include "evget/Event/Button/ButtonAction.h"
-#include "evget/Event/Button/Identifier.h"
-#include "evget/Event/Button/Action.h"
-#include "evget/Event/Button/Name.h"
+#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Button/Character.h"
+#include "evgetcore/Event/Button/ButtonAction.h"
+#include "evgetcore/Event/Button/Identifier.h"
+#include "evgetcore/Event/Button/Action.h"
+#include "evgetcore/Event/Button/Name.h"
 
 namespace Event {
     /**

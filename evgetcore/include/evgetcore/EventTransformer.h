@@ -25,7 +25,7 @@
 
 #include "Event/AbstractData.h"
 #include "SystemEvent.h"
-#include "evget/Event/TableData.h"
+#include "evgetcore/Event/TableData.h"
 
 namespace evget {
 

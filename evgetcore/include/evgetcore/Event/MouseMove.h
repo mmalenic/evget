@@ -27,10 +27,10 @@
 #include "AbstractField.h"
 #include <chrono>
 #include <optional>
-#include "evget/Event/Common/Time.h"
-#include "evget/Event/Pointer/PositionX.h"
-#include "evget/Event/Pointer/PositionY.h"
-#include "evget/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
+#include "evgetcore/Event/Pointer/PositionY.h"
+#include "evgetcore/Event/Common/DeviceType.h"
 
 namespace Event {
     /**

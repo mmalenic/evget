@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/Orientation.h"
+#include "evgetcore/Event/Pointer/Orientation.h"
 
 Event::Pointer::Orientation::Orientation(std::string orientation) : AbstractField{"Orientation", std::move(orientation)} {
 }

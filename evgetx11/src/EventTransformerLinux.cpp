@@ -27,13 +27,13 @@
 #include <X11/keysymdef.h>
 #include <xorg/xserver-properties.h>
 #include <boost/numeric/conversion/cast.hpp>
-#include "evget/EventTransformerLinux.h"
-#include "evget/UnsupportedOperationException.h"
-#include "evget/Event/MouseClick.h"
-#include "evget/Event/Key.h"
-#include "evget/Event/Field.h"
-#include "evget/Event/MouseScroll.h"
-#include "evget/Event/MouseMove.h"
+#include "evgetx11/EventTransformerLinux.h"
+#include "evgetcore/UnsupportedOperationException.h"
+#include "evgetcore/Event/MouseClick.h"
+#include "evgetcore/Event/Key.h"
+#include "evgetcore/Event/Field.h"
+#include "evgetcore/Event/MouseScroll.h"
+#include "evgetcore/Event/MouseMove.h"
 
 std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
     if (event.hasData()) {

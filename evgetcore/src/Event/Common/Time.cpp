@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Common/Time.h"
+#include "evgetcore/Event/Common/Time.h"
 
 Event::Common::Time::Time(std::string interval) : AbstractField{"Time", std::move(interval)} {
 }

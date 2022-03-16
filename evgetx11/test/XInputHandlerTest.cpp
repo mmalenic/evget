@@ -22,7 +22,7 @@
 
 #include <gtest/gtest.h>
 #include <X11/extensions/XTest.h>
-#include "evget/XInputHandler.h"
+#include "evgetx11/XInputHandler.h"
 
 TEST(XInputHandlerTest, TestEvent) { // NOLINT(cert-err58-cpp)
     Display* display = XOpenDisplay(nullptr);

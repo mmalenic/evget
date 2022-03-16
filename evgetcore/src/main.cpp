@@ -24,13 +24,13 @@
 #include <spdlog/spdlog.h>
 #include <boost/asio.hpp>
 #include <atomic>
-#include <evget/EventHandler.h>
+#include <evgetcore/EventHandler.h>
 #include <boost/program_options.hpp>
 #include <linux/input.h>
-#include "evget/CommandLine/ParserLinux.h"
-#include "evget/XInputHandler.h"
-#include "evget/EventTransformerLinux.h"
-#include "evget/SystemEventLoopLinux.h"
+#include "evgetcore/CommandLine/ParserLinux.h"
+#include "evgetcore/XInputHandler.h"
+#include "evgetcore/EventTransformerLinux.h"
+#include "evgetcore/SystemEventLoopLinux.h"
 #include "../checkinput/include/checkinput/EventDeviceLister.h"
 
 using namespace std;

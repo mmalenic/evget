@@ -28,12 +28,12 @@
 #include <set>
 #include <concepts>
 #include "XInputHandler.h"
-#include "evget/EventTransformer.h"
-#include "evget/Event/TableData.h"
-#include "evget/Util.h"
-#include "evget/Event/Common/DeviceType.h"
-#include "evget/Event/Button/ButtonAction.h"
-#include "evget/Event/MouseScroll.h"
+#include "evgetcore/EventTransformer.h"
+#include "evgetcore/Event/TableData.h"
+#include "evgetcore/Util.h"
+#include "evgetcore/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Button/ButtonAction.h"
+#include "evgetcore/Event/MouseScroll.h"
 
 namespace evget {
     class EventTransformerLinux : EventTransformer<XInputEvent> {

@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Pointer/EllipseMajorOuter.h"
+#include "EventTestUtils.h"
+#include "evgetcore/Event/Pointer/EllipseMajorOuter.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

@@ -25,12 +25,12 @@
 
 #include <chrono>
 #include "AbstractData.h"
-#include "evget/Event/Common/Time.h"
-#include "evget/Event/Common/DeviceType.h"
-#include "evget/Event/Pointer/ScrollUp.h"
-#include "evget/Event/Pointer/ScrollDown.h"
-#include "evget/Event/Pointer/ScrollLeft.h"
-#include "evget/Event/Pointer/ScrollRight.h"
+#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Pointer/ScrollUp.h"
+#include "evgetcore/Event/Pointer/ScrollDown.h"
+#include "evgetcore/Event/Pointer/ScrollLeft.h"
+#include "evgetcore/Event/Pointer/ScrollRight.h"
 
 namespace Event {
     /**

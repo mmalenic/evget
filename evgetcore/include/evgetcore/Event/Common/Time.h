@@ -23,7 +23,7 @@
 #ifndef EVGET_TIME_H
 #define EVGET_TIME_H
 
-#include "evget/Event/AbstractField.h"
+#include "evgetcore/Event/AbstractField.h"
 #include <string>
 #include <chrono>
 

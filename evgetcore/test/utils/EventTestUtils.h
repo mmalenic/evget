@@ -25,8 +25,8 @@
 
 #include <string>
 #include "gtest/gtest.h"
-#include "evget/Event/Data.h"
-#include "evget/Event/Field.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Field.h"
 
 namespace TestUtils::EventTestUtils {
     void createAndIterate(auto&& create) {

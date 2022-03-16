@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/TableData.h"
+#include "evgetcore/Event/TableData.h"
 
 Event::TableData::TableData(Event::TableData::TableDataBuilder& builder) : genericData{std::move(builder._genericData)}, systemData{std::move(builder._systemData)} {
 }

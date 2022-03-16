@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Data.h"
+#include "evgetcore/Event/Data.h"
 #include <utility>
 
 Event::Data::Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields) : AbstractData{std::move(name)} {

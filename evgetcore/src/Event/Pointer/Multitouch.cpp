@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/Multitouch.h"
+#include "evgetcore/Event/Pointer/Multitouch.h"
 
 Event::Pointer::Multitouch::Multitouch(std::string id) : AbstractField{"Multitouch", std::move(id)} {
 }

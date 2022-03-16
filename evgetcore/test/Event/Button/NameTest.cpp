@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "TestUtils/Event/EventTestUtils.h"
-#include "evget/Event/Button/Name.h"
+#include "EventTestUtils.h"
+#include "evgetcore/Event/Button/Name.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 

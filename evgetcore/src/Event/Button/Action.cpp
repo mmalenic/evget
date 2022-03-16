@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Button/Action.h"
+#include "evgetcore/Event/Button/Action.h"
 
 Event::Button::Action::Action(std::string type) : AbstractField{"Action", std::move(type)} {
 }

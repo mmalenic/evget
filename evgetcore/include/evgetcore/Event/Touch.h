@@ -25,17 +25,17 @@
 
 #include <chrono>
 #include "AbstractData.h"
-#include "evget/Event/Common/Time.h"
-#include "evget/Event/Pointer/PositionX.h"
-#include "evget/Event/Pointer/PositionY.h"
-#include "evget/Event/Pointer/EllipseMajorInner.h"
-#include "evget/Event/Pointer/EllipseMinorInner.h"
-#include "evget/Event/Pointer/PositionXOuterTest.h"
-#include "evget/Event/Pointer/PositionYOuterTest.h"
-#include "evget/Event/Pointer/EllipseMajorOuter.h"
-#include "evget/Event/Pointer/EllipseMinorOuter.h"
-#include "evget/Event/Pointer/Orientation.h"
-#include "evget/Event/Pointer/Multitouch.h"
+#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
+#include "evgetcore/Event/Pointer/PositionY.h"
+#include "evgetcore/Event/Pointer/EllipseMajorInner.h"
+#include "evgetcore/Event/Pointer/EllipseMinorInner.h"
+#include "evgetcore/Event/Pointer/PositionXOuterTest.h"
+#include "evgetcore/Event/Pointer/PositionYOuterTest.h"
+#include "evgetcore/Event/Pointer/EllipseMajorOuter.h"
+#include "evgetcore/Event/Pointer/EllipseMinorOuter.h"
+#include "evgetcore/Event/Pointer/Orientation.h"
+#include "evgetcore/Event/Pointer/Multitouch.h"
 
 namespace Event {
     /**

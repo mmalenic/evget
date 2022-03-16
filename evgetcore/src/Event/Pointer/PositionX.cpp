@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evget/Event/Pointer/PositionX.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
 
 Event::Pointer::PositionX::PositionX(std::string position) : AbstractField{"PositionX", std::move(position)} {
 }
