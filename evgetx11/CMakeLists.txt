@@ -1,5 +1,5 @@
-set_variable(EVGETX11_LIBRARY_NAME libevgetx11)
-set_variable(EVGETX11_TEST_EXECUTABLE_NAME libevgetx11test)
+set_and_get_variable(EVGETX11_LIBRARY_NAME libevgetx11)
+set_and_get_variable(EVGETX11_TEST_EXECUTABLE_NAME libevgetx11test)
 
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME} MAKE_LIBRARY

@@ -1,5 +1,5 @@
-set_variable(CLIOPTION_LIBRARY_NAME libclioption)
-set_variable(CLIOPTION_TEST_EXECUTABLE_NAME clioptiontest)
+set_and_get_variable(CLIOPTION_LIBRARY_NAME libclioption)
+set_and_get_variable(CLIOPTION_TEST_EXECUTABLE_NAME clioptiontest)
 
 add_program(
     TARGET ${CLIOPTION_LIBRARY_NAME} MAKE_LIBRARY

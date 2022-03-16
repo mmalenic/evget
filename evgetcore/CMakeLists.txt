@@ -1,5 +1,5 @@
-set_variable(EVGETCORE_LIBRARY_NAME libevgetcore)
-set_variable(EVGETCORE_TEST_EXECUTABLE_NAME libevgetcoretest)
+set_and_get_variable(EVGETCORE_LIBRARY_NAME libevgetcore)
+set_and_get_variable(EVGETCORE_TEST_EXECUTABLE_NAME libevgetcoretest)
 
 add_program(
     TARGET ${EVGETCORE_LIBRARY_NAME} MAKE_LIBRARY

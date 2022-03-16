@@ -1,5 +1,5 @@
-set_variable(LISTINPUTDEVICES_LIBRARY_NAME libcheckinput)
-set_variable(LISTINPUTDEVICES_TEST_EXECUTABLE_NAME checkinputtest)
+set_and_get_variable(LISTINPUTDEVICES_LIBRARY_NAME libcheckinput)
+set_and_get_variable(LISTINPUTDEVICES_TEST_EXECUTABLE_NAME checkinputtest)
 
 add_program(
     TARGET ${LISTINPUTDEVICES_LIBRARY_NAME} MAKE_LIBRARY

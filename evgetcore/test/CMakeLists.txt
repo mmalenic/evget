@@ -31,6 +31,6 @@ add_program(
     Event/TouchTest.cpp
     Event/DataTest.cpp
     Event/FieldTest.cpp
-    EventTestUtils.h
-    EventTestUtils.cpp
+    utils/EventTestUtils.h
+    utils/EventTestUtils.cpp
 )

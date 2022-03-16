@@ -300,10 +300,15 @@ macro(set_feature_property FEATURE FEATURE_CHECK FEATURE_REQUIRES)
     endif()
 endmacro()
 
-# Sets a variable in local and parent scope.
-macro(set_variable NAME VALUE)
-    set(${NAME} ${VALUE})
-    set(${NAME} ${VALUE} PARENT_SCOPE)
+# Sets a variable as a global property and retrieves it.
+macro(set_and_get_variable NAME VALUE)
+    set_property(GLOBAL PROPERTY ${NAME} ${VALUE})
+    get_property(${NAME} GLOBAL PROPERTY ${NAME})
+endmacro()
+
+# Gets a global property
+macro(get_variable NAME)
+    get_property(${NAME} GLOBAL PROPERTY ${NAME})
 endmacro()
 
 if (DOWNLOAD_DEPENDENCIES)
@@ -337,11 +342,19 @@ add_program(
     evgetcore/src/main.cpp
 )
 
+
 add_subdirectory(evgetcore)
+get_variable(EVGETCORE_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
+
 add_subdirectory(clioption)
+get_variable(CLIOPTION_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
+
 add_subdirectory(listinputdevices)
+get_variable(LISTINPUTDEVICES_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRARY_NAME} ONLY_LINK)
+
 add_subdirectory(evgetx11)
+get_variable(EVGETX11_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETX11_LIBRARY_NAME} ONLY_LINK)
