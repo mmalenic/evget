@@ -342,11 +342,6 @@ add_program(
     evgetcore/src/main.cpp
 )
 
-
-add_subdirectory(evgetcore)
-get_variable(EVGETCORE_LIBRARY_NAME)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
-
 add_subdirectory(clioption)
 get_variable(CLIOPTION_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
@@ -354,6 +349,10 @@ program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY
 add_subdirectory(listinputdevices)
 get_variable(LISTINPUTDEVICES_LIBRARY_NAME)
 program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRARY_NAME} ONLY_LINK)
+
+add_subdirectory(evgetcore)
+get_variable(EVGETCORE_LIBRARY_NAME)
+program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
 
 add_subdirectory(evgetx11)
 get_variable(EVGETX11_LIBRARY_NAME)
