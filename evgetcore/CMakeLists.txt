@@ -59,13 +59,5 @@ get_variable(CLIOPTION_LIBRARY_NAME)
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
 
 if (BUILD_TESTING)
-    add_program(TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE)
-
     add_subdirectory(test)
-    program_dependencies(TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
-    program_dependencies(TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
-
-    include(GoogleTest)
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    gtest_discover_tests(${EVGETCORE_TEST_EXECUTABLE_NAME})
 endif()

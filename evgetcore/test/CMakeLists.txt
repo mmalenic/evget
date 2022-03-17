@@ -1,5 +1,5 @@
 add_program(
-    TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME}
+    TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
     SRCS
@@ -34,3 +34,10 @@ add_program(
     utils/EventTestUtils.h
     utils/EventTestUtils.cpp
 )
+
+program_dependencies(TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
+program_dependencies(TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
+
+include(GoogleTest)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+gtest_discover_tests(${EVGETCORE_TEST_EXECUTABLE_NAME})
