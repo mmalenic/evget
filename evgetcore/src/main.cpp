@@ -27,37 +27,37 @@
 #include <evgetcore/EventHandler.h>
 #include <boost/program_options.hpp>
 #include <linux/input.h>
-#include "evgetcore/CommandLine/ParserLinux.h"
-#include "evgetcore/XInputHandler.h"
-#include "evgetcore/EventTransformerLinux.h"
-#include "evgetcore/SystemEventLoopLinux.h"
-#include "../checkinput/include/checkinput/EventDeviceLister.h"
+//#include "evgetcore/CommandLine/ParserLinux.h"
+//#include "evgetcore/XInputHandler.h"
+//#include "evgetcore/EventTransformerLinux.h"
+//#include "evgetcore/SystemEventLoopLinux.h"
+//#include "../checkinput/include/checkinput/EventDeviceLister.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CliOption::ParserLinux cmd{};
-    cmd.parseCommandLine(argc, (const char**) argv);
-
-    spdlog::set_level(cmd.getLogLevel());
-
-    boost::asio::thread_pool pool{};
-    auto context = pool.get_executor();
-    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
-    Display* display = XOpenDisplay(nullptr);
-    evget::EventTransformerLinux transformer{*display};
-    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
-
-    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage, eventLoop};
-
-    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
-
-    if (cmd.isListEventDevices()) {
-        evget::EventDeviceLister lister{};
-        cout << lister;
-    }
-
-    pool.join();
+//    CliOption::ParserLinux cmd{};
+//    cmd.parseCommandLine(argc, (const char**) argv);
+//
+//    spdlog::set_level(cmd.getLogLevel());
+//
+//    boost::asio::thread_pool pool{};
+//    auto context = pool.get_executor();
+//    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
+//    Display* display = XOpenDisplay(nullptr);
+//    evget::EventTransformerLinux transformer{*display};
+//    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
+//
+//    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage, eventLoop};
+//
+//    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+//
+//    if (cmd.isListEventDevices()) {
+//        evget::EventDeviceLister lister{};
+//        cout << lister;
+//    }
+//
+//    pool.join();
 //    po::options_description cmdlineDesc("Allowed options");
 //    cmdlineDesc.add_options()
 //            ("help", "produce help message")
