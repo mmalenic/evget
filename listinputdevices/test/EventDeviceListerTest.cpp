@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include "listinputdevices/InputDeviceLister.h"
-#include "utils/ListInputDevicesTestUtils.h"
+#include "ListInputDevicesTestUtils.h"
 
 #include <gtest/gtest.h>
 #include <filesystem>

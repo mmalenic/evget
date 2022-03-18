@@ -23,7 +23,7 @@
 #include <gtest/gtest.h>
 #include "clioption/Option.h"
 #include "clioption/InvalidCommandLineOption.h"
-#include "utils/CliOptionTestUtils.h"
+#include "CliOptionTestUtils.h"
 
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
