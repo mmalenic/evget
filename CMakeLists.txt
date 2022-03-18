@@ -323,6 +323,16 @@ macro(link_testing TEST_EXECUTABLE_NAME LIBRARY_NAME)
     gtest_discover_tests(${${TEST_EXECUTABLE_NAME}})
 endmacro()
 
+# Optionally adds a subdirectory and links the dependencies.
+macro(add_library_and_link TARGET DEPENDENCY DIRECTORY_NAME)
+    if (NOT "${DIRECTORY_NAME}" STREQUAL "")
+        add_subdirectory(${DIRECTORY_NAME})
+    endif()
+
+    get_variable(${DEPENDENCY})
+    program_dependencies(TARGET ${${TARGET}} DEP PUBLIC ${${DEPENDENCY}} ONLY_LINK)
+endmacro()
+
 if (DOWNLOAD_DEPENDENCIES)
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan.")
@@ -354,18 +364,7 @@ add_program(
     evgetcore/src/main.cpp
 )
 
-add_subdirectory(clioption)
-get_variable(CLIOPTION_LIBRARY_NAME)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
-
-add_subdirectory(listinputdevices)
-get_variable(LISTINPUTDEVICES_LIBRARY_NAME)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${LISTINPUTDEVICES_LIBRARY_NAME} ONLY_LINK)
-
-add_subdirectory(evgetcore)
-get_variable(EVGETCORE_LIBRARY_NAME)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETCORE_LIBRARY_NAME} ONLY_LINK)
-
-add_subdirectory(evgetx11)
-get_variable(EVGETX11_LIBRARY_NAME)
-program_dependencies(TARGET ${CMAKE_PROJECT_NAME} DEP PUBLIC ${EVGETX11_LIBRARY_NAME} ONLY_LINK)
+add_library_and_link(CMAKE_PROJECT_NAME CLIOPTION_LIBRARY_NAME clioption)
+add_library_and_link(CMAKE_PROJECT_NAME LISTINPUTDEVICES_LIBRARY_NAME listinputdevices)
+add_library_and_link(CMAKE_PROJECT_NAME EVGETCORE_LIBRARY_NAME evgetcore)
+add_library_and_link(CMAKE_PROJECT_NAME EVGETX11_LIBRARY_NAME evgetx11)

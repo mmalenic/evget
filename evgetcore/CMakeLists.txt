@@ -55,8 +55,7 @@ program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options headers)
 
-get_variable(CLIOPTION_LIBRARY_NAME)
-program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC ${CLIOPTION_LIBRARY_NAME} ONLY_LINK)
+add_library_and_link(EVGETCORE_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 
 if (BUILD_TESTING)
     add_subdirectory(test)
