@@ -35,8 +35,8 @@ namespace po = boost::program_options;
 
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
-static constexpr char PROJECT_NAME[] = "evgetx11";
-static constexpr char DESCRIPTION[] = "Usage: evgetx11 [OPTION]...\n"
+static constexpr char PROJECT_NAME[] = "evget";
+static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
                                       "Shows events from input devices.\n"
                                       "Written by Marko Malenic 2021.\n\n"
                                       "Options";
@@ -50,31 +50,6 @@ static constexpr char DEFAULT_CONFIG_NAME[] = ".evget_config";
 static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
 static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evgetx11.\n"
                                                    "# Commented out values are required to be present, either in the config file or on the command line.";
-
-std::ostream& operator<<(std::ostream& os, const Evget::Filetype& filetype) {
-    switch (filetype) {
-    case Evget::Filetype::sqlite:os << SQLITE_STRING;
-        break;
-    case Evget::csv:os << CSV_STRING;
-        break;
-    }
-    return os;
-}
-
-std::istream& operator>>(std::istream& in, Evget::Filetype& algorithm) {
-    std::string token{};
-    in >> token;
-    algorithm::to_lower(token);
-
-    if (token == SQLITE_STRING) {
-        algorithm = Evget::Filetype::sqlite;
-    } else if (token == CSV_STRING) {
-        algorithm = Evget::Filetype::csv;
-    } else {
-        throw po::validation_error(po::validation_error::invalid_option_value, "filetype", token);
-    }
-    return in;
-}
 
 Evget::CoreParser::CoreParser(std::string platform) :
         platformInformation{std::move(platform)},
@@ -110,15 +85,6 @@ Evget::CoreParser::CoreParser(std::string platform) :
             .longName("folder")
             .description("Folder location where events are stored.")
             .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
-            .build()
-    },
-        filetypes{
-            CliOption::OptionBuilder<std::vector<Filetype>>{configDesc}
-            .shortName('f')
-            .longName("filetypes")
-            .description("Filetypes used to store events.")
-            .defaultValue(std::vector{sqlite})
-            .representation("sqlite")
             .build()
     },
         print{
@@ -181,7 +147,6 @@ bool Evget::CoreParser::parseCommandLine(int argc, const char* argv[], po::varia
     storeAndNotify(po::parse_environment(configDesc, ENVIRONMENT_VARIABLE_PREFIX), vm);
 
     folder.run(vm);
-    filetypes.run(vm);
     print.run(vm);
     systemEvents.run(vm);
     logLevel.run(vm);
@@ -238,10 +203,6 @@ std::optional<spdlog::level::level_enum> Evget::CoreParser::validateLogLevel(std
     return level;
 }
 
-std::vector<Evget::Filetype> Evget::CoreParser::getFiletype() const {
-    return filetypes.getValue();
-}
-
 bool Evget::CoreParser::useSystemEvents() const {
     return systemEvents.getValue();
 }
@@ -278,7 +239,6 @@ std::string Evget::CoreParser::formatConfigFile() {
     out += "\n\n";
 
     out += formatConfigOption(folder);
-    out += formatConfigOption(filetypes, filetypes.getRepresentation());
     out += formatConfigOption(print);
     out += formatConfigOption(systemEvents);
     out += formatConfigOption(logLevel, logLevel.getRepresentation());

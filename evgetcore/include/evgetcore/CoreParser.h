@@ -37,14 +37,6 @@ namespace Evget {
     namespace fs = std::filesystem;
 
     /**
-     * Available filetypes.
-     */
-    enum Filetype {
-        csv,
-        sqlite
-    };
-
-    /**
      * The CoreParser class controls command line options.
      */
     class CoreParser : CliOption::Parser {
@@ -84,17 +76,7 @@ namespace Evget {
          */
         [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
-        /**
-         * Get the file device.
-         * @return file device
-         */
-        [[nodiscard]] std::vector<Filetype> getFiletype() const;
-
         bool parseCommandLine(int argc, const char **argv, po::variables_map &vm) override;
-
-        friend std::ostream &operator<<(std::ostream &os, const Filetype &filetype);
-
-        friend std::istream &operator>>(std::istream &in, Filetype &algorithm);
 
     protected:
 
@@ -123,7 +105,6 @@ namespace Evget {
         CliOption::OptionFlag version;
         CliOption::Option<fs::path> config;
         CliOption::Option<fs::path> folder;
-        CliOption::Option<std::vector<Filetype>> filetypes;
         CliOption::OptionFlag print;
         CliOption::OptionFlag systemEvents;
         CliOption::OptionValidated<spdlog::level::level_enum> logLevel;
