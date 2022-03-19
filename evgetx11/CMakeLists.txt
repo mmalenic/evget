@@ -3,6 +3,8 @@ set_and_get_variable(EVGETX11_TEST_EXECUTABLE_NAME libevgetx11test)
 
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME} MAKE_LIBRARY
+    FEATURE_REQUIRES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h X11/Xutil.h xorg/xserver-properties.h
+    FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS

@@ -23,7 +23,6 @@
 #ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
-#include <linux/input.h>
 #include <filesystem>
 #include "evgetcore/SystemEventLoop.h"
 #include "evgetcore/SystemEvent.h"

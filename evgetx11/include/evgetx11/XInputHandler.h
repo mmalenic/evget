@@ -23,7 +23,6 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
 
-#include <X11/X.h>
 #include <X11/extensions/XInput2.h>
 #include <memory>
 #include "XInputEvent.h"

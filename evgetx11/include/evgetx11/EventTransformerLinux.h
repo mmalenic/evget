@@ -24,7 +24,7 @@
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
 #include <map>
-#include <X11/extensions/XInput.h>
+#include <X11/extensions/XInput2.h>
 #include <set>
 #include <concepts>
 #include "XInputHandler.h"
