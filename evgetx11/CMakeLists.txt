@@ -14,6 +14,7 @@ add_program(
     include/evgetx11/XInputHandler.h
     include/evgetx11/EventTransformerLinux.h
     include/evgetx11/XInputEvent.h
+    include/evgetx11/XEventSwitch.h
 )
 add_subdirectory(src)
 
@@ -25,17 +26,17 @@ add_library_and_link(EVGETX11_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 add_library_and_link(EVGETX11_LIBRARY_NAME EVGETCORE_LIBRARY_NAME "")
 
 find_symbols(
-    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGET_X11_HAS_TOUCH_SUPPORT
+    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_TOUCH_SUPPORT
     SYMBOLS XI_TouchBegin XI_TouchUpdate XI_TouchEnd XI_TouchOwnership XI_RawTouchBegin XI_RawTouchUpdate XI_RawTouchEnd
     FILES X11/extensions/XInput2.h
 )
 find_symbols(
-    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGET_X11_HAS_BARRIER_SUPPORT
+    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_BARRIER_SUPPORT
     SYMBOLS XI_BarrierHit XI_BarrierLeave
     FILES X11/extensions/XInput2.h
 )
 find_symbols(
-    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGET_X11_HAS_GESTURE_SUPPORT
+    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_GESTURE_SUPPORT
     SYMBOLS XI_GesturePinchBegin XI_GesturePinchUpdate XI_GesturePinchEnd XI_GestureSwipeBegin XI_GestureSwipeUpdate XI_GestureSwipeEnd
     FILES X11/extensions/XInput2.h
 )

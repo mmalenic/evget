@@ -38,6 +38,8 @@
 namespace EvgetX11 {
     class EventTransformerLinux : EvgetCore::EventTransformer<XInputEvent> {
     public:
+        using EventData = std::vector<std::unique_ptr<EvgetCore::Event::TableData>>;
+
         explicit EventTransformerLinux(Display& display);
 
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;

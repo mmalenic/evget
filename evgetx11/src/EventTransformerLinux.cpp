@@ -537,13 +537,21 @@ std::map<int, std::string> EvgetX11::EventTransformerLinux::typeToName() {
     map.emplace(XI_RawButtonPress, "RawButtonPress");
     map.emplace(XI_RawButtonRelease, "RawButtonRelease");
     map.emplace(XI_RawMotion, "RawMotion");
-#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
+#if defined EVGETX11_HAS_TOUCH_SUPPORT
     map.emplace(XI_TouchBegin, "TouchBegin");
     map.emplace(XI_TouchUpdate, "TouchUpdate");
     map.emplace(XI_TouchEnd, "TouchEnd");
     map.emplace(XI_RawTouchBegin, "RawTouchBegin");
     map.emplace(XI_RawTouchUpdate, "RawTouchUpdate");
     map.emplace(XI_RawTouchEnd, "RawTouchEnd");
+#endif
+#if defined EVGETX11_HAS_BARRIER_SUPPORT
+    map.emplace(XI_BarrierHit, "BarrierHit");
+    map.emplace(XI_BarrierLeave, "BarrierLeave");
+#endif
+#if defined EVGETX11_HAS_GESTURE_SUPPORT
+    map.emplace(XI_BarrierHit, "BarrierHit");
+    map.emplace(XI_BarrierLeave, "BarrierLeave");
 #endif
 
     return map;
