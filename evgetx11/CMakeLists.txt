@@ -13,7 +13,6 @@ add_program(
     include/evgetx11/EventTransformerLinux.h
     include/evgetx11/XInputEvent.h
 )
-set_target_properties(${EVGETX11_LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 add_subdirectory(src)
 
 program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC X11 COMPONENTS X11 Xi Xkb)
@@ -21,6 +20,7 @@ program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
 program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
 
 add_library_and_link(EVGETX11_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
+add_library_and_link(EVGETX11_LIBRARY_NAME EVGETCORE_LIBRARY_NAME "")
 
 find_symbols(
     TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGET_X11_HAS_TOUCH_SUPPORT

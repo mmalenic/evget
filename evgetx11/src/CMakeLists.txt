@@ -1,4 +1,4 @@
-add_program_linux(
+add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     SRCS
     EventTransformerLinux.cpp

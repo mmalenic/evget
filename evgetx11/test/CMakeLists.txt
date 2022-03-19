@@ -1,7 +1,6 @@
 add_program(
     TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
     SRCS
-    CommandLineParserLinuxTest.cpp
     ShutdownHandlerLinuxTest.cpp
     XInputHandlerTest.cpp
 )
