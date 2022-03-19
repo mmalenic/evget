@@ -220,24 +220,6 @@ function(add_program)
     endif()
 endfunction()
 
-# Add evgetx11 specific code.
-function(add_program_linux)
-    set(options MAKE_EXECUTABLE MAKE_LIBRARY)
-    set(one_value_args TARGET INCLUDE_VISIBILITY)
-    set(multi_value_args SRCS INCLUDE_DIRS)
-    cmake_parse_arguments(ADD_PROGRAM_LINUX "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-
-    set_mode(ADD_PROGRAM_LINUX_MAKE_EXECUTABLE ADD_PROGRAM_LINUX_MAKE_LIBRARY)
-    add_program(
-        TARGET ${ADD_PROGRAM_LINUX_TARGET} ${MODE}
-        FEATURE_REQUIRES fcntl.h evgetx11/input.h sys/utsname.h
-        FEATURE_CHECK EVGET_HAS_LINUX_INPUT
-        SRCS ${ADD_PROGRAM_LINUX_SRCS}
-        INCLUDE_DIRS ${ADD_PROGRAM_LINUX_INCLUDE_DIRS}
-        INCLUDE_VISIBILITY ${ADD_PROGRAM_LINUX_INCLUDE_VISIBILITY}
-    )
-endfunction()
-
 # Checks for the existence of symbols in files, and sets a compilation definition if present. By default all
 # symbols must be present. If the ANY option is set, then only one of the symbols needs to be present.
 function(find_symbols)
@@ -278,8 +260,11 @@ macro(add_compile_definitions GUARD TARGET FEATURE_CHECK FEATURE_REQUIRES FEATUR
             set(${FEATURE_VISIBILITY} PUBLIC)
         endif()
 
-        message(STATUS "Adding compilation target ${${FEATURE_CHECK}} for ${${TARGET}} with ${${FEATURE_VISIBILITY}} visibility.")
-        target_compile_definitions(${${TARGET}} ${${FEATURE_VISIBILITY}} ${${FEATURE_CHECK}})
+        get_target_property(DEFINITIONS ${${TARGET}} COMPILE_DEFINITIONS)
+        if (NOT "${${FEATURE_CHECK}}" IN_LIST DEFINITIONS)
+            message(STATUS "Adding compilation target ${${FEATURE_CHECK}} for ${${TARGET}} with ${${FEATURE_VISIBILITY}} visibility.")
+            target_compile_definitions(${${TARGET}} ${${FEATURE_VISIBILITY}} ${${FEATURE_CHECK}})
+        endif()
     endif()
 endmacro()
 
