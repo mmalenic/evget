@@ -49,11 +49,10 @@ namespace CliOption {
          */
         static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
-    protected:
-        Parser &operator=(const Parser &) = default;
-        Parser &operator=(Parser &&) = default;
-        Parser(const Parser &) = default;
-        Parser(Parser &&) = default;
+        Parser &operator=(const Parser &) = delete;
+        Parser &operator=(Parser &&) = delete;
+        Parser(const Parser &) = delete;
+        Parser(Parser &&) = delete;
     };
 }
 
