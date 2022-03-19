@@ -29,7 +29,7 @@
 
 namespace fs = std::filesystem;
 
-TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-cpp)
     std::vector<ListInputDevices::InputDevice> devices = ListInputDevices::InputDeviceLister{}.listInputDevices();
 
     std::vector<bool> results {};
@@ -50,13 +50,13 @@ TEST(EventDeviceListerTest, ElevatedContainsAllDevices) { // NOLINT(cert-err58-c
     ASSERT_TRUE(all_of(results.begin(), results.end(), [](bool v) { return v; }));
 }
 
-TEST(EventDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceListerTest, ElevatedContainsAllIdSymlinks) { // NOLINT(cert-err58-cpp)
     ListInputDeviceTestUtils::checkDevices([](auto& device) {
         return device.getById();
     });
 }
 
-TEST(EventDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceListerTest, ElevatedContainsAllPathSymlinks) { // NOLINT(cert-err58-cpp)
     ListInputDeviceTestUtils::checkDevices([](auto& device) {
         return device.getByPath();
     });

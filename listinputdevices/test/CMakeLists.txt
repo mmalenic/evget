@@ -3,8 +3,8 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
     SRCS
-    EventDeviceListerTest.cpp
-    EventDeviceTest.cpp
+    InputDeviceListerTest.cpp
+    InputDeviceTest.cpp
     utils/ListInputDevicesTestUtils.h
     utils/ListInputDevicesTestUtils.cpp
 )

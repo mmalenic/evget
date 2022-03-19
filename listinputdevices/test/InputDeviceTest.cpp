@@ -25,7 +25,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
     ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         "",
@@ -43,7 +43,7 @@ TEST(EventDeviceTest, OrderWithAndWithoutSymlinks) { // NOLINT(cert-err58-cpp)
     ASSERT_LT(lt, gt);
 }
 
-TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
     ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         "",
@@ -61,7 +61,7 @@ TEST(EventDeviceTest, OrderBothWithSymlinks) { // NOLINT(cert-err58-cpp)
     ASSERT_LT(lt, gt);
 }
 
-TEST(EventDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
+TEST(InputDeviceTest, OrderBothWithoutSymlinks) { // NOLINT(cert-err58-cpp)
     ListInputDevices::InputDevice lt{
         "/dev/input/event3",
         {},
