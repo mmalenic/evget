@@ -18,7 +18,7 @@
 
 #include <string>
 
-namespace evget {
+namespace EvgetCore {
     /**
      * Exception used for an unsupported operation.
      */

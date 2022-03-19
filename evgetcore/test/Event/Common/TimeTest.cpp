@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(TimeTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Common::Time>(std::chrono::nanoseconds{1}, "Time", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Common::Time>(std::chrono::nanoseconds{1}, "Time", "1");
 }

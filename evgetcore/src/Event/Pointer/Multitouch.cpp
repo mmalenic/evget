@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/Multitouch.h"
 
-Event::Pointer::Multitouch::Multitouch(std::string id) : AbstractField{"Multitouch", std::move(id)} {
+EvgetCore::Event::Pointer::Multitouch::Multitouch(std::string id) : AbstractField{"Multitouch", std::move(id)} {
 }
 
-Event::Pointer::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
+EvgetCore::Event::Pointer::Multitouch::Multitouch(int id) : Multitouch{std::to_string(id)} {
 }
 
-Event::Pointer::Multitouch::Multitouch() : Multitouch{""} {
+EvgetCore::Event::Pointer::Multitouch::Multitouch() : Multitouch{""} {
 }

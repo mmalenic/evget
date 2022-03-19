@@ -22,13 +22,13 @@
 
 #include "evgetcore/Event/Button/Action.h"
 
-Event::Button::Action::Action(std::string type) : AbstractField{"Action", std::move(type)} {
+EvgetCore::Event::Button::Action::Action(std::string type) : AbstractField{"Action", std::move(type)} {
 }
 
-Event::Button::Action::Action() : Action{""} {
+EvgetCore::Event::Button::Action::Action() : Action{""} {
 }
 
-std::unique_ptr<Event::Button::Action> Event::Button::Action::createAction(ButtonAction action) {
+std::unique_ptr<EvgetCore::Event::Button::Action> EvgetCore::Event::Button::Action::createAction(ButtonAction action) {
     switch (action) {
     case ButtonAction::Press:
         return std::make_unique<Action>("Press");;

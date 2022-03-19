@@ -27,7 +27,7 @@
 #include "EventListener.h"
 #include "Task.h"
 
-namespace evget {
+namespace EvgetCore {
     namespace asio = boost::asio;
 
     /**

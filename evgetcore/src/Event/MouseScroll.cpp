@@ -22,7 +22,7 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
-Event::MouseScroll::MouseScrollBuilder::MouseScrollBuilder() :
+EvgetCore::Event::MouseScroll::MouseScrollBuilder::MouseScrollBuilder() :
 _time{std::make_unique<Common::Time>()},
 _device{std::make_unique<Common::DeviceType>()},
 _up{std::make_unique<Pointer::ScrollUp>()},
@@ -31,42 +31,42 @@ _left{std::make_unique<Pointer::ScrollLeft>()},
 _right{std::make_unique<Pointer::ScrollRight>()} {
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::time(std::chrono::nanoseconds nanoseconds) {
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::device(Event::Common::Device device) {
-    _device = Event::Common::DeviceType::createType(device);
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::device(EvgetCore::Event::Common::Device device) {
+    _device = EvgetCore::Event::Common::DeviceType::createType(device);
     return *this;
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::up(double amount) {
-    _up = std::make_unique<Event::Pointer::ScrollUp>(amount);
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::up(double amount) {
+    _up = std::make_unique<EvgetCore::Event::Pointer::ScrollUp>(amount);
     return *this;
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::down(double amount) {
-    _down = std::make_unique<Event::Pointer::ScrollDown>(amount);
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::down(double amount) {
+    _down = std::make_unique<EvgetCore::Event::Pointer::ScrollDown>(amount);
     return *this;
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::left(double amount) {
-    _left = std::make_unique<Event::Pointer::ScrollLeft>(amount);
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::left(double amount) {
+    _left = std::make_unique<EvgetCore::Event::Pointer::ScrollLeft>(amount);
     return *this;
 }
 
-Event::MouseScroll::MouseScrollBuilder& Event::MouseScroll::MouseScrollBuilder::right(double amount) {
-    _right = std::make_unique<Event::Pointer::ScrollRight>(amount);
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::right(double amount) {
+    _right = std::make_unique<EvgetCore::Event::Pointer::ScrollRight>(amount);
     return *this;
 }
 
-std::unique_ptr<Event::MouseScroll> Event::MouseScroll::MouseScrollBuilder::build() {
-    return std::make_unique<Event::MouseScroll>(*this);
+std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetCore::Event::MouseScroll::MouseScrollBuilder::build() {
+    return std::make_unique<EvgetCore::Event::MouseScroll>(*this);
 }
 
-Event::MouseScroll::MouseScroll(
-    Event::MouseScroll::MouseScrollBuilder& builder
+EvgetCore::Event::MouseScroll::MouseScroll(
+    EvgetCore::Event::MouseScroll::MouseScrollBuilder& builder
 ) : AbstractData{"MouseScroll"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._device));

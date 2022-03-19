@@ -22,8 +22,8 @@
 
 #include "evgetcore/Event/Button/Name.h"
 
-Event::Button::Name::Name(std::string button) : AbstractField{"Name", std::move(button)} {
+EvgetCore::Event::Button::Name::Name(std::string button) : AbstractField{"Name", std::move(button)} {
 }
 
-Event::Button::Name::Name() : Name{""} {
+EvgetCore::Event::Button::Name::Name() : Name{""} {
 }

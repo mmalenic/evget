@@ -27,7 +27,7 @@
 #include <string>
 #include <chrono>
 
-namespace Event::Common {
+namespace EvgetCore::Event::Common {
     class Time : public AbstractField {
     public:
         Time();

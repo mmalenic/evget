@@ -25,7 +25,7 @@
 
 #include <utility>
 
-Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
+EvgetCore::Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
     _time{std::make_unique<Common::Time>()},
     _device{std::make_unique<Common::DeviceType>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
@@ -36,48 +36,48 @@ Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
 {
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::time(std::chrono::nanoseconds nanoseconds) {
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionX(double x) {
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::positionX(double x) {
     _positionX = std::make_unique<Pointer::PositionX>(x);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::positionY(double y) {
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::positionY(double y) {
     _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::action(Button::ButtonAction action) {
-    _buttonType = Event::Button::Action::createAction(action);
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::action(Button::ButtonAction action) {
+    _buttonType = EvgetCore::Event::Button::Action::createAction(action);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::button(int button) {
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::button(int button) {
     _buttonId = std::make_unique<Button::Identifier>(button);
     return *this;
 }
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::name(const std::string& name) {
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::name(const std::string& name) {
     _buttonName = std::make_unique<Button::Name>(name);
     return *this;
 }
 
 
-Event::MouseClick::MouseClickBuilder& Event::MouseClick::MouseClickBuilder::device(Event::Common::Device device) {
-    _device = Event::Common::DeviceType::createType(device);
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::device(EvgetCore::Event::Common::Device device) {
+    _device = EvgetCore::Event::Common::DeviceType::createType(device);
     return *this;
 }
 
-std::unique_ptr<Event::MouseClick> Event::MouseClick::MouseClickBuilder::build() {
-    return std::make_unique<Event::MouseClick>(*this);
+std::unique_ptr<EvgetCore::Event::MouseClick> EvgetCore::Event::MouseClick::MouseClickBuilder::build() {
+    return std::make_unique<EvgetCore::Event::MouseClick>(*this);
 }
 
-Event::MouseClick::MouseClick(
-    Event::MouseClick::MouseClickBuilder& builder
+EvgetCore::Event::MouseClick::MouseClick(
+    EvgetCore::Event::MouseClick::MouseClickBuilder& builder
 ) : AbstractData{"MouseClick"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._device));

@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ScrollLeftTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pointer::ScrollLeft>(1, "ScrollLeft", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Pointer::ScrollLeft>(1, "ScrollLeft", "1");
 }

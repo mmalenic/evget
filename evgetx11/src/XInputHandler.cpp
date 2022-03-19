@@ -37,7 +37,7 @@ void EvgetX11::XInputHandler::announceVersion(Display& display) {
     if (status == Success) {
         spdlog::info("XI2 is supported with version {}.{}", major, minor);
     } else {
-        throw evget::UnsupportedOperationException(fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor));
+        throw EvgetCore::UnsupportedOperationException(fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor));
     }
 }
 

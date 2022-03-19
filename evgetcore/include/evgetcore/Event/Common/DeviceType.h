@@ -26,7 +26,7 @@
 #include "evgetcore/Event/AbstractField.h"
 #include "Device.h"
 
-namespace Event::Common {
+namespace EvgetCore::Event::Common {
     class DeviceType : public AbstractField {
     public:
         /**

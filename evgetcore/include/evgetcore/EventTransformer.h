@@ -27,7 +27,7 @@
 #include "SystemEvent.h"
 #include "evgetcore/Event/TableData.h"
 
-namespace evget {
+namespace EvgetCore {
 
     /**
      * Transform the data so its usable by storage.

@@ -27,7 +27,7 @@
 #include "evgetcore/Event/AbstractField.h"
 #include "ButtonAction.h"
 
-namespace Event::Button {
+namespace EvgetCore::Event::Button {
     class Action : public AbstractField {
     public:
         /**

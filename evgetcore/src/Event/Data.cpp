@@ -23,7 +23,7 @@
 #include "evgetcore/Event/Data.h"
 #include <utility>
 
-Event::Data::Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields) : AbstractData{std::move(name)} {
+EvgetCore::Event::Data::Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields) : AbstractData{std::move(name)} {
     for (auto& field : fields) {
         this->fields.emplace_back(std::move(field));
     }

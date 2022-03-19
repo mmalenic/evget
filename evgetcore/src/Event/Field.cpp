@@ -25,11 +25,11 @@
 
 #include <utility>
 
-Event::Field::Field(std::string name) : AbstractField{std::move(name)} {
+EvgetCore::Event::Field::Field(std::string name) : AbstractField{std::move(name)} {
 }
 
-Event::Field::Field(std::string name, std::string entries) : AbstractField{std::move(name), std::move(entries)} {
+EvgetCore::Event::Field::Field(std::string name, std::string entries) : AbstractField{std::move(name), std::move(entries)} {
 }
 
-Event::Field::Field(std::string name, Entries entry) : AbstractField{std::move(name), std::move(entry) } {
+EvgetCore::Event::Field::Field(std::string name, Entries entry) : AbstractField{std::move(name), std::move(entry) } {
 }

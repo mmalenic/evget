@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_SYSTEMEVENT_H
 #define EVGET_INCLUDE_SYSTEMEVENT_H
 
-namespace evget {
+namespace EvgetCore {
 
     /**
      * Defines the type of events that system events can take.

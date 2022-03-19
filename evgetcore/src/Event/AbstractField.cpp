@@ -26,29 +26,29 @@
 #include <utility>
 #include <memory>
 
-Event::AbstractField::~AbstractField() = default;
+EvgetCore::Event::AbstractField::~AbstractField() = default;
 
-std::string Event::AbstractField::getEntry() const {
+std::string EvgetCore::Event::AbstractField::getEntry() const {
     return std::get<std::string>(entry);
 }
 
-Event::AbstractField::AbstractField(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
+EvgetCore::Event::AbstractField::AbstractField(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(name), ""} {
+EvgetCore::Event::AbstractField::AbstractField(std::string name) : AbstractField{std::move(name), ""} {
 }
 
-Event::AbstractField::AbstractField(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
+EvgetCore::Event::AbstractField::AbstractField(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
 }
 
-std::string Event::AbstractField::getName() const {
+std::string EvgetCore::Event::AbstractField::getName() const {
     return name;
 }
 
-Event::AbstractField::Iterator Event::AbstractField::begin() const noexcept {
+EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::AbstractField::begin() const noexcept {
     return std::get<Entries>(entry).begin();
 }
 
-Event::AbstractField::Iterator Event::AbstractField::end() const noexcept {
+EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::AbstractField::end() const noexcept {
     return std::get<Entries>(entry).end();
 }

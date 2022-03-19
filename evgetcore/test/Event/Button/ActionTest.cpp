@@ -27,17 +27,17 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ButtonActionTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Button::Action>("Press", "Action", "Press");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Button::Action>("Press", "Action", "Press");
 }
 
 TEST(ButtonActionTest, Press) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Press), "Action", "Press");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Button::Action::createAction(EvgetCore::Event::Button::ButtonAction::Press), "Action", "Press");
 }
 
 TEST(ButtonActionTest, Release) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Release), "Action", "Release");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Button::Action::createAction(EvgetCore::Event::Button::ButtonAction::Release), "Action", "Release");
 }
 
 TEST(ButtonActionTest, Repeat) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Button::Action::createAction(Event::Button::ButtonAction::Repeat), "Action", "Repeat");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Button::Action::createAction(EvgetCore::Event::Button::ButtonAction::Repeat), "Action", "Repeat");
 }

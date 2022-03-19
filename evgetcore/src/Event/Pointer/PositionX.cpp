@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/PositionX.h"
 
-Event::Pointer::PositionX::PositionX(std::string position) : AbstractField{"PositionX", std::move(position)} {
+EvgetCore::Event::Pointer::PositionX::PositionX(std::string position) : AbstractField{"PositionX", std::move(position)} {
 }
 
-Event::Pointer::PositionX::PositionX(double position) : PositionX{std::to_string(position)} {
+EvgetCore::Event::Pointer::PositionX::PositionX(double position) : PositionX{std::to_string(position)} {
 }
 
-Event::Pointer::PositionX::PositionX() : PositionX{""} {
+EvgetCore::Event::Pointer::PositionX::PositionX() : PositionX{""} {
 }

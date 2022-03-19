@@ -32,7 +32,7 @@
 #include "evgetcore/Event/Button/Action.h"
 #include "evgetcore/Event/Button/Name.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Represents a key event.
      */

@@ -27,17 +27,17 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(MouseMoveTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove::MouseMoveBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
 TEST(MouseMoveTest, Device) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.device(Event::Common::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove::MouseMoveBuilder{}.device(EvgetCore::Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
 TEST(MouseMoveTest, PositionX) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.positionX(1).build(), 2, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove::MouseMoveBuilder{}.positionX(1).build(), 2, "1");
 }
 
 TEST(MouseMoveTest, PositionY) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::MouseMove::MouseMoveBuilder{}.positionY(1).build(), 3, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove::MouseMoveBuilder{}.positionY(1).build(), 3, "1");
 }

@@ -25,7 +25,7 @@
 
 #include <concepts>
 
-namespace evget::Util {
+namespace EvgetCore::Util {
     /**
      * Invocable concept with a checked return type.
      */

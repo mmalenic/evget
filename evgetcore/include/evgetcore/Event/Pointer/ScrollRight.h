@@ -25,7 +25,7 @@
 
 #include "evgetcore/Event/AbstractField.h"
 
-namespace Event::Pointer {
+namespace EvgetCore::Event::Pointer {
     class ScrollRight : public AbstractField {
     public:
         ScrollRight();

@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/EllipseMinorOuter.h"
 
-Event::Pointer::EllipseMinorOuter::EllipseMinorOuter(std::string width) : AbstractField{"EllipseMinorOuter", std::move(width)} {
+EvgetCore::Event::Pointer::EllipseMinorOuter::EllipseMinorOuter(std::string width) : AbstractField{"EllipseMinorOuter", std::move(width)} {
 }
 
-Event::Pointer::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {
+EvgetCore::Event::Pointer::EllipseMinorOuter::EllipseMinorOuter(int width) : EllipseMinorOuter{std::to_string(width)} {
 }
 
-Event::Pointer::EllipseMinorOuter::EllipseMinorOuter() : EllipseMinorOuter{""} {
+EvgetCore::Event::Pointer::EllipseMinorOuter::EllipseMinorOuter() : EllipseMinorOuter{""} {
 }

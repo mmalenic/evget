@@ -24,11 +24,11 @@
 
 #include <utility>
 
-Event::Pointer::PositionY::PositionY(std::string position) : AbstractField{"PositionY", std::move(position)} {
+EvgetCore::Event::Pointer::PositionY::PositionY(std::string position) : AbstractField{"PositionY", std::move(position)} {
 }
 
-Event::Pointer::PositionY::PositionY(double position) : PositionY{std::to_string(position)} {
+EvgetCore::Event::Pointer::PositionY::PositionY(double position) : PositionY{std::to_string(position)} {
 }
 
-Event::Pointer::PositionY::PositionY() : PositionY{""} {
+EvgetCore::Event::Pointer::PositionY::PositionY() : PositionY{""} {
 }

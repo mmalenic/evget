@@ -27,21 +27,21 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(TypeTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Common::DeviceType>("Mouse", "DeviceType", "Mouse");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Common::DeviceType>("Mouse", "DeviceType", "Mouse");
 }
 
 TEST(TypeTest, Mouse) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Common::DeviceType::createType(Event::Common::Device::Mouse), "DeviceType", "Mouse");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Common::DeviceType::createType(EvgetCore::Event::Common::Device::Mouse), "DeviceType", "Mouse");
 }
 
 TEST(TypeTest, Keyboard) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Common::DeviceType::createType(Event::Common::Device::Keyboard), "DeviceType", "Keyboard");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Common::DeviceType::createType(EvgetCore::Event::Common::Device::Keyboard), "DeviceType", "Keyboard");
 }
 
 TEST(TypeTest, Touchpad) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Common::DeviceType::createType(Event::Common::Device::Touchpad), "DeviceType", "Touchpad");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Common::DeviceType::createType(EvgetCore::Event::Common::Device::Touchpad), "DeviceType", "Touchpad");
 }
 
 TEST(TypeTest, Touchscreen) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(*Event::Common::DeviceType::createType(Event::Common::Device::Touchscreen), "DeviceType", "Touchscreen");
+    EventTestUtils::fieldValueAndName(*EvgetCore::Event::Common::DeviceType::createType(EvgetCore::Event::Common::Device::Touchscreen), "DeviceType", "Touchscreen");
 }

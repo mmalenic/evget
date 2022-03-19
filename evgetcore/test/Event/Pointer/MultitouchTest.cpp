@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(MultitouchTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pointer::Multitouch>(1, "Multitouch", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Pointer::Multitouch>(1, "Multitouch", "1");
 }

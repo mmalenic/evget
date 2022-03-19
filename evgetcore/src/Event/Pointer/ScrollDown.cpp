@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/ScrollDown.h"
 
-Event::Pointer::ScrollDown::ScrollDown(std::string amount) : AbstractField{"ScrollDown", std::move(amount)} {
+EvgetCore::Event::Pointer::ScrollDown::ScrollDown(std::string amount) : AbstractField{"ScrollDown", std::move(amount)} {
 }
 
-Event::Pointer::ScrollDown::ScrollDown(double amount) : ScrollDown{std::to_string(amount)} {
+EvgetCore::Event::Pointer::ScrollDown::ScrollDown(double amount) : ScrollDown{std::to_string(amount)} {
 }
 
-Event::Pointer::ScrollDown::ScrollDown() : ScrollDown{""} {
+EvgetCore::Event::Pointer::ScrollDown::ScrollDown() : ScrollDown{""} {
 }

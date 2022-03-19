@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/PositionYOuterTest.h"
 
-Event::Pointer::PositionYOuter::PositionYOuter(std::string position) : AbstractField{"PositionYOuter", std::move(position)} {
+EvgetCore::Event::Pointer::PositionYOuter::PositionYOuter(std::string position) : AbstractField{"PositionYOuter", std::move(position)} {
 }
 
-Event::Pointer::PositionYOuter::PositionYOuter(double position) : PositionYOuter{std::to_string(position)} {
+EvgetCore::Event::Pointer::PositionYOuter::PositionYOuter(double position) : PositionYOuter{std::to_string(position)} {
 }
 
-Event::Pointer::PositionYOuter::PositionYOuter() : PositionYOuter{""} {
+EvgetCore::Event::Pointer::PositionYOuter::PositionYOuter() : PositionYOuter{""} {
 }

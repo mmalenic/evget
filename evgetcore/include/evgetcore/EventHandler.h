@@ -30,7 +30,7 @@
 #include "Storage.h"
 #include "EventListener.h"
 
-namespace evget {
+namespace EvgetCore {
 
     namespace asio = boost::asio;
     

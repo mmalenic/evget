@@ -22,7 +22,7 @@
 #include "UnsupportedOperationException.h"
 #include <optional>
 
-namespace evget {
+namespace EvgetCore {
     
     namespace asio = boost::asio;
     

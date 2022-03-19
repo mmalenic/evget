@@ -37,7 +37,7 @@
 #include "evgetcore/Event/Pointer/Orientation.h"
 #include "evgetcore/Event/Pointer/Multitouch.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Represents a key event.
      */

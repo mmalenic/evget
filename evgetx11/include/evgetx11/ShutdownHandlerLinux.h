@@ -29,7 +29,7 @@ namespace EvgetX11 {
     /**
      * Linux (and unix) specific version of shutdown handler.
      */
-    class ShutdownHandlerLinux : public evget::ShutdownHandler {
+    class ShutdownHandlerLinux : public EvgetCore::ShutdownHandler {
     public:
         /**
          * Activate the shutdown process.

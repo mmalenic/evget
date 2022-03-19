@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTLISTENER_H
 #define EVGET_INCLUDE_EVENTLISTENER_H
 
-namespace evget {
+namespace EvgetCore {
 
     /**
      * Represents event listeners.

@@ -25,7 +25,7 @@
 
 #include "AbstractField.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Generic implementation of abstract field.
      */

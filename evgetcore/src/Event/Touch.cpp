@@ -22,7 +22,7 @@
 
 #include "evgetcore/Event/Touch.h"
 
-Event::Touch::TouchBuilder::TouchBuilder() :
+EvgetCore::Event::Touch::TouchBuilder::TouchBuilder() :
     _time{std::make_unique<Common::Time>()},
     _positionX{std::make_unique<Pointer::PositionX>()},
     _positionY{std::make_unique<Pointer::PositionY>()},
@@ -37,67 +37,67 @@ Event::Touch::TouchBuilder::TouchBuilder() :
     {
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::time(std::chrono::nanoseconds nanoseconds) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionX(int x) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::positionX(int x) {
     _positionX = std::make_unique<Pointer::PositionX>(x);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionY(int y) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::positionY(int y) {
     _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMajorInner(int width) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::ellipseMajorInner(int width) {
     _ellipseMajorInner = std::make_unique<Pointer::EllipseMajorInner>(width);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMinorInner(int width) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::ellipseMinorInner(int width) {
     _ellipseMinorInner = std::make_unique<Pointer::EllipseMinorInner>(width);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::orientation(int orientation) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::orientation(int orientation) {
     _orientation = std::make_unique<Pointer::Orientation>(orientation);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionXOuter(int x) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::positionXOuter(int x) {
     _positionXOuter = std::make_unique<Pointer::PositionXOuter>(x);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::positionYOuter(int y) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::positionYOuter(int y) {
     _positionYOuter = std::make_unique<Pointer::PositionYOuter>(y);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMajorOuter(int width) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::ellipseMajorOuter(int width) {
     _ellipseMajorOuter = std::make_unique<Pointer::EllipseMajorOuter>(width);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::ellipseMinorOuter(int width) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::ellipseMinorOuter(int width) {
     _ellipseMinorOuter = std::make_unique<Pointer::EllipseMinorOuter>(width);
     return *this;
 }
 
-Event::Touch::TouchBuilder& Event::Touch::TouchBuilder::multitouch(int id) {
+EvgetCore::Event::Touch::TouchBuilder& EvgetCore::Event::Touch::TouchBuilder::multitouch(int id) {
     _multitouch = std::make_unique<Pointer::Multitouch>(id);
     return *this;
 }
 
-std::unique_ptr<Event::Touch> Event::Touch::TouchBuilder::build() {
-    return std::make_unique<Event::Touch>(*this);
+std::unique_ptr<EvgetCore::Event::Touch> EvgetCore::Event::Touch::TouchBuilder::build() {
+    return std::make_unique<EvgetCore::Event::Touch>(*this);
 }
 
-Event::Touch::Touch(
-    Event::Touch::TouchBuilder& builder
+EvgetCore::Event::Touch::Touch(
+    EvgetCore::Event::Touch::TouchBuilder& builder
 ) : AbstractData{"Touch"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._positionX));

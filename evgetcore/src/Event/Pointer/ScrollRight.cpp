@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/ScrollRight.h"
 
-Event::Pointer::ScrollRight::ScrollRight(std::string amount) : AbstractField{"ScrollRight", std::move(amount)} {
+EvgetCore::Event::Pointer::ScrollRight::ScrollRight(std::string amount) : AbstractField{"ScrollRight", std::move(amount)} {
 }
 
-Event::Pointer::ScrollRight::ScrollRight(double amount) : ScrollRight{std::to_string(amount)} {
+EvgetCore::Event::Pointer::ScrollRight::ScrollRight(double amount) : ScrollRight{std::to_string(amount)} {
 }
 
-Event::Pointer::ScrollRight::ScrollRight() : ScrollRight{""} {
+EvgetCore::Event::Pointer::ScrollRight::ScrollRight() : ScrollRight{""} {
 }

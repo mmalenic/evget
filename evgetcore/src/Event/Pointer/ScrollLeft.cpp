@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/ScrollLeft.h"
 
-Event::Pointer::ScrollLeft::ScrollLeft(std::string amount) : AbstractField{"ScrollLeft", std::move(amount)} {
+EvgetCore::Event::Pointer::ScrollLeft::ScrollLeft(std::string amount) : AbstractField{"ScrollLeft", std::move(amount)} {
 }
 
-Event::Pointer::ScrollLeft::ScrollLeft(double amount) : ScrollLeft{std::to_string(amount)} {
+EvgetCore::Event::Pointer::ScrollLeft::ScrollLeft(double amount) : ScrollLeft{std::to_string(amount)} {
 }
 
-Event::Pointer::ScrollLeft::ScrollLeft() : ScrollLeft{""} {
+EvgetCore::Event::Pointer::ScrollLeft::ScrollLeft() : ScrollLeft{""} {
 }

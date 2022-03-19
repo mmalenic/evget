@@ -17,9 +17,9 @@
 #include <utility>
 #include "evgetcore/UnsupportedOperationException.h"
 
-evget::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {
+EvgetCore::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {
 }
 
-const char* evget::UnsupportedOperationException::what() const noexcept {
+const char* EvgetCore::UnsupportedOperationException::what() const noexcept {
     return message.c_str();
 }

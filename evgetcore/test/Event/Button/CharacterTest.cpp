@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(CharacterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Button::Character>('a', "Character", "a");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Button::Character>('a', "Character", "a");
 }

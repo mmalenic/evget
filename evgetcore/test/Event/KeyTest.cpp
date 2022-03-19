@@ -27,21 +27,21 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
 TEST(KeyTest, ButtonAction) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.action(Event::Button::ButtonAction::Press).build(), 1, "Press");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.action(EvgetCore::Event::Button::ButtonAction::Press).build(), 1, "Press");
 }
 
 TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.button(1).build(), 2, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.button(1).build(), 2, "1");
 }
 
 TEST(KeyTest, Name) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.name("1").build(), 3, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.name("1").build(), 3, "1");
 }
 
 TEST(KeyTest, Character) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(Event::Key::KeyBuilder{}.character("a").build(), 4, "a");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.character("a").build(), 4, "a");
 }

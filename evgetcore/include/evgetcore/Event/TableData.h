@@ -26,7 +26,8 @@
 #include "AbstractData.h"
 #include "Data.h"
 
-namespace Event {
+namespace EvgetCore::Event {
+
     class TableData {
     public:
         class TableDataBuilder {

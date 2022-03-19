@@ -32,7 +32,7 @@ namespace TestUtils::EventTestUtils {
     void createAndIterate(auto&& create) {
         std::string field_name = "field";
         std::string entry = "entry";
-        Event::Data eventData = create(field_name, "name", "entry");
+        EvgetCore::Event::Data eventData = create(field_name, "name", "entry");
 
         auto n = 0;
         for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
@@ -42,33 +42,33 @@ namespace TestUtils::EventTestUtils {
         ASSERT_EQ(n, 1);
     }
 
-    std::vector<std::unique_ptr<Event::AbstractField>> allocateFields(const std::string& name, const std::string& entry);
+    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> allocateFields(const std::string& name, const std::string& entry);
 
-    Event::Field constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
+    EvgetCore::Event::Field constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
 
     void getAndSet(auto&& get, std::string entry) {
         std::string field_name = "field";
-        Event::Data eventData{"name", allocateFields(field_name, entry)};
+        EvgetCore::Event::Data eventData{"name", allocateFields(field_name, entry)};
         const auto& field = get(eventData, field_name, 0);
 
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
     }
 
-    void fieldValueAndName(const Event::AbstractField& field, const std::string& name, const std::string& expected);
+    void fieldValueAndName(const EvgetCore::Event::AbstractField& field, const std::string& name, const std::string& expected);
 
     template<typename T>
     void fieldValueAndName(const char* value, const std::string& name, const std::string& expected) {
-        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(std::string{value});
+        std::unique_ptr<EvgetCore::Event::AbstractField> field = std::make_unique<T>(std::string{value});
         fieldValueAndName(*field, name, expected);
 
-        std::unique_ptr<Event::AbstractField> fieldDefault = std::make_unique<T>();
+        std::unique_ptr<EvgetCore::Event::AbstractField> fieldDefault = std::make_unique<T>();
         fieldValueAndName(*fieldDefault, name, "");
     }
 
     template<typename T>
     void fieldValueAndName(const auto& value, const std::string& name, const std::string& expected) {
-        std::unique_ptr<Event::AbstractField> field = std::make_unique<T>(value);
+        std::unique_ptr<EvgetCore::Event::AbstractField> field = std::make_unique<T>(value);
         fieldValueAndName(*field, name, expected);
 
         fieldValueAndName<T>("value", name, "value");

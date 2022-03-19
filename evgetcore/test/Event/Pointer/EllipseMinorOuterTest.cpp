@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(EllipseMinorOuterTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pointer::EllipseMinorOuter>(1, "EllipseMinorOuter", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Pointer::EllipseMinorOuter>(1, "EllipseMinorOuter", "1");
 }

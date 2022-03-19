@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/EllipseMajorInner.h"
 
-Event::Pointer::EllipseMajorInner::EllipseMajorInner(std::string width) : AbstractField{"EllipseMajorInner", std::move(width)} {
+EvgetCore::Event::Pointer::EllipseMajorInner::EllipseMajorInner(std::string width) : AbstractField{"EllipseMajorInner", std::move(width)} {
 }
 
-Event::Pointer::EllipseMajorInner::EllipseMajorInner(int width) : EllipseMajorInner{std::to_string(width)} {
+EvgetCore::Event::Pointer::EllipseMajorInner::EllipseMajorInner(int width) : EllipseMajorInner{std::to_string(width)} {
 }
 
-Event::Pointer::EllipseMajorInner::EllipseMajorInner() : EllipseMajorInner{""} {
+EvgetCore::Event::Pointer::EllipseMajorInner::EllipseMajorInner() : EllipseMajorInner{""} {
 }

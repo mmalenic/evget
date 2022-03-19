@@ -34,7 +34,7 @@
 #include "evgetcore/Event/Button/Identifier.h"
 #include "evgetcore/Event/Button/Name.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Represents a mouse click event.
      */
@@ -54,7 +54,7 @@ namespace Event {
             /**
              * Mouse device.
              */
-            MouseClickBuilder& device(Event::Common::Device device);
+            MouseClickBuilder& device(EvgetCore::Event::Common::Device device);
 
             /**
              * Add position x.

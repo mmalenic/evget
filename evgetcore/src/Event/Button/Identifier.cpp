@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Button/Identifier.h"
 
-Event::Button::Identifier::Identifier(std::string button) : AbstractField{"Identifier", std::move(button)} {
+EvgetCore::Event::Button::Identifier::Identifier(std::string button) : AbstractField{"Identifier", std::move(button)} {
 }
 
-Event::Button::Identifier::Identifier(int button) : Identifier{std::to_string(button)} {
+EvgetCore::Event::Button::Identifier::Identifier(int button) : Identifier{std::to_string(button)} {
 }
 
-Event::Button::Identifier::Identifier() : Identifier{""} {
+EvgetCore::Event::Button::Identifier::Identifier() : Identifier{""} {
 }

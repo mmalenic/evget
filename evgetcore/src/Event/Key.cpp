@@ -23,7 +23,7 @@
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/Button/Action.h"
 
-Event::Key::KeyBuilder::KeyBuilder() :
+EvgetCore::Event::Key::KeyBuilder::KeyBuilder() :
 _time{std::make_unique<Common::Time>()},
 _buttonType{std::make_unique<Button::Action>()},
 _button{std::make_unique<Button::Identifier>()},
@@ -31,37 +31,37 @@ _name{std::make_unique<Button::Name>()},
 _character{std::make_unique<Button::Character>()} {
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::action(Button::ButtonAction action) {
-    _buttonType = Event::Button::Action::createAction(action);
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::action(Button::ButtonAction action) {
+    _buttonType = EvgetCore::Event::Button::Action::createAction(action);
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::button(int button) {
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::button(int button) {
     _button = std::make_unique<Button::Identifier>(button);
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::name(std::string name) {
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::name(std::string name) {
     _name = std::make_unique<Button::Name>(std::move(name));
     return *this;
 }
 
-Event::Key::KeyBuilder& Event::Key::KeyBuilder::character(const std::string& character) {
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::character(const std::string& character) {
     _character = std::make_unique<Button::Character>(character);
     return *this;
 }
 
-std::unique_ptr<Event::Key> Event::Key::KeyBuilder::build() {
-    return std::make_unique<Event::Key>(*this);
+std::unique_ptr<EvgetCore::Event::Key> EvgetCore::Event::Key::KeyBuilder::build() {
+    return std::make_unique<EvgetCore::Event::Key>(*this);
 }
 
-Event::Key::Key(
-    Event::Key::KeyBuilder& builder
+EvgetCore::Event::Key::Key(
+    EvgetCore::Event::Key::KeyBuilder& builder
 ) : AbstractData{"Key"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._buttonType));

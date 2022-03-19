@@ -26,7 +26,7 @@
 #include "evgetcore/Event/AbstractField.h"
 #include <string>
 
-namespace Event::Pointer {
+namespace EvgetCore::Event::Pointer {
     class PositionYOuter : public AbstractField {
     public:
         PositionYOuter();

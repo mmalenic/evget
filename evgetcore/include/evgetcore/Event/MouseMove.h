@@ -32,7 +32,7 @@
 #include "evgetcore/Event/Pointer/PositionY.h"
 #include "evgetcore/Event/Common/DeviceType.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Represents a mouse move event.
      */
@@ -52,7 +52,7 @@ namespace Event {
             /**
              * Mouse device.
              */
-            MouseMoveBuilder& device(Event::Common::Device device);
+            MouseMoveBuilder& device(EvgetCore::Event::Common::Device device);
 
             /**
              * Add position x.

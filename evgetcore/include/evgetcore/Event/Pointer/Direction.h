@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 #define EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 
-namespace Event::Pointer {
+namespace EvgetCore::Event::Pointer {
     enum class Direction {
         Up,
         Down,

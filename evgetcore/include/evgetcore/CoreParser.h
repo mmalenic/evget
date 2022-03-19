@@ -31,7 +31,7 @@
 #include <clioption/OptionValidated.h>
 #include <clioption/OptionFlag.h>
 
-namespace Evget {
+namespace EvgetCore {
 
     namespace po = boost::program_options;
     namespace fs = std::filesystem;

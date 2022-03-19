@@ -32,7 +32,7 @@
 #include "evgetcore/Event/Pointer/ScrollLeft.h"
 #include "evgetcore/Event/Pointer/ScrollRight.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Represents a mouse wheel event.
      */
@@ -52,7 +52,7 @@ namespace Event {
             /**
              * Mouse device.
              */
-            MouseScrollBuilder& device(Event::Common::Device device);
+            MouseScrollBuilder& device(EvgetCore::Event::Common::Device device);
 
             /**
              * Add scroll up.

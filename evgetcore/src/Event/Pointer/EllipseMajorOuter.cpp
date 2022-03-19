@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/EllipseMajorOuter.h"
 
-Event::Pointer::EllipseMajorOuter::EllipseMajorOuter(std::string width) : AbstractField{"EllipseMajorOuter", std::move(width)} {
+EvgetCore::Event::Pointer::EllipseMajorOuter::EllipseMajorOuter(std::string width) : AbstractField{"EllipseMajorOuter", std::move(width)} {
 }
 
-Event::Pointer::EllipseMajorOuter::EllipseMajorOuter(int width) : EllipseMajorOuter{std::to_string(width)} {
+EvgetCore::Event::Pointer::EllipseMajorOuter::EllipseMajorOuter(int width) : EllipseMajorOuter{std::to_string(width)} {
 }
 
-Event::Pointer::EllipseMajorOuter::EllipseMajorOuter() : EllipseMajorOuter{""} {
+EvgetCore::Event::Pointer::EllipseMajorOuter::EllipseMajorOuter() : EllipseMajorOuter{""} {
 }

@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 
-namespace Event::Button {
+namespace EvgetCore::Event::Button {
     enum class ButtonAction {
         Press,
         Release,

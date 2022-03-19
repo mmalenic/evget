@@ -51,7 +51,7 @@ static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
 static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evgetx11.\n"
                                                    "# Commented out values are required to be present, either in the config file or on the command line.";
 
-Evget::CoreParser::CoreParser(std::string platform) :
+EvgetCore::CoreParser::CoreParser(std::string platform) :
         platformInformation{std::move(platform)},
         cmdlineDesc{
         DESCRIPTION
@@ -113,7 +113,7 @@ Evget::CoreParser::CoreParser(std::string platform) :
 {
 }
 
-bool Evget::CoreParser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
+bool EvgetCore::CoreParser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
     po::options_description cmdlineOptions{};
     cmdlineOptions.add(cmdlineDesc).add(configDesc);
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineOptions).allow_unregistered().run(), vm);
@@ -154,31 +154,31 @@ bool Evget::CoreParser::parseCommandLine(int argc, const char* argv[], po::varia
     return true;
 }
 
-Evget::fs::path Evget::CoreParser::getFolder() const {
+EvgetCore::fs::path EvgetCore::CoreParser::getFolder() const {
     return folder.getValue();
 }
 
-po::options_description& Evget::CoreParser::getCombinedDesc() {
+po::options_description& EvgetCore::CoreParser::getCombinedDesc() {
     return cmdlineDesc.add(configDesc);
 }
 
-po::options_description& Evget::CoreParser::getCmdlineDesc() {
+po::options_description& EvgetCore::CoreParser::getCmdlineDesc() {
     return cmdlineDesc;
 }
 
-po::options_description& Evget::CoreParser::getConfigDesc() {
+po::options_description& EvgetCore::CoreParser::getConfigDesc() {
     return configDesc;
 }
 
-bool Evget::CoreParser::shouldPrint() const {
+bool EvgetCore::CoreParser::shouldPrint() const {
     return print.getValue();
 }
 
-spdlog::level::level_enum Evget::CoreParser::getLogLevel() const {
+spdlog::level::level_enum EvgetCore::CoreParser::getLogLevel() const {
     return logLevel.getValue();
 }
 
-std::string Evget::CoreParser::logLevelsString() {
+std::string EvgetCore::CoreParser::logLevelsString() {
     return fmt::format(
             "[ {}, {}, {}, {}, {}, {}, {} ]",
             spdlog::level::to_string_view(spdlog::level::trace),
@@ -191,7 +191,7 @@ std::string Evget::CoreParser::logLevelsString() {
             );
 }
 
-std::optional<spdlog::level::level_enum> Evget::CoreParser::validateLogLevel(std::string logLevel) {
+std::optional<spdlog::level::level_enum> EvgetCore::CoreParser::validateLogLevel(std::string logLevel) {
 	algorithm::to_lower(logLevel);
     if (logLevel == "off" || logLevel == "o") {
 		return spdlog::level::off;
@@ -203,16 +203,16 @@ std::optional<spdlog::level::level_enum> Evget::CoreParser::validateLogLevel(std
     return level;
 }
 
-bool Evget::CoreParser::useSystemEvents() const {
+bool EvgetCore::CoreParser::useSystemEvents() const {
     return systemEvents.getValue();
 }
 
-std::filesystem::path Evget::CoreParser::getConfigFile() const {
+std::filesystem::path EvgetCore::CoreParser::getConfigFile() const {
     return config.getValue();
 }
 
 template<typename T>
-std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option) {
+std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option) {
     std::ostringstream value{};
     value << std::boolalpha;
     value << option.getDefaultValue().value();
@@ -221,7 +221,7 @@ std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOptio
 
 
 template<typename T>
-std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value) {
+std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value) {
     std::string out{};
     if (option.isRequired()) {
         out += "# ";
@@ -233,7 +233,7 @@ std::string Evget::CoreParser::formatConfigOption(const CliOption::AbstractOptio
     return out;
 }
 
-std::string Evget::CoreParser::formatConfigFile() {
+std::string EvgetCore::CoreParser::formatConfigFile() {
     std::string out{};
     out += CONFIG_FILE_COMMENT_LINE;
     out += "\n\n";

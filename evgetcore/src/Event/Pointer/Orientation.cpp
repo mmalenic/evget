@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/Orientation.h"
 
-Event::Pointer::Orientation::Orientation(std::string orientation) : AbstractField{"Orientation", std::move(orientation)} {
+EvgetCore::Event::Pointer::Orientation::Orientation(std::string orientation) : AbstractField{"Orientation", std::move(orientation)} {
 }
 
-Event::Pointer::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {
+EvgetCore::Event::Pointer::Orientation::Orientation(int orientation) : Orientation{std::to_string(orientation)} {
 }
 
-Event::Pointer::Orientation::Orientation() : Orientation{""} {
+EvgetCore::Event::Pointer::Orientation::Orientation() : Orientation{""} {
 }

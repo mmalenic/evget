@@ -24,19 +24,19 @@
 #include "evgetcore/Event/TableData.h"
 
 TEST(TableDataTest, NoData) { // NOLINT(cert-err58-cpp)
-    auto data = Event::TableData::TableDataBuilder{}.build();
+    auto data = EvgetCore::Event::TableData::TableDataBuilder{}.build();
     ASSERT_FALSE(data->getGenericData());
     ASSERT_FALSE(data->getSystemData());
 }
 
 TEST(TableDataTest, GenericData) { // NOLINT(cert-err58-cpp)
-    auto data = Event::TableData::TableDataBuilder{}.genericData(std::make_unique<Event::Data>(Event::Data{"genericData", {}})).build();
+    auto data = EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::make_unique<EvgetCore::Event::Data>(EvgetCore::Event::Data{"genericData", {}})).build();
     ASSERT_EQ("genericData", data->getGenericData()->getName());
     ASSERT_FALSE(data->getSystemData());
 }
 
 TEST(TableDataTest, SystemData) { // NOLINT(cert-err58-cpp)
-    auto data = Event::TableData::TableDataBuilder{}.systemData(std::make_unique<Event::Data>(Event::Data{"systemData", {}})).build();
+    auto data = EvgetCore::Event::TableData::TableDataBuilder{}.systemData(std::make_unique<EvgetCore::Event::Data>(EvgetCore::Event::Data{"systemData", {}})).build();
     ASSERT_FALSE(data->getGenericData());
     ASSERT_EQ("systemData", data->getSystemData()->getName());
 }

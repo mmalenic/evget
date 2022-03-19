@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Pointer/ScrollUp.h"
 
-Event::Pointer::ScrollUp::ScrollUp(std::string amount) : AbstractField{"ScrollUp", std::move(amount)} {
+EvgetCore::Event::Pointer::ScrollUp::ScrollUp(std::string amount) : AbstractField{"ScrollUp", std::move(amount)} {
 }
 
-Event::Pointer::ScrollUp::ScrollUp(double amount) : ScrollUp{std::to_string(amount)} {
+EvgetCore::Event::Pointer::ScrollUp::ScrollUp(double amount) : ScrollUp{std::to_string(amount)} {
 }
 
-Event::Pointer::ScrollUp::ScrollUp() : ScrollUp{""} {
+EvgetCore::Event::Pointer::ScrollUp::ScrollUp() : ScrollUp{""} {
 }

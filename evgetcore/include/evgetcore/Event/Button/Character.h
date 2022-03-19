@@ -26,7 +26,7 @@
 #include "evgetcore/Event/AbstractField.h"
 #include <string>
 
-namespace Event::Button {
+namespace EvgetCore::Event::Button {
     class Character : public AbstractField {
     public:
         Character();

@@ -31,7 +31,7 @@
 #include <memory>
 #include "AbstractField.h"
 
-namespace Event {
+namespace EvgetCore::Event {
 
     /**
      * Event container to represent event data.

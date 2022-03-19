@@ -27,5 +27,5 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(ScrollDownTest, Constructor) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName<Event::Pointer::ScrollDown>(1, "ScrollDown", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Pointer::ScrollDown>(1, "ScrollDown", "1");
 }

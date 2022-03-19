@@ -25,7 +25,7 @@
 
 #include "AbstractData.h"
 
-namespace Event {
+namespace EvgetCore::Event {
     /**
      * Generic implementation of abstract data.
      */

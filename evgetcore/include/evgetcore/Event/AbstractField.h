@@ -28,7 +28,7 @@
 #include <memory>
 #include <vector>
 
-namespace Event {
+namespace EvgetCore::Event {
 
     class AbstractData;
 

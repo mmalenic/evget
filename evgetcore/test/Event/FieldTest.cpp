@@ -27,11 +27,11 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(FieldTest, ConstructorNoEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(Event::Field{"name"}, "name", "");
+    EventTestUtils::fieldValueAndName(EvgetCore::Event::Field{"name"}, "name", "");
 }
 
 TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::fieldValueAndName(Event::Field{"name", "entry"}, "name", "entry");
+    EventTestUtils::fieldValueAndName(EvgetCore::Event::Field{"name", "entry"}, "name", "entry");
 }
 
 TEST(FieldTest, ConstructorData) { // NOLINT(cert-err58-cpp)
@@ -44,23 +44,23 @@ TEST(FieldTest, ConstructorData) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(FieldTest, GetName) { // NOLINT(cert-err58-cpp)
-    Event::Field field{"name", "entry"};
+    EvgetCore::Event::Field field{"name", "entry"};
     ASSERT_EQ("name", field.getName());
 }
 
 TEST(FieldTest, GetEntry) { // NOLINT(cert-err58-cpp)
-    Event::Field field{"name", "entry"};
+    EvgetCore::Event::Field field{"name", "entry"};
     ASSERT_EQ("entry", field.getEntry());
 }
 
 TEST(FieldTest, IsEntry) { // NOLINT(cert-err58-cpp)
-    Event::Field field{"name", "entry"};
+    EvgetCore::Event::Field field{"name", "entry"};
     ASSERT_TRUE(field.isEntry());
     ASSERT_FALSE(field.isData());
 }
 
 TEST(FieldTest, IsData) { // NOLINT(cert-err58-cpp)
-    Event::Field field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
+    EvgetCore::Event::Field field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
     ASSERT_TRUE(field.isData());
     ASSERT_FALSE(field.isEntry());
 }

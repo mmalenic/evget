@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 #define EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 
-namespace Event::Common {
+namespace EvgetCore::Event::Common {
     enum class Device {
         Mouse,
         Keyboard,

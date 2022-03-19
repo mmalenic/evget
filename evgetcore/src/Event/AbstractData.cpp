@@ -25,35 +25,35 @@
 #include <utility>
 #include <fmt/format.h>
 
-Event::AbstractData::~AbstractData() = default;
+EvgetCore::Event::AbstractData::~AbstractData() = default;
 
-Event::AbstractData::AbstractData(std::string name) : fields{}, name{std::move(name)} {
+EvgetCore::Event::AbstractData::AbstractData(std::string name) : fields{}, name{std::move(name)} {
 }
 
-Event::AbstractData::Iterator Event::AbstractData::begin() const noexcept {
+EvgetCore::Event::AbstractData::Iterator EvgetCore::Event::AbstractData::begin() const noexcept {
     return fields.begin();
 }
 
-Event::AbstractData::Iterator Event::AbstractData::end() const noexcept {
+EvgetCore::Event::AbstractData::Iterator EvgetCore::Event::AbstractData::end() const noexcept {
     return fields.end();
 }
 
-const Event::AbstractField& Event::AbstractData::getByName(std::string name) const {
+const EvgetCore::Event::AbstractField& EvgetCore::Event::AbstractData::getByName(std::string name) const {
     for (const auto& field : fields) {
         if (field->getName() == name) {
             return *field;
         }
     }
-    throw evget::UnsupportedOperationException(fmt::format("{} not in event data.", name));
+    throw EvgetCore::UnsupportedOperationException(fmt::format("{} not in event data.", name));
 }
 
-const Event::AbstractField& Event::AbstractData::getAtPosition(size_t position) const {
+const EvgetCore::Event::AbstractField& EvgetCore::Event::AbstractData::getAtPosition(size_t position) const {
     if (position < fields.size()) {
         return *fields.at(position);
     }
-    throw evget::UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
+    throw EvgetCore::UnsupportedOperationException(fmt::format("{} index out of range.", std::to_string(position)));
 }
 
-std::string Event::AbstractData::getName() const {
+std::string EvgetCore::Event::AbstractData::getName() const {
     return name;
 }

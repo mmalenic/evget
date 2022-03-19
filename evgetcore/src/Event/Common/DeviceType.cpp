@@ -23,13 +23,13 @@
 #include <fmt/format.h>
 #include "evgetcore/Event/Common/DeviceType.h"
 
-Event::Common::DeviceType::DeviceType(std::string type) : AbstractField{"DeviceType", std::move(type)} {
+EvgetCore::Event::Common::DeviceType::DeviceType(std::string type) : AbstractField{"DeviceType", std::move(type)} {
 }
 
-Event::Common::DeviceType::DeviceType() : DeviceType{""} {
+EvgetCore::Event::Common::DeviceType::DeviceType() : DeviceType{""} {
 }
 
-std::unique_ptr<Event::Common::DeviceType> Event::Common::DeviceType::createType(Device device) {
+std::unique_ptr<EvgetCore::Event::Common::DeviceType> EvgetCore::Event::Common::DeviceType::createType(Device device) {
     switch (device) {
     case Device::Mouse:
         return std::make_unique<DeviceType>("Mouse");;

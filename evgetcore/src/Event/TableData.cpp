@@ -22,27 +22,27 @@
 
 #include "evgetcore/Event/TableData.h"
 
-Event::TableData::TableData(Event::TableData::TableDataBuilder& builder) : genericData{std::move(builder._genericData)}, systemData{std::move(builder._systemData)} {
+EvgetCore::Event::TableData::TableData(EvgetCore::Event::TableData::TableDataBuilder& builder) : genericData{std::move(builder._genericData)}, systemData{std::move(builder._systemData)} {
 }
 
-Event::TableData::TableDataBuilder& Event::TableData::TableDataBuilder::genericData(std::unique_ptr<AbstractData> genericData) {
+EvgetCore::Event::TableData::TableDataBuilder& EvgetCore::Event::TableData::TableDataBuilder::genericData(std::unique_ptr<AbstractData> genericData) {
     _genericData = std::move(genericData);
     return *this;
 }
 
-Event::TableData::TableDataBuilder& Event::TableData::TableDataBuilder::systemData(std::unique_ptr<AbstractData> systemData) {
+EvgetCore::Event::TableData::TableDataBuilder& EvgetCore::Event::TableData::TableDataBuilder::systemData(std::unique_ptr<AbstractData> systemData) {
     _systemData = std::move(systemData);
     return *this;
 }
 
-std::unique_ptr<Event::TableData> Event::TableData::TableDataBuilder::build() {
-    return std::make_unique<Event::TableData>(*this);
+std::unique_ptr<EvgetCore::Event::TableData> EvgetCore::Event::TableData::TableDataBuilder::build() {
+    return std::make_unique<EvgetCore::Event::TableData>(*this);
 }
 
-const Event::AbstractData* Event::TableData::getGenericData() const {
+const EvgetCore::Event::AbstractData* EvgetCore::Event::TableData::getGenericData() const {
     return genericData.get();
 }
 
-const Event::AbstractData* Event::TableData::getSystemData() const {
+const EvgetCore::Event::AbstractData* EvgetCore::Event::TableData::getSystemData() const {
     return systemData.get();
 }

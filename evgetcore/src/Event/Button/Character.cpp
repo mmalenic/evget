@@ -22,11 +22,11 @@
 
 #include "evgetcore/Event/Button/Character.h"
 
-Event::Button::Character::Character() : Character{""} {
+EvgetCore::Event::Button::Character::Character() : Character{""} {
 }
 
-Event::Button::Character::Character(std::string character) : AbstractField{"Character", std::move(character)} {
+EvgetCore::Event::Button::Character::Character(std::string character) : AbstractField{"Character", std::move(character)} {
 }
 
-Event::Button::Character::Character(char character) : Character{std::string{character}} {
+EvgetCore::Event::Button::Character::Character(char character) : Character{std::string{character}} {
 }
