@@ -8,4 +8,5 @@ add_program(
     ShutdownHandlerLinux.cpp
     XInputEvent.cpp
     XInputHandler.cpp
+    CoreXEventSwitch.cpp
 )

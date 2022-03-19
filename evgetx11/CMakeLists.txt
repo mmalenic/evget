@@ -15,6 +15,7 @@ add_program(
     include/evgetx11/EventTransformerLinux.h
     include/evgetx11/XInputEvent.h
     include/evgetx11/XEventSwitch.h
+    include/evgetx11/CoreXEventSwitch.h
 )
 add_subdirectory(src)
 
