@@ -9,4 +9,5 @@ add_program(
     XInputEvent.cpp
     XInputHandler.cpp
     CoreXEventSwitch.cpp
+    XEventSwitch.cpp
 )

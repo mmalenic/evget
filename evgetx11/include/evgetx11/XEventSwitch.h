@@ -43,7 +43,30 @@ namespace EvgetX11 {
 
         XEventSwitch(const XEventSwitch&) = delete;
         XEventSwitch& operator=(const XEventSwitch&) = delete;
+
+    protected:
+        static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
+        static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
+        static std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name);
+        static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
+        static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
+
+        static void addTableData(std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
+        static void getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
+
+        static std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event, const std::string& deviceName);
+
+        static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
+        static std::string formatValue(int value);
     };
+
+    void EvgetX11::XEventSwitch::getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
+        for (int i = 0; i < maskLen * 8; i++) {
+            if (XIMaskIsSet(mask, i)) {
+                function(i);
+            }
+        }
+    }
 }
 
 #endif //EVGET_EVGETX11_SRC_XEVENTSWITCH_H

@@ -197,15 +197,6 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::EventTransformerLinux::
     return isScrollEvent ? builder.time(getTime(event)).device(devices[rawEvent.sourceid]).build() : nullptr;
 }
 
-std::map<int, int> EvgetX11::EventTransformerLinux::getValuators(const XIValuatorState& valuatorState) {
-    std::map<int, int> valuators{};
-    auto* values = valuatorState.values;
-    getMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
-        valuators.emplace(mask, *values++);
-    });
-    return valuators;
-}
-
 bool EvgetX11::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     if (type == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
@@ -260,81 +251,6 @@ bool EvgetX11::EventTransformerLinux::scrollEvent(
     return false;
 }
 
-void EvgetX11::EventTransformerLinux::addTableData(
-    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
-    std::unique_ptr<EvgetCore::Event::AbstractData> genericData,
-    std::unique_ptr<EvgetCore::Event::AbstractData> systemData
-) {
-    data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
-}
-
-
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux::createSystemDataWithRoot(
-    const XIDeviceEvent& event,
-    const std::string& name
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields = createSystemData(event, name);
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootX", std::to_string(event.root_x)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootY", std::to_string(event.root_y)));
-    return std::make_unique<EvgetCore::Event::Data>(name, std::move(fields));
-}
-
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux::createSystemDataWithoutRoot(
-    const XIDeviceEvent& event,
-    const std::string& name
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields = createSystemData(event, name);
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootX"));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootY"));
-    return std::make_unique<EvgetCore::Event::Data>(name, std::move(fields));
-}
-
-std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> EvgetX11::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[event.deviceid]));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("XInputTime", std::to_string(event.time)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceId", std::to_string(event.deviceid)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("SourceId", std::to_string(event.sourceid)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Flags", formatValue(event.flags)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ButtonState", createButtonEntries(event)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Valuators", createValuatorEntries(event.valuators)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ModifiersBase", formatValue(event.mods.base)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ModifiersEffective", formatValue(event.mods.effective)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ModifiersLatched", formatValue(event.mods.latched)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ModifiersLocked", formatValue(event.mods.locked)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupBase", formatValue(event.group.base)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupEffective", formatValue(event.group.effective)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupLatched", formatValue(event.group.latched)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupLocked", formatValue(event.group.locked)));
-
-    return fields;
-}
-
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux::createRawData(
-    const XIRawEvent& event
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[event.sourceid]));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("EventType", std::to_string(event.evtype)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("XInputTime", std::to_string(event.time)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceId", std::to_string(event.deviceid)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("SourceId", std::to_string(event.sourceid)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Detail", std::to_string(event.detail)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Flags", formatValue(event.flags)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Valuators", createValuatorEntries(event.valuators)));
-
-    return std::make_unique<EvgetCore::Event::Data>("RawEvent", std::move(fields));
-}
-
 std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux::createDeviceChangedEvent(const XIDeviceChangedEvent& event) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
 
@@ -346,36 +262,6 @@ std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux:
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ReasonName", (event.reason == XISlaveSwitch) ? "SlaveSwitch" : "DeviceChanged"));
 
     return std::make_unique<EvgetCore::Event::Data>("DeviceChangedEvent", std::move(fields));
-}
-
-EvgetCore::Event::AbstractField::Entries EvgetX11::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
-
-    getMasks(event.buttons.mask, event.buttons.mask_len, [&data](int mask) {
-        std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ButtonActive", std::to_string(mask)));
-        data.emplace_back(std::make_unique<EvgetCore::Event::Data>("ButtonState", std::move(fields)));
-    });
-
-    return data;
-}
-
-EvgetCore::Event::AbstractField::Entries EvgetX11::EventTransformerLinux::createValuatorEntries(const XIValuatorState& valuatorState) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
-
-    auto values = valuatorState.values;
-    getMasks(valuatorState.mask, valuatorState.mask_len, [&data, &values](int mask) {
-        std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Valuator", std::to_string(mask)));
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Value", std::to_string(*values++)));
-        data.emplace_back(std::make_unique<EvgetCore::Event::Data>("Valuators", std::move(fields)));
-    });
-
-    return data;
-}
-
-std::string EvgetX11::EventTransformerLinux::formatValue(int value) {
-    return value != 0 ? std::to_string(value) : "";
 }
 
 void EvgetX11::EventTransformerLinux::refreshDeviceIds() {
