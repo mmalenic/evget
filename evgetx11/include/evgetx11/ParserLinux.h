@@ -23,7 +23,7 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 #define INPUT_EVENT_RECORDER_COMMANDLINELINUX_H
 
-#include "../../../../../CommandLine/include/CommandLine/Parser.h"
+#include "clioption/Parser.h"
 
 namespace CliOption {
     /**
@@ -36,34 +36,9 @@ namespace CliOption {
          */
         ParserLinux();
 
-        /**
-         * Get mouse devices path.
-         */
-        [[nodiscard]] std::vector<fs::path> getMouseDevices() const;
-
-        /**
-         * Get key devices path.
-         */
-        [[nodiscard]] std::vector<fs::path> getKeyDevices() const;
-
-        /**
-         * Get touch devices path.
-         */
-        [[nodiscard]] std::vector<fs::path> getTouchDevices() const;
-
-        /**
-         * Get the list event devices option.
-         */
-        [[nodiscard]] bool isListEventDevices() const;
-
-        bool parseFileAndCmdlineOptions() override;
+        bool parseCommandLine(int argc, const char **argv, po::variables_map &vm) override;
 
     private:
-        Option<std::vector<fs::path>> mouseDevices;
-        Option<std::vector<fs::path>> keyDevices;
-        Option<std::vector<fs::path>> touchDevices;
-        OptionFlag listEventDevices;
-
         /**
          * Compute the platform.
          */
