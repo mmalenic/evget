@@ -81,7 +81,7 @@ namespace EvgetX11 {
     };
 
     template<typename T>
-    const T& evget::XInputEvent::viewData() const {
+    const T& EvgetX11::XInputEvent::viewData() const {
         return *static_cast<T*>(cookie->data);
     }
 }
