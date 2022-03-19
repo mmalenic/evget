@@ -27,16 +27,18 @@
 #include <filesystem>
 #include "evgetcore/SystemEventLoop.h"
 #include "evgetcore/SystemEvent.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XInputHandler.h"
 #include <utility>
 
-namespace evget {
+namespace EvgetX11 {
     namespace asio = boost::asio;
 
     /**
      * Class represents processing evgetx11 system events.
      */
     template<boost::asio::execution::executor E>
-    class SystemEventLoopLinux : public SystemEventLoop<E, XInputEvent> {
+    class SystemEventLoopLinux : public evget::SystemEventLoop<E, XInputEvent> {
     public:
         /**
          * Create the system events.

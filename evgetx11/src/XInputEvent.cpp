@@ -24,7 +24,7 @@
 #include <spdlog/spdlog.h>
 #include "evgetx11/XInputEvent.h"
 
-evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
+EvgetX11::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookieDeleter{display}} {
     XNextEvent(&display, &event);
     timestamp = std::chrono::steady_clock::now();
     if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
@@ -33,25 +33,25 @@ evget::XInputEvent::XInputEvent(Display& display) : cookie{nullptr, XEventCookie
     }
 }
 
-bool evget::XInputEvent::hasData() const {
+bool EvgetX11::XInputEvent::hasData() const {
     return cookie != nullptr;
 }
 
-int evget::XInputEvent::getEventType() const {
+int EvgetX11::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-evget::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
+EvgetX11::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
 }
 
-void evget::XInputEvent::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
+void EvgetX11::XInputEvent::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
     XFreeEventData(&display.get(), pointer);
 }
 
-evget::XInputEvent evget::XInputEvent::nextEvent(Display& display) {
+EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(Display& display) {
     return XInputEvent{display};
 }
 
-evget::XInputEvent::Timestamp evget::XInputEvent::getTimestamp() const {
+EvgetX11::XInputEvent::Timestamp EvgetX11::XInputEvent::getTimestamp() const {
     return timestamp;
 }

@@ -25,11 +25,11 @@
 
 #include "evgetcore/ShutdownHandler.h"
 
-namespace evget {
+namespace EvgetX11 {
     /**
      * Linux (and unix) specific version of shutdown handler.
      */
-    class ShutdownHandlerLinux : public ShutdownHandler {
+    class ShutdownHandlerLinux : public evget::ShutdownHandler {
     public:
         /**
          * Activate the shutdown process.

@@ -27,7 +27,7 @@
 #include <X11/Xlib.h>
 #include <chrono>
 
-namespace evget {
+namespace EvgetX11 {
     class XInputEvent {
     public:
         class XEventCookieDeleter {

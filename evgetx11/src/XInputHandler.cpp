@@ -24,12 +24,12 @@
 #include "evgetx11/XInputHandler.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-evget::XInputHandler::XInputHandler(Display& display) : display{display} {
+EvgetX11::XInputHandler::XInputHandler(Display& display) : display{display} {
     announceVersion(display);
     setMask(display);
 }
 
-void evget::XInputHandler::announceVersion(Display& display) {
+void EvgetX11::XInputHandler::announceVersion(Display& display) {
     int major = versionMajor;
     int minor = versionMinor;
 
@@ -37,11 +37,11 @@ void evget::XInputHandler::announceVersion(Display& display) {
     if (status == Success) {
         spdlog::info("XI2 is supported with version {}.{}", major, minor);
     } else {
-        throw UnsupportedOperationException(fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor));
+        throw evget::UnsupportedOperationException(fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor));
     }
 }
 
-void evget::XInputHandler::setMask(Display& display) {
+void EvgetX11::XInputHandler::setMask(Display& display) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
 
@@ -69,6 +69,6 @@ void evget::XInputHandler::setMask(Display& display) {
     XSync(&display, false);
 }
 
-evget::XInputEvent evget::XInputHandler::getEvent() {
+EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
     return XInputEvent::nextEvent(display);
 }

@@ -35,7 +35,7 @@
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/Event/MouseMove.h"
 
-std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::transformEvent(evget::XInputEvent event) {
+std::vector<std::unique_ptr<Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(EvgetX11::XInputEvent event) {
     if (event.hasData()) {
         std::vector<std::unique_ptr<Event::TableData>> data{};
         auto type = event.getEventType();
@@ -79,14 +79,14 @@ std::vector<std::unique_ptr<Event::TableData>> evget::EventTransformerLinux::tra
     return {};
 }
 
-std::chrono::nanoseconds evget::EventTransformerLinux::getTime(const evget::XInputEvent& event) {
+std::chrono::nanoseconds EvgetX11::EventTransformerLinux::getTime(const EvgetX11::XInputEvent& event) {
     if (!start.has_value()) {
         start = event.getTimestamp();
     }
     return event.getTimestamp() - *start;
 }
 
-void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action) {
+void EvgetX11::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
@@ -103,7 +103,7 @@ void evget::EventTransformerLinux::buttonEvent(const XInputEvent& event, std::ve
     addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent,"MouseClickSystemData"));
 }
 
-void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data) {
+void EvgetX11::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid)) {
         return;
@@ -163,7 +163,7 @@ void evget::EventTransformerLinux::keyEvent(const XInputEvent& event, std::vecto
     addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
 }
 
-std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
+std::unique_ptr<Event::MouseScroll> EvgetX11::EventTransformerLinux::scrollEvent(
     const XInputEvent& event
 ) {
     auto rawEvent = event.viewData<XIRawEvent>();
@@ -197,7 +197,7 @@ std::unique_ptr<Event::MouseScroll> evget::EventTransformerLinux::scrollEvent(
     return isScrollEvent ? builder.time(getTime(event)).device(devices[rawEvent.sourceid]).build() : nullptr;
 }
 
-std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorState& valuatorState) {
+std::map<int, int> EvgetX11::EventTransformerLinux::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
     auto* values = valuatorState.values;
     getMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
@@ -206,7 +206,7 @@ std::map<int, int> evget::EventTransformerLinux::getValuators(const XIValuatorSt
     return valuators;
 }
 
-bool evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data) {
+bool EvgetX11::EventTransformerLinux::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<Event::TableData>>& data) {
     if (type == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
         if (devices.contains(deviceEvent.deviceid)) {
@@ -222,7 +222,7 @@ bool evget::EventTransformerLinux::motionEvent(const XInputEvent& event, int typ
     return type == XI_Motion;
 }
 
-void evget::EventTransformerLinux::motionEvent(
+void EvgetX11::EventTransformerLinux::motionEvent(
     std::chrono::nanoseconds time,
     std::vector<std::unique_ptr<Event::TableData>>& data,
     const XIDeviceEvent& deviceEvent
@@ -245,7 +245,7 @@ void evget::EventTransformerLinux::motionEvent(
         }
     }
 }
-bool evget::EventTransformerLinux::scrollEvent(
+bool EvgetX11::EventTransformerLinux::scrollEvent(
     const XIDeviceEvent& event,
     std::vector<std::unique_ptr<Event::TableData>>& data,
     const std::map<int, XIScrollClassInfo>& scrollValuators,
@@ -260,7 +260,7 @@ bool evget::EventTransformerLinux::scrollEvent(
     return false;
 }
 
-void evget::EventTransformerLinux::addTableData(
+void EvgetX11::EventTransformerLinux::addTableData(
     std::vector<std::unique_ptr<Event::TableData>>& data,
     std::unique_ptr<Event::AbstractData> genericData,
     std::unique_ptr<Event::AbstractData> systemData
@@ -269,7 +269,7 @@ void evget::EventTransformerLinux::addTableData(
 }
 
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithRoot(
+std::unique_ptr<Event::AbstractData> EvgetX11::EventTransformerLinux::createSystemDataWithRoot(
     const XIDeviceEvent& event,
     const std::string& name
 ) {
@@ -279,7 +279,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     return std::make_unique<Event::Data>(name, std::move(fields));
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemDataWithoutRoot(
+std::unique_ptr<Event::AbstractData> EvgetX11::EventTransformerLinux::createSystemDataWithoutRoot(
     const XIDeviceEvent& event,
     const std::string& name
 ) {
@@ -289,7 +289,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createSystemD
     return std::make_unique<Event::Data>(name, std::move(fields));
 }
 
-std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name) {
+std::vector<std::unique_ptr<Event::AbstractField>> EvgetX11::EventTransformerLinux::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
@@ -316,7 +316,7 @@ std::vector<std::unique_ptr<Event::AbstractField>> evget::EventTransformerLinux:
     return fields;
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData(
+std::unique_ptr<Event::AbstractData> EvgetX11::EventTransformerLinux::createRawData(
     const XIRawEvent& event
 ) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
@@ -335,7 +335,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createRawData
     return std::make_unique<Event::Data>("RawEvent", std::move(fields));
 }
 
-std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createDeviceChangedEvent(const XIDeviceChangedEvent& event) {
+std::unique_ptr<Event::AbstractData> EvgetX11::EventTransformerLinux::createDeviceChangedEvent(const XIDeviceChangedEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<Event::Field>("DeviceName", idToName[event.deviceid]));
@@ -348,7 +348,7 @@ std::unique_ptr<Event::AbstractData> evget::EventTransformerLinux::createDeviceC
     return std::make_unique<Event::Data>("DeviceChangedEvent", std::move(fields));
 }
 
-Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
+Event::AbstractField::Entries EvgetX11::EventTransformerLinux::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
     getMasks(event.buttons.mask, event.buttons.mask_len, [&data](int mask) {
@@ -360,7 +360,7 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createButtonEntries(
     return data;
 }
 
-Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntries(const XIValuatorState& valuatorState) {
+Event::AbstractField::Entries EvgetX11::EventTransformerLinux::createValuatorEntries(const XIValuatorState& valuatorState) {
     std::vector<std::unique_ptr<Event::AbstractData>> data{};
 
     auto values = valuatorState.values;
@@ -374,11 +374,11 @@ Event::AbstractField::Entries evget::EventTransformerLinux::createValuatorEntrie
     return data;
 }
 
-std::string evget::EventTransformerLinux::formatValue(int value) {
+std::string EvgetX11::EventTransformerLinux::formatValue(int value) {
     return value != 0 ? std::to_string(value) : "";
 }
 
-void evget::EventTransformerLinux::refreshDeviceIds() {
+void EvgetX11::EventTransformerLinux::refreshDeviceIds() {
     int nDevices;
     int xi2NDevices;
     // See caveats about mixing XI1 calls with XI2 code:
@@ -429,7 +429,7 @@ void evget::EventTransformerLinux::refreshDeviceIds() {
     }
 }
 
-void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
+void EvgetX11::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
     const XIButtonClassInfo* buttonInfo = nullptr;
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};
@@ -464,7 +464,7 @@ void evget::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
     }
 }
 
-void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
+void EvgetX11::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
     Display& displayCapture = display;
     auto deleter = [&displayCapture](XDevice* device) {
         XCloseDevice(&displayCapture, device);
@@ -486,15 +486,15 @@ void evget::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& buttonI
     }
 }
 
-evget::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
+EvgetX11::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
     refreshDeviceIds();
 }
 
-std::unique_ptr<char[], decltype(&XFree)> evget::EventTransformerLinux::getAtomName(Atom atom) {
+std::unique_ptr<char[], decltype(&XFree)> EvgetX11::EventTransformerLinux::getAtomName(Atom atom) {
     return {XGetAtomName(&display.get(), atom), XFree};
 }
 
-std::unique_ptr<_XIC, decltype(&XDestroyIC)> evget::EventTransformerLinux::createIC(Display& display, XIM xim) {
+std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::EventTransformerLinux::createIC(Display& display, XIM xim) {
     if (xim) {
         XIMStyles* xim_styles;
         auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
@@ -517,7 +517,7 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> evget::EventTransformerLinux::creat
     }
 }
 
-std::map<int, std::string> evget::EventTransformerLinux::typeToName() {
+std::map<int, std::string> EvgetX11::EventTransformerLinux::typeToName() {
     std::map<int, std::string> map{};
 
     map.emplace(XI_DeviceChanged, "DeviceChanged");

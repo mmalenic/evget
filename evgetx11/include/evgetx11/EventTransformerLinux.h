@@ -35,8 +35,8 @@
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
 
-namespace evget {
-    class EventTransformerLinux : EventTransformer<XInputEvent> {
+namespace EvgetX11 {
+    class EventTransformerLinux : evget::EventTransformer<XInputEvent> {
     public:
         explicit EventTransformerLinux(Display& display);
 
@@ -61,7 +61,7 @@ namespace evget {
 
         std::unique_ptr<char[], decltype(&XFree)> getAtomName(Atom atom);
 
-        std::chrono::nanoseconds getTime(const evget::XInputEvent& event);
+        std::chrono::nanoseconds getTime(const XInputEvent& event);
 
         void buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data, Event::Button::ButtonAction action);
         void keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<Event::TableData>>& data);
@@ -99,7 +99,7 @@ namespace evget {
         std::map<int, std::string> types = typeToName();
     };
 
-    void evget::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
+    void EvgetX11::EventTransformerLinux::getMasks(const unsigned char* mask, int maskLen, evget::Util::Invocable<void, int> auto&& function) {
         for (int i = 0; i < maskLen * 8; i++) {
             if (XIMaskIsSet(mask, i)) {
                 function(i);

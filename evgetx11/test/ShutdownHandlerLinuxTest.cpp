@@ -17,9 +17,9 @@
 #include <evgetx11/ShutdownHandlerLinux.h>
 
 TEST(ShutdownHandlerLinuxTest, HandleSIGINT) { // NOLINT(cert-err58-cpp)
-    evget::ShutdownHandlerLinux shutdownHandler{};
+    EvgetX11::ShutdownHandlerLinux shutdownHandler{};
     shutdownHandler.registerInterruptHandler();
-    ASSERT_FALSE(evget::ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_FALSE(EvgetX11::ShutdownHandlerLinux::shouldShutdown());
     raise(SIGINT);
-    ASSERT_TRUE(evget::ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_TRUE(EvgetX11::ShutdownHandlerLinux::shouldShutdown());
 }

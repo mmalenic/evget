@@ -25,11 +25,14 @@
 
 #include "clioption/Parser.h"
 
-namespace CliOption {
+namespace EvgetX11 {
+
+    namespace po = boost::program_options;
+
     /**
      * Linux specific command line.
      */
-    class ParserLinux : public Parser {
+    class ParserLinux : public CliOption::Parser {
     public:
         /**
          * Create the parser object.

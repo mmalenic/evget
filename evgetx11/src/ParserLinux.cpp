@@ -26,9 +26,9 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
-CliOption::ParserLinux::ParserLinux() = default;
+EvgetX11::ParserLinux::ParserLinux() = default;
 
-std::string CliOption::ParserLinux::platformInformation() {
+std::string EvgetX11::ParserLinux::platformInformation() {
     struct utsname uts{};
     if ((uname(&uts)) == -1) {
         return "unknown";
@@ -36,6 +36,6 @@ std::string CliOption::ParserLinux::platformInformation() {
     return uts.sysname;
 }
 
-bool CliOption::ParserLinux::parseCommandLine(int argc, const char** argv, boost::program_options::variables_map& vm) {
+bool EvgetX11::ParserLinux::parseCommandLine(int argc, const char** argv, boost::program_options::variables_map& vm) {
     return false;
 }

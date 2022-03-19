@@ -28,7 +28,7 @@
 #include <memory>
 #include "XInputEvent.h"
 
-namespace evget {
+namespace EvgetX11 {
 
     class XInputHandler {
     public:
