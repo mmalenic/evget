@@ -30,7 +30,7 @@ namespace EvgetX11 {
     public:
         explicit CoreXEventSwitch(Display& display);
 
-        bool switchOnEvent(const XInputEvent &event, EventTransformerLinux::EventData &data, std::chrono::nanoseconds timestamp) override;
+        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventTransformerLinux::EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
 
     private:

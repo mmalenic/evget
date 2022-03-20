@@ -34,7 +34,7 @@ namespace EvgetX11 {
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
-        virtual bool switchOnEvent(const XInputEvent &event, EventTransformerLinux::EventData &data, std::chrono::nanoseconds timestamp) = 0;
+        virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventTransformerLinux::EventData &data) = 0;
         virtual void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info);
 
         virtual ~XEventSwitch() = default;

@@ -32,10 +32,28 @@
 
 bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetX11::EventTransformerLinux::EventData& data,
-    std::chrono::nanoseconds timestamp
+    std::chrono::nanoseconds timestamp,
+    EvgetX11::EventTransformerLinux::EventData& data
 ) {
-    return false;
+    auto type = event.getEventType();
+    if (motionEvent(event, timestamp, type, data)) {
+        return true;
+    }
+
+    switch (type) {
+    case XI_RawMotion:
+        rawScrollEvent = scrollEvent(event, timestamp);
+        return true;
+    case XI_ButtonPress:buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
+        return true;
+    case XI_ButtonRelease:buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
+        return true;
+    case XI_KeyPress:
+    case XI_KeyRelease:keyEvent(event, timestamp, data);
+        return true;
+    default:
+        return false;
+    }
 }
 
 void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {

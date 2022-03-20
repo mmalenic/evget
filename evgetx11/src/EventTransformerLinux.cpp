@@ -37,47 +37,22 @@
 #include "evgetx11/XEventSwitch.h"
 
 std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(EvgetX11::XInputEvent event) {
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>> data{};
     if (event.hasData()) {
-        std::vector<std::unique_ptr<EvgetCore::Event::TableData>> data{};
         auto type = event.getEventType();
 
-        if (motionEvent(event, type, data)) {
+        if (type == XI_DeviceChanged || type == XI_HierarchyChanged) {
+            refreshDeviceIds();
             return data;
         }
 
-        switch (type) {
-        case XI_RawMotion:
-            rawScrollEvent = scrollEvent(event);
-            break;
-        case XI_ButtonPress:
-            buttonEvent(event, data, EvgetCore::Event::Button::ButtonAction::Press);
-            break;
-        case XI_ButtonRelease:
-            buttonEvent(event, data, EvgetCore::Event::Button::ButtonAction::Release);
-            break;
-        case XI_KeyPress:
-        case XI_KeyRelease:
-            keyEvent(event, data);
-            break;
-#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
-        case XI_TouchBegin:break;
-        case XI_TouchUpdate:break;
-        case XI_TouchEnd:break;
-#endif
-        case XI_HierarchyChanged:
-        case XI_DeviceChanged:
-            refreshDeviceIds();
-            break;
-        default:
-            spdlog::info(
-                "Unsupported event with type '{}' passed to event transformer.",
-                type
-            );
-            return {};
+        for (const auto& eventSwitches : switches) {
+            if (eventSwitches.get().switchOnEvent(event, getTime(event), data)) {
+                return data;
+            }
         }
-        return data;
     }
-    return {};
+    return data;
 }
 
 std::chrono::nanoseconds EvgetX11::EventTransformerLinux::getTime(const EvgetX11::XInputEvent& event) {
