@@ -28,10 +28,6 @@
 #include <X11/extensions/XInput2.h>
 #include <boost/numeric/conversion/cast.hpp>
 
-EvgetX11::XEventSwitch::XEventSwitch(Display& display) : display{display} {
-}
-
-
 EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
 
@@ -150,6 +146,6 @@ void EvgetX11::XEventSwitch::refreshDevices(int id, EvgetCore::Event::Common::De
     idToName.emplace(id, name);
 }
 
-std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XEventSwitch::getAtomName(Atom atom) {
-    return {XGetAtomName(&display.get(), atom), XFree};
+std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XEventSwitch::getAtomName(Display& display, Atom atom) {
+    return {XGetAtomName(&display, atom), XFree};
 }

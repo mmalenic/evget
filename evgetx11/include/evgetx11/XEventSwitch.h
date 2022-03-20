@@ -28,9 +28,9 @@
 namespace EvgetX11 {
     class XEventSwitch {
     public:
-        explicit XEventSwitch(Display& display);
+        XEventSwitch() = default;
 
-        /**
+        /**defaul
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
@@ -38,6 +38,8 @@ namespace EvgetX11 {
         virtual void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info);
 
         virtual ~XEventSwitch() = default;
+
+        static std::unique_ptr<char[], decltype(&XFree)> getAtomName(Display& display, Atom atom);
 
     protected:
         XEventSwitch(XEventSwitch&&) noexcept = default;
@@ -57,14 +59,10 @@ namespace EvgetX11 {
 
         std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event);
 
-        std::unique_ptr<char[], decltype(&XFree)> getAtomName(Atom atom);
-
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
     private:
-        std::reference_wrapper<Display> display;
-
         std::map<int, EvgetCore::Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
     };
