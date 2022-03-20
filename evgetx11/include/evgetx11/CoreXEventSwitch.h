@@ -55,7 +55,6 @@ namespace EvgetX11 {
 
         std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
         std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
-
     };
 }
 

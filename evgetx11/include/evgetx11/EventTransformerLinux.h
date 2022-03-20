@@ -45,10 +45,10 @@ namespace EvgetX11 {
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
-        std::unique_ptr<EvgetCore::Event::AbstractData> createDeviceChangedEvent(const XIDeviceChangedEvent& event);
+        void deviceChangedEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
         static std::map<int, std::string> typeToName();
         std::chrono::nanoseconds getTime(const XInputEvent& event);
-        void refreshDeviceIds();
+        void refreshDevices();
 
         std::reference_wrapper<Display> display;
         std::optional<XInputEvent::Timestamp> start{std::nullopt};

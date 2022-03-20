@@ -40,6 +40,7 @@ namespace EvgetX11 {
         virtual ~XEventSwitch() = default;
 
         static std::unique_ptr<char[], decltype(&XFree)> getAtomName(Display& display, Atom atom);
+        static void addTableData(std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
     protected:
         XEventSwitch(XEventSwitch&&) noexcept = default;
@@ -54,7 +55,6 @@ namespace EvgetX11 {
         static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        static void addTableData(std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
 
         std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event);
