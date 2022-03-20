@@ -38,7 +38,7 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     return false;
 }
 
-void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
+void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
@@ -49,13 +49,13 @@ void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::vect
     }
 
     EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(getTime(event)).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
+    builder.time(timestamp).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
            .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
 
     addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent,"MouseClickSystemData"));
 }
 
-void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
+void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid)) {
         return;
@@ -110,13 +110,14 @@ void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::vector<
     }
 
     EvgetCore::Event::Key::KeyBuilder builder{};
-    builder.time(getTime(event)).action(action).button(deviceEvent.detail).character(character).name(name);
+    builder.time(timestamp).action(action).button(deviceEvent.detail).character(character).name(name);
 
     addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
 }
 
 std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrollEvent(
-    const XInputEvent& event
+    const XInputEvent& event,
+    std::chrono::nanoseconds timestamp
 ) {
     auto rawEvent = event.viewData<XIRawEvent>();
     if (!devices.contains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid)) {
@@ -146,14 +147,14 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrol
         isScrollEvent = true;
     }
 
-    return isScrollEvent ? builder.time(getTime(event)).device(devices[rawEvent.sourceid]).build() : nullptr;
+    return isScrollEvent ? builder.time(timestamp).device(devices[rawEvent.sourceid]).build() : nullptr;
 }
 
-bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
+bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     if (type == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
         if (devices.contains(deviceEvent.deviceid)) {
-            motionEvent(getTime(event), data, deviceEvent);
+            motionEvent(timestamp, data, deviceEvent);
         }
     }
 
