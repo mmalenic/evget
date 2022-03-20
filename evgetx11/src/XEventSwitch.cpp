@@ -20,8 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <spdlog/spdlog.h>
 #include "evgetx11/XEventSwitch.h"
 #include "evgetcore/Event/Field.h"
+#include "evgetcore/UnsupportedOperationException.h"
+#include <X11/extensions/XInput.h>
+#include <X11/extensions/XInput2.h>
+#include <boost/numeric/conversion/cast.hpp>
+
+EvgetX11::XEventSwitch::XEventSwitch(Display& display) : display{display} {
+}
+
 
 EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
@@ -137,4 +146,62 @@ std::map<int, int> EvgetX11::XEventSwitch::getValuators(const XIValuatorState& v
         valuators.emplace(mask, *values++);
     });
     return valuators;
+}
+
+void EvgetX11::XEventSwitch::refreshDevices() {
+    int nDevices;
+    int xi2NDevices;
+    // See caveats about mixing XI1 calls with XI2 code:
+    // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
+    // This should capture all devices with ids in the range 0-128.
+    auto info = std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>(XListInputDevices(&display.get(), &nDevices),
+        XFreeDeviceList);
+    auto xi2Info = std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &xi2NDevices),
+        XIFreeDeviceInfo);
+
+    if (nDevices != xi2NDevices) {
+        spdlog::warn("Devices with ids greater than 127 found. Set the device of these devices manually if their use is required.");
+    }
+
+    std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2Devices{};
+    for (int i = 0; i < xi2NDevices; i++) {
+        xi2Devices.emplace(xi2Info[i].deviceid, xi2Info[i]);
+    }
+
+    for (int i = 0; i < nDevices; i++) {
+        const auto& device = info[i];
+        int id = boost::numeric_cast<int>(device.id);
+
+        if (!xi2Devices.contains(id)) {
+            throw EvgetCore::UnsupportedOperationException{"Device id from XDeviceInfo not found in XIDeviceInfo."};
+        }
+        const auto& xi2Device = xi2Devices.at(id).get();
+
+        if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
+            auto type = getAtomName(device.type);
+
+            if (strcmp(type.get(), XI_MOUSE) == 0) {
+                devices.emplace(id, EvgetCore::Event::Common::Device::Mouse);
+            } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
+                devices.emplace(id, EvgetCore::Event::Common::Device::Keyboard);
+            } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
+                devices.emplace(id, EvgetCore::Event::Common::Device::Touchscreen);
+            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
+                devices.emplace(id, EvgetCore::Event::Common::Device::Touchpad);
+            } else {
+                spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
+                continue;
+            }
+
+            idToName.emplace(id, device.name);
+            setInfo(xi2Devices.at(id).get());
+        }
+    }
+}
+
+std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XEventSwitch::getAtomName(Atom atom) {
+    return {XGetAtomName(&display.get(), atom), XFree};
+}
+
+void EvgetX11::XEventSwitch::setInfo(const XIDeviceInfo& info) {
 }

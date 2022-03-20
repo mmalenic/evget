@@ -264,57 +264,6 @@ std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::EventTransformerLinux:
     return std::make_unique<EvgetCore::Event::Data>("DeviceChangedEvent", std::move(fields));
 }
 
-void EvgetX11::EventTransformerLinux::refreshDeviceIds() {
-    int nDevices;
-    int xi2NDevices;
-    // See caveats about mixing XI1 calls with XI2 code:
-    // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
-    // This should capture all devices with ids in the range 0-128.
-    auto info = std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>(XListInputDevices(&display.get(), &nDevices),
-        XFreeDeviceList);
-    auto xi2Info = std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &xi2NDevices),
-        XIFreeDeviceInfo);
-
-    if (nDevices != xi2NDevices) {
-        spdlog::warn("Devices with ids greater than 127 found. Set the device of these devices manually if their use is required.");
-    }
-
-    std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2Devices{};
-    for (int i = 0; i < xi2NDevices; i++) {
-        xi2Devices.emplace(xi2Info[i].deviceid, xi2Info[i]);
-    }
-
-    for (int i = 0; i < nDevices; i++) {
-        const auto& device = info[i];
-        int id = boost::numeric_cast<int>(device.id);
-
-        if (!xi2Devices.contains(id)) {
-            throw EvgetCore::UnsupportedOperationException{"Device id from XDeviceInfo not found in XIDeviceInfo."};
-        }
-        const auto& xi2Device = xi2Devices.at(id).get();
-
-        if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
-            auto type = getAtomName(device.type);
-
-            if (strcmp(type.get(), XI_MOUSE) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Mouse);
-            } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Keyboard);
-            } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Touchscreen);
-            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Touchpad);
-            } else {
-                spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
-                continue;
-            }
-
-            idToName.emplace(id, device.name);
-            setInfo(xi2Devices.at(id).get());
-        }
-    }
-}
-
 void EvgetX11::EventTransformerLinux::setInfo(const XIDeviceInfo& info) {
     const XIButtonClassInfo* buttonInfo = nullptr;
     std::vector<const XIScrollClassInfo*> scrollInfos{};
@@ -374,10 +323,6 @@ void EvgetX11::EventTransformerLinux::setButtonMap(const XIButtonClassInfo& butt
 
 EvgetX11::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
     refreshDeviceIds();
-}
-
-std::unique_ptr<char[], decltype(&XFree)> EvgetX11::EventTransformerLinux::getAtomName(Atom atom) {
-    return {XGetAtomName(&display.get(), atom), XFree};
 }
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::EventTransformerLinux::createIC(Display& display, XIM xim) {

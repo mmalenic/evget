@@ -28,23 +28,26 @@
 namespace EvgetX11 {
     class XEventSwitch {
     public:
-        XEventSwitch() = default;
+        explicit XEventSwitch(Display& display);
 
         /**
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
         virtual bool switchOnEvent(const XInputEvent &event, EventTransformerLinux::EventData &data, std::chrono::nanoseconds timestamp) = 0;
+        virtual void setInfo(const XIDeviceInfo& info);
+
+        void refreshDevices();
 
         virtual ~XEventSwitch() = default;
 
-        XEventSwitch(XEventSwitch&&) noexcept = delete;
-        XEventSwitch& operator=(XEventSwitch&&) noexcept = delete;
-
-        XEventSwitch(const XEventSwitch&) = delete;
-        XEventSwitch& operator=(const XEventSwitch&) = delete;
-
     protected:
+        XEventSwitch(XEventSwitch&&) noexcept = default;
+        XEventSwitch& operator=(XEventSwitch&&) noexcept = default;
+
+        XEventSwitch(const XEventSwitch&) = default;
+        XEventSwitch& operator=(const XEventSwitch&) = default;
+
         static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
         static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
         static std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name);
@@ -56,8 +59,16 @@ namespace EvgetX11 {
 
         static std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event, const std::string& deviceName);
 
+        std::unique_ptr<char[], decltype(&XFree)> getAtomName(Atom atom);
+
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
+
+    private:
+        std::reference_wrapper<Display> display;
+
+        std::map<int, EvgetCore::Event::Common::Device> devices{};
+        std::map<int, std::string> idToName{};
     };
 
     void EvgetX11::XEventSwitch::getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
