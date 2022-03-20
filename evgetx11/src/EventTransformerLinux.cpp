@@ -34,6 +34,7 @@
 #include "evgetcore/Event/Field.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/Event/MouseMove.h"
+#include "evgetx11/XEventSwitch.h"
 
 std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(EvgetX11::XInputEvent event) {
     if (event.hasData()) {
@@ -129,28 +130,33 @@ void EvgetX11::EventTransformerLinux::refreshDeviceIds() {
         const auto& xi2Device = xi2Devices.at(id).get();
 
         if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
-            auto type = getAtomName(device.type);
+            auto type = XEventSwitch::getAtomName(display, device.type);
+            EvgetCore::Event::Common::Device deviceType;
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Mouse);
+                deviceType = EvgetCore::Event::Common::Device::Mouse;
             } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Keyboard);
+                deviceType = EvgetCore::Event::Common::Device::Keyboard;
             } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Touchscreen);
+                deviceType = EvgetCore::Event::Common::Device::Touchscreen;
             } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                devices.emplace(id, EvgetCore::Event::Common::Device::Touchpad);
+                deviceType = EvgetCore::Event::Common::Device::Touchpad;
             } else {
                 spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
                 continue;
             }
 
+            devices.emplace(id, deviceType);
             idToName.emplace(id, device.name);
-            setInfo(xi2Devices.at(id).get());
+
+            for (const auto& eventSwitch : switches) {
+                eventSwitch.get().refreshDevices(id, deviceType, device.name, xi2Devices.at(id).get());
+            }
         }
     }
 }
 
-EvgetX11::EventTransformerLinux::EventTransformerLinux(Display& display) : display{display} {
+EvgetX11::EventTransformerLinux::EventTransformerLinux(Display& display, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : display{display}, switches{switches} {
     refreshDeviceIds();
 }
 

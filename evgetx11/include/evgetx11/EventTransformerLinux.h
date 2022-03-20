@@ -34,31 +34,29 @@
 #include "evgetcore/Event/Common/DeviceType.h"
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
+#include "XEventSwitch.h"
 
 namespace EvgetX11 {
     class EventTransformerLinux : EvgetCore::EventTransformer<XInputEvent> {
     public:
         using EventData = std::vector<std::unique_ptr<EvgetCore::Event::TableData>>;
 
-        explicit EventTransformerLinux(Display& display);
-
+        explicit EventTransformerLinux(Display& display, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
         std::unique_ptr<EvgetCore::Event::AbstractData> createDeviceChangedEvent(const XIDeviceChangedEvent& event);
-
         static std::map<int, std::string> typeToName();
-
         std::chrono::nanoseconds getTime(const XInputEvent& event);
-
         void refreshDeviceIds();
-        void setInfo(const XIDeviceInfo& info);
 
         std::reference_wrapper<Display> display;
-
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
-
         std::map<int, std::string> types = typeToName();
+
+        std::map<int, EvgetCore::Event::Common::Device> devices{};
+        std::map<int, std::string> idToName{};
+        std::vector<std::reference_wrapper<XEventSwitch>> switches{};
     };
 }
 

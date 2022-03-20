@@ -63,7 +63,6 @@ namespace EvgetX11 {
         static std::string formatValue(int value);
 
         std::map<int, EvgetCore::Event::Common::Device> devices{};
-    private:
         std::map<int, std::string> idToName{};
     };
 
