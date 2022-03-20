@@ -51,34 +51,10 @@ namespace EvgetX11 {
 
         std::chrono::nanoseconds getTime(const XInputEvent& event);
 
-        void buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
-        void keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
-        void motionEvent(std::chrono::nanoseconds time, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const XIDeviceEvent& deviceEvent);
-        bool motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
-        bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
-        std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event);
-
         void refreshDeviceIds();
         void setInfo(const XIDeviceInfo& info);
-        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
-
-        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
-
-        static constexpr int utf8MaxBytes = 4;
 
         std::reference_wrapper<Display> display;
-
-        std::map<int, std::map<int, std::string>> buttonMap{};
-
-        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
-        std::unique_ptr<EvgetCore::Event::MouseScroll> rawScrollEvent{};
-
-        std::optional<int> valuatorX{};
-        std::optional<int> valuatorY{};
-        std::map<int, std::string> valuatorNames{};
-
-        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
-        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
 
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
 

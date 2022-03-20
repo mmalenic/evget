@@ -27,7 +27,35 @@
 
 namespace EvgetX11 {
     class CoreXEventSwitch : XEventSwitch {
+    public:
+        explicit CoreXEventSwitch(Display& display);
+
         bool switchOnEvent(const XInputEvent &event, EventTransformerLinux::EventData &data, std::chrono::nanoseconds timestamp) override;
+        void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
+
+    private:
+        void buttonEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
+        void keyEvent(const XInputEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        void motionEvent(std::chrono::nanoseconds time, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const XIDeviceEvent& deviceEvent);
+        bool motionEvent(const XInputEvent& event, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
+        std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event);
+        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
+        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
+
+        std::reference_wrapper<Display> display;
+        static constexpr int utf8MaxBytes = 4;
+
+        std::map<int, std::map<int, std::string>> buttonMap{};
+        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+        std::unique_ptr<EvgetCore::Event::MouseScroll> rawScrollEvent{};
+        std::optional<int> valuatorX{};
+        std::optional<int> valuatorY{};
+        std::map<int, std::string> valuatorNames{};
+
+        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
+        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
+
     };
 }
 
