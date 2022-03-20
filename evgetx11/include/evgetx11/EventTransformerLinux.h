@@ -47,6 +47,7 @@ namespace EvgetX11 {
     private:
         void deviceChangedEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
         static std::map<int, std::string> typeToName();
+        static std::map<int, std::string> reasonToNameMap();
         std::chrono::nanoseconds getTime(const XInputEvent& event);
         void refreshDevices();
 
@@ -56,6 +57,8 @@ namespace EvgetX11 {
 
         std::map<int, EvgetCore::Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
+        std::map<int, std::string> reasonToName = reasonToNameName();
+
         std::vector<std::reference_wrapper<XEventSwitch>> switches{};
     };
 }

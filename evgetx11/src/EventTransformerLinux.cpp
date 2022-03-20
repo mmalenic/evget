@@ -79,7 +79,7 @@ void EvgetX11::EventTransformerLinux::deviceChangedEvent(const XInputEvent& even
         fields.emplace_back(
             std::make_unique<EvgetCore::Event::Field>(
                 "ReasonName",
-                (changedEvent.reason == XISlaveSwitch) ? "SlaveSwitch" : "DeviceChanged"
+                reasonToName[changedEvent.reason]
             )
         );
 
@@ -183,6 +183,15 @@ std::map<int, std::string> EvgetX11::EventTransformerLinux::typeToName() {
     map.emplace(XI_BarrierHit, "BarrierHit");
     map.emplace(XI_BarrierLeave, "BarrierLeave");
 #endif
+
+    return map;
+}
+
+std::map<int, std::string> EvgetX11::EventTransformerLinux::reasonToNameMap() {
+    std::map<int, std::string> map{};
+
+    map.emplace(XISlaveSwitch, "SlaveSwitch");
+    map.emplace(XIDeviceChange, "DeviceChange");
 
     return map;
 }
