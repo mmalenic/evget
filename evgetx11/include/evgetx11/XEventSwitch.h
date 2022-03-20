@@ -35,9 +35,7 @@ namespace EvgetX11 {
          * Returns true if event was successfully consumed.
          */
         virtual bool switchOnEvent(const XInputEvent &event, EventTransformerLinux::EventData &data, std::chrono::nanoseconds timestamp) = 0;
-        virtual void setInfo(const XIDeviceInfo& info);
-
-        void refreshDevices();
+        virtual void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info);
 
         virtual ~XEventSwitch() = default;
 
@@ -48,16 +46,16 @@ namespace EvgetX11 {
         XEventSwitch(const XEventSwitch&) = default;
         XEventSwitch& operator=(const XEventSwitch&) = default;
 
-        static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
-        static std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName, const std::string& dataName);
-        static std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event, const std::string& name);
+        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName);
+        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName);
+        std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event);
         static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static void addTableData(std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
         static void getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
 
-        static std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event, const std::string& deviceName);
+        std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event);
 
         std::unique_ptr<char[], decltype(&XFree)> getAtomName(Atom atom);
 

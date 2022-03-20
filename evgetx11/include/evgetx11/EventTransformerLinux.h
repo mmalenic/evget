@@ -58,6 +58,8 @@ namespace EvgetX11 {
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
         std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event);
 
+        void refreshDeviceIds();
+        void setInfo(const XIDeviceInfo& info);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
