@@ -30,7 +30,7 @@ namespace EvgetX11 {
     public:
         XEventSwitch() = default;
 
-        /**defaul
+        /**
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
@@ -56,8 +56,6 @@ namespace EvgetX11 {
         static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static void getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
-
-        std::unique_ptr<EvgetCore::Event::AbstractData> createRawData(const XIRawEvent& event);
 
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);

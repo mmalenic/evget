@@ -41,8 +41,7 @@ std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransfo
     if (event.hasData()) {
         auto type = event.getEventType();
 
-        if (type == XI_DeviceChanged) {
-            deviceChangedEvent(event, getTime(event), data);
+        if (type == XI_DeviceChanged || type == XI_HierarchyChanged) {
             refreshDevices();
             return data;
         }
@@ -61,30 +60,6 @@ std::chrono::nanoseconds EvgetX11::EventTransformerLinux::getTime(const EvgetX11
         start = event.getTimestamp();
     }
     return event.getTimestamp() - *start;
-}
-
-void EvgetX11::EventTransformerLinux::deviceChangedEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
-    auto changedEvent = event.viewData<XIDeviceChangedEvent>();
-    if (devices.contains(changedEvent.deviceid)) {
-        std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[changedEvent.deviceid]));
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Common::Time>(timestamp));
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("XInputTime", std::to_string(changedEvent.time)));
-        fields
-            .emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceId", std::to_string(changedEvent.deviceid)));
-        fields
-            .emplace_back(std::make_unique<EvgetCore::Event::Field>("SourceId", std::to_string(changedEvent.sourceid)));
-        fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Reason", std::to_string(changedEvent.reason)));
-        fields.emplace_back(
-            std::make_unique<EvgetCore::Event::Field>(
-                "ReasonName",
-                reasonToName[changedEvent.reason]
-            )
-        );
-
-        XEventSwitch::addTableData(data, {}, std::make_unique<EvgetCore::Event::Data>("DeviceChangedEvent", std::move(fields)));
-    }
 }
 
 void EvgetX11::EventTransformerLinux::refreshDevices() {
@@ -183,15 +158,6 @@ std::map<int, std::string> EvgetX11::EventTransformerLinux::typeToName() {
     map.emplace(XI_BarrierHit, "BarrierHit");
     map.emplace(XI_BarrierLeave, "BarrierLeave");
 #endif
-
-    return map;
-}
-
-std::map<int, std::string> EvgetX11::EventTransformerLinux::reasonToNameMap() {
-    std::map<int, std::string> map{};
-
-    map.emplace(XISlaveSwitch, "SlaveSwitch");
-    map.emplace(XIDeviceChange, "DeviceChange");
 
     return map;
 }

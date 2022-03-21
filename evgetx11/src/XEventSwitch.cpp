@@ -109,25 +109,6 @@ void EvgetX11::XEventSwitch::addTableData(
     data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
 }
 
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::XEventSwitch::createRawData(
-    const XIRawEvent& event
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[event.sourceid]));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("EventType", std::to_string(event.evtype)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("XInputTime", std::to_string(event.time)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceId", std::to_string(event.deviceid)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("SourceId", std::to_string(event.sourceid)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Detail", std::to_string(event.detail)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Flags", formatValue(event.flags)));
-
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Valuators", createValuatorEntries(event.valuators)));
-
-    return std::make_unique<EvgetCore::Event::Data>("RawEvent", std::move(fields));
-}
-
 std::string EvgetX11::XEventSwitch::formatValue(int value) {
     return value != 0 ? std::to_string(value) : "";
 }
