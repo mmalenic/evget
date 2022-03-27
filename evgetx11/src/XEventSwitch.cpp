@@ -26,7 +26,6 @@
 #include "evgetcore/UnsupportedOperationException.h"
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
-#include <boost/numeric/conversion/cast.hpp>
 
 EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
@@ -78,6 +77,8 @@ std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> EvgetX11::XEventSw
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[event.deviceid]));
+    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("EventTypeId", std::to_string(event.evtype)));
+    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("EventTypeName", evtypeToName[event.evtype]));
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("XInputTime", std::to_string(event.time)));
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceId", std::to_string(event.deviceid)));
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("SourceId", std::to_string(event.sourceid)));

@@ -62,6 +62,7 @@ namespace EvgetX11 {
 
         std::map<int, EvgetCore::Event::Common::Device> devices{};
         std::map<int, std::string> idToName{};
+        std::unordered_map<int, std::string> evtypeToName{};
     };
 
     void EvgetX11::XEventSwitch::getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
