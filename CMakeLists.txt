@@ -236,6 +236,7 @@ function(find_symbols)
             return()
         elseif (NOT FIND_SYMBOLS_ANY AND NOT FIND_SYMBOLS_HAS_SYMBOL)
             unset(FIND_SYMBOLS_HAS_SYMBOL CACHE)
+            set_property(GLOBAL PROPERTY ${FIND_SYMBOLS_NAME} FALSE)
             return()
         endif()
 
@@ -245,6 +246,7 @@ function(find_symbols)
     if (NOT FIND_SYMBOLS_ANY)
         find_symbols_add_compile_defintions(FIND_SYMBOLS_TARGET FIND_SYMBOLS_NAME FIND_SYMBOLS_VISIBILITY)
     endif()
+    set_property(GLOBAL PROPERTY ${FIND_SYMBOLS_NAME} FALSE)
 endfunction()
 
 # Add compile definitions for use inside find_symbols.
