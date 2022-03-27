@@ -39,12 +39,7 @@ function(feature_check)
     set(multi_value_args FEATURE_REQUIRES)
     cmake_parse_arguments(FEATURE_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    get_property(CHECK GLOBAL PROPERTY ${FEATURE_CHECK_NAME})
-    if (NOT "${CHECK}" STREQUAL "")
-        message(STATUS "Skipping check for ${FEATURE_CHECK_NAME}, already checked.")
-        return()
-    endif()
-
+    return_on_property(FEATURE_CHECK_NAME)
     if (NOT DEFINED FEATURE_CHECK_FEATURE OR "${FEATURE_CHECK_FEATURE}" OR "${${FEATURE_CHECK_FEATURE}}")
         if (NOT DEFINED FEATURE_CHECK_FEATURE_REQUIRES OR FEATURE_CHECK_FEATURE_REQUIRES STREQUAL "")
             if (DEFINED FEATURE_CHECK_NAME)
@@ -268,7 +263,7 @@ macro(add_compile_definitions GUARD TARGET FEATURE_CHECK FEATURE_REQUIRES FEATUR
     endif()
 endmacro()
 
-# Set mode indicating how to add sources.
+# Set mode variable indicating how to add sources.
 macro(set_mode MAKE_EXECUTABLE MAKE_LIBRARY)
     if (${MAKE_EXECUTABLE})
         set(MODE MAKE_EXECUTABLE)
@@ -277,7 +272,7 @@ macro(set_mode MAKE_EXECUTABLE MAKE_LIBRARY)
     endif()
 endmacro()
 
-# Perform feature check and set property.
+# Perform feature check and get guard property.
 macro(set_feature_property FEATURE FEATURE_CHECK FEATURE_REQUIRES)
     if (DEFINED ${FEATURE_CHECK})
         feature_check(FEATURE ${${FEATURE}} FEATURE_REQUIRES ${${FEATURE_REQUIRES}} NAME ${${FEATURE_CHECK}})
@@ -316,6 +311,14 @@ macro(add_library_and_link TARGET DEPENDENCY DIRECTORY_NAME)
 
     get_variable(${DEPENDENCY})
     program_dependencies(TARGET ${${TARGET}} DEP PUBLIC ${${DEPENDENCY}} ONLY_LINK)
+endmacro()
+
+# Return early is property is defined.
+macro(return_on_property PROPERTY)
+    get_property(RETURN_ON_PROPERTY_CHECK GLOBAL PROPERTY ${${PROPERTY}})
+    if (NOT "${RETURN_ON_PROPERTY_CHECK}" STREQUAL "")
+        return()
+    endif()
 endmacro()
 
 if (DOWNLOAD_DEPENDENCIES)
