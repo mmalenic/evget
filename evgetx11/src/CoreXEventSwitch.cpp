@@ -35,6 +35,8 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     std::chrono::nanoseconds timestamp,
     EvgetX11::EventTransformerLinux::EventData& data
 ) {
+    XEventSwitch::switchOnEvent(event, timestamp, data);
+
     auto type = event.getEventType();
     if (motionEvent(event, timestamp, type, data)) {
         return true;

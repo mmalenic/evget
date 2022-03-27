@@ -20,35 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
-#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKREFRESH_H
+#define EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKREFRESH_H
 
-#include <X11/extensions/XInput2.h>
-#include <memory>
-#include "XInputEvent.h"
 #include "XSetMask.h"
 
 namespace EvgetX11 {
-
-    class XInputHandler {
+    class XSetMaskRefresh : XSetMask {
     public:
-        explicit XInputHandler(Display& display, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
-
-        /**
-         * Get the next event.
-         */
-        XInputEvent getEvent();
-
-    private:
-        static constexpr int versionMajor = 2;
-        static constexpr int versionMinor = 2;
-
-        std::reference_wrapper<Display> display;
-
-        static void setMask(Display& display, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
-
-        static void announceVersion(Display& display);
+        void setMask(unsigned char *mask) override;
     };
 }
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKREFRESH_H

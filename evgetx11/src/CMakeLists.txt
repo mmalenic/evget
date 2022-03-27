@@ -10,4 +10,6 @@ add_program(
     XInputHandler.cpp
     CoreXEventSwitch.cpp
     XEventSwitch.cpp
+    XSetMaskRefresh.cpp
+    XSetMaskCore.cpp
 )

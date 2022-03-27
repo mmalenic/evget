@@ -16,6 +16,9 @@ add_program(
     include/evgetx11/XInputEvent.h
     include/evgetx11/XEventSwitch.h
     include/evgetx11/CoreXEventSwitch.h
+    include/evgetx11/XSetMask.h
+    include/evgetx11/XSetMaskRefresh.h
+    include/evgetx11/XSetMaskCore.h
 )
 add_subdirectory(src)
 

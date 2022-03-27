@@ -36,7 +36,7 @@
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetx11/XEventSwitch.h"
 
-std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(EvgetX11::XInputEvent event) {
+std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(XInputEvent event) {
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>> data{};
     if (event.hasData()) {
         auto type = event.getEventType();

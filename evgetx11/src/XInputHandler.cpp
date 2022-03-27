@@ -24,9 +24,9 @@
 #include "evgetx11/XInputHandler.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-EvgetX11::XInputHandler::XInputHandler(Display& display) : display{display} {
+EvgetX11::XInputHandler::XInputHandler(Display& display, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) : display{display} {
     announceVersion(display);
-    setMask(display);
+    setMask(display, maskSetters);
 }
 
 void EvgetX11::XInputHandler::announceVersion(Display& display) {
@@ -41,26 +41,14 @@ void EvgetX11::XInputHandler::announceVersion(Display& display) {
     }
 }
 
-void EvgetX11::XInputHandler::setMask(Display& display) {
+void EvgetX11::XInputHandler::setMask(Display& display, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
 
     unsigned char eventMask[XI_LASTEVENT] = {0};
-    XISetMask(eventMask, XI_ButtonPress);
-    XISetMask(eventMask, XI_ButtonRelease);
-    XISetMask(eventMask, XI_KeyPress);
-    XISetMask(eventMask, XI_KeyRelease);
-    XISetMask(eventMask, XI_Motion);
-#if defined XI_TouchBegin && defined XI_TouchUpdate && defined XI_TouchEnd
-    XISetMask(eventMask, XI_TouchBegin);
-    XISetMask(eventMask, XI_TouchUpdate);
-    XISetMask(eventMask, XI_TouchEnd);
-#endif
-
-    // Special events
-    XISetMask(eventMask, XI_RawMotion);
-    XISetMask(eventMask, XI_HierarchyChanged);
-    XISetMask(eventMask, XI_DeviceChanged);
+    for (const auto& maskSetter : maskSetters) {
+        maskSetter.get().setMask(eventMask);
+    }
 
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;

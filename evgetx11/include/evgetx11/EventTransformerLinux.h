@@ -34,7 +34,7 @@
 #include "evgetcore/Event/Common/DeviceType.h"
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
-#include "XEventSwitch.h"
+#include "evgetx11/XEventSwitch.h"
 
 namespace EvgetX11 {
     class EventTransformerLinux : EvgetCore::EventTransformer<XInputEvent> {
