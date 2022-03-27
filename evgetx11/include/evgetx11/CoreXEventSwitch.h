@@ -24,13 +24,15 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
 
 #include "XEventSwitch.h"
+#include "evgetcore/Event/Button/ButtonAction.h"
+#include "evgetcore/Event/MouseScroll.h"
 
 namespace EvgetX11 {
     class CoreXEventSwitch : XEventSwitch {
     public:
         explicit CoreXEventSwitch(Display& display);
 
-        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventTransformerLinux::EventData &data) override;
+        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
 
     private:

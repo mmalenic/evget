@@ -23,24 +23,32 @@
 #ifndef EVGET_EVGETX11_SRC_XEVENTSWITCH_H
 #define EVGET_EVGETX11_SRC_XEVENTSWITCH_H
 
-#include "evgetx11/EventTransformerLinux.h"
+#include <X11/extensions/XInput2.h>
+#include <map>
+#include "XInputEvent.h"
+#include "evgetcore/Event/Common/Device.h"
+#include "evgetcore/Event/AbstractData.h"
+#include "evgetcore/Event/TableData.h"
+#include "evgetcore/Util.h"
 
 namespace EvgetX11 {
     class XEventSwitch {
     public:
+        using EventData = std::vector<std::unique_ptr<EvgetCore::Event::TableData>>;
+
         XEventSwitch() = default;
 
         /**
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
-        virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventTransformerLinux::EventData &data) = 0;
+        virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) = 0;
         virtual void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info);
 
         virtual ~XEventSwitch() = default;
 
         static std::unique_ptr<char[], decltype(&XFree)> getAtomName(Display& display, Atom atom);
-        static void addTableData(std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
+        static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
     protected:
         XEventSwitch(XEventSwitch&&) noexcept = default;

@@ -33,7 +33,7 @@
 bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
-    EvgetX11::EventTransformerLinux::EventData& data
+    EventData& data
 ) {
     XEventSwitch::switchOnEvent(event, timestamp, data);
 
