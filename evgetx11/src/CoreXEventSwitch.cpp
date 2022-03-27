@@ -268,6 +268,7 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::CoreXEventSwitch::createI
 }
 
 EvgetX11::CoreXEventSwitch::CoreXEventSwitch(Display& display) : display{display} {
+    setEvtypeNames();
 }
 
 void EvgetX11::CoreXEventSwitch::refreshDevices(
@@ -310,4 +311,24 @@ void EvgetX11::CoreXEventSwitch::refreshDevices(
             valuatorNames.emplace(valuatorInfo->number, name.get());
         }
     }
+}
+
+void EvgetX11::CoreXEventSwitch::setEvtypeNames() {
+    evtypeToName.emplace(XI_DeviceChanged, "DeviceChanged");
+    evtypeToName.emplace(XI_KeyPress, "KeyPress");
+    evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
+    evtypeToName.emplace(XI_ButtonPress, "ButtonPress");
+    evtypeToName.emplace(XI_ButtonRelease, "ButtonRelease");
+    evtypeToName.emplace(XI_Motion, "Motion");
+    evtypeToName.emplace(XI_Enter, "Enter");
+    evtypeToName.emplace(XI_Leave, "Leave");
+    evtypeToName.emplace(XI_FocusIn, "FocusIn");
+    evtypeToName.emplace(XI_FocusOut, "FocusOut");
+    evtypeToName.emplace(XI_HierarchyChanged, "HierarchyChanged");
+    evtypeToName.emplace(XI_PropertyEvent, "PropertyEvent");
+    evtypeToName.emplace(XI_RawKeyPress, "RawKeyPress");
+    evtypeToName.emplace(XI_RawKeyRelease, "RawKeyRelease");
+    evtypeToName.emplace(XI_RawButtonPress, "RawButtonPress");
+    evtypeToName.emplace(XI_RawButtonRelease, "RawButtonRelease");
+    evtypeToName.emplace(XI_RawMotion, "RawMotion");
 }
