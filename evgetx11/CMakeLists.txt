@@ -26,6 +26,12 @@ find_symbols(
     SYMBOLS XI_TouchBegin XI_TouchUpdate XI_TouchEnd XI_TouchOwnership XI_RawTouchBegin XI_RawTouchUpdate XI_RawTouchEnd
     FILES X11/extensions/XInput2.h
 )
+add_program(
+    TARGET ${EVGETX11_LIBRARY_NAME}
+    FEATURE_CHECK EVGETX11_HAS_TOUCH_SUPPORT
+    SRCS include/evgetx11/TouchXEventSwitch.h include/evgetx11/XSetMaskTouch.h
+)
+
 find_symbols(
     TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_BARRIER_SUPPORT
     SYMBOLS XI_BarrierHit XI_BarrierLeave
