@@ -23,9 +23,11 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKTOUCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKTOUCH_H
 
-namespace EvgetX11 {
-    class XSetMaskTouch {
+#include "XSetMask.h"
 
+namespace EvgetX11 {
+    class XSetMaskTouch : XSetMask {
+        void setMask(unsigned char *mask) override;
     };
 }
 
