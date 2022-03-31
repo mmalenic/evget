@@ -46,12 +46,15 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     case XI_RawMotion:
         rawScrollEvent = scrollEvent(event, timestamp);
         return true;
-    case XI_ButtonPress:buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
+    case XI_ButtonPress:
+        buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
         return true;
-    case XI_ButtonRelease:buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
+    case XI_ButtonRelease:
+        buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
         return true;
     case XI_KeyPress:
-    case XI_KeyRelease:keyEvent(event, timestamp, data);
+    case XI_KeyRelease:
+        keyEvent(event, timestamp, data);
         return true;
     default:
         return false;
@@ -60,7 +63,7 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
 
 void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!devices.contains(deviceEvent.deviceid) ||
+    if (!devices.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
@@ -140,7 +143,7 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrol
     std::chrono::nanoseconds timestamp
 ) {
     auto rawEvent = event.viewData<XIRawEvent>();
-    if (!devices.contains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid)) {
+    if (!devices.contains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
         return {};
     }
 
@@ -173,7 +176,7 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrol
 bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     if (type == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
-        if (devices.contains(deviceEvent.deviceid)) {
+        if (devices.contains(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
             motionEvent(timestamp, data, deviceEvent);
         }
     }
@@ -209,6 +212,7 @@ void EvgetX11::CoreXEventSwitch::motionEvent(
         }
     }
 }
+
 bool EvgetX11::CoreXEventSwitch::scrollEvent(
     const XIDeviceEvent& event,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
