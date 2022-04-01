@@ -29,15 +29,29 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
 ) {
     switch (event.getEventType()) {
     case XI_TouchBegin:
+        touchButton(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
         return true;
     case XI_TouchUpdate:
         return true;
     case XI_TouchEnd:
+        touchButton(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
         return true;
     default:
         return false;
     }
 }
 
+
 EvgetX11::TouchXEventSwitch::TouchXEventSwitch(EvgetX11::CoreXEventSwitch& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
+}
+void EvgetX11::TouchXEventSwitch::touchButton(
+    const EvgetX11::XInputEvent& event,
+    std::chrono::nanoseconds timestamp,
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
+    EvgetCore::Event::Button::ButtonAction action
+) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (devices.contains(deviceEvent.deviceid)) {
+        coreXEventSwitch.get().addButtonEvent(deviceEvent, timestamp, data, action, 1);
+    }
 }

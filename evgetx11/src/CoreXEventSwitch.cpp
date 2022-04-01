@@ -69,18 +69,19 @@ void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chro
         return;
     }
 
-    addButtonEvent(deviceEvent, timestamp, data, action);
+    addButtonEvent(deviceEvent, timestamp, data, action, deviceEvent.detail);
 }
 
 void EvgetX11::CoreXEventSwitch::addButtonEvent(
     const XIDeviceEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
-    EvgetCore::Event::Button::ButtonAction action
+    EvgetCore::Event::Button::ButtonAction action,
+    int button
 ) {
     EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
     builder.time(timestamp).device(devices[event.deviceid]).positionX(event.root_x)
-           .positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
+           .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
     addTableData(data, builder.build(), createSystemDataWithoutRoot(event,"MouseClickSystemData"));
 }
