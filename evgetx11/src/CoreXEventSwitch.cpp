@@ -35,8 +35,6 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     std::chrono::nanoseconds timestamp,
     EventData& data
 ) {
-    XEventSwitch::switchOnEvent(event, timestamp, data);
-
     auto type = event.getEventType();
     if (motionEvent(event, timestamp, type, data)) {
         return true;
@@ -47,25 +45,28 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
         rawScrollEvent = scrollEvent(event, timestamp);
         return true;
     case XI_ButtonPress:
-        return buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
+        buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
+        return true;
     case XI_ButtonRelease:
-        return buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
+        buttonEvent(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
+        return true;
     case XI_KeyPress:
     case XI_KeyRelease:
-        return keyEvent(event, timestamp, data);
+        keyEvent(event, timestamp, data);
+        return true;
     default:
         return false;
     }
 }
 
-bool EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
+void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
-        return true;
+        return;
     }
 
     EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
@@ -73,13 +74,12 @@ bool EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chro
            .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
 
     addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent,"MouseClickSystemData"));
-    return true;
 }
 
-bool EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
+void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid)) {
-        return true;
+        return;
     }
 
     // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
@@ -134,7 +134,6 @@ bool EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono:
     builder.time(timestamp).action(action).button(deviceEvent.detail).character(character).name(name);
 
     addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
-    return true;
 }
 
 std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrollEvent(

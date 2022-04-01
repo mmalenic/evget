@@ -23,9 +23,11 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
-namespace EvgetX11 {
-    class TouchXEventSwitch {
+#include "XEventSwitch.h"
 
+namespace EvgetX11 {
+    class TouchXEventSwitch : XEventSwitch {
+        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
     };
 }
 

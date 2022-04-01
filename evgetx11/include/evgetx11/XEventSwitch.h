@@ -24,6 +24,7 @@
 #define EVGET_EVGETX11_SRC_XEVENTSWITCH_H
 
 #include <X11/extensions/XInput2.h>
+#include <unordered_map>
 #include <map>
 #include "XInputEvent.h"
 #include "evgetcore/Event/Common/Device.h"
