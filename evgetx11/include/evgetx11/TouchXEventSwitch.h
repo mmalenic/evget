@@ -24,10 +24,17 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
 #include "XEventSwitch.h"
+#include "CoreXEventSwitch.h"
 
 namespace EvgetX11 {
     class TouchXEventSwitch : XEventSwitch {
+    public:
+        explicit TouchXEventSwitch(CoreXEventSwitch &coreXEventSwitch);
+
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
+
+    private:
+        std::reference_wrapper<CoreXEventSwitch> coreXEventSwitch;
     };
 }
 

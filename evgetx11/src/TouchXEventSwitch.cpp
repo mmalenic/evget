@@ -38,3 +38,6 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
         return false;
     }
 }
+
+EvgetX11::TouchXEventSwitch::TouchXEventSwitch(EvgetX11::CoreXEventSwitch& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
+}

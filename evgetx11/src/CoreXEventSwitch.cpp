@@ -69,11 +69,20 @@ void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chro
         return;
     }
 
-    EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(timestamp).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x)
-           .positionY(deviceEvent.root_y).action(action).button(deviceEvent.detail).name(buttonMap[deviceEvent.deviceid][deviceEvent.detail]);
+    addButtonEvent(deviceEvent, timestamp, data, action);
+}
 
-    addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent,"MouseClickSystemData"));
+void EvgetX11::CoreXEventSwitch::addButtonEvent(
+    const XIDeviceEvent& event,
+    std::chrono::nanoseconds timestamp,
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
+    EvgetCore::Event::Button::ButtonAction action
+) {
+    EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
+    builder.time(timestamp).device(devices[event.deviceid]).positionX(event.root_x)
+           .positionY(event.root_y).action(action).button(event.detail).name(buttonMap[event.deviceid][event.detail]);
+
+    addTableData(data, builder.build(), createSystemDataWithoutRoot(event,"MouseClickSystemData"));
 }
 
 void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
@@ -188,7 +197,7 @@ bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chro
 }
 
 void EvgetX11::CoreXEventSwitch::motionEvent(
-    std::chrono::nanoseconds time,
+    std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
     const XIDeviceEvent& deviceEvent
 ) {
@@ -200,15 +209,23 @@ void EvgetX11::CoreXEventSwitch::motionEvent(
     bool hasMotion = false;
     for (const auto& [valuator, value]: valuators) {
         if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
-            EvgetCore::Event::MouseMove::MouseMoveBuilder builder{};
-            builder.time(time).device(devices[deviceEvent.deviceid]).positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
-
-            addTableData(data, builder.build(), createSystemDataWithoutRoot(deviceEvent, "MouseMoveSystemData"));
+            addMotionEvent(deviceEvent, timestamp, data);
             hasMotion = true;
         } else if (!hasScroll) {
             hasScroll = scrollEvent(deviceEvent, data, scrollValuators, valuator);
         }
     }
+}
+
+void EvgetX11::CoreXEventSwitch::addMotionEvent(
+    const XIDeviceEvent& event,
+    std::chrono::nanoseconds timestamp,
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
+) {
+    EvgetCore::Event::MouseMove::MouseMoveBuilder builder{};
+    builder.time(timestamp).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y);
+
+    addTableData(data, builder.build(), createSystemDataWithoutRoot(event, "MouseMoveSystemData"));
 }
 
 bool EvgetX11::CoreXEventSwitch::scrollEvent(
