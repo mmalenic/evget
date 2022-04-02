@@ -27,6 +27,7 @@
 
 namespace EvgetX11 {
     class XSetMaskCore : XSetMask {
+    public:
         void setMask(unsigned char *mask) override;
     };
 }

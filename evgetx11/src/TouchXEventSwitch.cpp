@@ -46,6 +46,9 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
 
 
 EvgetX11::TouchXEventSwitch::TouchXEventSwitch(EvgetX11::CoreXEventSwitch& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
+    this->coreXEventSwitch.get().addEvtypeName(XI_TouchBegin, "TouchBegin");
+    this->coreXEventSwitch.get().addEvtypeName(XI_TouchUpdate, "TouchUpdate");
+    this->coreXEventSwitch.get().addEvtypeName(XI_TouchEnd, "TouchEnd");
 }
 
 void EvgetX11::TouchXEventSwitch::touchButton(

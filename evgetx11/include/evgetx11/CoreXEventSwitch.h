@@ -35,6 +35,7 @@ namespace EvgetX11 {
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
 
+        void addEvtypeName(int evtype, const std::string& name);
         void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action, int button);
         void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
 
@@ -46,7 +47,6 @@ namespace EvgetX11 {
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
         std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
-        void setEvtypeNames();
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
         std::reference_wrapper<Display> display;

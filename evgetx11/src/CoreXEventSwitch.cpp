@@ -182,7 +182,8 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrol
 }
 
 bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
-    if (type == XI_Motion) {
+    bool isMotion = type == XI_Motion;
+    if (isMotion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
         if (devices.contains(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
             motionEvent(timestamp, data, deviceEvent);
@@ -194,7 +195,7 @@ bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chro
         data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(rawScrollEvent)).build());
     }
 
-    return type == XI_Motion;
+    return isMotion;
 }
 
 void EvgetX11::CoreXEventSwitch::motionEvent(
@@ -290,7 +291,11 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::CoreXEventSwitch::createI
 }
 
 EvgetX11::CoreXEventSwitch::CoreXEventSwitch(Display& display) : display{display} {
-    setEvtypeNames();
+    evtypeToName.emplace(XI_KeyPress, "KeyPress");
+    evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
+    evtypeToName.emplace(XI_ButtonPress, "ButtonPress");
+    evtypeToName.emplace(XI_ButtonRelease, "ButtonRelease");
+    evtypeToName.emplace(XI_Motion, "Motion");
 }
 
 void EvgetX11::CoreXEventSwitch::refreshDevices(
@@ -335,22 +340,6 @@ void EvgetX11::CoreXEventSwitch::refreshDevices(
     }
 }
 
-void EvgetX11::CoreXEventSwitch::setEvtypeNames() {
-    evtypeToName.emplace(XI_DeviceChanged, "DeviceChanged");
-    evtypeToName.emplace(XI_KeyPress, "KeyPress");
-    evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
-    evtypeToName.emplace(XI_ButtonPress, "ButtonPress");
-    evtypeToName.emplace(XI_ButtonRelease, "ButtonRelease");
-    evtypeToName.emplace(XI_Motion, "Motion");
-    evtypeToName.emplace(XI_Enter, "Enter");
-    evtypeToName.emplace(XI_Leave, "Leave");
-    evtypeToName.emplace(XI_FocusIn, "FocusIn");
-    evtypeToName.emplace(XI_FocusOut, "FocusOut");
-    evtypeToName.emplace(XI_HierarchyChanged, "HierarchyChanged");
-    evtypeToName.emplace(XI_PropertyEvent, "PropertyEvent");
-    evtypeToName.emplace(XI_RawKeyPress, "RawKeyPress");
-    evtypeToName.emplace(XI_RawKeyRelease, "RawKeyRelease");
-    evtypeToName.emplace(XI_RawButtonPress, "RawButtonPress");
-    evtypeToName.emplace(XI_RawButtonRelease, "RawButtonRelease");
-    evtypeToName.emplace(XI_RawMotion, "RawMotion");
+void EvgetX11::CoreXEventSwitch::addEvtypeName(int evtype, const std::string& name) {
+    evtypeToName.emplace(evtype, name);
 }

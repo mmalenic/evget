@@ -24,10 +24,13 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTSWITCHBARRIER_H
 
 #include "XEventSwitch.h"
+#include <unordered_map>
 
 namespace EvgetX11 {
     class XEventSwitchBarrier : XEventSwitch {
+    public:
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
+    private:
     };
 }
 
