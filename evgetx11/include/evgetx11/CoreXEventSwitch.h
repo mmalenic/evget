@@ -24,6 +24,7 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
 
 #include "XEventSwitch.h"
+#include <unordered_map>
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
 
@@ -52,12 +53,12 @@ namespace EvgetX11 {
         std::reference_wrapper<Display> display;
         static constexpr int utf8MaxBytes = 4;
 
-        std::map<int, std::map<int, std::string>> buttonMap{};
-        std::map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+        std::unordered_map<int, std::map<int, std::string>> buttonMap{};
+        std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
         std::unique_ptr<EvgetCore::Event::MouseScroll> rawScrollEvent{};
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
-        std::map<int, std::string> valuatorNames{};
+        std::unordered_map<int, std::string> valuatorNames{};
 
         std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
         std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());

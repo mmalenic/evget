@@ -23,9 +23,10 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
-#include <map>
+#include <unordered_map>
 #include <X11/extensions/XInput2.h>
 #include <set>
+#include <map>
 #include <concepts>
 #include "XInputHandler.h"
 #include "evgetcore/EventTransformer.h"
@@ -49,8 +50,8 @@ namespace EvgetX11 {
         std::reference_wrapper<Display> display;
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
 
-        std::map<int, EvgetCore::Event::Common::Device> devices{};
-        std::map<int, std::string> idToName{};
+        std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};
+        std::unordered_map<int, std::string> idToName{};
 
         std::vector<std::reference_wrapper<XEventSwitch>> switches{};
     };

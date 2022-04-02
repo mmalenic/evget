@@ -69,8 +69,8 @@ namespace EvgetX11 {
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
-        std::map<int, EvgetCore::Event::Common::Device> devices{};
-        std::map<int, std::string> idToName{};
+        std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};
+        std::unordered_map<int, std::string> idToName{};
         std::unordered_map<int, std::string> evtypeToName{};
     };
 
