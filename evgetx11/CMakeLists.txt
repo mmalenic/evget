@@ -37,6 +37,12 @@ find_symbols(
     SYMBOLS XI_BarrierHit XI_BarrierLeave
     FILES X11/extensions/XInput2.h
 )
+add_program(
+    TARGET ${EVGETX11_LIBRARY_NAME}
+    FEATURE_CHECK EVGETX11_HAS_BARRIER_SUPPORT
+    SRCS include/evgetx11/XEventSwitchBarrier.h include/evgetx11/XSetMaskBarrier.h
+)
+
 find_symbols(
     TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_GESTURE_SUPPORT
     SYMBOLS XI_GesturePinchBegin XI_GesturePinchUpdate XI_GesturePinchEnd XI_GestureSwipeBegin XI_GestureSwipeUpdate XI_GestureSwipeEnd
