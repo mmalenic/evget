@@ -33,7 +33,7 @@ namespace EvgetX11 {
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
     private:
-        std::unordered_map<int, std::string> flagToName{};
+        void barrierEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
     };
 }
 
