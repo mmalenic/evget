@@ -29,8 +29,11 @@
 namespace EvgetX11 {
     class XEventSwitchBarrier : XEventSwitch {
     public:
+        XEventSwitchBarrier();
+
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
     private:
+        std::unordered_map<int, std::string> flagToName{};
     };
 }
 

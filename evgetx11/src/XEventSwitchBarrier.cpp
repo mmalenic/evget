@@ -29,3 +29,11 @@ bool EvgetX11::XEventSwitchBarrier::switchOnEvent(
 ) {
     return false;
 }
+
+EvgetX11::XEventSwitchBarrier::XEventSwitchBarrier() {
+    evtypeToName.emplace(XI_BarrierHit, "BarrierHit");
+    evtypeToName.emplace(XI_BarrierLeave, "BarrierLeave");
+
+    flagToName.emplace(XIBarrierPointerReleased, "PointerReleased");
+    flagToName.emplace(XIBarrierDeviceIsGrabbed, "DeviceIsGrabbed");
+}
