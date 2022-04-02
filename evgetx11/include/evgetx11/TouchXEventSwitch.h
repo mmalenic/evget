@@ -35,6 +35,7 @@ namespace EvgetX11 {
 
     private:
         void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
+        void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
 
         std::reference_wrapper<CoreXEventSwitch> coreXEventSwitch;
     };

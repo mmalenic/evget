@@ -29,11 +29,14 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
 ) {
     switch (event.getEventType()) {
     case XI_TouchBegin:
+        touchMotion(event, timestamp, data);
         touchButton(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Press);
         return true;
     case XI_TouchUpdate:
+        touchMotion(event, timestamp, data);
         return true;
     case XI_TouchEnd:
+        touchMotion(event, timestamp, data);
         touchButton(event, timestamp, data, EvgetCore::Event::Button::ButtonAction::Release);
         return true;
     default:
@@ -44,6 +47,7 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
 
 EvgetX11::TouchXEventSwitch::TouchXEventSwitch(EvgetX11::CoreXEventSwitch& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
 }
+
 void EvgetX11::TouchXEventSwitch::touchButton(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
@@ -53,5 +57,16 @@ void EvgetX11::TouchXEventSwitch::touchButton(
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (devices.contains(deviceEvent.deviceid)) {
         coreXEventSwitch.get().addButtonEvent(deviceEvent, timestamp, data, action, 1);
+    }
+}
+
+void EvgetX11::TouchXEventSwitch::touchMotion(
+    const EvgetX11::XInputEvent& event,
+    std::chrono::nanoseconds timestamp,
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
+) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (devices.contains(deviceEvent.deviceid)) {
+        coreXEventSwitch.get().addMotionEvent(deviceEvent, timestamp, data);
     }
 }
