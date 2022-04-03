@@ -269,7 +269,7 @@ void EvgetX11::CoreXEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInf
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::CoreXEventSwitch::createIC(Display& display, XIM xim) {
     if (xim) {
-        XIMStyles* xim_styles;
+        auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
         auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
         if (values || !xim_styles) {
             spdlog::warn("The input method does not support any styles, falling back to encoding key events in ISO Latin-1.");
@@ -278,16 +278,14 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::CoreXEventSwitch::createI
 
         for (int i = 0;  i < xim_styles->count_styles;  i++) {
             if (xim_styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing)) {
-                XFree(xim_styles);
                 Window window = XDefaultRootWindow(&display);
                 return {XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window, XNFocusWindow, window, nullptr), XDestroyIC};
             }
         }
 
         spdlog::warn("The input method does not support the PreeditNothing and StatusNothing style, falling back to encoding key events in ISO Latin-1.");
-        XFree (xim_styles);
-        return {nullptr, XDestroyIC};
     }
+    return {nullptr, XDestroyIC};
 }
 
 EvgetX11::CoreXEventSwitch::CoreXEventSwitch(Display& display) : display{display} {

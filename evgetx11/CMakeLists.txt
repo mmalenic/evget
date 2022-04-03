@@ -19,6 +19,7 @@ add_program(
     include/evgetx11/XSetMask.h
     include/evgetx11/XSetMaskRefresh.h
     include/evgetx11/XSetMaskCore.h
+    include/evgetx11/XWrapper.h
 )
 
 find_symbols(
