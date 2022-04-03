@@ -106,11 +106,11 @@ std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
 }
 
 std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::listInputDevices(int& nDevices) {
-    return {XListInputDevices(&display.get(), &ndevices), XFreeDeviceList};
+    return {XListInputDevices(&display.get(), &nDevices), XFreeDeviceList};
 }
 
 std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapper::queryDevice(int& nDevices) {
-    return {XIQueryDevice(&display.get(), XIAllDevices, &ndevices), XIFreeDeviceInfo};
+    return {XIQueryDevice(&display.get(), XIAllDevices, &nDevices), XIFreeDeviceInfo};
 }
 
 std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapper::atomName(Atom atom) {
