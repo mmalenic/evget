@@ -105,6 +105,14 @@ std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::GetDeviceButtonMapping(
     return map;
 }
 
+std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::ListInputDevices(int& nDevices) {
+    return {XListInputDevices(&display.get(), &nDevices), XFreeDeviceList};
+}
+
+std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapper::QueryDevice(int& nDevices) {
+    return {XIQueryDevice(&display.get(), XIAllDevices, &nDevices), XIFreeDeviceInfo};
+}
+
 EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
 }
 

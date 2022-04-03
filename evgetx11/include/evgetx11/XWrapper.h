@@ -48,6 +48,9 @@ namespace EvgetX11 {
         std::string KeySymToString(KeySym keySym);
         std::unique_ptr<unsigned char[]> GetDeviceButtonMapping(XDevice& device, int mapSize);
 
+        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> ListInputDevices(int& ndevices);
+        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> QueryDevice(int& ndevices);
+
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
