@@ -127,6 +127,15 @@ bool EvgetX11::XWrapper::eventData(XGenericEventCookie& cookie) {
     return XGetEventData(&display.get(), &cookie);
 }
 
+Status EvgetX11::XWrapper::queryVersion(int& major, int& minor) {
+    return XIQueryVersion(&display.get(), &major, &minor);
+}
+
+void EvgetX11::XWrapper::selectEvents(XIEventMask& mask) {
+    XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
+    XSync(&display.get(), false);
+}
+
 EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
 }
 

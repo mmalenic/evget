@@ -56,6 +56,9 @@ namespace EvgetX11 {
         XEvent nextEvent();
         bool eventData(XGenericEventCookie& cookie);
 
+        Status queryVersion(int& major, int& minor);
+        void selectEvents(XIEventMask& mask);
+
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
