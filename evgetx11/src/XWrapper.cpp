@@ -29,7 +29,7 @@
 EvgetX11::XWrapper::XWrapper(Display& display) : display{display} {
 }
 
-std::string EvgetX11::XWrapper::LookupCharacter(XIDeviceEvent& event, KeySym& keySym) {
+std::string EvgetX11::XWrapper::lookupCharacter(XIDeviceEvent& event, KeySym& keySym) {
     if (event.evtype == XI_KeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
         // little bit hacky to do this conversion, however it should be okay as all the elements have a direct relationship.
@@ -72,7 +72,7 @@ std::string EvgetX11::XWrapper::LookupCharacter(XIDeviceEvent& event, KeySym& ke
     return {};
 }
 
-std::string EvgetX11::XWrapper::KeySymToString(KeySym keySym) {
+std::string EvgetX11::XWrapper::keySymToString(KeySym keySym) {
     return XKeysymToString(keySym);
 }
 
@@ -96,7 +96,7 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Displa
     }
     return {nullptr, XDestroyIC};
 }
-std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::GetDeviceButtonMapping(
+std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
     XDevice& device,
     int mapSize
 ) {
@@ -105,12 +105,16 @@ std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::GetDeviceButtonMapping(
     return map;
 }
 
-std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::ListInputDevices(int& nDevices) {
-    return {XListInputDevices(&display.get(), &nDevices), XFreeDeviceList};
+std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::listInputDevices(int& nDevices) {
+    return {XListInputDevices(&display.get(), &ndevices), XFreeDeviceList};
 }
 
-std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapper::QueryDevice(int& nDevices) {
-    return {XIQueryDevice(&display.get(), XIAllDevices, &nDevices), XIFreeDeviceInfo};
+std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapper::queryDevice(int& nDevices) {
+    return {XIQueryDevice(&display.get(), XIAllDevices, &ndevices), XIFreeDeviceInfo};
+}
+
+std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapper::atomName(Atom atom) {
+    return {XGetAtomName(&display.get(), atom), XFree};
 }
 
 EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {

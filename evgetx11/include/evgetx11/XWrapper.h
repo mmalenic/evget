@@ -1,4 +1,4 @@
-// MIT License
+`// MIT License
 //
 // Copyright (c) 2021 Marko Malenic
 //
@@ -44,12 +44,14 @@ namespace EvgetX11 {
 
         explicit XWrapper(Display& display);
 
-        std::string LookupCharacter(XIDeviceEvent& event, KeySym& keySym);
-        std::string KeySymToString(KeySym keySym);
-        std::unique_ptr<unsigned char[]> GetDeviceButtonMapping(XDevice& device, int mapSize);
+        std::string lookupCharacter(XIDeviceEvent& event, KeySym& keySym);
+        std::string keySymToString(KeySym keySym);
+        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(XDevice& device, int mapSize);
 
-        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> ListInputDevices(int& ndevices);
-        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> QueryDevice(int& ndevices);
+        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
+        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);
+
+        std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
 
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
@@ -64,3 +66,4 @@ namespace EvgetX11 {
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H
+`
