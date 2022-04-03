@@ -117,6 +117,16 @@ std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapper::atomName(Atom atom
     return {XGetAtomName(&display.get(), atom), XFree};
 }
 
+XEvent EvgetX11::XWrapper::nextEvent() {
+    XEvent event;
+    XNextEvent(&display.get(), &event);
+    return event;
+}
+
+bool EvgetX11::XWrapper::eventData(XGenericEventCookie& cookie) {
+    return XGetEventData(&display.get(), &cookie);
+}
+
 EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
 }
 

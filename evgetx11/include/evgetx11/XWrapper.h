@@ -53,6 +53,9 @@ namespace EvgetX11 {
 
         std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
 
+        XEvent nextEvent();
+        bool eventData(XGenericEventCookie& cookie);
+
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
