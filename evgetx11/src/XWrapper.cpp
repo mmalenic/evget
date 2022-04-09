@@ -29,7 +29,7 @@
 EvgetX11::XWrapper::XWrapper(Display& display) : display{display} {
 }
 
-std::string EvgetX11::XWrapper::lookupCharacter(XIDeviceEvent& event, KeySym& keySym) {
+std::string EvgetX11::XWrapper::lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) {
     if (event.evtype == XI_KeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
         // little bit hacky to do this conversion, however it should be okay as all the elements have a direct relationship.
@@ -97,12 +97,16 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Displa
     return {nullptr, XDestroyIC};
 }
 std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
-    XDevice& device,
-    int mapSize
+    int id,
+    const XIButtonClassInfo& buttonInfo
 ) {
-    auto map = std::make_unique<unsigned char[]>(mapSize);
-    XGetDeviceButtonMapping(&display.get(), &device, map.get(), mapSize);
-    return map;
+    auto device = std::unique_ptr<XDevice, XDeviceDeleter>(XOpenDevice(&display.get(), id), XDeviceDeleter{display.get()});
+    if (device) {
+        auto map = std::make_unique<unsigned char[]>(buttonInfo.num_buttons);
+        XGetDeviceButtonMapping(&display.get(), &device, map.get(), buttonInfo.num_buttons);
+        return map;
+    }
+    return nullptr;
 }
 
 std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::listInputDevices(int& nDevices) {

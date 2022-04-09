@@ -92,47 +92,14 @@ void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono:
         return;
     }
 
-    // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
-    // little bit hacky to do this conversion, however it should be okay as all the elements have a direct relationship.
-    XKeyEvent keyEvent{
-        .type = ButtonPress,
-        .serial = deviceEvent.serial,
-        .send_event = deviceEvent.send_event,
-        .display = deviceEvent.display,
-        .window = deviceEvent.event,
-        .root = deviceEvent.root,
-        .subwindow = deviceEvent.child,
-        .time = deviceEvent.time,
-        .x = static_cast<int>(deviceEvent.event_x),
-        .y = static_cast<int>(deviceEvent.event_y),
-        .x_root = static_cast<int>(deviceEvent.root_x),
-        .y_root = static_cast<int>(deviceEvent.root_y),
-        .state = static_cast<unsigned int>(deviceEvent.mods.effective),
-        .keycode = static_cast<unsigned int>(deviceEvent.detail),
-        .same_screen = true
-    };
-
-    std::string character{};
+    std::string character;
     KeySym keySym;
 
-    int bytes;
-    std::array<char, utf8MaxBytes + 1> array{};
-    if (xic) {
-        Status status;
-        bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
-        if (status == XBufferOverflow) {
-            spdlog::warn("Buffer overflowed when looking up string, falling back to encoding key events in ISO Latin-1.");
-            bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
-        }
-    } else {
-        bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
-    }
+    character = xWrapper.get().lookupCharacter(deviceEvent, keySym);
 
     EvgetCore::Event::Button::ButtonAction action = EvgetCore::Event::Button::ButtonAction::Release;
     if (deviceEvent.evtype != XI_KeyRelease) {
         action = (deviceEvent.flags & XIKeyRepeat) ? EvgetCore::Event::Button::ButtonAction::Repeat : EvgetCore::Event::Button::ButtonAction::Press;
-        array[bytes] = '\0';
-        character = std::string{array.data()};
     }
 
     std::string name{};

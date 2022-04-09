@@ -27,6 +27,7 @@
 #include <functional>
 #include <string>
 #include <X11/extensions/XInput.h>
+#include <X11/extensions/XInput2.h>
 #include <memory>
 
 namespace EvgetX11 {
@@ -44,9 +45,9 @@ namespace EvgetX11 {
 
         explicit XWrapper(Display& display);
 
-        std::string lookupCharacter(XIDeviceEvent& event, KeySym& keySym);
+        std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
         std::string keySymToString(KeySym keySym);
-        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(XDevice& device, int mapSize);
+        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, const XIButtonClassInfo& buttonInfo);
 
         std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
         std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);
