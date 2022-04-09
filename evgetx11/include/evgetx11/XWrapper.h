@@ -47,7 +47,7 @@ namespace EvgetX11 {
 
         std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
         std::string keySymToString(KeySym keySym);
-        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, const XIButtonClassInfo& buttonInfo);
+        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize);
 
         std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
         std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);

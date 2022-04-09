@@ -98,12 +98,12 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Displa
 }
 std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
     int id,
-    const XIButtonClassInfo& buttonInfo
+    int mapSize
 ) {
     auto device = std::unique_ptr<XDevice, XDeviceDeleter>(XOpenDevice(&display.get(), id), XDeviceDeleter{display.get()});
     if (device) {
-        auto map = std::make_unique<unsigned char[]>(buttonInfo.num_buttons);
-        XGetDeviceButtonMapping(&display.get(), &device, map.get(), buttonInfo.num_buttons);
+        auto map = std::make_unique<unsigned char[]>(mapSize);
+        XGetDeviceButtonMapping(&display.get(), device.get(), map.get(), mapSize);
         return map;
     }
     return nullptr;

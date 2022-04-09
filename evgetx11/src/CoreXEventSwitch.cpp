@@ -213,46 +213,17 @@ bool EvgetX11::CoreXEventSwitch::scrollEvent(
 }
 
 void EvgetX11::CoreXEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
-    Display& displayCapture = display;
-    auto deleter = [&displayCapture](XDevice* device) {
-        XCloseDevice(&displayCapture, device);
-    };
-    auto device = std::unique_ptr<XDevice, decltype(deleter)>(XOpenDevice(&display.get(), id), deleter);
-
-    if (device) {
-        auto map = std::make_unique<unsigned char[]>(buttonInfo.num_buttons);
-        XGetDeviceButtonMapping(&display.get(), device.get(), map.get(), buttonInfo.num_buttons);
-
+    auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
+    if (map) {
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
             if (buttonInfo.labels[i]) {
-                auto name = getAtomName(display, buttonInfo.labels[i]);
+                auto name = xWrapper.get().atomName(buttonInfo.labels[i]);
                 if (name) {
                     buttonMap[id][map[i]] = name.get();
                 }
             }
         }
     }
-}
-
-std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::CoreXEventSwitch::createIC(Display& display, XIM xim) {
-    if (xim) {
-        auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
-        auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
-        if (values || !xim_styles) {
-            spdlog::warn("The input method does not support any styles, falling back to encoding key events in ISO Latin-1.");
-            return {nullptr, XDestroyIC};
-        }
-
-        for (int i = 0;  i < xim_styles->count_styles;  i++) {
-            if (xim_styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing)) {
-                Window window = XDefaultRootWindow(&display);
-                return {XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window, XNFocusWindow, window, nullptr), XDestroyIC};
-            }
-        }
-
-        spdlog::warn("The input method does not support the PreeditNothing and StatusNothing style, falling back to encoding key events in ISO Latin-1.");
-    }
-    return {nullptr, XDestroyIC};
 }
 
 EvgetX11::CoreXEventSwitch::CoreXEventSwitch(XWrapper& xWrapper) : xWrapper{xWrapper} {
@@ -293,7 +264,7 @@ void EvgetX11::CoreXEventSwitch::refreshDevices(
         scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
     }
     for (auto valuatorInfo : valuatorInfos) {
-        auto name = getAtomName(display, valuatorInfo->label);
+        auto name = xWrapper.get().atomName(valuatorInfo->label);
         if (name) {
             if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
                 valuatorX = valuatorInfo->number;
