@@ -26,18 +26,19 @@
 #include <memory>
 #include <X11/Xlib.h>
 #include <chrono>
+#include "XWrapper.h"
 
 namespace EvgetX11 {
     class XInputEvent {
     public:
         class XEventCookieDeleter {
         public:
-            explicit XEventCookieDeleter(Display& display);
+            explicit XEventCookieDeleter(XWrapper& xWrapper);
 
             void operator()(XGenericEventCookie *pointer) const;
 
         private:
-            std::reference_wrapper<Display> display;
+            std::reference_wrapper<XWrapper> xWrapper;
         };
 
         using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
@@ -70,10 +71,10 @@ namespace EvgetX11 {
          * the event mask set on the display. This function will block if there are no events on the event
          * queue.
          */
-        static XInputEvent nextEvent(Display& display);
+        static XInputEvent nextEvent(XWrapper& xWrapper);
 
     private:
-        explicit XInputEvent(Display& display);
+        explicit XInputEvent(XWrapper& xWrapper);
 
         XEvent event{};
         Timestamp timestamp{};

@@ -1,4 +1,4 @@
-`// MIT License
+// MIT License
 //
 // Copyright (c) 2021 Marko Malenic
 //
@@ -72,4 +72,3 @@ namespace EvgetX11 {
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H
-`

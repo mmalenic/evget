@@ -118,6 +118,6 @@ void EvgetX11::EventTransformerLinux::refreshDevices() {
     }
 }
 
-EvgetX11::EventTransformerLinux::EventTransformerLinux(Display& display, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : display{display}, switches{switches} {
+EvgetX11::EventTransformerLinux::EventTransformerLinux(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : xWrapper{xWrapper}, switches{switches} {
     refreshDevices();
 }
