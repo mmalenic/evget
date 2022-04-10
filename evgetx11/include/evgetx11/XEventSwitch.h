@@ -30,7 +30,6 @@
 #include "evgetcore/Event/Common/Device.h"
 #include "evgetcore/Event/AbstractData.h"
 #include "evgetcore/Event/TableData.h"
-#include "evgetcore/Util.h"
 
 namespace EvgetX11 {
     class XEventSwitch {
@@ -64,8 +63,6 @@ namespace EvgetX11 {
         static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
-        static void getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
-
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
@@ -73,14 +70,6 @@ namespace EvgetX11 {
         std::unordered_map<int, std::string> idToName{};
         std::unordered_map<int, std::string> evtypeToName{};
     };
-
-    void EvgetX11::XEventSwitch::getMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
-        for (int i = 0; i < maskLen * 8; i++) {
-            if (XIMaskIsSet(mask, i)) {
-                function(i);
-            }
-        }
-    }
 }
 
 #endif //EVGET_EVGETX11_SRC_XEVENTSWITCH_H
