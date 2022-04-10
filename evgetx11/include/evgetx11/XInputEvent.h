@@ -31,17 +31,6 @@
 namespace EvgetX11 {
     class XInputEvent {
     public:
-        class XEventCookieDeleter {
-        public:
-            explicit XEventCookieDeleter(XWrapper& xWrapper);
-
-            void operator()(XGenericEventCookie *pointer) const;
-
-        private:
-            std::reference_wrapper<XWrapper> xWrapper;
-        };
-
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
         using Timestamp = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
 
         /**
@@ -76,9 +65,9 @@ namespace EvgetX11 {
     private:
         explicit XInputEvent(XWrapper& xWrapper);
 
-        XEvent event{};
-        Timestamp timestamp{};
-        XEventPointer cookie;
+        XEvent event;
+        Timestamp timestamp;
+        XWrapper::XEventPointer cookie;
     };
 
     template<typename T>

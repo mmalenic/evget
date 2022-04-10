@@ -43,10 +43,22 @@ namespace EvgetX11 {
             std::reference_wrapper<Display> display;
         };
 
+        class XEventCookieDeleter {
+        public:
+            explicit XEventCookieDeleter(Display& display);
+
+            void operator()(XGenericEventCookie *pointer) const;
+
+        private:
+            std::reference_wrapper<Display> display;
+        };
+
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+
         explicit XWrapper(Display& display);
 
         std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
-        std::string keySymToString(KeySym keySym);
+        static std::string keySymToString(KeySym keySym);
         std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize);
 
         std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
@@ -55,7 +67,7 @@ namespace EvgetX11 {
         std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
 
         XEvent nextEvent();
-        bool eventData(XGenericEventCookie& cookie);
+        XEventPointer eventData(XEvent& event);
 
         Status queryVersion(int& major, int& minor);
         void selectEvents(XIEventMask& mask);

@@ -68,10 +68,8 @@ void EvgetX11::EventTransformerLinux::refreshDevices() {
     // See caveats about mixing XI1 calls with XI2 code:
     // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
     // This should capture all devices with ids in the range 0-128.
-    auto info = std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>(XListInputDevices(&display.get(), &nDevices),
-        XFreeDeviceList);
-    auto xi2Info = std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>(XIQueryDevice(&display.get(), XIAllDevices, &xi2NDevices),
-        XIFreeDeviceInfo);
+    auto info = xWrapper.get().listInputDevices(nDevices);
+    auto xi2Info = xWrapper.get().queryDevice(xi2NDevices);
 
     if (nDevices != xi2NDevices) {
         spdlog::warn("Devices with ids greater than 127 found. Set the device of these devices manually if their use is required.");
@@ -92,7 +90,7 @@ void EvgetX11::EventTransformerLinux::refreshDevices() {
         const auto& xi2Device = xi2Devices.at(id).get();
 
         if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
-            auto type = XEventSwitch::getAtomName(display, device.type);
+            auto type = xWrapper.get().atomName(device.type);
             EvgetCore::Event::Common::Device deviceType;
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {

@@ -102,10 +102,7 @@ void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono:
         action = (deviceEvent.flags & XIKeyRepeat) ? EvgetCore::Event::Button::ButtonAction::Repeat : EvgetCore::Event::Button::ButtonAction::Press;
     }
 
-    std::string name{};
-    if (keySym != NoSymbol) {
-        name = XKeysymToString(keySym);
-    }
+    std::string name = xWrapper.get().keySymToString(keySym);
 
     EvgetCore::Event::Key::KeyBuilder builder{};
     builder.time(timestamp).action(action).button(deviceEvent.detail).character(character).name(name);

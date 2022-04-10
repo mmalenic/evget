@@ -20,17 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fmt/format.h>
-#include <spdlog/spdlog.h>
 #include "evgetx11/XInputEvent.h"
 
-EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper) : cookie{nullptr, XEventCookieDeleter{xWrapper}} {
-    XNextEvent(&display, &event);
-    timestamp = std::chrono::steady_clock::now();
-    if (XGetEventData(&display, &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
-        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        cookie.reset(&event.xcookie);
-    }
+EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper) : event{xWrapper.nextEvent()}, timestamp{std::chrono::steady_clock::now()}, cookie{xWrapper.eventData(event)} {
 }
 
 bool EvgetX11::XInputEvent::hasData() const {
@@ -41,17 +33,10 @@ int EvgetX11::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-EvgetX11::XInputEvent::XEventCookieDeleter::XEventCookieDeleter(XWrapper& xWrapper) : xWrapper{xWrapper} {
-}
-
-void EvgetX11::XInputEvent::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
-    XFreeEventData(&display.get(), pointer);
+EvgetX11::XInputEvent::Timestamp EvgetX11::XInputEvent::getTimestamp() const {
+    return timestamp;
 }
 
 EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper& xWrapper) {
     return XInputEvent{xWrapper};
-}
-
-EvgetX11::XInputEvent::Timestamp EvgetX11::XInputEvent::getTimestamp() const {
-    return timestamp;
 }

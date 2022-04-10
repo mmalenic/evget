@@ -73,7 +73,10 @@ std::string EvgetX11::XWrapper::lookupCharacter(const XIDeviceEvent& event, KeyS
 }
 
 std::string EvgetX11::XWrapper::keySymToString(KeySym keySym) {
-    return XKeysymToString(keySym);
+    if (keySym != NoSymbol) {
+        XKeysymToString(keySym);
+    }
+    return {};
 }
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Display& display, XIM xim) {
@@ -127,8 +130,12 @@ XEvent EvgetX11::XWrapper::nextEvent() {
     return event;
 }
 
-bool EvgetX11::XWrapper::eventData(XGenericEventCookie& cookie) {
-    return XGetEventData(&display.get(), &cookie);
+EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapper::eventData(XEvent& event) {
+    if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+        spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
+        return {&event.xcookie, XEventCookieDeleter{display.get()}};
+    }
+    return {nullptr, XEventCookieDeleter{display.get()}};
 }
 
 Status EvgetX11::XWrapper::queryVersion(int& major, int& minor) {
@@ -145,4 +152,11 @@ EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{d
 
 void EvgetX11::XWrapper::XDeviceDeleter::operator()(XDevice* pointer) const {
     XCloseDevice(&display.get(), pointer);
+}
+
+EvgetX11::XWrapper::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
+}
+
+void EvgetX11::XWrapper::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
+    XFreeEventData(&display.get(), pointer);
 }
