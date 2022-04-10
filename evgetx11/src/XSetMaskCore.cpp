@@ -21,13 +21,9 @@
 // SOFTWARE.
 
 #include "evgetx11/XSetMaskCore.h"
+#include "evgetx11/XWrapper.h"
 #include <X11/extensions/XInput2.h>
 
 void EvgetX11::XSetMaskCore::setMask(unsigned char* mask) {
-    XISetMask(mask, XI_ButtonPress);
-    XISetMask(mask, XI_ButtonRelease);
-    XISetMask(mask, XI_KeyPress);
-    XISetMask(mask, XI_KeyRelease);
-    XISetMask(mask, XI_Motion);
-    XISetMask(mask, XI_RawMotion);
+    EvgetX11::XWrapper::setMask(mask, {XI_ButtonPress, XI_ButtonRelease, XI_KeyPress, XI_KeyRelease, XI_Motion, XI_RawMotion});
 }

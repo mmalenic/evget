@@ -21,9 +21,9 @@
 // SOFTWARE.
 
 #include "evgetx11/XSetMaskRefresh.h"
+#include "evgetx11/XWrapper.h"
 #include <X11/extensions/XInput2.h>
 
 void EvgetX11::XSetMaskRefresh::setMask(unsigned char* mask) {
-    XISetMask(mask, XI_HierarchyChanged);
-    XISetMask(mask, XI_DeviceChanged);
+    EvgetX11::XWrapper::setMask(mask, {XI_HierarchyChanged, XI_DeviceChanged});
 }

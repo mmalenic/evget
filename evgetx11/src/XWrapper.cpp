@@ -147,6 +147,12 @@ void EvgetX11::XWrapper::selectEvents(XIEventMask& mask) {
     XSync(&display.get(), false);
 }
 
+void EvgetX11::XWrapper::setMask(unsigned char* mask, std::initializer_list<int> events) {
+    for (auto event : events) {
+        XISetMask(mask, event);
+    }
+}
+
 EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
 }
 

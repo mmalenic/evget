@@ -72,6 +72,8 @@ namespace EvgetX11 {
         Status queryVersion(int& major, int& minor);
         void selectEvents(XIEventMask& mask);
 
+        static void setMask(unsigned char* mask, std::initializer_list<int> events);
+
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 

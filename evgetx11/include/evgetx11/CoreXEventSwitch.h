@@ -49,10 +49,8 @@ namespace EvgetX11 {
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
         std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
-        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
         std::reference_wrapper<XWrapper> xWrapper;
-        static constexpr int utf8MaxBytes = 4;
 
         std::unordered_map<int, std::map<int, std::string>> buttonMap{};
         std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
@@ -60,9 +58,6 @@ namespace EvgetX11 {
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
         std::unordered_map<int, std::string> valuatorNames{};
-
-        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
-        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
     };
 }
 
