@@ -33,7 +33,7 @@ void EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
     int minor = versionMinor;
 
-    Status status = XIQueryVersion(&display, &major, &minor);
+    Status status = xWrapper.queryVersion(major, minor);
     if (status == Success) {
         spdlog::info("XI2 is supported with version {}.{}", major, minor);
     } else {
@@ -53,8 +53,7 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::initializer_list<
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;
 
-    XISelectEvents(&display, XDefaultRootWindow(&display), &mask, 1);
-    XSync(&display, false);
+    xWrapper.selectEvents(mask);
 }
 
 EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
