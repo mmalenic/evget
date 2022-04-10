@@ -127,7 +127,3 @@ void EvgetX11::XEventSwitch::refreshDevices(int id, EvgetCore::Event::Common::De
     devices.emplace(id, device);
     idToName.emplace(id, name);
 }
-
-std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XEventSwitch::getAtomName(Display& display, Atom atom) {
-    return {XGetAtomName(&display, atom), XFree};
-}

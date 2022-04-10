@@ -47,7 +47,6 @@ namespace EvgetX11 {
 
         virtual ~XEventSwitch() = default;
 
-        static std::unique_ptr<char[], decltype(&XFree)> getAtomName(Display& display, Atom atom);
         static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
     protected:
