@@ -30,7 +30,7 @@
 EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createButtonEntries(const XIDeviceEvent& event) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
 
-    EvgetX11::XWrapper::onMasks(event.buttons.mask, event.buttons.mask_len, [&data](int mask) {
+    EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&data](int mask) {
         std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
         fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("ButtonActive", std::to_string(mask)));
         data.emplace_back(std::make_unique<EvgetCore::Event::Data>("ButtonState", std::move(fields)));
@@ -43,7 +43,7 @@ EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createValuatorE
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractData>> data{};
 
     auto values = valuatorState.values;
-    EvgetX11::XWrapper::onMasks(valuatorState.mask, valuatorState.mask_len, [&data, &values](int mask) {
+    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&data, &values](int mask) {
         std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
         fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Valuator", std::to_string(mask)));
         fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("Value", std::to_string(*values++)));
@@ -117,7 +117,7 @@ std::string EvgetX11::XEventSwitch::formatValue(int value) {
 std::map<int, int> EvgetX11::XEventSwitch::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
     auto* values = valuatorState.values;
-    EvgetX11::XWrapper::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
+    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
         valuators.emplace(mask, *values++);
     });
     return valuators;

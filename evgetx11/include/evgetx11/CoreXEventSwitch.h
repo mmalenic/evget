@@ -27,12 +27,12 @@
 #include <unordered_map>
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
-#include "XWrapper.h"
+#include "XWrapperX11.h"
 
 namespace EvgetX11 {
     class CoreXEventSwitch : XEventSwitch {
     public:
-        explicit CoreXEventSwitch(XWrapper& xWrapper);
+        explicit CoreXEventSwitch(XWrapperX11& xWrapper);
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
@@ -50,7 +50,7 @@ namespace EvgetX11 {
         std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp);
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
-        std::reference_wrapper<XWrapper> xWrapper;
+        std::reference_wrapper<XWrapperX11> xWrapper;
 
         std::unordered_map<int, std::map<int, std::string>> buttonMap{};
         std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};

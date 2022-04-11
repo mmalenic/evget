@@ -26,7 +26,7 @@
 #include <memory>
 #include <X11/Xlib.h>
 #include <chrono>
-#include "XWrapper.h"
+#include "XWrapperX11.h"
 
 namespace EvgetX11 {
     class XInputEvent {
@@ -60,14 +60,14 @@ namespace EvgetX11 {
          * the event mask set on the display. This function will block if there are no events on the event
          * queue.
          */
-        static XInputEvent nextEvent(XWrapper& xWrapper);
+        static XInputEvent nextEvent(XWrapperX11& xWrapper);
 
     private:
-        explicit XInputEvent(XWrapper& xWrapper);
+        explicit XInputEvent(XWrapperX11& xWrapper);
 
         XEvent event;
         Timestamp timestamp;
-        XWrapper::XEventPointer cookie;
+        XWrapperX11::XEventPointer cookie;
     };
 
     template<typename T>

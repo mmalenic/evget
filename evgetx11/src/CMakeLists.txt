@@ -11,7 +11,7 @@ add_program(
     XEventSwitch.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
-    XWrapper.cpp
+    XWrapperX11.cpp
 )
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}

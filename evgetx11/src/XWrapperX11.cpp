@@ -24,12 +24,12 @@
 #include <spdlog/spdlog.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
-#include "evgetx11/XWrapper.h"
+#include "evgetx11/XWrapperX11.h"
 
-EvgetX11::XWrapper::XWrapper(Display& display) : display{display} {
+EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {
 }
 
-std::string EvgetX11::XWrapper::lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) {
+std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) {
     if (event.evtype == XI_KeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
         // little bit hacky to do this conversion, however it should be okay as all the elements have a direct relationship.
@@ -72,14 +72,14 @@ std::string EvgetX11::XWrapper::lookupCharacter(const XIDeviceEvent& event, KeyS
     return {};
 }
 
-std::string EvgetX11::XWrapper::keySymToString(KeySym keySym) {
+std::string EvgetX11::XWrapperX11::keySymToString(KeySym keySym) {
     if (keySym != NoSymbol) {
         XKeysymToString(keySym);
     }
     return {};
 }
 
-std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Display& display, XIM xim) {
+std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
     if (xim) {
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
         auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
@@ -99,7 +99,7 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapper::createIC(Displa
     }
     return {nullptr, XDestroyIC};
 }
-std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
+std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(
     int id,
     int mapSize
 ) {
@@ -112,25 +112,25 @@ std::unique_ptr<unsigned char[]> EvgetX11::XWrapper::getDeviceButtonMapping(
     return nullptr;
 }
 
-std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapper::listInputDevices(int& nDevices) {
+std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> EvgetX11::XWrapperX11::listInputDevices(int& nDevices) {
     return {XListInputDevices(&display.get(), &nDevices), XFreeDeviceList};
 }
 
-std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapper::queryDevice(int& nDevices) {
+std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> EvgetX11::XWrapperX11::queryDevice(int& nDevices) {
     return {XIQueryDevice(&display.get(), XIAllDevices, &nDevices), XIFreeDeviceInfo};
 }
 
-std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapper::atomName(Atom atom) {
+std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapperX11::atomName(Atom atom) {
     return {XGetAtomName(&display.get(), atom), XFree};
 }
 
-XEvent EvgetX11::XWrapper::nextEvent() {
+XEvent EvgetX11::XWrapperX11::nextEvent() {
     XEvent event;
     XNextEvent(&display.get(), &event);
     return event;
 }
 
-EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapper::eventData(XEvent& event) {
+EvgetX11::XWrapperX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         return {&event.xcookie, XEventCookieDeleter{display.get()}};
@@ -138,31 +138,31 @@ EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapper::eventData(XEvent& event) {
     return {nullptr, XEventCookieDeleter{display.get()}};
 }
 
-Status EvgetX11::XWrapper::queryVersion(int& major, int& minor) {
+Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
     return XIQueryVersion(&display.get(), &major, &minor);
 }
 
-void EvgetX11::XWrapper::selectEvents(XIEventMask& mask) {
+void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
     XSync(&display.get(), false);
 }
 
-void EvgetX11::XWrapper::setMask(unsigned char* mask, std::initializer_list<int> events) {
+void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<int> events) {
     for (auto event : events) {
         XISetMask(mask, event);
     }
 }
 
-EvgetX11::XWrapper::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
+EvgetX11::XWrapperX11::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
 }
 
-void EvgetX11::XWrapper::XDeviceDeleter::operator()(XDevice* pointer) const {
+void EvgetX11::XWrapperX11::XDeviceDeleter::operator()(XDevice* pointer) const {
     XCloseDevice(&display.get(), pointer);
 }
 
-EvgetX11::XWrapper::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
+EvgetX11::XWrapperX11::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
 }
 
-void EvgetX11::XWrapper::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
+void EvgetX11::XWrapperX11::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
     XFreeEventData(&display.get(), pointer);
 }

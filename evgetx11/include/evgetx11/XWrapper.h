@@ -34,67 +34,30 @@
 namespace EvgetX11 {
     class XWrapper {
     public:
-        class XDeviceDeleter {
-        public:
-            explicit XDeviceDeleter(Display& display);
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, void(XGenericEventCookie*)>;
 
-            void operator()(XDevice *pointer) const;
+        virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
+        virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
 
-        private:
-            std::reference_wrapper<Display> display;
-        };
+        virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
+        virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
 
-        class XEventCookieDeleter {
-        public:
-            explicit XEventCookieDeleter(Display& display);
+        virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
 
-            void operator()(XGenericEventCookie *pointer) const;
+        virtual XEvent nextEvent() = 0;
+        virtual XEventPointer eventData(XEvent& event) = 0;
 
-        private:
-            std::reference_wrapper<Display> display;
-        };
+        virtual Status queryVersion(int& major, int& minor) = 0;
+        virtual void selectEvents(XIEventMask& mask) = 0;
 
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
+        virtual ~XWrapper() = default;
 
-        explicit XWrapper(Display& display);
+        XWrapper(XWrapper&&) noexcept = delete;
+        XWrapper& operator=(XWrapper&&) noexcept = delete;
 
-        std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
-        static std::string keySymToString(KeySym keySym);
-        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize);
-
-        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
-        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);
-
-        std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
-
-        XEvent nextEvent();
-        XEventPointer eventData(XEvent& event);
-
-        Status queryVersion(int& major, int& minor);
-        void selectEvents(XIEventMask& mask);
-
-        static void setMask(unsigned char* mask, std::initializer_list<int> events);
-        static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
-
-    private:
-        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
-
-        static constexpr int utf8MaxBytes = 4;
-        static constexpr int maskBits = 8;
-
-        std::reference_wrapper<Display> display;
-
-        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
-        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
+        XWrapper(const XWrapper&) = delete;
+        XWrapper& operator=(const XWrapper&) = delete;
     };
-
-    void EvgetX11::XWrapper::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
-        for (int i = 0; i < maskLen * maskBits; i++) {
-            if (XIMaskIsSet(mask, i)) {
-                function(i);
-            }
-        }
-    }
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H
