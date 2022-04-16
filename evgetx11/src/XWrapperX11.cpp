@@ -25,6 +25,7 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include "evgetx11/XWrapperX11.h"
+#include "evgetx11/XDeviceDeleter.h"
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {
 }
@@ -130,10 +131,10 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
     return event;
 }
 
-EvgetX11::XWrapperX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
+EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {&event.xcookie, XEventCookieDeleter{display.get()}};
+        return {nullptr, XEventCookieDeleter{display.get()}};
     }
     return {nullptr, XEventCookieDeleter{display.get()}};
 }
@@ -151,18 +152,4 @@ void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<i
     for (auto event : events) {
         XISetMask(mask, event);
     }
-}
-
-EvgetX11::XWrapperX11::XDeviceDeleter::XDeviceDeleter(Display& display) : display{display} {
-}
-
-void EvgetX11::XWrapperX11::XDeviceDeleter::operator()(XDevice* pointer) const {
-    XCloseDevice(&display.get(), pointer);
-}
-
-EvgetX11::XWrapperX11::XEventCookieDeleter::XEventCookieDeleter(Display& display) : display{display} {
-}
-
-void EvgetX11::XWrapperX11::XEventCookieDeleter::operator()(XGenericEventCookie* pointer) const {
-    XFreeEventData(&display.get(), pointer);
 }

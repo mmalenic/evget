@@ -30,11 +30,12 @@
 #include <X11/extensions/XInput2.h>
 #include <memory>
 #include "evgetcore/Util.h"
+#include "XEventCookieDeleter.h"
 
 namespace EvgetX11 {
     class XWrapper {
     public:
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, void(XGenericEventCookie*)>;
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
 
         virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
         virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
@@ -50,6 +51,7 @@ namespace EvgetX11 {
         virtual Status queryVersion(int& major, int& minor) = 0;
         virtual void selectEvents(XIEventMask& mask) = 0;
 
+        XWrapper() = default;
         virtual ~XWrapper() = default;
 
         XWrapper(XWrapper&&) noexcept = delete;

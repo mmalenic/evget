@@ -12,6 +12,8 @@ add_program(
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
     XWrapperX11.cpp
+    XDeviceDeleter.cpp
+    XEventCookieDeleter.cpp
 )
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}

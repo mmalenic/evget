@@ -30,48 +30,27 @@
 #include <X11/extensions/XInput2.h>
 #include <memory>
 #include "evgetcore/Util.h"
+#include "XWrapper.h"
 
 namespace EvgetX11 {
-    class XWrapperX11 {
+    class XWrapperX11 : public XWrapper {
     public:
-        class XDeviceDeleter {
-        public:
-            explicit XDeviceDeleter(Display& display);
-
-            void operator()(XDevice *pointer) const;
-
-        private:
-            std::reference_wrapper<Display> display;
-        };
-
-        class XEventCookieDeleter {
-        public:
-            explicit XEventCookieDeleter(Display& display);
-
-            void operator()(XGenericEventCookie *pointer) const;
-
-        private:
-            std::reference_wrapper<Display> display;
-        };
-
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, XEventCookieDeleter>;
-
         explicit XWrapperX11(Display& display);
 
-        std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
+        std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
         static std::string keySymToString(KeySym keySym);
-        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize);
+        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
 
-        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
-        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);
+        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
+        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
 
-        std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
+        std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
 
-        XEvent nextEvent();
-        XEventPointer eventData(XEvent& event);
+        XEvent nextEvent() override;
+        XEventPointer eventData(XEvent& event) override;
 
-        Status queryVersion(int& major, int& minor);
-        void selectEvents(XIEventMask& mask);
+        Status queryVersion(int& major, int& minor) override;
+        void selectEvents(XIEventMask& mask) override;
 
         static void setMask(unsigned char* mask, std::initializer_list<int> events);
         static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
