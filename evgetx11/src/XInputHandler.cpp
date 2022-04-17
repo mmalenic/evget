@@ -24,12 +24,12 @@
 #include "evgetx11/XInputHandler.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-EvgetX11::XInputHandler::XInputHandler(XWrapperX11& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) : xWrapper{xWrapper} {
+EvgetX11::XInputHandler::XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) : xWrapper{xWrapper} {
     announceVersion(xWrapper);
     setMask(xWrapper, maskSetters);
 }
 
-void EvgetX11::XInputHandler::announceVersion(XWrapperX11& xWrapper) {
+void EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
     int minor = versionMinor;
 
@@ -41,7 +41,7 @@ void EvgetX11::XInputHandler::announceVersion(XWrapperX11& xWrapper) {
     }
 }
 
-void EvgetX11::XInputHandler::setMask(XWrapperX11& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) {
+void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
 

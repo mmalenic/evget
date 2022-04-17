@@ -223,7 +223,7 @@ void EvgetX11::CoreXEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInf
     }
 }
 
-EvgetX11::CoreXEventSwitch::CoreXEventSwitch(XWrapperX11& xWrapper) : xWrapper{xWrapper} {
+EvgetX11::CoreXEventSwitch::CoreXEventSwitch(XWrapper& xWrapper) : xWrapper{xWrapper} {
     evtypeToName.emplace(XI_KeyPress, "KeyPress");
     evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
     evtypeToName.emplace(XI_ButtonPress, "ButtonPress");

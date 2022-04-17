@@ -32,7 +32,7 @@ namespace EvgetX11 {
 
     class XInputHandler {
     public:
-        explicit XInputHandler(XWrapperX11& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+        explicit XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
 
         /**
          * Get the next event.
@@ -43,11 +43,11 @@ namespace EvgetX11 {
         static constexpr int versionMajor = 2;
         static constexpr int versionMinor = 2;
 
-        std::reference_wrapper<XWrapperX11> xWrapper;
+        std::reference_wrapper<XWrapper> xWrapper;
 
-        static void setMask(XWrapperX11& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+        static void setMask(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
 
-        static void announceVersion(XWrapperX11& xWrapper);
+        static void announceVersion(XWrapper& xWrapper);
     };
 }
 

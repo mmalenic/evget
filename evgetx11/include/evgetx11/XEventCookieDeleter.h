@@ -25,6 +25,7 @@
 
 #include <X11/Xlib.h>
 #include <functional>
+
 namespace EvgetX11 {
     class XEventCookieDeleter {
     public:
