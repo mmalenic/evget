@@ -73,13 +73,6 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
     return {};
 }
 
-std::string EvgetX11::XWrapperX11::keySymToString(KeySym keySym) {
-    if (keySym != NoSymbol) {
-        XKeysymToString(keySym);
-    }
-    return {};
-}
-
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
     if (xim) {
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
@@ -146,10 +139,4 @@ Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
 void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
     XSync(&display.get(), false);
-}
-
-void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<int> events) {
-    for (auto event : events) {
-        XISetMask(mask, event);
-    }
 }

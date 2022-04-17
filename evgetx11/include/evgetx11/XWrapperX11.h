@@ -38,7 +38,6 @@ namespace EvgetX11 {
         explicit XWrapperX11(Display& display);
 
         std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
-        static std::string keySymToString(KeySym keySym);
         std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
 
         std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
@@ -52,28 +51,16 @@ namespace EvgetX11 {
         Status queryVersion(int& major, int& minor) override;
         void selectEvents(XIEventMask& mask) override;
 
-        static void setMask(unsigned char* mask, std::initializer_list<int> events);
-        static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
-
     private:
         static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
         static constexpr int utf8MaxBytes = 4;
-        static constexpr int maskBits = 8;
 
         std::reference_wrapper<Display> display;
 
         std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
         std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
     };
-
-    void EvgetX11::XWrapperX11::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
-        for (int i = 0; i < maskLen * maskBits; i++) {
-            if (XIMaskIsSet(mask, i)) {
-                function(i);
-            }
-        }
-    }
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H

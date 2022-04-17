@@ -51,6 +51,10 @@ namespace EvgetX11 {
         virtual Status queryVersion(int& major, int& minor) = 0;
         virtual void selectEvents(XIEventMask& mask) = 0;
 
+        static std::string keySymToString(KeySym keySym);
+        static void setMask(unsigned char* mask, std::initializer_list<int> events);
+        static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
+
         XWrapper() = default;
         virtual ~XWrapper() = default;
 
@@ -59,7 +63,18 @@ namespace EvgetX11 {
 
         XWrapper(const XWrapper&) = delete;
         XWrapper& operator=(const XWrapper&) = delete;
+
+    private:
+        static constexpr int maskBits = 8;
     };
+
+    void EvgetX11::XWrapper::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
+        for (int i = 0; i < maskLen * maskBits; i++) {
+            if (XIMaskIsSet(mask, i)) {
+                function(i);
+            }
+        }
+    }
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H

@@ -20,10 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evgetx11/XSetMaskCore.h"
 #include "evgetx11/XWrapper.h"
-#include <X11/extensions/XInput2.h>
 
-void EvgetX11::XSetMaskCore::setMask(unsigned char* mask) {
-    EvgetX11::XWrapper::setMask(mask, {XI_ButtonPress, XI_ButtonRelease, XI_KeyPress, XI_KeyRelease, XI_Motion, XI_RawMotion});
+void EvgetX11::XWrapper::setMask(unsigned char* mask, std::initializer_list<int> events) {
+    for (auto event : events) {
+        XISetMask(mask, event);
+    }
+}
+
+std::string EvgetX11::XWrapper::keySymToString(KeySym keySym) {
+    if (keySym != NoSymbol) {
+        XKeysymToString(keySym);
+    }
+    return {};
 }

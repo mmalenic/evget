@@ -14,6 +14,7 @@ add_program(
     XWrapperX11.cpp
     XDeviceDeleter.cpp
     XEventCookieDeleter.cpp
+    XWrapper.cpp
 )
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
