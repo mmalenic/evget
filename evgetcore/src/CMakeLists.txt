@@ -32,6 +32,5 @@ add_program(
     Event/MouseMove.cpp
     Event/MouseScroll.cpp
     Event/Touch.cpp
-    ShutdownHandler.cpp
     UnsupportedOperationException.cpp
 )

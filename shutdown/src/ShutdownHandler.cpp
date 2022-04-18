@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "evgetcore/ShutdownHandler.h"
+#include "shutdown/ShutdownHandler.h"
 
-std::atomic_flag EvgetCore::ShutdownHandler::_shutdown{};
+std::atomic_flag Shutdown::ShutdownHandler::_shutdown{};
 
-bool EvgetCore::ShutdownHandler::shouldShutdown() {
+bool Shutdown::ShutdownHandler::shouldShutdown() {
     return _shutdown.test();
 }
 
-void EvgetCore::ShutdownHandler::shutdown() {
+void Shutdown::ShutdownHandler::shutdown() {
     _shutdown.test_and_set();
 }

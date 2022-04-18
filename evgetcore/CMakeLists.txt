@@ -12,7 +12,6 @@ add_program(
     include/evgetcore/EventHandler.h
     include/evgetcore/SystemEvent.h
     include/evgetcore/SystemEventLoop.h
-    include/evgetcore/ShutdownHandler.h
     include/evgetcore/Storage.h
     include/evgetcore/Event/Data.h
     include/evgetcore/Event/Field.h

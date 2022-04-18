@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 #define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 
-#include "evgetcore/ShutdownHandler.h"
+#include "shutdown/ShutdownHandler.h"
 
 namespace EvgetX11 {
     /**

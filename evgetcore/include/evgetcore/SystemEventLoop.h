@@ -28,7 +28,6 @@
 #include <boost/fiber/buffered_channel.hpp>
 #include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
-#include "ShutdownHandler.h"
 #include "Task.h"
 #include "SystemEvent.h"
 #include "EventListener.h"

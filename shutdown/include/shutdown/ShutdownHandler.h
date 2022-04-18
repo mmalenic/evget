@@ -26,7 +26,7 @@
 #include <vector>
 #include <atomic>
 
-namespace EvgetCore {
+namespace Shutdown {
     /**
      * Represents the shutdown handler which intercepts program termination.
      */
