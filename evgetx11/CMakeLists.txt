@@ -56,8 +56,8 @@ find_symbols(
 add_subdirectory(src)
 
 program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC X11 COMPONENTS X11 Xi Xkb)
-program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
-program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
+program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC fmt ${FMT_VERSION})
+program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC spdlog ${SPDLOG_VERSION})
 
 add_library_and_link(EVGETX11_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 add_library_and_link(EVGETX11_LIBRARY_NAME EVGETCORE_LIBRARY_NAME "")

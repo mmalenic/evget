@@ -33,6 +33,10 @@ include(CheckIncludeFiles)
 include(CheckCXXSymbolExists)
 include(CTest)
 
+set(BOOST_VERSION 1.79)
+set(FMT_VERSION 8.1)
+set(SPDLOG_VERSION 1.10)
+
 # Checks the feature, returning the result true for the current feature.
 function(feature_check)
     set(one_value_args NAME FEATURE)

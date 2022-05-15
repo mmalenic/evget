@@ -17,9 +17,9 @@ add_program(
 
 add_subdirectory(src)
 
-program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC fmt 8.0.1)
-program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC spdlog 1.9.2)
-program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC Boost 1.78 FIND_ALL COMPONENTS program_options)
+program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC fmt ${FMT_VERSION})
+program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC spdlog ${SPDLOG_VERSION})
+program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC Boost ${BOOST_VERSION} FIND_ALL COMPONENTS program_options)
 
 if (BUILD_TESTING)
     add_subdirectory(test)
