@@ -10,6 +10,6 @@ add_program(
 )
 add_subdirectory(src)
 
-if (BUILD_TESTING)
-    add_subdirectory(test)
-endif()
+#if (BUILD_TESTING)
+#    add_subdirectory(test)
+#endif()

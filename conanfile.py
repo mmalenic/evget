@@ -33,7 +33,7 @@ class App(ConanFile):
     author = 'Marko Malenic'
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
-    requires = 'boost/1.78.0', 'fmt/8.0.1', 'spdlog/1.9.2'
+    requires = 'boost/1.79.0', 'fmt/8.1.1', 'spdlog/1.10.0'
     generators = 'cmake', 'CMakeDeps'
     options = {
         'build_tests': [True, False],
