@@ -4,7 +4,6 @@ add_program(
     SRCS
     EventTransformerLinux.cpp
     ParserLinux.cpp
-    ShutdownHandlerLinux.cpp
     XInputEvent.cpp
     XInputHandler.cpp
     CoreXEventSwitch.cpp

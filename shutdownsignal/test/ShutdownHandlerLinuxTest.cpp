@@ -14,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
-#include <evgetx11/ShutdownHandlerLinux.h>
+#include "shutdownsignal/ShutdownHandlerLinux.h"
 
 TEST(ShutdownHandlerLinuxTest, HandleSIGINT) { // NOLINT(cert-err58-cpp)
     EvgetX11::ShutdownHandlerLinux shutdownHandler{};

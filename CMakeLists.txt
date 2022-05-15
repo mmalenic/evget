@@ -362,5 +362,6 @@ add_program(
 add_library_and_link(CMAKE_PROJECT_NAME CLIOPTION_LIBRARY_NAME clioption)
 add_library_and_link(CMAKE_PROJECT_NAME LISTINPUTDEVICES_LIBRARY_NAME listinputdevices)
 add_library_and_link(CMAKE_PROJECT_NAME SHUTDOWN_LIBRARY_NAME shutdown)
+add_library_and_link(CMAKE_PROJECT_NAME SHUTDOWN_LIBRARY_NAME shutdownsignal)
 add_library_and_link(CMAKE_PROJECT_NAME EVGETCORE_LIBRARY_NAME evgetcore)
 add_library_and_link(CMAKE_PROJECT_NAME EVGETX11_LIBRARY_NAME evgetx11)

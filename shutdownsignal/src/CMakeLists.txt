@@ -1,0 +1,6 @@
+add_program(
+    TARGET ${SHUTDOWN_SIGNAL_LIBRARY_NAME}
+    FEATURE_CHECK SHUTDOWN_SIGNAL_HAS_DEPENDENCIES
+    SRCS
+    ShutdownHandlerLinux.cpp
+)

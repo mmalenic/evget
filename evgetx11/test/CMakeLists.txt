@@ -3,7 +3,6 @@ add_program(
     FEATURE_REQUIRES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h X11/Xutil.h xorg/xserver-properties.h
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
-    ShutdownHandlerLinuxTest.cpp
     XInputHandlerTest.cpp
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
