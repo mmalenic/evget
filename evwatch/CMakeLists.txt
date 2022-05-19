@@ -6,7 +6,7 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
-    include/shutdown/ShutdownHandler.h
+        include/shutdown/EventWatcher.h
 )
 add_subdirectory(src)
 

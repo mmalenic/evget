@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "shutdown/ShutdownHandler.h"
+#include "shutdown/EventWatcher.h"
 
-std::atomic_flag Shutdown::ShutdownHandler::_shutdown{};
+std::atomic_flag EvWatch::EventWatcher::eventFlag{};
 
-bool Shutdown::ShutdownHandler::shouldShutdown() {
-    return _shutdown.test();
+bool EvWatch::EventWatcher::eventOccurred() {
+    return eventFlag.test();
 }
 
-void Shutdown::ShutdownHandler::shutdown() {
-    _shutdown.test_and_set();
+void EvWatch::EventWatcher::setEvent() {
+    eventFlag.test_and_set();
 }

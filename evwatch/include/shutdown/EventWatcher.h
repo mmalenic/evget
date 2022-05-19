@@ -20,14 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "shutdownsignal/ShutdownHandlerLinux.h"
+#ifndef EVGET_INCLUDE_SHUTDOWNHANDLER_H
+#define EVGET_INCLUDE_SHUTDOWNHANDLER_H
 
-#include <csignal>
+#include <vector>
+#include <atomic>
 
-void EvgetX11::ShutdownHandlerLinux::registerInterruptHandler() {
-    signal(SIGINT, activateShutdown);
+namespace EvWatch {
+    /**
+     * Represents the handler which intercepts program termination.
+     */
+    class EventWatcher {
+    public:
+        /**
+         * Whether event has occured.
+         */
+        [[nodiscard]] bool static eventOccurred();
+
+        EventWatcher() = default;
+
+        virtual ~EventWatcher() = default;
+
+        EventWatcher(EventWatcher&&) noexcept = delete;
+        EventWatcher& operator=(EventWatcher&&) noexcept = delete;
+
+        EventWatcher(const EventWatcher&) = delete;
+        EventWatcher& operator=(const EventWatcher&) = delete;
+
+    protected:
+        /**
+         * Set the event flag to true.
+         */
+        void static setEvent();
+
+    private:
+        static std::atomic_flag eventFlag;
+    };
 }
 
-void EvgetX11::ShutdownHandlerLinux::activateShutdown([[maybe_unused]] int _) {
-    shutdown();
-}
+#endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H

@@ -14,12 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
-#include "shutdownsignal/ShutdownHandlerLinux.h"
+#include "shutdownsignal/EventWatcherSignal.h"
 
-TEST(ShutdownHandlerLinuxTest, HandleSIGINT) { // NOLINT(cert-err58-cpp)
-    EvgetX11::ShutdownHandlerLinux shutdownHandler{};
+TEST(EventWatcherSignalTest, HandleSIGINT) { // NOLINT(cert-err58-cpp)
+    EvWatch::EventWatcherSignal shutdownHandler{};
     shutdownHandler.registerInterruptHandler();
-    ASSERT_FALSE(EvgetX11::ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_FALSE(EvWatch::EventWatcherSignal::eventOccurred());
     raise(SIGINT);
-    ASSERT_TRUE(EvgetX11::ShutdownHandlerLinux::shouldShutdown());
+    ASSERT_TRUE(EvWatch::EventWatcherSignal::eventOccurred());
 }

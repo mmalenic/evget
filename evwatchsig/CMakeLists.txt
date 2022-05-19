@@ -8,7 +8,7 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
-    include/shutdownsignal/ShutdownHandlerLinux.h
+        include/shutdownsignal/EventWatcherSignal.h
 )
 add_subdirectory(src)
 

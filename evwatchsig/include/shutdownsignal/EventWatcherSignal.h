@@ -20,47 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_SHUTDOWNHANDLER_H
-#define EVGET_INCLUDE_SHUTDOWNHANDLER_H
+#ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 
-#include <vector>
-#include <atomic>
+#include "shutdown/EventWatcher.h"
 
-namespace Shutdown {
+namespace EvWatch {
     /**
-     * Represents the shutdown handler which intercepts program termination.
+     * Watch signals using sigaction.
      */
-    class ShutdownHandler {
+    class EventWatcherSignal : EventWatcher {
     public:
-        /**
-         * Whether the program should shutdown.
-         */
-        [[nodiscard]] bool static shouldShutdown();
+        explicit EventWatcherSignal(std::initializer_list<int> registerSignals);
 
-        /**
-         * Set the interrupt handler.
-         */
-        virtual void registerInterruptHandler() = 0;
-
-        ShutdownHandler() = default;
-
-        virtual ~ShutdownHandler() = default;
-
-        ShutdownHandler(ShutdownHandler&&) noexcept = delete;
-        ShutdownHandler& operator=(ShutdownHandler&&) noexcept = delete;
-
-        ShutdownHandler(const ShutdownHandler&) = delete;
-        ShutdownHandler& operator=(const ShutdownHandler&) = delete;
-
-    protected:
-        /**
-         * Set the shutdown flag to true.
-         */
-        void static shutdown();
-
-    private:
-        static std::atomic_flag _shutdown;
+        void registerInterruptHandler();
     };
 }
 
-#endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H
+#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H

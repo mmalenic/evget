@@ -20,25 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
-#define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#include "shutdownsignal/EventWatcherSignal.h"
 
-#include "shutdown/ShutdownHandler.h"
+#include <csignal>
 
-namespace EvgetX11 {
-    /**
-     * Linux (and unix) specific version of shutdown handler.
-     */
-    class ShutdownHandlerLinux : public Shutdown::ShutdownHandler {
-    public:
-        /**
-         * Activate the shutdown process.
-         * @param signal signal
-         */
-        static void activateShutdown([[maybe_unused]] int _);
-
-        void registerInterruptHandler() override;
-    };
+void EvWatch::EventWatcherSignal::registerInterruptHandler() {
+    signal(SIGINT, [](){EventWatcher::setEvent()});
 }
-
-#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
