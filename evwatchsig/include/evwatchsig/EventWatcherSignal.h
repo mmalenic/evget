@@ -20,20 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "shutdownsignal/EventWatcherSignal.h"
+#ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 
-#include <csignal>
+#include "shutdown/EventWatcher.h"
 
-EvWatch::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> registerSignals) {
-    struct sigaction sigIntHandler{};
-    sigIntHandler.sa_handler = signalHandler;
-    sigemptyset(&sigIntHandler.sa_mask);
+namespace EvWatch {
+    /**
+     * Watch signals using sigaction.
+     */
+    class EventWatcherSignal : EventWatcher {
+    public:
+        explicit EventWatcherSignal(std::initializer_list<int> registerSignals);
 
-    for(auto signal : registerSignals) {
-        sigaction(signal, &sigIntHandler, nullptr);
-    }
+    private:
+        static void signalHandler(int _);
+    };
 }
 
-void EvWatch::EventWatcherSignal::signalHandler(int _) {
-    EventWatcher::setEvent();
-}
+#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H

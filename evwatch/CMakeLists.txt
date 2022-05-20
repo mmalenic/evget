@@ -6,7 +6,8 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
-        include/shutdown/EventWatcher.h
+        include/evwatch/EventWatcher.h
+        include/evwatch/EventWatcherException.h
 )
 add_subdirectory(src)
 

@@ -20,21 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
-#define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#ifndef EVGET_EVENTWATCHEREXCEPTION_H
+#define EVGET_EVENTWATCHEREXCEPTION_H
 
-#include "shutdown/EventWatcher.h"
+#include <system_error>
 
 namespace EvWatch {
-    /**
-     * Watch signals using sigaction.
-     */
-    class EventWatcherSignal : EventWatcher {
+class EventWatcherException : public std::system_error {
     public:
-        explicit EventWatcherSignal(std::initializer_list<int> registerSignals);
+        /**
+         * Create exception with message.
+         */
+        explicit EventWatcherException(int errorNumber, const std::string& message = "Event watcher error.", const std::error_category& category = std::generic_category());
+        [[nodiscard]] const char* what() const noexcept override;
 
-        void registerInterruptHandler();
+    private:
+        std::string message;
     };
 }
 
-#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+
+#endif //EVGET_EVENTWATCHEREXCEPTION_H

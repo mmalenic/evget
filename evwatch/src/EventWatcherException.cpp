@@ -20,20 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "shutdownsignal/EventWatcherSignal.h"
+#include "evwatch/EventWatcherException.h"
 
-#include <csignal>
-
-EvWatch::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> registerSignals) {
-    struct sigaction sigIntHandler{};
-    sigIntHandler.sa_handler = signalHandler;
-    sigemptyset(&sigIntHandler.sa_mask);
-
-    for(auto signal : registerSignals) {
-        sigaction(signal, &sigIntHandler, nullptr);
-    }
+EvWatch::EventWatcherException::EventWatcherException(int errorNumber, const std::string &message,
+                                                      const std::error_category &category) : std::system_error(errorNumber, category, message) {
 }
 
-void EvWatch::EventWatcherSignal::signalHandler(int _) {
-    EventWatcher::setEvent();
+const char *EvWatch::EventWatcherException::what() const noexcept {
+    return std::system_error::what();
 }
