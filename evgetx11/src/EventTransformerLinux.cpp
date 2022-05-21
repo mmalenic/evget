@@ -27,7 +27,7 @@
 #include <X11/Xutil.h>
 #include <xorg/xserver-properties.h>
 #include <boost/numeric/conversion/cast.hpp>
-#include "evgetx11/EventTransformerLinux.h"
+#include "evgetx11/EventTransformerX11.h"
 #include "evgetcore/UnsupportedOperationException.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/Key.h"
@@ -36,7 +36,7 @@
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetx11/XEventSwitch.h"
 
-std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerLinux::transformEvent(XInputEvent event) {
+std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerX11::transformEvent(XInputEvent event) {
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>> data{};
     if (event.hasData()) {
         auto type = event.getEventType();
@@ -55,14 +55,14 @@ std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransfo
     return data;
 }
 
-std::chrono::nanoseconds EvgetX11::EventTransformerLinux::getTime(const EvgetX11::XInputEvent& event) {
+std::chrono::nanoseconds EvgetX11::EventTransformerX11::getTime(const EvgetX11::XInputEvent& event) {
     if (!start.has_value()) {
         start = event.getTimestamp();
     }
     return event.getTimestamp() - *start;
 }
 
-void EvgetX11::EventTransformerLinux::refreshDevices() {
+void EvgetX11::EventTransformerX11::refreshDevices() {
     int nDevices;
     int xi2NDevices;
     // See caveats about mixing XI1 calls with XI2 code:
@@ -116,6 +116,6 @@ void EvgetX11::EventTransformerLinux::refreshDevices() {
     }
 }
 
-EvgetX11::EventTransformerLinux::EventTransformerLinux(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : xWrapper{xWrapper}, switches{switches} {
+EvgetX11::EventTransformerX11::EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : xWrapper{xWrapper}, switches{switches} {
     refreshDevices();
 }

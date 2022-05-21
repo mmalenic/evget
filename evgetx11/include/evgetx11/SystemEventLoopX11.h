@@ -37,12 +37,12 @@ namespace EvgetX11 {
      * Class represents processing evgetx11 system events.
      */
     template<boost::asio::execution::executor E>
-    class SystemEventLoopLinux : public EvgetCore::SystemEventLoop<E, XInputEvent> {
+    class SystemEventLoopX11 : public EvgetCore::SystemEventLoop<E, XInputEvent> {
     public:
         /**
          * Create the system events.
          */
-        explicit SystemEventLoopLinux(E& context, XInputHandler xInputHandler);
+        explicit SystemEventLoopX11(E& context, XInputHandler xInputHandler);
 
         boost::asio::awaitable<void> eventLoop() override;
 
@@ -51,7 +51,7 @@ namespace EvgetX11 {
     };
 
     template<boost::asio::execution::executor E>
-    SystemEventLoopLinux<E>::SystemEventLoopLinux(
+    SystemEventLoopX11<E>::SystemEventLoopX11(
         E& context,
         XInputHandler xInputHandler
     ) : EvgetCore::SystemEventLoop<E, XInputEvent>{context},
@@ -59,7 +59,7 @@ namespace EvgetX11 {
     }
 
     template<boost::asio::execution::executor E>
-    boost::asio::awaitable<void> SystemEventLoopLinux<E>::eventLoop() {
+    boost::asio::awaitable<void> SystemEventLoopX11<E>::eventLoop() {
         while (!this->isCancelled()) {
             this->notify(std::move(handler.getEvent()));
         }

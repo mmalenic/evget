@@ -9,9 +9,9 @@ add_program(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
     include/evgetx11/ParserLinux.h
-    include/evgetx11/SystemEventLoopLinux.h
+    include/evgetx11/SystemEventLoopX11.h
     include/evgetx11/XInputHandler.h
-    include/evgetx11/EventTransformerLinux.h
+    include/evgetx11/EventTransformerX11.h
     include/evgetx11/XInputEvent.h
     include/evgetx11/XEventSwitch.h
     include/evgetx11/CoreXEventSwitch.h

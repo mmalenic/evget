@@ -39,9 +39,9 @@
 #include "XWrapper.h"
 
 namespace EvgetX11 {
-    class EventTransformerLinux : EvgetCore::EventTransformer<XInputEvent> {
+    class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        explicit EventTransformerLinux(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
+        explicit EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
