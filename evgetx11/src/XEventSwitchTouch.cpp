@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evgetx11/TouchXEventSwitch.h"
+#include "evgetx11/XEventSwitchTouch.h"
 
-bool EvgetX11::TouchXEventSwitch::switchOnEvent(
+bool EvgetX11::XEventTwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     EvgetX11::XEventSwitch::EventData& data
@@ -45,13 +45,13 @@ bool EvgetX11::TouchXEventSwitch::switchOnEvent(
 }
 
 
-EvgetX11::TouchXEventSwitch::TouchXEventSwitch(EvgetX11::CoreXEventSwitch& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
+EvgetX11::XEventTwitchTouch::XEventTwitchTouch(EvgetX11::XEventSwitchCore& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
     this->coreXEventSwitch.get().addEvtypeName(XI_TouchBegin, "TouchBegin");
     this->coreXEventSwitch.get().addEvtypeName(XI_TouchUpdate, "TouchUpdate");
     this->coreXEventSwitch.get().addEvtypeName(XI_TouchEnd, "TouchEnd");
 }
 
-void EvgetX11::TouchXEventSwitch::touchButton(
+void EvgetX11::XEventTwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
@@ -63,7 +63,7 @@ void EvgetX11::TouchXEventSwitch::touchButton(
     }
 }
 
-void EvgetX11::TouchXEventSwitch::touchMotion(
+void EvgetX11::XEventTwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data

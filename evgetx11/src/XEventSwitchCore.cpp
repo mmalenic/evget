@@ -25,12 +25,12 @@
 #include <X11/Xutil.h>
 #include <xorg/xserver-properties.h>
 #include <X11/extensions/XInput.h>
-#include "evgetx11/CoreXEventSwitch.h"
+#include "evgetx11/XEventSwitchCore.h"
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseClick.h"
 
-bool EvgetX11::CoreXEventSwitch::switchOnEvent(
+bool EvgetX11::XEventSwitchCore::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     EventData& data
@@ -59,7 +59,7 @@ bool EvgetX11::CoreXEventSwitch::switchOnEvent(
     }
 }
 
-void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
+void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
@@ -72,7 +72,7 @@ void EvgetX11::CoreXEventSwitch::buttonEvent(const XInputEvent& event, std::chro
     addButtonEvent(deviceEvent, timestamp, data, action, deviceEvent.detail);
 }
 
-void EvgetX11::CoreXEventSwitch::addButtonEvent(
+void EvgetX11::XEventSwitchCore::addButtonEvent(
     const XIDeviceEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
@@ -86,7 +86,7 @@ void EvgetX11::CoreXEventSwitch::addButtonEvent(
     addTableData(data, builder.build(), createSystemDataWithoutRoot(event,"MouseClickSystemData"));
 }
 
-void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
+void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!devices.contains(deviceEvent.deviceid)) {
         return;
@@ -110,7 +110,7 @@ void EvgetX11::CoreXEventSwitch::keyEvent(const XInputEvent& event, std::chrono:
     addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
 }
 
-std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrollEvent(
+std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrollEvent(
     const XInputEvent& event,
     std::chrono::nanoseconds timestamp
 ) {
@@ -145,7 +145,7 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::CoreXEventSwitch::scrol
     return isScrollEvent ? builder.time(timestamp).device(devices[rawEvent.sourceid]).build() : nullptr;
 }
 
-bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
+bool EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     bool isMotion = type == XI_Motion;
     if (isMotion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
@@ -162,7 +162,7 @@ bool EvgetX11::CoreXEventSwitch::motionEvent(const XInputEvent& event, std::chro
     return isMotion;
 }
 
-void EvgetX11::CoreXEventSwitch::motionEvent(
+void EvgetX11::XEventSwitchCore::motionEvent(
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
     const XIDeviceEvent& deviceEvent
@@ -183,7 +183,7 @@ void EvgetX11::CoreXEventSwitch::motionEvent(
     }
 }
 
-void EvgetX11::CoreXEventSwitch::addMotionEvent(
+void EvgetX11::XEventSwitchCore::addMotionEvent(
     const XIDeviceEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
@@ -194,7 +194,7 @@ void EvgetX11::CoreXEventSwitch::addMotionEvent(
     addTableData(data, builder.build(), createSystemDataWithoutRoot(event, "MouseMoveSystemData"));
 }
 
-bool EvgetX11::CoreXEventSwitch::scrollEvent(
+bool EvgetX11::XEventSwitchCore::scrollEvent(
     const XIDeviceEvent& event,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
     const std::map<int, XIScrollClassInfo>& scrollValuators,
@@ -209,7 +209,7 @@ bool EvgetX11::CoreXEventSwitch::scrollEvent(
     return false;
 }
 
-void EvgetX11::CoreXEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
+void EvgetX11::XEventSwitchCore::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
     auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
     if (map) {
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
@@ -223,7 +223,7 @@ void EvgetX11::CoreXEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInf
     }
 }
 
-EvgetX11::CoreXEventSwitch::CoreXEventSwitch(XWrapper& xWrapper) : xWrapper{xWrapper} {
+EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper) : xWrapper{xWrapper} {
     evtypeToName.emplace(XI_KeyPress, "KeyPress");
     evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
     evtypeToName.emplace(XI_ButtonPress, "ButtonPress");
@@ -231,7 +231,7 @@ EvgetX11::CoreXEventSwitch::CoreXEventSwitch(XWrapper& xWrapper) : xWrapper{xWra
     evtypeToName.emplace(XI_Motion, "Motion");
 }
 
-void EvgetX11::CoreXEventSwitch::refreshDevices(
+void EvgetX11::XEventSwitchCore::refreshDevices(
     int id,
     EvgetCore::Event::Common::Device device,
     const std::string& name,
@@ -273,6 +273,6 @@ void EvgetX11::CoreXEventSwitch::refreshDevices(
     }
 }
 
-void EvgetX11::CoreXEventSwitch::addEvtypeName(int evtype, const std::string& name) {
+void EvgetX11::XEventSwitchCore::addEvtypeName(int evtype, const std::string& name) {
     evtypeToName.emplace(evtype, name);
 }

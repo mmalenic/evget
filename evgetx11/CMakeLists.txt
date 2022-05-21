@@ -14,7 +14,7 @@ add_program(
     include/evgetx11/EventTransformerX11.h
     include/evgetx11/XInputEvent.h
     include/evgetx11/XEventSwitch.h
-    include/evgetx11/CoreXEventSwitch.h
+    include/evgetx11/XEventSwitchCore.h
     include/evgetx11/XSetMask.h
     include/evgetx11/XSetMaskRefresh.h
     include/evgetx11/XSetMaskCore.h
@@ -32,18 +32,7 @@ find_symbols(
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     FEATURE_CHECK EVGETX11_HAS_TOUCH_SUPPORT
-    SRCS include/evgetx11/TouchXEventSwitch.h include/evgetx11/XSetMaskTouch.h
-)
-
-find_symbols(
-    TARGET ${EVGETX11_LIBRARY_NAME} VISIBILITY PUBLIC NAME EVGETX11_HAS_BARRIER_SUPPORT
-    SYMBOLS XI_BarrierHit XI_BarrierLeave
-    FILES X11/extensions/XInput2.h
-)
-add_program(
-    TARGET ${EVGETX11_LIBRARY_NAME}
-    FEATURE_CHECK EVGETX11_HAS_BARRIER_SUPPORT
-    SRCS include/evgetx11/XEventSwitchBarrier.h include/evgetx11/XSetMaskBarrier.h
+    SRCS include/evgetx11/XEventSwitchTouch.h include/evgetx11/XSetMaskTouch.h
 )
 
 find_symbols(

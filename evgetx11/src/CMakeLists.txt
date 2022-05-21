@@ -2,11 +2,11 @@ add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
-    EventTransformerLinux.cpp
+    EventTransformerX11.cpp
     ParserLinux.cpp
     XInputEvent.cpp
     XInputHandler.cpp
-    CoreXEventSwitch.cpp
+    XEventSwitchCore.cpp
     XEventSwitch.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
@@ -18,10 +18,5 @@ add_program(
 add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     FEATURE_CHECK EVGETX11_HAS_TOUCH_SUPPORT
-    SRCS TouchXEventSwitch.cpp XSetMaskTouch.cpp
-)
-add_program(
-    TARGET ${EVGETX11_LIBRARY_NAME}
-    FEATURE_CHECK EVGETX11_HAS_BARRIER_SUPPORT
-    SRCS XEventSwitchBarrier.cpp XSetMaskBarrier.cpp
+    SRCS XEventSwitchTouch.cpp XSetMaskTouch.cpp
 )

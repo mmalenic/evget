@@ -30,9 +30,9 @@
 #include "XWrapper.h"
 
 namespace EvgetX11 {
-    class CoreXEventSwitch : XEventSwitch {
+    class XEventSwitchCore : XEventSwitch {
     public:
-        explicit CoreXEventSwitch(XWrapper& xWrapper);
+        explicit XEventSwitchCore(XWrapper& xWrapper);
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;

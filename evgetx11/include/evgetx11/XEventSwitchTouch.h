@@ -20,21 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTSWITCHBARRIER_H
-#define EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTSWITCHBARRIER_H
+#ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
+#define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
 #include "XEventSwitch.h"
-#include <unordered_map>
+#include "XEventSwitchCore.h"
 
 namespace EvgetX11 {
-    class XEventSwitchBarrier : XEventSwitch {
+    class XEventTwitchTouch : XEventSwitch {
     public:
-        XEventSwitchBarrier();
+        explicit XEventTwitchTouch(XEventSwitchCore &coreXEventSwitch);
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
+
     private:
-        void barrierEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
+        void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+
+        std::reference_wrapper<XEventSwitchCore> coreXEventSwitch;
     };
 }
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTSWITCHBARRIER_H
+#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
