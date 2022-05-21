@@ -39,7 +39,7 @@ namespace EvWatch {
 
         EventWatcher() = default;
 
-        virtual ~EventWatcher() = default;
+        virtual ~EventWatcher() = 0;
 
         EventWatcher(EventWatcher&&) noexcept = delete;
         EventWatcher& operator=(EventWatcher&&) noexcept = delete;

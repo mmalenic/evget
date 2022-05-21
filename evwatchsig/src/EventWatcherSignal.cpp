@@ -33,7 +33,7 @@ EvWatch::Sig::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> 
     }
     sigIntHandler.sa_flags = flags;
 
-    for(auto signal : registerSignals) {
+    for (auto signal : registerSignals) {
         if (sigaction(signal, &sigIntHandler, nullptr) == -1) {
             throw EventWatcherException(errno, "Setting sig action failed.");
         }

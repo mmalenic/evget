@@ -15,6 +15,8 @@
 
 #include "evwatch//EventWatcher.h"
 
+EvWatch::EventWatcher::~EventWatcher() = default;
+
 std::atomic_flag EvWatch::EventWatcher::eventFlag{};
 
 bool EvWatch::EventWatcher::eventOccurred() {
