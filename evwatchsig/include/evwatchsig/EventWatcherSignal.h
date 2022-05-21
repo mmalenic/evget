@@ -23,18 +23,18 @@
 #ifndef EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 #define EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
 
-#include "shutdown/EventWatcher.h"
+#include "evwatch/EventWatcher.h"
 
-namespace EvWatch {
+namespace EvWatch::Sig {
     /**
      * Watch signals using sigaction.
      */
-    class EventWatcherSignal : EventWatcher {
+    class EventWatcherSignal : public EventWatcher {
     public:
-        explicit EventWatcherSignal(std::initializer_list<int> registerSignals);
+        EventWatcherSignal(std::initializer_list<int> registerSignals, int flags = 0);
 
     private:
-        static void signalHandler(int _);
+        static void signalHandler([[maybe_unused]] int _);
     };
 }
 

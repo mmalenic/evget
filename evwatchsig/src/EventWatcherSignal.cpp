@@ -20,20 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "shutdownsignal/EventWatcherSignal.h"
+#include "evwatchsig/EventWatcherSignal.h"
+#include "evwatch/EventWatcherException.h"
 
 #include <csignal>
 
-EvWatch::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> registerSignals) {
+EvWatch::Sig::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> registerSignals, int flags) {
     struct sigaction sigIntHandler{};
     sigIntHandler.sa_handler = signalHandler;
-    sigemptyset(&sigIntHandler.sa_mask);
+    if (sigemptyset(&sigIntHandler.sa_mask) == -1) {
+        throw EventWatcherException(errno, "Setting sig handler mask failed.");
+    }
+    sigIntHandler.sa_flags = flags;
 
     for(auto signal : registerSignals) {
-        sigaction(signal, &sigIntHandler, nullptr);
+        if (sigaction(signal, &sigIntHandler, nullptr) == -1) {
+            throw EventWatcherException(errno, "Setting sig action failed.");
+        }
     }
 }
 
-void EvWatch::EventWatcherSignal::signalHandler(int _) {
+void EvWatch::Sig::EventWatcherSignal::signalHandler([[maybe_unused]] int _) {
     EventWatcher::setEvent();
 }
