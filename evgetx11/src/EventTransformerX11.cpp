@@ -72,7 +72,7 @@ void EvgetX11::EventTransformerX11::refreshDevices() {
     auto xi2Info = xWrapper.get().queryDevice(xi2NDevices);
 
     if (nDevices != xi2NDevices) {
-        spdlog::warn("Devices with ids greater than 127 found. Set the device of these devices manually if their use is required.");
+        spdlog::warn("Devices with ids greater than 127 found. Set the id of these devices manually if their use is required.");
     }
 
     std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2Devices{};
