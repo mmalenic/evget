@@ -5,7 +5,6 @@ add_program(
     SRCS
     XInputHandlerTest.cpp
     XWrapperMock.h
-    XWrapperMock.cpp
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
 

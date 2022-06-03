@@ -314,7 +314,7 @@ macro(link_testing TEST_EXECUTABLE_NAME LIBRARY_NAME)
     include(GoogleTest)
     enable_testing()
 
-    program_dependencies(TARGET ${${TEST_EXECUTABLE_NAME}} DEP PRIVATE GTest COMPONENTS gtest gtest_main)
+    program_dependencies(TARGET ${${TEST_EXECUTABLE_NAME}} DEP PRIVATE GTest COMPONENTS gtest gtest_main gmock)
     program_dependencies(TARGET ${${TEST_EXECUTABLE_NAME}} DEP PUBLIC ${${LIBRARY_NAME}} ONLY_LINK)
 
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
