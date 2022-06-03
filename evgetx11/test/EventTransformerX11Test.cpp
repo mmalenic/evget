@@ -24,8 +24,9 @@
 #include <X11/extensions/XTest.h>
 #include "evgetx11/XInputHandler.h"
 #include "evgetx11/XWrapper.h"
+#include "evgetx11/EventTransformerX11.h"
 #include "XWrapperMock.h"
 
-TEST(XInputHandlerTest, TestEvent) { // NOLINT(cert-err58-cpp)
-    XWrapperMock xWrapper;
+TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
+    XWrapperMock xWrapper{};
 }

@@ -26,6 +26,8 @@
 
 #include "gmock/gmock.h"
 #include "evgetx11/XWrapper.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XInputEvent.h"
 
 class XWrapperMock : public EvgetX11::XWrapper {
 public:
@@ -38,6 +40,11 @@ public:
     MOCK_METHOD(XEventPointer, eventData, (XEvent& event), (override));
     MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
     MOCK_METHOD(void, selectEvents, (XIEventMask& mask), (override));
+};
+
+class XEventSwitchMock : public EvgetX11::XEventSwitch {
+public:
+    MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data), (override));
 };
 
 #endif //EVGET_XWRAPPERMOCK_H
