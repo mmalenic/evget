@@ -41,7 +41,6 @@ find_symbols(
     FILES X11/extensions/XInput2.h
 )
 
-
 add_subdirectory(src)
 
 program_dependencies(TARGET ${EVGETX11_LIBRARY_NAME} DEP PUBLIC X11 COMPONENTS X11 Xi Xkb)

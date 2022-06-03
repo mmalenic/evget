@@ -28,8 +28,16 @@
 #include "evgetx11/XWrapper.h"
 
 class XWrapperMock : public EvgetX11::XWrapper {
-
+public:
+    MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
+    MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
+    MOCK_METHOD((std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>), listInputDevices, (int& ndevices), (override));
+    MOCK_METHOD((std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>), queryDevice, (int& ndevices), (override));
+    MOCK_METHOD((std::unique_ptr<char[], decltype(&XFree)>), atomName, (Atom atom), (override));
+    MOCK_METHOD(XEvent, nextEvent, (), (override));
+    MOCK_METHOD(XEventPointer, eventData, (XEvent& event), (override));
+    MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
+    MOCK_METHOD(void, selectEvents, (XIEventMask& mask), (override));
 };
-
 
 #endif //EVGET_XWRAPPERMOCK_H

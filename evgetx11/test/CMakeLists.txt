@@ -5,8 +5,8 @@ add_program(
     SRCS
     XInputHandlerTest.cpp
     XWrapperMock.h
+    XWrapperMock.cpp
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
-program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC GTest COMPONENTS gmock ONLY_LINK)
 
 link_testing(EVGETX11_TEST_EXECUTABLE_NAME EVGETX11_LIBRARY_NAME)
