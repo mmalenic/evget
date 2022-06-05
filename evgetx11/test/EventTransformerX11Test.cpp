@@ -28,5 +28,21 @@
 #include "XWrapperMock.h"
 
 TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
-    XWrapperMock xWrapper{};
+    XDeviceInfo deviceInfo{
+        .id = 0,
+        .type = 0,
+        .name = nullptr,
+        .num_classes = 0,
+        .use = IsXExtensionPointer,
+        .inputclassinfo = nullptr
+    };
+    XIDeviceInfo xi2DeviceInfo{
+        .deviceid = 0,
+        .name = nullptr,
+        .use = 0,
+        .attachment = 0,
+        .enabled = true,
+        .num_classes = 0,
+        .classes = nullptr
+    };
 }
