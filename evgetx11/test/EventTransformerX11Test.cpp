@@ -28,7 +28,7 @@
 #include "XWrapperMock.h"
 
 TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
-    XDeviceInfo deviceInfo{
+    XDeviceInfo deviceInfo = {
         .id = 0,
         .type = 0,
         .name = nullptr,
@@ -45,4 +45,8 @@ TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
         .num_classes = 0,
         .classes = nullptr
     };
+
+    XWrapperMock xWrapperMock{};
+    EXPECT_CALL(xWrapperMock, listInputDevices).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({&deviceInfo, [](XDeviceInfo *_){}})));
+    EXPECT_CALL(xWrapperMock, queryDevice).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>({&xi2DeviceInfo, [](XIDeviceInfo *_){}})));
 }
