@@ -21,8 +21,8 @@
 // SOFTWARE.
 //
 
-#ifndef EVGET_XWRAPPERMOCK_H
-#define EVGET_XWRAPPERMOCK_H
+#ifndef EVGET_MOCKOBJECTS_H
+#define EVGET_MOCKOBJECTS_H
 
 #include "gmock/gmock.h"
 #include "evgetx11/XWrapper.h"
@@ -45,6 +45,7 @@ public:
 class XEventSwitchMock : public EvgetX11::XEventSwitch {
 public:
     MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data), (override));
+    MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info), (override));
 };
 
-#endif //EVGET_XWRAPPERMOCK_H
+#endif //EVGET_MOCKOBJECTS_H

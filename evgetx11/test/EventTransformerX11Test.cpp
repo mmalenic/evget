@@ -25,7 +25,8 @@
 #include "evgetx11/XInputHandler.h"
 #include "evgetx11/XWrapper.h"
 #include "evgetx11/EventTransformerX11.h"
-#include "XWrapperMock.h"
+#include <X11/Xlib.h>
+#include "MockObjects.h"
 
 TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     XDeviceInfo deviceInfo = {
@@ -49,4 +50,5 @@ TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     XWrapperMock xWrapperMock{};
     EXPECT_CALL(xWrapperMock, listInputDevices).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({&deviceInfo, [](XDeviceInfo *_){}})));
     EXPECT_CALL(xWrapperMock, queryDevice).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>({&xi2DeviceInfo, [](XIDeviceInfo *_){}})));
+    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
 }

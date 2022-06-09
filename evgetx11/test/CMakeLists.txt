@@ -4,7 +4,7 @@ add_program(
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
     EventTransformerX11Test.cpp
-    XWrapperMock.h
+    MockObjects.h
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
 
