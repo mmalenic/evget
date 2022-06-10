@@ -51,4 +51,7 @@ TEST(EventTransformerX11Test, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     EXPECT_CALL(xWrapperMock, listInputDevices).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({&deviceInfo, [](XDeviceInfo *_){}})));
     EXPECT_CALL(xWrapperMock, queryDevice).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>({&xi2DeviceInfo, [](XIDeviceInfo *_){}})));
     EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
+
+    XEventSwitchMock xEventSwitchMock{};
+    EXPECT_CALL(xEventSwitchMock, refreshDevices(0, testing::_, testing::_, testing::_));
 }
