@@ -41,7 +41,7 @@
 namespace EvgetX11 {
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        explicit EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
+        EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;
 
     private:
