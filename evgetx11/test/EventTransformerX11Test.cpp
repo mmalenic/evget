@@ -58,3 +58,20 @@ TEST(EventTransformerX11Test, TestConstructor) { // NOLINT(cert-err58-cpp)
 
     EvgetX11::EventTransformerX11 transformer{xWrapperMock, {xEventSwitchMock}};
 }
+
+TEST(EventTransformerX11Test, TestTransformEvent) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11TestUtils::XEventSwitchMock xEventSwitchMock{};
+    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
+
+    EXPECT_CALL(xEventSwitchMock, switchOnEvent).WillOnce([](const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EvgetX11::XEventSwitch::EventData &data) {
+        data.push_back(EvgetCore::Event::TableData::TableDataBuilder{}.build());
+        return true;
+    });
+
+    EvgetX11::EventTransformerX11 transformer{xWrapperMock, {xEventSwitchMock}};
+    auto data = transformer.transformEvent(std::move(event));
+
+    ASSERT_EQ(data.at(0)->getGenericData(), nullptr);
+    ASSERT_EQ(data.at(0)->getSystemData(), nullptr);
+}
