@@ -6,6 +6,7 @@ add_program(
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
     SRCS
     EventTransformerX11Test.cpp
+    XEventSwitchTest.cpp
     utils/EvgetX11TestUtils.h
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
