@@ -49,6 +49,10 @@ namespace EvgetX11 {
 
         static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
+        EvgetCore::Event::Common::Device getDevices(int id) const;
+        const std::string &getIdToName(int id) const;
+        const std::string &getEvtypeToName(int id) const;
+
     protected:
         XEventSwitch(XEventSwitch&&) noexcept = default;
         XEventSwitch& operator=(XEventSwitch&&) noexcept = default;
@@ -65,6 +69,7 @@ namespace EvgetX11 {
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
 
+    private:
         std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
         std::unordered_map<int, std::string> evtypeToName{};
