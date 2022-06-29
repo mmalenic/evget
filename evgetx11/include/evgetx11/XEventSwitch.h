@@ -49,9 +49,13 @@ namespace EvgetX11 {
 
         static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
-        EvgetCore::Event::Common::Device getDevices(int id) const;
-        const std::string &getIdToName(int id) const;
-        const std::string &getEvtypeToName(int id) const;
+        EvgetCore::Event::Common::Device getDevice(int id) const;
+        const std::string &getNameFromId(int id) const;
+        const std::string &getEvtypeName(int evtype) const;
+
+        void setDevice(int id, EvgetCore::Event::Common::Device device);
+        void setNameFromId(int id, const std::string& name);
+        void setEvtypeName(int evtype, const std::string& name);
 
     protected:
         XEventSwitch(XEventSwitch&&) noexcept = default;

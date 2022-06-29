@@ -128,14 +128,26 @@ void EvgetX11::XEventSwitch::refreshDevices(int id, EvgetCore::Event::Common::De
     idToName.emplace(id, name);
 }
 
-EvgetCore::Event::Common::Device EvgetX11::XEventSwitch::getDevices(int id) const {
+EvgetCore::Event::Common::Device EvgetX11::XEventSwitch::getDevice(int id) const {
     return devices.at(id);
 }
 
-const std::string &EvgetX11::XEventSwitch::getIdToName(int id) const {
+const std::string &EvgetX11::XEventSwitch::getNameFromId(int id) const {
     return idToName.at(id);
 }
 
-const std::string &EvgetX11::XEventSwitch::getEvtypeToName(int id) const {
-    return evtypeToName.at(id);
+const std::string &EvgetX11::XEventSwitch::getEvtypeName(int evtype) const {
+    return evtypeToName.at(evtype);
+}
+
+void EvgetX11::XEventSwitch::setDevice(int id, EvgetCore::Event::Common::Device device) {
+    devices.emplace(id, device);
+}
+
+void EvgetX11::XEventSwitch::setNameFromId(int id, const std::string& name) {
+    idToName.emplace(id, name);
+}
+
+void EvgetX11::XEventSwitch::setEvtypeName(int evtype, const std::string& name) {
+    evtypeToName.emplace(evtype, name);
 }
