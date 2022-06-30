@@ -30,7 +30,7 @@
 #include "XWrapper.h"
 
 namespace EvgetX11 {
-    class XEventSwitchCore : XEventSwitch {
+    class XEventSwitchCore : public XEventSwitch {
     public:
         explicit XEventSwitchCore(XWrapper& xWrapper);
 
