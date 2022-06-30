@@ -22,7 +22,7 @@
 
 #include "evgetx11/XEventSwitchTouch.h"
 
-bool EvgetX11::XEventTwitchTouch::switchOnEvent(
+bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     EvgetX11::XEventSwitch::EventData& data
@@ -45,13 +45,13 @@ bool EvgetX11::XEventTwitchTouch::switchOnEvent(
 }
 
 
-EvgetX11::XEventTwitchTouch::XEventTwitchTouch(EvgetX11::XEventSwitchCore& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
-    this->coreXEventSwitch.get().setEvtypeName(XI_TouchBegin, "TouchBegin");
-    this->coreXEventSwitch.get().setEvtypeName(XI_TouchUpdate, "TouchUpdate");
-    this->coreXEventSwitch.get().setEvtypeName(XI_TouchEnd, "TouchEnd");
+EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XWrapper& xWrapper) : XEventSwitchPointer{xWrapper} {
+    setEvtypeName(XI_TouchBegin, "TouchBegin");
+    setEvtypeName(XI_TouchUpdate, "TouchUpdate");
+    setEvtypeName(XI_TouchEnd, "TouchEnd");
 }
 
-void EvgetX11::XEventTwitchTouch::touchButton(
+void EvgetX11::XEventSwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
@@ -59,17 +59,17 @@ void EvgetX11::XEventTwitchTouch::touchButton(
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (devicesContains(deviceEvent.deviceid)) {
-        coreXEventSwitch.get().addButtonEvent(deviceEvent, timestamp, data, action, 1);
+        addButtonEvent(deviceEvent, timestamp, data, action, 1);
     }
 }
 
-void EvgetX11::XEventTwitchTouch::touchMotion(
+void EvgetX11::XEventSwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (devicesContains(deviceEvent.deviceid)) {
-        coreXEventSwitch.get().addMotionEvent(deviceEvent, timestamp, data);
+        addMotionEvent(deviceEvent, timestamp, data);
     }
 }

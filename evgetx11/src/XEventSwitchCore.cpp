@@ -199,9 +199,8 @@ void EvgetX11::XEventSwitchCore::refreshDevices(
     const std::string& name,
     const XIDeviceInfo& info
 ) {
-    XEventSwitch::refreshDevices(id, device, name, info);
+    XEventSwitchPointer::refreshDevices(id, device, name, info);
 
-    const XIButtonClassInfo* buttonInfo = nullptr;
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};
     for (int i = 0; i < info.num_classes; i++) {

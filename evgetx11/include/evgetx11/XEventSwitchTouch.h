@@ -27,17 +27,15 @@
 #include "XEventSwitchCore.h"
 
 namespace EvgetX11 {
-    class XEventTwitchTouch : XEventSwitch {
+    class XEventSwitchTouch : XEventSwitchPointer {
     public:
-        explicit XEventTwitchTouch(XEventSwitchCore &coreXEventSwitch);
+        explicit XEventSwitchTouch(XWrapper &xWrapper);
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
 
     private:
         void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
         void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
-
-        std::reference_wrapper<XEventSwitchCore> coreXEventSwitch;
     };
 }
 
