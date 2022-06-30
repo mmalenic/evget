@@ -61,7 +61,7 @@ bool EvgetX11::XEventSwitchCore::switchOnEvent(
 
 void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!devices.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
+    if (!devicesContains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_UP ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         buttonMap[deviceEvent.deviceid][deviceEvent.detail] == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
@@ -80,7 +80,7 @@ void EvgetX11::XEventSwitchCore::addButtonEvent(
     int button
 ) {
     EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(timestamp).device(devices[event.deviceid]).positionX(event.root_x)
+    builder.time(timestamp).device(getDevice(event.deviceid)).positionX(event.root_x)
            .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
     addTableData(data, builder.build(), createSystemDataWithoutRoot(event,"MouseClickSystemData"));
@@ -88,7 +88,7 @@ void EvgetX11::XEventSwitchCore::addButtonEvent(
 
 void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!devices.contains(deviceEvent.deviceid)) {
+    if (!devicesContains(deviceEvent.deviceid)) {
         return;
     }
 
@@ -115,7 +115,7 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrol
     std::chrono::nanoseconds timestamp
 ) {
     auto rawEvent = event.viewData<XIRawEvent>();
-    if (!devices.contains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
+    if (!devicesContains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
         return {};
     }
 
@@ -142,14 +142,14 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrol
         isScrollEvent = true;
     }
 
-    return isScrollEvent ? builder.time(timestamp).device(devices[rawEvent.sourceid]).build() : nullptr;
+    return isScrollEvent ? builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build() : nullptr;
 }
 
 bool EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     bool isMotion = type == XI_Motion;
     if (isMotion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
-        if (devices.contains(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
+        if (devicesContains(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
             motionEvent(timestamp, data, deviceEvent);
         }
     }
@@ -189,7 +189,7 @@ void EvgetX11::XEventSwitchCore::addMotionEvent(
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
     EvgetCore::Event::MouseMove::MouseMoveBuilder builder{};
-    builder.time(timestamp).device(devices[event.deviceid]).positionX(event.root_x).positionY(event.root_y);
+    builder.time(timestamp).device(getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
 
     addTableData(data, builder.build(), createSystemDataWithoutRoot(event, "MouseMoveSystemData"));
 }
@@ -224,11 +224,11 @@ void EvgetX11::XEventSwitchCore::setButtonMap(const XIButtonClassInfo& buttonInf
 }
 
 EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper) : xWrapper{xWrapper} {
-    evtypeToName.emplace(XI_KeyPress, "KeyPress");
-    evtypeToName.emplace(XI_KeyRelease, "KeyRelease");
-    evtypeToName.emplace(XI_ButtonPress, "ButtonPress");
-    evtypeToName.emplace(XI_ButtonRelease, "ButtonRelease");
-    evtypeToName.emplace(XI_Motion, "Motion");
+    setEvtypeName(XI_KeyPress, "KeyPress");
+    setEvtypeName(XI_KeyRelease, "KeyRelease");
+    setEvtypeName(XI_ButtonPress, "ButtonPress");
+    setEvtypeName(XI_ButtonRelease, "ButtonRelease");
+    setEvtypeName(XI_Motion, "Motion");
 }
 
 void EvgetX11::XEventSwitchCore::refreshDevices(
@@ -271,8 +271,4 @@ void EvgetX11::XEventSwitchCore::refreshDevices(
             valuatorNames.emplace(valuatorInfo->number, name.get());
         }
     }
-}
-
-void EvgetX11::XEventSwitchCore::addEvtypeName(int evtype, const std::string& name) {
-    evtypeToName.emplace(evtype, name);
 }

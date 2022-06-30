@@ -46,9 +46,9 @@ bool EvgetX11::XEventTwitchTouch::switchOnEvent(
 
 
 EvgetX11::XEventTwitchTouch::XEventTwitchTouch(EvgetX11::XEventSwitchCore& coreXEventSwitch) : coreXEventSwitch{coreXEventSwitch} {
-    this->coreXEventSwitch.get().addEvtypeName(XI_TouchBegin, "TouchBegin");
-    this->coreXEventSwitch.get().addEvtypeName(XI_TouchUpdate, "TouchUpdate");
-    this->coreXEventSwitch.get().addEvtypeName(XI_TouchEnd, "TouchEnd");
+    setEvtypeName(XI_TouchBegin, "TouchBegin");
+    setEvtypeName(XI_TouchUpdate, "TouchUpdate");
+    setEvtypeName(XI_TouchEnd, "TouchEnd");
 }
 
 void EvgetX11::XEventTwitchTouch::touchButton(
@@ -58,7 +58,7 @@ void EvgetX11::XEventTwitchTouch::touchButton(
     EvgetCore::Event::Button::ButtonAction action
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (devices.contains(deviceEvent.deviceid)) {
+    if (devicesContains(deviceEvent.deviceid)) {
         coreXEventSwitch.get().addButtonEvent(deviceEvent, timestamp, data, action, 1);
     }
 }
@@ -69,7 +69,7 @@ void EvgetX11::XEventTwitchTouch::touchMotion(
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (devices.contains(deviceEvent.deviceid)) {
+    if (devicesContains(deviceEvent.deviceid)) {
         coreXEventSwitch.get().addMotionEvent(deviceEvent, timestamp, data);
     }
 }
