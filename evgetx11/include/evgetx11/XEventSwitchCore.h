@@ -28,17 +28,15 @@
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "XWrapper.h"
+#include "XEventSwitchPointer.h"
 
 namespace EvgetX11 {
-    class XEventSwitchCore : public XEventSwitch {
+    class XEventSwitchCore : public XEventSwitchPointer {
     public:
         explicit XEventSwitchCore(XWrapper& xWrapper);
 
-        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
         void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
-
-        void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action, int button);
-        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
 
     private:
         void buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
@@ -47,11 +45,9 @@ namespace EvgetX11 {
         bool motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
         std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp);
-        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<XWrapper> xWrapper;
 
-        std::unordered_map<int, std::map<int, std::string>> buttonMap{};
         std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
         std::unique_ptr<EvgetCore::Event::MouseScroll> rawScrollEvent{};
         std::optional<int> valuatorX{};

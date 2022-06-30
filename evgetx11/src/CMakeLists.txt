@@ -8,6 +8,7 @@ add_program(
     XInputHandler.cpp
     XEventSwitchCore.cpp
     XEventSwitch.cpp
+    XEventSwitchPointer.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
     XWrapperX11.cpp
