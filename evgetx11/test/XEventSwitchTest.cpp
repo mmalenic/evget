@@ -43,20 +43,23 @@ TEST(XEventSwitchTest, ContainsDevice) { // NOLINT(cert-err58-cpp)
     ASSERT_FALSE(eventSwitch.containsDevice(1));
 }
 
-TEST(XEventSwitchTest, GetDevice) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchTest, Device) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    ASSERT_THROW(eventSwitch.getDevice(1), std::out_of_range);
     eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
     ASSERT_EQ(eventSwitch.getDevice(1), EvgetCore::Event::Common::Device::Mouse);
 }
 
-TEST(XEventSwitchTest, GetNameFromId) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchTest, NameFromId) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    ASSERT_THROW(eventSwitch.getNameFromId(1), std::out_of_range);
     eventSwitch.setNameFromId(1, "Name");
     ASSERT_EQ(eventSwitch.getNameFromId(1), "Name");
 }
 
-TEST(XEventSwitchTest, GetEvtypeName) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchTest, EvtypeName) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    ASSERT_THROW(eventSwitch.getEvtypeName(1), std::out_of_range);
     eventSwitch.setEvtypeName(1, "Evtype");
-    ASSERT_EQ(eventSwitch.getNameFromId(1), "Evtype");
+    ASSERT_EQ(eventSwitch.getEvtypeName(1), "Evtype");
 }
