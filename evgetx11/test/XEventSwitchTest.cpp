@@ -42,3 +42,9 @@ TEST(XEventSwitchTest, ContainsDevice) { // NOLINT(cert-err58-cpp)
     eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
     ASSERT_FALSE(eventSwitch.containsDevice(1));
 }
+
+TEST(XEventSwitchTest, GetDevice) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
+    ASSERT_EQ(eventSwitch.getDevice(1), EvgetCore::Event::Common::Device::Mouse);
+}
