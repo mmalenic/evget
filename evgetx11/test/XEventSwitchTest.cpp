@@ -48,3 +48,15 @@ TEST(XEventSwitchTest, GetDevice) { // NOLINT(cert-err58-cpp)
     eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
     ASSERT_EQ(eventSwitch.getDevice(1), EvgetCore::Event::Common::Device::Mouse);
 }
+
+TEST(XEventSwitchTest, GetNameFromId) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    eventSwitch.setNameFromId(1, "Name");
+    ASSERT_EQ(eventSwitch.getNameFromId(1), "Name");
+}
+
+TEST(XEventSwitchTest, GetEvtypeName) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    eventSwitch.setEvtypeName(1, "Evtype");
+    ASSERT_EQ(eventSwitch.getNameFromId(1), "Evtype");
+}
