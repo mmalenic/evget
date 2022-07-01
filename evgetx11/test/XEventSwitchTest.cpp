@@ -23,6 +23,7 @@
 
 #include <gtest/gtest.h>
 #include "evgetx11/XEventSwitch.h"
+#include "EvgetX11TestUtils.h"
 
 TEST(XEventSwitchTest, TestAddTableData) { // NOLINT(cert-err58-cpp)
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
@@ -33,4 +34,11 @@ TEST(XEventSwitchTest, TestAddTableData) { // NOLINT(cert-err58-cpp)
 
     ASSERT_EQ(data.at(0)->getGenericData()->getName(), "Test");
     ASSERT_EQ(data.at(0)->getSystemData(), nullptr);
+}
+
+TEST(XEventSwitchTest, ContainsDevice) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+    ASSERT_FALSE(eventSwitch.containsDevice(1));
+    eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
+    ASSERT_FALSE(eventSwitch.containsDevice(1));
 }

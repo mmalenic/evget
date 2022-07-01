@@ -152,6 +152,6 @@ void EvgetX11::XEventSwitch::setEvtypeName(int evtype, const std::string& name) 
     evtypeToName.emplace(evtype, name);
 }
 
-bool EvgetX11::XEventSwitch::devicesContains(int id) {
+bool EvgetX11::XEventSwitch::containsDevice(int id) {
     return devices.contains(id);
 }

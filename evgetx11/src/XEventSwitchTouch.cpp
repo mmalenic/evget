@@ -58,7 +58,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     EvgetCore::Event::Button::ButtonAction action
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (devicesContains(deviceEvent.deviceid)) {
+    if (containsDevice(deviceEvent.deviceid)) {
         addButtonEvent(deviceEvent, timestamp, data, action, 1);
     }
 }
@@ -69,7 +69,7 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (devicesContains(deviceEvent.deviceid)) {
+    if (containsDevice(deviceEvent.deviceid)) {
         addMotionEvent(deviceEvent, timestamp, data);
     }
 }

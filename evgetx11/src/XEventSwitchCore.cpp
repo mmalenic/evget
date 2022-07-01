@@ -62,7 +62,7 @@ bool EvgetX11::XEventSwitchCore::switchOnEvent(
 void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     auto button = getButtonName(deviceEvent.deviceid, deviceEvent.detail);
-    if (!devicesContains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
+    if (!containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
             button == BTN_LABEL_PROP_BTN_WHEEL_UP ||
             button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
             button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
@@ -75,7 +75,7 @@ void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chro
 
 void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!devicesContains(deviceEvent.deviceid)) {
+    if (!containsDevice(deviceEvent.deviceid)) {
         return;
     }
 
@@ -102,7 +102,7 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrol
     std::chrono::nanoseconds timestamp
 ) {
     auto rawEvent = event.viewData<XIRawEvent>();
-    if (!devicesContains(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
+    if (!containsDevice(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
         return {};
     }
 
@@ -136,7 +136,7 @@ bool EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chro
     bool isMotion = type == XI_Motion;
     if (isMotion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
-        if (devicesContains(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
+        if (containsDevice(deviceEvent.deviceid) && !(deviceEvent.flags & XIPointerEmulated)) {
             motionEvent(timestamp, data, deviceEvent);
         }
     }

@@ -49,7 +49,7 @@ namespace EvgetX11 {
 
         static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
 
-        bool devicesContains(int id);
+        bool containsDevice(int id);
         EvgetCore::Event::Common::Device getDevice(int id) const;
         const std::string &getNameFromId(int id) const;
         const std::string &getEvtypeName(int evtype) const;
