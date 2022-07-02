@@ -23,16 +23,23 @@
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/Button/Action.h"
 
-EvgetCore::Event::Key::KeyBuilder::KeyBuilder() :
-_time{std::make_unique<Common::Time>()},
-_buttonType{std::make_unique<Button::Action>()},
-_button{std::make_unique<Button::Identifier>()},
-_name{std::make_unique<Button::Name>()},
-_character{std::make_unique<Button::Character>()} {
-}
-
 EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
+    return *this;
+}
+
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::device(EvgetCore::Event::Common::Device device) {
+    _device = EvgetCore::Event::Common::DeviceType::createType(device);
+    return *this;
+}
+
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::positionX(double x) {
+    _positionX = std::make_unique<Pointer::PositionX>(x);
+    return *this;
+}
+
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::positionY(double y) {
+    _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
@@ -64,6 +71,9 @@ EvgetCore::Event::Key::Key(
     EvgetCore::Event::Key::KeyBuilder& builder
 ) : AbstractData{"Key"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._device));
+    fields.emplace_back(std::move(builder._positionX));
+    fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._buttonType));
     fields.emplace_back(std::move(builder._button));
     fields.emplace_back(std::move(builder._name));

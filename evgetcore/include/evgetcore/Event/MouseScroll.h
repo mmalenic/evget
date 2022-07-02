@@ -31,6 +31,8 @@
 #include "evgetcore/Event/Pointer/ScrollDown.h"
 #include "evgetcore/Event/Pointer/ScrollLeft.h"
 #include "evgetcore/Event/Pointer/ScrollRight.h"
+#include "evgetcore/Event/Pointer/PositionY.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
 
 namespace EvgetCore::Event {
     /**
@@ -42,7 +44,7 @@ namespace EvgetCore::Event {
         public:
             friend class MouseScroll;
 
-            MouseScrollBuilder();
+            MouseScrollBuilder() = default;
 
             /**
              * Add time in nanoseconds.
@@ -53,6 +55,16 @@ namespace EvgetCore::Event {
              * Mouse device.
              */
             MouseScrollBuilder& device(EvgetCore::Event::Common::Device device);
+
+            /**
+             * Add position x.
+             */
+            MouseScrollBuilder& positionX(double x);
+
+            /**
+             * Add position y.
+             */
+            MouseScrollBuilder& positionY(double y);
 
             /**
              * Add scroll up.
@@ -80,12 +92,14 @@ namespace EvgetCore::Event {
             std::unique_ptr<MouseScroll> build();
 
         private:
-            std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Common::DeviceType> _device;
-            std::unique_ptr<Pointer::ScrollUp> _up;
-            std::unique_ptr<Pointer::ScrollDown> _down;
-            std::unique_ptr<Pointer::ScrollLeft> _left;
-            std::unique_ptr<Pointer::ScrollRight> _right;
+            std::unique_ptr<Common::Time> _time{};
+            std::unique_ptr<Common::DeviceType> _device{};
+            std::unique_ptr<Pointer::PositionX> _positionX{};
+            std::unique_ptr<Pointer::PositionY> _positionY{};
+            std::unique_ptr<Pointer::ScrollUp> _up{};
+            std::unique_ptr<Pointer::ScrollDown> _down{};
+            std::unique_ptr<Pointer::ScrollLeft> _left{};
+            std::unique_ptr<Pointer::ScrollRight> _right{};
         };
 
         /**

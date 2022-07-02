@@ -66,7 +66,6 @@ EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::M
     return *this;
 }
 
-
 EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::device(EvgetCore::Event::Common::Device device) {
     _device = EvgetCore::Event::Common::DeviceType::createType(device);
     return *this;

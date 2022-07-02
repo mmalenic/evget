@@ -31,6 +31,10 @@
 #include "evgetcore/Event/Button/Identifier.h"
 #include "evgetcore/Event/Button/Action.h"
 #include "evgetcore/Event/Button/Name.h"
+#include "evgetcore/Event/Pointer/PositionX.h"
+#include "evgetcore/Event/Pointer/PositionY.h"
+#include "evgetcore/Event/Common/Device.h"
+#include "evgetcore/Event/Common/DeviceType.h"
 
 namespace EvgetCore::Event {
     /**
@@ -42,12 +46,27 @@ namespace EvgetCore::Event {
         public:
             friend class Key;
 
-            KeyBuilder();
+            KeyBuilder() = default;
 
             /**
              * Add time in nanoseconds.
              */
             KeyBuilder& time(std::chrono::nanoseconds nanoseconds);
+
+            /**
+             * Mouse device.
+             */
+            KeyBuilder& device(EvgetCore::Event::Common::Device device);
+
+            /**
+             * Add position x.
+             */
+            KeyBuilder& positionX(double x);
+
+            /**
+             * Add position y.
+             */
+            KeyBuilder& positionY(double y);
 
             /**
              * Add action.
@@ -75,11 +94,14 @@ namespace EvgetCore::Event {
             std::unique_ptr<Key> build();
 
         private:
-            std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Button::Action> _buttonType;
-            std::unique_ptr<Button::Identifier> _button;
-            std::unique_ptr<Button::Name> _name;
-            std::unique_ptr<Button::Character> _character;
+            std::unique_ptr<Common::Time> _time{};
+            std::unique_ptr<Common::DeviceType> _device{};
+            std::unique_ptr<Pointer::PositionX> _positionX{};
+            std::unique_ptr<Pointer::PositionY> _positionY{};
+            std::unique_ptr<Button::Action> _buttonType{};
+            std::unique_ptr<Button::Identifier> _button{};
+            std::unique_ptr<Button::Name> _name{};
+            std::unique_ptr<Button::Character> _character{};
         };
 
         /**

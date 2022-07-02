@@ -58,13 +58,6 @@ namespace EvgetX11 {
         void setNameFromId(int id, const std::string& name);
         void setEvtypeName(int evtype, const std::string& name);
 
-    protected:
-        XEventSwitch(XEventSwitch&&) noexcept = default;
-        XEventSwitch& operator=(XEventSwitch&&) noexcept = default;
-
-        XEventSwitch(const XEventSwitch&) = default;
-        XEventSwitch& operator=(const XEventSwitch&) = default;
-
         std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName);
         std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName);
         std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event);
@@ -73,6 +66,13 @@ namespace EvgetX11 {
 
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
+
+    protected:
+        XEventSwitch(XEventSwitch&&) noexcept = default;
+        XEventSwitch& operator=(XEventSwitch&&) noexcept = default;
+
+        XEventSwitch(const XEventSwitch&) = default;
+        XEventSwitch& operator=(const XEventSwitch&) = default;
 
     private:
         std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};

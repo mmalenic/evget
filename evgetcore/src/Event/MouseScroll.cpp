@@ -22,15 +22,6 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder::MouseScrollBuilder() :
-_time{std::make_unique<Common::Time>()},
-_device{std::make_unique<Common::DeviceType>()},
-_up{std::make_unique<Pointer::ScrollUp>()},
-_down{std::make_unique<Pointer::ScrollDown>()},
-_left{std::make_unique<Pointer::ScrollLeft>()},
-_right{std::make_unique<Pointer::ScrollRight>()} {
-}
-
 EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
     return *this;
@@ -38,6 +29,16 @@ EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll
 
 EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::device(EvgetCore::Event::Common::Device device) {
     _device = EvgetCore::Event::Common::DeviceType::createType(device);
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::positionX(double x) {
+    _positionX = std::make_unique<Pointer::PositionX>(x);
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::positionY(double y) {
+    _positionY = std::make_unique<Pointer::PositionY>(y);
     return *this;
 }
 
@@ -70,6 +71,8 @@ EvgetCore::Event::MouseScroll::MouseScroll(
 ) : AbstractData{"MouseScroll"} {
     fields.emplace_back(std::move(builder._time));
     fields.emplace_back(std::move(builder._device));
+    fields.emplace_back(std::move(builder._positionX));
+    fields.emplace_back(std::move(builder._positionY));
     fields.emplace_back(std::move(builder._up));
     fields.emplace_back(std::move(builder._down));
     fields.emplace_back(std::move(builder._left));

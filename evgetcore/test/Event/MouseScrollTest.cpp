@@ -34,18 +34,26 @@ TEST(MouseScrollTest, Device) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.device(EvgetCore::Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 
+TEST(MouseScrollTest, PositionX) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.positionX(1).build(), 2, "1");
+}
+
+TEST(MouseScrollTest, PositionY) { // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.positionY(1).build(), 3, "1");
+}
+
 TEST(MouseScrollTest, Up) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.up(1).build(), 2, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.up(1).build(), 4, "1");
 }
 
 TEST(MouseScrollTest, Down) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.down(1).build(), 3, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.down(1).build(), 5, "1");
 }
 
 TEST(MouseScrollTest, Left) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.left(1).build(), 4, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.left(1).build(), 6, "1");
 }
 
 TEST(MouseScrollTest, Right) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.right(1).build(), 5, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll::MouseScrollBuilder{}.right(1).build(), 7, "1");
 }
