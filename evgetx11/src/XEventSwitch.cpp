@@ -53,27 +53,7 @@ EvgetCore::Event::AbstractField::Entries EvgetX11::XEventSwitch::createValuatorE
     return data;
 }
 
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::XEventSwitch::createSystemDataWithRoot(
-    const XIDeviceEvent& event,
-    const std::string& dataName
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields = createSystemData(event);
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootX", std::to_string(event.root_x)));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootY", std::to_string(event.root_y)));
-    return std::make_unique<EvgetCore::Event::Data>(dataName, std::move(fields));
-}
-
-std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::XEventSwitch::createSystemDataWithoutRoot(
-    const XIDeviceEvent& event,
-    const std::string& dataName
-) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields = createSystemData(event);
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootX"));
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("RootY"));
-    return std::make_unique<EvgetCore::Event::Data>(dataName, std::move(fields));
-}
-
-std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> EvgetX11::XEventSwitch::createSystemData(const XIDeviceEvent& event) {
+std::unique_ptr<EvgetCore::Event::AbstractData> EvgetX11::XEventSwitch::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
 
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("DeviceName", idToName[event.deviceid]));
@@ -99,7 +79,7 @@ std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> EvgetX11::XEventSw
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupLatched", formatValue(event.group.latched)));
     fields.emplace_back(std::make_unique<EvgetCore::Event::Field>("GroupLocked", formatValue(event.group.locked)));
 
-    return fields;
+    return std::make_unique<EvgetCore::Event::Data>(name, std::move(fields));
 }
 
 void EvgetX11::XEventSwitch::addTableData(

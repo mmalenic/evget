@@ -30,7 +30,7 @@ TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
-TEST(MouseClickTest, Device) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Device) { // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key::KeyBuilder{}.device(EvgetCore::Event::Common::Device::Mouse).build(), 1, "Mouse");
 }
 

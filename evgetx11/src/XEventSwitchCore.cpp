@@ -94,7 +94,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
     EvgetCore::Event::Key::KeyBuilder builder{};
     builder.time(timestamp).action(action).button(deviceEvent.detail).character(character).name(name);
 
-    addTableData(data, builder.build(), createSystemDataWithRoot(deviceEvent, "KeySystemData"));
+    addTableData(data, builder.build(), createSystemData(deviceEvent, "KeySystemData"));
 }
 
 std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrollEvent(
@@ -178,7 +178,7 @@ bool EvgetX11::XEventSwitchCore::scrollEvent(
 ) {
     for (const auto& [scrollValuator, _]: scrollValuators) {
         if (valuator == scrollValuator) {
-            addTableData(data, std::move(rawScrollEvent), createSystemDataWithRoot(event, "MouseScrollSystemData"));
+            addTableData(data, std::move(rawScrollEvent), createSystemData(event, "MouseScrollSystemData"));
             return true;
         }
     }

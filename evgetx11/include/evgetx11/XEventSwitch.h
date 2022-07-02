@@ -58,9 +58,7 @@ namespace EvgetX11 {
         void setNameFromId(int id, const std::string& name);
         void setEvtypeName(int evtype, const std::string& name);
 
-        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithoutRoot(const XIDeviceEvent& event, const std::string& deviceName);
-        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemDataWithRoot(const XIDeviceEvent& event, const std::string& deviceName);
-        std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> createSystemData(const XIDeviceEvent& event);
+        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& name);
         static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
         static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
 
