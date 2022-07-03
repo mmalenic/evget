@@ -43,13 +43,14 @@ namespace EvgetX11 {
         void keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
         void motionEvent(std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const XIDeviceEvent& deviceEvent);
         bool motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        std::map<int, XIScrollClassInfo> scrollEventValuators(const XInputEvent& event);
         bool scrollEvent(const XIDeviceEvent& event, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, const std::map<int, XIScrollClassInfo>& scrollValuators, int valuator);
-        std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp);
+        std::unique_ptr<EvgetCore::Event::MouseScroll> scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
 
         std::reference_wrapper<XWrapper> xWrapper;
 
         std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
-        std::unique_ptr<EvgetCore::Event::MouseScroll> rawScrollEvent{};
+        std::optional<EvgetCore::Event::MouseScroll::MouseScrollBuilder> scrollEventBuilder{};
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
         std::unordered_map<int, std::string> valuatorNames{};

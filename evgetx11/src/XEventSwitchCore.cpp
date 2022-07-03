@@ -29,6 +29,7 @@
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseClick.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 bool EvgetX11::XEventSwitchCore::switchOnEvent(
     const EvgetX11::XInputEvent& event,
@@ -97,39 +98,100 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
     addTableData(data, builder.build(), createSystemData(deviceEvent, "KeySystemData"));
 }
 
-std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrollEvent(
-    const XInputEvent& event,
-    std::chrono::nanoseconds timestamp
-) {
-    auto rawEvent = event.viewData<XIRawEvent>();
-    if (!containsDevice(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
+std::map<int, XIScrollClassInfo> EvgetX11::XEventSwitchCore::scrollEventValuators(const EvgetX11::XInputEvent &event) {
+    std::map<int, XIScrollClassInfo> scrollValuators{};
+    std::map<int, int> valuators;
+    int id;
+
+    if (event.getEventType() == XI_RawMotion) {
+        auto rawEvent = event.viewData<XIRawEvent>();
+        if (!containsDevice(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
+            return {};
+        }
+        valuators = getValuators(rawEvent.valuators);
+        id = rawEvent.sourceid;
+    } else if (event.getEventType() == XI_Motion) {
+        auto deviceEvent = event.viewData<XIDeviceEvent>();
+        if (!containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
+            return {};
+        }
+        valuators = getValuators(deviceEvent.valuators);
+        id = deviceEvent.deviceid;
+    } else {
         return {};
     }
 
-    EvgetCore::Event::MouseScroll::MouseScrollBuilder builder{};
-    auto valuators = getValuators(rawEvent.valuators);
-    bool isScrollEvent = false;
-    for (const auto& [valuator, info] : scrollMap[rawEvent.sourceid]) {
-        if (!valuators.contains(valuator)) {
-            continue;
+    for (const auto& [valuator, info] : scrollMap[id]) {
+        if (valuators.contains(valuator)) {
+            scrollValuators.emplace(valuator, info);
         }
-        if (info.type == XIScrollTypeVertical) {
-            if (info.increment * valuators[valuator] >= 0) {
-                builder.down(valuators[valuator]);
-            } else {
-                builder.up(valuators[valuator]);
-            }
-        } else {
-            if (info.increment * valuators[valuator] >= 0) {
-                builder.left(valuators[valuator]);
-            } else {
-                builder.right(valuators[valuator]);
-            }
-        }
-        isScrollEvent = true;
     }
 
-    return isScrollEvent ? builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build() : nullptr;
+    return scrollValuators;
+}
+
+std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrollEvent(
+    const XInputEvent& event,
+    std::chrono::nanoseconds timestamp,
+    std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
+) {
+    auto valuators = scrollEventValuators(event);
+    if (valuators.empty()) {
+        if (scrollEventBuilder.has_value()) {
+            spdlog::warn("Missing complimentary scroll event.");
+
+            std::unique_ptr<EvgetCore::Event::AbstractData> systemData{};
+            if (event.getEventType() == XI_Motion) {
+                systemData = createSystemData(event, "MouseScrollSystemData");
+            }
+            auto genericData = builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build();
+            data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
+
+            return std::exchange(scrollEventBuilder, std::nullopt)->build();
+        }
+        return nullptr;
+    }
+
+    bool shouldUpdate = true;
+    if (!scrollEventBuilder.has_value()) {
+        scrollEventBuilder = EvgetCore::Event::MouseScroll::MouseScrollBuilder{};
+        shouldUpdate = false;
+    }
+
+    if (event.getEventType() == XI_RawMotion) {
+        auto rawEvent = event.viewData<XIRawEvent>();
+        auto scrollValuators = getValuators(rawEvent.valuators);
+        for (const auto &[valuator, info]: valuators) {
+            auto valuatorValue = scrollValuators[valuator];
+            if (info.type == XIScrollTypeVertical) {
+                if (info.increment * valuatorValue >= 0) {
+                    scrollEventBuilder->down(valuatorValue);
+                } else {
+                    scrollEventBuilder->up(valuatorValue);
+                }
+            } else {
+                if (info.increment * valuatorValue >= 0) {
+                    scrollEventBuilder->left(valuatorValue);
+                } else {
+                    scrollEventBuilder->right(valuatorValue);
+                }
+            }
+        }
+    } else if (event.getEventType() == XI_Motion) {
+        auto deviceEvent = event.viewData<XIDeviceEvent>();
+        scrollEventBuilder->positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+    } else {
+        throw EvgetCore::UnsupportedOperationException("Unsupported event type.");
+    }
+
+    if (shouldUpdate) {
+        std::unique_ptr<EvgetCore::Event::AbstractData> systemData{};
+        if (event.getEventType() == XI_Motion) {
+            systemData = createSystemData(event, "MouseScrollSystemData");
+        }
+        auto genericData = builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build();
+        data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
+    }
 }
 
 bool EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
