@@ -140,3 +140,11 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
     XSync(&display.get(), false);
 }
+
+std::unique_ptr<XDeviceState, decltype(&XFreeDeviceState)> EvgetX11::XWrapperX11::queryDeviceState(int id) {
+    auto device = std::unique_ptr<XDevice, XDeviceDeleter>(XOpenDevice(&display.get(), id), XDeviceDeleter{display.get()});
+    if (device) {
+        return {XQueryDeviceState(&display.get(), device.get()), XFreeDeviceState};
+    }
+    return {nullptr, XFreeDeviceState};
+}
