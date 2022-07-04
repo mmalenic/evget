@@ -130,7 +130,7 @@ std::map<int, XIScrollClassInfo> EvgetX11::XEventSwitchCore::scrollEventValuator
     return scrollValuators;
 }
 
-std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrollEvent(
+void EvgetX11::XEventSwitchCore::scrollEvent(
     const XInputEvent& event,
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
@@ -140,16 +140,15 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrol
         if (scrollEventBuilder.has_value()) {
             spdlog::warn("Missing complimentary scroll event.");
 
-            std::unique_ptr<EvgetCore::Event::AbstractData> systemData{};
-            if (event.getEventType() == XI_Motion) {
-                systemData = createSystemData(event, "MouseScrollSystemData");
+            if (event.getEventType() == XI_RawMotion) {
+                updateRawMotionEvent(timestamp, data, event.viewData<XIRawEvent>());
+            } else if (event.getEventType() == XI_Motion) {
+                updateMotionEvent(timestamp, data, event.viewData<XIDeviceEvent>());
+            } else {
+                std::exchange(scrollEventBuilder, std::nullopt);
             }
-            auto genericData = builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build();
-            data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
-
-            return std::exchange(scrollEventBuilder, std::nullopt)->build();
         }
-        return nullptr;
+        return;
     }
 
     bool shouldUpdate = true;
@@ -177,21 +176,37 @@ std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetX11::XEventSwitchCore::scrol
                 }
             }
         }
+
+        if (shouldUpdate) {
+            updateRawMotionEvent(timestamp, data, rawEvent);
+        }
     } else if (event.getEventType() == XI_Motion) {
         auto deviceEvent = event.viewData<XIDeviceEvent>();
         scrollEventBuilder->positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+
+        if (shouldUpdate) {
+            std::unique_ptr<EvgetCore::Event::AbstractData> systemData = createSystemData(deviceEvent, "MouseScrollSystemData");
+            auto genericData = std::exchange(scrollEventBuilder, std::nullopt)->time(timestamp).device(getDevice(deviceEvent.deviceid)).build();
+            data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
+        }
     } else {
         throw EvgetCore::UnsupportedOperationException("Unsupported event type.");
     }
+}
 
-    if (shouldUpdate) {
-        std::unique_ptr<EvgetCore::Event::AbstractData> systemData{};
-        if (event.getEventType() == XI_Motion) {
-            systemData = createSystemData(event, "MouseScrollSystemData");
-        }
-        auto genericData = builder.time(timestamp).device(getDevice(rawEvent.sourceid)).build();
-        data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
-    }
+void EvgetX11::XEventSwitchCore::updateMotionEvent(std::chrono::nanoseconds &timestamp,
+                                                   std::vector<std::unique_ptr<EvgetCore::Event::TableData>> &data,
+                                                   const XIDeviceEvent &deviceEvent) {
+    std::unique_ptr<EvgetCore::Event::AbstractData> systemData = createSystemData(deviceEvent, "MouseScrollSystemData");
+    auto genericData = std::exchange(scrollEventBuilder, std::nullopt)->time(timestamp).device(getDevice(deviceEvent.deviceid)).build();
+    data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
+}
+
+void EvgetX11::XEventSwitchCore::updateRawMotionEvent(std::chrono::nanoseconds &timestamp,
+                                                      std::vector<std::unique_ptr<EvgetCore::Event::TableData>> &data,
+                                                      const XIRawEvent &rawEvent) {
+    auto genericData = std::exchange(scrollEventBuilder, std::nullopt)->time(timestamp).device(getDevice(rawEvent.sourceid)).build();
+    data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).build());
 }
 
 bool EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, int type, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
