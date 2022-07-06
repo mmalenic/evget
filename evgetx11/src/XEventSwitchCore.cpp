@@ -233,12 +233,12 @@ void EvgetX11::XEventSwitchCore::motionEvent(
 ) {
     auto valuators = getValuators(deviceEvent.valuators);
     const auto& scrollValuators =
-        scrollMap.contains(deviceEvent.deviceid) ? scrollMap[deviceEvent.deviceid] : std::map<int, XIScrollClassInfo>{};
+        scrollMap.contains(deviceEvent.deviceid) ? scrollMap[deviceEvent.deviceid] : std::unordered_map<int, XIScrollClassInfo>{};
 
     bool hasScroll = false;
     bool hasMotion = false;
     for (const auto& [valuator, value]: valuators) {
-        if (!hasMotion && (valuator == valuatorX || valuator == valuatorY)) {
+        if (!hasMotion && (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid])) {
             addMotionEvent(deviceEvent, timestamp, data);
             hasMotion = true;
         } else if (!hasScroll) {
@@ -297,11 +297,11 @@ void EvgetX11::XEventSwitchCore::refreshDevices(
         auto valuatorName = xWrapper.get().atomName(valuatorInfo->label);
         if (valuatorName) {
             if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
-                valuatorX = valuatorInfo->number;
+                valuatorX[id] = valuatorInfo->number;
             } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
-                valuatorY = valuatorInfo->number;
+                valuatorY[id] = valuatorInfo->number;
             }
-            valuatorNames.emplace(valuatorInfo->number, valuatorName.get());
+            valuatorNames[id][valuatorInfo->number] = valuatorName.get();
         }
         valuatorValues[id][valuatorInfo->number] = valuatorInfo->value;
     }

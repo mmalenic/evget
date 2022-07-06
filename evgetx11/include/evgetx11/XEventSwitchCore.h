@@ -49,12 +49,12 @@ namespace EvgetX11 {
 
         std::reference_wrapper<XWrapper> xWrapper;
 
-        std::unordered_map<int, std::map<int, XIScrollClassInfo>> scrollMap{};
+        std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
         std::optional<EvgetCore::Event::MouseScroll::MouseScrollBuilder> scrollEventBuilder{};
-        std::optional<int> valuatorX{};
-        std::optional<int> valuatorY{};
-        std::unordered_map<int, std::string> valuatorNames{};
-        std::unordered_map<int,  std::unordered_map<int, double>> valuatorValues{};
+        std::unordered_map<int, std::optional<int>> valuatorX{};
+        std::unordered_map<int, std::optional<int>> valuatorY{};
+        std::unordered_map<int, std::unordered_map<int, std::string>> valuatorNames{};
+        std::unordered_map<int, std::unordered_map<int, double>> valuatorValues{};
 
         void updateRawMotionEvent(std::chrono::nanoseconds &timestamp,
                                   std::vector<std::unique_ptr<EvgetCore::Event::TableData>> &data,

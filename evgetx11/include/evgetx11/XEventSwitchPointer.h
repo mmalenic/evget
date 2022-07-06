@@ -43,7 +43,7 @@ namespace EvgetX11 {
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<XWrapper> xWrapper;
-        std::unordered_map<int, std::map<int, std::string>> buttonMap{};
+        std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     };
 }
 
