@@ -39,7 +39,6 @@ namespace EvgetX11 {
 
         virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
         virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
-        virtual std::unique_ptr<XDeviceState, decltype(&XFreeDeviceState)> queryDeviceState(int id) = 0;
 
         virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
         virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;

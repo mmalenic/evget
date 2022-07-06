@@ -54,6 +54,7 @@ namespace EvgetX11 {
         std::optional<int> valuatorX{};
         std::optional<int> valuatorY{};
         std::unordered_map<int, std::string> valuatorNames{};
+        std::unordered_map<int,  std::unordered_map<int, double>> valuatorValues{};
 
         void updateRawMotionEvent(std::chrono::nanoseconds &timestamp,
                                   std::vector<std::unique_ptr<EvgetCore::Event::TableData>> &data,

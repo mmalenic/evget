@@ -39,7 +39,6 @@ namespace EvgetX11 {
 
         std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
         std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
-        std::unique_ptr<XDeviceState, decltype(&XFreeDeviceState)> queryDeviceState(int id) override;
 
         std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
         std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;

@@ -291,17 +291,18 @@ void EvgetX11::XEventSwitchCore::refreshDevices(
     }
 
     for (auto scrollInfo : scrollInfos) {
-        scrollMap[info.deviceid][scrollInfo->number] = *scrollInfo;
+        scrollMap[id][scrollInfo->number] = *scrollInfo;
     }
     for (auto valuatorInfo : valuatorInfos) {
-        auto name = xWrapper.get().atomName(valuatorInfo->label);
-        if (name) {
-            if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
+        auto valuatorName = xWrapper.get().atomName(valuatorInfo->label);
+        if (valuatorName) {
+            if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
                 valuatorX = valuatorInfo->number;
-            } else if (strcmp(name.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
+            } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
                 valuatorY = valuatorInfo->number;
             }
-            valuatorNames.emplace(valuatorInfo->number, name.get());
+            valuatorNames.emplace(valuatorInfo->number, valuatorName.get());
         }
+        valuatorValues[id][valuatorInfo->number] = valuatorInfo->value;
     }
 }
