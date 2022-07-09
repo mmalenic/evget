@@ -103,23 +103,12 @@ std::map<int, XIScrollClassInfo> EvgetX11::XEventSwitchCore::scrollEventValuator
     std::map<int, int> valuators;
     int id;
 
-    if (event.getEventType() == XI_RawMotion) {
-        auto rawEvent = event.viewData<XIRawEvent>();
-        if (!containsDevice(rawEvent.sourceid) || !scrollMap.contains(rawEvent.sourceid) || (rawEvent.flags & XIPointerEmulated)) {
-            return {};
-        }
-        valuators = getValuators(rawEvent.valuators);
-        id = rawEvent.sourceid;
-    } else if (event.getEventType() == XI_Motion) {
-        auto deviceEvent = event.viewData<XIDeviceEvent>();
-        if (!containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
-            return {};
-        }
-        valuators = getValuators(deviceEvent.valuators);
-        id = deviceEvent.deviceid;
-    } else {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (!containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return {};
     }
+    valuators = getValuators(deviceEvent.valuators);
+    id = deviceEvent.deviceid;
 
     for (const auto& [valuator, info] : scrollMap[id]) {
         if (valuators.contains(valuator)) {
@@ -135,63 +124,41 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
     std::chrono::nanoseconds timestamp,
     std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
-    auto valuators = scrollEventValuators(event);
-    if (valuators.empty()) {
-        if (scrollEventBuilder.has_value()) {
-            spdlog::warn("Missing complimentary scroll event.");
-
-            if (event.getEventType() == XI_RawMotion) {
-                updateRawMotionEvent(timestamp, data, event.viewData<XIRawEvent>());
-            } else if (event.getEventType() == XI_Motion) {
-                updateMotionEvent(timestamp, data, event.viewData<XIDeviceEvent>());
-            } else {
-                std::exchange(scrollEventBuilder, std::nullopt);
-            }
-        }
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (!containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
-    bool shouldUpdate = true;
-    if (!scrollEventBuilder.has_value()) {
-        scrollEventBuilder = EvgetCore::Event::MouseScroll::MouseScrollBuilder{};
-        shouldUpdate = false;
-    }
+    EvgetCore::Event::MouseScroll::MouseScrollBuilder builder{};
+    auto valuators = getValuators(deviceEvent.valuators);
+    for (const auto& [valuator, info] : scrollMap[deviceEvent.deviceid]) {
+        if (!valuators.contains(valuator)) {
+            continue;
+        }
 
-    if (event.getEventType() == XI_RawMotion) {
-        auto rawEvent = event.viewData<XIRawEvent>();
-        auto scrollValuators = getValuators(rawEvent.valuators);
-        for (const auto &[valuator, info]: valuators) {
-            auto valuatorValue = scrollValuators[valuator];
-            if (info.type == XIScrollTypeVertical) {
-                if (info.increment * valuatorValue >= 0) {
-                    scrollEventBuilder->down(valuatorValue);
-                } else {
-                    scrollEventBuilder->up(valuatorValue);
-                }
+        auto value = valuators[valuator] - valuatorValues[deviceEvent.deviceid][valuator];
+        valuatorValues[deviceEvent.deviceid][valuator] = valuators[valuator];
+
+        if (info.type == XIScrollTypeVertical) {
+            if (info.increment * value >= 0) {
+                builder.down(value);
             } else {
-                if (info.increment * valuatorValue >= 0) {
-                    scrollEventBuilder->left(valuatorValue);
-                } else {
-                    scrollEventBuilder->right(valuatorValue);
-                }
+                builder.up(value);
+            }
+        } else {
+            if (info.increment * value >= 0) {
+                builder.left(value);
+            } else {
+                builder.right(value);
             }
         }
-
-        if (shouldUpdate) {
-            updateRawMotionEvent(timestamp, data, rawEvent);
-        }
-    } else if (event.getEventType() == XI_Motion) {
-        auto deviceEvent = event.viewData<XIDeviceEvent>();
-        scrollEventBuilder->positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
-
-        if (shouldUpdate) {
-            std::unique_ptr<EvgetCore::Event::AbstractData> systemData = createSystemData(deviceEvent, "MouseScrollSystemData");
-            auto genericData = std::exchange(scrollEventBuilder, std::nullopt)->time(timestamp).device(getDevice(deviceEvent.deviceid)).build();
-            data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(std::move(genericData)).systemData(std::move(systemData)).build());
-        }
-    } else {
-        throw EvgetCore::UnsupportedOperationException("Unsupported event type.");
     }
+
+    builder.time(timestamp).device(getDevice(deviceEvent.deviceid))
+    .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+
+    data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(builder.build())
+    .systemData(createSystemData(deviceEvent, "MouseScrollSystemData")).build());
 }
 
 void EvgetX11::XEventSwitchCore::updateMotionEvent(std::chrono::nanoseconds &timestamp,
