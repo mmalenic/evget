@@ -36,6 +36,7 @@ include(CTest)
 set(BOOST_VERSION 1.79)
 set(FMT_VERSION 8.1)
 set(SPDLOG_VERSION 1.10)
+set(DATE_VERSION 3.0.1)
 
 # Checks the feature, returning the result true for the current feature.
 function(feature_check)

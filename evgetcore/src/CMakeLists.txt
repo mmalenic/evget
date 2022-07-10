@@ -21,6 +21,7 @@ add_program(
     Event/Pointer/PositionYOuter.cpp
     Event/Pointer/PositionX.cpp
     Event/Pointer/PositionY.cpp
+    Event/Common/DateTime.cpp
     Event/Button/Name.cpp
     Event/Common/DeviceType.cpp
     Event/TableData.cpp

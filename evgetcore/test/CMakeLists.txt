@@ -17,6 +17,7 @@ add_program(
     Event/Pointer/EllipseMinorInnerTest.cpp
     Event/Pointer/EllipseMinorOuterTest.cpp
     Event/Pointer/MultitouchTest.cpp
+    Event/Common/DateTimeTest.cpp
     Event/Pointer/OrientationTest.cpp
     Event/Button/ActionTest.cpp
     Event/Button/IdentifierTest.cpp

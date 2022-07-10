@@ -25,6 +25,7 @@ add_program(
     include/evgetcore/Event/Pointer/ScrollRight.h
     include/evgetcore/Event/Common/Time.h
     include/evgetcore/Event/Pointer/Multitouch.h
+    include/evgetcore/Event/Common/DateTime.h
     include/evgetcore/Event/Pointer/Orientation.h
     include/evgetcore/Event/Pointer/EllipseMajorInner.h
     include/evgetcore/Event/Pointer/EllipseMajorOuter.h
@@ -53,6 +54,7 @@ add_subdirectory(src)
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC fmt ${FMT_VERSION})
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC spdlog ${SPDLOG_VERSION})
 program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC Boost ${BOOST_VERSION} FIND_ALL COMPONENTS program_options headers)
+program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC date ${DATE_VERSION} COMPONENTS date-tz)
 
 add_library_and_link(EVGETCORE_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 
