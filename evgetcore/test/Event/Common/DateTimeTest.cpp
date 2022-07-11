@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include "EventTestUtils.h"
-#include "evgetcore/Event/Common/Time.h"
+#include "evgetcore/Event/Common/DateTime.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(DateTimeTest, Constructor) { // NOLINT(cert-err58-cpp)
-//    EventTestUtils::fieldValueAndName<EvgetCore::Event::Common::Time>(std::chrono::nanoseconds{1}, "Time", "1");
+    EventTestUtils::fieldValueAndName<EvgetCore::Event::Common::DateTime>("1", "Time", "1");
 }
