@@ -27,6 +27,7 @@
 #include <X11/Xlib.h>
 #include <chrono>
 #include "XWrapperX11.h"
+#include "evgetcore/Event/Common/DateTime.h"
 
 namespace EvgetX11 {
     class XInputEvent {
@@ -37,6 +38,11 @@ namespace EvgetX11 {
          * Get the timestamp of the event.
          */
         [[nodiscard]] Timestamp getTimestamp() const;
+
+        /**
+         * Get the date time of the event.
+         */
+        [[nodiscard]] const EvgetCore::Event::Common::DateTime::TimePoint &getDateTime() const;
 
         /**
          * Check if viewData and getEventType is safe to call.
@@ -67,6 +73,7 @@ namespace EvgetX11 {
 
         XEvent event;
         Timestamp timestamp;
+        EvgetCore::Event::Common::DateTime::TimePoint dateTime;
         XWrapper::XEventPointer cookie;
     };
 
