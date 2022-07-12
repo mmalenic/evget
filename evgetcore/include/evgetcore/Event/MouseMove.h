@@ -31,6 +31,7 @@
 #include "evgetcore/Event/Pointer/PositionX.h"
 #include "evgetcore/Event/Pointer/PositionY.h"
 #include "evgetcore/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Common/DateTime.h"
 
 namespace EvgetCore::Event {
     /**
@@ -42,12 +43,17 @@ namespace EvgetCore::Event {
         public:
             friend class MouseMove;
 
-            MouseMoveBuilder();
+            MouseMoveBuilder() = default;
 
             /**
              * Add time in nanoseconds.
              */
             MouseMoveBuilder& time(std::chrono::nanoseconds nanoseconds);
+
+            /**
+             * Add date time
+             */
+            MouseMoveBuilder& dateTime(Common::DateTime::TimePoint timePoint);
 
             /**
              * Mouse device.
@@ -70,10 +76,11 @@ namespace EvgetCore::Event {
             std::unique_ptr<MouseMove> build();
 
         private:
-            std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Common::DeviceType> _device;
-            std::unique_ptr<Pointer::PositionX> _positionX;
-            std::unique_ptr<Pointer::PositionY> _positionY;
+            std::unique_ptr<Common::Time> _time{};
+            std::unique_ptr<Common::DateTime> _dateTime{};
+            std::unique_ptr<Common::DeviceType> _device{};
+            std::unique_ptr<Pointer::PositionX> _positionX{};
+            std::unique_ptr<Pointer::PositionY> _positionY{};
         };
 
         /**

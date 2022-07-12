@@ -25,19 +25,13 @@
 
 #include <utility>
 
-EvgetCore::Event::MouseClick::MouseClickBuilder::MouseClickBuilder() :
-    _time{std::make_unique<Common::Time>()},
-    _device{std::make_unique<Common::DeviceType>()},
-    _positionX{std::make_unique<Pointer::PositionX>()},
-    _positionY{std::make_unique<Pointer::PositionY>()},
-    _buttonType{std::make_unique<Button::Action>()},
-    _buttonId{std::make_unique<Button::Identifier>()},
-    _buttonName{std::make_unique<Button::Name>()}
-{
-}
-
 EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::time(std::chrono::nanoseconds nanoseconds) {
     _time = std::make_unique<Common::Time>(nanoseconds);
+    return *this;
+}
+
+EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
+    _dateTime = std::make_unique<Common::DateTime>(timePoint);
     return *this;
 }
 
@@ -79,6 +73,7 @@ EvgetCore::Event::MouseClick::MouseClick(
     EvgetCore::Event::MouseClick::MouseClickBuilder& builder
 ) : AbstractData{"MouseClick"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._dateTime));
     fields.emplace_back(std::move(builder._device));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

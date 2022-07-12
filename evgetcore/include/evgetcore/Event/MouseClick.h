@@ -33,6 +33,7 @@
 #include "evgetcore/Event/Button/Action.h"
 #include "evgetcore/Event/Button/Identifier.h"
 #include "evgetcore/Event/Button/Name.h"
+#include "evgetcore/Event/Common/DateTime.h"
 
 namespace EvgetCore::Event {
     /**
@@ -44,7 +45,7 @@ namespace EvgetCore::Event {
         public:
             friend class MouseClick;
 
-            MouseClickBuilder();
+            MouseClickBuilder() = default;
 
             /**
              * Add time in nanoseconds.
@@ -52,9 +53,14 @@ namespace EvgetCore::Event {
             MouseClickBuilder& time(std::chrono::nanoseconds nanoseconds);
 
             /**
+             * Add date time
+             */
+            MouseClickBuilder& dateTime(Common::DateTime::TimePoint timePoint);
+
+            /**
              * Mouse device.
              */
-            MouseClickBuilder& device(EvgetCore::Event::Common::Device device);
+            MouseClickBuilder& device(Common::Device device);
 
             /**
              * Add position x.
@@ -87,13 +93,14 @@ namespace EvgetCore::Event {
             std::unique_ptr<MouseClick> build();
 
         private:
-            std::unique_ptr<Common::Time> _time;
-            std::unique_ptr<Common::DeviceType> _device;
-            std::unique_ptr<Pointer::PositionX> _positionX;
-            std::unique_ptr<Pointer::PositionY> _positionY;
-            std::unique_ptr<Button::Action> _buttonType;
-            std::unique_ptr<Button::Identifier> _buttonId;
-            std::unique_ptr<Button::Name> _buttonName;
+            std::unique_ptr<Common::Time> _time{};
+            std::unique_ptr<Common::DateTime> _dateTime{};
+            std::unique_ptr<Common::DeviceType> _device{};
+            std::unique_ptr<Pointer::PositionX> _positionX{};
+            std::unique_ptr<Pointer::PositionY> _positionY{};
+            std::unique_ptr<Button::Action> _buttonType{};
+            std::unique_ptr<Button::Identifier> _buttonId{};
+            std::unique_ptr<Button::Name> _buttonName{};
         };
 
         /**

@@ -36,5 +36,4 @@ namespace EvgetCore::Event::Common {
     };
 }
 
-
 #endif //EVGET_TIME_H

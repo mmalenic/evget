@@ -27,6 +27,11 @@ EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll
     return *this;
 }
 
+EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
+    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+    return *this;
+}
+
 EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::device(EvgetCore::Event::Common::Device device) {
     _device = EvgetCore::Event::Common::DeviceType::createType(device);
     return *this;
@@ -70,6 +75,7 @@ EvgetCore::Event::MouseScroll::MouseScroll(
     EvgetCore::Event::MouseScroll::MouseScrollBuilder& builder
 ) : AbstractData{"MouseScroll"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._dateTime));
     fields.emplace_back(std::move(builder._device));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

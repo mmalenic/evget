@@ -28,6 +28,11 @@ EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::time(std::
     return *this;
 }
 
+EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
+    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+    return *this;
+}
+
 EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::device(EvgetCore::Event::Common::Device device) {
     _device = EvgetCore::Event::Common::DeviceType::createType(device);
     return *this;
@@ -71,6 +76,7 @@ EvgetCore::Event::Key::Key(
     EvgetCore::Event::Key::KeyBuilder& builder
 ) : AbstractData{"Key"} {
     fields.emplace_back(std::move(builder._time));
+    fields.emplace_back(std::move(builder._dateTime));
     fields.emplace_back(std::move(builder._device));
     fields.emplace_back(std::move(builder._positionX));
     fields.emplace_back(std::move(builder._positionY));

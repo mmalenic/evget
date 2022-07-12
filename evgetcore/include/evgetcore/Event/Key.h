@@ -35,6 +35,7 @@
 #include "evgetcore/Event/Pointer/PositionY.h"
 #include "evgetcore/Event/Common/Device.h"
 #include "evgetcore/Event/Common/DeviceType.h"
+#include "evgetcore/Event/Common/DateTime.h"
 
 namespace EvgetCore::Event {
     /**
@@ -52,6 +53,11 @@ namespace EvgetCore::Event {
              * Add time in nanoseconds.
              */
             KeyBuilder& time(std::chrono::nanoseconds nanoseconds);
+
+            /**
+             * Add date time
+             */
+            KeyBuilder& dateTime(Common::DateTime::TimePoint timePoint);
 
             /**
              * Mouse device.
@@ -95,6 +101,7 @@ namespace EvgetCore::Event {
 
         private:
             std::unique_ptr<Common::Time> _time{};
+            std::unique_ptr<Common::DateTime> _dateTime{};
             std::unique_ptr<Common::DeviceType> _device{};
             std::unique_ptr<Pointer::PositionX> _positionX{};
             std::unique_ptr<Pointer::PositionY> _positionY{};
