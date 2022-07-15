@@ -67,7 +67,7 @@ void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chro
         return;
     }
 
-    addButtonEvent(deviceEvent, timestamp, data, action, deviceEvent.detail);
+    addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, deviceEvent.detail);
 }
 
 void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data) {
@@ -89,7 +89,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
     std::string name = XWrapper::keySymToString(keySym);
 
     EvgetCore::Event::Key::KeyBuilder builder{};
-    builder.time(timestamp).action(action).button(deviceEvent.detail).character(character).name(name);
+    builder.time(timestamp).dateTime(event.getDateTime()).action(action).button(deviceEvent.detail).character(character).name(name);
 
     addTableData(data, builder.build(), createSystemData(deviceEvent, "KeySystemData"));
 }
@@ -129,7 +129,7 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
         }
     }
 
-    builder.time(timestamp).device(getDevice(deviceEvent.deviceid))
+    builder.time(timestamp).dateTime(event.getDateTime()).device(getDevice(deviceEvent.deviceid))
     .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
 
     data.emplace_back(EvgetCore::Event::TableData::TableDataBuilder{}.genericData(builder.build())
@@ -145,7 +145,7 @@ void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chro
     auto valuators = getValuators(deviceEvent.valuators);
     for (const auto& [valuator, value]: valuators) {
         if (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid]) {
-            addMotionEvent(deviceEvent, timestamp, data);
+            addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
             break;
         }
     }

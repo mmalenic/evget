@@ -28,10 +28,11 @@
 void EvgetX11::XEventSwitchPointer::addMotionEvent(
         const XIDeviceEvent& event,
         std::chrono::nanoseconds timestamp,
+        EvgetCore::Event::Common::DateTime::TimePoint dateTime,
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data
 ) {
     EvgetCore::Event::MouseMove::MouseMoveBuilder builder{};
-    builder.time(timestamp).device(getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
+    builder.time(timestamp).dateTime(dateTime).device(getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
 
     addTableData(data, builder.build(), createSystemData(event, "MouseMoveSystemData"));
 }
@@ -39,12 +40,13 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
 void EvgetX11::XEventSwitchPointer::addButtonEvent(
         const XIDeviceEvent& event,
         std::chrono::nanoseconds timestamp,
+        EvgetCore::Event::Common::DateTime::TimePoint dateTime,
         std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data,
         EvgetCore::Event::Button::ButtonAction action,
         int button
 ) {
     EvgetCore::Event::MouseClick::MouseClickBuilder builder{};
-    builder.time(timestamp).device(getDevice(event.deviceid)).positionX(event.root_x)
+    builder.time(timestamp).dateTime(dateTime).device(getDevice(event.deviceid)).positionX(event.root_x)
             .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
     addTableData(data, builder.build(), createSystemData(event,"MouseClickSystemData"));
