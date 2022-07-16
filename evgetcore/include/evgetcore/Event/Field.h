@@ -27,14 +27,54 @@
 
 namespace EvgetCore::Event {
     /**
-     * Generic implementation of abstract field.
+     * Represents a field in an event.
      */
-    class Field : public AbstractField {
+    class Field {
     public:
-        explicit Field(std::string name);
+        using Entries = std::vector<std::unique_ptr<AbstractData>>;
+        using Iterator = Entries::const_iterator;
+        using EntryOrData = std::variant<std::string, Entries>;
+
         Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
+        explicit Field(std::string name);
+
+        /**
+         * Check if variant is the entry.
+         */
+        constexpr bool isEntry();
+
+        /**
+         * Check if variant is more data.
+         */
+        constexpr bool isData();
+
+        /**
+         * Get the entry.
+         */
+        [[nodiscard]] std::string getEntry() const;
+
+        /**
+         * Get the name.
+         */
+        [[nodiscard]] std::string getName() const;
+
+        [[nodiscard]] Iterator begin() const;
+
+        [[nodiscard]] Iterator end() const;
+
+    private:
+        std::string name;
+        EntryOrData entry;
     };
+
+    constexpr bool EvgetCore::Event::Field::isEntry() {
+        return std::holds_alternative<std::string>(entry);
+    }
+
+    constexpr bool EvgetCore::Event::Field::isData() {
+        return std::holds_alternative<Entries>(entry);
+    }
 }
 
 #endif //EVGET_SRC_EVENT_FIELD_H

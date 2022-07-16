@@ -25,11 +25,27 @@
 
 #include <utility>
 
-EvgetCore::Event::Field::Field(std::string name) : AbstractField{std::move(name)} {
+EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{} {
 }
 
-EvgetCore::Event::Field::Field(std::string name, std::string entries) : AbstractField{std::move(name), std::move(entries)} {
+EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-EvgetCore::Event::Field::Field(std::string name, Entries entry) : AbstractField{std::move(name), std::move(entry) } {
+EvgetCore::Event::Field::Field(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
+}
+
+std::string EvgetCore::Event::Field::getEntry() const {
+    return std::get<std::string>(entry);
+}
+
+std::string EvgetCore::Event::Field::getName() const {
+    return name;
+}
+
+EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::begin() const {
+    return std::get<Entries>(entry).begin();
+}
+
+EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::end() const {
+    return std::get<Entries>(entry).end();
 }
