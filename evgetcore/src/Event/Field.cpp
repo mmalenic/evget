@@ -31,7 +31,10 @@ EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{
 EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{entry}{
+EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{entry} {
+}
+
+EvgetCore::Event::Field::Field(std::string_view name, std::string entry) : name{name}, entry{entry} {
 }
 
 EvgetCore::Event::Field::Field(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
@@ -64,3 +67,6 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createAction(EvgetCore::Event::
     }
 }
 
+EvgetCore::Event::Field EvgetCore::Event::Field::createCharacter(std::string character) {
+    return {CHARACTER_FIELD_NAME, std::move(character)};
+}

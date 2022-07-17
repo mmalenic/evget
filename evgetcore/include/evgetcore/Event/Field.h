@@ -42,6 +42,10 @@ namespace EvgetCore::Event {
          * Create a Field using string_view, which copies over the data to a string.
          */
         Field(std::string_view name, std::string_view entry);
+        /**
+         * Create a Field using string_view, which copies over the data to a string.
+         */
+        Field(std::string_view name, std::string entry);
         explicit Field(std::string name);
 
         /**
@@ -73,11 +77,17 @@ namespace EvgetCore::Event {
          */
         static Field createAction(Button::ButtonAction action);
 
+        /**
+         * Create a character from a string.
+         */
+        static Field createCharacter(std::string character);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
         static constexpr std::string_view ACTION_RELEASE{"Release"};
         static constexpr std::string_view ACTION_REPEAT{"Repeat"};
+        static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
 
         std::string name;
     private:
