@@ -38,14 +38,17 @@ namespace EvgetCore::Event {
 
         Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
+
         /**
          * Create a Field using string_view, which copies over the data to a string.
          */
         Field(std::string_view name, std::string_view entry);
+
         /**
          * Create a Field using string_view, which copies over the data to a string.
          */
         Field(std::string_view name, std::string entry);
+
         explicit Field(std::string name);
 
         /**
@@ -82,12 +85,18 @@ namespace EvgetCore::Event {
          */
         static Field createCharacter(std::string character);
 
+        /**
+         * Create an identifier using int id, usually representing a button id.
+         */
+        static Field createIdentifier(int id);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
         static constexpr std::string_view ACTION_RELEASE{"Release"};
         static constexpr std::string_view ACTION_REPEAT{"Repeat"};
         static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
+        static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
 
         std::string name;
     private:
