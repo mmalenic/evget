@@ -74,3 +74,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createCharacter(std::string cha
 EvgetCore::Event::Field EvgetCore::Event::Field::createIdentifier(int id) {
     return {IDENTIFIER_FIELD_NAME, std::to_string(id)};
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createName(std::string name) {
+    return {NAME_FIELD_NAME, std::move(name)};
+}

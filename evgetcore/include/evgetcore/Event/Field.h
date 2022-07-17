@@ -90,6 +90,11 @@ namespace EvgetCore::Event {
          */
         static Field createIdentifier(int id);
 
+        /**
+         * Create a name field.
+         */
+        static Field createName(std::string name);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -97,9 +102,9 @@ namespace EvgetCore::Event {
         static constexpr std::string_view ACTION_REPEAT{"Repeat"};
         static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
         static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
+        static constexpr std::string_view NAME_FIELD_NAME{"Name"};
 
         std::string name;
-    private:
         EntryOrData entry;
     };
 
