@@ -23,6 +23,7 @@
 #ifndef EVGET_SRC_EVENT_FIELD_H
 #define EVGET_SRC_EVENT_FIELD_H
 
+#include <c++/11/chrono>
 #include "AbstractField.h"
 #include "evgetcore/Event/Button/ButtonAction.h"
 
@@ -35,6 +36,7 @@ namespace EvgetCore::Event {
         using Entries = std::vector<std::unique_ptr<AbstractData>>;
         using Iterator = Entries::const_iterator;
         using EntryOrData = std::variant<std::string, Entries>;
+        using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
         Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
@@ -95,6 +97,11 @@ namespace EvgetCore::Event {
          */
         static Field createName(std::string name);
 
+        /**
+         * Create a date time field using a DateTime value.
+         */
+        static Field createDateTime(DateTime dateTime);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -103,6 +110,7 @@ namespace EvgetCore::Event {
         static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
         static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
         static constexpr std::string_view NAME_FIELD_NAME{"Name"};
+        static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
 
         std::string name;
         EntryOrData entry;

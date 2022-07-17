@@ -23,6 +23,7 @@
 #include "evgetcore/Event/Field.h"
 #include "evgetcore/Event/AbstractData.h"
 
+#include <date/tz.h>
 #include <utility>
 
 EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{} {
@@ -77,4 +78,10 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createIdentifier(int id) {
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createName(std::string name) {
     return {NAME_FIELD_NAME, std::move(name)};
+}
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(EvgetCore::Event::Field::DateTime dateTime) {
+    std::stringstream stream{};
+    stream << date::make_zoned(date::current_zone(), dateTime);
+    return {DATE_TIME_FIELD_NAME, stream.str()};
 }
