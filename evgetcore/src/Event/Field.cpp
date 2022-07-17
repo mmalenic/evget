@@ -85,3 +85,16 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(EvgetCore::Event
     stream << date::make_zoned(date::current_zone(), dateTime);
     return {DATE_TIME_FIELD_NAME, stream.str()};
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(EvgetCore::Event::Common::Device device) {
+    switch (device) {
+        case Common::Device::Mouse:
+            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_MOUSE};
+        case Common::Device::Keyboard:
+            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_KEYBOARD};
+        case Common::Device::Touchpad:
+            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHPAD};
+        case Common::Device::Touchscreen:
+            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHSCREEN};
+    }
+}

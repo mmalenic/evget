@@ -26,6 +26,7 @@
 #include <c++/11/chrono>
 #include "AbstractField.h"
 #include "evgetcore/Event/Button/ButtonAction.h"
+#include "evgetcore/Event/Common/Device.h"
 
 namespace EvgetCore::Event {
     /**
@@ -102,6 +103,11 @@ namespace EvgetCore::Event {
          */
         static Field createDateTime(DateTime dateTime);
 
+        /**
+         * Create a date time field using a DateTime value.
+         */
+        static Field createDeviceType(Event::Common::Device device);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -111,6 +117,11 @@ namespace EvgetCore::Event {
         static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
         static constexpr std::string_view NAME_FIELD_NAME{"Name"};
         static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
+        static constexpr std::string_view DEVICE_TYPE_FIELD_NAME{"DeviceType"};
+        static constexpr std::string_view DEVICE_TYPE_MOUSE{"Mouse"};
+        static constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
+        static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
+        static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
 
         std::string name;
         EntryOrData entry;
