@@ -31,6 +31,9 @@ EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{
 EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
+EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{entry}{
+}
+
 EvgetCore::Event::Field::Field(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
 }
 
@@ -49,3 +52,15 @@ EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::begin() const
 EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::end() const {
     return std::get<Entries>(entry).end();
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createAction(EvgetCore::Event::Button::ButtonAction action) {
+    switch (action) {
+        case Button::ButtonAction::Press:
+            return {ACTION_FIELD_NAME, ACTION_PRESS};
+        case Button::ButtonAction::Release:
+            return {ACTION_FIELD_NAME, ACTION_RELEASE};
+        case Button::ButtonAction::Repeat:
+            return {ACTION_FIELD_NAME, ACTION_REPEAT};
+    }
+}
+

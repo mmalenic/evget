@@ -24,6 +24,7 @@
 #define EVGET_SRC_EVENT_FIELD_H
 
 #include "AbstractField.h"
+#include "evgetcore/Event/Button/ButtonAction.h"
 
 namespace EvgetCore::Event {
     /**
@@ -37,6 +38,10 @@ namespace EvgetCore::Event {
 
         Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
+        /**
+         * Create a Field using string_view, which copies over the data to a string.
+         */
+        Field(std::string_view name, std::string_view entry);
         explicit Field(std::string name);
 
         /**
@@ -63,8 +68,19 @@ namespace EvgetCore::Event {
 
         [[nodiscard]] Iterator end() const;
 
+        /**
+         * Create an Action based on the ButtonAction enum.
+         */
+        static Field createAction(Button::ButtonAction action);
+
     private:
+        static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
+        static constexpr std::string_view ACTION_PRESS{"Press"};
+        static constexpr std::string_view ACTION_RELEASE{"Release"};
+        static constexpr std::string_view ACTION_REPEAT{"Repeat"};
+
         std::string name;
+    private:
         EntryOrData entry;
     };
 
