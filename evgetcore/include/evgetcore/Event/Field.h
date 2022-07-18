@@ -27,6 +27,7 @@
 #include "AbstractField.h"
 #include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/Common/Device.h"
+#include "evgetcore/Event/Pointer/Direction.h"
 
 namespace EvgetCore::Event {
     /**
@@ -118,6 +119,16 @@ namespace EvgetCore::Event {
          */
         static Field createPositionX(double position);
 
+        /**
+         * Create a position y Field.
+         */
+        static Field createPositionY(double position);
+
+        /**
+         * Create a scroll Field using the Direction and amount.
+         */
+        static Field createScroll(Pointer::Direction direction, double amount);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -133,7 +144,12 @@ namespace EvgetCore::Event {
         static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
         static constexpr std::string_view TIME_FIELD_NAME{"Time"};
-        static constexpr std::string_view POSITIONX_FIELD_NAME{"Time"};
+        static constexpr std::string_view POSITIONX_FIELD_NAME{"PositionX"};
+        static constexpr std::string_view POSITIONY_FIELD_NAME{"PositionY"};
+        static constexpr std::string_view SCROLLDOWN_FIELD_NAME{"ScrollDown"};
+        static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
+        static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
+        static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
 
         std::string name;
         EntryOrData entry;

@@ -106,3 +106,20 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::chrono::nanosec
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(double position) {
     return {POSITIONX_FIELD_NAME, std::to_string(position)};
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createPositionY(double position) {
+    return {POSITIONY_FIELD_NAME, std::to_string(position)};
+}
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::Pointer::Direction direction, double amount) {
+    switch (direction) {
+        case Pointer::Direction::Down:
+            return {SCROLLDOWN_FIELD_NAME, std::to_string(amount)};
+        case Pointer::Direction::Left:
+            return {SCROLLLEFT_FIELD_NAME, std::to_string(amount)};
+        case Pointer::Direction::Right:
+            return {SCROLLRIGHT_FIELD_NAME, std::to_string(amount)};
+        case Pointer::Direction::Up:
+            return {SCROLLUP_FIELD_NAME, std::to_string(amount)};
+    }
+}

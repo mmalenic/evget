@@ -25,10 +25,10 @@
 
 namespace EvgetCore::Event::Pointer {
     enum class Direction {
-        Up,
         Down,
         Left,
-        Right
+        Right,
+        Up
     };
 }
 
