@@ -102,3 +102,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(EvgetCore::Eve
 EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::chrono::nanoseconds interval) {
     return {TIME_FIELD_NAME, std::to_string(interval.count())};
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(double position) {
+    return {POSITIONX_FIELD_NAME, std::to_string(position)};
+}

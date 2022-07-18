@@ -113,6 +113,11 @@ namespace EvgetCore::Event {
          */
         static Field createTime(std::chrono::nanoseconds interval);
 
+        /**
+         * Create a position x Field.
+         */
+        static Field createPositionX(double position);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -128,6 +133,7 @@ namespace EvgetCore::Event {
         static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
         static constexpr std::string_view TIME_FIELD_NAME{"Time"};
+        static constexpr std::string_view POSITIONX_FIELD_NAME{"Time"};
 
         std::string name;
         EntryOrData entry;
