@@ -98,3 +98,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(EvgetCore::Eve
             return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHSCREEN};
     }
 }
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::chrono::nanoseconds interval) {
+    return {TIME_FIELD_NAME, std::to_string(interval.count())};
+}

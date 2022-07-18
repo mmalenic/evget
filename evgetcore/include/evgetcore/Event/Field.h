@@ -108,6 +108,11 @@ namespace EvgetCore::Event {
          */
         static Field createDeviceType(Event::Common::Device device);
 
+        /**
+         * Create a time field, which represents an interval of time.
+         */
+        static Field createTime(std::chrono::nanoseconds interval);
+
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -122,6 +127,7 @@ namespace EvgetCore::Event {
         static constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
+        static constexpr std::string_view TIME_FIELD_NAME{"Time"};
 
         std::string name;
         EntryOrData entry;
