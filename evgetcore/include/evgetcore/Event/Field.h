@@ -151,6 +151,12 @@ namespace EvgetCore::Event {
         static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
         static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
 
+
+        /**
+         * Create a Field using a double value.
+         */
+        static Field createDouble(std::string_view name, double value);
+
         std::string name;
         EntryOrData entry;
     };

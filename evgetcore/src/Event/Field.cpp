@@ -104,22 +104,26 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::chrono::nanosec
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(double position) {
-    return {POSITIONX_FIELD_NAME, std::to_string(position)};
+    return createDoublePOSITIONX_FIELD_NAME, std::to_string(position);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionY(double position) {
-    return {POSITIONY_FIELD_NAME, std::to_string(position)};
+    return createDouble(POSITIONY_FIELD_NAME, position);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::Pointer::Direction direction, double amount) {
     switch (direction) {
         case Pointer::Direction::Down:
-            return {SCROLLDOWN_FIELD_NAME, std::to_string(amount)};
+            return createDouble(SCROLLDOWN_FIELD_NAME, amount);
         case Pointer::Direction::Left:
-            return {SCROLLLEFT_FIELD_NAME, std::to_string(amount)};
+            return createDouble(SCROLLLEFT_FIELD_NAME, amount);
         case Pointer::Direction::Right:
-            return {SCROLLRIGHT_FIELD_NAME, std::to_string(amount)};
+            return createDouble(SCROLLRIGHT_FIELD_NAME, amount);
         case Pointer::Direction::Up:
-            return {SCROLLUP_FIELD_NAME, std::to_string(amount)};
+            return createDouble(SCROLLUP_FIELD_NAME,amount);
     }
+}
+
+EvgetCore::Event::Field EvgetCore::Event::Field::createDouble(std::string_view name, double value) {
+    return {name, std::to_string(value)};
 }
