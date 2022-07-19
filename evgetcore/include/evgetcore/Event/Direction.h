@@ -20,13 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evgetcore/Event/Pointer/ScrollDown.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
+#define EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 
-EvgetCore::Event::Pointer::ScrollDown::ScrollDown(std::string amount) : AbstractField{"ScrollDown", std::move(amount)} {
+namespace EvgetCore::Event {
+    enum class Direction {
+        Down,
+        Left,
+        Right,
+        Up
+    };
 }
 
-EvgetCore::Event::Pointer::ScrollDown::ScrollDown(double amount) : ScrollDown{std::to_string(amount)} {
-}
-
-EvgetCore::Event::Pointer::ScrollDown::ScrollDown() : ScrollDown{""} {
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H

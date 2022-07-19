@@ -19,22 +19,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-#include <date/tz.h>
-#include "evgetcore/Event/Common/DateTime.h"
+#ifndef EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
+#define EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 
-EvgetCore::Event::Common::DateTime::DateTime(std::string timePoint) : AbstractField{"DateTime", std::move(timePoint)} {
+namespace EvgetCore::Event {
+    enum class Device {
+        Mouse,
+        Keyboard,
+        Touchpad,
+        Touchscreen
+    };
 }
 
-EvgetCore::Event::Common::DateTime::DateTime(TimePoint timePoint) : DateTime{formatDateTime(timePoint)} {
-}
-
-EvgetCore::Event::Common::DateTime::DateTime() : DateTime{""} {
-}
-
-std::string EvgetCore::Event::Common::DateTime::formatDateTime(TimePoint timePoint) {
-    std::stringstream stream{};
-    stream << date::make_zoned(date::current_zone(), timePoint);
-    return stream.str();
-}
+#endif //EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H

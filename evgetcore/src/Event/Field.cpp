@@ -49,15 +49,15 @@ std::string EvgetCore::Event::Field::getName() const {
     return name;
 }
 
-EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::begin() const {
+EvgetCore::Event::Field::Iterator EvgetCore::Event::Field::begin() const {
     return std::get<Entries>(entry).begin();
 }
 
-EvgetCore::Event::AbstractField::Iterator EvgetCore::Event::Field::end() const {
+EvgetCore::Event::Field::Iterator EvgetCore::Event::Field::end() const {
     return std::get<Entries>(entry).end();
 }
 
-EvgetCore::Event::Field EvgetCore::Event::Field::createAction(EvgetCore::Event::Button::ButtonAction action) {
+EvgetCore::Event::Field EvgetCore::Event::Field::createAction(EvgetCore::Event::ButtonAction action) {
     switch (action) {
         case Button::ButtonAction::Press:
             return {ACTION_FIELD_NAME, ACTION_PRESS};
@@ -86,15 +86,15 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(EvgetCore::Event
     return {DATE_TIME_FIELD_NAME, stream.str()};
 }
 
-EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(EvgetCore::Event::Common::Device device) {
+EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(EvgetCore::Event::Device device) {
     switch (device) {
-        case Common::Device::Mouse:
+        case Device::Mouse:
             return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_MOUSE};
-        case Common::Device::Keyboard:
+        case Device::Keyboard:
             return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_KEYBOARD};
-        case Common::Device::Touchpad:
+        case Device::Touchpad:
             return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHPAD};
-        case Common::Device::Touchscreen:
+        case Device::Touchscreen:
             return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHSCREEN};
     }
 }
@@ -104,22 +104,22 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::chrono::nanosec
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(double position) {
-    return createDoublePOSITIONX_FIELD_NAME, std::to_string(position);
+    return createDouble(POSITIONX_FIELD_NAME, position);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionY(double position) {
     return createDouble(POSITIONY_FIELD_NAME, position);
 }
 
-EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::Pointer::Direction direction, double amount) {
+EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::Direction direction, double amount) {
     switch (direction) {
-        case Pointer::Direction::Down:
+        case Direction::Down:
             return createDouble(SCROLLDOWN_FIELD_NAME, amount);
-        case Pointer::Direction::Left:
+        case Direction::Left:
             return createDouble(SCROLLLEFT_FIELD_NAME, amount);
-        case Pointer::Direction::Right:
+        case Direction::Right:
             return createDouble(SCROLLRIGHT_FIELD_NAME, amount);
-        case Pointer::Direction::Up:
+        case Direction::Up:
             return createDouble(SCROLLUP_FIELD_NAME,amount);
     }
 }

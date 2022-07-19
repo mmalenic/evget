@@ -18,34 +18,13 @@ add_program(
     include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h
     include/evgetcore/Event/MouseScroll.h
-    include/evgetcore/Event/Button/Character.h
-    include/evgetcore/Event/Pointer/ScrollUp.h
-    include/evgetcore/Event/Pointer/ScrollDown.h
-    include/evgetcore/Event/Pointer/ScrollLeft.h
-    include/evgetcore/Event/Pointer/ScrollRight.h
-    include/evgetcore/Event/Common/Time.h
-    include/evgetcore/Event/Pointer/Multitouch.h
-    include/evgetcore/Event/Common/DateTime.h
-    include/evgetcore/Event/Pointer/Orientation.h
-    include/evgetcore/Event/Pointer/EllipseMajorInner.h
-    include/evgetcore/Event/Pointer/EllipseMajorOuter.h
-    include/evgetcore/Event/Pointer/EllipseMinorInner.h
-    include/evgetcore/Event/Pointer/EllipseMinorOuter.h
-    include/evgetcore/Event/Pointer/PositionXOuterTest.h
-    include/evgetcore/Event/Pointer/PositionYOuterTest.h
-    include/evgetcore/Event/Pointer/PositionX.h
-    include/evgetcore/Event/Pointer/PositionY.h
-    include/evgetcore/Event/Button/Name.h
-    include/evgetcore/Event/Common/DeviceType.h
-    include/evgetcore/Event/Common/Device.h
-    include/evgetcore/Event/Button/Action.h
-    include/evgetcore/Event/Button/ButtonAction.h
-    include/evgetcore/Event/Button/Identifier.h
+    include/evgetcore/Event/Direction.h
+    include/evgetcore/Event/ButtonAction.h
+    include/evgetcore/Event/Device.h
     include/evgetcore/Event/TableData.h
     include/evgetcore/Event/Touch.h
     include/evgetcore/EventListener.h
     include/evgetcore/Util.h
-    include/evgetcore/Event/AbstractField.h
     include/evgetcore/UnsupportedOperationException.h
     include/evgetcore/CoreParser.h
 )

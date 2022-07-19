@@ -1,33 +1,11 @@
 add_program(
     TARGET ${EVGETCORE_LIBRARY_NAME}
     SRCS
-    Event/Button/Character.cpp
-    Event/Common/Time.cpp
     Event/Data.cpp
     Event/Field.cpp
-    Event/Button/Action.cpp
-    Event/Button/Identifier.cpp
-    Event/Pointer/Multitouch.cpp
-    Event/Pointer/ScrollUp.cpp
-    Event/Pointer/ScrollDown.cpp
-    Event/Pointer/ScrollLeft.cpp
-    Event/Pointer/ScrollRight.cpp
-    Event/Pointer/Orientation.cpp
-    Event/Pointer/EllipseMajorInner.cpp
-    Event/Pointer/EllipseMajorOuter.cpp
-    Event/Pointer/EllipseMinorInner.cpp
-    Event/Pointer/EllipseMinorOuter.cpp
-    Event/Pointer/PositionXOuter.cpp
-    Event/Pointer/PositionYOuter.cpp
-    Event/Pointer/PositionX.cpp
-    Event/Pointer/PositionY.cpp
-    Event/Common/DateTime.cpp
-    Event/Button/Name.cpp
-    Event/Common/DeviceType.cpp
     Event/TableData.cpp
     Event/AbstractData.cpp
     CoreParser.cpp
-    Event/AbstractField.cpp
     Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp

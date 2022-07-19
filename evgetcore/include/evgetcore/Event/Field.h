@@ -24,10 +24,10 @@
 #define EVGET_SRC_EVENT_FIELD_H
 
 #include <c++/11/chrono>
-#include "AbstractField.h"
-#include "evgetcore/Event/Button/ButtonAction.h"
-#include "evgetcore/Event/Common/Device.h"
-#include "evgetcore/Event/Pointer/Direction.h"
+#include "AbstractData.h"
+#include "ButtonAction.h"
+#include "Device.h"
+#include "Direction.h"
 
 namespace EvgetCore::Event {
     /**
@@ -82,7 +82,7 @@ namespace EvgetCore::Event {
         /**
          * Create an Action based on the ButtonAction enum.
          */
-        static Field createAction(Button::ButtonAction action);
+        static Field createAction(ButtonAction action);
 
         /**
          * Create a character from a string.
@@ -107,7 +107,7 @@ namespace EvgetCore::Event {
         /**
          * Create a date time field using a DateTime value.
          */
-        static Field createDeviceType(Event::Common::Device device);
+        static Field createDeviceType(Device device);
 
         /**
          * Create a time field, which represents an interval of time.
@@ -127,7 +127,7 @@ namespace EvgetCore::Event {
         /**
          * Create a scroll Field using the Direction and amount.
          */
-        static Field createScroll(Pointer::Direction direction, double amount);
+        static Field createScroll(Direction direction, double amount);
 
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};

@@ -20,19 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_IDENTIFIER_H
-#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_IDENTIFIER_H
+#ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
+#define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 
-#include "evgetcore/Event/AbstractField.h"
-#include <string>
-
-namespace EvgetCore::Event::Button {
-    class Identifier : public AbstractField {
-    public:
-        Identifier();
-        explicit Identifier(std::string button);
-        explicit Identifier(int button);
+namespace EvgetCore::Event {
+    enum class ButtonAction {
+        Press,
+        Release,
+        Repeat
     };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_IDENTIFIER_H
+#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
