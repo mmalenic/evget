@@ -29,7 +29,7 @@
 #include <variant>
 #include <optional>
 #include <memory>
-#include "AbstractField.h"
+#include "Field.h"
 
 namespace EvgetCore::Event {
 
@@ -38,7 +38,7 @@ namespace EvgetCore::Event {
      */
     class AbstractData {
     public:
-        using Iterator = std::vector<std::unique_ptr<AbstractField>>::const_iterator;
+        using Iterator = std::vector<std::unique_ptr<Field>>::const_iterator;
 
         /**
          * List of fields represent the ordered fields in the data.

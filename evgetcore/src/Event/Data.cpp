@@ -23,8 +23,17 @@
 #include "evgetcore/Event/Data.h"
 #include <utility>
 
-EvgetCore::Event::Data::Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields) : AbstractData{std::move(name)} {
-    for (auto& field : fields) {
-        this->fields.emplace_back(std::move(field));
-    }
+EvgetCore::Event::Data::Data(std::string name) : name{std::move(name)}, fields{} {
+}
+
+EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::begin() const noexcept {
+    return fields.begin();
+}
+
+EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::end() const noexcept {
+    return fields.end();
+}
+
+std::string EvgetCore::Event::Data::getName() const {
+    return name;
 }

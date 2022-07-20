@@ -27,11 +27,30 @@
 
 namespace EvgetCore::Event {
     /**
-     * Generic implementation of abstract data.
+     * Event container to represent event data.
      */
-    class Data : public AbstractData {
+    class Data {
     public:
-        explicit Data(std::string name, std::vector<std::unique_ptr<AbstractField>> fields);
+        using Iterator = std::vector<Field>::const_iterator;
+
+        Data() = default;
+        /**
+         * Create a Data with the given name.
+         */
+        explicit Data(std::string name);
+
+        /**
+         * Get the name of the data.
+         */
+        [[nodiscard]] std::string getName() const;
+
+        [[nodiscard]] Iterator begin() const noexcept;
+
+        [[nodiscard]] Iterator end() const noexcept;
+
+    private:
+        std::string name{};
+        std::vector<Field> fields{};
     };
 }
 

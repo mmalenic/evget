@@ -40,6 +40,7 @@ namespace EvgetCore::Event {
         using EntryOrData = std::variant<std::string, Entries>;
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
+        Field() = default;
         Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
 
@@ -157,8 +158,8 @@ namespace EvgetCore::Event {
          */
         static Field createDouble(std::string_view name, double value);
 
-        std::string name;
-        EntryOrData entry;
+        std::string name{};
+        EntryOrData entry{};
     };
 
     constexpr bool EvgetCore::Event::Field::isEntry() {
