@@ -40,6 +40,11 @@ namespace EvgetCore::Event {
         explicit Data(std::string name);
 
         /**
+         * Add a field to this data.
+         */
+        void setField(Field field);
+
+        /**
          * Get the name of the data.
          */
         [[nodiscard]] std::string getName() const;

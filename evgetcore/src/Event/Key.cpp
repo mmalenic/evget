@@ -21,67 +21,66 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Key.h"
-#include "evgetcore/Event/Button/Action.h"
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = std::make_unique<Common::Time>(nanoseconds);
+#include <utility>
+
+EvgetCore::Event::Key& EvgetCore::Event::Key::time(std::chrono::nanoseconds nanoseconds) {
+    _time = nanoseconds;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
-    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(Field::DateTime dateTime) {
+    _dateTime = dateTime;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::device(EvgetCore::Event::Common::Device device) {
-    _device = EvgetCore::Event::Common::DeviceType::createType(device);
+EvgetCore::Event::Key& EvgetCore::Event::Key::device(EvgetCore::Event::Device device) {
+    _device = device;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::positionX(double x) {
-    _positionX = std::make_unique<Pointer::PositionX>(x);
+EvgetCore::Event::Key& EvgetCore::Event::Key::positionX(double x) {
+    _positionX = x;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::positionY(double y) {
-    _positionY = std::make_unique<Pointer::PositionY>(y);
+EvgetCore::Event::Key& EvgetCore::Event::Key::positionY(double y) {
+    _positionY = y;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::action(Button::ButtonAction action) {
-    _buttonType = EvgetCore::Event::Button::Action::createAction(action);
+EvgetCore::Event::Key& EvgetCore::Event::Key::action(ButtonAction action) {
+    _action = action;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::button(int button) {
-    _button = std::make_unique<Button::Identifier>(button);
+EvgetCore::Event::Key& EvgetCore::Event::Key::button(int button) {
+    _button = button;
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::name(std::string name) {
-    _name = std::make_unique<Button::Name>(std::move(name));
+EvgetCore::Event::Key& EvgetCore::Event::Key::name(std::string name) {
+    _name = std::move(name);
     return *this;
 }
 
-EvgetCore::Event::Key::KeyBuilder& EvgetCore::Event::Key::KeyBuilder::character(const std::string& character) {
-    _character = std::make_unique<Button::Character>(character);
+EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
+    _character = std::move(character);
     return *this;
 }
 
-std::unique_ptr<EvgetCore::Event::Key> EvgetCore::Event::Key::KeyBuilder::build() {
-    return std::make_unique<EvgetCore::Event::Key>(*this);
-}
+EvgetCore::Event::Data EvgetCore::Event::Key::build() {
+    auto data = Data{"Key"};
 
-EvgetCore::Event::Key::Key(
-    EvgetCore::Event::Key::KeyBuilder& builder
-) : AbstractData{"Key"} {
-    fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._dateTime));
-    fields.emplace_back(std::move(builder._device));
-    fields.emplace_back(std::move(builder._positionX));
-    fields.emplace_back(std::move(builder._positionY));
-    fields.emplace_back(std::move(builder._buttonType));
-    fields.emplace_back(std::move(builder._button));
-    fields.emplace_back(std::move(builder._name));
-    fields.emplace_back(std::move(builder._character));
+    data.setField(Field::createTime(_time));
+    data.setField(Field::createDateTime(_dateTime));
+    data.setField(Field::createDeviceType(_device));
+    data.setField(Field::createPositionX(_positionX));
+    data.setField(Field::createPositionY(_positionY));
+    data.setField(Field::createAction(_action));
+    data.setField(Field::createIdentifier(_button));
+    data.setField(Field::createName(_name));
+    data.setField(Field::createName(_character));
+
+    return data;
 }

@@ -37,3 +37,7 @@ EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::end() const noexcept {
 std::string EvgetCore::Event::Data::getName() const {
     return name;
 }
+
+void EvgetCore::Event::Data::setField(Field field) {
+    fields.emplace_back(std::move(field));
+}
