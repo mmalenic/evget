@@ -23,70 +23,54 @@
 #ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 #define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 
-#include "AbstractData.h"
-#include "AbstractField.h"
 #include <chrono>
 #include <optional>
-#include "evgetcore/Event/Common/Time.h"
-#include "evgetcore/Event/Pointer/PositionX.h"
-#include "evgetcore/Event/Pointer/PositionY.h"
-#include "evgetcore/Event/Common/DeviceType.h"
-#include "evgetcore/Event/Common/DateTime.h"
+#include "Data.h"
 
 namespace EvgetCore::Event {
     /**
      * Represents a mouse move event.
      */
-    class MouseMove : public AbstractData {
+    class MouseMove {
     public:
-        class MouseMoveBuilder {
-        public:
-            friend class MouseMove;
-
-            MouseMoveBuilder() = default;
-
-            /**
-             * Add time in nanoseconds.
-             */
-            MouseMoveBuilder& time(std::chrono::nanoseconds nanoseconds);
-
-            /**
-             * Add date time
-             */
-            MouseMoveBuilder& dateTime(Common::DateTime::TimePoint timePoint);
-
-            /**
-             * Mouse device.
-             */
-            MouseMoveBuilder& device(EvgetCore::Event::Common::Device device);
-
-            /**
-             * Add position x.
-             */
-            MouseMoveBuilder& positionX(double x);
-
-            /**
-             * Add position y.
-             */
-            MouseMoveBuilder& positionY(double y);
-
-            /**
-             * Build mouse move event.
-             */
-            std::unique_ptr<MouseMove> build();
-
-        private:
-            std::unique_ptr<Common::Time> _time{};
-            std::unique_ptr<Common::DateTime> _dateTime{};
-            std::unique_ptr<Common::DeviceType> _device{};
-            std::unique_ptr<Pointer::PositionX> _positionX{};
-            std::unique_ptr<Pointer::PositionY> _positionY{};
-        };
+        MouseMove() = default;
 
         /**
-         * Create event entry.
+         * Add time in nanoseconds.
          */
-        explicit MouseMove(MouseMoveBuilder& builder);
+        MouseMove& time(std::chrono::nanoseconds nanoseconds);
+
+        /**
+         * Add date time
+         */
+        MouseMove& dateTime(Field::DateTime dateTime);
+
+        /**
+         * Mouse device.
+         */
+        MouseMove& device(Device device);
+
+        /**
+         * Add position x.
+         */
+        MouseMove& positionX(double x);
+
+        /**
+         * Add position y.
+         */
+        MouseMove& positionY(double y);
+
+        /**
+         * Build key event.
+         */
+        Data build();
+
+    private:
+        std::chrono::nanoseconds _time{};
+        Field::DateTime _dateTime{};
+        Device _device{};
+        double _positionX{};
+        double _positionY{};
     };
 }
 

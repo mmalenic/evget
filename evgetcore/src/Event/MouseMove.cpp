@@ -22,41 +22,39 @@
 
 #include "evgetcore/Event/MouseMove.h"
 
-EvgetCore::Event::MouseMove::MouseMoveBuilder& EvgetCore::Event::MouseMove::MouseMoveBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = std::make_unique<Common::Time>(nanoseconds);
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::time(std::chrono::nanoseconds nanoseconds) {
+    _time = nanoseconds;
     return *this;
 }
 
-EvgetCore::Event::MouseMove::MouseMoveBuilder& EvgetCore::Event::MouseMove::MouseMoveBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
-    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::dateTime(Field::DateTime dateTime) {
+    _dateTime = dateTime;
     return *this;
 }
 
-EvgetCore::Event::MouseMove::MouseMoveBuilder& EvgetCore::Event::MouseMove::MouseMoveBuilder::positionX(double x) {
-    _positionX = std::make_unique<Pointer::PositionX>(x);
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::device(EvgetCore::Event::Device device) {
+    _device = device;
     return *this;
 }
 
-EvgetCore::Event::MouseMove::MouseMoveBuilder& EvgetCore::Event::MouseMove::MouseMoveBuilder::positionY(double y) {
-    _positionY = std::make_unique<Pointer::PositionY>(y);
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::positionX(double x) {
+    _positionX = x;
     return *this;
 }
 
-EvgetCore::Event::MouseMove::MouseMoveBuilder& EvgetCore::Event::MouseMove::MouseMoveBuilder::device(EvgetCore::Event::Common::Device device) {
-    _device = EvgetCore::Event::Common::DeviceType::createType(device);
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::positionY(double y) {
+    _positionY = y;
     return *this;
 }
 
-std::unique_ptr<EvgetCore::Event::MouseMove> EvgetCore::Event::MouseMove::MouseMoveBuilder::build() {
-    return std::make_unique<EvgetCore::Event::MouseMove>(*this);
-}
+EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
+    auto data = Data{"MouseMove"};
 
-EvgetCore::Event::MouseMove::MouseMove(
-    EvgetCore::Event::MouseMove::MouseMoveBuilder& builder
-) : AbstractData{"MouseMove"} {
-    fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._dateTime));
-    fields.emplace_back(std::move(builder._device));
-    fields.emplace_back(std::move(builder._positionX));
-    fields.emplace_back(std::move(builder._positionY));
+    data.setField(Field::createTime(_time));
+    data.setField(Field::createDateTime(_dateTime));
+    data.setField(Field::createDeviceType(_device));
+    data.setField(Field::createPositionX(_positionX));
+    data.setField(Field::createPositionY(_positionY));
+
+    return data;
 }
