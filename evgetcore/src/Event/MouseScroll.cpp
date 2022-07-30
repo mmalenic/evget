@@ -22,65 +22,63 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = std::make_unique<Common::Time>(nanoseconds);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::time(std::chrono::nanoseconds nanoseconds) {
+    _time = nanoseconds;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
-    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::dateTime(Field::DateTime dateTime) {
+    _dateTime = dateTime;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::device(EvgetCore::Event::Common::Device device) {
-    _device = EvgetCore::Event::Common::DeviceType::createType(device);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::device(EvgetCore::Event::Device device) {
+    _device = device;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::positionX(double x) {
-    _positionX = std::make_unique<Pointer::PositionX>(x);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionX(double x) {
+    _positionX = x;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::positionY(double y) {
-    _positionY = std::make_unique<Pointer::PositionY>(y);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionY(double y) {
+    _positionY = y;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::up(double amount) {
-    _up = std::make_unique<EvgetCore::Event::Pointer::ScrollUp>(amount);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::down(double amount) {
+    _down = amount;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::down(double amount) {
-    _down = std::make_unique<EvgetCore::Event::Pointer::ScrollDown>(amount);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::left(double amount) {
+    _left = amount;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::left(double amount) {
-    _left = std::make_unique<EvgetCore::Event::Pointer::ScrollLeft>(amount);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::right(double amount) {
+    _right = amount;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll::MouseScrollBuilder& EvgetCore::Event::MouseScroll::MouseScrollBuilder::right(double amount) {
-    _right = std::make_unique<EvgetCore::Event::Pointer::ScrollRight>(amount);
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) {
+    _up = amount;
     return *this;
 }
 
-std::unique_ptr<EvgetCore::Event::MouseScroll> EvgetCore::Event::MouseScroll::MouseScrollBuilder::build() {
-    return std::make_unique<EvgetCore::Event::MouseScroll>(*this);
-}
+EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
+    auto data = Data{"MouseScroll"};
 
-EvgetCore::Event::MouseScroll::MouseScroll(
-    EvgetCore::Event::MouseScroll::MouseScrollBuilder& builder
-) : AbstractData{"MouseScroll"} {
-    fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._dateTime));
-    fields.emplace_back(std::move(builder._device));
-    fields.emplace_back(std::move(builder._positionX));
-    fields.emplace_back(std::move(builder._positionY));
-    fields.emplace_back(std::move(builder._up));
-    fields.emplace_back(std::move(builder._down));
-    fields.emplace_back(std::move(builder._left));
-    fields.emplace_back(std::move(builder._right));
+    data.setField(Field::createTime(_time));
+    data.setField(Field::createDateTime(_dateTime));
+    data.setField(Field::createDeviceType(_device));
+    data.setField(Field::createPositionX(_positionX));
+    data.setField(Field::createPositionY(_positionY));
+    data.setField(Field::createScroll(Direction::Down, _down));
+    data.setField(Field::createScroll(Direction::Left, _left));
+    data.setField(Field::createScroll(Direction::Right, _right));
+    data.setField(Field::createScroll(Direction::Up, _up));
+
+    return data;
 }
