@@ -21,63 +21,60 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/MouseClick.h"
-#include "evgetcore/Event/Button/Action.h"
 
 #include <utility>
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::time(std::chrono::nanoseconds nanoseconds) {
-    _time = std::make_unique<Common::Time>(nanoseconds);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::time(std::chrono::nanoseconds nanoseconds) {
+    _time = nanoseconds;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::dateTime(EvgetCore::Event::Common::DateTime::TimePoint timePoint) {
-    _dateTime = std::make_unique<Common::DateTime>(timePoint);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Field::DateTime dateTime) {
+    _dateTime = dateTime;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::positionX(double x) {
-    _positionX = std::make_unique<Pointer::PositionX>(x);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::device(EvgetCore::Event::Device device) {
+    _device = device;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::positionY(double y) {
-    _positionY = std::make_unique<Pointer::PositionY>(y);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionX(double x) {
+    _positionX = x;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::action(Button::ButtonAction action) {
-    _buttonType = EvgetCore::Event::Button::Action::createAction(action);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionY(double y) {
+    _positionY = y;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::button(int button) {
-    _buttonId = std::make_unique<Button::Identifier>(button);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::action(ButtonAction action) {
+    _action = action;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::name(const std::string& name) {
-    _buttonName = std::make_unique<Button::Name>(name);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::button(int button) {
+    _button = button;
     return *this;
 }
 
-EvgetCore::Event::MouseClick::MouseClickBuilder& EvgetCore::Event::MouseClick::MouseClickBuilder::device(EvgetCore::Event::Common::Device device) {
-    _device = EvgetCore::Event::Common::DeviceType::createType(device);
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::name(std::string name) {
+    _name = std::move(name);
     return *this;
 }
 
-std::unique_ptr<EvgetCore::Event::MouseClick> EvgetCore::Event::MouseClick::MouseClickBuilder::build() {
-    return std::make_unique<EvgetCore::Event::MouseClick>(*this);
-}
+EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
+    auto data = Data{"MouseClick"};
 
-EvgetCore::Event::MouseClick::MouseClick(
-    EvgetCore::Event::MouseClick::MouseClickBuilder& builder
-) : AbstractData{"MouseClick"} {
-    fields.emplace_back(std::move(builder._time));
-    fields.emplace_back(std::move(builder._dateTime));
-    fields.emplace_back(std::move(builder._device));
-    fields.emplace_back(std::move(builder._positionX));
-    fields.emplace_back(std::move(builder._positionY));
-    fields.emplace_back(std::move(builder._buttonType));
-    fields.emplace_back(std::move(builder._buttonId));
-    fields.emplace_back(std::move(builder._buttonName));
+    data.setField(Field::createTime(_time));
+    data.setField(Field::createDateTime(_dateTime));
+    data.setField(Field::createDeviceType(_device));
+    data.setField(Field::createPositionX(_positionX));
+    data.setField(Field::createPositionY(_positionY));
+    data.setField(Field::createAction(_action));
+    data.setField(Field::createIdentifier(_button));
+    data.setField(Field::createName(_name));
+
+    return data;
 }

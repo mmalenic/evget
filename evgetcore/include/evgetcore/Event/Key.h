@@ -46,7 +46,7 @@ namespace EvgetCore::Event {
         Key& dateTime(Field::DateTime dateTime);
 
         /**
-         * Mouse device.
+         * Key device.
          */
         Key& device(Device device);
 
