@@ -75,7 +75,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createAction(std::optional<Evge
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createCharacter(std::optional<std::string> character) {
-    return {CHARACTER_FIELD_NAME, std::move(character)};
+    return createOptionalString(CHARACTER_FIELD_NAME, std::move(character));
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createIdentifier(std::optional<int> id) {
@@ -83,7 +83,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createIdentifier(std::optional<
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createName(std::optional<std::string> name) {
-    return {NAME_FIELD_NAME, std::move(name)};
+    return createOptionalString(NAME_FIELD_NAME, std::move(name));
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(std::optional<EvgetCore::Event::Field::DateTime> dateTime) {
@@ -114,30 +114,38 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(std::optional<
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::optional<std::chrono::nanoseconds> interval) {
-    return {TIME_FIELD_NAME, std::to_string(interval.count())};
+    return createOptionalToString(TIME_FIELD_NAME, std::to_string(interval.count()));
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(std::optional<double> position) {
-    return createDouble(POSITIONX_FIELD_NAME, position);
+    return createOptionalToString(POSITIONX_FIELD_NAME, position);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionY(std::optional<double> position) {
-    return createDouble(POSITIONY_FIELD_NAME, position);
+    return createOptionalToString(POSITIONY_FIELD_NAME, position);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::Direction direction, std::optional<double> amount) {
     switch (direction) {
         case Direction::Down:
-            return createDouble(SCROLLDOWN_FIELD_NAME, amount);
+            return createOptionalToString(SCROLLDOWN_FIELD_NAME, amount);
         case Direction::Left:
-            return createDouble(SCROLLLEFT_FIELD_NAME, amount);
+            return createOptionalToString(SCROLLLEFT_FIELD_NAME, amount);
         case Direction::Right:
-            return createDouble(SCROLLRIGHT_FIELD_NAME, amount);
+            return createOptionalToString(SCROLLRIGHT_FIELD_NAME, amount);
         case Direction::Up:
-            return createDouble(SCROLLUP_FIELD_NAME,amount);
+            return createOptionalToString(SCROLLUP_FIELD_NAME,amount);
     }
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createDouble(std::string_view name, double value) {
     return {name, std::to_string(value)};
+}
+
+EvgetCore::Event::Field
+EvgetCore::Event::Field::createOptionalString(std::string_view name, std::optional<std::string> value) {
+    if (!value.has_value()) {
+        return Field{name};
+    }
+    return {name, std::move(*value)};
 }

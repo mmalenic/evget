@@ -139,6 +139,11 @@ namespace EvgetCore::Event {
         static Field createScroll(Direction direction, std::optional<double> amount);
 
     private:
+        template<typename T>
+        concept ToString = requires(T value) {
+            { std::to_string(value) } -> std::convertible_to<std::string>;
+        };
+
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
         static constexpr std::string_view ACTION_RELEASE{"Release"};
@@ -167,15 +172,14 @@ namespace EvgetCore::Event {
         static Field createDouble(std::string_view name, double value);
 
         /**
-         * Create a Field using a generic optional value with a std::to_string call.
+         * Create a Field using a string value.
          */
-        template<typename T>
-        static Field createOptionalToString(std::string_view name, std::optional<T> value);
+        static Field createOptionalString(std::string_view name, std::optional<std::string> value);
 
         /**
          * Create a Field using a generic optional value with a std::to_string call.
          */
-        template<typename T>
+        template<ToString T>
         static Field createOptionalToString(std::string_view name, std::optional<T> value);
 
         std::string name{};
@@ -189,6 +193,16 @@ namespace EvgetCore::Event {
     constexpr bool EvgetCore::Event::Field::isData() {
         return std::holds_alternative<Entries>(entry);
     }
+
+    template<ToString T>
+    EvgetCore::Event::Field
+    EvgetCore::Event::Field::createOptionalToString(std::string_view name, std::optional<T> value) {
+        if (!value.has_value()) {
+            return Field{name};
+        }
+        return {name, std::to_string(*value)};
+    }
+
 }
 
 #endif //EVGET_SRC_EVENT_FIELD_H
