@@ -54,7 +54,15 @@ namespace EvgetCore::Event {
          */
         Field(std::string_view name, std::string entry);
 
+        /**
+         * Create a Field with an empty entry.
+         */
         explicit Field(std::string name);
+
+        /**
+         * Create a Field with an empty entry.
+         */
+        explicit Field(std::string_view name);
 
         /**
          * Check if variant is the entry.
@@ -83,52 +91,52 @@ namespace EvgetCore::Event {
         /**
          * Create an Action based on the ButtonAction enum.
          */
-        static Field createAction(ButtonAction action);
+        static Field createAction(std::optional<ButtonAction> action);
 
         /**
          * Create a character from a string.
          */
-        static Field createCharacter(std::string character);
+        static Field createCharacter(std::optional<std::string> character);
 
         /**
          * Create an identifier using int id, usually representing a button id.
          */
-        static Field createIdentifier(int id);
+        static Field createIdentifier(std::optional<int> id);
 
         /**
          * Create a name field.
          */
-        static Field createName(std::string name);
+        static Field createName(std::optional<std::string> name);
 
         /**
          * Create a date time field using a DateTime value.
          */
-        static Field createDateTime(DateTime dateTime);
+        static Field createDateTime(std::optional<DateTime> dateTime);
 
         /**
          * Create a date time field using a DateTime value.
          */
-        static Field createDeviceType(Device device);
+        static Field createDeviceType(std::optional<Device> device);
 
         /**
          * Create a time field, which represents an interval of time.
          */
-        static Field createTime(std::chrono::nanoseconds interval);
+        static Field createTime(std::optional<std::chrono::nanoseconds> interval);
 
         /**
          * Create a position x Field.
          */
-        static Field createPositionX(double position);
+        static Field createPositionX(std::optional<double> position);
 
         /**
          * Create a position y Field.
          */
-        static Field createPositionY(double position);
+        static Field createPositionY(std::optional<double> position);
 
         /**
          * Create a scroll Field using the Direction and amount.
          */
-        static Field createScroll(Direction direction, double amount);
+        static Field createScroll(Direction direction, std::optional<double> amount);
 
     private:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
@@ -157,6 +165,18 @@ namespace EvgetCore::Event {
          * Create a Field using a double value.
          */
         static Field createDouble(std::string_view name, double value);
+
+        /**
+         * Create a Field using a generic optional value with a std::to_string call.
+         */
+        template<typename T>
+        static Field createOptionalToString(std::string_view name, std::optional<T> value);
+
+        /**
+         * Create a Field using a generic optional value with a std::to_string call.
+         */
+        template<typename T>
+        static Field createOptionalToString(std::string_view name, std::optional<T> value);
 
         std::string name{};
         EntryOrData entry{};

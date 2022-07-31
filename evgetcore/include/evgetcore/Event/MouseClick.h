@@ -80,14 +80,14 @@ namespace EvgetCore::Event {
         Data build();
 
     private:
-        std::chrono::nanoseconds _time{};
-        Field::DateTime _dateTime{};
-        Device _device{};
-        double _positionX{};
-        double _positionY{};
-        ButtonAction _action{};
-        int _button{};
-        std::string _name{};
+        std::optional<std::chrono::nanoseconds> _time{};
+        std::optional<Field::DateTime> _dateTime{};
+        std::optional<Device> _device{};
+        std::optional<double> _positionX{};
+        std::optional<double> _positionY{};
+        std::optional<ButtonAction> _action{};
+        std::optional<int> _button{};
+        std::optional<std::string> _name{};
     };
     };
 }

@@ -66,11 +66,11 @@ namespace EvgetCore::Event {
         Data build();
 
     private:
-        std::chrono::nanoseconds _time{};
-        Field::DateTime _dateTime{};
-        Device _device{};
-        double _positionX{};
-        double _positionY{};
+        std::optional<std::chrono::nanoseconds> _time{};
+        std::optional<Field::DateTime> _dateTime{};
+        std::optional<Device> _device{};
+        std::optional<double> _positionX{};
+        std::optional<double> _positionY{};
     };
 }
 
