@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Field.h"
-#include "evgetcore/Event/AbstractData.h"
 
 #include <date/tz.h>
 #include <utility>
@@ -41,7 +40,7 @@ EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : 
 EvgetCore::Event::Field::Field(std::string_view name, std::string entry) : name{name}, entry{entry} {
 }
 
-EvgetCore::Event::Field::Field(std::string name, Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
+EvgetCore::Event::Field::Field(std::string name, EvgetCore::Event::Field::Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
 }
 
 std::string EvgetCore::Event::Field::getEntry() const {
@@ -79,7 +78,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createCharacter(std::optional<s
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createIdentifier(std::optional<int> id) {
-    return {IDENTIFIER_FIELD_NAME, std::to_string(id)};
+    return createOptionalToString(IDENTIFIER_FIELD_NAME, id);
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createName(std::optional<std::string> name) {
@@ -114,7 +113,10 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(std::optional<
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::optional<std::chrono::nanoseconds> interval) {
-    return createOptionalToString(TIME_FIELD_NAME, std::to_string(interval.count()));
+    if (!interval.has_value()) {
+        return Field{TIME_FIELD_NAME};
+    }
+    return {TIME_FIELD_NAME, std::to_string(interval->count())};
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(std::optional<double> position) {
@@ -136,10 +138,6 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::
         case Direction::Up:
             return createOptionalToString(SCROLLUP_FIELD_NAME,amount);
     }
-}
-
-EvgetCore::Event::Field EvgetCore::Event::Field::createDouble(std::string_view name, double value) {
-    return {name, std::to_string(value)};
 }
 
 EvgetCore::Event::Field

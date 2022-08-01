@@ -24,18 +24,31 @@
 #define EVGET_SRC_EVENT_FIELD_H
 
 #include <c++/11/chrono>
-#include "AbstractData.h"
+#include <memory>
+#include <variant>
+#include <optional>
+#include <vector>
 #include "ButtonAction.h"
 #include "Device.h"
 #include "Direction.h"
 
 namespace EvgetCore::Event {
+    class Data;
+
+    /**
+     * A concept requiring the to_string function.
+     */
+    template<typename T>
+    concept ToString = requires(T value) {
+        { std::to_string(value) } -> std::convertible_to<std::string>;
+    };
+
     /**
      * Represents a field in an event.
      */
     class Field {
     public:
-        using Entries = std::vector<std::unique_ptr<AbstractData>>;
+        using Entries = std::vector<Data>;
         using Iterator = Entries::const_iterator;
         using EntryOrData = std::variant<std::string, Entries>;
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
@@ -139,11 +152,6 @@ namespace EvgetCore::Event {
         static Field createScroll(Direction direction, std::optional<double> amount);
 
     private:
-        template<typename T>
-        concept ToString = requires(T value) {
-            { std::to_string(value) } -> std::convertible_to<std::string>;
-        };
-
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
         static constexpr std::string_view ACTION_RELEASE{"Release"};
@@ -164,12 +172,6 @@ namespace EvgetCore::Event {
         static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
         static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
         static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
-
-
-        /**
-         * Create a Field using a double value.
-         */
-        static Field createDouble(std::string_view name, double value);
 
         /**
          * Create a Field using a string value.

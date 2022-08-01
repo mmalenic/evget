@@ -23,7 +23,9 @@
 #ifndef EVGET_INCLUDE_EVGET_DATA_H
 #define EVGET_INCLUDE_EVGET_DATA_H
 
-#include "AbstractData.h"
+#include <vector>
+#include <string>
+#include "Field.h"
 
 namespace EvgetCore::Event {
     /**
