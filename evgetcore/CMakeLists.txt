@@ -8,7 +8,6 @@ add_program(
     SRCS
     include/evgetcore/Task.h
     include/evgetcore/EventTransformer.h
-    include/evgetcore/Event/AbstractData.h
     include/evgetcore/EventHandler.h
     include/evgetcore/SystemEvent.h
     include/evgetcore/SystemEventLoop.h
@@ -22,7 +21,6 @@ add_program(
     include/evgetcore/Event/ButtonAction.h
     include/evgetcore/Event/Device.h
     include/evgetcore/Event/TableData.h
-    include/evgetcore/Event/Touch.h
     include/evgetcore/EventListener.h
     include/evgetcore/Util.h
     include/evgetcore/UnsupportedOperationException.h

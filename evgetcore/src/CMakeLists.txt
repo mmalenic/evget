@@ -4,12 +4,10 @@ add_program(
     Event/Data.cpp
     Event/Field.cpp
     Event/TableData.cpp
-    Event/AbstractData.cpp
     CoreParser.cpp
     Event/Key.cpp
     Event/MouseClick.cpp
     Event/MouseMove.cpp
     Event/MouseScroll.cpp
-    Event/Touch.cpp
     UnsupportedOperationException.cpp
 )
