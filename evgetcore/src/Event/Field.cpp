@@ -34,7 +34,7 @@ EvgetCore::Event::Field::Field(std::string_view name) : name{name}, entry{} {
 EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{entry} {
+EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{std::string{entry}} {
 }
 
 EvgetCore::Event::Field::Field(std::string_view name, std::string entry) : name{name}, entry{entry} {
@@ -91,7 +91,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(std::optional<Ev
     }
 
     std::stringstream stream{};
-    stream << date::make_zoned(date::current_zone(), dateTime);
+    stream << date::make_zoned(date::current_zone(), *dateTime);
     return {DATE_TIME_FIELD_NAME, stream.str()};
 }
 
