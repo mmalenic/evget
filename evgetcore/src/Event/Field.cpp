@@ -29,16 +29,7 @@
 EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{} {
 }
 
-EvgetCore::Event::Field::Field(std::string_view name) : name{name}, entry{} {
-}
-
 EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
-}
-
-EvgetCore::Event::Field::Field(std::string_view name, std::string_view entry) : name{name}, entry{std::string{entry}} {
-}
-
-EvgetCore::Event::Field::Field(std::string_view name, std::string entry) : name{name}, entry{entry} {
 }
 
 EvgetCore::Event::Field::Field(std::string name, EvgetCore::Event::Field::Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
@@ -62,15 +53,15 @@ EvgetCore::Event::Field::Iterator EvgetCore::Event::Field::end() const {
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createAction(std::optional<EvgetCore::Event::ButtonAction> action) {
     if (!action.has_value()) {
-        return Field{ACTION_FIELD_NAME};
+        return Field{std::string{ACTION_FIELD_NAME}};
     }
     switch (*action) {
         case ButtonAction::Press:
-            return {ACTION_FIELD_NAME, ACTION_PRESS};
+            return {std::string{ACTION_FIELD_NAME}, std::string{ACTION_PRESS}};
         case ButtonAction::Release:
-            return {ACTION_FIELD_NAME, ACTION_RELEASE};
+            return {std::string{ACTION_FIELD_NAME}, std::string{ACTION_RELEASE}};
         case ButtonAction::Repeat:
-            return {ACTION_FIELD_NAME, ACTION_REPEAT};
+            return {std::string{ACTION_FIELD_NAME}, std::string{ACTION_REPEAT}};
     }
 }
 
@@ -88,36 +79,36 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createName(std::optional<std::s
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createDateTime(std::optional<EvgetCore::Event::Field::DateTime> dateTime) {
     if (!dateTime.has_value()) {
-        return Field{DATE_TIME_FIELD_NAME};
+        return Field{std::string{DATE_TIME_FIELD_NAME}};
     }
 
     std::stringstream stream{};
     stream << date::make_zoned(date::current_zone(), *dateTime);
-    return {DATE_TIME_FIELD_NAME, stream.str()};
+    return {std::string{DATE_TIME_FIELD_NAME}, stream.str()};
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createDeviceType(std::optional<EvgetCore::Event::Device> device) {
     if (!device.has_value()) {
-        return Field{DEVICE_TYPE_FIELD_NAME};
+        return Field{std::string{DEVICE_TYPE_FIELD_NAME}};
     }
 
     switch (*device) {
         case Device::Mouse:
-            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_MOUSE};
+            return {std::string{DEVICE_TYPE_FIELD_NAME}, std::string{DEVICE_TYPE_MOUSE}};
         case Device::Keyboard:
-            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_KEYBOARD};
+            return {std::string{DEVICE_TYPE_FIELD_NAME}, std::string{DEVICE_TYPE_KEYBOARD}};
         case Device::Touchpad:
-            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHPAD};
+            return {std::string{DEVICE_TYPE_FIELD_NAME}, std::string{DEVICE_TYPE_TOUCHPAD}};
         case Device::Touchscreen:
-            return {DEVICE_TYPE_FIELD_NAME, DEVICE_TYPE_TOUCHSCREEN};
+            return {std::string{DEVICE_TYPE_FIELD_NAME}, std::string{DEVICE_TYPE_TOUCHSCREEN}};
     }
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createTime(std::optional<std::chrono::nanoseconds> interval) {
     if (!interval.has_value()) {
-        return Field{TIME_FIELD_NAME};
+        return Field{std::string{TIME_FIELD_NAME}};
     }
-    return {TIME_FIELD_NAME, std::to_string(interval->count())};
+    return {std::string{TIME_FIELD_NAME}, std::to_string(interval->count())};
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createPositionX(std::optional<double> position) {
@@ -144,7 +135,7 @@ EvgetCore::Event::Field EvgetCore::Event::Field::createScroll(EvgetCore::Event::
 EvgetCore::Event::Field
 EvgetCore::Event::Field::createOptionalString(std::string_view name, std::optional<std::string> value) {
     if (!value.has_value()) {
-        return Field{name};
+        return Field{std::string{name}};
     }
-    return {name, std::move(*value)};
+    return {std::string{name}, std::move(*value)};
 }

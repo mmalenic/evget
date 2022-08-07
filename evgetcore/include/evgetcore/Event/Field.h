@@ -58,24 +58,9 @@ namespace EvgetCore::Event {
         Field(std::string name, std::string entry);
 
         /**
-         * Create a Field using string_view, which copies over the data to a string.
-         */
-        Field(std::string_view name, std::string_view entry);
-
-        /**
-         * Create a Field using string_view, which copies over the data to a string.
-         */
-        Field(std::string_view name, std::string entry);
-
-        /**
          * Create a Field with an empty entry.
          */
         explicit Field(std::string name);
-
-        /**
-         * Create a Field with an empty entry.
-         */
-        explicit Field(std::string_view name);
 
         /**
          * Check if variant is the entry.
@@ -200,9 +185,9 @@ namespace EvgetCore::Event {
     EvgetCore::Event::Field
     EvgetCore::Event::Field::createOptionalToString(std::string_view name, std::optional<T> value) {
         if (!value.has_value()) {
-            return Field{name};
+            return Field{std::string{name}};
         }
-        return {name, std::to_string(*value)};
+        return {std::string{name}, std::to_string(*value)};
     }
 
 }
