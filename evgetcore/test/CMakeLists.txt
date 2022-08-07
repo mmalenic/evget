@@ -3,33 +3,10 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
     SRCS
-    Event/Common/TimeTest.cpp
-    Event/Button/CharacterTest.cpp
-    Event/Pointer/ScrollUpTest.cpp
-    Event/Pointer/ScrollDownTest.cpp
-    Event/Pointer/ScrollLeftTest.cpp
-    Event/Pointer/ScrollRightTest.cpp
-    Event/Pointer/PositionXTest.cpp
-    Event/Pointer/PositionYTest.cpp
-    Event/Button/NameTest.cpp
-    Event/Pointer/EllipseMajorInnerTest.cpp
-    Event/Pointer/EllipseMajorOuterTest.cpp
-    Event/Pointer/EllipseMinorInnerTest.cpp
-    Event/Pointer/EllipseMinorOuterTest.cpp
-    Event/Pointer/MultitouchTest.cpp
-    Event/Common/DateTimeTest.cpp
-    Event/Pointer/OrientationTest.cpp
-    Event/Button/ActionTest.cpp
-    Event/Button/IdentifierTest.cpp
-    Event/Pointer/PositionXOuterTest.cpp
-    Event/Pointer/PositionYOuterTest.cpp
-    Event/Common/TypeTest.cpp
-    Event/TableDataTest.cpp
     Event/MouseMoveTest.cpp
     Event/MouseClickTest.cpp
     Event/KeyTest.cpp
     Event/MouseScrollTest.cpp
-    Event/TouchTest.cpp
     Event/DataTest.cpp
     Event/FieldTest.cpp
     utils/EventTestUtils.h
