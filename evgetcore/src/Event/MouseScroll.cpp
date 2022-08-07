@@ -70,15 +70,15 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) 
 EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
     auto data = Data{"MouseScroll"};
 
-    data.setField(Field::createTime(_time));
-    data.setField(Field::createDateTime(_dateTime));
-    data.setField(Field::createDeviceType(_device));
-    data.setField(Field::createPositionX(_positionX));
-    data.setField(Field::createPositionY(_positionY));
-    data.setField(Field::createScroll(Direction::Down, _down));
-    data.setField(Field::createScroll(Direction::Left, _left));
-    data.setField(Field::createScroll(Direction::Right, _right));
-    data.setField(Field::createScroll(Direction::Up, _up));
+    data.addField(Field::createTime(_time));
+    data.addField(Field::createDateTime(_dateTime));
+    data.addField(Field::createDeviceType(_device));
+    data.addField(Field::createPositionX(_positionX));
+    data.addField(Field::createPositionY(_positionY));
+    data.addField(Field::createScroll(Direction::Down, _down));
+    data.addField(Field::createScroll(Direction::Left, _left));
+    data.addField(Field::createScroll(Direction::Right, _right));
+    data.addField(Field::createScroll(Direction::Up, _up));
 
     return data;
 }

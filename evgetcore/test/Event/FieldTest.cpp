@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evgetcore/Event/AbstractField.h"
 #include "EventTestUtils.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
@@ -35,11 +34,11 @@ TEST(FieldTest, ConstructorEntry) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(FieldTest, ConstructorData) { // NOLINT(cert-err58-cpp)
-    auto field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
+    auto field = EventTestUtils::createEntriesData("OuterField", "InnerData", "InnerField", "InnerEntry");
 
-    ASSERT_EQ("InnerField", (*field.begin())->getAtPosition(0).getName());
-    ASSERT_EQ("InnerEntry", (*field.begin())->getAtPosition(0).getEntry());
-    ASSERT_EQ("InnerData", (*field.begin())->getName());
+    ASSERT_EQ("InnerField", field.begin()->begin()->getName());
+    ASSERT_EQ("InnerEntry", field.begin()->begin()->getName());
+    ASSERT_EQ("InnerData", field.begin()->getName());
     ASSERT_EQ("OuterField", field.getName());
 }
 
@@ -60,7 +59,8 @@ TEST(FieldTest, IsEntry) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(FieldTest, IsData) { // NOLINT(cert-err58-cpp)
-    EvgetCore::Event::Field field = EventTestUtils::constructRecursiveField("OuterField", "InnerData", "InnerField", "InnerEntry");
+    EvgetCore::Event::Field field = EventTestUtils::createEntriesData("OuterField", "InnerData", "InnerField",
+                                                                      "InnerEntry");
     ASSERT_TRUE(field.isData());
     ASSERT_FALSE(field.isEntry());
 }

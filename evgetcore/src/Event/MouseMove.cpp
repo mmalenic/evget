@@ -50,11 +50,11 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::positionY(double y) {
 EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
     auto data = Data{"MouseMove"};
 
-    data.setField(Field::createTime(_time));
-    data.setField(Field::createDateTime(_dateTime));
-    data.setField(Field::createDeviceType(_device));
-    data.setField(Field::createPositionX(_positionX));
-    data.setField(Field::createPositionY(_positionY));
+    data.addField(Field::createTime(_time));
+    data.addField(Field::createDateTime(_dateTime));
+    data.addField(Field::createDeviceType(_device));
+    data.addField(Field::createPositionX(_positionX));
+    data.addField(Field::createPositionY(_positionY));
 
     return data;
 }

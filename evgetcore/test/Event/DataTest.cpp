@@ -56,6 +56,6 @@ TEST(EventDataTest, GetAtPosition) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventDataTest, GetName) { // NOLINT(cert-err58-cpp)
-    EvgetCore::Event::Data eventData{"name", EventUtils::allocateFields("", "")};
+    EvgetCore::Event::Data eventData{"name", EventUtils::createData("", "")};
     ASSERT_EQ("name", eventData.getName());
 }

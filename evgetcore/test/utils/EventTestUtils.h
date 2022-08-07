@@ -36,43 +36,26 @@ namespace TestUtils::EventTestUtils {
 
         auto n = 0;
         for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-            ASSERT_EQ(field_name, (*i)->getName());
-            ASSERT_EQ(entry, (*i)->getEntry());
+            ASSERT_EQ(field_name, i->getName());
+            ASSERT_EQ(entry, i->getEntry());
         }
         ASSERT_EQ(n, 1);
     }
 
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> allocateFields(const std::string& name, const std::string& entry);
+    EvgetCore::Event::Data createData(std::string dataName, const std::string& name, const std::string& entry);
 
-    EvgetCore::Event::Field constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
+    EvgetCore::Event::Field createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
 
     void getAndSet(auto&& get, std::string entry) {
         std::string field_name = "field";
-        EvgetCore::Event::Data eventData{"name", allocateFields(field_name, entry)};
+        EvgetCore::Event::Data eventData = createData("name", field_name, entry);
         const auto& field = get(eventData, field_name, 0);
 
         ASSERT_EQ(field_name, field.getName());
         ASSERT_EQ(entry, field.getEntry());
     }
 
-    void fieldValueAndName(const EvgetCore::Event::AbstractField& field, const std::string& name, const std::string& expected);
-
-    template<typename T>
-    void fieldValueAndName(const char* value, const std::string& name, const std::string& expected) {
-        std::unique_ptr<EvgetCore::Event::AbstractField> field = std::make_unique<T>(std::string{value});
-        fieldValueAndName(*field, name, expected);
-
-        std::unique_ptr<EvgetCore::Event::AbstractField> fieldDefault = std::make_unique<T>();
-        fieldValueAndName(*fieldDefault, name, "");
-    }
-
-    template<typename T>
-    void fieldValueAndName(const auto& value, const std::string& name, const std::string& expected) {
-        std::unique_ptr<EvgetCore::Event::AbstractField> field = std::make_unique<T>(value);
-        fieldValueAndName(*field, name, expected);
-
-        fieldValueAndName<T>("value", name, "value");
-    }
+    void fieldValueAndName(const EvgetCore::Event::Field& field, const std::string& name, const std::string& expected);
 
     void event_entry_at(auto&& event, size_t position, const std::string& expected) {
         ASSERT_EQ(event->getAtPosition(position).getEntry(), expected);

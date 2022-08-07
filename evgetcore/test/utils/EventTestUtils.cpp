@@ -22,21 +22,26 @@
 
 #include "EventTestUtils.h"
 
-void TestUtils::EventTestUtils::fieldValueAndName(const EvgetCore::Event::AbstractField& field, const std::string& name, const std::string& expected) {
+void TestUtils::EventTestUtils::fieldValueAndName(const EvgetCore::Event::Field& field, const std::string& name, const std::string& expected) {
     ASSERT_EQ(name, field.getName());
     ASSERT_EQ(expected, field.getEntry());
 }
 
-std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> TestUtils::EventTestUtils::allocateFields(const std::string& name, const std::string& entry) {
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-    fields.emplace_back(std::make_unique<EvgetCore::Event::Field>(name, entry));
-    return fields;
+EvgetCore::Event::Data TestUtils::EventTestUtils::createData(std::string dataName, const std::string& name, const std::string& entry) {
+    EvgetCore::Event::Data data{std::move(dataName)};
+    data.addField({name, entry});
+    return data;
 }
 
-EvgetCore::Event::Field TestUtils::EventTestUtils::constructRecursiveField(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
-    EvgetCore::Event::AbstractField::Entries entries{};
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields = TestUtils::EventTestUtils::allocateFields(innerName, innerEntry);
-    auto data = std::make_unique<EvgetCore::Event::Data>(innerDataName, std::move(fields));
-    entries.emplace_back(std::move(data));
+EvgetCore::Event::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
+    EvgetCore::Event::Field::Entries entries{};
+    std::vector<EvgetCore::Event::Field> fields = TestUtils::EventTestUtils::createData(innerName, innerEntry);
+
+    EvgetCore::Event::Data data{innerDataName};
+    for (auto field : fields) {
+        data.addField(std::move(field));
+    }
+
+    entries.emplace_back(data);
     return EvgetCore::Event::Field{outerName, std::move(entries)};
 }

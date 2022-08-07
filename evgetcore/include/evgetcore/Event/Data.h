@@ -44,7 +44,7 @@ namespace EvgetCore::Event {
         /**
          * Add a field to this data.
          */
-        void setField(Field field);
+        void addField(Field field);
 
         /**
          * Get the name of the data.

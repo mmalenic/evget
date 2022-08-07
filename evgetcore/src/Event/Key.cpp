@@ -72,15 +72,15 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
 EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     auto data = Data{"Key"};
 
-    data.setField(Field::createTime(_time));
-    data.setField(Field::createDateTime(_dateTime));
-    data.setField(Field::createDeviceType(_device));
-    data.setField(Field::createPositionX(_positionX));
-    data.setField(Field::createPositionY(_positionY));
-    data.setField(Field::createAction(_action));
-    data.setField(Field::createIdentifier(_button));
-    data.setField(Field::createName(_name));
-    data.setField(Field::createName(_character));
+    data.addField(Field::createTime(_time));
+    data.addField(Field::createDateTime(_dateTime));
+    data.addField(Field::createDeviceType(_device));
+    data.addField(Field::createPositionX(_positionX));
+    data.addField(Field::createPositionY(_positionY));
+    data.addField(Field::createAction(_action));
+    data.addField(Field::createIdentifier(_button));
+    data.addField(Field::createName(_name));
+    data.addField(Field::createName(_character));
 
     return data;
 }
