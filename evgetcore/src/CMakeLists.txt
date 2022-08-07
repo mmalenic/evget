@@ -3,7 +3,6 @@ add_program(
     SRCS
     Event/Data.cpp
     Event/Field.cpp
-    Event/TableData.cpp
     CoreParser.cpp
     Event/Key.cpp
     Event/MouseClick.cpp

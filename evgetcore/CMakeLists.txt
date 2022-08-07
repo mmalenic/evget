@@ -20,7 +20,6 @@ add_program(
     include/evgetcore/Event/Direction.h
     include/evgetcore/Event/ButtonAction.h
     include/evgetcore/Event/Device.h
-    include/evgetcore/Event/TableData.h
     include/evgetcore/EventListener.h
     include/evgetcore/Util.h
     include/evgetcore/UnsupportedOperationException.h
