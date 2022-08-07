@@ -35,12 +35,7 @@ EvgetCore::Event::Data TestUtils::EventTestUtils::createData(std::string dataNam
 
 EvgetCore::Event::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
     EvgetCore::Event::Field::Entries entries{};
-    std::vector<EvgetCore::Event::Field> fields = TestUtils::EventTestUtils::createData(innerName, innerEntry);
-
-    EvgetCore::Event::Data data{innerDataName};
-    for (auto field : fields) {
-        data.addField(std::move(field));
-    }
+    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
 
     entries.emplace_back(data);
     return EvgetCore::Event::Field{outerName, std::move(entries)};
