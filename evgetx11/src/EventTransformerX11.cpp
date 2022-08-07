@@ -36,8 +36,8 @@
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetx11/XEventSwitch.h"
 
-std::vector<std::unique_ptr<EvgetCore::Event::TableData>> EvgetX11::EventTransformerX11::transformEvent(XInputEvent event) {
-    std::vector<std::unique_ptr<EvgetCore::Event::TableData>> data{};
+std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11::transformEvent(XInputEvent event) {
+    std::vector<EvgetCore::Event::Data> data{};
     if (event.hasData()) {
         auto type = event.getEventType();
 
@@ -91,16 +91,16 @@ void EvgetX11::EventTransformerX11::refreshDevices() {
 
         if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
             auto type = xWrapper.get().atomName(device.type);
-            EvgetCore::Event::Common::Device deviceType;
+            EvgetCore::Event::Device deviceType;
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
-                deviceType = EvgetCore::Event::Common::Device::Mouse;
+                deviceType = EvgetCore::Event::Device::Mouse;
             } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                deviceType = EvgetCore::Event::Common::Device::Keyboard;
+                deviceType = EvgetCore::Event::Device::Keyboard;
             } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                deviceType = EvgetCore::Event::Common::Device::Touchscreen;
+                deviceType = EvgetCore::Event::Device::Touchscreen;
             } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                deviceType = EvgetCore::Event::Common::Device::Touchpad;
+                deviceType = EvgetCore::Event::Device::Touchpad;
             } else {
                 spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
                 continue;

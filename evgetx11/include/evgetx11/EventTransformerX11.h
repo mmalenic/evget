@@ -30,10 +30,7 @@
 #include <concepts>
 #include "XInputHandler.h"
 #include "evgetcore/EventTransformer.h"
-#include "evgetcore/Event/TableData.h"
 #include "evgetcore/Util.h"
-#include "evgetcore/Event/Common/DeviceType.h"
-#include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetx11/XEventSwitch.h"
 #include "XWrapper.h"
@@ -42,7 +39,7 @@ namespace EvgetX11 {
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
         EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
-        std::vector<std::unique_ptr<EvgetCore::Event::TableData>> transformEvent(XInputEvent event) override;
+        std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
         std::chrono::nanoseconds getTime(const XInputEvent& event);
@@ -51,7 +48,7 @@ namespace EvgetX11 {
         std::reference_wrapper<XWrapper> xWrapper;
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
 
-        std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};
+        std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
 
         std::vector<std::reference_wrapper<XEventSwitch>> switches{};
