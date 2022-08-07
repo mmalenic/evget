@@ -42,7 +42,7 @@ namespace EvgetCore::Event {
         /**
          * Add date time
          */
-        MouseClick& dateTime(Field::DateTime dateTime));
+        MouseClick& dateTime(Field::DateTime dateTime);
 
         /**
          * Mouse device.
@@ -88,7 +88,6 @@ namespace EvgetCore::Event {
         std::optional<ButtonAction> _action{};
         std::optional<int> _button{};
         std::optional<std::string> _name{};
-    };
     };
 }
 

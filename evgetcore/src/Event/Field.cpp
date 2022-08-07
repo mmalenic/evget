@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Field.h"
+#include "evgetcore/Event/Data.h"
 
 #include <date/tz.h>
 #include <utility>
