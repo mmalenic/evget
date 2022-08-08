@@ -27,14 +27,11 @@
 #include <unordered_map>
 #include <map>
 #include "XInputEvent.h"
-#include "evgetcore/Event/Common/Device.h"
-#include "evgetcore/Event/AbstractData.h"
-#include "evgetcore/Event/TableData.h"
 
 namespace EvgetX11 {
     class XEventSwitch {
     public:
-        using EventData = std::vector<std::unique_ptr<EvgetCore::Event::TableData>>;
+        using EventData = std::vector<EvgetCore::Event::Data>;
 
         XEventSwitch() = default;
 
@@ -43,24 +40,24 @@ namespace EvgetX11 {
          * Returns true if event was successfully consumed.
          */
         virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) = 0;
-        virtual void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info);
+        virtual void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
         virtual ~XEventSwitch() = default;
 
-        static void addTableData(EventData& data, std::unique_ptr<EvgetCore::Event::AbstractData> genericData, std::unique_ptr<EvgetCore::Event::AbstractData> systemData);
+        static void addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData);
 
         bool containsDevice(int id);
-        EvgetCore::Event::Common::Device getDevice(int id) const;
+        EvgetCore::Event::Device getDevice(int id) const;
         const std::string &getNameFromId(int id) const;
         const std::string &getEvtypeName(int evtype) const;
 
-        void setDevice(int id, EvgetCore::Event::Common::Device device);
+        void setDevice(int id, EvgetCore::Event::Device device);
         void setNameFromId(int id, const std::string& name);
         void setEvtypeName(int evtype, const std::string& name);
 
-        std::unique_ptr<EvgetCore::Event::AbstractData> createSystemData(const XIDeviceEvent& event, const std::string& name);
-        static EvgetCore::Event::AbstractField::Entries createValuatorEntries(const XIValuatorState& valuatorState);
-        static EvgetCore::Event::AbstractField::Entries createButtonEntries(const XIDeviceEvent& event);
+        EvgetCore::Event::Data createSystemData(const XIDeviceEvent& event, const std::string& name);
+        static EvgetCore::Event::Field::Entries createValuatorEntries(const XIValuatorState& valuatorState);
+        static EvgetCore::Event::Field::Entries createButtonEntries(const XIDeviceEvent& event);
 
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
@@ -73,7 +70,7 @@ namespace EvgetX11 {
         XEventSwitch& operator=(const XEventSwitch&) = default;
 
     private:
-        std::unordered_map<int, EvgetCore::Event::Common::Device> devices{};
+        std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
         std::unordered_map<int, std::string> evtypeToName{};
     };

@@ -73,7 +73,7 @@ namespace EvgetX11 {
 
         XEvent event;
         Timestamp timestamp;
-        EvgetCore::Event::Common::DateTime::TimePoint dateTime;
+        EvgetCore::Event::Field::DateTime dateTime;
         XWrapper::XEventPointer cookie;
     };
 

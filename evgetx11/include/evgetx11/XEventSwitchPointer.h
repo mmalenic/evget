@@ -25,17 +25,16 @@
 #define EVGET_XEVENTSWITCHPOINTER_H
 
 #include "XEventSwitch.h"
-#include "evgetcore/Event/Button/ButtonAction.h"
 
 namespace EvgetX11 {
     class XEventSwitchPointer : public XEventSwitch {
     public:
         explicit XEventSwitchPointer(XWrapper& xWrapper);
 
-        void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
+        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
 
-        void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Common::DateTime::TimePoint dateTime, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action, int button);
-        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Common::DateTime::TimePoint dateTime, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
+        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data);
 
         const std::string &getButtonName(int id, int button) const;
 

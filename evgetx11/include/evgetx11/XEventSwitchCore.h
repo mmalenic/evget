@@ -25,7 +25,6 @@
 
 #include "XEventSwitch.h"
 #include <unordered_map>
-#include "evgetcore/Event/Button/ButtonAction.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "XWrapper.h"
 #include "XEventSwitchPointer.h"
@@ -35,14 +34,14 @@ namespace EvgetX11 {
     public:
         explicit XEventSwitchCore(XWrapper& xWrapper);
 
-        void refreshDevices(int id, EvgetCore::Event::Common::Device device, const std::string &name, const XIDeviceInfo &info) override;
+        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
 
     private:
-        void buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
-        void keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
-        void motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
-        void scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        void buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::Button::ButtonAction action);
+        void keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
+        void motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
+        void scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
 
         std::reference_wrapper<XWrapper> xWrapper;
 

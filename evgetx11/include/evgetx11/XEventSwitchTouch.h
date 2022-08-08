@@ -34,8 +34,8 @@ namespace EvgetX11 {
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
 
     private:
-        void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data, EvgetCore::Event::Button::ButtonAction action);
-        void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<std::unique_ptr<EvgetCore::Event::TableData>>& data);
+        void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action);
+        void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
     };
 }
 
