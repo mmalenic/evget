@@ -47,7 +47,7 @@ namespace EvgetX11TestUtils {
     class XEventSwitchMock : public EvgetX11::XEventSwitch {
     public:
         MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data), (override));
-        MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Common::Device device, const std::string& name, const XIDeviceInfo& info), (override));
+        MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info), (override));
     };
 }
 

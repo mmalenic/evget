@@ -26,6 +26,7 @@
 #include <memory>
 #include <X11/Xlib.h>
 #include <chrono>
+#include "evgetcore/Event/Data.h"
 #include "XWrapperX11.h"
 #include "evgetcore/Event/Field.h"
 

@@ -26,28 +26,24 @@
 #include "EvgetX11TestUtils.h"
 
 TEST(XEventSwitchTest, TestAddTableData) { // NOLINT(cert-err58-cpp)
-    std::vector<std::unique_ptr<EvgetCore::Event::AbstractField>> fields{};
-    std::unique_ptr<EvgetCore::Event::AbstractData> genericData = std::make_unique<EvgetCore::Event::Data>("Test", std::move(fields));
-
     EvgetX11::XEventSwitch::EventData data{};
-    EvgetX11::XEventSwitch::addTableData(data, std::move(genericData), nullptr);
+    EvgetX11::XEventSwitch::addTableData(data, EvgetCore::Event::Data{"Test"}, EvgetCore::Event::Data{"Test"});
 
-    ASSERT_EQ(data.at(0)->getGenericData()->getName(), "Test");
-    ASSERT_EQ(data.at(0)->getSystemData(), nullptr);
+    ASSERT_EQ(data.at(0).begin()->getName(), "Test");
 }
 
 TEST(XEventSwitchTest, ContainsDevice) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
     ASSERT_FALSE(eventSwitch.containsDevice(1));
-    eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
+    eventSwitch.setDevice(1, EvgetCore::Event::Device::Mouse);
     ASSERT_FALSE(eventSwitch.containsDevice(1));
 }
 
 TEST(XEventSwitchTest, Device) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
     ASSERT_THROW(eventSwitch.getDevice(1), std::out_of_range);
-    eventSwitch.setDevice(1, EvgetCore::Event::Common::Device::Mouse);
-    ASSERT_EQ(eventSwitch.getDevice(1), EvgetCore::Event::Common::Device::Mouse);
+    eventSwitch.setDevice(1, EvgetCore::Event::Device::Mouse);
+    ASSERT_EQ(eventSwitch.getDevice(1), EvgetCore::Event::Device::Mouse);
 }
 
 TEST(XEventSwitchTest, NameFromId) { // NOLINT(cert-err58-cpp)

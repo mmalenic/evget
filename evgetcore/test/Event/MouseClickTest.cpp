@@ -30,29 +30,29 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(MouseClickTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
 }
 
 TEST(MouseClickTest, Device) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.device(EvgetCore::Event::Common::Device::Mouse).build(), 1, "Mouse");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.device(EvgetCore::Event::Device::Mouse).build(), 1, "Mouse");
 }
 
 TEST(MouseClickTest, PositionX) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.positionX(1).build(), 2, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.positionX(1).build(), 2, "1");
 }
 
 TEST(MouseClickTest, PositionY) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.positionY(1).build(), 3, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.positionY(1).build(), 3, "1");
 }
 
 TEST(MouseClickTest, ButtonAction) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.action(EvgetCore::Event::Button::ButtonAction::Press).build(), 4, "Press");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.action(EvgetCore::Event::ButtonAction::Press).build(), 4, "Press");
 }
 
 TEST(MouseClickTest, Button) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.button(1).build(), 5, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.button(1).build(), 5, "1");
 }
 
 TEST(MouseClickTest, Name) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick::MouseClickBuilder{}.name("name").build(), 6, "name");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.name("name").build(), 6, "name");
 }

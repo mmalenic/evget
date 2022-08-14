@@ -57,9 +57,7 @@ namespace TestUtils::EventTestUtils {
 
     void fieldValueAndName(const EvgetCore::Event::Field& field, const std::string& name, const std::string& expected);
 
-    void event_entry_at(auto&& event, size_t position, const std::string& expected) {
-        ASSERT_EQ(event->getAtPosition(position).getEntry(), expected);
-    }
+    void event_entry_at(const EvgetCore::Event::Data& data, size_t position, const std::string& expected);
 }
 
 #endif //EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H

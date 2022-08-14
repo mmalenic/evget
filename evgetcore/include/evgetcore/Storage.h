@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_STORAGE_H
 #define EVGET_INCLUDE_STORAGE_H
 
-#include "Event/AbstractData.h"
+#include "Event/Data.h"
 #include "EventListener.h"
 #include "Task.h"
 
@@ -34,12 +34,12 @@ namespace EvgetCore {
      * Storage class represents storing event data.
      */
     template<asio::execution::executor E>
-    class Storage : Task<E>, EventListener<std::unique_ptr<Event::AbstractData>> {
+    class Storage : Task<E>, EventListener<Event::Data> {
     public:
         explicit Storage(E& context);
 
         asio::awaitable<void> start() override;
-        void notify(std::unique_ptr<Event::AbstractData> event) override;
+        void notify(Event::Data event) override;
     };
 
     template<asio::execution::executor E>
@@ -53,7 +53,7 @@ namespace EvgetCore {
     }
 
     template<asio::execution::executor E>
-    void Storage<E>::notify(std::unique_ptr<Event::AbstractData> event) {
+    void Storage<E>::notify(Event::Data event) {
     }
 }
 

@@ -37,7 +37,7 @@ EvgetX11::XInputEvent::Timestamp EvgetX11::XInputEvent::getTimestamp() const {
     return timestamp;
 }
 
-const EvgetCore::Event::Common::DateTime::TimePoint &EvgetX11::XInputEvent::getDateTime() const {
+const EvgetCore::Event::Field::DateTime &EvgetX11::XInputEvent::getDateTime() const {
     return dateTime;
 }
 
