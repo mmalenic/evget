@@ -45,3 +45,7 @@ void EvgetCore::Event::Data::addField(Field field) {
 void EvgetCore::Event::Data::addField(std::string name, std::string entry) {
     fields.emplace_back(std::move(name), std::move(entry));
 }
+
+const EvgetCore::Event::Field& EvgetCore::Event::Data::getFieldAt(size_t position) const {
+    return fields.at(position);
+}

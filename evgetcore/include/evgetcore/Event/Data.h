@@ -51,6 +51,8 @@ namespace EvgetCore::Event {
          */
         void addField(std::string name, std::string entry);
 
+        const Field &getFieldAt(size_t position) const;
+
         /**
          * Get the name of the data.
          */
