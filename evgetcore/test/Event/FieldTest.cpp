@@ -64,3 +64,9 @@ TEST(FieldTest, IsData) { // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(field.isData());
     ASSERT_FALSE(field.isEntry());
 }
+
+TEST(FieldTest, CreateAction) { // NOLINT(cert-err58-cpp)
+    auto field = EvgetCore::Event::Field::createAction(EvgetCore::Event::ButtonAction::Press);
+    ASSERT_EQ("Action", field.getName());
+    ASSERT_EQ("Press", field.getEntry());
+}
