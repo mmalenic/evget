@@ -42,9 +42,5 @@ EvgetCore::Event::Field TestUtils::EventTestUtils::createEntriesData(const std::
 }
 
 void TestUtils::EventTestUtils::event_entry_at(const EvgetCore::Event::Data& data, size_t position, const std::string& expected) {
-    auto dataIterator = data.begin();
-    for (size_t i = 0; i < position; i++) {
-        dataIterator++;
-    }
-    ASSERT_EQ(dataIterator->getEntry(), expected);
+    ASSERT_EQ(data.getFieldAt(position).getEntry(), expected);
 }
