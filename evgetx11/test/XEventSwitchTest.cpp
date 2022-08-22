@@ -59,3 +59,8 @@ TEST(XEventSwitchTest, EvtypeName) { // NOLINT(cert-err58-cpp)
     eventSwitch.setEvtypeName(1, "Evtype");
     ASSERT_EQ(eventSwitch.getEvtypeName(1), "Evtype");
 }
+
+TEST(XEventSwitchTest, FormatValue) { // NOLINT(cert-err58-cpp)
+    ASSERT_EQ(EvgetX11TestUtils::XEventSwitchMock::formatValue(0), "");
+    ASSERT_EQ(EvgetX11TestUtils::XEventSwitchMock::formatValue(1), "1");
+}
