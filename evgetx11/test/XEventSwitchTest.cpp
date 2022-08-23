@@ -64,3 +64,21 @@ TEST(XEventSwitchTest, FormatValue) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(EvgetX11TestUtils::XEventSwitchMock::formatValue(0), "");
     ASSERT_EQ(EvgetX11TestUtils::XEventSwitchMock::formatValue(1), "1");
 }
+
+TEST(XEventSwitchTest, GetValuators) { // NOLINT(cert-err58-cpp)
+    auto mask = nullptr;
+    XISetMask(mask, 1);
+    double values[1] = {1};
+
+    auto valuatorState = XIValuatorState {
+         .mask_len = 1,
+         .mask = mask,
+         .values = values
+    };
+
+    auto valuators = EvgetX11TestUtils::XEventSwitchMock::getValuators(valuatorState);
+    std::map<int, int> expected{};
+    expected[1] = 1;
+
+    ASSERT_EQ(valuators, expected);
+}
