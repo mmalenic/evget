@@ -82,3 +82,21 @@ TEST(XEventSwitchTest, GetValuators) { // NOLINT(cert-err58-cpp)
 
     ASSERT_EQ(valuators, expected);
 }
+
+
+TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
+    auto mask = nullptr;
+    XISetMask(mask, 1);
+
+    auto event = XIDeviceEvent {
+        .buttons = XIButtonState{
+                .mask_len = 1,
+                .mask = mask,
+        }
+    };
+
+    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createButtonEntries(event);
+    ASSERT_EQ(buttons.at(0).getName(), "ButtonState");
+    ASSERT_EQ(buttons.at(0).getFieldAt(0).getName(), "ButtonActive");
+    ASSERT_EQ(buttons.at(0).getFieldAt(0).getEntry(), "1");
+}
