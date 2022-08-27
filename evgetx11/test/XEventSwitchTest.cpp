@@ -83,13 +83,12 @@ TEST(XEventSwitchTest, GetValuators) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(valuators, expected);
 }
 
-
 TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
     auto mask = nullptr;
     XISetMask(mask, 1);
 
     auto event = XIDeviceEvent {
-        .buttons = XIButtonState{
+        .buttons = XIButtonState {
                 .mask_len = 1,
                 .mask = mask,
         }
@@ -99,4 +98,25 @@ TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(buttons.at(0).getName(), "ButtonState");
     ASSERT_EQ(buttons.at(0).getFieldAt(0).getName(), "ButtonActive");
     ASSERT_EQ(buttons.at(0).getFieldAt(0).getEntry(), "1");
+}
+
+TEST(XEventSwitchTest, CreateValuatorEntries) { // NOLINT(cert-err58-cpp)
+    auto mask = nullptr;
+    XISetMask(mask, 1);
+    double values[1] = {1};
+
+    auto event = XIValuatorState {
+            .mask_len = 1,
+            .mask = mask,
+            .values = values
+    };
+
+    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createValuatorEntries(event);
+    ASSERT_EQ(buttons.at(0).getName(), "Valuators");
+
+    ASSERT_EQ(buttons.at(0).getFieldAt(0).getName(), "Valuator");
+    ASSERT_EQ(buttons.at(0).getFieldAt(0).getEntry(), "1");
+
+    ASSERT_EQ(buttons.at(0).getFieldAt(1).getName(), "Value");
+    ASSERT_EQ(buttons.at(0).getFieldAt(1).getEntry(), "1");
 }
