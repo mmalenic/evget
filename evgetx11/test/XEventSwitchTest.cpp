@@ -120,3 +120,111 @@ TEST(XEventSwitchTest, CreateValuatorEntries) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(buttons.at(0).getFieldAt(1).getName(), "Value");
     ASSERT_EQ(buttons.at(0).getFieldAt(1).getEntry(), "1");
 }
+
+TEST(XEventSwitchTest, CreateSystemData) { // NOLINT(cert-err58-cpp)
+    auto buttonMask = nullptr;
+    XISetMask(buttonMask, 1);
+
+    auto valuatorMask = nullptr;
+    XISetMask(valuatorMask, 1);
+    double values[1] = {1};
+
+    auto event = XIDeviceEvent {
+            .type = 0,
+            .serial = 0,
+            .send_event = 0,
+            .display = nullptr,
+            .extension = 0,
+            .evtype = 0,
+            .time = 0,
+            .deviceid = 0,
+            .sourceid = 0,
+            .detail = 0,
+            .root = 0,
+            .event = 0,
+            .child = 0,
+            .root_x = 0,
+            .root_y = 0,
+            .event_x = 0,
+            .event_y = 0,
+            .flags = 0,
+            .buttons = {
+                    .mask_len = 1,
+                    .mask = buttonMask,
+            },
+            .valuators = {
+                    .mask_len = 1,
+                    .mask = valuatorMask,
+                    .values = values
+            },
+            .mods = {0, 0, 0, 0},
+            .group = {0, 0, 0, 0},
+    };
+
+    EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
+
+    eventSwitch.setDevice(0, EvgetCore::Event::Device::Mouse);
+    eventSwitch.setEvtypeName(0, "Name");
+    eventSwitch.setNameFromId(0, "Name");
+
+    auto data = eventSwitch.createSystemData(event, "Name");
+
+    ASSERT_EQ(data.getName(), "Name");
+
+    ASSERT_EQ(data.getFieldAt(0).getName(), "DeviceName");
+    ASSERT_EQ(data.getFieldAt(0).getEntry(), "Name");
+
+    ASSERT_EQ(data.getFieldAt(1).getName(), "EventTypeId");
+    ASSERT_EQ(data.getFieldAt(1).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(2).getName(), "EventTypeName");
+    ASSERT_EQ(data.getFieldAt(2).getEntry(), "Name");
+
+    ASSERT_EQ(data.getFieldAt(3).getName(), "XInputTime");
+    ASSERT_EQ(data.getFieldAt(3).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(4).getName(), "DeviceId");
+    ASSERT_EQ(data.getFieldAt(4).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(5).getName(), "SourceId");
+    ASSERT_EQ(data.getFieldAt(5).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(6).getName(), "Flags");
+    ASSERT_EQ(data.getFieldAt(6).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(7).getName(), "ButtonState");
+    ASSERT_EQ(data.getFieldAt(7).getEntryAt(0).getName(), "ButtonState");
+    ASSERT_EQ(data.getFieldAt(7).getEntryAt(0).getFieldAt(0).getName(), "ButtonActive");
+    ASSERT_EQ(data.getFieldAt(7).getEntryAt(0).getFieldAt(0).getEntry(), "1");
+
+    ASSERT_EQ(data.getFieldAt(8).getName(), "Valuators");
+    ASSERT_EQ(data.getFieldAt(8).getEntryAt(0).getName(), "Valuators");
+    ASSERT_EQ(data.getFieldAt(8).getEntryAt(0).getFieldAt(0).getName(), "Valuator");
+    ASSERT_EQ(data.getFieldAt(8).getEntryAt(0).getFieldAt(0).getEntry(), "1");
+    ASSERT_EQ(data.getFieldAt(8).getEntryAt(1).getFieldAt(1).getName(), "Value");
+    ASSERT_EQ(data.getFieldAt(8).getEntryAt(1).getFieldAt(1).getEntry(), "1");
+
+    ASSERT_EQ(data.getFieldAt(9).getName(), "ModifiersBase");
+    ASSERT_EQ(data.getFieldAt(9).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(10).getName(), "ModifiersEffective");
+    ASSERT_EQ(data.getFieldAt(10).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(11).getName(), "ModifiersLatched");
+    ASSERT_EQ(data.getFieldAt(11).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(12).getName(), "ModifiersLocked");
+    ASSERT_EQ(data.getFieldAt(12).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(13).getName(), "GroupBase");
+    ASSERT_EQ(data.getFieldAt(13).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(14).getName(), "GroupEffective");
+    ASSERT_EQ(data.getFieldAt(14).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(15).getName(), "GroupLatched");
+    ASSERT_EQ(data.getFieldAt(15).getEntry(), "0");
+
+    ASSERT_EQ(data.getFieldAt(16).getName(), "GroupLocked");
+    ASSERT_EQ(data.getFieldAt(16).getEntry(), "0");
+}

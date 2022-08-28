@@ -78,6 +78,11 @@ namespace EvgetCore::Event {
         [[nodiscard]] std::string getEntry() const;
 
         /**
+         * Get the entry.
+         */
+        [[nodiscard]] Data getEntryAt(size_t position) const;
+
+        /**
          * Get the name.
          */
         [[nodiscard]] std::string getName() const;

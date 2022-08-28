@@ -139,3 +139,7 @@ EvgetCore::Event::Field::createOptionalString(std::string_view name, std::option
     }
     return {std::string{name}, std::move(*value)};
 }
+
+EvgetCore::Event::Data EvgetCore::Event::Field::getEntryAt(size_t position) const {
+    return std::get<Entries>(entry).at(position);
+}
