@@ -7,6 +7,7 @@ add_program(
     SRCS
     EventTransformerX11Test.cpp
     XEventSwitchTest.cpp
+    XEventSwitchCoreTest.cpp
     utils/EvgetX11TestUtils.h
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
