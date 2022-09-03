@@ -39,16 +39,42 @@ TEST(XEventSwitchCore, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
             .resolution = 0,
             .mode = 0
     };
-    auto classInfo = reinterpret_cast<XIAnyClassInfo *>(&valuatorInfo);
+    XIScrollClassInfo scrollInfo{
+            .type = XIScrollClass,
+            .sourceid = 0,
+            .number = 0,
+            .scroll_type = XIScrollTypeVertical,
+            .increment = 0,
+            .flags = 0
+    };
+    Atom labels[] = {1};
+    auto mask = nullptr;
+    XISetMask(mask, 1);
+    XIButtonClassInfo buttonInfo{
+            .type = XIButtonClass,
+            .sourceid = 0,
+            .num_buttons = 1,
+            .labels = labels,
+            .state = XIButtonState {
+                    .mask_len = 1,
+                    .mask = mask,
+            },
+    };
 
+    auto anyValuatorInfo = reinterpret_cast<XIAnyClassInfo *>(&valuatorInfo);
+    auto anyScrollInfo = reinterpret_cast<XIAnyClassInfo *>(&scrollInfo);
+    auto anyButtonInfo = reinterpret_cast<XIAnyClassInfo *>(&buttonInfo);
+    XIAnyClassInfo* classes[] = {anyValuatorInfo, anyScrollInfo, anyButtonInfo};
+
+    char name[] = "name";
     XIDeviceInfo xi2DeviceInfo{
             .deviceid = 0,
-            .name = nullptr,
+            .name = name,
             .use = 0,
             .attachment = 0,
             .enabled = true,
             .num_classes = 1,
-            .classes = &classInfo
+            .classes = classes
     };
 
     EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
