@@ -22,7 +22,7 @@ add_program(
     include/evgetx11/XWrapperX11.h
     include/evgetx11/XWrapper.h
     include/evgetx11/XDeviceDeleter.h
-    include/evgetx11/XEventCookieDeleter.h
+    include/evgetx11/DeleterWithDisplay.h
 )
 
 find_symbols(

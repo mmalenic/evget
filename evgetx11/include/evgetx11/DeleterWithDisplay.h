@@ -27,15 +27,26 @@
 #include <functional>
 
 namespace EvgetX11 {
-    class XEventCookieDeleter {
+    template <auto F>
+    class DeleterWithDisplay {
     public:
-        explicit XEventCookieDeleter(Display& display);
+        explicit DeleterWithDisplay(Display& display);
 
-        void operator()(XGenericEventCookie *pointer) const;
+        template <typename T>
+        void operator()(T *pointer) const;
 
     private:
         std::reference_wrapper<Display> display;
     };
+
+    template<auto F>
+    template<typename T>
+    void EvgetX11::DeleterWithDisplay<F>::operator()(T *pointer) const {
+        F(&display.get(), pointer);
+    }
+
+    template<auto fn>
+    DeleterWithDisplay<fn>::DeleterWithDisplay(Display &display) : display{display} {}
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTCOOKIEDELETER_H

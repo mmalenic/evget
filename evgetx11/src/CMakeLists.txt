@@ -13,7 +13,6 @@ add_program(
     XSetMaskCore.cpp
     XWrapperX11.cpp
     XDeviceDeleter.cpp
-    XEventCookieDeleter.cpp
     XWrapper.cpp
 )
 add_program(
