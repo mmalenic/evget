@@ -45,8 +45,8 @@ namespace EvgetX11 {
         F(&display.get(), pointer);
     }
 
-    template<auto fn>
-    DeleterWithDisplay<fn>::DeleterWithDisplay(Display &display) : display{display} {}
+    template<auto F>
+    DeleterWithDisplay<F>::DeleterWithDisplay(Display &display) : display{display} {}
 }
 
 #endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTCOOKIEDELETER_H
