@@ -12,7 +12,6 @@ add_program(
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
     XWrapperX11.cpp
-    XDeviceDeleter.cpp
     XWrapper.cpp
 )
 add_program(

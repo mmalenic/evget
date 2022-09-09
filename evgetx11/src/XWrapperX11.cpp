@@ -25,7 +25,6 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include "evgetx11/XWrapperX11.h"
-#include "evgetx11/XDeviceDeleter.h"
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {
 }
@@ -97,7 +96,7 @@ std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(
     int id,
     int mapSize
 ) {
-    auto device = std::unique_ptr<XDevice, XDeviceDeleter>(XOpenDevice(&display.get(), id), XDeviceDeleter{display.get()});
+    auto device = std::unique_ptr<XDevice, DeleterWithDisplay<XCloseDevice>>(XOpenDevice(&display.get(), id), DeleterWithDisplay<XCloseDevice>{display.get()});
     if (device) {
         auto map = std::make_unique<unsigned char[]>(mapSize);
         XGetDeviceButtonMapping(&display.get(), device.get(), map.get(), mapSize);
@@ -127,9 +126,9 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
 EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {nullptr, DeleterWithDisplay{display.get()}};
+        return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
     }
-    return {nullptr, DeleterWithDisplay{display.get()}};
+    return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
 }
 
 Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
