@@ -129,7 +129,7 @@ EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         return {&event.xcookie, std::move(deleter)};
     }
-    return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
+    return {nullptr, [](XGenericEventCookie *){ }};
 }
 
 Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
