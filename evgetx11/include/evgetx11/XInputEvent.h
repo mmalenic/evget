@@ -39,7 +39,7 @@ namespace EvgetX11 {
 
         [[nodiscard]] const EvgetCore::Event::Field::DateTime &getDateTime() const override;
 
-        const std::optional<std::reference_wrapper<T>> viewData() const override;
+        std::optional<std::reference_wrapper<T>> viewData() const override;
 
         /**
          * Create a XInputEvent by getting the next event from the display. Events received depend on
@@ -72,7 +72,7 @@ namespace EvgetX11 {
     }
 
     template<typename T>
-    const std::optional<std::reference_wrapper<T>> EvgetX11::XInputEvent<T>::viewData() const {
+    std::optional<std::reference_wrapper<T>> EvgetX11::XInputEvent<T>::viewData() const {
         return std::optional<std::reference_wrapper<T>>();
     }
 

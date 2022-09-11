@@ -46,7 +46,7 @@ namespace EvgetX11 {
          * A non owning reference to the data in the event cookie. Must check if data is available first
          * with hasData.
          */
-        virtual const std::optional<std::reference_wrapper<T>> viewData() const = 0;
+        virtual std::optional<std::reference_wrapper<T>> viewData() const = 0;
 
         XInputEventWrapper() = default;
         virtual ~XInputEventWrapper() = default;
