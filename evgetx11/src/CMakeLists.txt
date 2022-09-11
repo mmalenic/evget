@@ -4,6 +4,7 @@ add_program(
     SRCS
     EventTransformerX11.cpp
     ParserLinux.cpp
+    XInputEvent.cpp
     XInputHandler.cpp
     XEventSwitchCore.cpp
     XEventSwitch.cpp
