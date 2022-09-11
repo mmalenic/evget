@@ -86,7 +86,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
         action = (deviceEvent.flags & XIKeyRepeat) ? EvgetCore::Event::ButtonAction::Repeat : EvgetCore::Event::ButtonAction::Press;
     }
 
-    std::string name = XWrapper::keySymToString(keySym);
+    std::string name = XWrapper<XEventDeleter>::keySymToString(keySym);
 
     EvgetCore::Event::Key builder{};
     builder.time(timestamp).dateTime(event.getDateTime()).action(action).button(deviceEvent.detail).character(character).name(name);
@@ -152,7 +152,7 @@ void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chro
 }
 
 
-EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper) : XEventSwitchPointer(xWrapper), xWrapper{xWrapper} {
+EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper<XEventDeleter>& xWrapper) : XEventSwitchPointer(xWrapper), xWrapper{xWrapper} {
     setEvtypeName(XI_KeyPress, "KeyPress");
     setEvtypeName(XI_KeyRelease, "KeyRelease");
     setEvtypeName(XI_ButtonPress, "ButtonPress");

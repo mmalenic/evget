@@ -22,13 +22,15 @@
 
 #include "evgetx11/XWrapper.h"
 
-void EvgetX11::XWrapper::setMask(unsigned char* mask, std::initializer_list<int> events) {
+template <typename Deleter>
+void EvgetX11::XWrapper<Deleter>::setMask(unsigned char* mask, std::initializer_list<int> events) {
     for (auto event : events) {
         XISetMask(mask, event);
     }
 }
 
-std::string EvgetX11::XWrapper::keySymToString(KeySym keySym) {
+template <typename Deleter>
+std::string EvgetX11::XWrapper<Deleter>::keySymToString(KeySym keySym) {
     if (keySym != NoSymbol) {
         XKeysymToString(keySym);
     }

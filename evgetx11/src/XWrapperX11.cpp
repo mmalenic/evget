@@ -123,12 +123,12 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
     return event;
 }
 
-EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
+EvgetX11::XWrapperX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
+        return {nullptr, XEventDeleter{display.get()}};
     }
-    return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
+    return {nullptr, XEventDeleter{display.get()}};
 }
 
 Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {

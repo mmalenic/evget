@@ -44,7 +44,7 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     }
 }
 
-EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XWrapper& xWrapper) : XEventSwitchPointer{xWrapper} {
+EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XWrapper<XEventDeleter>& xWrapper) : XEventSwitchPointer{xWrapper} {
     setEvtypeName(XI_TouchBegin, "TouchBegin");
     setEvtypeName(XI_TouchUpdate, "TouchUpdate");
     setEvtypeName(XI_TouchEnd, "TouchEnd");

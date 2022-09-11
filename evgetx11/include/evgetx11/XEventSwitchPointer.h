@@ -29,7 +29,7 @@
 namespace EvgetX11 {
     class XEventSwitchPointer : public XEventSwitch {
     public:
-        explicit XEventSwitchPointer(XWrapper& xWrapper);
+        explicit XEventSwitchPointer(XWrapper<XEventDeleter>& xWrapper);
 
         void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
 
@@ -41,7 +41,7 @@ namespace EvgetX11 {
     private:
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
-        std::reference_wrapper<XWrapper> xWrapper;
+        std::reference_wrapper<XWrapper<XEventDeleter>> xWrapper;
         std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     };
 }

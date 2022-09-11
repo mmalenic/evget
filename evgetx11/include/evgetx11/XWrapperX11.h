@@ -33,7 +33,9 @@
 #include "XWrapper.h"
 
 namespace EvgetX11 {
-    class XWrapperX11 : public XWrapper {
+    using XEventDeleter = DeleterWithDisplay<XFreeEventData>;
+
+    class XWrapperX11 : public XWrapper<XEventDeleter> {
     public:
         explicit XWrapperX11(Display& display);
 

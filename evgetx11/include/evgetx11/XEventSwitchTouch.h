@@ -29,7 +29,7 @@
 namespace EvgetX11 {
     class XEventSwitchTouch : XEventSwitchPointer {
     public:
-        explicit XEventSwitchTouch(XWrapper &xWrapper);
+        explicit XEventSwitchTouch(XWrapper<XEventDeleter> &xWrapper);
 
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
 

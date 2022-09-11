@@ -89,7 +89,7 @@ void EvgetX11::XEventSwitchPointer::refreshDevices(
     }
 }
 
-EvgetX11::XEventSwitchPointer::XEventSwitchPointer(EvgetX11::XWrapper &xWrapper) : xWrapper{xWrapper} {
+EvgetX11::XEventSwitchPointer::XEventSwitchPointer(XWrapper<XEventDeleter> &xWrapper) : xWrapper{xWrapper} {
 }
 
 const std::string &EvgetX11::XEventSwitchPointer::getButtonName(int id, int button) const {
