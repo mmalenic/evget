@@ -35,7 +35,7 @@
 namespace EvgetX11 {
     class XWrapper {
     public:
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, DeleterWithDisplay<XFreeEventData>>;
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie *)>>;
 
         virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
         virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
