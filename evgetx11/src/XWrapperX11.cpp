@@ -124,9 +124,10 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
 }
 
 EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
+    auto deleter = std::function<void(XGenericEventCookie *)>{DeleterWithDisplay<XFreeEventData>{display.get()}};
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {&event.xcookie, DeleterWithDisplay<XFreeEventData>{display.get()}};
+        return {&event.xcookie, std::move(deleter)};
     }
     return {nullptr, DeleterWithDisplay<XFreeEventData>{display.get()}};
 }
