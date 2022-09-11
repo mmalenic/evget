@@ -32,7 +32,7 @@
 namespace EvgetX11 {
     class XEventSwitchCore : public XEventSwitchPointer {
     public:
-        explicit XEventSwitchCore(XWrapper<XEventDeleter>& xWrapper);
+        explicit XEventSwitchCore(XWrapper& xWrapper);
 
         void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
         bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) override;
@@ -43,7 +43,7 @@ namespace EvgetX11 {
         void motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
         void scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
 
-        std::reference_wrapper<XWrapper<XEventDeleter>> xWrapper;
+        std::reference_wrapper<XWrapper> xWrapper;
 
         std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
         std::unordered_map<int, std::optional<int>> valuatorX{};

@@ -33,10 +33,9 @@
 #include "DeleterWithDisplay.h"
 
 namespace EvgetX11 {
-    template<typename Deleter>
     class XWrapper {
     public:
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, Deleter>;
+        using XEventPointer = std::unique_ptr<XGenericEventCookie, DeleterWithDisplay<XFreeEventData>>;
 
         virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
         virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
@@ -69,8 +68,7 @@ namespace EvgetX11 {
         static constexpr int maskBits = 8;
     };
 
-    template<typename Deleter>
-    void EvgetX11::XWrapper<Deleter>::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
+    void EvgetX11::XWrapper::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
         for (int i = 0; i < maskLen * maskBits; i++) {
             if (XIMaskIsSet(mask, i)) {
                 function(i);

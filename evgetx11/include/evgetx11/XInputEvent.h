@@ -67,15 +67,15 @@ namespace EvgetX11 {
          * the event mask set on the display. This function will block if there are no events on the event
          * queue.
          */
-        static XInputEvent nextEvent(XWrapper<XEventDeleter>& xWrapper);
+        static XInputEvent nextEvent(XWrapper& xWrapper);
 
     private:
-        explicit XInputEvent(XWrapper<XEventDeleter>& xWrapper);
+        explicit XInputEvent(XWrapper& xWrapper);
 
         XEvent event;
         Timestamp timestamp;
         EvgetCore::Event::Field::DateTime dateTime;
-        XWrapper<XEventDeleter>::XEventPointer cookie;
+        XWrapper::XEventPointer cookie;
     };
 
     template<typename T>

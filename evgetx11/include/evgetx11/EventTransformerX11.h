@@ -38,14 +38,14 @@
 namespace EvgetX11 {
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        EventTransformerX11(XWrapper<XEventDeleter>& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
+        EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
         std::chrono::nanoseconds getTime(const XInputEvent& event);
         void refreshDevices();
 
-        std::reference_wrapper<XWrapper<XEventDeleter>> xWrapper;
+        std::reference_wrapper<XWrapper> xWrapper;
         std::optional<XInputEvent::Timestamp> start{std::nullopt};
 
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
