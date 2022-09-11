@@ -43,11 +43,6 @@ namespace EvgetX11 {
         [[nodiscard]] virtual const EvgetCore::Event::Field::DateTime &getDateTime() const = 0;
 
         /**
-         * Must check if data is available first with hasData.
-         */
-        [[nodiscard]] virtual int getEventType() const = 0;
-
-        /**
          * A non owning reference to the data in the event cookie. Must check if data is available first
          * with hasData.
          */

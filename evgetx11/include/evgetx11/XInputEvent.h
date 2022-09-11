@@ -29,38 +29,17 @@
 #include "evgetcore/Event/Data.h"
 #include "XWrapperX11.h"
 #include "evgetcore/Event/Field.h"
+#include "XInputEventWrapper.h"
 
 namespace EvgetX11 {
-    class XInputEvent {
+    template<typename T>
+    class XInputEvent : public XInputEventWrapper<T> {
     public:
-        using Timestamp = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
+        [[nodiscard]] typename XInputEventWrapper<T>::Timestamp getTimestamp() const override;
 
-        /**
-         * Get the timestamp of the event.
-         */
-        [[nodiscard]] Timestamp getTimestamp() const;
+        [[nodiscard]] const EvgetCore::Event::Field::DateTime &getDateTime() const override;
 
-        /**
-         * Get the date time of the event.
-         */
-        [[nodiscard]] const EvgetCore::Event::Field::DateTime &getDateTime() const;
-
-        /**
-         * Check if viewData and getEventType is safe to call.
-         */
-        [[nodiscard]] bool hasData() const;
-
-        /**
-         * Must check if data is available first with hasData.
-         */
-        [[nodiscard]] int getEventType() const;
-
-        /**
-         * A non owning reference to the data in the event cookie. Must check if data is available first
-         * with hasData.
-         */
-        template<typename T>
-        const T& viewData() const;
+        const std::optional<std::reference_wrapper<T>> viewData() const override;
 
         /**
          * Create a XInputEvent by getting the next event from the display. Events received depend on
@@ -73,14 +52,33 @@ namespace EvgetX11 {
         explicit XInputEvent(XWrapper<XEventDeleter>& xWrapper);
 
         XEvent event;
-        Timestamp timestamp;
+        typename XInputEventWrapper<T>::Timestamp timestamp;
         EvgetCore::Event::Field::DateTime dateTime;
         XWrapper<XEventDeleter>::XEventPointer cookie;
     };
 
     template<typename T>
-    const T& EvgetX11::XInputEvent::viewData() const {
-        return *static_cast<T*>(cookie->data);
+    EvgetX11::XInputEvent<T>::XInputEvent(XWrapper<XEventDeleter>& xWrapper) : event{xWrapper.nextEvent()}, timestamp{std::chrono::steady_clock::now()}, dateTime{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {
+    }
+
+    template<typename T>
+    typename EvgetX11::XInputEventWrapper<T>::Timestamp EvgetX11::XInputEvent<T>::getTimestamp() const {
+        return timestamp;
+    }
+
+    template<typename T>
+    const EvgetCore::Event::Field::DateTime &EvgetX11::XInputEvent<T>::getDateTime() const {
+        return dateTime;
+    }
+
+    template<typename T>
+    const std::optional<std::reference_wrapper<T>> EvgetX11::XInputEvent<T>::viewData() const {
+        return std::optional<std::reference_wrapper<T>>();
+    }
+
+    template<typename T>
+    EvgetX11::XInputEvent<T> EvgetX11::XInputEvent<T>::nextEvent(XWrapper<XEventDeleter>& xWrapper) {
+        return XInputEvent{xWrapper};
     }
 }
 
