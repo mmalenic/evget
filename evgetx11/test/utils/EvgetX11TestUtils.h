@@ -31,7 +31,13 @@
 #include "evgetx11/EventTransformerX11.h"
 
 namespace EvgetX11TestUtils {
-    class XWrapperMock : public EvgetX11::XWrapper {
+    class MockDeleter {
+    public:
+        void operator()(XGenericEventCookie *_pointer) const {
+        }
+    };
+
+    class XWrapperMock : public EvgetX11::XWrapper<MockDeleter> {
     public:
         MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
         MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));

@@ -21,6 +21,7 @@ add_program(
     include/evgetx11/XSetMaskCore.h
     include/evgetx11/XWrapperX11.h
     include/evgetx11/XWrapper.h
+    include/evgetx11/XInputEventWrapper.h
     include/evgetx11/DeleterWithDisplay.h
 )
 

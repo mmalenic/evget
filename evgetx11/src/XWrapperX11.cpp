@@ -126,7 +126,7 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
 EvgetX11::XWrapperX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
-        return {nullptr, XEventDeleter{display.get()}};
+        return {&event.xcookie, XEventDeleter{display.get()}};
     }
     return {nullptr, XEventDeleter{display.get()}};
 }
