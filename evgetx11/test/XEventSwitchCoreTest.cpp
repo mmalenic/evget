@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 #include "evgetx11/XEventSwitchCore.h"
 #include "EvgetX11TestUtils.h"
+#include "evgetcore/Event/MouseClick.h"
 
 TEST(XEventSwitchCore, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
@@ -88,7 +89,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
 
     XIValuatorClassInfo valuatorInfo{
             .type = XIValuatorClass,
-            .sourceid = 0,
+            .sourceid = 1,
             .number = 0,
             .label = 0,
             .min = 0,
@@ -99,7 +100,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     };
     XIScrollClassInfo scrollInfo{
             .type = XIScrollClass,
-            .sourceid = 0,
+            .sourceid = 1,
             .number = 0,
             .scroll_type = XIScrollTypeVertical,
             .increment = 0,
@@ -110,7 +111,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     XISetMask(mask, 1);
     XIButtonClassInfo buttonInfo{
             .type = XIButtonClass,
-            .sourceid = 0,
+            .sourceid = 1,
             .num_buttons = 1,
             .labels = labels,
             .state = XIButtonState {
@@ -126,7 +127,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
 
     char name[] = "name";
     XIDeviceInfo xi2DeviceInfo{
-            .deviceid = 0,
+            .deviceid = 1,
             .name = name,
             .use = 0,
             .attachment = 0,
@@ -150,14 +151,14 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
             .extension = 0,
             .evtype = 0,
             .time = 0,
-            .deviceid = 0,
-            .sourceid = 0,
+            .deviceid = 1,
+            .sourceid = 1,
             .detail = 0,
             .root = 0,
             .event = 0,
             .child = 0,
-            .root_x = 0,
-            .root_y = 0,
+            .root_x = 1,
+            .root_y = 1,
             .event_x = 0,
             .event_y = 0,
             .flags = 0,
@@ -188,7 +189,21 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
             .xcookie = cookie
     };
 
-//    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
-//
-//    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
+    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(event)));
+    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
+
+    auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
+
+    EvgetX11::XEventSwitch::EventData eventData{};
+    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
+    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+
+    auto genericData = eventData.at(0);
+
+    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "0");
+    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "0");
+    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "0");
+    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "name");
 }
