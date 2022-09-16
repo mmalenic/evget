@@ -59,3 +59,15 @@ XIButtonClassInfo EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>
             },
     };
 }
+
+XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo *, 3>& info, char name[]) {
+    return XIDeviceInfo {
+            .deviceid = 1,
+            .name = name,
+            .use = XIMasterPointer,
+            .attachment = 0,
+            .enabled = true,
+            .num_classes = static_cast<int>(info.size()),
+            .classes = info.data()
+    };
+}

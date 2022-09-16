@@ -52,6 +52,7 @@ namespace EvgetX11TestUtils {
     XIValuatorClassInfo createXIValuatorClassInfo();
     XIScrollClassInfo createXIScrollClassInfo();
     XIButtonClassInfo createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask);
+    XIDeviceInfo createXIDeviceInfo(std::array<XIAnyClassInfo *, 3>& info, char name[]);
 }
 
 #endif //EVGET_UTILS_H
