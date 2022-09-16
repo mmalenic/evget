@@ -19,7 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
 #ifndef EVGET_UTILS_H
 #define EVGET_UTILS_H
@@ -49,6 +48,8 @@ namespace EvgetX11TestUtils {
         MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data), (override));
         MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info), (override));
     };
+
+    XIValuatorClassInfo createXIValuatorClassInfo();
 }
 
 #endif //EVGET_UTILS_H

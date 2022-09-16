@@ -9,6 +9,7 @@ add_program(
     XEventSwitchTest.cpp
     XEventSwitchCoreTest.cpp
     utils/EvgetX11TestUtils.h
+    utils/Evgetx11TestUtils.cpp
 )
 program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
 
