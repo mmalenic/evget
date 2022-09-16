@@ -28,10 +28,21 @@ XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
             .sourceid = 1,
             .number = 1,
             .label = 1,
-            .min = 1,
-            .max = 1,
+            .min = 0,
+            .max = 0,
             .value = 1,
             .resolution = 1,
-            .mode = 1
+            .mode = XIModeAbsolute
+    };
+}
+
+XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
+    return XIScrollClassInfo {
+            .type = XIScrollClass,
+            .sourceid = 1,
+            .number = 1,
+            .scroll_type = XIScrollTypeVertical,
+            .increment = 1,
+            .flags = 0
     };
 }

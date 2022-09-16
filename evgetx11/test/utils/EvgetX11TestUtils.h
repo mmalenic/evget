@@ -50,6 +50,7 @@ namespace EvgetX11TestUtils {
     };
 
     XIValuatorClassInfo createXIValuatorClassInfo();
+    XIScrollClassInfo createXIScrollClassInfo();
 }
 
 #endif //EVGET_UTILS_H
