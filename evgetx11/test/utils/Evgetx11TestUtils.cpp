@@ -71,3 +71,14 @@ XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo *, 
             .classes = info.data()
     };
 }
+
+XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
+    return XDeviceInfo {
+            .id = 1,
+            .type = 1,
+            .name = nullptr,
+            .num_classes = 0,
+            .use = IsXExtensionPointer,
+            .inputclassinfo = nullptr
+    };
+}
