@@ -46,3 +46,16 @@ XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
             .flags = 0
     };
 }
+
+XIButtonClassInfo EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask) {
+    return XIButtonClassInfo{
+            .type = XIButtonClass,
+            .sourceid = 1,
+            .num_buttons = static_cast<int>(labels.size()),
+            .labels = labels.data(),
+            .state = XIButtonState {
+                    .mask_len = static_cast<int>(mask.size()),
+                    .mask = mask.data(),
+            },
+    };
+}
