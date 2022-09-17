@@ -23,7 +23,7 @@
 #include "EvgetX11TestUtils.h"
 
 XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
-    return XIValuatorClassInfo {
+    return {
             .type = XIValuatorClass,
             .sourceid = 1,
             .number = 1,
@@ -37,7 +37,7 @@ XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
 }
 
 XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
-    return XIScrollClassInfo {
+    return {
             .type = XIScrollClass,
             .sourceid = 1,
             .number = 1,
@@ -48,12 +48,12 @@ XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
 }
 
 XIButtonClassInfo EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask) {
-    return XIButtonClassInfo{
+    return {
             .type = XIButtonClass,
             .sourceid = 1,
             .num_buttons = static_cast<int>(labels.size()),
             .labels = labels.data(),
-            .state = XIButtonState {
+            .state = {
                     .mask_len = static_cast<int>(mask.size()),
                     .mask = mask.data(),
             },
@@ -61,7 +61,7 @@ XIButtonClassInfo EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>
 }
 
 XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo *, 3>& info, char name[]) {
-    return XIDeviceInfo {
+    return {
             .deviceid = 1,
             .name = name,
             .use = XIMasterPointer,
@@ -73,7 +73,7 @@ XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo *, 
 }
 
 XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
-    return XDeviceInfo {
+    return {
             .id = 1,
             .type = 1,
             .name = nullptr,
@@ -84,7 +84,7 @@ XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
 }
 
 XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values) {
-    return XIDeviceEvent {
+    return {
             .type = GenericEvent,
             .serial = 1,
             .send_event = false,
@@ -107,18 +107,14 @@ XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(std::array<unsigned char, 1
                     .mask_len = static_cast<int>(buttonMask.size()),
                     .mask = buttonMask.data(),
             },
-            .valuators = {
-                    .mask_len = static_cast<int>(valuatorMask.size()),
-                    .mask = valuatorMask.data(),
-                    .values = values.data()
-            },
+            .valuators = createXIValuatorState(valuatorMask, values),
             .mods = {0, 0, 0, 0},
             .group = {0, 0, 0, 0},
     };
 }
 
 XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
-    return XEvent {
+    return {
             .xcookie = {
                     .type = GenericEvent,
                     .serial = 0,
@@ -129,5 +125,13 @@ XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
                     .cookie = 0,
                     .data = &event,
             }
+    };
+}
+
+XIValuatorState EvgetX11TestUtils::createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values) {
+    return {
+        .mask_len = static_cast<int>(valuatorMask.size()),
+        .mask = valuatorMask.data(),
+        .values = values.data()
     };
 }

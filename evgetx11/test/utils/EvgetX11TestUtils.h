@@ -56,6 +56,7 @@ namespace EvgetX11TestUtils {
     XDeviceInfo createXDeviceInfo();
     XIDeviceEvent createXIDeviceEvent(std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
     XEvent createXEvent(XIDeviceEvent& event);
+    XIValuatorState createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 }
 
 #endif //EVGET_UTILS_H
