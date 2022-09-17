@@ -65,15 +65,9 @@ TEST(XEventSwitchTest, FormatValue) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(XEventSwitchTest, GetValuators) { // NOLINT(cert-err58-cpp)
-    auto mask = nullptr;
-    XISetMask(mask, 1);
-    double values[1] = {1};
-
-    auto valuatorState = XIValuatorState {
-         .mask_len = 1,
-         .mask = mask,
-         .values = values
-    };
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto valuatorState = EvgetX11TestUtils::createXIValuatorState(valuatorMask, values);
 
     auto valuators = EvgetX11TestUtils::XEventSwitchMock::getValuators(valuatorState);
     std::map<int, int> expected{};
@@ -95,17 +89,11 @@ TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(XEventSwitchTest, CreateValuatorEntries) { // NOLINT(cert-err58-cpp)
-    auto mask = nullptr;
-    XISetMask(mask, 1);
-    double values[1] = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto valuatorState = EvgetX11TestUtils::createXIValuatorState(valuatorMask, values);
 
-    auto event = XIValuatorState {
-            .mask_len = 1,
-            .mask = mask,
-            .values = values
-    };
-
-    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createValuatorEntries(event);
+    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createValuatorEntries(valuatorState);
     ASSERT_EQ(buttons.at(0).getName(), "Valuators");
 
     ASSERT_EQ(buttons.at(0).getFieldAt(0).getName(), "Valuator");
