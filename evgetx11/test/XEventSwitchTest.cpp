@@ -83,17 +83,12 @@ TEST(XEventSwitchTest, GetValuators) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
-    auto mask = nullptr;
-    XISetMask(mask, 1);
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
 
-    auto event = XIDeviceEvent {
-        .buttons = XIButtonState {
-                .mask_len = 1,
-                .mask = mask,
-        }
-    };
-
-    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createButtonEntries(event);
+    auto buttons = EvgetX11TestUtils::XEventSwitchMock::createButtonEntries(deviceEvent);
     ASSERT_EQ(buttons.at(0).getName(), "ButtonState");
     ASSERT_EQ(buttons.at(0).getFieldAt(0).getName(), "ButtonActive");
     ASSERT_EQ(buttons.at(0).getFieldAt(0).getEntry(), "1");
@@ -121,44 +116,10 @@ TEST(XEventSwitchTest, CreateValuatorEntries) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(XEventSwitchTest, CreateSystemData) { // NOLINT(cert-err58-cpp)
-    auto buttonMask = nullptr;
-    XISetMask(buttonMask, 1);
-
-    auto valuatorMask = nullptr;
-    XISetMask(valuatorMask, 1);
-    double values[1] = {1};
-
-    auto event = XIDeviceEvent {
-            .type = 0,
-            .serial = 0,
-            .send_event = 0,
-            .display = nullptr,
-            .extension = 0,
-            .evtype = 0,
-            .time = 0,
-            .deviceid = 0,
-            .sourceid = 0,
-            .detail = 0,
-            .root = 0,
-            .event = 0,
-            .child = 0,
-            .root_x = 0,
-            .root_y = 0,
-            .event_x = 0,
-            .event_y = 0,
-            .flags = 0,
-            .buttons = {
-                    .mask_len = 1,
-                    .mask = buttonMask,
-            },
-            .valuators = {
-                    .mask_len = 1,
-                    .mask = valuatorMask,
-                    .values = values
-            },
-            .mods = {0, 0, 0, 0},
-            .group = {0, 0, 0, 0},
-    };
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
 
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
 
@@ -166,7 +127,7 @@ TEST(XEventSwitchTest, CreateSystemData) { // NOLINT(cert-err58-cpp)
     eventSwitch.setEvtypeName(0, "Name");
     eventSwitch.setNameFromId(0, "Name");
 
-    auto data = eventSwitch.createSystemData(event, "Name");
+    auto data = eventSwitch.createSystemData(deviceEvent, "Name");
 
     ASSERT_EQ(data.getName(), "Name");
 
