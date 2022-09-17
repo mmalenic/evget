@@ -80,7 +80,7 @@ TEST(XEventSwitchTest, CreateButtonEntries) { // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
-    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
     auto buttons = EvgetX11TestUtils::XEventSwitchMock::createButtonEntries(deviceEvent);
     ASSERT_EQ(buttons.at(0).getName(), "ButtonState");
@@ -107,7 +107,7 @@ TEST(XEventSwitchTest, CreateSystemData) { // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
-    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
     EvgetX11TestUtils::XEventSwitchMock eventSwitch{};
 

@@ -80,7 +80,7 @@ TEST(XEventSwitchCore, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
 
     EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
 
-    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
+    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
 }
 
 TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
@@ -108,7 +108,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
     EvgetX11::XEventSwitch::EventData eventData{};
-    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
     auto genericData = eventData.at(0);
