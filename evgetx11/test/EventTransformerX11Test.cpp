@@ -31,26 +31,13 @@ TEST(EventTransformerX11Test, TestConstructor) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11TestUtils::XEventSwitchMock xEventSwitchMock{};
 
-    XDeviceInfo deviceInfo = {
-            .id = 0,
-            .type = 0,
-            .name = nullptr,
-            .num_classes = 0,
-            .use = IsXExtensionPointer,
-            .inputclassinfo = nullptr
-    };
-    XIDeviceInfo xi2DeviceInfo{
-            .deviceid = 0,
-            .name = nullptr,
-            .use = 0,
-            .attachment = 0,
-            .enabled = true,
-            .num_classes = 0,
-            .classes = nullptr
-    };
+    auto xDeviceInfo = EvgetX11TestUtils::createXDeviceInfo();
+    std::array<XIAnyClassInfo *, 3> info{};
+    char name[] ="name";
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(info, name);
 
-    EXPECT_CALL(xWrapperMock, listInputDevices).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({&deviceInfo, [](XDeviceInfo *_){}})));
-    EXPECT_CALL(xWrapperMock, queryDevice).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>({&xi2DeviceInfo, [](XIDeviceInfo *_){}})));
+    EXPECT_CALL(xWrapperMock, listInputDevices).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({&xDeviceInfo, [](XDeviceInfo *_){}})));
+    EXPECT_CALL(xWrapperMock, queryDevice).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>({&xiDeviceInfo, [](XIDeviceInfo *_){}})));
     EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
 
     EXPECT_CALL(xEventSwitchMock, refreshDevices(0, testing::_, testing::_, testing::_));

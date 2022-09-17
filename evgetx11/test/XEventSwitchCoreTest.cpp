@@ -87,115 +87,28 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
-    XIValuatorClassInfo valuatorInfo{
-            .type = XIValuatorClass,
-            .sourceid = 1,
-            .number = 0,
-            .label = 0,
-            .min = 0,
-            .max = 0,
-            .value = 0,
-            .resolution = 0,
-            .mode = 0
-    };
-    XIScrollClassInfo scrollInfo{
-            .type = XIScrollClass,
-            .sourceid = 1,
-            .number = 0,
-            .scroll_type = XIScrollTypeVertical,
-            .increment = 0,
-            .flags = 0
-    };
-    Atom labels[] = {1};
-    unsigned char mask[] = {0};
-    XISetMask(mask, 1);
-    XIButtonClassInfo buttonInfo{
-            .type = XIButtonClass,
-            .sourceid = 1,
-            .num_buttons = 1,
-            .labels = labels,
-            .state = XIButtonState {
-                    .mask_len = 1,
-                    .mask = mask,
-            },
-    };
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
-    auto anyValuatorInfo = reinterpret_cast<XIAnyClassInfo *>(&valuatorInfo);
-    auto anyScrollInfo = reinterpret_cast<XIAnyClassInfo *>(&scrollInfo);
-    auto anyButtonInfo = reinterpret_cast<XIAnyClassInfo *>(&buttonInfo);
-    XIAnyClassInfo* classes[] = {anyValuatorInfo, anyScrollInfo, anyButtonInfo};
-
+    std::array<XIAnyClassInfo *, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo *>(&buttonClassInfo)};
     char name[] = "name";
-    XIDeviceInfo xi2DeviceInfo{
-            .deviceid = 1,
-            .name = name,
-            .use = 0,
-            .attachment = 0,
-            .enabled = true,
-            .num_classes = 1,
-            .classes = classes
-    };
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
-    auto buttonMask = nullptr;
-    XISetMask(buttonMask, 1);
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
 
-    auto valuatorMask = nullptr;
-    XISetMask(valuatorMask, 1);
-    double values[1] = {1};
+    auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
 
-    XIDeviceEvent deviceEvent{
-            .type = 0,
-            .serial = 0,
-            .send_event = 0,
-            .display = nullptr,
-            .extension = 0,
-            .evtype = 0,
-            .time = 0,
-            .deviceid = 1,
-            .sourceid = 1,
-            .detail = 0,
-            .root = 0,
-            .event = 0,
-            .child = 0,
-            .root_x = 1,
-            .root_y = 1,
-            .event_x = 0,
-            .event_y = 0,
-            .flags = 0,
-            .buttons = {
-                    .mask_len = 1,
-                    .mask = buttonMask,
-            },
-            .valuators = {
-                    .mask_len = 1,
-                    .mask = valuatorMask,
-                    .values = values
-            },
-            .mods = {0, 0, 0, 0},
-            .group = {0, 0, 0, 0},
-    };
-
-    XGenericEventCookie cookie{
-            .type = GenericEvent,
-            .serial = 0,
-            .send_event = false,
-            .display = nullptr,
-            .extension = 0,
-            .evtype = XI_ButtonPress,
-            .cookie = 0,
-            .data = &deviceEvent,
-    };
-    XEvent event{
-            .xcookie = cookie
-    };
-
-    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(event)));
+    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
     EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
     EvgetX11::XEventSwitch::EventData eventData{};
-    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
+    xEventSwitchCore.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
     auto genericData = eventData.at(0);
