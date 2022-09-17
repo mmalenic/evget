@@ -116,3 +116,18 @@ XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(std::array<unsigned char, 1
             .group = {0, 0, 0, 0},
     };
 }
+
+XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
+    return XEvent {
+            .xcookie = {
+                    .type = GenericEvent,
+                    .serial = 0,
+                    .send_event = false,
+                    .display = nullptr,
+                    .extension = 0,
+                    .evtype = XI_ButtonPress,
+                    .cookie = 0,
+                    .data = &event,
+            }
+    };
+}
