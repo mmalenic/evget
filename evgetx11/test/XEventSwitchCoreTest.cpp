@@ -98,7 +98,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
-    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(buttonMask, valuatorMask, values);
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
     auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
 

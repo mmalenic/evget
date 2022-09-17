@@ -83,14 +83,14 @@ XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
     };
 }
 
-XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values) {
+XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(int evtype, std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values) {
     return {
             .type = GenericEvent,
             .serial = 1,
             .send_event = false,
             .display = nullptr,
             .extension = 0,
-            .evtype = XI_ButtonPress,
+            .evtype = evtype,
             .time = 1,
             .deviceid = 1,
             .sourceid = 1,

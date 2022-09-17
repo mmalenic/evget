@@ -54,7 +54,7 @@ namespace EvgetX11TestUtils {
     XIButtonClassInfo createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask);
     XIDeviceInfo createXIDeviceInfo(std::array<XIAnyClassInfo *, 3>& info, char name[]);
     XDeviceInfo createXDeviceInfo();
-    XIDeviceEvent createXIDeviceEvent(std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
+    XIDeviceEvent createXIDeviceEvent(int evtype, std::array<unsigned char, 1>& buttonMask, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
     XEvent createXEvent(XIDeviceEvent& event);
     XIValuatorState createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 }
