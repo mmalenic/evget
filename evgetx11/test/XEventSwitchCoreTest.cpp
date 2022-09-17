@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <X11/keysym.h>
 #include "evgetx11/XEventSwitchCore.h"
 #include "EvgetX11TestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
@@ -119,4 +120,43 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "0");
     ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
     ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "name");
+}
+
+TEST(XEventSwitchCore, TestKeyEvent) { // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+
+    std::array<XIAnyClassInfo *, 3> anyClassInfo = {};
+    char name[] = "name";
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
+
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_KeyPress, buttonMask, valuatorMask, values);
+
+    auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
+
+    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
+    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_KEYBOARD, [](void *_){ return 0; }})));
+    EXPECT_CALL(xWrapperMock, lookupCharacter).WillOnce([](const XIDeviceEvent& _event, KeySym& keySym) {
+        keySym = XK_A;
+        return "a";
+    });
+
+    auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
+
+    EvgetX11::XEventSwitch::EventData eventData{};
+    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Keyboard, "name", xiDeviceInfo);
+    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+
+    auto genericData = eventData.at(0);
+
+    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Keyboard");
+    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "XK_A");
+    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "a");
 }
