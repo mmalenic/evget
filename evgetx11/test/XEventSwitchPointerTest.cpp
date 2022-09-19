@@ -19,31 +19,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-#ifndef EVGET_XEVENTSWITCHPOINTER_H
-#define EVGET_XEVENTSWITCHPOINTER_H
+#include <gtest/gtest.h>
+#include "EvgetX11TestUtils.h"
+#include "evgetx11/XEventSwitchPointer.h"
 
-#include "XEventSwitch.h"
+TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(cert-err58-cpp)
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
-namespace EvgetX11 {
-    class XEventSwitchPointer : public XEventSwitch {
-    public:
-        explicit XEventSwitchPointer(XWrapper& xWrapper);
+    std::vector<EvgetCore::Event::Data> data{};
+    EvgetX11::XEventSwitchPointer::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data, EvgetCore::Event::ButtonAction::Press, 1);
 
-        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
+    auto genericData = data.at(0);
 
-        static void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
-        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data);
-
-        const std::string &getButtonName(int id, int button) const;
-
-    private:
-        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
-
-        std::reference_wrapper<XWrapper> xWrapper;
-        std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
-    };
+    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
+    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
+    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "1");
 }
 
-#endif //EVGET_XEVENTSWITCHPOINTER_H
+

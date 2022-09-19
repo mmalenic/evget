@@ -7,6 +7,7 @@ add_program(
     SRCS
     EventTransformerX11Test.cpp
     XEventSwitchTest.cpp
+    XEventSwitchPointerTest.cpp
     XEventSwitchCoreTest.cpp
     utils/EvgetX11TestUtils.h
     utils/Evgetx11TestUtils.cpp

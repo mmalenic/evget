@@ -27,7 +27,7 @@
 #include "EvgetX11TestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
 
-TEST(XEventSwitchCore, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
@@ -85,7 +85,7 @@ TEST(XEventSwitchCore, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
     xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
 }
 
-TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
@@ -123,7 +123,7 @@ TEST(XEventSwitchCore, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "name");
 }
 
-TEST(XEventSwitchCore, TestKeyEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
@@ -162,7 +162,7 @@ TEST(XEventSwitchCore, TestKeyEvent) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "a");
 }
 
-TEST(XEventSwitchCore, TestMotionEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestMotionEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
@@ -197,7 +197,7 @@ TEST(XEventSwitchCore, TestMotionEvent) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
 }
 
-TEST(XEventSwitchCore, TestScrollEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 

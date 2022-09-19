@@ -49,7 +49,7 @@ void EvgetX11::XEventSwitchPointer::addButtonEvent(
     builder.time(timestamp).dateTime(dateTime).device(getDevice(event.deviceid)).positionX(event.root_x)
             .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
-    addTableData(data, builder.build(), createSystemData(event,"MouseClickSystemData"));
+    XEventSwitch::addTableData(data, builder.build(), createSystemData(event,"MouseClickSystemData"));
 }
 
 void EvgetX11::XEventSwitchPointer::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
