@@ -319,7 +319,10 @@ macro(link_testing TEST_EXECUTABLE_NAME LIBRARY_NAME)
     program_dependencies(TARGET ${${TEST_EXECUTABLE_NAME}} DEP PUBLIC ${${LIBRARY_NAME}} ONLY_LINK)
 
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    gtest_discover_tests(${${TEST_EXECUTABLE_NAME}})
+
+    if (TARGET ${${TEST_EXECUTABLE_NAME}})
+        gtest_discover_tests(${${TEST_EXECUTABLE_NAME}})
+    endif()
 endmacro()
 
 # Optionally adds a subdirectory and links the dependencies.
