@@ -26,7 +26,7 @@
 #include <atomic>
 #include <evgetcore/EventHandler.h>
 #include <boost/program_options.hpp>
-#include <linux/input.h>
+//#include <linux/input.h>
 //#include "evgetcore/CommandLine/ParserLinux.h"
 //#include "evgetcore/XInputHandler.h"
 //#include "evgetcore/EventTransformerLinux.h"
