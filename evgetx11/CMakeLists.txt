@@ -6,7 +6,7 @@ add_program(
     FEATURE_REQUIRES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h X11/Xutil.h xorg/xserver-properties.h
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include /opt/X11/include
     SRCS
     include/evgetx11/ParserLinux.h
     include/evgetx11/SystemEventLoopX11.h
