@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <array>
 #include "evgetx11/XEventSwitch.h"
 #include "EvgetX11TestUtils.h"
 

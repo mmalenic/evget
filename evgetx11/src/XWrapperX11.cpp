@@ -24,6 +24,7 @@
 #include <spdlog/spdlog.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
+#include <array>
 #include "evgetx11/XWrapperX11.h"
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {

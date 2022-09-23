@@ -22,6 +22,7 @@
 
 #include <gtest/gtest.h>
 #include <X11/keysym.h>
+#include <array>
 #include <xorg/xserver-properties.h>
 #include "evgetx11/XEventSwitchCore.h"
 #include "EvgetX11TestUtils.h"

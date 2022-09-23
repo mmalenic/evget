@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <array>
 #include "EvgetX11TestUtils.h"
 #include "evgetx11/XEventSwitchPointer.h"
 
@@ -31,7 +32,7 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(cert-err58-cpp)
     auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
     std::vector<EvgetCore::Event::Data> data{};
-    EvgetX11::XEventSwitchPointer::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data, EvgetCore::Event::ButtonAction::Press, 1);
+//    EvgetX11::XEventSwitchPointer::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data, EvgetCore::Event::ButtonAction::Press, 1);
 
     auto genericData = data.at(0);
 

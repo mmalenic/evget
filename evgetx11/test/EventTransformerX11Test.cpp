@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <array>
 #include "evgetx11/XInputHandler.h"
 #include "evgetx11/XWrapper.h"
 #include "evgetx11/EventTransformerX11.h"
