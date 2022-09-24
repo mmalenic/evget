@@ -24,10 +24,10 @@
 #ifndef EVGET_XEVENTSWITCHPOINTER_H
 #define EVGET_XEVENTSWITCHPOINTER_H
 
-#include "XEventSwitch.h"
+#include "XDeviceRefresh.h"
 
 namespace EvgetX11 {
-    class XEventSwitchPointer : public XEventSwitch {
+    class XEventSwitchPointer : public XDeviceRefresh {
     public:
         explicit XEventSwitchPointer(XWrapper& xWrapper);
 

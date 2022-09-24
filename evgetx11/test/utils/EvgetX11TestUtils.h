@@ -25,7 +25,7 @@
 
 #include "gmock/gmock.h"
 #include "evgetx11/XWrapper.h"
-#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/EventTransformerX11.h"
 
@@ -43,7 +43,7 @@ namespace EvgetX11TestUtils {
         MOCK_METHOD(void, selectEvents, (XIEventMask& mask), (override));
     };
 
-    class XEventSwitchMock : public EvgetX11::XEventSwitch {
+    class XEventSwitchMock : public EvgetX11::XDeviceRefresh {
     public:
         MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data), (override));
         MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info), (override));

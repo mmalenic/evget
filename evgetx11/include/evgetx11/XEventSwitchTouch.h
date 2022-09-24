@@ -23,7 +23,7 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
-#include "XEventSwitch.h"
+#include "XDeviceRefresh.h"
 #include "XEventSwitchCore.h"
 
 namespace EvgetX11 {

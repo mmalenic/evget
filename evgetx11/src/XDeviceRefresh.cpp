@@ -21,14 +21,14 @@
 // SOFTWARE.
 
 #include <spdlog/spdlog.h>
-#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XDeviceRefresh.h"
 #include "evgetcore/Event/Field.h"
 #include "evgetcore/UnsupportedOperationException.h"
 #include "evgetcore/Event/Data.h"
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 
-EvgetCore::Event::Field::Entries EvgetX11::XEventSwitch::createButtonEntries(const XIDeviceEvent& event) {
+EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
     EvgetCore::Event::Field::Entries entries{};
 
     EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
@@ -40,7 +40,7 @@ EvgetCore::Event::Field::Entries EvgetX11::XEventSwitch::createButtonEntries(con
     return entries;
 }
 
-EvgetCore::Event::Field::Entries EvgetX11::XEventSwitch::createValuatorEntries(const XIValuatorState& valuatorState) {
+EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState& valuatorState) {
     EvgetCore::Event::Field::Entries entries{};
 
     auto values = valuatorState.values;
@@ -54,7 +54,7 @@ EvgetCore::Event::Field::Entries EvgetX11::XEventSwitch::createValuatorEntries(c
     return entries;
 }
 
-EvgetCore::Event::Data EvgetX11::XEventSwitch::createSystemData(const XIDeviceEvent& event, const std::string& name) {
+EvgetCore::Event::Data EvgetX11::XDeviceRefresh::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     EvgetCore::Event::Data data{name};
 
     data.addField("DeviceName", idToName[event.deviceid]);
@@ -83,16 +83,16 @@ EvgetCore::Event::Data EvgetX11::XEventSwitch::createSystemData(const XIDeviceEv
     return data;
 }
 
-void EvgetX11::XEventSwitch::addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData) {
+void EvgetX11::XDeviceRefresh::addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData) {
     data.emplace_back(std::move(genericData));
     data.emplace_back(std::move(systemData));
 }
 
-std::string EvgetX11::XEventSwitch::formatValue(int value) {
+std::string EvgetX11::XDeviceRefresh::formatValue(int value) {
     return value != 0 ? std::to_string(value) : "";
 }
 
-std::map<int, int> EvgetX11::XEventSwitch::getValuators(const XIValuatorState& valuatorState) {
+std::map<int, int> EvgetX11::XDeviceRefresh::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
     auto* values = valuatorState.values;
     EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
@@ -101,35 +101,35 @@ std::map<int, int> EvgetX11::XEventSwitch::getValuators(const XIValuatorState& v
     return valuators;
 }
 
-void EvgetX11::XEventSwitch::refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& _) {
+void EvgetX11::XDeviceRefresh::refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& _) {
     devices.emplace(id, device);
     idToName.emplace(id, name);
 }
 
-EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int id) const {
+EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const {
     return devices.at(id);
 }
 
-const std::string &EvgetX11::XEventSwitch::getNameFromId(int id) const {
+const std::string &EvgetX11::XDeviceRefresh::getNameFromId(int id) const {
     return idToName.at(id);
 }
 
-const std::string &EvgetX11::XEventSwitch::getEvtypeName(int evtype) const {
+const std::string &EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const {
     return evtypeToName.at(evtype);
 }
 
-void EvgetX11::XEventSwitch::setDevice(int id, EvgetCore::Event::Device device) {
+void EvgetX11::XDeviceRefresh::setDevice(int id, EvgetCore::Event::Device device) {
     devices.emplace(id, device);
 }
 
-void EvgetX11::XEventSwitch::setNameFromId(int id, const std::string& name) {
+void EvgetX11::XDeviceRefresh::setNameFromId(int id, const std::string& name) {
     idToName.emplace(id, name);
 }
 
-void EvgetX11::XEventSwitch::setEvtypeName(int evtype, const std::string& name) {
+void EvgetX11::XDeviceRefresh::setEvtypeName(int evtype, const std::string& name) {
     evtypeToName.emplace(evtype, name);
 }
 
-bool EvgetX11::XEventSwitch::containsDevice(int id) {
+bool EvgetX11::XDeviceRefresh::containsDevice(int id) {
     return devices.contains(id);
 }

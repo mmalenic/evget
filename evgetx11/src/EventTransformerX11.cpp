@@ -34,7 +34,7 @@
 #include "evgetcore/Event/Field.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/Event/MouseMove.h"
-#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XDeviceRefresh.h"
 
 std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11::transformEvent(XInputEvent event) {
     std::vector<EvgetCore::Event::Data> data{};
@@ -116,6 +116,6 @@ void EvgetX11::EventTransformerX11::refreshDevices() {
     }
 }
 
-EvgetX11::EventTransformerX11::EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches) : xWrapper{xWrapper}, switches{switches} {
+EvgetX11::EventTransformerX11::EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XDeviceRefresh>> switches) : xWrapper{xWrapper}, switches{switches} {
     refreshDevices();
 }

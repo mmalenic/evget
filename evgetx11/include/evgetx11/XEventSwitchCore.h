@@ -23,7 +23,7 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
 
-#include "XEventSwitch.h"
+#include "XDeviceRefresh.h"
 #include <unordered_map>
 #include "evgetcore/Event/MouseScroll.h"
 #include "XWrapper.h"

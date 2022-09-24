@@ -29,11 +29,11 @@
 #include "XInputEvent.h"
 
 namespace EvgetX11 {
-    class XEventSwitch {
+    class XDeviceRefresh {
     public:
         using EventData = std::vector<EvgetCore::Event::Data>;
 
-        XEventSwitch() = default;
+        XDeviceRefresh() = default;
 
         /**
          * Switch on the event type and add relevant data to the event data.
@@ -42,7 +42,7 @@ namespace EvgetX11 {
         virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) = 0;
         virtual void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
-        virtual ~XEventSwitch() = default;
+        virtual ~XDeviceRefresh() = default;
 
         static void addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData);
 
@@ -63,11 +63,11 @@ namespace EvgetX11 {
         static std::string formatValue(int value);
 
     protected:
-        XEventSwitch(XEventSwitch&&) noexcept = default;
-        XEventSwitch& operator=(XEventSwitch&&) noexcept = default;
+        XDeviceRefresh(XDeviceRefresh&&) noexcept = default;
+        XDeviceRefresh& operator=(XDeviceRefresh&&) noexcept = default;
 
-        XEventSwitch(const XEventSwitch&) = default;
-        XEventSwitch& operator=(const XEventSwitch&) = default;
+        XDeviceRefresh(const XDeviceRefresh&) = default;
+        XDeviceRefresh& operator=(const XDeviceRefresh&) = default;
 
     private:
         std::unordered_map<int, EvgetCore::Event::Device> devices{};

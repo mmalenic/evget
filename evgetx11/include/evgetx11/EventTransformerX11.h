@@ -32,13 +32,13 @@
 #include "evgetcore/EventTransformer.h"
 #include "evgetcore/Util.h"
 #include "evgetcore/Event/MouseScroll.h"
-#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XDeviceRefresh.h"
 #include "XWrapper.h"
 
 namespace EvgetX11 {
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XEventSwitch>> switches);
+        EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XDeviceRefresh>> switches);
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
@@ -51,7 +51,7 @@ namespace EvgetX11 {
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
 
-        std::vector<std::reference_wrapper<XEventSwitch>> switches{};
+        std::vector<std::reference_wrapper<XDeviceRefresh>> switches{};
     };
 }
 

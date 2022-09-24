@@ -51,7 +51,7 @@ TEST(EventTransformerX11Test, TestTransformEvent) { // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XEventSwitchMock xEventSwitchMock{};
     EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    EXPECT_CALL(xEventSwitchMock, switchOnEvent).WillOnce([](const EvgetX11::XInputEvent &_event, std::chrono::nanoseconds _timestamp, EvgetX11::XEventSwitch::EventData &data) {
+    EXPECT_CALL(xEventSwitchMock, switchOnEvent).WillOnce([](const EvgetX11::XInputEvent &_event, std::chrono::nanoseconds _timestamp, EvgetX11::XDeviceRefresh::EventData &data) {
         data.push_back(EvgetCore::Event::Data{"Test"});
         return true;
     });

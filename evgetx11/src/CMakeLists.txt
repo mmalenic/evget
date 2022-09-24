@@ -7,7 +7,7 @@ add_program(
     XInputEvent.cpp
     XInputHandler.cpp
     XEventSwitchCore.cpp
-    XEventSwitch.cpp
+        XDeviceRefresh.cpp
     XEventSwitchPointer.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
