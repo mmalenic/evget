@@ -27,12 +27,11 @@
 #include <unordered_map>
 #include <map>
 #include "XInputEvent.h"
+#include "XEventSwitch.h"
 
 namespace EvgetX11 {
     class XDeviceRefresh {
     public:
-        using EventData = std::vector<EvgetCore::Event::Data>;
-
         XDeviceRefresh() = default;
 
         /**
