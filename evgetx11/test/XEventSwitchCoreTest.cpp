@@ -110,7 +110,7 @@ TEST(XEventSwitchCoreTest, TestButtonEvent) { // NOLINT(cert-err58-cpp)
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    EvgetX11::XDeviceRefresh::EventData eventData{};
+    EvgetX11::EventData eventData{};
     xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
@@ -148,7 +148,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(cert-err58-cpp)
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    EvgetX11::XDeviceRefresh::EventData eventData{};
+    EvgetX11::EventData eventData{};
     xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Keyboard, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
@@ -187,7 +187,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) { // NOLINT(cert-err58-cpp)
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    EvgetX11::XDeviceRefresh::EventData eventData{};
+    EvgetX11::EventData eventData{};
     xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
@@ -222,7 +222,7 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(cert-err58-cpp)
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    EvgetX11::XDeviceRefresh::EventData eventData{};
+    EvgetX11::EventData eventData{};
     xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
     xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
