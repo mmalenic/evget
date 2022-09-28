@@ -36,9 +36,10 @@
 #include "XWrapper.h"
 
 namespace EvgetX11 {
+    template<XEventSwitch... T>
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        EventTransformerX11(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XDeviceRefresh>> switches);
+        EventTransformerX11(XWrapper& xWrapper, T... switches);
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
@@ -51,6 +52,7 @@ namespace EvgetX11 {
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
 
+        std::t
         std::vector<std::reference_wrapper<XDeviceRefresh>> switches{};
     };
 }
