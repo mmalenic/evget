@@ -39,7 +39,7 @@ namespace EvgetX11 {
     template<XEventSwitch... T>
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        EventTransformerX11(XWrapper& xWrapper, T... switches);
+        EventTransformerX11(XWrapper& xWrapper, T&... switches);
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
@@ -52,9 +52,14 @@ namespace EvgetX11 {
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
 
-        std::t
-        std::vector<std::reference_wrapper<XDeviceRefresh>> switches{};
+        std::tuple<T&...> switches;
     };
+
+    template<XEventSwitch... T>
+    EvgetX11::EventTransformerX11<T...>::EventTransformerX11(EvgetX11::XWrapper &xWrapper, T&... switches):
+    xWrapper{xWrapper}, switches{std::make_tuple(std::forward<T>(switches)...)} {
+        refreshDevices();
+    }
 }
 
 #endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
