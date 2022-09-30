@@ -60,6 +60,61 @@ namespace EvgetX11 {
     xWrapper{xWrapper}, switches{std::make_tuple(std::forward<T>(switches)...)} {
         refreshDevices();
     }
+
+    template<XEventSwitch... T>
+    void EvgetX11::EventTransformerX11<T...>::refreshDevices() {
+        int nDevices;
+        int xi2NDevices;
+        // See caveats about mixing XI1 calls with XI2 code:
+        // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
+        // This should capture all devices with ids in the range 0-128.
+        auto info = xWrapper.get().listInputDevices(nDevices);
+        auto xi2Info = xWrapper.get().queryDevice(xi2NDevices);
+
+        if (nDevices != xi2NDevices) {
+            spdlog::warn("Devices with ids greater than 127 found. Set the id of these devices manually if their use is required.");
+        }
+
+        std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2Devices{};
+        for (int i = 0; i < xi2NDevices; i++) {
+            xi2Devices.emplace(xi2Info[i].deviceid, xi2Info[i]);
+        }
+
+        for (int i = 0; i < nDevices; i++) {
+            const auto& device = info[i];
+            int id = boost::numeric_cast<int>(device.id);
+
+            if (!xi2Devices.contains(id)) {
+                throw EvgetCore::UnsupportedOperationException{"Device id from XDeviceInfo not found in XIDeviceInfo."};
+            }
+            const auto& xi2Device = xi2Devices.at(id).get();
+
+            if (xi2Device.enabled && device.type != None && (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice)) {
+                auto type = xWrapper.get().atomName(device.type);
+                EvgetCore::Event::Device deviceType;
+
+                if (strcmp(type.get(), XI_MOUSE) == 0) {
+                    deviceType = EvgetCore::Event::Device::Mouse;
+                } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
+                    deviceType = EvgetCore::Event::Device::Keyboard;
+                } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
+                    deviceType = EvgetCore::Event::Device::Touchscreen;
+                } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
+                    deviceType = EvgetCore::Event::Device::Touchpad;
+                } else {
+                    spdlog::info("Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.", type.get(), device.name, device.id);
+                    continue;
+                }
+
+                devices.emplace(id, deviceType);
+                idToName.emplace(id, device.name);
+
+                for (const auto& eventSwitch : switches) {
+                    eventSwitch.get().refreshDevices(id, deviceType, device.name, xi2Devices.at(id).get());
+                }
+            }
+        }
+    }
 }
 
 #endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
