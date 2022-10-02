@@ -34,6 +34,7 @@
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetx11/XDeviceRefresh.h"
 #include "XWrapper.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 namespace EvgetX11 {
     template<XEventSwitch... T>
@@ -114,6 +115,14 @@ namespace EvgetX11 {
                 }
             }
         }
+    }
+
+    template<XEventSwitch... T>
+    std::chrono::nanoseconds EvgetX11::EventTransformerX11<T...>::getTime(const EvgetX11::XInputEvent& event) {
+        if (!start.has_value()) {
+            start = event.getTimestamp();
+        }
+        return event.getTimestamp() - *start;
     }
 }
 
