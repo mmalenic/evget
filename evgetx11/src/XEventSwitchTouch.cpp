@@ -21,11 +21,12 @@
 // SOFTWARE.
 
 #include "evgetx11/XEventSwitchTouch.h"
+#include "evgetx11/XEventSwitch.h"
 
 bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     std::chrono::nanoseconds timestamp,
-    EvgetX11::XEventSwitch::EventData& data
+    EvgetX11::EventData& data
 ) {
     switch (event.getEventType()) {
     case XI_TouchBegin:
