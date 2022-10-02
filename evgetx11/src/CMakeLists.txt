@@ -2,7 +2,6 @@ add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
-    EventTransformerX11.cpp
     ParserLinux.cpp
     XInputEvent.cpp
     XInputHandler.cpp

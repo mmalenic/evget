@@ -28,6 +28,8 @@
 #include <set>
 #include <map>
 #include <concepts>
+#include <spdlog/spdlog.h>
+#include <boost/numeric/conversion/cast.hpp>
 #include "XInputHandler.h"
 #include "evgetcore/EventTransformer.h"
 #include "evgetcore/Util.h"
@@ -123,6 +125,26 @@ namespace EvgetX11 {
             start = event.getTimestamp();
         }
         return event.getTimestamp() - *start;
+    }
+
+    template<XEventSwitch... T>
+    std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11<T...>::transformEvent(XInputEvent event) {
+        std::vector<EvgetCore::Event::Data> data{};
+        if (event.hasData()) {
+            auto type = event.getEventType();
+
+            if (type == XI_DeviceChanged || type == XI_HierarchyChanged) {
+                refreshDevices();
+                return data;
+            }
+
+            for (const auto& eventSwitches : switches) {
+                if (eventSwitches.get().switchOnEvent(event, getTime(event), data)) {
+                    return data;
+                }
+            }
+        }
+        return data;
     }
 }
 
