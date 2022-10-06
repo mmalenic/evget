@@ -43,7 +43,7 @@ TEST(EventTransformerX11Test, TestConstructor) { // NOLINT(cert-err58-cpp)
 
     EXPECT_CALL(xEventSwitchMock, refreshDevices(1, testing::_, testing::_, testing::_));
 
-    EvgetX11::EventTransformerX11 transformer{xWrapperMock, {xEventSwitchMock}};
+    EvgetX11::EventTransformerX11 transformer{xWrapperMock, xEventSwitchMock};
 }
 
 TEST(EventTransformerX11Test, TestTransformEvent) { // NOLINT(cert-err58-cpp)
@@ -56,7 +56,7 @@ TEST(EventTransformerX11Test, TestTransformEvent) { // NOLINT(cert-err58-cpp)
         return true;
     });
 
-    EvgetX11::EventTransformerX11 transformer{xWrapperMock, {xEventSwitchMock}};
+    EvgetX11::EventTransformerX11 transformer{xWrapperMock, xEventSwitchMock};
     auto data = transformer.transformEvent(std::move(event));
 
     ASSERT_EQ(data.at(0).begin()->getName(), "Test");

@@ -60,7 +60,7 @@ namespace EvgetX11 {
 
     template<XEventSwitch... T>
     EvgetX11::EventTransformerX11<T...>::EventTransformerX11(EvgetX11::XWrapper &xWrapper, T&... switches):
-    xWrapper{xWrapper}, switches{std::make_tuple(std::forward<T>(switches)...)} {
+    xWrapper{xWrapper}, switches{switches...} {
         refreshDevices();
     }
 
