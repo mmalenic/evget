@@ -112,9 +112,10 @@ namespace EvgetX11 {
                 devices.emplace(id, deviceType);
                 idToName.emplace(id, device.name);
 
-                for (const auto& eventSwitch : switches) {
-                    eventSwitch.get().refreshDevices(id, deviceType, device.name, xi2Devices.at(id).get());
-                }
+                // Iterate through switches and refresh devices.
+                std::apply([&id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
+                    ((eventSwitches.refreshDevices(id, deviceType, device.name, xi2Devices.at(id).get())), ...);
+                }, switches);
             }
         }
     }
