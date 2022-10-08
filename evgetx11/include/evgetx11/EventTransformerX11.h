@@ -138,6 +138,7 @@ namespace EvgetX11 {
                 return data;
             }
 
+            // Iterate through switches until the first one returns true.
             std::apply([&event, &data, this](auto&&... eventSwitches) {
                 ((eventSwitches.switchOnEvent(event, getTime(event), data)) || ...);
             }, switches);
