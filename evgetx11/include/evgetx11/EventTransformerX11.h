@@ -138,11 +138,9 @@ namespace EvgetX11 {
                 return data;
             }
 
-            for (const auto& eventSwitches : switches) {
-                if (eventSwitches.get().switchOnEvent(event, getTime(event), data)) {
-                    return data;
-                }
-            }
+            std::apply([&event, &data, this](auto&&... eventSwitches) {
+                ((eventSwitches.switchOnEvent(event, getTime(event), data)) && ...);
+            }, switches);
         }
         return data;
     }
