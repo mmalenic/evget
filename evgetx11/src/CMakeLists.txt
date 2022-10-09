@@ -2,11 +2,10 @@ add_program(
     TARGET ${EVGETX11_LIBRARY_NAME}
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
-    ParserLinux.cpp
     XInputEvent.cpp
     XInputHandler.cpp
     XEventSwitchCore.cpp
-        XDeviceRefresh.cpp
+    XDeviceRefresh.cpp
     XEventSwitchPointer.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp

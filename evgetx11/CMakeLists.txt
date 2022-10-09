@@ -8,12 +8,11 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include /opt/X11/include
     SRCS
-    include/evgetx11/ParserLinux.h
     include/evgetx11/SystemEventLoopX11.h
     include/evgetx11/XInputHandler.h
     include/evgetx11/EventTransformerX11.h
     include/evgetx11/XInputEvent.h
-        include/evgetx11/XDeviceRefresh.h
+    include/evgetx11/XDeviceRefresh.h
     include/evgetx11/XEventSwitchCore.h
     include/evgetx11/XEventSwitchPointer.h
     include/evgetx11/XSetMask.h
@@ -22,7 +21,7 @@ add_program(
     include/evgetx11/XWrapperX11.h
     include/evgetx11/XWrapper.h
     include/evgetx11/DeleterWithDisplay.h
-        include/evgetx11/XEventSwitch.h
+    include/evgetx11/XEventSwitch.h
 )
 
 find_symbols(
