@@ -27,11 +27,11 @@
 #include "XDeviceRefresh.h"
 
 namespace EvgetX11 {
-    class XEventSwitchPointer : public XDeviceRefresh {
+    class XEventSwitchPointer {
     public:
-        explicit XEventSwitchPointer(XWrapper& xWrapper);
+        explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
 
-        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info) override;
+        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info);
 
         void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
         void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data);
@@ -42,6 +42,7 @@ namespace EvgetX11 {
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
         std::reference_wrapper<XWrapper> xWrapper;
+        std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
         std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     };
 }

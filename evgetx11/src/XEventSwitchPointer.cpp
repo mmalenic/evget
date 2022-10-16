@@ -32,9 +32,9 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
         std::vector<EvgetCore::Event::Data>& data
 ) {
     EvgetCore::Event::MouseMove builder{};
-    builder.time(timestamp).dateTime(dateTime).device(getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
+    builder.time(timestamp).dateTime(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
 
-    addTableData(data, builder.build(), createSystemData(event, "MouseMoveSystemData"));
+    data.emplace_back(builder.build());
 }
 
 void EvgetX11::XEventSwitchPointer::addButtonEvent(
@@ -46,10 +46,10 @@ void EvgetX11::XEventSwitchPointer::addButtonEvent(
         int button
 ) {
     EvgetCore::Event::MouseClick builder{};
-    builder.time(timestamp).dateTime(dateTime).device(getDevice(event.deviceid)).positionX(event.root_x)
+    builder.time(timestamp).dateTime(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
             .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
-    XDeviceRefresh::addTableData(data, builder.build(), createSystemData(event,"MouseClickSystemData"));
+    data.emplace_back(builder.build());
 }
 
 void EvgetX11::XEventSwitchPointer::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
@@ -72,7 +72,7 @@ void EvgetX11::XEventSwitchPointer::refreshDevices(
         const std::string& name,
         const XIDeviceInfo& info
 ) {
-    XDeviceRefresh::refreshDevices(id, device, name, info);
+    xDeviceRefresh.get().refreshDevices(id, device, name, info);
 
     const XIButtonClassInfo* buttonInfo = nullptr;
     for (int i = 0; i < info.num_classes; i++) {
@@ -89,7 +89,8 @@ void EvgetX11::XEventSwitchPointer::refreshDevices(
     }
 }
 
-EvgetX11::XEventSwitchPointer::XEventSwitchPointer(EvgetX11::XWrapper &xWrapper) : xWrapper{xWrapper} {
+EvgetX11::XEventSwitchPointer::XEventSwitchPointer(EvgetX11::XWrapper &xWrapper, EvgetX11::XDeviceRefresh& xDeviceRefresh) : xWrapper{xWrapper},
+                                                                                                                             xDeviceRefresh{xDeviceRefresh} {
 }
 
 const std::string &EvgetX11::XEventSwitchPointer::getButtonName(int id, int button) const {
