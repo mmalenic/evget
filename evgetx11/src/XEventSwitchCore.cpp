@@ -58,8 +58,8 @@ bool EvgetX11::XEventSwitchCore::switchOnEvent(
 
 void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    auto button = getButtonName(deviceEvent.deviceid, deviceEvent.detail);
-    if (!containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
+    auto button = xEventSwitchPointer.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
+    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
             button == BTN_LABEL_PROP_BTN_WHEEL_UP ||
             button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
             button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT ||
@@ -67,12 +67,12 @@ void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chro
         return;
     }
 
-    addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, deviceEvent.detail);
+    xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, deviceEvent.detail);
 }
 
 void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!containsDevice(deviceEvent.deviceid)) {
+    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
         return;
     }
 
@@ -91,7 +91,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
     EvgetCore::Event::Key builder{};
     builder.time(timestamp).dateTime(event.getDateTime()).action(action).button(deviceEvent.detail).character(character).name(name);
 
-    addTableData(data, builder.build(), createSystemData(deviceEvent, "KeySystemData"));
+    XDeviceRefresh::addTableData(data, builder.build(), xDeviceRefresh.get().createSystemData(deviceEvent, "KeySystemData"));
 }
 
 void EvgetX11::XEventSwitchCore::scrollEvent(
@@ -100,12 +100,12 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
     std::vector<EvgetCore::Event::Data>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
+    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
     EvgetCore::Event::MouseScroll builder{};
-    auto valuators = getValuators(deviceEvent.valuators);
+    auto valuators = XDeviceRefresh::getValuators(deviceEvent.valuators);
     for (const auto& [valuator, info] : scrollMap[deviceEvent.deviceid]) {
         if (!valuators.contains(valuator)) {
             continue;
@@ -129,35 +129,37 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
         }
     }
 
-    builder.time(timestamp).dateTime(event.getDateTime()).device(getDevice(deviceEvent.deviceid))
+    builder.time(timestamp).dateTime(event.getDateTime()).device(xDeviceRefresh.get().getDevice(deviceEvent.deviceid))
     .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
 
     data.emplace_back(builder.build());
-    data.emplace_back(createSystemData(deviceEvent, "MouseScrollSystemData"));
+    data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));
 }
 
 void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
+    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
-    auto valuators = getValuators(deviceEvent.valuators);
+    auto valuators = XDeviceRefresh::getValuators(deviceEvent.valuators);
     for (const auto& [valuator, value]: valuators) {
         if (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid]) {
-            addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
+            xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
             break;
         }
     }
 }
 
 
-EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper) : XEventSwitchPointer(xWrapper), xWrapper{xWrapper} {
-    setEvtypeName(XI_KeyPress, "KeyPress");
-    setEvtypeName(XI_KeyRelease, "KeyRelease");
-    setEvtypeName(XI_ButtonPress, "ButtonPress");
-    setEvtypeName(XI_ButtonRelease, "ButtonRelease");
-    setEvtypeName(XI_Motion, "Motion");
+EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper, XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh): xWrapper{xWrapper},
+                                                                                                  xEventSwitchPointer{xEventSwitchPointer},
+                                                                                                  xDeviceRefresh{xDeviceRefresh} {
+    xDeviceRefresh.setEvtypeName(XI_KeyPress, "KeyPress");
+    xDeviceRefresh.setEvtypeName(XI_KeyRelease, "KeyRelease");
+    xDeviceRefresh.setEvtypeName(XI_ButtonPress, "ButtonPress");
+    xDeviceRefresh.setEvtypeName(XI_ButtonRelease, "ButtonRelease");
+    xDeviceRefresh.setEvtypeName(XI_Motion, "Motion");
 }
 
 void EvgetX11::XEventSwitchCore::refreshDevices(
@@ -166,7 +168,7 @@ void EvgetX11::XEventSwitchCore::refreshDevices(
     const std::string& name,
     const XIDeviceInfo& info
 ) {
-    XEventSwitchPointer::refreshDevices(id, device, name, info);
+    xEventSwitchPointer.get().refreshDevices(id, device, name, info);
 
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};
