@@ -44,7 +44,7 @@ namespace EvgetX11 {
         void scrollEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
 
         std::reference_wrapper<XWrapper> xWrapper;
-        std::reference_wrapper<xEventSwitchPointer> xEventSwitchPointer;
+        std::reference_wrapper<XEventSwitchPointer> xEventSwitchPointer;
         std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
 
         std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};

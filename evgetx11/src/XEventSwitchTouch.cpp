@@ -45,10 +45,12 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     }
 }
 
-EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XWrapper& xWrapper) : XEventSwitchPointer{xWrapper} {
-    setEvtypeName(XI_TouchBegin, "TouchBegin");
-    setEvtypeName(XI_TouchUpdate, "TouchUpdate");
-    setEvtypeName(XI_TouchEnd, "TouchEnd");
+EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh) :
+                                                                     xEventSwitchPointer{xEventSwitchPointer},
+                                                                     xDeviceRefresh{xDeviceRefresh} {
+    xDeviceRefresh.setEvtypeName(XI_TouchBegin, "TouchBegin");
+    xDeviceRefresh.setEvtypeName(XI_TouchUpdate, "TouchUpdate");
+    xDeviceRefresh.setEvtypeName(XI_TouchEnd, "TouchEnd");
 }
 
 void EvgetX11::XEventSwitchTouch::touchButton(
@@ -58,8 +60,8 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     EvgetCore::Event::ButtonAction action
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (containsDevice(deviceEvent.deviceid)) {
-        addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, 1);
+    if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
+        xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, 1);
     }
 }
 
@@ -69,7 +71,7 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
     std::vector<EvgetCore::Event::Data>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (containsDevice(deviceEvent.deviceid)) {
-        addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
+    if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
+        xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
     }
 }
