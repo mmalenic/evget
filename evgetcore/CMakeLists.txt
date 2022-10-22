@@ -24,6 +24,7 @@ add_program(
     include/evgetcore/Util.h
     include/evgetcore/UnsupportedOperationException.h
     include/evgetcore/CoreParser.h
+    include/evgetcore/Event/Modifiers.h
 )
 add_subdirectory(src)
 
