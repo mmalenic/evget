@@ -34,8 +34,6 @@
 #include "Direction.h"
 
 namespace EvgetCore::Event {
-    class Data;
-
     /**
      * A concept requiring the to_string function.
      */

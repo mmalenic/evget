@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include "Field.h"
+#include <unordered_map>
 
 namespace EvgetCore::Event {
     /**
@@ -51,6 +52,15 @@ namespace EvgetCore::Event {
          */
         void addField(std::string name, std::string entry);
 
+        /**
+         * Specify a data table which is contained within this table for
+         * a one-to-many relation.
+         */
+        void contains(Data data);
+
+        /**
+         * Get the field at the position.
+         */
         [[nodiscard]] const Field &getFieldAt(size_t position) const;
 
         /**
@@ -65,6 +75,7 @@ namespace EvgetCore::Event {
     private:
         std::string name{};
         std::vector<Field> fields{};
+        std::unordered_map<std::string, std::vector<Data>> containsData{};
     };
 }
 
