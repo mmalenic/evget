@@ -32,23 +32,12 @@ EvgetCore::Event::Field::Field(std::string name) : name{std::move(name)}, entry{
 EvgetCore::Event::Field::Field(std::string name, std::string entry) : name{std::move(name)}, entry{std::move(entry)} {
 }
 
-EvgetCore::Event::Field::Field(std::string name, EvgetCore::Event::Field::Entries entries) : name{std::move(name)}, entry{std::move(entries)} {
-}
-
 std::string EvgetCore::Event::Field::getEntry() const {
-    return std::get<std::string>(entry);
+    return entry;
 }
 
 std::string EvgetCore::Event::Field::getName() const {
     return name;
-}
-
-EvgetCore::Event::Field::Iterator EvgetCore::Event::Field::begin() const {
-    return std::get<Entries>(entry).begin();
-}
-
-EvgetCore::Event::Field::Iterator EvgetCore::Event::Field::end() const {
-    return std::get<Entries>(entry).end();
 }
 
 EvgetCore::Event::Field EvgetCore::Event::Field::createAction(std::optional<EvgetCore::Event::ButtonAction> action) {
@@ -138,8 +127,4 @@ EvgetCore::Event::Field::createOptionalString(std::string_view name, std::option
         return Field{std::string{name}};
     }
     return {std::string{name}, std::move(*value)};
-}
-
-EvgetCore::Event::Data EvgetCore::Event::Field::getEntryAt(size_t position) const {
-    return std::get<Entries>(entry).at(position);
 }

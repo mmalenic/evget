@@ -49,13 +49,9 @@ namespace EvgetCore::Event {
      */
     class Field {
     public:
-        using Entries = std::vector<Data>;
-        using Iterator = Entries::const_iterator;
-        using EntryOrData = std::variant<std::string, Entries>;
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
         Field() = default;
-        Field(std::string name, Entries entries);
         Field(std::string name, std::string entry);
 
         /**
@@ -64,33 +60,14 @@ namespace EvgetCore::Event {
         explicit Field(std::string name);
 
         /**
-         * Check if variant is the entry.
-         */
-        constexpr bool isEntry();
-
-        /**
-         * Check if variant is more data.
-         */
-        constexpr bool isData();
-
-        /**
          * Get the entry.
          */
         [[nodiscard]] std::string getEntry() const;
 
         /**
-         * Get the entry.
-         */
-        [[nodiscard]] Data getEntryAt(size_t position) const;
-
-        /**
          * Get the name.
          */
         [[nodiscard]] std::string getName() const;
-
-        [[nodiscard]] Iterator begin() const;
-
-        [[nodiscard]] Iterator end() const;
 
         /**
          * Create an Action based on the ButtonAction enum.
@@ -176,16 +153,8 @@ namespace EvgetCore::Event {
         static Field createOptionalToString(std::string_view name, std::optional<T> value);
 
         std::string name{};
-        EntryOrData entry{};
+        std::string entry{};
     };
-
-    constexpr bool EvgetCore::Event::Field::isEntry() {
-        return std::holds_alternative<std::string>(entry);
-    }
-
-    constexpr bool EvgetCore::Event::Field::isData() {
-        return std::holds_alternative<Entries>(entry);
-    }
 
     template<ToString T>
     EvgetCore::Event::Field
