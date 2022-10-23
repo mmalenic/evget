@@ -53,3 +53,11 @@ const EvgetCore::Event::Field& EvgetCore::Event::Data::getFieldAt(size_t positio
 void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
     containsData.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }
+
+bool EvgetCore::Event::Data::areFieldsUnique() const {
+    return fieldsUnique;
+}
+
+void EvgetCore::Event::Data::unique() {
+    fieldsUnique = true;
+}

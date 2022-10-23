@@ -59,6 +59,16 @@ namespace EvgetCore::Event {
         void contains(Data data);
 
         /**
+         * Specify that the fields of this data have a unique combination.
+         */
+        void unique();
+
+        /**
+         * Are the field combinations unique.
+         */
+        bool areFieldsUnique() const;
+
+        /**
          * Get the field at the position.
          */
         [[nodiscard]] const Field &getFieldAt(size_t position) const;
@@ -76,6 +86,7 @@ namespace EvgetCore::Event {
         std::string name{};
         std::vector<Field> fields{};
         std::unordered_map<std::string, std::vector<Data>> containsData{};
+        bool fieldsUnique{false};
     };
 }
 
