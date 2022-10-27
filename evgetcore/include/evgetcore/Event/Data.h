@@ -35,6 +35,7 @@ namespace EvgetCore::Event {
     class Data {
     public:
         using Iterator = std::vector<Field>::const_iterator;
+        using ContainedData = std::unordered_map<std::string, std::vector<Data>>;
 
         Data() = default;
         /**
@@ -69,13 +70,13 @@ namespace EvgetCore::Event {
          * Get the data associated with the contains function, i.e. the one-to-many
          * data.
          */
-        const std::unordered_map<std::string, std::vector<Data>>& getData() const;
+        const ContainedData& getData() const;
 
         /**
          * Get the data associated with the contains function, i.e. the many-to-many
          * data.
          */
-        const std::unordered_map<std::string, std::vector<Data>>& getUniqueData() const;
+        const ContainedData& getUniqueData() const;
 
         /**
          * Get the field at the position.
@@ -96,8 +97,8 @@ namespace EvgetCore::Event {
 
         std::string name{};
         std::vector<Field> fields{};
-        std::unordered_map<std::string, std::vector<Data>> containsData{};
-        std::unordered_map<std::string, std::vector<Data>> containsUniqueData{};
+        ContainedData containsData{};
+        ContainedData containsUniqueData{};
     };
 }
 

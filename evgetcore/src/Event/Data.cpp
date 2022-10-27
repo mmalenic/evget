@@ -62,10 +62,10 @@ void EvgetCore::Event::Data::setContainsData(std::unordered_map<std::string, std
     table.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }
 
-const std::unordered_map<std::string, std::vector<EvgetCore::Event::Data>> &EvgetCore::Event::Data::getData() const {
+const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getData() const {
     return containsData;
 }
 
-const std::unordered_map<std::string, std::vector<EvgetCore::Event::Data>> &EvgetCore::Event::Data::getUniqueData() const {
+const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getUniqueData() const {
     return containsUniqueData;
 }
