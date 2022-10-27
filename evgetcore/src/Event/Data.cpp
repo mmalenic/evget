@@ -51,13 +51,13 @@ const EvgetCore::Event::Field& EvgetCore::Event::Data::getFieldAt(size_t positio
 }
 
 void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
-    containsData.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
+    setContainsData(containsData, std::move(data));
 }
 
-bool EvgetCore::Event::Data::areFieldsUnique() const {
-    return fieldsUnique;
+void EvgetCore::Event::Data::containsUnique(EvgetCore::Event::Data data) {
+    setContainsData(containsData, std::move(data));
 }
 
-void EvgetCore::Event::Data::unique() {
-    fieldsUnique = true;
+void EvgetCore::Event::Data::setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data) {
+    table.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }

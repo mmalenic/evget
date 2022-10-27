@@ -59,9 +59,11 @@ namespace EvgetCore::Event {
         void contains(Data data);
 
         /**
-         * Specify that the fields of this data have a unique combination.
+         * Specify a data table which is contained within this table for
+         * a many-to-many relation, where the given data table entires are
+         * unique.
          */
-        void unique();
+        void containsUnique(Data data);
 
         /**
          * Are the field combinations unique.
@@ -83,10 +85,12 @@ namespace EvgetCore::Event {
         [[nodiscard]] Iterator end() const noexcept;
 
     private:
+        static void setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data);
+
         std::string name{};
         std::vector<Field> fields{};
         std::unordered_map<std::string, std::vector<Data>> containsData{};
-        bool fieldsUnique{false};
+        std::unordered_map<std::string, std::vector<Data>> containsUniqueData{};
     };
 }
 
