@@ -66,9 +66,17 @@ namespace EvgetCore::Event {
         void containsUnique(Data data);
 
         /**
-         * Are the field combinations unique.
+         * Get the data associated with the contains function, i.e. the one-to-many
+         * data.
          */
-        bool areFieldsUnique() const;
+        const std::unordered_map<std::string, std::vector<Data>>& getData() const;
+
+        /**
+         * Specify a data table which is contained within this table for
+         * a many-to-many relation, where the given data table entires are
+         * unique.
+         */
+        void containsUnique(Data data);
 
         /**
          * Get the field at the position.

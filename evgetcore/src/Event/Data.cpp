@@ -61,3 +61,7 @@ void EvgetCore::Event::Data::containsUnique(EvgetCore::Event::Data data) {
 void EvgetCore::Event::Data::setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data) {
     table.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }
+
+const std::unordered_map<std::string, std::vector<EvgetCore::Event::Data>> &EvgetCore::Event::Data::getData() const {
+    return containsData;
+}
