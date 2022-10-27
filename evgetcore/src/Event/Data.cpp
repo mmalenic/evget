@@ -65,3 +65,7 @@ void EvgetCore::Event::Data::setContainsData(std::unordered_map<std::string, std
 const std::unordered_map<std::string, std::vector<EvgetCore::Event::Data>> &EvgetCore::Event::Data::getData() const {
     return containsData;
 }
+
+const std::unordered_map<std::string, std::vector<EvgetCore::Event::Data>> &EvgetCore::Event::Data::getUniqueData() const {
+    return containsUniqueData;
+}

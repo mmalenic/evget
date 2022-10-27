@@ -72,11 +72,10 @@ namespace EvgetCore::Event {
         const std::unordered_map<std::string, std::vector<Data>>& getData() const;
 
         /**
-         * Specify a data table which is contained within this table for
-         * a many-to-many relation, where the given data table entires are
-         * unique.
+         * Get the data associated with the contains function, i.e. the many-to-many
+         * data.
          */
-        void containsUnique(Data data);
+        const std::unordered_map<std::string, std::vector<Data>>& getUniqueData() const;
 
         /**
          * Get the field at the position.
