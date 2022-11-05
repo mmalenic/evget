@@ -97,3 +97,12 @@ const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinked
 void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
     linkedTo.emplace_back(std::move(schema));
 }
+
+const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getUniquelyLinkedTo() const {
+    return uniquelyLinkedTo;
+}
+
+void EvgetCore::Event::Schema::addUniquelyLinkedTo(EvgetCore::Event::Schema schema) {
+    uniquelyLinkedTo.emplace_back(std::move(schema));
+}
+

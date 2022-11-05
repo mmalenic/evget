@@ -81,6 +81,16 @@ namespace EvgetCore::Event {
         void addLinkedTo(Schema schema);
 
         /**
+         * Get the uniquely linked to schemas.
+         */
+        [[nodiscard]] const std::vector<Schema> &getUniquelyLinkedTo() const;
+
+        /**
+         * Add a uniquely linked to schema, representing a many-to-many relation.
+         */
+        void addUniquelyLinkedTo(Schema schema);
+
+        /**
          * Create a string from a string value.
          */
         static std::string fromString(std::optional<std::string> value);
@@ -130,7 +140,7 @@ namespace EvgetCore::Event {
 
         std::vector<Field> fields{};
         std::vector<Schema> linkedTo{};
-        std::vector<Schema> linkedUniqueTo{};
+        std::vector<Schema> uniquelyLinkedTo{};
     };
 
     template<typename T>
