@@ -25,7 +25,6 @@
 
 #include <vector>
 #include <string>
-#include "Field.h"
 #include <unordered_map>
 
 namespace EvgetCore::Event {
@@ -34,7 +33,7 @@ namespace EvgetCore::Event {
      */
     class Data {
     public:
-        using Iterator = std::vector<Field>::const_iterator;
+        using Iterator = std::vector<std::string>::const_iterator;
         using ContainedData = std::unordered_map<std::string, std::vector<Data>>;
 
         Data() = default;
@@ -46,12 +45,7 @@ namespace EvgetCore::Event {
         /**
          * Add a field to this data.
          */
-        void addField(Field field);
-
-        /**
-         * Add a field to this data.
-         */
-        void addField(std::string name, std::string entry);
+        void addField(std::string field);
 
         /**
          * Specify a data table which is contained within this table for
@@ -81,7 +75,7 @@ namespace EvgetCore::Event {
         /**
          * Get the field at the position.
          */
-        [[nodiscard]] const Field &getFieldAt(size_t position) const;
+        [[nodiscard]] const std::string &getFieldAt(size_t position) const;
 
         /**
          * Get the name of the data.
@@ -96,7 +90,7 @@ namespace EvgetCore::Event {
         static void setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data);
 
         std::string name{};
-        std::vector<Field> fields{};
+        std::vector<std::string> fields{};
         ContainedData containsData{};
         ContainedData containsUniqueData{};
     };

@@ -38,15 +38,11 @@ std::string EvgetCore::Event::Data::getName() const {
     return name;
 }
 
-void EvgetCore::Event::Data::addField(Field field) {
+void EvgetCore::Event::Data::addField(std::string field) {
     fields.emplace_back(std::move(field));
 }
 
-void EvgetCore::Event::Data::addField(std::string name, std::string entry) {
-    fields.emplace_back(std::move(name), std::move(entry));
-}
-
-const EvgetCore::Event::Field& EvgetCore::Event::Data::getFieldAt(size_t position) const {
+const std::string& EvgetCore::Event::Data::getFieldAt(size_t position) const {
     return fields.at(position);
 }
 
