@@ -21,4 +21,59 @@
 // SOFTWARE.
 //
 
+#include <utility>
+#include <date/tz.h>
+
 #include "evgetcore/Event/Schema.h"
+
+std::string EvgetCore::Event::Schema::fromString(std::optional<std::string> value) {
+    return optionalToString(std::move(value), [](auto value){ return value; });
+}
+
+std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
+    return optionalToString(value, [](auto value){ return std::to_string(value); });
+}
+
+std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
+    return optionalToString(value, [](auto value){
+        std::stringstream stream{};
+        stream << date::make_zoned(date::current_zone(), value);
+        return stream.str();
+    });
+}
+
+std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonAction> value) {
+    return optionalToString(value, [](auto value){
+        switch (value) {
+            case ButtonAction::Press:
+                return std::string{ACTION_PRESS};
+            case ButtonAction::Release:
+                return std::string{ACTION_RELEASE};
+            case ButtonAction::Repeat:
+                return std::string{ACTION_REPEAT};
+        }
+    });
+}
+
+std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
+    return optionalToString(value, [](auto value){
+        switch (value) {
+            case Device::Mouse:
+                return std::string{DEVICE_TYPE_MOUSE};
+            case Device::Keyboard:
+                return std::string{DEVICE_TYPE_KEYBOARD};
+            case Device::Touchpad:
+                return std::string{DEVICE_TYPE_TOUCHPAD};
+            case Device::Touchscreen:
+                return std::string{DEVICE_TYPE_TOUCHSCREEN};
+        }
+    });
+}
+
+std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
+    return optionalToString(value, [](auto value){ return std::to_string(value.count()); });
+}
+
+std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
+    return optionalToString(value, [](auto value){ return std::to_string(value); });
+}

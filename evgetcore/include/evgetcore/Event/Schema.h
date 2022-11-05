@@ -25,6 +25,12 @@
 #define EVGET_SCHEMA_H
 
 #include <map>
+#include <string>
+#include <optional>
+#include <chrono>
+#include "ButtonAction.h"
+#include "Device.h"
+#include "../Util.h"
 
 namespace EvgetCore::Event {
     /**
@@ -32,8 +38,76 @@ namespace EvgetCore::Event {
      */
     class Schema {
     public:
+        using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+
+        /**
+         * Create a string from a string value.
+         */
+        static std::string fromString(std::optional<std::string> value);
+
+        /**
+         * Format a string from an int value.
+         */
+        static std::string fromInt(std::optional<int> value);
+
+        /**
+         * Format a string from a `DateTime` value.
+         */
+        static std::string fromDateTime(std::optional<DateTime> value);
+
+        /**
+         * Format a string from a `ButtonAction` value.
+         */
+        static std::string fromButtonAction(std::optional<ButtonAction> value);
+
+        /**
+         * Format a string from a `Device` value.
+         */
+        static std::string fromDevice(std::optional<Device> value);
+
+        /**
+         * Format a string from a nanoseconds value.
+         */
+        static std::string fromNanoseconds(std::optional<std::chrono::nanoseconds> value);
+
+        /**
+         * Format a string from a double value.
+         */
+        static std::string fromDouble(std::optional<double> value);
+
     private:
+        static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
+        static constexpr std::string_view ACTION_PRESS{"Press"};
+        static constexpr std::string_view ACTION_RELEASE{"Release"};
+        static constexpr std::string_view ACTION_REPEAT{"Repeat"};
+        static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
+        static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
+        static constexpr std::string_view NAME_FIELD_NAME{"Name"};
+        static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
+        static constexpr std::string_view DEVICE_TYPE_FIELD_NAME{"DeviceType"};
+        static constexpr std::string_view DEVICE_TYPE_MOUSE{"Mouse"};
+        static constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
+        static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
+        static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
+        static constexpr std::string_view TIME_FIELD_NAME{"Time"};
+        static constexpr std::string_view POSITIONX_FIELD_NAME{"PositionX"};
+        static constexpr std::string_view POSITIONY_FIELD_NAME{"PositionY"};
+        static constexpr std::string_view SCROLLDOWN_FIELD_NAME{"ScrollDown"};
+        static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
+        static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
+        static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
+
+        template <typename T>
+        static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
     };
+
+    template<typename T>
+    std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto &&function) {
+        if (!optional.has_value()) {
+            return "";
+        }
+        return function(*optional);
+    }
 }
 
 
