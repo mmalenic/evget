@@ -37,7 +37,7 @@ std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
 std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
     return optionalToString(value, [](auto value){
         std::stringstream stream{};
-        stream << date::make_zoned(date::current_zone(), value);
+        stream << date::format("%FT%T%z", value);
         return stream.str();
     });
 }
