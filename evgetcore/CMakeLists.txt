@@ -13,7 +13,6 @@ add_program(
     include/evgetcore/SystemEventLoop.h
     include/evgetcore/Storage.h
     include/evgetcore/Event/Data.h
-    include/evgetcore/Event/Field.h
     include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h
     include/evgetcore/Event/MouseScroll.h
