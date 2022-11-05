@@ -89,3 +89,11 @@ void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
 const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
     return fields;
 }
+
+const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinkedTo() const {
+    return linkedTo;
+}
+
+void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
+    linkedTo.emplace_back(std::move(schema));
+}

@@ -38,6 +38,20 @@ namespace EvgetCore::Event {
      */
     class Schema {
     public:
+        static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
+        static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
+        static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
+        static constexpr std::string_view NAME_FIELD_NAME{"Name"};
+        static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
+        static constexpr std::string_view DEVICE_TYPE_FIELD_NAME{"DeviceType"};
+        static constexpr std::string_view TIME_FIELD_NAME{"Time"};
+        static constexpr std::string_view POSITIONX_FIELD_NAME{"PositionX"};
+        static constexpr std::string_view POSITIONY_FIELD_NAME{"PositionY"};
+        static constexpr std::string_view SCROLLDOWN_FIELD_NAME{"ScrollDown"};
+        static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
+        static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
+        static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
+
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
         using Field = std::pair<std::string, std::string>;
 
@@ -55,6 +69,16 @@ namespace EvgetCore::Event {
          * Get the fields in this Schema.
          */
         [[nodiscard]] const std::vector<Field> &getFields() const;
+
+        /**
+         * Get the linked to schemas.
+         */
+        [[nodiscard]] const std::vector<Schema> &getLinkedTo() const;
+
+        /**
+         * Add a linked to schema, representing a one-to-many relation.
+         */
+        void addLinkedTo(Schema schema);
 
         /**
          * Create a string from a string value.
@@ -92,26 +116,14 @@ namespace EvgetCore::Event {
         static std::string fromDouble(std::optional<double> value);
 
     private:
-        static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
         static constexpr std::string_view ACTION_PRESS{"Press"};
         static constexpr std::string_view ACTION_RELEASE{"Release"};
         static constexpr std::string_view ACTION_REPEAT{"Repeat"};
-        static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
-        static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
-        static constexpr std::string_view NAME_FIELD_NAME{"Name"};
-        static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
-        static constexpr std::string_view DEVICE_TYPE_FIELD_NAME{"DeviceType"};
+
         static constexpr std::string_view DEVICE_TYPE_MOUSE{"Mouse"};
         static constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
         static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
-        static constexpr std::string_view TIME_FIELD_NAME{"Time"};
-        static constexpr std::string_view POSITIONX_FIELD_NAME{"PositionX"};
-        static constexpr std::string_view POSITIONY_FIELD_NAME{"PositionY"};
-        static constexpr std::string_view SCROLLDOWN_FIELD_NAME{"ScrollDown"};
-        static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
-        static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
-        static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
 
         template <typename T>
         static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
