@@ -77,3 +77,15 @@ std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono:
 std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
     return optionalToString(value, [](auto value){ return std::to_string(value); });
 }
+
+void EvgetCore::Event::Schema::addField(EvgetCore::Event::Schema::Field field) {
+    fields.emplace_back(std::move(field));
+}
+
+void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
+    addField({std::move(name), std::move(type)});
+}
+
+const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
+    return fields;
+}

@@ -39,6 +39,22 @@ namespace EvgetCore::Event {
     class Schema {
     public:
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+        using Field = std::pair<std::string, std::string>;
+
+        /**
+         * Add a field to this data.
+         */
+        void addField(Field field);
+
+        /**
+         * Add a field to this data.
+         */
+        void addField(std::string name, std::string type);
+
+        /**
+         * Get the fields in this Schema.
+         */
+        [[nodiscard]] const std::vector<Field> &getFields() const;
 
         /**
          * Create a string from a string value.
@@ -99,10 +115,14 @@ namespace EvgetCore::Event {
 
         template <typename T>
         static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
+
+        std::vector<Field> fields{};
+        std::vector<Schema> linkedTo{};
+        std::vector<Schema> linkedUniqueTo{};
     };
 
     template<typename T>
-    std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto &&function) {
+    std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
         if (!optional.has_value()) {
             return "";
         }
