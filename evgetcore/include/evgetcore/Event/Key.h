@@ -24,8 +24,9 @@
 #define EVGET_SRC_KEY_H
 
 #include <chrono>
-#include "Field.h"
 #include "Data.h"
+#include "Schema.h"
+#include "ButtonAction.h"
 
 namespace EvgetCore::Event {
     /**
@@ -43,7 +44,7 @@ namespace EvgetCore::Event {
         /**
          * Add date time
          */
-        Key& dateTime(Field::DateTime dateTime);
+        Key& dateTime(Schema::DateTime dateTime);
 
         /**
          * Key device.
@@ -87,7 +88,7 @@ namespace EvgetCore::Event {
 
     private:
         std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<Field::DateTime> _dateTime{};
+        std::optional<Schema::DateTime> _dateTime{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};

@@ -27,7 +27,7 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::time(std::chrono::
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::dateTime(Field::DateTime dateTime) {
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::dateTime(Schema::DateTime dateTime) {
     _dateTime = dateTime;
     return *this;
 }
@@ -70,15 +70,15 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) 
 EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
     auto data = Data{"MouseScroll"};
 
-    data.addField(Field::createTime(_time));
-    data.addField(Field::createDateTime(_dateTime));
-    data.addField(Field::createDeviceType(_device));
-    data.addField(Field::createPositionX(_positionX));
-    data.addField(Field::createPositionY(_positionY));
-    data.addField(Field::createScroll(Direction::Down, _down));
-    data.addField(Field::createScroll(Direction::Left, _left));
-    data.addField(Field::createScroll(Direction::Right, _right));
-    data.addField(Field::createScroll(Direction::Up, _up));
+    data.addField(Schema::fromNanoseconds(_time));
+    data.addField(Schema::fromDateTime(_dateTime));
+    data.addField(Schema::fromDevice(_device));
+    data.addField(Schema::fromDouble(_positionX));
+    data.addField(Schema::fromDouble(_positionY));
+    data.addField(Schema::fromDouble(_down));
+    data.addField(Schema::fromDouble(_left));
+    data.addField(Schema::fromDouble(_right));
+    data.addField(Schema::fromDouble(_up));
 
     return data;
 }
