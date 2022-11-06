@@ -26,15 +26,15 @@
 
 #include "evgetcore/Event/Schema.h"
 
-std::string EvgetCore::Event::Schema::fromString(std::optional<std::string> value) {
+constexpr std::string EvgetCore::Event::Schema::fromString(std::optional<std::string> value) {
     return optionalToString(std::move(value), [](auto value){ return value; });
 }
 
-std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
+constexpr std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
     return optionalToString(value, [](auto value){ return std::to_string(value); });
 }
 
-std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
+constexpr std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
     return optionalToString(value, [](auto value){
         std::stringstream stream{};
         stream << date::format("%FT%T%z", value);
@@ -42,7 +42,7 @@ std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value
     });
 }
 
-std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonAction> value) {
+constexpr std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonAction> value) {
     return optionalToString(value, [](auto value){
         switch (value) {
             case ButtonAction::Press:
@@ -55,7 +55,7 @@ std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonActio
     });
 }
 
-std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
+constexpr std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
     return optionalToString(value, [](auto value){
         switch (value) {
             case Device::Mouse:
@@ -70,39 +70,42 @@ std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
     });
 }
 
-std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
+constexpr std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
     return optionalToString(value, [](auto value){ return std::to_string(value.count()); });
 }
 
-std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
+constexpr std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
     return optionalToString(value, [](auto value){ return std::to_string(value); });
 }
 
-void EvgetCore::Event::Schema::addField(EvgetCore::Event::Schema::Field field) {
+constexpr void EvgetCore::Event::Schema::addField(EvgetCore::Event::Schema::Field field) {
     fields.emplace_back(std::move(field));
 }
 
-void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
+constexpr void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
     addField({std::move(name), std::move(type)});
 }
 
-const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
+constexpr const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
     return fields;
 }
 
-const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinkedTo() const {
+constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinkedTo() const {
     return linkedTo;
 }
 
-void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
+constexpr void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
     linkedTo.emplace_back(std::move(schema));
 }
 
-const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getUniquelyLinkedTo() const {
+constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getUniquelyLinkedTo() const {
     return uniquelyLinkedTo;
 }
 
-void EvgetCore::Event::Schema::addUniquelyLinkedTo(EvgetCore::Event::Schema schema) {
+constexpr void EvgetCore::Event::Schema::addUniquelyLinkedTo(EvgetCore::Event::Schema schema) {
     uniquelyLinkedTo.emplace_back(std::move(schema));
+}
+
+constexpr EvgetCore::Event::Schema::Schema(std::string name): name{std::move(name)} {
 }
 

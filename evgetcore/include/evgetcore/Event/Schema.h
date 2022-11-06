@@ -55,75 +55,77 @@ namespace EvgetCore::Event {
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
         using Field = std::pair<std::string, std::string>;
 
-        /**
-         * Add a field to this data.
-         */
-        void addField(Field field);
+        constexpr explicit Schema(std::string name);
 
         /**
          * Add a field to this data.
          */
-        void addField(std::string name, std::string type);
+        constexpr void addField(Field field);
+
+        /**
+         * Add a field to this data.
+         */
+        constexpr void addField(std::string name, std::string type);
 
         /**
          * Get the fields in this Schema.
          */
-        [[nodiscard]] const std::vector<Field> &getFields() const;
+        [[nodiscard]] constexpr const std::vector<Field> &getFields() const;
 
         /**
          * Get the linked to schemas.
          */
-        [[nodiscard]] const std::vector<Schema> &getLinkedTo() const;
+        [[nodiscard]] constexpr const std::vector<Schema> &getLinkedTo() const;
 
         /**
          * Add a linked to schema, representing a one-to-many relation.
          */
-        void addLinkedTo(Schema schema);
+        constexpr void addLinkedTo(Schema schema);
 
         /**
          * Get the uniquely linked to schemas.
          */
-        [[nodiscard]] const std::vector<Schema> &getUniquelyLinkedTo() const;
+        [[nodiscard]] constexpr const std::vector<Schema> &getUniquelyLinkedTo() const;
 
         /**
          * Add a uniquely linked to schema, representing a many-to-many relation.
          */
-        void addUniquelyLinkedTo(Schema schema);
+        constexpr void addUniquelyLinkedTo(Schema schema);
 
         /**
          * Create a string from a string value.
          */
-        static std::string fromString(std::optional<std::string> value);
+        constexpr static std::string fromString(std::optional<std::string> value);
 
         /**
          * Format a string from an int value.
          */
-        static std::string fromInt(std::optional<int> value);
+        constexpr static std::string fromInt(std::optional<int> value);
 
         /**
          * Format a string from a `DateTime` value.
          */
-        static std::string fromDateTime(std::optional<DateTime> value);
+        constexpr static std::string fromDateTime(std::optional<DateTime> value);
 
         /**
          * Format a string from a `ButtonAction` value.
          */
-        static std::string fromButtonAction(std::optional<ButtonAction> value);
+        constexpr static std::string fromButtonAction(std::optional<ButtonAction> value);
 
         /**
          * Format a string from a `Device` value.
          */
-        static std::string fromDevice(std::optional<Device> value);
+        constexpr static std::string fromDevice(std::optional<Device> value);
 
         /**
          * Format a string from a nanoseconds value.
          */
-        static std::string fromNanoseconds(std::optional<std::chrono::nanoseconds> value);
+        constexpr static std::string fromNanoseconds(std::optional<std::chrono::nanoseconds> value);
 
         /**
          * Format a string from a double value.
          */
-        static std::string fromDouble(std::optional<double> value);
+        constexpr static std::string fromDouble(std::optional<double> value);
 
     private:
         static constexpr std::string_view ACTION_PRESS{"Press"};
@@ -136,15 +138,16 @@ namespace EvgetCore::Event {
         static constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
 
         template <typename T>
-        static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
+        constexpr static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
 
+        std::vector<std::string> name{};
         std::vector<Field> fields{};
         std::vector<Schema> linkedTo{};
         std::vector<Schema> uniquelyLinkedTo{};
     };
 
     template<typename T>
-    std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
+    constexpr std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
         if (!optional.has_value()) {
             return "";
         }
