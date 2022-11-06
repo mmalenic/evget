@@ -33,10 +33,10 @@ include(CheckIncludeFiles)
 include(CheckCXXSymbolExists)
 include(CTest)
 
-set(BOOST_VERSION 1.79)
-set(FMT_VERSION 8.1)
-set(SPDLOG_VERSION 1.10)
-set(DATE_VERSION 3.0.1)
+set(BOOST_VERSION 1.80)
+set(FMT_VERSION 9.1)
+set(SPDLOG_VERSION 1.11)
+set(DATE_VERSION 3.0)
 
 # Checks the feature, returning the result true for the current feature.
 function(feature_check)
@@ -353,12 +353,12 @@ if (DOWNLOAD_DEPENDENCIES)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
+
     conan_cmake_autodetect(settings)
 
     conan_add_remote(
         NAME conancenter
         URL https://center.conan.io
-        VERIFY_SSL False
     )
     conan_cmake_install(
         PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
