@@ -84,3 +84,7 @@ EvgetCore::Event::Data EvgetCore::Event::Key::build() {
 
     return data;
 }
+
+constexpr EvgetCore::Event::Schema EvgetCore::Event::Key::generateSchema() {
+    return Schema{""};
+}

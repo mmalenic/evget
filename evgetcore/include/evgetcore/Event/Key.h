@@ -86,6 +86,11 @@ namespace EvgetCore::Event {
          */
         Data build();
 
+        /**
+         * Generate the schema for this data.
+         */
+        static constexpr Schema generateSchema();
+
     private:
         std::optional<std::chrono::nanoseconds> _time{};
         std::optional<Schema::DateTime> _dateTime{};

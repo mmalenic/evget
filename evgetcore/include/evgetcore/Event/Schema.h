@@ -28,6 +28,8 @@
 #include <string>
 #include <optional>
 #include <chrono>
+#include <utility>
+#include <date/tz.h>
 #include "ButtonAction.h"
 #include "Device.h"
 #include "evgetcore/Util.h"
@@ -152,6 +154,89 @@ namespace EvgetCore::Event {
             return "";
         }
         return function(*optional);
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromString(std::optional<std::string> value) {
+        return optionalToString(std::move(value), [](auto value){ return value; });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
+        return optionalToString(value, [](auto value){ return std::to_string(value); });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
+        return optionalToString(value, [](auto value){
+            std::stringstream stream{};
+            stream << date::format("%FT%T%z", value);
+            return stream.str();
+        });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonAction> value) {
+        return optionalToString(value, [](auto value){
+            switch (value) {
+                case ButtonAction::Press:
+                    return std::string{ACTION_PRESS};
+                case ButtonAction::Release:
+                    return std::string{ACTION_RELEASE};
+                case ButtonAction::Repeat:
+                    return std::string{ACTION_REPEAT};
+            }
+        });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
+        return optionalToString(value, [](auto value){
+            switch (value) {
+                case Device::Mouse:
+                    return std::string{DEVICE_TYPE_MOUSE};
+                case Device::Keyboard:
+                    return std::string{DEVICE_TYPE_KEYBOARD};
+                case Device::Touchpad:
+                    return std::string{DEVICE_TYPE_TOUCHPAD};
+                case Device::Touchscreen:
+                    return std::string{DEVICE_TYPE_TOUCHSCREEN};
+            }
+        });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
+        return optionalToString(value, [](auto value){ return std::to_string(value.count()); });
+    }
+
+    constexpr std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
+        return optionalToString(value, [](auto value){ return std::to_string(value); });
+    }
+
+    constexpr void EvgetCore::Event::Schema::addField(EvgetCore::Event::Schema::Field field) {
+        fields.emplace_back(std::move(field));
+    }
+
+    constexpr void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
+        addField({std::move(name), std::move(type)});
+    }
+
+    constexpr const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
+        return fields;
+    }
+
+    constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinkedTo() const {
+        return linkedTo;
+    }
+
+    constexpr void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
+        linkedTo.emplace_back(std::move(schema));
+    }
+
+    constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getUniquelyLinkedTo() const {
+        return uniquelyLinkedTo;
+    }
+
+    constexpr void EvgetCore::Event::Schema::addUniquelyLinkedTo(EvgetCore::Event::Schema schema) {
+        uniquelyLinkedTo.emplace_back(std::move(schema));
+    }
+
+    constexpr EvgetCore::Event::Schema::Schema(std::string name): name{std::move(name)} {
     }
 }
 
