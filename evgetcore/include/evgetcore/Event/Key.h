@@ -24,6 +24,7 @@
 #define EVGET_SRC_KEY_H
 
 #include <chrono>
+#include <c++/11/array>
 #include "Data.h"
 #include "Schema.h"
 #include "ButtonAction.h"
@@ -44,7 +45,7 @@ namespace EvgetCore::Event {
         /**
          * Add date time
          */
-        Key& dateTime(Schema::DateTime dateTime);
+        Key& dateTime(Schema<>::DateTime dateTime);
 
         /**
          * Key device.
@@ -89,11 +90,11 @@ namespace EvgetCore::Event {
         /**
          * Generate the schema for this data.
          */
-        static constexpr Schema generateSchema();
+        static constexpr Schema<> generateSchema();
 
     private:
         std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<Schema::DateTime> _dateTime{};
+        std::optional<Schema<>::DateTime> _dateTime{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};
@@ -102,6 +103,10 @@ namespace EvgetCore::Event {
         std::optional<std::string> _name{};
         std::optional<std::string> _character{};
     };
+
+    constexpr EvgetCore::Event::Schema<> EvgetCore::Event::Key::generateSchema() {
+        return Schema{""};
+    }
 }
 
 #endif //EVGET_SRC_KEY_H

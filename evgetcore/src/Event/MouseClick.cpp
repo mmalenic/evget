@@ -29,7 +29,7 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::time(std::chrono::na
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Schema::DateTime dateTime) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Schema<>::DateTime dateTime) {
     _dateTime = dateTime;
     return *this;
 }
@@ -67,14 +67,14 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::name(std::string nam
 EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
     auto data = Data{"MouseClick"};
 
-    data.addField(Schema::fromNanoseconds(_time));
-    data.addField(Schema::fromDateTime(_dateTime));
-    data.addField(Schema::fromDevice(_device));
-    data.addField(Schema::fromDouble(_positionX));
-    data.addField(Schema::fromDouble(_positionY));
-    data.addField(Schema::fromButtonAction(_action));
-    data.addField(Schema::fromInt(_button));
-    data.addField(Schema::fromString(_name));
+    data.addField(Schema<>::fromNanoseconds(_time));
+    data.addField(Schema<>::fromDateTime(_dateTime));
+    data.addField(Schema<>::fromDevice(_device));
+    data.addField(Schema<>::fromDouble(_positionX));
+    data.addField(Schema<>::fromDouble(_positionY));
+    data.addField(Schema<>::fromButtonAction(_action));
+    data.addField(Schema<>::fromInt(_button));
+    data.addField(Schema<>::fromString(_name));
 
     return data;
 }

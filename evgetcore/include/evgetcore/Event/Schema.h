@@ -28,6 +28,7 @@
 #include <string>
 #include <optional>
 #include <chrono>
+#include <array>
 #include <utility>
 #include <date/tz.h>
 #include "ButtonAction.h"
@@ -38,6 +39,7 @@ namespace EvgetCore::Event {
     /**
      * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
      */
+    template<std::size_t NFields = 0, std::size_t NLinkedTo = 0, std::size_t NUniquelyLinkedTo = 0>
     class Schema {
     public:
         static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
@@ -55,44 +57,24 @@ namespace EvgetCore::Event {
         static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
 
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
-        using Field = std::pair<std::string, std::string>;
+        using Field = std::pair<std::string_view, std::string_view>;
 
-        constexpr explicit Schema(std::string name);
-
-        /**
-         * Add a field to this data.
-         */
-        constexpr void addField(Field field);
-
-        /**
-         * Add a field to this data.
-         */
-        constexpr void addField(std::string name, std::string type);
+        constexpr Schema(std::string_view name, std::array<Field, NFields> fields = {}, std::array<Schema, NLinkedTo> linkedTo = {}, std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo = {});
 
         /**
          * Get the fields in this Schema.
          */
-        [[nodiscard]] constexpr const std::vector<Field> &getFields() const;
+        [[nodiscard]] constexpr const std::array<Field, NFields> &getFields() const;
 
         /**
          * Get the linked to schemas.
          */
-        [[nodiscard]] constexpr const std::vector<Schema> &getLinkedTo() const;
-
-        /**
-         * Add a linked to schema, representing a one-to-many relation.
-         */
-        constexpr void addLinkedTo(Schema schema);
+        [[nodiscard]] constexpr const std::array<Schema, NLinkedTo> &getLinkedTo() const;
 
         /**
          * Get the uniquely linked to schemas.
          */
-        [[nodiscard]] constexpr const std::vector<Schema> &getUniquelyLinkedTo() const;
-
-        /**
-         * Add a uniquely linked to schema, representing a many-to-many relation.
-         */
-        constexpr void addUniquelyLinkedTo(Schema schema);
+        [[nodiscard]] constexpr const std::array<Schema, NUniquelyLinkedTo> &getUniquelyLinkedTo() const;
 
         /**
          * Create a string from a string value.
@@ -142,29 +124,54 @@ namespace EvgetCore::Event {
         template <typename T>
         constexpr static std::string optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function);
 
-        std::vector<std::string> name{};
-        std::vector<Field> fields{};
-        std::vector<Schema> linkedTo{};
-        std::vector<Schema> uniquelyLinkedTo{};
+        std::string_view name{};
+        std::array<Field, NFields> fields{};
+        std::array<Schema, NLinkedTo> linkedTo{};
+        std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo{};
     };
 
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
     template<typename T>
-    constexpr std::string EvgetCore::Event::Schema::optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::optionalToString(std::optional<T> optional,
+                                                                                          EvgetCore::Util::Invocable<std::string, T> auto &&function) {
         if (!optional.has_value()) {
             return "";
         }
         return function(*optional);
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromString(std::optional<std::string> value) {
-        return optionalToString(std::move(value), [](auto value){ return value; });
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::Schema(std::string_view name, std::array<Field, NFields> fields,
+                                                                    std::array<Schema, NLinkedTo> linkedTo,
+                                                                    std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo):
+                                                                    name{name},
+                                                                    fields{std::move(fields)},
+                                                                    linkedTo{std::move(linkedTo)},
+                                                                    uniquelyLinkedTo{std::move(uniquelyLinkedTo)} {
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromInt(std::optional<int> value) {
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr const std::array<typename Schema<>::Field, NFields> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getFields() const {
+        return fields;
+    }
+
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr const std::array<Schema<NFields, NLinkedTo, NUniquelyLinkedTo>, NLinkedTo> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getLinkedTo() const {
+        return linkedTo;
+    }
+
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr const std::array<Schema<NFields, NLinkedTo, NUniquelyLinkedTo>, NUniquelyLinkedTo> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getUniquelyLinkedTo() const {
+        return uniquelyLinkedTo;
+    }
+
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromInt(std::optional<int> value) {
         return optionalToString(value, [](auto value){ return std::to_string(value); });
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromDateTime(std::optional<DateTime> value) {
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromDateTime(std::optional<DateTime> value) {
         return optionalToString(value, [](auto value){
             std::stringstream stream{};
             stream << date::format("%FT%T%z", value);
@@ -172,7 +179,14 @@ namespace EvgetCore::Event {
         });
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromButtonAction(std::optional<ButtonAction> value) {
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromString(std::optional<std::string> value) {
+        return optionalToString(std::move(value), [](auto value){ return value; });
+    }
+
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string
+    Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromButtonAction(std::optional<ButtonAction> value) {
         return optionalToString(value, [](auto value){
             switch (value) {
                 case ButtonAction::Press:
@@ -185,8 +199,9 @@ namespace EvgetCore::Event {
         });
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromDevice(std::optional<Device> value) {
-        return optionalToString(value, [](auto value){
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromDevice(std::optional<Device> value) {
+        return optionalToString(value, [](auto value) {
             switch (value) {
                 case Device::Mouse:
                     return std::string{DEVICE_TYPE_MOUSE};
@@ -200,43 +215,15 @@ namespace EvgetCore::Event {
         });
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string
+    Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
         return optionalToString(value, [](auto value){ return std::to_string(value.count()); });
     }
 
-    constexpr std::string EvgetCore::Event::Schema::fromDouble(std::optional<double> value) {
+    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromDouble(std::optional<double> value) {
         return optionalToString(value, [](auto value){ return std::to_string(value); });
-    }
-
-    constexpr void EvgetCore::Event::Schema::addField(EvgetCore::Event::Schema::Field field) {
-        fields.emplace_back(std::move(field));
-    }
-
-    constexpr void EvgetCore::Event::Schema::addField(std::string name, std::string type) {
-        addField({std::move(name), std::move(type)});
-    }
-
-    constexpr const std::vector<EvgetCore::Event::Schema::Field> &EvgetCore::Event::Schema::getFields() const {
-        return fields;
-    }
-
-    constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getLinkedTo() const {
-        return linkedTo;
-    }
-
-    constexpr void EvgetCore::Event::Schema::addLinkedTo(EvgetCore::Event::Schema schema) {
-        linkedTo.emplace_back(std::move(schema));
-    }
-
-    constexpr const std::vector<EvgetCore::Event::Schema> &EvgetCore::Event::Schema::getUniquelyLinkedTo() const {
-        return uniquelyLinkedTo;
-    }
-
-    constexpr void EvgetCore::Event::Schema::addUniquelyLinkedTo(EvgetCore::Event::Schema schema) {
-        uniquelyLinkedTo.emplace_back(std::move(schema));
-    }
-
-    constexpr EvgetCore::Event::Schema::Schema(std::string name): name{std::move(name)} {
     }
 }
 

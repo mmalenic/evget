@@ -32,10 +32,16 @@
 //#include "evgetcore/EventTransformerLinux.h"
 //#include "evgetcore/SystemEventLoopLinux.h"
 //#include "../checkinput/include/checkinput/EventDeviceLister.h"
+#include "evgetcore/Event/Key.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    EvgetCore::Event::Key key{};
+    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
+
+    cout << schema.getFields().size() << endl;
+
 //    CliOption::ParserLinux cmd{};
 //    cmd.parseCommandLine(argc, (const char**) argv);
 //

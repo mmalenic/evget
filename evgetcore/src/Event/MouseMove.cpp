@@ -27,7 +27,7 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::time(std::chrono::nano
     return *this;
 }
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::dateTime(Schema::DateTime dateTime) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::dateTime(Schema<>::DateTime dateTime) {
     _dateTime = dateTime;
     return *this;
 }
@@ -50,11 +50,11 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::positionY(double y) {
 EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
     auto data = Data{"MouseMove"};
 
-    data.addField(Schema::fromNanoseconds(_time));
-    data.addField(Schema::fromDateTime(_dateTime));
-    data.addField(Schema::fromDevice(_device));
-    data.addField(Schema::fromDouble(_positionX));
-    data.addField(Schema::fromDouble(_positionY));
+    data.addField(Schema<>::fromNanoseconds(_time));
+    data.addField(Schema<>::fromDateTime(_dateTime));
+    data.addField(Schema<>::fromDevice(_device));
+    data.addField(Schema<>::fromDouble(_positionX));
+    data.addField(Schema<>::fromDouble(_positionY));
 
     return data;
 }
