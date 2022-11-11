@@ -103,7 +103,7 @@
 //
 //TEST(FieldTest, CreateDateTime) { // NOLINT(cert-err58-cpp)
 //    auto field = EvgetCore::Event::Field::createDateTime({});
-//    ASSERT_EQ("DateTime", field.getName());
+//    ASSERT_EQ("Timestamp", field.getName());
 //}
 //
 //TEST(FieldTest, CreateDeviceTypeMouse) { // NOLINT(cert-err58-cpp)

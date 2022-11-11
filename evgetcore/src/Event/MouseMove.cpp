@@ -27,7 +27,7 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::time(std::chrono::nano
     return *this;
 }
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::dateTime(Schema<>::DateTime dateTime) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::dateTime(Schema<>::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }

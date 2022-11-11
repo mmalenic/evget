@@ -42,24 +42,24 @@ namespace EvgetCore::Event {
     template<std::size_t NFields = 0, std::size_t NLinkedTo = 0, std::size_t NUniquelyLinkedTo = 0>
     class Schema {
     public:
-        static constexpr std::string_view ACTION_FIELD{"Action"};
-        static constexpr std::string_view CHARACTER_FIELD{"Character"};
-        static constexpr std::string_view IDENTIFIER_FIELD{"Identifier"};
-        static constexpr std::string_view NAME_FIELD{"Name"};
-        static constexpr std::string_view DATE_TIME_FIELD{"DateTime"};
-        static constexpr std::string_view DEVICE_TYPE_FIELD{"DeviceType"};
-        static constexpr std::string_view TIME_FIELD{"Time"};
-        static constexpr std::string_view POSITIONX_FIELD{"PositionX"};
-        static constexpr std::string_view POSITIONY_FIELD{"PositionY"};
-        static constexpr std::string_view SCROLLDOWN_FIELD{"ScrollDown"};
-        static constexpr std::string_view SCROLLLEFT_FIELD{"ScrollLeft"};
-        static constexpr std::string_view SCROLLRIGHT_FIELD{"ScrollRight"};
-        static constexpr std::string_view SCROLLUP_FIELD{"ScrollUp"};
-
-        using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+        using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
         using Field = std::pair<std::string_view, std::string_view>;
 
-        constexpr Schema(std::string_view name, std::array<Field, NFields> fields = {}, std::array<Schema, NLinkedTo> linkedTo = {}, std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo = {});
+        static constexpr Field ACTION_FIELD{"Action", "text"};
+        static constexpr Field CHARACTER_FIELD{"Character", "text"};
+        static constexpr Field IDENTIFIER_FIELD{"Identifier", "integer"};
+        static constexpr Field NAME_FIELD{"Name", "string"};
+        static constexpr Field TIMESTAMP_FIELD{"Timestamp", "timestamp"};
+        static constexpr Field DEVICE_TYPE_FIELD{"DeviceType", "text"};
+        static constexpr Field INTERVAL_FIELD{"Interval", "interval"};
+        static constexpr Field POSITIONX_FIELD{"PositionX", "double"};
+        static constexpr Field POSITIONY_FIELD{"PositionY", "double"};
+        static constexpr Field SCROLLDOWN_FIELD{"ScrollDown", "double"};
+        static constexpr Field SCROLLLEFT_FIELD{"ScrollLeft", "double"};
+        static constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", "double"};
+        static constexpr Field SCROLLUP_FIELD{"ScrollUp", "double"};
+
+        constexpr explicit Schema(std::string_view name, std::array<Field, NFields> fields = {}, std::array<Schema, NLinkedTo> linkedTo = {}, std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo = {});
 
         /**
          * Get the fields in this Schema.
@@ -87,9 +87,9 @@ namespace EvgetCore::Event {
         constexpr static std::string fromInt(std::optional<int> value);
 
         /**
-         * Format a string from a `DateTime` value.
+         * Format a string from a `Timestamp` value.
          */
-        constexpr static std::string fromDateTime(std::optional<DateTime> value);
+        constexpr static std::string fromDateTime(std::optional<Timestamp> value);
 
         /**
          * Format a string from a `ButtonAction` value.
@@ -171,7 +171,7 @@ namespace EvgetCore::Event {
     }
 
     template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
-    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromDateTime(std::optional<DateTime> value) {
+    constexpr std::string Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::fromDateTime(std::optional<Timestamp> value) {
         return optionalToString(value, [](auto value){
             std::stringstream stream{};
             stream << date::format("%FT%T%z", value);

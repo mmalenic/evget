@@ -29,7 +29,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::time(std::chrono::nanoseconds nano
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(Schema<>::DateTime dateTime) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(Schema<>::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }

@@ -27,7 +27,7 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::time(std::chrono::
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::dateTime(Schema<>::DateTime dateTime) {
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::dateTime(Schema<>::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }

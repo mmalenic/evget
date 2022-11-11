@@ -29,7 +29,7 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::time(std::chrono::na
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Schema<>::DateTime dateTime) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Schema<>::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }
