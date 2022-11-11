@@ -85,6 +85,11 @@ namespace EvgetCore::Event {
          */
         Data build();
 
+        /**
+         * Generate the MouseScroll schema.
+         */
+        static constexpr Schema<9> generateSchema();
+
     private:
         std::optional<std::chrono::nanoseconds> _time{};
         std::optional<SchemaField::Timestamp> _dateTime{};
@@ -96,6 +101,20 @@ namespace EvgetCore::Event {
         std::optional<double> _right{};
         std::optional<double> _up{};
     };
+
+    constexpr EvgetCore::Event::Schema<9> EvgetCore::Event::MouseScroll::generateSchema() {
+        return Schema<9>{"MouseScroll", {
+                SchemaField::INTERVAL_FIELD,
+                SchemaField::TIMESTAMP_FIELD,
+                SchemaField::DEVICE_TYPE_FIELD,
+                SchemaField::POSITIONX_FIELD,
+                SchemaField::POSITIONY_FIELD,
+                SchemaField::SCROLLDOWN_FIELD,
+                SchemaField::SCROLLLEFT_FIELD,
+                SchemaField::SCROLLRIGHT_FIELD,
+                SchemaField::SCROLLUP_FIELD},
+        };
+    }
 }
 
 #endif //EVGET_SRC_EVENT_MOUSEWHEEL_H
