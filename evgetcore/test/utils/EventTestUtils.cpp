@@ -22,7 +22,7 @@
 
 #include "EventTestUtils.h"
 
-void TestUtils::EventTestUtils::fieldValueAndName(const EvgetCore::Event::Schema<>::Field& field, const std::string& name, const std::string& expected) {
+void TestUtils::EventTestUtils::fieldValueAndName(const EvgetCore::Event::SchemaField::Field& field, const std::string& name, const std::string& expected) {
 //    ASSERT_EQ(name, field.getName());
 //    ASSERT_EQ(expected, field.getEntry());
 }
@@ -33,7 +33,7 @@ EvgetCore::Event::Data TestUtils::EventTestUtils::createData(std::string dataNam
     return data;
 }
 
-EvgetCore::Event::Schema<>::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
+EvgetCore::Event::SchemaField::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
 //    EvgetCore::Event::Field::Entries entries{};
     EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
 

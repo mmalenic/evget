@@ -29,7 +29,7 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::time(std::chrono::na
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(Schema<>::Timestamp dateTime) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(SchemaField::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }
@@ -68,7 +68,7 @@ EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
     auto data = Data{"MouseClick"};
 
     data.addField(SchemaField::fromNanoseconds(_time));
-    data.addField(SchemaField::fromDateTime(_dateTime));
+    data.addField(SchemaField::fromTimestamp(_dateTime));
     data.addField(SchemaField::fromDevice(_device));
     data.addField(SchemaField::fromDouble(_positionX));
     data.addField(SchemaField::fromDouble(_positionY));

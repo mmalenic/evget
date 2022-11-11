@@ -51,7 +51,7 @@ EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
     auto data = Data{"MouseMove"};
 
     data.addField(SchemaField::fromNanoseconds(_time));
-    data.addField(SchemaField::fromDateTime(_dateTime));
+    data.addField(SchemaField::fromTimestamp(_dateTime));
     data.addField(SchemaField::fromDevice(_device));
     data.addField(SchemaField::fromDouble(_positionX));
     data.addField(SchemaField::fromDouble(_positionY));
