@@ -42,19 +42,19 @@ namespace EvgetCore::Event {
     template<std::size_t NFields = 0, std::size_t NLinkedTo = 0, std::size_t NUniquelyLinkedTo = 0>
     class Schema {
     public:
-        static constexpr std::string_view ACTION_FIELD_NAME{"Action"};
-        static constexpr std::string_view CHARACTER_FIELD_NAME{"Character"};
-        static constexpr std::string_view IDENTIFIER_FIELD_NAME{"Identifier"};
-        static constexpr std::string_view NAME_FIELD_NAME{"Name"};
-        static constexpr std::string_view DATE_TIME_FIELD_NAME{"DateTime"};
-        static constexpr std::string_view DEVICE_TYPE_FIELD_NAME{"DeviceType"};
-        static constexpr std::string_view TIME_FIELD_NAME{"Time"};
-        static constexpr std::string_view POSITIONX_FIELD_NAME{"PositionX"};
-        static constexpr std::string_view POSITIONY_FIELD_NAME{"PositionY"};
-        static constexpr std::string_view SCROLLDOWN_FIELD_NAME{"ScrollDown"};
-        static constexpr std::string_view SCROLLLEFT_FIELD_NAME{"ScrollLeft"};
-        static constexpr std::string_view SCROLLRIGHT_FIELD_NAME{"ScrollRight"};
-        static constexpr std::string_view SCROLLUP_FIELD_NAME{"ScrollUp"};
+        static constexpr std::string_view ACTION_FIELD{"Action"};
+        static constexpr std::string_view CHARACTER_FIELD{"Character"};
+        static constexpr std::string_view IDENTIFIER_FIELD{"Identifier"};
+        static constexpr std::string_view NAME_FIELD{"Name"};
+        static constexpr std::string_view DATE_TIME_FIELD{"DateTime"};
+        static constexpr std::string_view DEVICE_TYPE_FIELD{"DeviceType"};
+        static constexpr std::string_view TIME_FIELD{"Time"};
+        static constexpr std::string_view POSITIONX_FIELD{"PositionX"};
+        static constexpr std::string_view POSITIONY_FIELD{"PositionY"};
+        static constexpr std::string_view SCROLLDOWN_FIELD{"ScrollDown"};
+        static constexpr std::string_view SCROLLLEFT_FIELD{"ScrollLeft"};
+        static constexpr std::string_view SCROLLRIGHT_FIELD{"ScrollRight"};
+        static constexpr std::string_view SCROLLUP_FIELD{"ScrollUp"};
 
         using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
         using Field = std::pair<std::string_view, std::string_view>;
