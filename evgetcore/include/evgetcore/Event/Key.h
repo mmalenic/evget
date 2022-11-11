@@ -90,7 +90,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the schema for this data.
          */
-        static constexpr Schema<9, 0, 0> generateSchema();
+        static constexpr Schema<9> generateSchema();
 
     private:
         std::optional<std::chrono::nanoseconds> _time{};
@@ -104,8 +104,8 @@ namespace EvgetCore::Event {
         std::optional<std::string> _character{};
     };
 
-    constexpr EvgetCore::Event::Schema<9, 0, 0> EvgetCore::Event::Key::generateSchema() {
-        return Schema<9, 0, 0>{"Key", {
+    constexpr EvgetCore::Event::Schema<9> EvgetCore::Event::Key::generateSchema() {
+        return Schema<9>{"Key", {
             SchemaField::INTERVAL_FIELD,
             SchemaField::TIMESTAMP_FIELD,
             SchemaField::DEVICE_TYPE_FIELD,
@@ -114,7 +114,7 @@ namespace EvgetCore::Event {
             SchemaField::ACTION_FIELD,
             SchemaField::IDENTIFIER_FIELD,
             SchemaField::NAME_FIELD,
-            SchemaField::CHARACTER_FIELD}, {}, {}
+            SchemaField::CHARACTER_FIELD},
         };
     }
 }

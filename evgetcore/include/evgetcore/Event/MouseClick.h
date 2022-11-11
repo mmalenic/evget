@@ -80,6 +80,11 @@ namespace EvgetCore::Event {
          */
         Data build();
 
+        /**
+         * Generate the schema for this data.
+         */
+        static constexpr Schema<8> generateSchema();
+
     private:
         std::optional<std::chrono::nanoseconds> _time{};
         std::optional<SchemaField::Timestamp> _dateTime{};
@@ -90,6 +95,19 @@ namespace EvgetCore::Event {
         std::optional<int> _button{};
         std::optional<std::string> _name{};
     };
+
+    constexpr EvgetCore::Event::Schema<8> EvgetCore::Event::MouseClick::generateSchema() {
+        return Schema<8>{"MouseClick", {
+                SchemaField::INTERVAL_FIELD,
+                SchemaField::TIMESTAMP_FIELD,
+                SchemaField::DEVICE_TYPE_FIELD,
+                SchemaField::POSITIONX_FIELD,
+                SchemaField::POSITIONY_FIELD,
+                SchemaField::ACTION_FIELD,
+                SchemaField::IDENTIFIER_FIELD,
+                SchemaField::NAME_FIELD},
+        };
+    }
 }
 
 #endif //EVGET_SRC_EVENT_MOUSECLICK_H
