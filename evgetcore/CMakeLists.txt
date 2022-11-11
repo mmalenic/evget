@@ -25,6 +25,7 @@ add_program(
     include/evgetcore/CoreParser.h
     include/evgetcore/Event/Modifiers.h
     include/evgetcore/Event/Schema.h
+    include/evgetcore/Event/DataType.h
 )
 add_subdirectory(src)
 
