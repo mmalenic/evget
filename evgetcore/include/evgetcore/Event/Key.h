@@ -45,7 +45,7 @@ namespace EvgetCore::Event {
         /**
          * Add date time
          */
-        Key& dateTime(Schema<>::Timestamp dateTime);
+        Key& dateTime(SchemaField::Timestamp dateTime);
 
         /**
          * Key device.
@@ -94,7 +94,7 @@ namespace EvgetCore::Event {
 
     private:
         std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<Schema<>::Timestamp> _dateTime{};
+        std::optional<SchemaField::Timestamp> _dateTime{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};
@@ -106,15 +106,15 @@ namespace EvgetCore::Event {
 
     constexpr EvgetCore::Event::Schema<9, 0, 0> EvgetCore::Event::Key::generateSchema() {
         return Schema<9, 0, 0>{"Key", {
-            Schema<>::INTERVAL_FIELD,
-            Schema<>::TIMESTAMP_FIELD,
-            Schema<>::DEVICE_TYPE_FIELD,
-            Schema<>::POSITIONX_FIELD,
-            Schema<>::POSITIONY_FIELD,
-            Schema<>::ACTION_FIELD,
-            Schema<>::IDENTIFIER_FIELD,
-            Schema<>::NAME_FIELD,
-            Schema<>::CHARACTER_FIELD}, {}, {}
+            SchemaField::INTERVAL_FIELD,
+            SchemaField::TIMESTAMP_FIELD,
+            SchemaField::DEVICE_TYPE_FIELD,
+            SchemaField::POSITIONX_FIELD,
+            SchemaField::POSITIONY_FIELD,
+            SchemaField::ACTION_FIELD,
+            SchemaField::IDENTIFIER_FIELD,
+            SchemaField::NAME_FIELD,
+            SchemaField::CHARACTER_FIELD}, {}, {}
         };
     }
 }

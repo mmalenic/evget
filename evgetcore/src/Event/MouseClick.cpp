@@ -67,14 +67,14 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::name(std::string nam
 EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
     auto data = Data{"MouseClick"};
 
-    data.addField(Schema<>::fromNanoseconds(_time));
-    data.addField(Schema<>::fromDateTime(_dateTime));
-    data.addField(Schema<>::fromDevice(_device));
-    data.addField(Schema<>::fromDouble(_positionX));
-    data.addField(Schema<>::fromDouble(_positionY));
-    data.addField(Schema<>::fromButtonAction(_action));
-    data.addField(Schema<>::fromInt(_button));
-    data.addField(Schema<>::fromString(_name));
+    data.addField(SchemaField::fromNanoseconds(_time));
+    data.addField(SchemaField::fromDateTime(_dateTime));
+    data.addField(SchemaField::fromDevice(_device));
+    data.addField(SchemaField::fromDouble(_positionX));
+    data.addField(SchemaField::fromDouble(_positionY));
+    data.addField(SchemaField::fromButtonAction(_action));
+    data.addField(SchemaField::fromInt(_button));
+    data.addField(SchemaField::fromString(_name));
 
     return data;
 }

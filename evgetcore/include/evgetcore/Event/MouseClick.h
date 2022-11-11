@@ -43,7 +43,7 @@ namespace EvgetCore::Event {
         /**
          * Add date time
          */
-        MouseClick& dateTime(Schema<>::Timestamp dateTime);
+        MouseClick& dateTime(SchemaField::Timestamp dateTime);
 
         /**
          * Mouse device.
@@ -82,7 +82,7 @@ namespace EvgetCore::Event {
 
     private:
         std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<Schema<>::Timestamp> _dateTime{};
+        std::optional<SchemaField::Timestamp> _dateTime{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};

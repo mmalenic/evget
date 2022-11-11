@@ -29,7 +29,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::time(std::chrono::nanoseconds nano
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(Schema<>::Timestamp dateTime) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(SchemaField::Timestamp dateTime) {
     _dateTime = dateTime;
     return *this;
 }
@@ -72,15 +72,15 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
 EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     auto data = Data{"Key"};
 
-    data.addField(Schema<>::fromNanoseconds(_time));
-    data.addField(Schema<>::fromDateTime(_dateTime));
-    data.addField(Schema<>::fromDevice(_device));
-    data.addField(Schema<>::fromDouble(_positionX));
-    data.addField(Schema<>::fromDouble(_positionY));
-    data.addField(Schema<>::fromButtonAction(_action));
-    data.addField(Schema<>::fromInt(_button));
-    data.addField(Schema<>::fromString(_name));
-    data.addField(Schema<>::fromString(_character));
+    data.addField(SchemaField::fromNanoseconds(_time));
+    data.addField(SchemaField::fromDateTime(_dateTime));
+    data.addField(SchemaField::fromDevice(_device));
+    data.addField(SchemaField::fromDouble(_positionX));
+    data.addField(SchemaField::fromDouble(_positionY));
+    data.addField(SchemaField::fromButtonAction(_action));
+    data.addField(SchemaField::fromInt(_button));
+    data.addField(SchemaField::fromString(_name));
+    data.addField(SchemaField::fromString(_character));
 
     return data;
 }

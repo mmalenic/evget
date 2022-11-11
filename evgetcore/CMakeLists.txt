@@ -26,6 +26,7 @@ add_program(
     include/evgetcore/Event/Modifiers.h
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/DataType.h
+    include/evgetcore/Event/SchemaField.h
 )
 add_subdirectory(src)
 
