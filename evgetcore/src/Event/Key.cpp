@@ -24,13 +24,13 @@
 
 #include <utility>
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::time(std::chrono::nanoseconds nanoseconds) {
-    _time = nanoseconds;
+EvgetCore::Event::Key& EvgetCore::Event::Key::interval(SchemaField::Interval interval) {
+    _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::dateTime(SchemaField::Timestamp dateTime) {
-    _dateTime = dateTime;
+EvgetCore::Event::Key& EvgetCore::Event::Key::timestamp(SchemaField::Timestamp timestamp) {
+    _timestamp = timestamp;
     return *this;
 }
 
@@ -72,8 +72,8 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
 EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     auto data = Data{"Key"};
 
-    data.addField(SchemaField::fromNanoseconds(_time));
-    data.addField(SchemaField::fromTimestamp(_dateTime));
+    data.addField(SchemaField::fromInterval(_interval));
+    data.addField(SchemaField::fromTimestamp(_timestamp));
     data.addField(SchemaField::fromDevice(_device));
     data.addField(SchemaField::fromDouble(_positionX));
     data.addField(SchemaField::fromDouble(_positionY));

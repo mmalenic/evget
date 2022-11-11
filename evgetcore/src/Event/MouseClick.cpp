@@ -24,13 +24,13 @@
 
 #include <utility>
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::time(std::chrono::nanoseconds nanoseconds) {
-    _time = nanoseconds;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(SchemaField::Interval interval) {
+    _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::dateTime(SchemaField::Timestamp dateTime) {
-    _dateTime = dateTime;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::timestamp(SchemaField::Timestamp timestamp) {
+    _timestamp = timestamp;
     return *this;
 }
 
@@ -67,8 +67,8 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::name(std::string nam
 EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
     auto data = Data{"MouseClick"};
 
-    data.addField(SchemaField::fromNanoseconds(_time));
-    data.addField(SchemaField::fromTimestamp(_dateTime));
+    data.addField(SchemaField::fromInterval(_interval));
+    data.addField(SchemaField::fromTimestamp(_timestamp));
     data.addField(SchemaField::fromDevice(_device));
     data.addField(SchemaField::fromDouble(_positionX));
     data.addField(SchemaField::fromDouble(_positionY));

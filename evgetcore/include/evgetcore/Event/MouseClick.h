@@ -36,14 +36,14 @@ namespace EvgetCore::Event {
         MouseClick() = default;
 
         /**
-         * Add time in nanoseconds.
+         * Add interval in microseconds.
          */
-        MouseClick& time(std::chrono::nanoseconds nanoseconds);
+        MouseClick& interval(SchemaField::Interval interval);
 
         /**
-         * Add date time
+         * Add date timestamp.
          */
-        MouseClick& dateTime(SchemaField::Timestamp dateTime);
+        MouseClick& timestamp(SchemaField::Timestamp timestamp);
 
         /**
          * Mouse device.
@@ -86,8 +86,8 @@ namespace EvgetCore::Event {
         static constexpr Schema<8> generateSchema();
 
     private:
-        std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<SchemaField::Timestamp> _dateTime{};
+        std::optional<SchemaField::Interval> _interval{};
+        std::optional<SchemaField::Timestamp> _timestamp{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};

@@ -27,7 +27,7 @@
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(MouseScrollTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(), 0, "1");
 }
 
 TEST(MouseScrollTest, Device) { // NOLINT(cert-err58-cpp)

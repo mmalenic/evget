@@ -23,11 +23,12 @@
 #include <gtest/gtest.h>
 #include "evgetcore/Event/Key.h"
 #include "EventTestUtils.h"
+#include "evgetcore/Event/SchemaField.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
 TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.time(std::chrono::nanoseconds{1}).build(), 0, "1");
+    EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(), 0, "1");
 }
 
 TEST(KeyTest, Device) { // NOLINT(cert-err58-cpp)

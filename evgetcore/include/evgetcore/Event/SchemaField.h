@@ -53,6 +53,7 @@ namespace EvgetCore::Event::SchemaField {
         }
     }
 
+    using Interval = std::chrono::microseconds;
     using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
     using Field = std::pair<std::string_view, DataType>;
 
@@ -130,9 +131,9 @@ namespace EvgetCore::Event::SchemaField {
     }
 
     /**
-     * Format a string from a nanoseconds value.
+     * Format a string from an `Interval` value.
      */
-    constexpr std::string fromNanoseconds(std::optional<std::chrono::nanoseconds> value) {
+    constexpr std::string fromInterval(std::optional<Interval> value) {
         return detail::optionalToString(value, [](auto value){ return std::to_string(value.count()); });
     }
 

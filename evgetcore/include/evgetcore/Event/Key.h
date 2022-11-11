@@ -38,14 +38,14 @@ namespace EvgetCore::Event {
         Key() = default;
 
         /**
-         * Add time in nanoseconds.
+         * Add interval in microseconds.
          */
-        Key& time(std::chrono::nanoseconds nanoseconds);
+        Key& interval(SchemaField::Interval interval);
 
         /**
-         * Add date time
+         * Add date timestamp.
          */
-        Key& dateTime(SchemaField::Timestamp dateTime);
+        Key& timestamp(SchemaField::Timestamp dateTime);
 
         /**
          * Key device.
@@ -93,8 +93,8 @@ namespace EvgetCore::Event {
         static constexpr Schema<9> generateSchema();
 
     private:
-        std::optional<std::chrono::nanoseconds> _time{};
-        std::optional<SchemaField::Timestamp> _dateTime{};
+        std::optional<SchemaField::Interval> _interval{};
+        std::optional<SchemaField::Timestamp> _timestamp{};
         std::optional<Device> _device{};
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};
