@@ -66,6 +66,11 @@ namespace EvgetCore::Event {
          */
         Data build();
 
+        /**
+         * Generate the MouseMove schema.
+         */
+        static constexpr Schema<5> generateSchema();
+
     private:
         std::optional<std::chrono::nanoseconds> _time{};
         std::optional<SchemaField::Timestamp> _dateTime{};
@@ -73,6 +78,16 @@ namespace EvgetCore::Event {
         std::optional<double> _positionX{};
         std::optional<double> _positionY{};
     };
+
+    constexpr EvgetCore::Event::Schema<5> EvgetCore::Event::MouseMove::generateSchema() {
+        return Schema<5>{"MouseMove", {
+                SchemaField::INTERVAL_FIELD,
+                SchemaField::TIMESTAMP_FIELD,
+                SchemaField::DEVICE_TYPE_FIELD,
+                SchemaField::POSITIONX_FIELD,
+                SchemaField::POSITIONY_FIELD}
+        };
+    }
 }
 
 #endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H

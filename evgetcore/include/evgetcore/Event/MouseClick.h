@@ -81,7 +81,7 @@ namespace EvgetCore::Event {
         Data build();
 
         /**
-         * Generate the schema for this data.
+         * Generate the MouseClick schema.
          */
         static constexpr Schema<8> generateSchema();
 
