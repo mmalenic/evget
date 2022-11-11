@@ -56,19 +56,19 @@ namespace EvgetCore::Event::SchemaField {
     using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
     using Field = std::pair<std::string_view, DataType>;
 
-    static constexpr Field ACTION_FIELD{"Action", DataType::String};
-    static constexpr Field CHARACTER_FIELD{"Character", DataType::String};
-    static constexpr Field IDENTIFIER_FIELD{"Identifier", DataType::Integer};
-    static constexpr Field NAME_FIELD{"Name", DataType::String};
-    static constexpr Field TIMESTAMP_FIELD{"Timestamp", DataType::Timestamp};
-    static constexpr Field DEVICE_TYPE_FIELD{"DeviceType", DataType::String};
-    static constexpr Field INTERVAL_FIELD{"Interval", DataType::Interval};
-    static constexpr Field POSITIONX_FIELD{"PositionX", DataType::Double};
-    static constexpr Field POSITIONY_FIELD{"PositionY", DataType::Double};
-    static constexpr Field SCROLLDOWN_FIELD{"ScrollDown", DataType::Double};
-    static constexpr Field SCROLLLEFT_FIELD{"ScrollLeft", DataType::Double};
-    static constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
-    static constexpr Field SCROLLUP_FIELD{"ScrollUp", DataType::Double};
+    constexpr Field ACTION_FIELD{"Action", DataType::String};
+    constexpr Field CHARACTER_FIELD{"Character", DataType::String};
+    constexpr Field IDENTIFIER_FIELD{"Identifier", DataType::Integer};
+    constexpr Field NAME_FIELD{"Name", DataType::String};
+    constexpr Field TIMESTAMP_FIELD{"Timestamp", DataType::Timestamp};
+    constexpr Field DEVICE_TYPE_FIELD{"DeviceType", DataType::String};
+    constexpr Field INTERVAL_FIELD{"Interval", DataType::Interval};
+    constexpr Field POSITIONX_FIELD{"PositionX", DataType::Double};
+    constexpr Field POSITIONY_FIELD{"PositionY", DataType::Double};
+    constexpr Field SCROLLDOWN_FIELD{"ScrollDown", DataType::Double};
+    constexpr Field SCROLLLEFT_FIELD{"ScrollLeft", DataType::Double};
+    constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
+    constexpr Field SCROLLUP_FIELD{"ScrollUp", DataType::Double};
 
     /**
      * Create a string from a string value.
