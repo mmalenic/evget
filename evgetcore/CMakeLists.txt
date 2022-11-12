@@ -23,10 +23,11 @@ add_program(
     include/evgetcore/Util.h
     include/evgetcore/UnsupportedOperationException.h
     include/evgetcore/CoreParser.h
-    include/evgetcore/Event/Modifiers.h
+    include/evgetcore/Event/ModifierValue.h
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/DataType.h
     include/evgetcore/Event/SchemaField.h
+    include/evgetcore/Event/Modifier.h
 )
 add_subdirectory(src)
 
