@@ -21,11 +21,11 @@
 // SOFTWARE.
 //
 
-#ifndef EVGET_MODIFIERS_H
-#define EVGET_MODIFIERS_H
+#ifndef EVGET_MODIFIERVALUE_H
+#define EVGET_MODIFIERVALUE_H
 
 namespace EvgetCore::Event {
-    enum class Modifiers {
+    enum class ModifierValue {
         Shift,
         Lock,
         Control,
@@ -37,4 +37,4 @@ namespace EvgetCore::Event {
     };
 }
 
-#endif //EVGET_MODIFIERS_H
+#endif //EVGET_MODIFIERVALUE_H

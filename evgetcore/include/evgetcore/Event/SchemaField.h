@@ -31,6 +31,7 @@
 #include "ButtonAction.h"
 #include "Device.h"
 #include "evgetcore/Util.h"
+#include "ModifierValue.h"
 
 namespace EvgetCore::Event::SchemaField {
     namespace detail {
@@ -42,6 +43,15 @@ namespace EvgetCore::Event::SchemaField {
         constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
         constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
         constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
+
+        constexpr std::string_view MODIFIER_VALUE_SHIFT{"Shift"};
+        constexpr std::string_view MODIFIER_VALUE_LOCK{"Lock"};
+        constexpr std::string_view MODIFIER_VALUE_CONTROL{"Control"};
+        constexpr std::string_view MODIFIER_VALUE_MOD1{"Mod1"};
+        constexpr std::string_view MODIFIER_VALUE_MOD2{"Mod2"};
+        constexpr std::string_view MODIFIER_VALUE_MOD3{"Mod3"};
+        constexpr std::string_view MODIFIER_VALUE_MOD4{"Mod4"};
+        constexpr std::string_view MODIFIER_VALUE_MOD5{"Mod5"};
 
         template<typename T>
         constexpr std::string
@@ -70,6 +80,7 @@ namespace EvgetCore::Event::SchemaField {
     constexpr Field SCROLLLEFT_FIELD{"ScrollLeft", DataType::Double};
     constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
     constexpr Field SCROLLUP_FIELD{"ScrollUp", DataType::Double};
+    constexpr Field MODIFIER_FIELD{"Modifier", DataType::String};
 
     /**
      * Create a string from a string value.
@@ -126,6 +137,32 @@ namespace EvgetCore::Event::SchemaField {
                     return std::string{detail::DEVICE_TYPE_TOUCHPAD};
                 case Device::Touchscreen:
                     return std::string{detail::DEVICE_TYPE_TOUCHSCREEN};
+            }
+        });
+    }
+
+    /**
+     * Format a string from a `ModifierValue`.
+     */
+    constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
+        return detail::optionalToString(value, [](auto value) {
+            switch (value) {
+                case ModifierValue::Shift:
+                    return std::string{detail::MODIFIER_VALUE_SHIFT};
+                case ModifierValue::Lock:
+                    return std::string{detail::MODIFIER_VALUE_LOCK};
+                case ModifierValue::Control:
+                    return std::string{detail::MODIFIER_VALUE_CONTROL};
+                case ModifierValue::Mod1:
+                    return std::string{detail::MODIFIER_VALUE_MOD1};
+                case ModifierValue::Mod2:
+                    return std::string{detail::MODIFIER_VALUE_MOD2};
+                case ModifierValue::Mod3:
+                    return std::string{detail::MODIFIER_VALUE_MOD3};
+                case ModifierValue::Mod4:
+                    return std::string{detail::MODIFIER_VALUE_MOD4};
+                case ModifierValue::Mod5:
+                    return std::string{detail::MODIFIER_VALUE_MOD5};
             }
         });
     }
