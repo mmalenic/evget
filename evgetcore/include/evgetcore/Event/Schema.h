@@ -41,10 +41,10 @@ namespace EvgetCore::Event {
     /**
      * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
      */
-    template<std::size_t NFields = 0, std::size_t NLinkedTo = 0, std::size_t NUniquelyLinkedTo = 0>
+    template<std::size_t NFields, typename... LinkedTo>
     class Schema {
     public:
-        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields = {}, std::array<Schema, NLinkedTo> linkedTo = {}, std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo = {});
+        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, LinkedTo... linkedTo);
 
         /**
          * Get the fields in this Schema.
@@ -52,45 +52,31 @@ namespace EvgetCore::Event {
         [[nodiscard]] constexpr const std::array<SchemaField::Field, NFields> &getFields() const;
 
         /**
-         * Get the linked to schemas.
-         */
-        [[nodiscard]] constexpr const std::array<Schema, NLinkedTo> &getLinkedTo() const;
-
-        /**
          * Get the uniquely linked to schemas.
          */
-        [[nodiscard]] constexpr const std::array<Schema, NUniquelyLinkedTo> &getUniquelyLinkedTo() const;
+        [[nodiscard]] constexpr const std::tuple<LinkedTo...> &getLinkedTo() const;
 
     private:
         std::string_view name{};
         std::array<SchemaField::Field, NFields> fields{};
-        std::array<Schema, NLinkedTo> linkedTo{};
-        std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo{};
+        std::tuple<LinkedTo...> linkedTo{};
     };
 
-    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
-    constexpr Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
-                                                                    std::array<Schema, NLinkedTo> linkedTo,
-                                                                    std::array<Schema, NUniquelyLinkedTo> uniquelyLinkedTo):
-                                                                    name{name},
-                                                                    fields{std::move(fields)},
-                                                                    linkedTo{std::move(linkedTo)},
-                                                                    uniquelyLinkedTo{std::move(uniquelyLinkedTo)} {
+    template<std::size_t NFields, typename... LinkedTo>
+    constexpr
+    Schema<NFields, LinkedTo...>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
+                                         LinkedTo... linkedTo) : name{name}, fields{fields}, linkedTo{linkedTo...} {
+
     }
 
-    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
-    constexpr const std::array<SchemaField::Field, NFields> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getFields() const {
+    template<std::size_t NFields, typename... LinkedTo>
+    constexpr const std::array<SchemaField::Field, NFields> &Schema<NFields, LinkedTo...>::getFields() const {
         return fields;
     }
 
-    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
-    constexpr const std::array<Schema<NFields, NLinkedTo, NUniquelyLinkedTo>, NLinkedTo> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getLinkedTo() const {
+    template<std::size_t NFields, typename... LinkedTo>
+    constexpr const std::tuple<LinkedTo...> &Schema<NFields, LinkedTo...>::getLinkedTo() const {
         return linkedTo;
-    }
-
-    template<std::size_t NFields, std::size_t NLinkedTo, std::size_t NUniquelyLinkedTo>
-    constexpr const std::array<Schema<NFields, NLinkedTo, NUniquelyLinkedTo>, NUniquelyLinkedTo> &Schema<NFields, NLinkedTo, NUniquelyLinkedTo>::getUniquelyLinkedTo() const {
-        return uniquelyLinkedTo;
     }
 }
 

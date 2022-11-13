@@ -28,6 +28,7 @@
 #include "Data.h"
 #include "Schema.h"
 #include "ButtonAction.h"
+#include "Modifier.h"
 
 namespace EvgetCore::Event {
     /**
@@ -90,7 +91,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the schema for this data.
          */
-        static constexpr Schema<9> generateSchema();
+        static constexpr Schema<9, Schema<1>> generateSchema();
 
     private:
         std::optional<SchemaField::Interval> _interval{};
@@ -104,8 +105,8 @@ namespace EvgetCore::Event {
         std::optional<std::string> _character{};
     };
 
-    constexpr EvgetCore::Event::Schema<9> EvgetCore::Event::Key::generateSchema() {
-        return Schema<9>{"Key", {
+    constexpr EvgetCore::Event::Schema<9, Schema<1>> EvgetCore::Event::Key::generateSchema() {
+        return Schema<9, Schema<1>>{"Key", {
             SchemaField::INTERVAL_FIELD,
             SchemaField::TIMESTAMP_FIELD,
             SchemaField::DEVICE_TYPE_FIELD,
@@ -114,7 +115,7 @@ namespace EvgetCore::Event {
             SchemaField::ACTION_FIELD,
             SchemaField::IDENTIFIER_FIELD,
             SchemaField::NAME_FIELD,
-            SchemaField::CHARACTER_FIELD},
+            SchemaField::CHARACTER_FIELD}, {Modifier::generateSchema()}
         };
     }
 }
