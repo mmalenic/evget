@@ -115,7 +115,7 @@ namespace EvgetCore::Event {
             SchemaField::ACTION_FIELD,
             SchemaField::IDENTIFIER_FIELD,
             SchemaField::NAME_FIELD,
-            SchemaField::CHARACTER_FIELD}, {Modifier::generateSchema()}
+            SchemaField::CHARACTER_FIELD}, {true, Modifier::generateSchema()}
         };
     }
 }
