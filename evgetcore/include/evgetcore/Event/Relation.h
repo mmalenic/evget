@@ -36,7 +36,7 @@ namespace EvgetCore::Event {
         /**
          * Create the relation object.
          */
-        constexpr Relation(const To &schema, bool isUnique);
+        constexpr Relation(To schema, bool isUnique);
 
         /**
          * Get the to side of the relation.
@@ -49,13 +49,13 @@ namespace EvgetCore::Event {
         [[nodiscard]] constexpr bool isUnique() const;
 
     private:
-        std::reference_wrapper<const To> schema{};
+        To schema{};
         bool _isUnique{};
     };
 
     template<typename To>
     constexpr
-    Relation<To>::Relation(const To &schema, bool isUnique) : schema{schema}, _isUnique{isUnique} {
+    Relation<To>::Relation(To schema, bool isUnique) : schema{schema}, _isUnique{isUnique} {
     }
 
     template<typename To>
