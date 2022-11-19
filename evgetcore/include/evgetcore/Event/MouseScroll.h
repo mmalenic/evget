@@ -26,6 +26,7 @@
 #include <chrono>
 #include "Data.h"
 #include "Schema.h"
+#include "Modifier.h"
 
 namespace EvgetCore::Event {
     /**
@@ -33,6 +34,8 @@ namespace EvgetCore::Event {
      */
     class MouseScroll {
     public:
+        using SchemaType = Schema<9, Modifier::SchemaType>;
+
         MouseScroll() = default;
 
         /**
@@ -88,7 +91,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the MouseScroll schema.
          */
-        static constexpr Schema<9> generateSchema();
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<SchemaField::Interval> _interval{};
@@ -102,8 +105,8 @@ namespace EvgetCore::Event {
         std::optional<double> _up{};
     };
 
-    constexpr EvgetCore::Event::Schema<9> EvgetCore::Event::MouseScroll::generateSchema() {
-        return Schema<9>{"MouseScroll", {
+    constexpr EvgetCore::Event::MouseScroll::SchemaType EvgetCore::Event::MouseScroll::generateSchema() {
+        return SchemaType{"MouseScroll", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,
@@ -112,7 +115,7 @@ namespace EvgetCore::Event {
                 SchemaField::SCROLLDOWN_FIELD,
                 SchemaField::SCROLLLEFT_FIELD,
                 SchemaField::SCROLLRIGHT_FIELD,
-                SchemaField::SCROLLUP_FIELD},
+                SchemaField::SCROLLUP_FIELD}, {Modifier::generateSchema(), true}
         };
     }
 }

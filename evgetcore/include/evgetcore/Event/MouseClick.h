@@ -26,6 +26,7 @@
 #include <memory>
 #include "Data.h"
 #include "Schema.h"
+#include "Modifier.h"
 
 namespace EvgetCore::Event {
     /**
@@ -33,6 +34,8 @@ namespace EvgetCore::Event {
      */
     class MouseClick {
     public:
+        using SchemaType = Schema<8, Modifier::SchemaType>;
+
         MouseClick() = default;
 
         /**
@@ -83,7 +86,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the MouseClick schema.
          */
-        static constexpr Schema<8> generateSchema();
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<SchemaField::Interval> _interval{};
@@ -96,8 +99,8 @@ namespace EvgetCore::Event {
         std::optional<std::string> _name{};
     };
 
-    constexpr EvgetCore::Event::Schema<8> EvgetCore::Event::MouseClick::generateSchema() {
-        return Schema<8>{"MouseClick", {
+    constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
+        return SchemaType{"MouseClick", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,
@@ -105,7 +108,7 @@ namespace EvgetCore::Event {
                 SchemaField::POSITIONY_FIELD,
                 SchemaField::ACTION_FIELD,
                 SchemaField::IDENTIFIER_FIELD,
-                SchemaField::NAME_FIELD},
+                SchemaField::NAME_FIELD}, {Modifier::generateSchema(), true}
         };
     }
 }

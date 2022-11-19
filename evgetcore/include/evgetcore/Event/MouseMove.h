@@ -27,6 +27,7 @@
 #include <optional>
 #include "Data.h"
 #include "Schema.h"
+#include "Modifier.h"
 
 namespace EvgetCore::Event {
     /**
@@ -34,6 +35,8 @@ namespace EvgetCore::Event {
      */
     class MouseMove {
     public:
+        using SchemaType = Schema<5, Modifier::SchemaType>;
+
         MouseMove() = default;
 
         /**
@@ -69,7 +72,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the MouseMove schema.
          */
-        static constexpr Schema<5> generateSchema();
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<SchemaField::Interval> _interval{};
@@ -79,13 +82,13 @@ namespace EvgetCore::Event {
         std::optional<double> _positionY{};
     };
 
-    constexpr EvgetCore::Event::Schema<5> EvgetCore::Event::MouseMove::generateSchema() {
-        return Schema<5>{"MouseMove", {
+    constexpr EvgetCore::Event::MouseMove::SchemaType EvgetCore::Event::MouseMove::generateSchema() {
+        return SchemaType{"MouseMove", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,
                 SchemaField::POSITIONX_FIELD,
-                SchemaField::POSITIONY_FIELD}
+                SchemaField::POSITIONY_FIELD}, {Modifier::generateSchema(), true}
         };
     }
 }
