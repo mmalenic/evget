@@ -49,7 +49,7 @@ namespace EvgetCore::Event {
         [[nodiscard]] constexpr bool isUnique() const;
 
     private:
-        std::reference_wrapper<To> schema{};
+        std::reference_wrapper<const To> schema{};
         bool _isUnique{};
     };
 
