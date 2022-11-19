@@ -39,19 +39,13 @@
 #include "Relation.h"
 
 namespace EvgetCore::Event {
-//    template<typename T, std::size_t NFields, typename... LinkedTo>
-//    concept SchemaConcept = requires(T value) {
-//        { value.getFields() } -> std::convertible_to<std::array<SchemaField::Field, NFields> &>;
-//        { value.getLinkedTo() } -> std::convertible_to<std::tuple<LinkedTo...> &>;
-//    };
-
     /**
      * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
      */
-    template<std::size_t NFields, typename... LinkedTo>
+    template<std::size_t NFields, typename... To>
     class Schema {
     public:
-        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<LinkedTo>... linkedTo);
+        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<To>... relations);
 
         /**
          * Get the fields in this Schema.
@@ -61,29 +55,29 @@ namespace EvgetCore::Event {
         /**
          * Get the linked to schemas.
          */
-        [[nodiscard]] constexpr const std::tuple<std::pair<bool, LinkedTo>...> &getLinkedTo() const;
+        [[nodiscard]] constexpr const std::tuple<Relation<To>...> &getRelations() const;
 
     private:
         std::string_view name{};
         std::array<SchemaField::Field, NFields> fields{};
-        std::tuple<Relation<LinkedTo>...> linkedTo{};
+        std::tuple<Relation<To>...> relations{};
     };
 
-    template<std::size_t NFields, typename... LinkedTo>
+    template<std::size_t NFields, typename... To>
     constexpr
-    Schema<NFields, LinkedTo...>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
-                                         Relation<LinkedTo>... linkedTo) : name{name}, fields{fields}, linkedTo{linkedTo...} {
+    Schema<NFields, To...>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
+                                         Relation<To>... relations) : name{name}, fields{fields}, relations{relations...} {
 
     }
 
-    template<std::size_t NFields, typename... LinkedTo>
-    constexpr const std::array<SchemaField::Field, NFields> &Schema<NFields, LinkedTo...>::getFields() const {
+    template<std::size_t NFields, typename... To>
+    constexpr const std::array<SchemaField::Field, NFields> &Schema<NFields, To...>::getFields() const {
         return fields;
     }
 
-    template<std::size_t NFields, typename... LinkedTo>
-    constexpr const std::tuple<std::pair<bool, LinkedTo>...> &Schema<NFields, LinkedTo...>::getLinkedTo() const {
-        return linkedTo;
+    template<std::size_t NFields, typename... To>
+    constexpr const std::tuple<Relation<To>...> &Schema<NFields, To...>::getRelations() const {
+        return relations;
     }
 }
 
