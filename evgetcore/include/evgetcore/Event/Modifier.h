@@ -35,6 +35,8 @@ namespace EvgetCore::Event {
      */
     class Modifier {
     public:
+        using SchemaType = Schema<1>;
+
         /**
          * Add a modifier value.
          */
@@ -48,14 +50,14 @@ namespace EvgetCore::Event {
         /**
          * Generate the Modifier schema.
          */
-        static constexpr Schema<1> generateSchema();
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<ModifierValue> _modifierValue;
     };
 
-    constexpr EvgetCore::Event::Schema<1> EvgetCore::Event::Modifier::generateSchema() {
-        return Schema<1>{"Modifier", {
+    constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
+        return SchemaType{"Modifier", {
                 SchemaField::MODIFIER_FIELD}
         };
     }

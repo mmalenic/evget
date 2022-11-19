@@ -36,6 +36,8 @@ namespace EvgetCore::Event {
      */
     class Key {
     public:
+        using SchemaType = Schema<9, Modifier::SchemaType>;
+
         Key() = default;
 
         /**
@@ -91,7 +93,7 @@ namespace EvgetCore::Event {
         /**
          * Generate the schema for this data.
          */
-        static constexpr Schema<9, Schema<1>> generateSchema();
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<SchemaField::Interval> _interval{};
@@ -105,8 +107,8 @@ namespace EvgetCore::Event {
         std::optional<std::string> _character{};
     };
 
-    constexpr EvgetCore::Event::Schema<9, Schema<1>> EvgetCore::Event::Key::generateSchema() {
-        return Schema<9, Schema<1>>{"Key", {
+    constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
+        return SchemaType{"Key", {
             SchemaField::INTERVAL_FIELD,
             SchemaField::TIMESTAMP_FIELD,
             SchemaField::DEVICE_TYPE_FIELD,
