@@ -36,6 +36,7 @@
 #include "evgetcore/Util.h"
 #include "DataType.h"
 #include "SchemaField.h"
+#include "Relation.h"
 
 namespace EvgetCore::Event {
 //    template<typename T, std::size_t NFields, typename... LinkedTo>
@@ -50,7 +51,7 @@ namespace EvgetCore::Event {
     template<std::size_t NFields, typename... LinkedTo>
     class Schema {
     public:
-        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, std::pair<bool, LinkedTo>... linkedTo);
+        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<LinkedTo>... linkedTo);
 
         /**
          * Get the fields in this Schema.
@@ -65,13 +66,13 @@ namespace EvgetCore::Event {
     private:
         std::string_view name{};
         std::array<SchemaField::Field, NFields> fields{};
-        std::tuple<std::pair<bool, LinkedTo>...> linkedTo{};
+        std::tuple<Relation<LinkedTo>...> linkedTo{};
     };
 
     template<std::size_t NFields, typename... LinkedTo>
     constexpr
     Schema<NFields, LinkedTo...>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
-                                         std::pair<bool, LinkedTo>... linkedTo) : name{name}, fields{fields}, linkedTo{linkedTo...} {
+                                         Relation<LinkedTo>... linkedTo) : name{name}, fields{fields}, linkedTo{linkedTo...} {
 
     }
 

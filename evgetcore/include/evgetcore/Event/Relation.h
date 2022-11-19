@@ -49,18 +49,18 @@ namespace EvgetCore::Event {
         [[nodiscard]] constexpr bool isUnique() const;
 
     private:
-        std::reference_wrapper <To> toSchema{};
+        std::reference_wrapper<To> schema{};
         bool _isUnique{};
     };
 
     template<typename To>
     constexpr
-    Relation<To>::Relation(const To &schema, bool isUnique) : toSchema{toSchema}, _isUnique{isUnique} {
+    Relation<To>::Relation(const To &schema, bool isUnique) : schema{schema}, _isUnique{isUnique} {
     }
 
     template<typename To>
     constexpr To Relation<To>::getToSchema() const {
-        return toSchema;
+        return schema;
     }
 
     template<typename To>
