@@ -30,18 +30,13 @@ namespace EvgetCore::Event {
     /**
      * A relation between two schemas.
      */
-    template<typename From, typename To>
+    template<typename To>
     class Relation {
     public:
         /**
          * Create the relation object.
          */
-        constexpr Relation(const From &fromSchema, const To &toSchema, bool isUnique);
-
-        /**
-         * Get the from side of the relation.
-         */
-        constexpr From getFromSchema() const;
+        constexpr Relation(const To &schema, bool isUnique);
 
         /**
          * Get the to side of the relation.
@@ -54,30 +49,22 @@ namespace EvgetCore::Event {
         [[nodiscard]] constexpr bool isUnique() const;
 
     private:
-        std::reference_wrapper <From> fromSchema{};
         std::reference_wrapper <To> toSchema{};
         bool _isUnique{};
     };
 
-    template<typename From, typename To>
+    template<typename To>
     constexpr
-    Relation<From, To>::Relation(const From &fromSchema, const To &toSchema, bool isUnique) : fromSchema{fromSchema},
-                                                                                              toSchema{toSchema},
-                                                                                              _isUnique{isUnique} {
+    Relation<To>::Relation(const To &schema, bool isUnique) : toSchema{toSchema}, _isUnique{isUnique} {
     }
 
-    template<typename From, typename To>
-    constexpr From Relation<From, To>::getFromSchema() const {
-        return fromSchema;
-    }
-
-    template<typename From, typename To>
-    constexpr To Relation<From, To>::getToSchema() const {
+    template<typename To>
+    constexpr To Relation<To>::getToSchema() const {
         return toSchema;
     }
 
-    template<typename From, typename To>
-    constexpr bool Relation<From, To>::isUnique() const {
+    template<typename To>
+    constexpr bool Relation<To>::isUnique() const {
         return _isUnique;
     }
 }
