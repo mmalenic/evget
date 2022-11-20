@@ -36,7 +36,7 @@ namespace EvgetCore::Event {
      */
     class Key {
     public:
-        using SchemaType = Schema<9, Modifier::SchemaType>;
+        using SchemaType = Schema<11, Modifier::SchemaType>;
 
         Key() = default;
 
@@ -105,6 +105,8 @@ namespace EvgetCore::Event {
         std::optional<int> _button{};
         std::optional<std::string> _name{};
         std::optional<std::string> _character{};
+        std::optional<std::string> _layout{};
+        std::optional<std::string> _variant{};
     };
 
     constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
@@ -117,7 +119,9 @@ namespace EvgetCore::Event {
             SchemaField::ACTION_FIELD,
             SchemaField::IDENTIFIER_FIELD,
             SchemaField::NAME_FIELD,
-            SchemaField::CHARACTER_FIELD}, {Modifier::generateSchema(), true}
+            SchemaField::CHARACTER_FIELD,
+            SchemaField::LAYOUT_FIELD,
+            SchemaField::VARIANT_FIELD}, {Modifier::generateSchema(), true}
         };
     }
 }

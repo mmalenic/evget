@@ -81,6 +81,8 @@ namespace EvgetCore::Event::SchemaField {
     constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
     constexpr Field SCROLLUP_FIELD{"ScrollUp", DataType::Double};
     constexpr Field MODIFIER_FIELD{"Modifier", DataType::String};
+    constexpr Field LAYOUT_FIELD{"Layout", DataType::String};
+    constexpr Field VARIANT_FIELD{"Variant", DataType::String};
 
     /**
      * Create a string from a string value.
