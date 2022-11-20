@@ -23,14 +23,12 @@
 #include <gtest/gtest.h>
 #include "EventTestUtils.h"
 
-#include <utility>
 #include "evgetcore/UnsupportedOperationException.h"
 
 namespace EventUtils = TestUtils::EventTestUtils;
 
 TEST(EventDataTest, CreateAndIterate) { // NOLINT(cert-err58-cpp)
-    EvgetCore::Event::Data data{"name"};
-    data.addField("field");
+    auto data = EventUtils::createData();
 
     auto n = 0;
     for (auto i{data.begin()}; i != data.end(); i++, n++) {
@@ -40,13 +38,27 @@ TEST(EventDataTest, CreateAndIterate) { // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventDataTest, GetFieldAtPosition) { // NOLINT(cert-err58-cpp)
-    EvgetCore::Event::Data data{"name"};
-    data.addField("field");
+    auto data = EventUtils::createData();
 
     ASSERT_EQ(data.getFieldAt(0), "field");
 }
 
 TEST(EventDataTest, GetName) { // NOLINT(cert-err58-cpp)
-    EvgetCore::Event::Data eventData{"name"};
-    ASSERT_EQ("name", eventData.getName());
+    auto data = EventUtils::createData();
+
+    ASSERT_EQ("name", data.getName());
+}
+
+TEST(EventDataTest, Contains) { // NOLINT(cert-err58-cpp)
+    auto data = EventUtils::createData();
+
+    ASSERT_EQ(data.getData().at("contained").at(0).getFieldAt(0), "firstField");
+    ASSERT_EQ(data.getData().at("contained").at(0).getFieldAt(1), "secondField");
+}
+
+TEST(EventDataTest, ContainsUnique) { // NOLINT(cert-err58-cpp)
+    auto data = EventUtils::createData();
+
+    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(0), "firstField");
+    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(1), "secondField");
 }

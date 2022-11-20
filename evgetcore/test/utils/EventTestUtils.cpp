@@ -27,15 +27,26 @@ void TestUtils::EventTestUtils::fieldValueAndName(const EvgetCore::Event::Schema
 //    ASSERT_EQ(expected, field.getEntry());
 }
 
-EvgetCore::Event::Data TestUtils::EventTestUtils::createData(std::string dataName, const std::string& name, const std::string& entry) {
-    EvgetCore::Event::Data data{std::move(dataName)};
-//    data.addField({name, entry});
+EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
+    EvgetCore::Event::Data data{"name"};
+    data.addField("field");
+
+    EvgetCore::Event::Data firstContained{"contained"};
+    firstContained.addField("firstField");
+    EvgetCore::Event::Data secondContained{"contained"};
+    secondContained.addField("secondField");
+
+    data.contains(firstContained);
+    data.contains(secondContained);
+    data.containsUnique(firstContained);
+    data.containsUnique(secondContained);
+
     return data;
 }
 
 EvgetCore::Event::SchemaField::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
 //    EvgetCore::Event::Field::Entries entries{};
-    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
+//    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
 
 //    entries.emplace_back(data);
 //    return EvgetCore::Event::Field{outerName, std::move(entries)};

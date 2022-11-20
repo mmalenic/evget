@@ -29,20 +29,7 @@
 #include "evgetcore/Event/Schema.h"
 
 namespace TestUtils::EventTestUtils {
-    void createAndIterate(auto&& create) {
-        std::string field_name = "field";
-        std::string entry = "entry";
-        EvgetCore::Event::Data eventData = create(field_name, "name", "entry");
-
-        auto n = 0;
-        for (auto i{eventData.begin()}; i != eventData.end(); i++, n++) {
-//            ASSERT_EQ(field_name, i->getName());
-//            ASSERT_EQ(entry, i->getEntry());
-        }
-        ASSERT_EQ(n, 1);
-    }
-
-    EvgetCore::Event::Data createData(std::string dataName, const std::string& name, const std::string& entry);
+    EvgetCore::Event::Data createData();
 
     EvgetCore::Event::SchemaField::Field createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
 
