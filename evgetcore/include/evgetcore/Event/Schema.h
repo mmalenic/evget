@@ -57,6 +57,11 @@ namespace EvgetCore::Event {
          */
         [[nodiscard]] constexpr const std::tuple<Relation<To>...> &getRelations() const;
 
+        /**
+         * Get the schema name.
+         */
+        [[nodiscard]] constexpr const std::string_view &getName() const;
+
     private:
         std::string_view name{};
         std::array<SchemaField::Field, NFields> fields{};
@@ -78,6 +83,11 @@ namespace EvgetCore::Event {
     template<std::size_t NFields, typename... To>
     constexpr const std::tuple<Relation<To>...> &Schema<NFields, To...>::getRelations() const {
         return relations;
+    }
+
+    template<std::size_t NFields, typename... To>
+    constexpr const std::string_view &Schema<NFields, To...>::getName() const {
+        return name;
     }
 }
 

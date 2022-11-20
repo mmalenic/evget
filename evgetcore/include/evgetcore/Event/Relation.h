@@ -44,7 +44,7 @@ namespace EvgetCore::Event {
         constexpr To getToSchema() const;
 
         /**
-         * Does this relation has unique entries on the to side.
+         * Does this relation have unique entries on the `To` side.
          */
         [[nodiscard]] constexpr bool isUnique() const;
 
