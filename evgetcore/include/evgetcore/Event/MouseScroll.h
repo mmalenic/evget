@@ -36,8 +36,6 @@ namespace EvgetCore::Event {
     public:
         using SchemaType = Schema<14, Modifier::SchemaType>;
 
-        MouseScroll() = default;
-
         /**
          * Add interval in microseconds.
          */

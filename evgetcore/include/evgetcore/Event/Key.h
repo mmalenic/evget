@@ -38,8 +38,6 @@ namespace EvgetCore::Event {
     public:
         using SchemaType = Schema<16, Modifier::SchemaType>;
 
-        Key() = default;
-
         /**
          * Add interval in microseconds.
          */
