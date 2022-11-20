@@ -26,8 +26,8 @@
 #include <filesystem>
 #include "evgetcore/SystemEventLoop.h"
 #include "evgetcore/SystemEvent.h"
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XInputHandler.h"
+#include "XInputEvent.h"
+#include "XInputHandler.h"
 #include <utility>
 
 namespace EvgetX11 {

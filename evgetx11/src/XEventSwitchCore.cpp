@@ -33,7 +33,7 @@
 
 bool EvgetX11::XEventSwitchCore::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    std::chrono::nanoseconds timestamp,
+    std::chrono::microseconds timestamp,
     EventData& data
 ) {
     switch (event.getEventType()) {
@@ -56,7 +56,7 @@ bool EvgetX11::XEventSwitchCore::switchOnEvent(
     }
 }
 
-void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action) {
+void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chrono::microseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     auto button = xEventSwitchPointer.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
     if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
@@ -70,7 +70,7 @@ void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chro
     xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getTimestamp(), data, action, deviceEvent.detail);
 }
 
-void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
+void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::microseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
         return;
@@ -96,7 +96,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
 
 void EvgetX11::XEventSwitchCore::scrollEvent(
     const XInputEvent& event,
-    std::chrono::nanoseconds timestamp,
+    std::chrono::microseconds timestamp,
     std::vector<EvgetCore::Event::Data>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
@@ -136,7 +136,7 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
     data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));
 }
 
-void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
+void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chrono::microseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;

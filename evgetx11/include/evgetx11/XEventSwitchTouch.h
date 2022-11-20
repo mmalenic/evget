@@ -31,11 +31,11 @@ namespace EvgetX11 {
     public:
         explicit XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh);
 
-        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data);
+        bool switchOnEvent(const XInputEvent &event, std::chrono::microseconds timestamp, EventData &data);
 
     private:
-        void touchButton(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action);
-        void touchMotion(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
+        void touchButton(const XInputEvent& event, std::chrono::microseconds timestamp, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action);
+        void touchMotion(const XInputEvent& event, std::chrono::microseconds timestamp, std::vector<EvgetCore::Event::Data>& data);
 
         std::reference_wrapper<XEventSwitchPointer> xEventSwitchPointer;
         std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;

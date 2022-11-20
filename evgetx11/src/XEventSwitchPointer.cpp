@@ -27,7 +27,7 @@
 
 void EvgetX11::XEventSwitchPointer::addMotionEvent(
         const XIDeviceEvent& event,
-        std::chrono::nanoseconds timestamp,
+        std::chrono::microseconds timestamp,
         EvgetCore::Event::SchemaField::Timestamp dateTime,
         std::vector<EvgetCore::Event::Data>& data
 ) {
@@ -39,7 +39,7 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
 
 void EvgetX11::XEventSwitchPointer::addButtonEvent(
         const XIDeviceEvent& event,
-        std::chrono::nanoseconds timestamp,
+        std::chrono::microseconds timestamp,
         EvgetCore::Event::SchemaField::Timestamp dateTime,
         std::vector<EvgetCore::Event::Data>& data,
         EvgetCore::Event::ButtonAction action,

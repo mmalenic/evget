@@ -33,11 +33,11 @@ namespace EvgetX11 {
 
     template<typename T>
     concept Refreshable = requires(T value, int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info) {
-        value.refreshDevices(id, device, name, info);
+        { value.refreshDevices(id, device, name, info) } -> std::convertible_to<void>;
     };
 
     template<typename T>
-    concept Switchable = requires(T value, const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) {
+    concept Switchable = requires(T value, const XInputEvent &event, std::chrono::microseconds timestamp, EventData &data) {
         { value.switchOnEvent(event, timestamp, data) } -> std::convertible_to<bool>;
     };
 

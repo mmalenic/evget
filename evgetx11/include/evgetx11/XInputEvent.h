@@ -33,7 +33,7 @@
 namespace EvgetX11 {
     class XInputEvent {
     public:
-        using Interval = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
+        using Interval = std::chrono::time_point<std::chrono::steady_clock, std::chrono::microseconds>;
 
         /**
          * Get the interval of the event.

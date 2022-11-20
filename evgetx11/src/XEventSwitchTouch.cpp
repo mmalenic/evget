@@ -25,7 +25,7 @@
 
 bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    std::chrono::nanoseconds timestamp,
+    std::chrono::microseconds timestamp,
     EvgetX11::EventData& data
 ) {
     switch (event.getEventType()) {
@@ -55,7 +55,7 @@ EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitch
 
 void EvgetX11::XEventSwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
-    std::chrono::nanoseconds timestamp,
+    std::chrono::microseconds timestamp,
     std::vector<EvgetCore::Event::Data>& data,
     EvgetCore::Event::ButtonAction action
 ) {
@@ -67,7 +67,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
 
 void EvgetX11::XEventSwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
-    std::chrono::nanoseconds timestamp,
+    std::chrono::microseconds timestamp,
     std::vector<EvgetCore::Event::Data>& data
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
