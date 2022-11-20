@@ -33,8 +33,8 @@ namespace EvgetX11 {
 
         void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info);
 
-        void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
-        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::Field::DateTime dateTime, std::vector<EvgetCore::Event::Data>& data);
+        void addButtonEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
+        void addMotionEvent(const XIDeviceEvent& event, std::chrono::nanoseconds timestamp, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data);
 
         const std::string &getButtonName(int id, int button) const;
 

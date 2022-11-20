@@ -50,7 +50,7 @@ namespace EvgetX11 {
         void refreshDevices();
 
         std::reference_wrapper<XWrapper> xWrapper;
-        std::optional<XInputEvent::Timestamp> start{std::nullopt};
+        std::optional<XInputEvent::Interval> start{std::nullopt};
 
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
@@ -123,9 +123,9 @@ namespace EvgetX11 {
     template<XEventSwitch... T>
     std::chrono::nanoseconds EvgetX11::EventTransformerX11<T...>::getTime(const EvgetX11::XInputEvent& event) {
         if (!start.has_value()) {
-            start = event.getTimestamp();
+            start = event.getInterval();
         }
-        return event.getTimestamp() - *start;
+        return event.getInterval() - *start;
     }
 
     template<XEventSwitch... T>

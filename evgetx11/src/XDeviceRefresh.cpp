@@ -22,63 +22,62 @@
 
 #include <spdlog/spdlog.h>
 #include "evgetx11/XDeviceRefresh.h"
-#include "evgetcore/Event/Field.h"
 #include "evgetcore/UnsupportedOperationException.h"
 #include "evgetcore/Event/Data.h"
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 
-EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
-    EvgetCore::Event::Field::Entries entries{};
-
-    EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
-        EvgetCore::Event::Data data{"ButtonState"};
-        data.addField("ButtonActive", std::to_string(mask));
-        entries.emplace_back(data);
-    });
-
-    return entries;
-}
-
-EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState& valuatorState) {
-    EvgetCore::Event::Field::Entries entries{};
-
-    auto values = valuatorState.values;
-    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&entries, &values](int mask) {
-        EvgetCore::Event::Data data{"Valuators"};
-        data.addField("Valuator", std::to_string(mask));
-        data.addField("Value", std::to_string(*values++));
-        entries.emplace_back(data);
-    });
-
-    return entries;
-}
+//EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
+//    EvgetCore::Event::Field::Entries entries{};
+//
+//    EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
+//        EvgetCore::Event::Data data{"ButtonState"};
+//        data.addField("ButtonActive", std::to_string(mask));
+//        entries.emplace_back(data);
+//    });
+//
+//    return entries;
+//}
+//
+//EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState& valuatorState) {
+//    EvgetCore::Event::Field::Entries entries{};
+//
+//    auto values = valuatorState.values;
+//    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&entries, &values](int mask) {
+//        EvgetCore::Event::Data data{"Valuators"};
+//        data.addField("Valuator", std::to_string(mask));
+//        data.addField("Value", std::to_string(*values++));
+//        entries.emplace_back(data);
+//    });
+//
+//    return entries;
+//}
 
 EvgetCore::Event::Data EvgetX11::XDeviceRefresh::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     EvgetCore::Event::Data data{name};
 
-    data.addField("DeviceName", idToName[event.deviceid]);
-    data.addField("EventTypeId", std::to_string(event.evtype));
-    data.addField("EventTypeName", evtypeToName[event.evtype]);
-    data.addField("XInputTime", std::to_string(event.time));
-    data.addField("DeviceId", std::to_string(event.deviceid));
-    data.addField("SourceId", std::to_string(event.sourceid));
-
-    data.addField("Flags", formatValue(event.flags));
-
-    data.addField({"ButtonState", createButtonEntries(event)});
-
-    data.addField({"Valuators", createValuatorEntries(event.valuators)});
-
-    data.addField("ModifiersBase", formatValue(event.mods.base));
-    data.addField("ModifiersEffective", formatValue(event.mods.effective));
-    data.addField("ModifiersLatched", formatValue(event.mods.latched));
-    data.addField("ModifiersLocked", formatValue(event.mods.locked));
-
-    data.addField("GroupBase", formatValue(event.group.base));
-    data.addField("GroupEffective", formatValue(event.group.effective));
-    data.addField("GroupLatched", formatValue(event.group.latched));
-    data.addField("GroupLocked", formatValue(event.group.locked));
+//    data.addField("DeviceName", idToName[event.deviceid]);
+//    data.addField("EventTypeId", std::to_string(event.evtype));
+//    data.addField("EventTypeName", evtypeToName[event.evtype]);
+//    data.addField("XInputTime", std::to_string(event.time));
+//    data.addField("DeviceId", std::to_string(event.deviceid));
+//    data.addField("SourceId", std::to_string(event.sourceid));
+//
+//    data.addField("Flags", formatValue(event.flags));
+//
+//    data.addField({"ButtonState", createButtonEntries(event)});
+//
+//    data.addField({"Valuators", createValuatorEntries(event.valuators)});
+//
+//    data.addField("ModifiersBase", formatValue(event.mods.base));
+//    data.addField("ModifiersEffective", formatValue(event.mods.effective));
+//    data.addField("ModifiersLatched", formatValue(event.mods.latched));
+//    data.addField("ModifiersLocked", formatValue(event.mods.locked));
+//
+//    data.addField("GroupBase", formatValue(event.group.base));
+//    data.addField("GroupEffective", formatValue(event.group.effective));
+//    data.addField("GroupLatched", formatValue(event.group.latched));
+//    data.addField("GroupLocked", formatValue(event.group.locked));
 
     return data;
 }

@@ -67,7 +67,7 @@ void EvgetX11::XEventSwitchCore::buttonEvent(const XInputEvent& event, std::chro
         return;
     }
 
-    xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, deviceEvent.detail);
+    xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getTimestamp(), data, action, deviceEvent.detail);
 }
 
 void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, std::vector<EvgetCore::Event::Data>& data) {
@@ -89,7 +89,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(const XInputEvent& event, std::chrono:
     std::string name = XWrapper::keySymToString(keySym);
 
     EvgetCore::Event::Key builder{};
-    builder.time(timestamp).dateTime(event.getDateTime()).action(action).button(deviceEvent.detail).character(character).name(name);
+//    builder.time(timestamp).dateTime(event.getTimestamp()).action(action).button(deviceEvent.detail).character(character).name(name);
 
     XDeviceRefresh::addTableData(data, builder.build(), xDeviceRefresh.get().createSystemData(deviceEvent, "KeySystemData"));
 }
@@ -129,8 +129,8 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
         }
     }
 
-    builder.time(timestamp).dateTime(event.getDateTime()).device(xDeviceRefresh.get().getDevice(deviceEvent.deviceid))
-    .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+//    builder.time(timestamp).dateTime(event.getTimestamp()).device(xDeviceRefresh.get().getDevice(deviceEvent.deviceid))
+//    .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
 
     data.emplace_back(builder.build());
     data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));
@@ -145,7 +145,7 @@ void EvgetX11::XEventSwitchCore::motionEvent(const XInputEvent& event, std::chro
     auto valuators = XDeviceRefresh::getValuators(deviceEvent.valuators);
     for (const auto& [valuator, value]: valuators) {
         if (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid]) {
-            xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
+            xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getTimestamp(), data);
             break;
         }
     }

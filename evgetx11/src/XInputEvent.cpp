@@ -22,7 +22,7 @@
 
 #include "evgetx11/XInputEvent.h"
 
-EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper) : event{xWrapper.nextEvent()}, timestamp{std::chrono::steady_clock::now()}, dateTime{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {
+EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper) : event{xWrapper.nextEvent()}, interval{std::chrono::steady_clock::now()}, timestamp{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {
 }
 
 bool EvgetX11::XInputEvent::hasData() const {
@@ -33,12 +33,12 @@ int EvgetX11::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-EvgetX11::XInputEvent::Timestamp EvgetX11::XInputEvent::getTimestamp() const {
-    return timestamp;
+EvgetX11::XInputEvent::Interval EvgetX11::XInputEvent::getInterval() const {
+    return interval;
 }
 
-const EvgetCore::Event::Field::DateTime &EvgetX11::XInputEvent::getDateTime() const {
-    return dateTime;
+const EvgetCore::Event::SchemaField::Timestamp &EvgetX11::XInputEvent::getTimestamp() const {
+    return timestamp;
 }
 
 EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper& xWrapper) {

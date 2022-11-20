@@ -33,17 +33,17 @@
 namespace EvgetX11 {
     class XInputEvent {
     public:
-        using Timestamp = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
+        using Interval = std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
 
         /**
-         * Get the timestamp of the event.
+         * Get the interval of the event.
          */
-        [[nodiscard]] Timestamp getTimestamp() const;
+        [[nodiscard]] Interval getInterval() const;
 
         /**
          * Get the date time of the event.
          */
-        [[nodiscard]] const EvgetCore::Event::Schema::DateTime &getDateTime() const;
+        [[nodiscard]] const EvgetCore::Event::SchemaField::Timestamp &getTimestamp() const;
 
         /**
          * Check if viewData and getEventType is safe to call.
@@ -73,8 +73,8 @@ namespace EvgetX11 {
         explicit XInputEvent(XWrapper& xWrapper);
 
         XEvent event;
-        Timestamp timestamp;
-        EvgetCore::Event::Schema::DateTime dateTime;
+        Interval interval;
+        EvgetCore::Event::SchemaField::Timestamp timestamp;
         XWrapper::XEventPointer cookie;
     };
 

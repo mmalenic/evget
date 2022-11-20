@@ -61,7 +61,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getDateTime(), data, action, 1);
+        xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getTimestamp(), data, action, 1);
     }
 }
 
@@ -72,6 +72,6 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getDateTime(), data);
+        xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getTimestamp(), data);
     }
 }
