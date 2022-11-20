@@ -34,7 +34,7 @@ namespace EvgetCore::Event {
      */
     class MouseClick {
     public:
-        using SchemaType = Schema<8, Modifier::SchemaType>;
+        using SchemaType = Schema<13, Modifier::SchemaType>;
 
         MouseClick() = default;
 
@@ -79,6 +79,31 @@ namespace EvgetCore::Event {
         MouseClick& name(std::string name);
 
         /**
+         * Add the focus window name.
+         */
+        MouseClick& focusWindowName(std::string name);
+
+        /**
+         * Add the focus window position x.
+         */
+        MouseClick& focusWindowPositionX(double x);
+
+        /**
+         * Add the focus window position y.
+         */
+        MouseClick& focusWindowPositionY(double y);
+
+        /**
+         * Add the focus window width.
+         */
+        MouseClick& focusWindowWidth(double width);
+
+        /**
+         * Add the focus window height.
+         */
+        MouseClick& focusWindowHeight(double height);
+
+        /**
          * Build mouse click event.
          */
         Data build();
@@ -97,6 +122,11 @@ namespace EvgetCore::Event {
         std::optional<ButtonAction> _action{};
         std::optional<int> _button{};
         std::optional<std::string> _name{};
+        std::optional<std::string> _focusWindowName{};
+        std::optional<double> _focusWindowPositionX{};
+        std::optional<double> _focusWindowPositionY{};
+        std::optional<double> _focusWindowWidth{};
+        std::optional<double> _focusWindowHeight{};
     };
 
     constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
@@ -108,7 +138,12 @@ namespace EvgetCore::Event {
                 SchemaField::POSITIONY_FIELD,
                 SchemaField::ACTION_FIELD,
                 SchemaField::IDENTIFIER_FIELD,
-                SchemaField::NAME_FIELD}, {Modifier::generateSchema(), true}
+                SchemaField::NAME_FIELD,
+                SchemaField::FOCUS_WINDOW_NAME_FIELD,
+                SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
+                SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
+                SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
+                SchemaField::FOCUS_WINDOW_HEIGHT_FIELD}, {Modifier::generateSchema(), true}
         };
     }
 }

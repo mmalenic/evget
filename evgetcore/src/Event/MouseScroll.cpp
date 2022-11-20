@@ -67,6 +67,31 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) 
     return *this;
 }
 
+EvgetCore::Event::MouseScroll &EvgetCore::Event::MouseScroll::focusWindowName(std::string name) {
+    _focusWindowName = std::move(name);
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll &EvgetCore::Event::MouseScroll::focusWindowPositionX(double x) {
+    _focusWindowPositionX = x;
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll &EvgetCore::Event::MouseScroll::focusWindowPositionY(double y) {
+    _focusWindowPositionY = y;
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll &EvgetCore::Event::MouseScroll::focusWindowWidth(double width) {
+    _focusWindowWidth = width;
+    return *this;
+}
+
+EvgetCore::Event::MouseScroll &EvgetCore::Event::MouseScroll::focusWindowHeight(double height) {
+    _focusWindowHeight = height;
+    return *this;
+}
+
 EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
     auto data = Data{"MouseScroll"};
 
@@ -79,6 +104,11 @@ EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
     data.addField(SchemaField::fromDouble(_left));
     data.addField(SchemaField::fromDouble(_right));
     data.addField(SchemaField::fromDouble(_up));
+    data.addField(SchemaField::fromString(_focusWindowName));
+    data.addField(SchemaField::fromDouble(_focusWindowPositionX));
+    data.addField(SchemaField::fromDouble(_focusWindowPositionY));
+    data.addField(SchemaField::fromDouble(_focusWindowWidth));
+    data.addField(SchemaField::fromDouble(_focusWindowHeight));
 
     return data;
 }

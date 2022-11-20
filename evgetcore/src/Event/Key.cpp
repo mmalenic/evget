@@ -69,6 +69,31 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
     return *this;
 }
 
+EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowName(std::string name) {
+    _focusWindowName = std::move(name);
+    return *this;
+}
+
+EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowPositionX(double x) {
+    _focusWindowPositionX = x;
+    return *this;
+}
+
+EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowPositionY(double y) {
+    _focusWindowPositionY = y;
+    return *this;
+}
+
+EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowWidth(double width) {
+    _focusWindowWidth = width;
+    return *this;
+}
+
+EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowHeight(double height) {
+    _focusWindowHeight = height;
+    return *this;
+}
+
 EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     auto data = Data{"Key"};
 
@@ -81,6 +106,11 @@ EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     data.addField(SchemaField::fromInt(_button));
     data.addField(SchemaField::fromString(_name));
     data.addField(SchemaField::fromString(_character));
+    data.addField(SchemaField::fromString(_focusWindowName));
+    data.addField(SchemaField::fromDouble(_focusWindowPositionX));
+    data.addField(SchemaField::fromDouble(_focusWindowPositionY));
+    data.addField(SchemaField::fromDouble(_focusWindowWidth));
+    data.addField(SchemaField::fromDouble(_focusWindowHeight));
 
     return data;
 }

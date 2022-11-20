@@ -83,7 +83,7 @@ namespace EvgetCore::Event::SchemaField {
     constexpr Field MODIFIER_FIELD{"Modifier", DataType::String};
     constexpr Field LAYOUT_FIELD{"Layout", DataType::String};
     constexpr Field VARIANT_FIELD{"Variant", DataType::String};
-    constexpr Field FOCUS_WINDOW_NAME{"FocusWindowName", DataType::String};
+    constexpr Field FOCUS_WINDOW_NAME_FIELD{"FocusWindowName", DataType::String};
     constexpr Field FOCUS_WINDOW_POSITION_X_FIELD{"FocusWindowPositionX", DataType::Double};
     constexpr Field FOCUS_WINDOW_POSITION_Y_FIELD{"FocusWindowPositionY", DataType::Double};
     constexpr Field FOCUS_WINDOW_WIDTH_FIELD{"FocusWindowWidth", DataType::Double};
