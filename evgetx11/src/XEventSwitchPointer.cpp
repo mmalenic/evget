@@ -32,7 +32,7 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
         std::vector<EvgetCore::Event::Data>& data
 ) {
     EvgetCore::Event::MouseMove builder{};
-    //builder.time(timestamp).dateTime(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
+    builder.interval(timestamp).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
 
     data.emplace_back(builder.build());
 }
@@ -46,8 +46,8 @@ void EvgetX11::XEventSwitchPointer::addButtonEvent(
         int button
 ) {
     EvgetCore::Event::MouseClick builder{};
-    //builder.time(timestamp).dateTime(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
-    //        .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
+    builder.interval(timestamp).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
+            .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
 
     data.emplace_back(builder.build());
 }
