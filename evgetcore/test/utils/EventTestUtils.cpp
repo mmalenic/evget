@@ -44,6 +44,11 @@ EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
     return data;
 }
 
+EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> TestUtils::EventTestUtils::createSchema() {
+    EvgetCore::Event::Schema<1> relationSchema{"Relation", {EvgetCore::Event::SchemaField::Field{"RelationField", EvgetCore::Event::DataType::String}}};
+    return {"Name", {EvgetCore::Event::SchemaField::Field{"Field", EvgetCore::Event::DataType::String}}, {relationSchema, false}};
+}
+
 EvgetCore::Event::SchemaField::Field TestUtils::EventTestUtils::createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry) {
 //    EvgetCore::Event::Field::Entries entries{};
 //    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);

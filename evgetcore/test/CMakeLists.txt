@@ -9,6 +9,7 @@ add_program(
     Event/MouseScrollTest.cpp
     Event/DataTest.cpp
     Event/FieldTest.cpp
+    Event/RelationTest.cpp
     utils/EventTestUtils.h
     utils/EventTestUtils.cpp
 )

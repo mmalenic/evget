@@ -45,7 +45,7 @@ namespace EvgetCore::Event {
     template<std::size_t NFields, typename... To>
     class Schema {
     public:
-        constexpr explicit Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<To>... relations);
+        constexpr Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<To>... relations);
 
         /**
          * Get the fields in this Schema.
