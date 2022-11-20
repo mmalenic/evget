@@ -138,7 +138,7 @@ namespace EvgetCore::Event {
     };
 
     constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
-        return SchemaType{"Key", {
+        return {"Key", {
             SchemaField::INTERVAL_FIELD,
             SchemaField::TIMESTAMP_FIELD,
             SchemaField::DEVICE_TYPE_FIELD,

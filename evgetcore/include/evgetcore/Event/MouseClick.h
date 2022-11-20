@@ -128,7 +128,7 @@ namespace EvgetCore::Event {
     };
 
     constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
-        return SchemaType{"MouseClick", {
+        return {"MouseClick", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,

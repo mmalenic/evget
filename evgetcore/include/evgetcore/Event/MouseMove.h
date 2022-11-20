@@ -111,7 +111,7 @@ namespace EvgetCore::Event {
     };
 
     constexpr EvgetCore::Event::MouseMove::SchemaType EvgetCore::Event::MouseMove::generateSchema() {
-        return SchemaType{"MouseMove", {
+        return {"MouseMove", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,

@@ -134,7 +134,7 @@ namespace EvgetCore::Event {
     };
 
     constexpr EvgetCore::Event::MouseScroll::SchemaType EvgetCore::Event::MouseScroll::generateSchema() {
-        return SchemaType{"MouseScroll", {
+        return {"MouseScroll", {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,
