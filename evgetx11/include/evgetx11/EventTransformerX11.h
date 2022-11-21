@@ -46,11 +46,11 @@ namespace EvgetX11 {
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
-        std::chrono::nanoseconds getTime(const XInputEvent& event);
+        std::optional<std::chrono::microseconds> getInterval(Time time);
         void refreshDevices();
 
         std::reference_wrapper<XWrapper> xWrapper;
-        std::optional<XInputEvent::Interval> start{std::nullopt};
+        std::optional<Time> previous{std::nullopt};
 
         std::unordered_map<int, EvgetCore::Event::Device> devices{};
         std::unordered_map<int, std::string> idToName{};
@@ -121,11 +121,16 @@ namespace EvgetX11 {
     }
 
     template<XEventSwitch... T>
-    std::chrono::nanoseconds EvgetX11::EventTransformerX11<T...>::getTime(const EvgetX11::XInputEvent& event) {
-        if (!start.has_value()) {
-            start = event.getInterval();
+    std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<T...>::getInterval(Time time) {
+        if (!previous.has_value() || time < *previous) {
+            previous = time;
+            return std::nullopt;
         }
-        return event.getInterval() - *start;
+
+        std::chrono::microseconds interval{time - *previous};
+        previous = time;
+
+        return interval;
     }
 
     template<XEventSwitch... T>
@@ -141,7 +146,7 @@ namespace EvgetX11 {
 
             // Iterate through switches until the first one returns true.
             std::apply([&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, getTime(event), data)) || ...);
+                ((eventSwitches.switchOnEvent(event, getInterval(event), data)) || ...);
             }, switches);
         }
         return data;

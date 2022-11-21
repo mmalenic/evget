@@ -37,8 +37,8 @@ namespace EvgetX11 {
     };
 
     template<typename T>
-    concept Switchable = requires(T value, const XInputEvent &event, std::chrono::microseconds timestamp, EventData &data) {
-        { value.switchOnEvent(event, timestamp, data) } -> std::convertible_to<bool>;
+    concept Switchable = requires(T value, const XInputEvent &event, EventData &data) {
+        { value.switchOnEvent(event, data) } -> std::convertible_to<bool>;
     };
 
     template<typename T>

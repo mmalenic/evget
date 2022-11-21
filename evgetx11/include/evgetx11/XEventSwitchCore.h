@@ -35,13 +35,13 @@ namespace EvgetX11 {
         explicit XEventSwitchCore(XWrapper& xWrapper, XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh);
 
         void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info);
-        bool switchOnEvent(const XInputEvent &event, std::chrono::microseconds interval, EventData &data);
+        bool switchOnEvent(const XInputEvent &event, EventData &data);
 
     private:
-        void buttonEvent(const XInputEvent& event, std::chrono::microseconds interval, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action);
-        void keyEvent(const XInputEvent& event, std::chrono::microseconds interval, std::vector<EvgetCore::Event::Data>& data);
-        void motionEvent(const XInputEvent& event, std::chrono::microseconds interval, std::vector<EvgetCore::Event::Data>& data);
-        void scrollEvent(const XInputEvent& event, std::chrono::microseconds interval, std::vector<EvgetCore::Event::Data>& data);
+        void buttonEvent(const XInputEvent& event, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action);
+        void keyEvent(const XInputEvent& event, std::vector<EvgetCore::Event::Data>& data);
+        void motionEvent(const XInputEvent& event, std::vector<EvgetCore::Event::Data>& data);
+        void scrollEvent(const XInputEvent& event, std::vector<EvgetCore::Event::Data>& data);
 
         std::reference_wrapper<XWrapper> xWrapper;
         std::reference_wrapper<XEventSwitchPointer> xEventSwitchPointer;

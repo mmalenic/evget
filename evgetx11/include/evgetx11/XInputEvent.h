@@ -33,13 +33,6 @@
 namespace EvgetX11 {
     class XInputEvent {
     public:
-        using Interval = std::chrono::time_point<std::chrono::steady_clock, std::chrono::microseconds>;
-
-        /**
-         * Get the interval of the event.
-         */
-        [[nodiscard]] Interval getInterval() const;
-
         /**
          * Get the date time of the event.
          */
@@ -73,7 +66,6 @@ namespace EvgetX11 {
         explicit XInputEvent(XWrapper& xWrapper);
 
         XEvent event;
-        Interval interval;
         EvgetCore::Event::SchemaField::Timestamp timestamp;
         XWrapper::XEventPointer cookie;
     };
