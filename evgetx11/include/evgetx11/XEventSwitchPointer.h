@@ -40,6 +40,11 @@ namespace EvgetX11 {
 
         const std::string &getButtonName(int id, int button) const;
 
+        /**
+         * Get the xkb modifier value.
+         */
+        static std::optional<EvgetCore::Event::ModifierValue> getModifierValue(int modifierState);
+
     private:
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 

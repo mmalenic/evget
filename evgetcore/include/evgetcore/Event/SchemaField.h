@@ -45,12 +45,12 @@ namespace EvgetCore::Event::SchemaField {
         constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
 
         constexpr std::string_view MODIFIER_VALUE_SHIFT{"Shift"};
-        constexpr std::string_view MODIFIER_VALUE_LOCK{"Lock"};
+        constexpr std::string_view MODIFIER_VALUE_CAPSLOCK{"CapsLock"};
         constexpr std::string_view MODIFIER_VALUE_CONTROL{"Control"};
-        constexpr std::string_view MODIFIER_VALUE_MOD1{"Mod1"};
-        constexpr std::string_view MODIFIER_VALUE_MOD2{"Mod2"};
+        constexpr std::string_view MODIFIER_VALUE_ALT{"Alt"};
+        constexpr std::string_view MODIFIER_VALUE_NUMLOCK{"NumLock"};
         constexpr std::string_view MODIFIER_VALUE_MOD3{"Mod3"};
-        constexpr std::string_view MODIFIER_VALUE_MOD4{"Mod4"};
+        constexpr std::string_view MODIFIER_VALUE_SUPER{"Super"};
         constexpr std::string_view MODIFIER_VALUE_MOD5{"Mod5"};
 
         template<typename T>
@@ -156,18 +156,18 @@ namespace EvgetCore::Event::SchemaField {
             switch (value) {
                 case ModifierValue::Shift:
                     return std::string{detail::MODIFIER_VALUE_SHIFT};
-                case ModifierValue::Lock:
-                    return std::string{detail::MODIFIER_VALUE_LOCK};
+                case ModifierValue::CapsLock:
+                    return std::string{detail::MODIFIER_VALUE_CAPSLOCK};
                 case ModifierValue::Control:
                     return std::string{detail::MODIFIER_VALUE_CONTROL};
-                case ModifierValue::Mod1:
-                    return std::string{detail::MODIFIER_VALUE_MOD1};
-                case ModifierValue::Mod2:
-                    return std::string{detail::MODIFIER_VALUE_MOD2};
+                case ModifierValue::Alt:
+                    return std::string{detail::ACTION_PRESS};
+                case ModifierValue::NumLock:
+                    return std::string{detail::MODIFIER_VALUE_NUMLOCK};
                 case ModifierValue::Mod3:
                     return std::string{detail::MODIFIER_VALUE_MOD3};
-                case ModifierValue::Mod4:
-                    return std::string{detail::MODIFIER_VALUE_MOD4};
+                case ModifierValue::Super:
+                    return std::string{detail::MODIFIER_VALUE_SUPER};
                 case ModifierValue::Mod5:
                     return std::string{detail::MODIFIER_VALUE_MOD5};
             }
