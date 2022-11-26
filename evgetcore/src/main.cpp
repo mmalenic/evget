@@ -33,14 +33,29 @@
 //#include "evgetcore/SystemEventLoopLinux.h"
 //#include "../checkinput/include/checkinput/EventDeviceLister.h"
 #include "evgetcore/Event/Key.h"
+#include "evgetx11/XWrapperX11.h"
+#include "evgetx11/XDeviceRefresh.h"
+#include "evgetx11/EventTransformerX11.h"
+#include "evgetx11/XEventSwitchCore.h"
+#include "evgetx11/XEventSwitchPointer.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    EvgetCore::Event::Key key{};
-    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
+//    EvgetCore::Event::Key key{};
+//    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
+//
+//    cout << schema.getFields().size() << endl;
 
-    cout << schema.getFields().size() << endl;
+    Display* display = XOpenDisplay(nullptr);
+    EvgetX11::XWrapperX11 wrapper{*display};
+    EvgetX11::XDeviceRefresh xDeviceRefresh{};
+    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
+    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
+    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
+    EvgetX11::EventData data{};
+
+    EvgetX11::EventTransformerX11 transformer{wrapper, core};
 
 //    CliOption::ParserLinux cmd{};
 //    cmd.parseCommandLine(argc, (const char**) argv);

@@ -21,7 +21,6 @@ add_program(
     include/evgetx11/XWrapperX11.h
     include/evgetx11/XWrapper.h
     include/evgetx11/DeleterWithDisplay.h
-    include/evgetx11/XEventSwitch.h
 )
 
 find_symbols(

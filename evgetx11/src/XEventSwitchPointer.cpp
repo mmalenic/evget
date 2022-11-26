@@ -25,33 +25,6 @@
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetcore/Event/MouseClick.h"
 
-void EvgetX11::XEventSwitchPointer::addMotionEvent(
-        const XIDeviceEvent& event,
-        std::chrono::microseconds timestamp,
-        EvgetCore::Event::SchemaField::Timestamp dateTime,
-        std::vector<EvgetCore::Event::Data>& data
-) {
-    EvgetCore::Event::MouseMove builder{};
-    builder.interval(timestamp).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
-
-    data.emplace_back(builder.build());
-}
-
-void EvgetX11::XEventSwitchPointer::addButtonEvent(
-        const XIDeviceEvent& event,
-        std::chrono::microseconds timestamp,
-        EvgetCore::Event::SchemaField::Timestamp dateTime,
-        std::vector<EvgetCore::Event::Data>& data,
-        EvgetCore::Event::ButtonAction action,
-        int button
-) {
-    EvgetCore::Event::MouseClick builder{};
-    builder.interval(timestamp).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
-            .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
-
-    data.emplace_back(builder.build());
-}
-
 void EvgetX11::XEventSwitchPointer::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
     auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
     if (map) {

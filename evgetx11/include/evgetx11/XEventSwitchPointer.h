@@ -25,6 +25,8 @@
 #define EVGET_XEVENTSWITCHPOINTER_H
 
 #include "XDeviceRefresh.h"
+#include "evgetcore/Event/MouseMove.h"
+#include "evgetcore/Event/MouseClick.h"
 
 namespace EvgetX11 {
     class XEventSwitchPointer {
@@ -33,8 +35,8 @@ namespace EvgetX11 {
 
         void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info);
 
-        void addButtonEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button);
-        void addMotionEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data);
+        void addButtonEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button, EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime);
+        void addMotionEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime);
 
         const std::string &getButtonName(int id, int button) const;
 
@@ -45,6 +47,33 @@ namespace EvgetX11 {
         std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
         std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     };
+
+    void EvgetX11::XEventSwitchPointer::addMotionEvent(
+            const XIDeviceEvent& event,
+            EvgetCore::Event::SchemaField::Timestamp dateTime,
+            std::vector<EvgetCore::Event::Data>& data,
+            EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    ) {
+        EvgetCore::Event::MouseMove builder{};
+        builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
+
+        data.emplace_back(builder.build());
+    }
+
+    void EvgetX11::XEventSwitchPointer::addButtonEvent(
+            const XIDeviceEvent& event,
+            EvgetCore::Event::SchemaField::Timestamp dateTime,
+            std::vector<EvgetCore::Event::Data>& data,
+            EvgetCore::Event::ButtonAction action,
+            int button,
+            EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    ) {
+        EvgetCore::Event::MouseClick builder{};
+        builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
+                .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
+
+        data.emplace_back(builder.build());
+    }
 }
 
 #endif //EVGET_XEVENTSWITCHPOINTER_H

@@ -21,29 +21,6 @@
 // SOFTWARE.
 
 #include "evgetx11/XEventSwitchTouch.h"
-#include "evgetx11/XEventSwitch.h"
-
-bool EvgetX11::XEventSwitchTouch::switchOnEvent(
-    const EvgetX11::XInputEvent& event,
-    std::chrono::microseconds timestamp,
-    EvgetX11::EventData& data
-) {
-    switch (event.getEventType()) {
-    case XI_TouchBegin:
-        touchMotion(event, timestamp, data);
-        touchButton(event, timestamp, data, EvgetCore::Event::ButtonAction::Press);
-        return true;
-    case XI_TouchUpdate:
-        touchMotion(event, timestamp, data);
-        return true;
-    case XI_TouchEnd:
-        touchMotion(event, timestamp, data);
-        touchButton(event, timestamp, data, EvgetCore::Event::ButtonAction::Release);
-        return true;
-    default:
-        return false;
-    }
-}
 
 EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh) :
                                                                      xEventSwitchPointer{xEventSwitchPointer},
@@ -51,27 +28,4 @@ EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitch
     xDeviceRefresh.setEvtypeName(XI_TouchBegin, "TouchBegin");
     xDeviceRefresh.setEvtypeName(XI_TouchUpdate, "TouchUpdate");
     xDeviceRefresh.setEvtypeName(XI_TouchEnd, "TouchEnd");
-}
-
-void EvgetX11::XEventSwitchTouch::touchButton(
-    const EvgetX11::XInputEvent& event,
-    std::chrono::microseconds timestamp,
-    std::vector<EvgetCore::Event::Data>& data,
-    EvgetCore::Event::ButtonAction action
-) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addButtonEvent(deviceEvent, timestamp, event.getTimestamp(), data, action, 1);
-    }
-}
-
-void EvgetX11::XEventSwitchTouch::touchMotion(
-    const EvgetX11::XInputEvent& event,
-    std::chrono::microseconds timestamp,
-    std::vector<EvgetCore::Event::Data>& data
-) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addMotionEvent(deviceEvent, timestamp, event.getTimestamp(), data);
-    }
 }

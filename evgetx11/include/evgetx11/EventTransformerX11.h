@@ -34,15 +34,14 @@
 #include "evgetcore/EventTransformer.h"
 #include "evgetcore/Util.h"
 #include "evgetcore/Event/MouseScroll.h"
-#include "evgetx11/XDeviceRefresh.h"
 #include "XWrapper.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
 namespace EvgetX11 {
-    template<XEventSwitch... T>
+    template<typename... T>
     class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
     public:
-        EventTransformerX11(XWrapper& xWrapper, T&... switches);
+        explicit EventTransformerX11(XWrapper& xWrapper, T&... switches);
         std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
     private:
@@ -58,13 +57,13 @@ namespace EvgetX11 {
         std::tuple<T&...> switches;
     };
 
-    template<XEventSwitch... T>
+    template<typename... T>
     EvgetX11::EventTransformerX11<T...>::EventTransformerX11(EvgetX11::XWrapper &xWrapper, T&... switches):
     xWrapper{xWrapper}, switches{switches...} {
         refreshDevices();
     }
 
-    template<XEventSwitch... T>
+    template<typename... T>
     void EvgetX11::EventTransformerX11<T...>::refreshDevices() {
         int nDevices;
         int xi2NDevices;
@@ -120,7 +119,7 @@ namespace EvgetX11 {
         }
     }
 
-    template<XEventSwitch... T>
+    template<typename... T>
     std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<T...>::getInterval(Time time) {
         if (!previous.has_value() || time < *previous) {
             previous = time;
@@ -133,7 +132,7 @@ namespace EvgetX11 {
         return interval;
     }
 
-    template<XEventSwitch... T>
+    template<typename... T>
     std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11<T...>::transformEvent(XInputEvent event) {
         std::vector<EvgetCore::Event::Data> data{};
         if (event.hasData()) {
@@ -146,7 +145,7 @@ namespace EvgetX11 {
 
             // Iterate through switches until the first one returns true.
             std::apply([&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, getInterval(event), data)) || ...);
+                ((eventSwitches.switchOnEvent(event, data, [this](Time time){ return getInterval(time); })) || ...);
             }, switches);
         }
         return data;

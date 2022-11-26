@@ -40,7 +40,7 @@ namespace EvgetCore::Event {
         /**
          * Add a modifier value.
          */
-        Modifier& interval(ModifierValue modifierValue);
+        Modifier& modifierValue(ModifierValue modifierValue);
 
         /**
          * Build modifier.

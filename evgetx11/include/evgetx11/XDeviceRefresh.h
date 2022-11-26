@@ -27,9 +27,10 @@
 #include <unordered_map>
 #include <map>
 #include "XInputEvent.h"
-#include "XEventSwitch.h"
 
 namespace EvgetX11 {
+    using EventData = std::vector<EvgetCore::Event::Data>;
+
     class XDeviceRefresh {
     public:
         XDeviceRefresh() = default;
@@ -38,10 +39,8 @@ namespace EvgetX11 {
          * Switch on the event type and add relevant data to the event data.
          * Returns true if event was successfully consumed.
          */
-        virtual bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data) = 0;
-        virtual void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
-
-        virtual ~XDeviceRefresh() = default;
+        bool switchOnEvent(const XInputEvent &event, std::chrono::nanoseconds timestamp, EventData &data);
+        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
         static void addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData);
 
@@ -60,13 +59,6 @@ namespace EvgetX11 {
 
         static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
         static std::string formatValue(int value);
-
-    protected:
-        XDeviceRefresh(XDeviceRefresh&&) noexcept = default;
-        XDeviceRefresh& operator=(XDeviceRefresh&&) noexcept = default;
-
-        XDeviceRefresh(const XDeviceRefresh&) = default;
-        XDeviceRefresh& operator=(const XDeviceRefresh&) = default;
 
     private:
         std::unordered_map<int, EvgetCore::Event::Device> devices{};

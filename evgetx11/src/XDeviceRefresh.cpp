@@ -132,3 +132,8 @@ void EvgetX11::XDeviceRefresh::setEvtypeName(int evtype, const std::string& name
 bool EvgetX11::XDeviceRefresh::containsDevice(int id) {
     return devices.contains(id);
 }
+
+bool EvgetX11::XDeviceRefresh::switchOnEvent(const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp,
+                                             EvgetX11::EventData &data) {
+    return false;
+}
