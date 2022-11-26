@@ -27,6 +27,11 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(SchemaFie
     return *this;
 }
 
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(std::optional<SchemaField::Interval> interval) {
+    _interval = interval;
+    return *this;
+}
+
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::timestamp(SchemaField::Timestamp timestamp) {
     _timestamp = timestamp;
     return *this;

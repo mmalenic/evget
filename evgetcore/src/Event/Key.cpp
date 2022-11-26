@@ -29,6 +29,11 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::interval(SchemaField::Interval int
     return *this;
 }
 
+EvgetCore::Event::Key& EvgetCore::Event::Key::interval(std::optional<SchemaField::Interval> interval) {
+    _interval = interval;
+    return *this;
+}
+
 EvgetCore::Event::Key& EvgetCore::Event::Key::timestamp(SchemaField::Timestamp timestamp) {
     _timestamp = timestamp;
     return *this;

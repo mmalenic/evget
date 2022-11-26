@@ -44,6 +44,11 @@ namespace EvgetCore::Event {
         Key& interval(SchemaField::Interval interval);
 
         /**
+         * Add interval in microseconds.
+         */
+        Key& interval(std::optional<SchemaField::Interval> interval);
+
+        /**
          * Add date timestamp.
          */
         Key& timestamp(SchemaField::Timestamp dateTime);

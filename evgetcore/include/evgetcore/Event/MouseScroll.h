@@ -42,6 +42,11 @@ namespace EvgetCore::Event {
         MouseScroll& interval(SchemaField::Interval interval);
 
         /**
+         * Add interval in microseconds.
+         */
+        MouseScroll& interval(std::optional<SchemaField::Interval> interval);
+
+        /**
          * Add date timestamp
          */
         MouseScroll& timestamp(SchemaField::Timestamp timestamp);
