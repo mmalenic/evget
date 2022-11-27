@@ -48,27 +48,27 @@ namespace EvgetCore::Event {
         Data build();
 
         /**
-         * Generate the Modifier schema.
-         */
-        static constexpr SchemaType generateSchema();
-
-        /**
          * Get modifier name value.
          */
         static constexpr std::string_view getName();
+
+        /**
+         * Generate the Modifier schema.
+         */
+        static constexpr SchemaType generateSchema();
 
     private:
         std::optional<ModifierValue> _modifierValue;
     };
 
+    constexpr std::string_view Modifier::getName() {
+        return "Modifier";
+    }
+
     constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
         return SchemaType{getName(), {
                 SchemaField::MODIFIER_FIELD}
         };
-    }
-
-    constexpr std::string_view Modifier::getName() {
-        return "Modifier";
     }
 }
 

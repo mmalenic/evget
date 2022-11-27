@@ -122,12 +122,17 @@ namespace EvgetCore::Event {
         Data build();
 
         /**
+         * Get mouse scroll name value.
+         */
+        static constexpr std::string_view getName();
+
+        /**
          * Generate the MouseScroll schema.
          */
         static constexpr SchemaType generateSchema();
 
     private:
-        Data data{"MouseScroll"};
+        Data data{getName()};
 
         std::optional<SchemaField::Interval> _interval{};
         std::optional<SchemaField::Timestamp> _timestamp{};
@@ -145,8 +150,12 @@ namespace EvgetCore::Event {
         std::optional<double> _focusWindowHeight{};
     };
 
+    constexpr std::string_view MouseScroll::getName() {
+        return "MouseScroll";
+    }
+
     constexpr EvgetCore::Event::MouseScroll::SchemaType EvgetCore::Event::MouseScroll::generateSchema() {
-        return {"MouseScroll", {
+        return {getName(), {
                 SchemaField::INTERVAL_FIELD,
                 SchemaField::TIMESTAMP_FIELD,
                 SchemaField::DEVICE_TYPE_FIELD,

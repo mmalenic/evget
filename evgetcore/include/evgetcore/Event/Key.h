@@ -124,12 +124,17 @@ namespace EvgetCore::Event {
         Data build();
 
         /**
+         * Get key name value.
+         */
+        static constexpr std::string_view getName();
+
+        /**
          * Generate the schema for this data.
          */
         static constexpr SchemaType generateSchema();
 
     private:
-        Data data{"Key"};
+        Data data{getName()};
 
         std::optional<SchemaField::Interval> _interval{};
         std::optional<SchemaField::Timestamp> _timestamp{};
@@ -149,8 +154,12 @@ namespace EvgetCore::Event {
         std::optional<double> _focusWindowHeight{};
     };
 
+    constexpr std::string_view Key::getName() {
+        return "Key";
+    }
+
     constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
-        return {"Key", {
+        return {getName(), {
             SchemaField::INTERVAL_FIELD,
             SchemaField::TIMESTAMP_FIELD,
             SchemaField::DEVICE_TYPE_FIELD,
