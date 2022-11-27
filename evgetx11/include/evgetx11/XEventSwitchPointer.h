@@ -43,7 +43,8 @@ namespace EvgetX11 {
         /**
          * Get the xkb modifier value.
          */
-        static std::optional<EvgetCore::Event::ModifierValue> getModifierValue(int modifierState, std::vector<EvgetCore::Event::Data>& data);
+        template<typename T>
+        static T& setModifierValue(int modifierState, T& builder);
 
     private:
         void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
@@ -79,6 +80,31 @@ namespace EvgetX11 {
 
         data.emplace_back(builder.build());
     }
+
+    template<typename T>
+    T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder) {
+        // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
+        if (modifierState & ShiftMask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
+        } else if (modifierState & LockMask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
+        } else if (modifierState & ControlMask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Control);
+        } else if (modifierState & Mod1Mask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Alt);
+        } else if (modifierState & Mod2Mask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
+        } else if (modifierState & Mod3Mask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
+        } else if (modifierState & Mod4Mask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Super);
+        } else if (modifierState & Mod5Mask) {
+            return builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
+        } else {
+            return builder;
+        }
+    }
+
 }
 
 #endif //EVGET_XEVENTSWITCHPOINTER_H

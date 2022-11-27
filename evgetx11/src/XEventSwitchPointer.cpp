@@ -69,26 +69,3 @@ EvgetX11::XEventSwitchPointer::XEventSwitchPointer(EvgetX11::XWrapper &xWrapper,
 const std::string &EvgetX11::XEventSwitchPointer::getButtonName(int id, int button) const {
     return buttonMap.at(id).at(button);
 }
-
-std::optional<EvgetCore::Event::ModifierValue> EvgetX11::XEventSwitchPointer::getModifierValue(int modifierState, std::vector<EvgetCore::Event::Data>& data) {
-    // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
-    if (modifierState & ShiftMask) {
-        return EvgetCore::Event::ModifierValue::Shift;
-    } else if (modifierState & LockMask) {
-        return EvgetCore::Event::ModifierValue::CapsLock;
-    } else if (modifierState & ControlMask) {
-        return EvgetCore::Event::ModifierValue::Control;
-    } else if (modifierState & Mod1Mask) {
-        return EvgetCore::Event::ModifierValue::Alt;
-    } else if (modifierState & Mod2Mask) {
-        return EvgetCore::Event::ModifierValue::NumLock;
-    } else if (modifierState & Mod3Mask) {
-        return EvgetCore::Event::ModifierValue::Mod3;
-    } else if (modifierState & Mod4Mask) {
-        return EvgetCore::Event::ModifierValue::Super;
-    } else if (modifierState & Mod5Mask) {
-        return EvgetCore::Event::ModifierValue::Mod5;
-    } else {
-        return std::nullopt;
-    }
-}
