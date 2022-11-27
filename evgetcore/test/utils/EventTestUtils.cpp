@@ -38,8 +38,8 @@ EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
 
     data.contains(firstContained);
     data.contains(secondContained);
-    data.containsUnique(firstContained);
-    data.containsUnique(secondContained);
+//    data.containsUnique(firstContained);
+//    data.containsUnique(secondContained);
 
     return data;
 }

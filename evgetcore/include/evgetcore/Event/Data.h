@@ -48,29 +48,20 @@ namespace EvgetCore::Event {
         void addField(std::string field);
 
         /**
-         * Specify a data table which is contained within this table for
-         * a one-to-many relation.
+         * Specify a data table which is contained within this table.
          */
-        void contains(Data data);
+        void contains(std::string name, std::vector<Data> data);
 
         /**
-         * Specify a data table which is contained within this table for
-         * a many-to-many relation, where the given data table entires are
-         * unique.
+         * Specify a data table which is contained within this table
          */
-        void containsUnique(Data data);
+        void contains(Data data);
 
         /**
          * Get the data associated with the contains function, i.e. the one-to-many
          * data.
          */
         const ContainedData& getData() const;
-
-        /**
-         * Get the data associated with the contains function, i.e. the many-to-many
-         * data.
-         */
-        const ContainedData& getUniqueData() const;
 
         /**
          * Get the field at the position.
@@ -87,12 +78,9 @@ namespace EvgetCore::Event {
         [[nodiscard]] Iterator end() const noexcept;
 
     private:
-        static void setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data);
-
         std::string name{};
         std::vector<std::string> fields{};
         ContainedData containsData{};
-        ContainedData containsUniqueData{};
     };
 }
 

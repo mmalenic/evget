@@ -56,9 +56,9 @@ TEST(EventDataTest, Contains) { // NOLINT(cert-err58-cpp)
     ASSERT_EQ(data.getData().at("contained").at(0).getFieldAt(1), "secondField");
 }
 
-TEST(EventDataTest, ContainsUnique) { // NOLINT(cert-err58-cpp)
-    auto data = EventUtils::createData();
-
-    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(0), "firstField");
-    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(1), "secondField");
-}
+//TEST(EventDataTest, ContainsUnique) { // NOLINT(cert-err58-cpp)
+//    auto data = EventUtils::createData();
+//
+//    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(0), "firstField");
+//    ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(1), "secondField");
+//}

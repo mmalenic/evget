@@ -47,21 +47,14 @@ const std::string& EvgetCore::Event::Data::getFieldAt(size_t position) const {
 }
 
 void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
-    setContainsData(containsData, std::move(data));
-}
-
-void EvgetCore::Event::Data::containsUnique(EvgetCore::Event::Data data) {
-    setContainsData(containsData, std::move(data));
-}
-
-void EvgetCore::Event::Data::setContainsData(std::unordered_map<std::string, std::vector<Data>>& table, EvgetCore::Event::Data data) {
-    table.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
+    containsData.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }
 
 const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getData() const {
     return containsData;
 }
 
-const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getUniqueData() const {
-    return containsUniqueData;
+void EvgetCore::Event::Data::contains(std::string name, std::vector<Data> data) {
+    auto& value = containsData.try_emplace(name, std::vector<Data>{}).first->second;
+    value.insert(value.end(), data.begin(), data.end());
 }
