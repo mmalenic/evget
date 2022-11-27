@@ -29,6 +29,14 @@
 #include "evgetcore/Event/MouseClick.h"
 
 namespace EvgetX11 {
+    /**
+     * Check whether the template parameter is a builder with a modifier function.
+     */
+    template<typename T>
+    concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
+        { builder.modifier(modifierValue) } -> std::convertible_to<T>;
+    };
+
     class XEventSwitchPointer {
     public:
         explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
@@ -43,7 +51,7 @@ namespace EvgetX11 {
         /**
          * Get the xkb modifier value.
          */
-        template<typename T>
+        template<BuilderHasModifier T>
         static T& setModifierValue(int modifierState, T& builder);
 
     private:
@@ -81,7 +89,7 @@ namespace EvgetX11 {
         data.emplace_back(builder.build());
     }
 
-    template<typename T>
+    template<BuilderHasModifier T>
     T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder) {
         // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
         if (modifierState & ShiftMask) {
