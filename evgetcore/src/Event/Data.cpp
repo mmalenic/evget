@@ -53,8 +53,3 @@ void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
 const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getData() const {
     return containsData;
 }
-
-void EvgetCore::Event::Data::contains(std::string_view name, std::vector<Data> data) {
-    auto& value = containsData.try_emplace(name, std::vector<Data>{}).first->second;
-    value.insert(value.end(), data.begin(), data.end());
-}

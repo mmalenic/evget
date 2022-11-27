@@ -95,8 +95,6 @@ EvgetCore::Event::MouseClick &EvgetCore::Event::MouseClick::focusWindowHeight(do
 }
 
 EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
-    auto data = Data{"MouseClick"};
-
     data.addField(SchemaField::fromInterval(_interval));
     data.addField(SchemaField::fromTimestamp(_timestamp));
     data.addField(SchemaField::fromDevice(_device));
@@ -110,11 +108,10 @@ EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
     data.addField(SchemaField::fromDouble(_focusWindowPositionY));
     data.addField(SchemaField::fromDouble(_focusWindowWidth));
     data.addField(SchemaField::fromDouble(_focusWindowHeight));
-    data.contains(Modifier::getName(), modifiers);
 
     return data;
 }
 
 EvgetCore::Event::MouseClick &EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    modifiers.emplace_back(Modifier{}.modifierValue(modifierValue).build());
+    data.contains(Modifier{}.modifierValue(modifierValue).build());
 }

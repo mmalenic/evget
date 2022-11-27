@@ -48,11 +48,6 @@ namespace EvgetCore::Event {
         void addField(std::string field);
 
         /**
-         * Specify a data table which is contained within this table.
-         */
-        void contains(std::string_view name, std::vector<Data> data);
-
-        /**
          * Specify a data table which is contained within this table
          */
         void contains(Data data);

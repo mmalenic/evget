@@ -122,6 +122,8 @@ namespace EvgetCore::Event {
         static constexpr SchemaType generateSchema();
 
     private:
+        Data data{"MouseClick"};
+
         std::optional<SchemaField::Interval> _interval{};
         std::optional<SchemaField::Timestamp> _timestamp{};
         std::optional<Device> _device{};
@@ -135,7 +137,6 @@ namespace EvgetCore::Event {
         std::optional<double> _focusWindowPositionY{};
         std::optional<double> _focusWindowWidth{};
         std::optional<double> _focusWindowHeight{};
-        std::vector<Data> modifiers{};
     };
 
     constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
