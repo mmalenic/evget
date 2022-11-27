@@ -114,6 +114,11 @@ namespace EvgetCore::Event {
         Key& focusWindowHeight(double height);
 
         /**
+         * Add modifier value.
+         */
+        Key& modifier(ModifierValue modifier);
+
+        /**
          * Build key event.
          */
         Data build();
@@ -140,6 +145,7 @@ namespace EvgetCore::Event {
         std::optional<double> _focusWindowPositionY{};
         std::optional<double> _focusWindowWidth{};
         std::optional<double> _focusWindowHeight{};
+        std::vector<Data> modifiers{};
     };
 
     constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {

@@ -112,6 +112,11 @@ namespace EvgetCore::Event {
         MouseScroll& focusWindowHeight(double height);
 
         /**
+         * Add modifier value.
+         */
+        MouseScroll& modifier(ModifierValue modifier);
+
+        /**
          * Build mouse wheel event.
          */
         Data build();
@@ -136,6 +141,7 @@ namespace EvgetCore::Event {
         std::optional<double> _focusWindowPositionY{};
         std::optional<double> _focusWindowWidth{};
         std::optional<double> _focusWindowHeight{};
+        std::vector<Data> modifiers{};
     };
 
     constexpr EvgetCore::Event::MouseScroll::SchemaType EvgetCore::Event::MouseScroll::generateSchema() {
