@@ -23,7 +23,7 @@
 #include "evgetcore/Event/Data.h"
 #include <utility>
 
-EvgetCore::Event::Data::Data(std::string name) : name{std::move(name)}, fields{} {
+EvgetCore::Event::Data::Data(std::string_view name) : name{name}, fields{} {
 }
 
 EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::begin() const noexcept {
@@ -34,7 +34,7 @@ EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::end() const noexcept {
     return fields.end();
 }
 
-std::string EvgetCore::Event::Data::getName() const {
+std::string_view EvgetCore::Event::Data::getName() const {
     return name;
 }
 
@@ -54,7 +54,7 @@ const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getData() c
     return containsData;
 }
 
-void EvgetCore::Event::Data::contains(std::string name, std::vector<Data> data) {
+void EvgetCore::Event::Data::contains(std::string_view name, std::vector<Data> data) {
     auto& value = containsData.try_emplace(name, std::vector<Data>{}).first->second;
     value.insert(value.end(), data.begin(), data.end());
 }

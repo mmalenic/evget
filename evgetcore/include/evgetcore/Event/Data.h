@@ -34,13 +34,13 @@ namespace EvgetCore::Event {
     class Data {
     public:
         using Iterator = std::vector<std::string>::const_iterator;
-        using ContainedData = std::unordered_map<std::string, std::vector<Data>>;
+        using ContainedData = std::unordered_map<std::string_view, std::vector<Data>>;
 
         Data() = default;
         /**
          * Create a Data with the given name.
          */
-        explicit Data(std::string name);
+        explicit Data(std::string_view name);
 
         /**
          * Add a field to this data.
@@ -50,7 +50,7 @@ namespace EvgetCore::Event {
         /**
          * Specify a data table which is contained within this table.
          */
-        void contains(std::string name, std::vector<Data> data);
+        void contains(std::string_view name, std::vector<Data> data);
 
         /**
          * Specify a data table which is contained within this table
@@ -71,14 +71,14 @@ namespace EvgetCore::Event {
         /**
          * Get the name of the data.
          */
-        [[nodiscard]] std::string getName() const;
+        [[nodiscard]] std::string_view getName() const;
 
         [[nodiscard]] Iterator begin() const noexcept;
 
         [[nodiscard]] Iterator end() const noexcept;
 
     private:
-        std::string name{};
+        std::string_view name{};
         std::vector<std::string> fields{};
         ContainedData containsData{};
     };
