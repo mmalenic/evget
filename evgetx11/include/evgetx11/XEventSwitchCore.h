@@ -118,6 +118,7 @@ namespace EvgetX11 {
 
         EvgetCore::Event::Key builder{};
         builder.interval(getTime(deviceEvent.time)).timestamp(event.getTimestamp()).action(action).button(deviceEvent.detail).character(character).name(name);
+        XEventSwitchPointer::setModifierValue(deviceEvent.mods.effective, builder);
 
         XDeviceRefresh::addTableData(data, builder.build(), xDeviceRefresh.get().createSystemData(deviceEvent, "KeySystemData"));
     }
@@ -159,6 +160,7 @@ namespace EvgetX11 {
 
         builder.interval(getTime(deviceEvent.time)).timestamp(event.getTimestamp()).device(xDeviceRefresh.get().getDevice(deviceEvent.deviceid))
                 .positionX(deviceEvent.root_x).positionY(deviceEvent.root_y);
+        XEventSwitchPointer::setModifierValue(deviceEvent.mods.effective, builder);
 
         data.emplace_back(builder.build());
         data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));

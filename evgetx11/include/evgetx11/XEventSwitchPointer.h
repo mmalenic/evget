@@ -70,6 +70,7 @@ namespace EvgetX11 {
     ) {
         EvgetCore::Event::MouseMove builder{};
         builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
+        XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
 
         data.emplace_back(builder.build());
     }
@@ -85,6 +86,7 @@ namespace EvgetX11 {
         EvgetCore::Event::MouseClick builder{};
         builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
                 .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
+        XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
 
         data.emplace_back(builder.build());
     }
