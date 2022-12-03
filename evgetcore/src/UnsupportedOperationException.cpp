@@ -20,4 +20,6 @@
 
 EvgetCore::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {}
 
-const char* EvgetCore::UnsupportedOperationException::what() const noexcept { return message.c_str(); }
+const char* EvgetCore::UnsupportedOperationException::what() const noexcept {
+    return message.c_str();
+}

@@ -142,17 +142,29 @@ bool EvgetCore::CoreParser::parseCommandLine(int argc, const char* argv[], po::v
     return true;
 }
 
-EvgetCore::fs::path EvgetCore::CoreParser::getFolder() const { return folder.getValue(); }
+EvgetCore::fs::path EvgetCore::CoreParser::getFolder() const {
+    return folder.getValue();
+}
 
-po::options_description& EvgetCore::CoreParser::getCombinedDesc() { return cmdlineDesc.add(configDesc); }
+po::options_description& EvgetCore::CoreParser::getCombinedDesc() {
+    return cmdlineDesc.add(configDesc);
+}
 
-po::options_description& EvgetCore::CoreParser::getCmdlineDesc() { return cmdlineDesc; }
+po::options_description& EvgetCore::CoreParser::getCmdlineDesc() {
+    return cmdlineDesc;
+}
 
-po::options_description& EvgetCore::CoreParser::getConfigDesc() { return configDesc; }
+po::options_description& EvgetCore::CoreParser::getConfigDesc() {
+    return configDesc;
+}
 
-bool EvgetCore::CoreParser::shouldPrint() const { return print.getValue(); }
+bool EvgetCore::CoreParser::shouldPrint() const {
+    return print.getValue();
+}
 
-spdlog::level::level_enum EvgetCore::CoreParser::getLogLevel() const { return logLevel.getValue(); }
+spdlog::level::level_enum EvgetCore::CoreParser::getLogLevel() const {
+    return logLevel.getValue();
+}
 
 std::string EvgetCore::CoreParser::logLevelsString() {
     return fmt::format(
@@ -179,9 +191,13 @@ std::optional<spdlog::level::level_enum> EvgetCore::CoreParser::validateLogLevel
     return level;
 }
 
-bool EvgetCore::CoreParser::useSystemEvents() const { return systemEvents.getValue(); }
+bool EvgetCore::CoreParser::useSystemEvents() const {
+    return systemEvents.getValue();
+}
 
-std::filesystem::path EvgetCore::CoreParser::getConfigFile() const { return config.getValue(); }
+std::filesystem::path EvgetCore::CoreParser::getConfigFile() const {
+    return config.getValue();
+}
 
 template <typename T>
 std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option) {

@@ -19,6 +19,10 @@ EvWatch::EventWatcher::~EventWatcher() = default;
 
 std::atomic_flag EvWatch::EventWatcher::eventFlag{};
 
-bool EvWatch::EventWatcher::eventOccurred() { return eventFlag.test(); }
+bool EvWatch::EventWatcher::eventOccurred() {
+    return eventFlag.test();
+}
 
-void EvWatch::EventWatcher::setEvent() { eventFlag.test_and_set(); }
+void EvWatch::EventWatcher::setEvent() {
+    eventFlag.test_and_set();
+}

@@ -5,6 +5,9 @@ AlignOperands: DontAlign
 AlignTrailingComments: false
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
 BasedOnStyle: Google
 BinPackArguments: false
 BinPackParameters: false

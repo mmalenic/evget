@@ -145,7 +145,9 @@ private:
     std::optional<double> _focusWindowHeight{};
 };
 
-constexpr std::string_view MouseClick::getName() { return "MouseClick"; }
+constexpr std::string_view MouseClick::getName() {
+    return "MouseClick";
+}
 
 constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
     return {

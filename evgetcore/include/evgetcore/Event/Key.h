@@ -155,7 +155,9 @@ private:
     std::optional<double> _focusWindowHeight{};
 };
 
-constexpr std::string_view Key::getName() { return "Key"; }
+constexpr std::string_view Key::getName() {
+    return "Key";
+}
 
 constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
     return {

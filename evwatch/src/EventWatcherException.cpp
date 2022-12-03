@@ -29,4 +29,6 @@ EvWatch::EventWatcherException::EventWatcherException(
 )
     : std::system_error(errorNumber, category, message) {}
 
-const char* EvWatch::EventWatcherException::what() const noexcept { return std::system_error::what(); }
+const char* EvWatch::EventWatcherException::what() const noexcept {
+    return std::system_error::what();
+}

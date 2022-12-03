@@ -67,4 +67,6 @@ void EvgetX11::XInputHandler::setMask(
     xWrapper.selectEvents(mask);
 }
 
-EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() { return XInputEvent::nextEvent(xWrapper); }
+EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
+    return XInputEvent::nextEvent(xWrapper);
+}

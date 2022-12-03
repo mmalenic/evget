@@ -94,7 +94,9 @@ void EvgetX11::XDeviceRefresh::addTableData(
     data.emplace_back(std::move(systemData));
 }
 
-std::string EvgetX11::XDeviceRefresh::formatValue(int value) { return value != 0 ? std::to_string(value) : ""; }
+std::string EvgetX11::XDeviceRefresh::formatValue(int value) {
+    return value != 0 ? std::to_string(value) : "";
+}
 
 std::map<int, int> EvgetX11::XDeviceRefresh::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
@@ -115,21 +117,33 @@ void EvgetX11::XDeviceRefresh::refreshDevices(
     idToName.emplace(id, name);
 }
 
-EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const { return devices.at(id); }
+EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const {
+    return devices.at(id);
+}
 
-const std::string& EvgetX11::XDeviceRefresh::getNameFromId(int id) const { return idToName.at(id); }
+const std::string& EvgetX11::XDeviceRefresh::getNameFromId(int id) const {
+    return idToName.at(id);
+}
 
-const std::string& EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const { return evtypeToName.at(evtype); }
+const std::string& EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const {
+    return evtypeToName.at(evtype);
+}
 
-void EvgetX11::XDeviceRefresh::setDevice(int id, EvgetCore::Event::Device device) { devices.emplace(id, device); }
+void EvgetX11::XDeviceRefresh::setDevice(int id, EvgetCore::Event::Device device) {
+    devices.emplace(id, device);
+}
 
-void EvgetX11::XDeviceRefresh::setNameFromId(int id, const std::string& name) { idToName.emplace(id, name); }
+void EvgetX11::XDeviceRefresh::setNameFromId(int id, const std::string& name) {
+    idToName.emplace(id, name);
+}
 
 void EvgetX11::XDeviceRefresh::setEvtypeName(int evtype, const std::string& name) {
     evtypeToName.emplace(evtype, name);
 }
 
-bool EvgetX11::XDeviceRefresh::containsDevice(int id) { return devices.contains(id); }
+bool EvgetX11::XDeviceRefresh::containsDevice(int id) {
+    return devices.contains(id);
+}
 
 bool EvgetX11::XDeviceRefresh::switchOnEvent(
     const EvgetX11::XInputEvent& event,

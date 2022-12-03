@@ -42,4 +42,6 @@ EvWatch::Sig::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> 
     }
 }
 
-void EvWatch::Sig::EventWatcherSignal::signalHandler([[maybe_unused]] int _) { EventWatcher::setEvent(); }
+void EvWatch::Sig::EventWatcherSignal::signalHandler([[maybe_unused]] int _) {
+    EventWatcher::setEvent();
+}

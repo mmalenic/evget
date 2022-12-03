@@ -62,7 +62,9 @@ private:
     std::optional<ModifierValue> _modifierValue;
 };
 
-constexpr std::string_view Modifier::getName() { return "Modifier"; }
+constexpr std::string_view Modifier::getName() {
+    return "Modifier";
+}
 
 constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
     return SchemaType{getName(), {SchemaField::MODIFIER_FIELD}};
