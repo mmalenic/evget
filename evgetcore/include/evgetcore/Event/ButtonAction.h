@@ -24,11 +24,7 @@
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 
 namespace EvgetCore::Event {
-    enum class ButtonAction {
-        Press,
-        Release,
-        Repeat
-    };
+enum class ButtonAction { Press, Release, Repeat };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
+#endif  // EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H

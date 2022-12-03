@@ -23,161 +23,161 @@
 #ifndef EVGET_SRC_KEY_H
 #define EVGET_SRC_KEY_H
 
-#include <chrono>
 #include <c++/11/array>
-#include "Data.h"
-#include "Schema.h"
+#include <chrono>
+
 #include "ButtonAction.h"
+#include "Data.h"
 #include "Modifier.h"
+#include "Schema.h"
 
 namespace EvgetCore::Event {
+/**
+ * Represents a key event.
+ */
+class Key {
+public:
+    using SchemaType = Schema<16, Modifier::SchemaType>;
+
     /**
-     * Represents a key event.
+     * Add interval in microseconds.
      */
-    class Key {
-    public:
-        using SchemaType = Schema<16, Modifier::SchemaType>;
+    Key& interval(SchemaField::Interval interval);
 
-        /**
-         * Add interval in microseconds.
-         */
-        Key& interval(SchemaField::Interval interval);
+    /**
+     * Add interval in microseconds.
+     */
+    Key& interval(std::optional<SchemaField::Interval> interval);
 
-        /**
-         * Add interval in microseconds.
-         */
-        Key& interval(std::optional<SchemaField::Interval> interval);
+    /**
+     * Add date timestamp.
+     */
+    Key& timestamp(SchemaField::Timestamp dateTime);
 
-        /**
-         * Add date timestamp.
-         */
-        Key& timestamp(SchemaField::Timestamp dateTime);
+    /**
+     * Key device.
+     */
+    Key& device(Device device);
 
-        /**
-         * Key device.
-         */
-        Key& device(Device device);
+    /**
+     * Add position x.
+     */
+    Key& positionX(double x);
 
-        /**
-         * Add position x.
-         */
-        Key& positionX(double x);
+    /**
+     * Add position y.
+     */
+    Key& positionY(double y);
 
-        /**
-         * Add position y.
-         */
-        Key& positionY(double y);
+    /**
+     * Add action.
+     */
+    Key& action(ButtonAction action);
 
-        /**
-         * Add action.
-         */
-        Key& action(ButtonAction action);
+    /**
+     * Add id.
+     */
+    Key& button(int button);
 
-        /**
-         * Add id.
-         */
-        Key& button(int button);
+    /**
+     * Add id.
+     */
+    Key& name(std::string name);
 
-        /**
-         * Add id.
-         */
-        Key& name(std::string name);
+    /**
+     * Add character.
+     */
+    Key& character(std::string character);
 
-        /**
-         * Add character.
-         */
-        Key& character(std::string character);
+    /**
+     * Add the focus window name.
+     */
+    Key& focusWindowName(std::string name);
 
-        /**
-         * Add the focus window name.
-         */
-        Key& focusWindowName(std::string name);
+    /**
+     * Add the focus window position x.
+     */
+    Key& focusWindowPositionX(double x);
 
-        /**
-         * Add the focus window position x.
-         */
-        Key& focusWindowPositionX(double x);
+    /**
+     * Add the focus window position y.
+     */
+    Key& focusWindowPositionY(double y);
 
-        /**
-         * Add the focus window position y.
-         */
-        Key& focusWindowPositionY(double y);
+    /**
+     * Add the focus window width.
+     */
+    Key& focusWindowWidth(double width);
 
-        /**
-         * Add the focus window width.
-         */
-        Key& focusWindowWidth(double width);
+    /**
+     * Add the focus window height.
+     */
+    Key& focusWindowHeight(double height);
 
-        /**
-         * Add the focus window height.
-         */
-        Key& focusWindowHeight(double height);
+    /**
+     * Add modifier value.
+     */
+    Key& modifier(ModifierValue modifier);
 
-        /**
-         * Add modifier value.
-         */
-        Key& modifier(ModifierValue modifier);
+    /**
+     * Build key event.
+     */
+    Data build();
 
-        /**
-         * Build key event.
-         */
-        Data build();
+    /**
+     * Get key name value.
+     */
+    static constexpr std::string_view getName();
 
-        /**
-         * Get key name value.
-         */
-        static constexpr std::string_view getName();
+    /**
+     * Generate the schema for this data.
+     */
+    static constexpr SchemaType generateSchema();
 
-        /**
-         * Generate the schema for this data.
-         */
-        static constexpr SchemaType generateSchema();
+private:
+    Data data{getName()};
 
-    private:
-        Data data{getName()};
+    std::optional<SchemaField::Interval> _interval{};
+    std::optional<SchemaField::Timestamp> _timestamp{};
+    std::optional<Device> _device{};
+    std::optional<double> _positionX{};
+    std::optional<double> _positionY{};
+    std::optional<ButtonAction> _action{};
+    std::optional<int> _button{};
+    std::optional<std::string> _name{};
+    std::optional<std::string> _character{};
+    std::optional<std::string> _layout{};
+    std::optional<std::string> _variant{};
+    std::optional<std::string> _focusWindowName{};
+    std::optional<double> _focusWindowPositionX{};
+    std::optional<double> _focusWindowPositionY{};
+    std::optional<double> _focusWindowWidth{};
+    std::optional<double> _focusWindowHeight{};
+};
 
-        std::optional<SchemaField::Interval> _interval{};
-        std::optional<SchemaField::Timestamp> _timestamp{};
-        std::optional<Device> _device{};
-        std::optional<double> _positionX{};
-        std::optional<double> _positionY{};
-        std::optional<ButtonAction> _action{};
-        std::optional<int> _button{};
-        std::optional<std::string> _name{};
-        std::optional<std::string> _character{};
-        std::optional<std::string> _layout{};
-        std::optional<std::string> _variant{};
-        std::optional<std::string> _focusWindowName{};
-        std::optional<double> _focusWindowPositionX{};
-        std::optional<double> _focusWindowPositionY{};
-        std::optional<double> _focusWindowWidth{};
-        std::optional<double> _focusWindowHeight{};
-    };
+constexpr std::string_view Key::getName() { return "Key"; }
 
-    constexpr std::string_view Key::getName() {
-        return "Key";
-    }
-
-    constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
-        return {getName(), {
-            SchemaField::INTERVAL_FIELD,
-            SchemaField::TIMESTAMP_FIELD,
-            SchemaField::DEVICE_TYPE_FIELD,
-            SchemaField::POSITIONX_FIELD,
-            SchemaField::POSITIONY_FIELD,
-            SchemaField::ACTION_FIELD,
-            SchemaField::IDENTIFIER_FIELD,
-            SchemaField::NAME_FIELD,
-            SchemaField::CHARACTER_FIELD,
-            SchemaField::LAYOUT_FIELD,
-            SchemaField::VARIANT_FIELD,
-            SchemaField::FOCUS_WINDOW_NAME_FIELD,
-            SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
-            SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
-            SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
-            SchemaField::FOCUS_WINDOW_HEIGHT_FIELD}, {Modifier::generateSchema(), true}
-        };
-    }
+constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
+    return {
+        getName(),
+        {SchemaField::INTERVAL_FIELD,
+         SchemaField::TIMESTAMP_FIELD,
+         SchemaField::DEVICE_TYPE_FIELD,
+         SchemaField::POSITIONX_FIELD,
+         SchemaField::POSITIONY_FIELD,
+         SchemaField::ACTION_FIELD,
+         SchemaField::IDENTIFIER_FIELD,
+         SchemaField::NAME_FIELD,
+         SchemaField::CHARACTER_FIELD,
+         SchemaField::LAYOUT_FIELD,
+         SchemaField::VARIANT_FIELD,
+         SchemaField::FOCUS_WINDOW_NAME_FIELD,
+         SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
+         SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
+         SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
+         SchemaField::FOCUS_WINDOW_HEIGHT_FIELD},
+        {Modifier::generateSchema(), true}};
 }
+}  // namespace EvgetCore::Event
 
-#endif //EVGET_SRC_KEY_H
+#endif  // EVGET_SRC_KEY_H

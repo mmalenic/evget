@@ -25,51 +25,48 @@
 #define EVGET_MODIFIER_H
 
 #include <optional>
-#include "ModifierValue.h"
+
 #include "Data.h"
+#include "ModifierValue.h"
 #include "Schema.h"
 
 namespace EvgetCore::Event {
+/**
+ * Represents a key modifier value.
+ */
+class Modifier {
+public:
+    using SchemaType = Schema<1>;
+
     /**
-     * Represents a key modifier value.
+     * Add a modifier value.
      */
-    class Modifier {
-    public:
-        using SchemaType = Schema<1>;
+    Modifier& modifierValue(ModifierValue modifierValue);
 
-        /**
-         * Add a modifier value.
-         */
-        Modifier& modifierValue(ModifierValue modifierValue);
+    /**
+     * Build modifier.
+     */
+    Data build();
 
-        /**
-         * Build modifier.
-         */
-        Data build();
+    /**
+     * Get modifier name value.
+     */
+    static constexpr std::string_view getName();
 
-        /**
-         * Get modifier name value.
-         */
-        static constexpr std::string_view getName();
+    /**
+     * Generate the Modifier schema.
+     */
+    static constexpr SchemaType generateSchema();
 
-        /**
-         * Generate the Modifier schema.
-         */
-        static constexpr SchemaType generateSchema();
+private:
+    std::optional<ModifierValue> _modifierValue;
+};
 
-    private:
-        std::optional<ModifierValue> _modifierValue;
-    };
+constexpr std::string_view Modifier::getName() { return "Modifier"; }
 
-    constexpr std::string_view Modifier::getName() {
-        return "Modifier";
-    }
-
-    constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
-        return SchemaType{getName(), {
-                SchemaField::MODIFIER_FIELD}
-        };
-    }
+constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
+    return SchemaType{getName(), {SchemaField::MODIFIER_FIELD}};
 }
+}  // namespace EvgetCore::Event
 
-#endif //EVGET_MODIFIER_H
+#endif  // EVGET_MODIFIER_H

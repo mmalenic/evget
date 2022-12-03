@@ -13,13 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <string>
-#include <utility>
 #include "evgetcore/UnsupportedOperationException.h"
 
-EvgetCore::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {
-}
+#include <string>
+#include <utility>
 
-const char* EvgetCore::UnsupportedOperationException::what() const noexcept {
-    return message.c_str();
-}
+EvgetCore::UnsupportedOperationException::UnsupportedOperationException(std::string message) : message{move(message)} {}
+
+const char* EvgetCore::UnsupportedOperationException::what() const noexcept { return message.c_str(); }

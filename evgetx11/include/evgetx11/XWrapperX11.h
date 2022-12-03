@@ -24,43 +24,46 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H
 
 #include <X11/Xlib.h>
-#include <functional>
-#include <string>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+
+#include <functional>
 #include <memory>
-#include "evgetcore/Util.h"
+#include <string>
+
 #include "XWrapper.h"
+#include "evgetcore/Util.h"
 
 namespace EvgetX11 {
-    class XWrapperX11 : public XWrapper {
-    public:
-        explicit XWrapperX11(Display& display);
+class XWrapperX11 : public XWrapper {
+public:
+    explicit XWrapperX11(Display& display);
 
-        std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
-        std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
+    std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
+    std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
 
-        std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
-        std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
+    std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
+    std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
 
-        std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
+    std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
 
-        XEvent nextEvent() override;
-        XEventPointer eventData(XEvent& event) override;
+    XEvent nextEvent() override;
+    XEventPointer eventData(XEvent& event) override;
 
-        Status queryVersion(int& major, int& minor) override;
-        void selectEvents(XIEventMask& mask) override;
+    Status queryVersion(int& major, int& minor) override;
+    void selectEvents(XIEventMask& mask) override;
 
-    private:
-        static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
+private:
+    static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
-        static constexpr int utf8MaxBytes = 4;
+    static constexpr int utf8MaxBytes = 4;
 
-        std::reference_wrapper<Display> display;
+    std::reference_wrapper<Display> display;
 
-        std::unique_ptr<_XIM, decltype(&XCloseIM)> xim = std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
-        std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
-    };
-}
+    std::unique_ptr<_XIM, decltype(&XCloseIM)> xim =
+        std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
+    std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
+};
+}  // namespace EvgetX11
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H
+#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H

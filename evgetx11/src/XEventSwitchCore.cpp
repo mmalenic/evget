@@ -20,20 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <spdlog/spdlog.h>
-#include <X11/extensions/XInput2.h>
-#include <X11/Xutil.h>
-#include <xorg/xserver-properties.h>
-#include <X11/extensions/XInput.h>
 #include "evgetx11/XEventSwitchCore.h"
-#include "evgetcore/Event/MouseMove.h"
+
+#include <X11/Xutil.h>
+#include <X11/extensions/XInput.h>
+#include <X11/extensions/XInput2.h>
+#include <spdlog/spdlog.h>
+#include <xorg/xserver-properties.h>
+
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseClick.h"
+#include "evgetcore/Event/MouseMove.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-EvgetX11::XEventSwitchCore::XEventSwitchCore(XWrapper& xWrapper, XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh): xWrapper{xWrapper},
-                                                                                                  xEventSwitchPointer{xEventSwitchPointer},
-                                                                                                  xDeviceRefresh{xDeviceRefresh} {
+EvgetX11::XEventSwitchCore::XEventSwitchCore(
+    XWrapper& xWrapper,
+    XEventSwitchPointer& xEventSwitchPointer,
+    XDeviceRefresh& xDeviceRefresh
+)
+    : xWrapper{xWrapper}, xEventSwitchPointer{xEventSwitchPointer}, xDeviceRefresh{xDeviceRefresh} {
     xDeviceRefresh.setEvtypeName(XI_KeyPress, "KeyPress");
     xDeviceRefresh.setEvtypeName(XI_KeyRelease, "KeyRelease");
     xDeviceRefresh.setEvtypeName(XI_ButtonPress, "ButtonPress");

@@ -20,20 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <X11/extensions/XInput2.h>
-#include <spdlog/spdlog.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/XInput.h>
-#include <array>
 #include "evgetx11/XWrapperX11.h"
 
-EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {
-}
+#include <X11/Xutil.h>
+#include <X11/extensions/XInput.h>
+#include <X11/extensions/XInput2.h>
+#include <spdlog/spdlog.h>
+
+#include <array>
+
+EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {}
 
 std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) {
     if (event.evtype == XI_KeyPress) {
-        // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems a
-        // little bit hacky to do this conversion, however it should be okay as all the elements have a direct relationship.
+        // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems
+        // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
+        // relationship.
         XKeyEvent keyEvent{
             .type = ButtonPress,
             .serial = event.serial,
@@ -49,8 +51,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
             .y_root = static_cast<int>(event.root_y),
             .state = static_cast<unsigned int>(event.mods.effective),
             .keycode = static_cast<unsigned int>(event.detail),
-            .same_screen = true
-        };
+            .same_screen = true};
 
         int bytes;
         std::array<char, utf8MaxBytes + 1> array{};
@@ -78,26 +79,43 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Dis
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
         auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
         if (values || !xim_styles) {
-            spdlog::warn("The input method does not support any styles, falling back to encoding key events in ISO Latin-1.");
+            spdlog::warn(
+                "The input method does not support any styles, falling back to encoding key events in ISO Latin-1."
+            );
             return {nullptr, XDestroyIC};
         }
 
-        for (int i = 0;  i < xim_styles->count_styles;  i++) {
+        for (int i = 0; i < xim_styles->count_styles; i++) {
             if (xim_styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing)) {
                 Window window = XDefaultRootWindow(&display);
-                return {XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window, XNFocusWindow, window, nullptr), XDestroyIC};
+                return {
+                    XCreateIC(
+                        xim,
+                        XNInputStyle,
+                        XIMPreeditNothing | XIMStatusNothing,
+                        XNClientWindow,
+                        window,
+                        XNFocusWindow,
+                        window,
+                        nullptr
+                    ),
+                    XDestroyIC};
             }
         }
 
-        spdlog::warn("The input method does not support the PreeditNothing and StatusNothing style, falling back to encoding key events in ISO Latin-1.");
+        spdlog::warn(
+            "The input method does not support the PreeditNothing and StatusNothing style, falling back to encoding "
+            "key events in ISO Latin-1."
+        );
     }
     return {nullptr, XDestroyIC};
 }
-std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(
-    int id,
-    int mapSize
-) {
-    auto device = std::unique_ptr<XDevice, DeleterWithDisplay<XCloseDevice>>(XOpenDevice(&display.get(), id), DeleterWithDisplay<XCloseDevice>{display.get()});
+
+std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(int id, int mapSize) {
+    auto device = std::unique_ptr<XDevice, DeleterWithDisplay<XCloseDevice>>(
+        XOpenDevice(&display.get(), id),
+        DeleterWithDisplay<XCloseDevice>{display.get()}
+    );
     if (device) {
         auto map = std::make_unique<unsigned char[]>(mapSize);
         XGetDeviceButtonMapping(&display.get(), device.get(), map.get(), mapSize);
@@ -125,12 +143,12 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
 }
 
 EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
-    auto deleter = std::function<void(XGenericEventCookie *)>{DeleterWithDisplay<XFreeEventData>{display.get()}};
+    auto deleter = std::function<void(XGenericEventCookie*)>{DeleterWithDisplay<XFreeEventData>{display.get()}};
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         return {&event.xcookie, std::move(deleter)};
     }
-    return {nullptr, [](XGenericEventCookie *){ }};
+    return {nullptr, [](XGenericEventCookie*) {}};
 }
 
 Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {

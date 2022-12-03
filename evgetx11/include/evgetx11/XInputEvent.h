@@ -23,57 +23,59 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H
 
-#include <memory>
 #include <X11/Xlib.h>
+
 #include <chrono>
-#include "evgetcore/Event/Data.h"
+#include <memory>
+
 #include "XWrapperX11.h"
+#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetX11 {
-    class XInputEvent {
-    public:
-        /**
-         * Get the date time of the event.
-         */
-        [[nodiscard]] const EvgetCore::Event::SchemaField::Timestamp &getTimestamp() const;
+class XInputEvent {
+public:
+    /**
+     * Get the date time of the event.
+     */
+    [[nodiscard]] const EvgetCore::Event::SchemaField::Timestamp& getTimestamp() const;
 
-        /**
-         * Check if viewData and getEventType is safe to call.
-         */
-        [[nodiscard]] bool hasData() const;
+    /**
+     * Check if viewData and getEventType is safe to call.
+     */
+    [[nodiscard]] bool hasData() const;
 
-        /**
-         * Must check if data is available first with hasData.
-         */
-        [[nodiscard]] int getEventType() const;
+    /**
+     * Must check if data is available first with hasData.
+     */
+    [[nodiscard]] int getEventType() const;
 
-        /**
-         * A non owning reference to the data in the event cookie. Must check if data is available first
-         * with hasData.
-         */
-        template<typename T>
-        const T& viewData() const;
+    /**
+     * A non owning reference to the data in the event cookie. Must check if data is available first
+     * with hasData.
+     */
+    template <typename T>
+    const T& viewData() const;
 
-        /**
-         * Create a XInputEvent by getting the next event from the display. Events received depend on
-         * the event mask set on the display. This function will block if there are no events on the event
-         * queue.
-         */
-        static XInputEvent nextEvent(XWrapper& xWrapper);
+    /**
+     * Create a XInputEvent by getting the next event from the display. Events received depend on
+     * the event mask set on the display. This function will block if there are no events on the event
+     * queue.
+     */
+    static XInputEvent nextEvent(XWrapper& xWrapper);
 
-    private:
-        explicit XInputEvent(XWrapper& xWrapper);
+private:
+    explicit XInputEvent(XWrapper& xWrapper);
 
-        XEvent event;
-        EvgetCore::Event::SchemaField::Timestamp timestamp;
-        XWrapper::XEventPointer cookie;
-    };
+    XEvent event;
+    EvgetCore::Event::SchemaField::Timestamp timestamp;
+    XWrapper::XEventPointer cookie;
+};
 
-    template<typename T>
-    const T& EvgetX11::XInputEvent::viewData() const {
-        return *static_cast<T*>(cookie->data);
-    }
+template <typename T>
+const T& EvgetX11::XInputEvent::viewData() const {
+    return *static_cast<T*>(cookie->data);
 }
+}  // namespace EvgetX11
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H
+#endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTEVENT_H

@@ -25,16 +25,10 @@
 #define EVGET_DATATYPE_H
 
 namespace EvgetCore::Event {
-    /**
-     * Valid schema data types.
-     */
-    enum class DataType {
-        String,
-        Integer,
-        Timestamp,
-        Interval,
-        Double
-    };
-}
+/**
+ * Valid schema data types.
+ */
+enum class DataType { String, Integer, Timestamp, Interval, Double };
+}  // namespace EvgetCore::Event
 
-#endif //EVGET_DATATYPE_H
+#endif  // EVGET_DATATYPE_H

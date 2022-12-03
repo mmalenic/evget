@@ -21,28 +21,29 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+
 #include <array>
+
 #include "EvgetX11TestUtils.h"
 #include "evgetx11/XEventSwitchPointer.h"
 
-TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
     auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
 
     std::vector<EvgetCore::Event::Data> data{};
-//    EvgetX11::XEventSwitchPointer::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data, EvgetCore::Event::ButtonAction::Press, 1);
+    //    EvgetX11::XEventSwitchPointer::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data,
+    //    EvgetCore::Event::ButtonAction::Press, 1);
 
     auto genericData = data.at(0);
 
-//    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
-//    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
-//    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
+    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    //    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "1");
 }
-
-

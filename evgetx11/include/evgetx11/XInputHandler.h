@@ -24,31 +24,33 @@
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
 
 #include <X11/extensions/XInput2.h>
+
 #include <memory>
+
 #include "XInputEvent.h"
 #include "XSetMask.h"
 
 namespace EvgetX11 {
 
-    class XInputHandler {
-    public:
-        explicit XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+class XInputHandler {
+public:
+    explicit XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
 
-        /**
-         * Get the next event.
-         */
-        XInputEvent getEvent();
+    /**
+     * Get the next event.
+     */
+    XInputEvent getEvent();
 
-    private:
-        static constexpr int versionMajor = 2;
-        static constexpr int versionMinor = 2;
+private:
+    static constexpr int versionMajor = 2;
+    static constexpr int versionMinor = 2;
 
-        std::reference_wrapper<XWrapper> xWrapper;
+    std::reference_wrapper<XWrapper> xWrapper;
 
-        static void setMask(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+    static void setMask(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
 
-        static void announceVersion(XWrapper& xWrapper);
-    };
-}
+    static void announceVersion(XWrapper& xWrapper);
+};
+}  // namespace EvgetX11
 
-#endif //EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H

@@ -26,16 +26,16 @@
 #include "evwatch/EventWatcher.h"
 
 namespace EvWatch::Sig {
-    /**
-     * Watch signals using sigaction.
-     */
-    class EventWatcherSignal : public EventWatcher {
-    public:
-        EventWatcherSignal(std::initializer_list<int> registerSignals, int flags = 0);
+/**
+ * Watch signals using sigaction.
+ */
+class EventWatcherSignal : public EventWatcher {
+public:
+    EventWatcherSignal(std::initializer_list<int> registerSignals, int flags = 0);
 
-    private:
-        static void signalHandler([[maybe_unused]] int _);
-    };
-}
+private:
+    static void signalHandler([[maybe_unused]] int _);
+};
+}  // namespace EvWatch::Sig
 
-#endif //EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H
+#endif  // EVGET_INCLUDE_LINUX_SHUTDOWNHANDLERLINUX_H

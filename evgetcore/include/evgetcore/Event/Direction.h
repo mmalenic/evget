@@ -24,12 +24,7 @@
 #define EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 
 namespace EvgetCore::Event {
-    enum class Direction {
-        Down,
-        Left,
-        Right,
-        Up
-    };
+enum class Direction { Down, Left, Right, Up };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
+#endif  // EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H

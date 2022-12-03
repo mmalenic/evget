@@ -22,9 +22,8 @@
 
 #include "evgetx11/XEventSwitchTouch.h"
 
-EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh) :
-                                                                     xEventSwitchPointer{xEventSwitchPointer},
-                                                                     xDeviceRefresh{xDeviceRefresh} {
+EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh)
+    : xEventSwitchPointer{xEventSwitchPointer}, xDeviceRefresh{xDeviceRefresh} {
     xDeviceRefresh.setEvtypeName(XI_TouchBegin, "TouchBegin");
     xDeviceRefresh.setEvtypeName(XI_TouchUpdate, "TouchUpdate");
     xDeviceRefresh.setEvtypeName(XI_TouchEnd, "TouchEnd");

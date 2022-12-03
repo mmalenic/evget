@@ -24,72 +24,74 @@
 #ifndef EVGET_SCHEMA_H
 #define EVGET_SCHEMA_H
 
-#include <map>
-#include <string>
-#include <optional>
-#include <chrono>
-#include <array>
-#include <utility>
 #include <date/tz.h>
+
+#include <array>
+#include <chrono>
+#include <map>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "ButtonAction.h"
-#include "Device.h"
-#include "evgetcore/Util.h"
 #include "DataType.h"
-#include "SchemaField.h"
+#include "Device.h"
 #include "Relation.h"
+#include "SchemaField.h"
+#include "evgetcore/Util.h"
 
 namespace EvgetCore::Event {
+/**
+ * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
+ */
+template <std::size_t NFields, typename... To>
+class Schema {
+public:
+    constexpr Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<To>... relations);
+
     /**
-     * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
+     * Get the fields in this Schema.
      */
-    template<std::size_t NFields, typename... To>
-    class Schema {
-    public:
-        constexpr Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields, Relation<To>... relations);
+    [[nodiscard]] constexpr const std::array<SchemaField::Field, NFields>& getFields() const;
 
-        /**
-         * Get the fields in this Schema.
-         */
-        [[nodiscard]] constexpr const std::array<SchemaField::Field, NFields> &getFields() const;
+    /**
+     * Get the linked to schemas.
+     */
+    [[nodiscard]] constexpr const std::tuple<Relation<To>...>& getRelations() const;
 
-        /**
-         * Get the linked to schemas.
-         */
-        [[nodiscard]] constexpr const std::tuple<Relation<To>...> &getRelations() const;
+    /**
+     * Get the schema name.
+     */
+    [[nodiscard]] constexpr const std::string_view& getName() const;
 
-        /**
-         * Get the schema name.
-         */
-        [[nodiscard]] constexpr const std::string_view &getName() const;
+private:
+    std::string_view name{};
+    std::array<SchemaField::Field, NFields> fields{};
+    std::tuple<Relation<To>...> relations{};
+};
 
-    private:
-        std::string_view name{};
-        std::array<SchemaField::Field, NFields> fields{};
-        std::tuple<Relation<To>...> relations{};
-    };
+template <std::size_t NFields, typename... To>
+constexpr Schema<NFields, To...>::Schema(
+    std::string_view name,
+    std::array<SchemaField::Field, NFields> fields,
+    Relation<To>... relations
+)
+    : name{name}, fields{fields}, relations{relations...} {}
 
-    template<std::size_t NFields, typename... To>
-    constexpr
-    Schema<NFields, To...>::Schema(std::string_view name, std::array<SchemaField::Field, NFields> fields,
-                                         Relation<To>... relations) : name{name}, fields{fields}, relations{relations...} {
-
-    }
-
-    template<std::size_t NFields, typename... To>
-    constexpr const std::array<SchemaField::Field, NFields> &Schema<NFields, To...>::getFields() const {
-        return fields;
-    }
-
-    template<std::size_t NFields, typename... To>
-    constexpr const std::tuple<Relation<To>...> &Schema<NFields, To...>::getRelations() const {
-        return relations;
-    }
-
-    template<std::size_t NFields, typename... To>
-    constexpr const std::string_view &Schema<NFields, To...>::getName() const {
-        return name;
-    }
+template <std::size_t NFields, typename... To>
+constexpr const std::array<SchemaField::Field, NFields>& Schema<NFields, To...>::getFields() const {
+    return fields;
 }
 
+template <std::size_t NFields, typename... To>
+constexpr const std::tuple<Relation<To>...>& Schema<NFields, To...>::getRelations() const {
+    return relations;
+}
 
-#endif //EVGET_SCHEMA_H
+template <std::size_t NFields, typename... To>
+constexpr const std::string_view& Schema<NFields, To...>::getName() const {
+    return name;
+}
+}  // namespace EvgetCore::Event
+
+#endif  // EVGET_SCHEMA_H

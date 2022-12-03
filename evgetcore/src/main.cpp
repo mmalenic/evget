@@ -20,32 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <iostream>
-#include <spdlog/spdlog.h>
-#include <boost/asio.hpp>
-#include <atomic>
 #include <evgetcore/EventHandler.h>
+#include <spdlog/spdlog.h>
+
+#include <atomic>
+#include <boost/asio.hpp>
 #include <boost/program_options.hpp>
-//#include <linux/input.h>
-//#include "evgetcore/CommandLine/ParserLinux.h"
-//#include "evgetcore/XInputHandler.h"
-//#include "evgetcore/EventTransformerLinux.h"
-//#include "evgetcore/SystemEventLoopLinux.h"
-//#include "../checkinput/include/checkinput/EventDeviceLister.h"
+#include <iostream>
+// #include <linux/input.h>
+// #include "evgetcore/CommandLine/ParserLinux.h"
+// #include "evgetcore/XInputHandler.h"
+// #include "evgetcore/EventTransformerLinux.h"
+// #include "evgetcore/SystemEventLoopLinux.h"
+// #include "../checkinput/include/checkinput/EventDeviceLister.h"
 #include "evgetcore/Event/Key.h"
-#include "evgetx11/XWrapperX11.h"
-#include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/EventTransformerX11.h"
+#include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XEventSwitchCore.h"
 #include "evgetx11/XEventSwitchPointer.h"
+#include "evgetx11/XWrapperX11.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-//    EvgetCore::Event::Key key{};
-//    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
-//
-//    cout << schema.getFields().size() << endl;
+    //    EvgetCore::Event::Key key{};
+    //    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
+    //
+    //    cout << schema.getFields().size() << endl;
 
     Display* display = XOpenDisplay(nullptr);
     EvgetX11::XWrapperX11 wrapper{*display};
@@ -57,49 +58,50 @@ int main(int argc, char* argv[]) {
 
     EvgetX11::EventTransformerX11 transformer{wrapper, core};
 
-//    CliOption::ParserLinux cmd{};
-//    cmd.parseCommandLine(argc, (const char**) argv);
-//
-//    spdlog::set_level(cmd.getLogLevel());
-//
-//    boost::asio::thread_pool pool{};
-//    auto context = pool.get_executor();
-//    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
-//    Display* display = XOpenDisplay(nullptr);
-//    evget::EventTransformerLinux transformer{*display};
-//    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
-//
-//    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage, eventLoop};
-//
-//    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
-//
-//    if (cmd.isListEventDevices()) {
-//        evget::EventDeviceLister lister{};
-//        cout << lister;
-//    }
-//
-//    pool.join();
-//    po::options_description cmdlineDesc("Allowed options");
-//    cmdlineDesc.add_options()
-//            ("help", "produce help message")
-//            ("compression", po::_value<int>(), "set compression level")
-//        ;
-//
-//    po::variables_map vm;
-//    po::store(po::parse_command_line(argc, argv, cmdlineDesc), vm);
-//    po::notify(vm);
-//
-//    if (vm.count("help")) {
-//        cout << cmdlineDesc << "\n";
-//        return 1;
-//    }
-//
-//    if (vm.count("compression")) {
-//        cout << "Compression level was set to "
-//             << vm["compression"].as<int>() << ".\n";
-//    } else {
-//        cout << "Compression level was not set.\n";
-//    }
+    //    CliOption::ParserLinux cmd{};
+    //    cmd.parseCommandLine(argc, (const char**) argv);
+    //
+    //    spdlog::set_level(cmd.getLogLevel());
+    //
+    //    boost::asio::thread_pool pool{};
+    //    auto context = pool.get_executor();
+    //    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
+    //    Display* display = XOpenDisplay(nullptr);
+    //    evget::EventTransformerLinux transformer{*display};
+    //    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
+    //
+    //    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage,
+    //    eventLoop};
+    //
+    //    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+    //
+    //    if (cmd.isListEventDevices()) {
+    //        evget::EventDeviceLister lister{};
+    //        cout << lister;
+    //    }
+    //
+    //    pool.join();
+    //    po::options_description cmdlineDesc("Allowed options");
+    //    cmdlineDesc.add_options()
+    //            ("help", "produce help message")
+    //            ("compression", po::_value<int>(), "set compression level")
+    //        ;
+    //
+    //    po::variables_map vm;
+    //    po::store(po::parse_command_line(argc, argv, cmdlineDesc), vm);
+    //    po::notify(vm);
+    //
+    //    if (vm.count("help")) {
+    //        cout << cmdlineDesc << "\n";
+    //        return 1;
+    //    }
+    //
+    //    if (vm.count("compression")) {
+    //        cout << "Compression level was set to "
+    //             << vm["compression"].as<int>() << ".\n";
+    //    } else {
+    //        cout << "Compression level was not set.\n";
+    //    }
 
     return 1;
 }

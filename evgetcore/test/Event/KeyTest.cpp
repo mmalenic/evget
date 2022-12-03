@@ -21,40 +21,49 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evgetcore/Event/Key.h"
+
 #include "EventTestUtils.h"
+#include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/SchemaField.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(KeyTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(), 0, "1");
+TEST(KeyTest, Time) {  // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(
+        EvgetCore::Event::Key{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
+        0,
+        "1"
+    );
 }
 
-TEST(KeyTest, Device) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Device) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.device(EvgetCore::Event::Device::Mouse).build(), 1, "Mouse");
 }
 
-TEST(KeyTest, PositionX) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, PositionX) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.positionX(1).build(), 2, "1");
 }
 
-TEST(KeyTest, PositionY) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, PositionY) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.positionY(1).build(), 3, "1");
 }
 
-TEST(KeyTest, ButtonAction) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.action(EvgetCore::Event::ButtonAction::Press).build(), 4, "Press");
+TEST(KeyTest, ButtonAction) {  // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(
+        EvgetCore::Event::Key{}.action(EvgetCore::Event::ButtonAction::Press).build(),
+        4,
+        "Press"
+    );
 }
 
-TEST(KeyTest, Button) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Button) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.button(1).build(), 5, "1");
 }
 
-TEST(KeyTest, Name) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Name) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.name("1").build(), 6, "1");
 }
 
-TEST(KeyTest, Character) { // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Character) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.character("a").build(), 7, "a");
 }

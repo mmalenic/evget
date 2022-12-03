@@ -24,29 +24,30 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTCOOKIEDELETER_H
 
 #include <X11/Xlib.h>
+
 #include <functional>
 
 namespace EvgetX11 {
-    template <auto F>
-    class DeleterWithDisplay {
-    public:
-        explicit DeleterWithDisplay(Display& display);
+template <auto F>
+class DeleterWithDisplay {
+public:
+    explicit DeleterWithDisplay(Display& display);
 
-        template <typename T>
-        void operator()(T *pointer) const;
+    template <typename T>
+    void operator()(T* pointer) const;
 
-    private:
-        std::reference_wrapper<Display> display;
-    };
+private:
+    std::reference_wrapper<Display> display;
+};
 
-    template<auto F>
-    template<typename T>
-    void EvgetX11::DeleterWithDisplay<F>::operator()(T *pointer) const {
-        F(&display.get(), pointer);
-    }
-
-    template<auto F>
-    DeleterWithDisplay<F>::DeleterWithDisplay(Display &display) : display{display} {}
+template <auto F>
+template <typename T>
+void EvgetX11::DeleterWithDisplay<F>::operator()(T* pointer) const {
+    F(&display.get(), pointer);
 }
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTCOOKIEDELETER_H
+template <auto F>
+DeleterWithDisplay<F>::DeleterWithDisplay(Display& display) : display{display} {}
+}  // namespace EvgetX11
+
+#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XEVENTCOOKIEDELETER_H

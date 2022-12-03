@@ -27,17 +27,20 @@
 
 namespace EvWatch {
 class EventWatcherException : public std::system_error {
-    public:
-        /**
-         * Create exception with message.
-         */
-        explicit EventWatcherException(int errorNumber, const std::string& message = "Event watcher error.", const std::error_category& category = std::generic_category());
-        [[nodiscard]] const char* what() const noexcept override;
+public:
+    /**
+     * Create exception with message.
+     */
+    explicit EventWatcherException(
+        int errorNumber,
+        const std::string& message = "Event watcher error.",
+        const std::error_category& category = std::generic_category()
+    );
+    [[nodiscard]] const char* what() const noexcept override;
 
-    private:
-        std::string message;
-    };
-}
+private:
+    std::string message;
+};
+}  // namespace EvWatch
 
-
-#endif //EVGET_EVENTWATCHEREXCEPTION_H
+#endif  // EVGET_EVENTWATCHEREXCEPTION_H

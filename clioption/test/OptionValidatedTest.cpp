@@ -21,43 +21,55 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "clioption/OptionValidated.h"
+
 #include "CliOptionTestUtils.h"
+#include "clioption/OptionValidated.h"
 
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(OptionValidatedTest, ValidatedValuePresent) { // NOLINT(cert-err58-cpp)
-    Utils::withOption({"program", "-a", "1"}, [](po::options_description &desc) {
-        return CliOption::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string &_) {
-            return 2;
-        });
-    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        Utils::storeAndNotifyOption(option, parse, vm);
-        ASSERT_EQ(2, option.getValue());
-    });
+TEST(OptionValidatedTest, ValidatedValuePresent) {  // NOLINT(cert-err58-cpp)
+    Utils::withOption(
+        {"program", "-a", "1"},
+        [](po::options_description& desc) {
+            return CliOption::OptionBuilder<int>(desc).shortName('a').required().build([](const std::string& _) {
+                return 2;
+            });
+        },
+        [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+            Utils::storeAndNotifyOption(option, parse, vm);
+            ASSERT_EQ(2, option.getValue());
+        }
+    );
 }
 
-TEST(OptionValidatedTest, ValidatedValueNotPresent) { // NOLINT(cert-err58-cpp)
-    Utils::withOption({"program"}, [](po::options_description &desc) {
-        return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).build([](const std::string &_) {
-            return 2;
-        });
-    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        Utils::storeAndNotifyOption(option, parse, vm);
-        ASSERT_EQ(1, option.getValue());
-    });
+TEST(OptionValidatedTest, ValidatedValueNotPresent) {  // NOLINT(cert-err58-cpp)
+    Utils::withOption(
+        {"program"},
+        [](po::options_description& desc) {
+            return CliOption::OptionBuilder<int>(desc).shortName('a').defaultValue(1).build([](const std::string& _) {
+                return 2;
+            });
+        },
+        [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+            Utils::storeAndNotifyOption(option, parse, vm);
+            ASSERT_EQ(1, option.getValue());
+        }
+    );
 }
 
-TEST(OptionValidatedTest, RepresentationValidated) { // NOLINT(cert-err58-cpp)
-    Utils::withOption({"program"}, [](po::options_description &desc) {
-        return CliOption::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build(
-                [](const std::string &_) {
-                    return 2;
-                });
-    }, [](po::variables_map &vm, auto &option, po::command_line_parser &parse) {
-        Utils::storeAndNotifyOption(option, parse, vm);
-        ASSERT_EQ(1, option.getValue());
-        ASSERT_EQ("repr", option.getRepresentation());
-    });
+TEST(OptionValidatedTest, RepresentationValidated) {  // NOLINT(cert-err58-cpp)
+    Utils::withOption(
+        {"program"},
+        [](po::options_description& desc) {
+            return CliOption::OptionBuilder<int>(desc).shortName('a').representation("repr").defaultValue(1).build(
+                [](const std::string& _) { return 2; }
+            );
+        },
+        [](po::variables_map& vm, auto& option, po::command_line_parser& parse) {
+            Utils::storeAndNotifyOption(option, parse, vm);
+            ASSERT_EQ(1, option.getValue());
+            ASSERT_EQ("repr", option.getRepresentation());
+        }
+    );
 }

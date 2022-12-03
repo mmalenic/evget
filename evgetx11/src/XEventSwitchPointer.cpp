@@ -22,8 +22,9 @@
 //
 
 #include "evgetx11/XEventSwitchPointer.h"
-#include "evgetcore/Event/MouseMove.h"
+
 #include "evgetcore/Event/MouseClick.h"
+#include "evgetcore/Event/MouseMove.h"
 
 void EvgetX11::XEventSwitchPointer::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
     auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
@@ -40,10 +41,10 @@ void EvgetX11::XEventSwitchPointer::setButtonMap(const XIButtonClassInfo& button
 }
 
 void EvgetX11::XEventSwitchPointer::refreshDevices(
-        int id,
-        EvgetCore::Event::Device device,
-        const std::string& name,
-        const XIDeviceInfo& info
+    int id,
+    EvgetCore::Event::Device device,
+    const std::string& name,
+    const XIDeviceInfo& info
 ) {
     xDeviceRefresh.get().refreshDevices(id, device, name, info);
 
@@ -62,10 +63,12 @@ void EvgetX11::XEventSwitchPointer::refreshDevices(
     }
 }
 
-EvgetX11::XEventSwitchPointer::XEventSwitchPointer(EvgetX11::XWrapper &xWrapper, EvgetX11::XDeviceRefresh& xDeviceRefresh) : xWrapper{xWrapper},
-                                                                                                                             xDeviceRefresh{xDeviceRefresh} {
-}
+EvgetX11::XEventSwitchPointer::XEventSwitchPointer(
+    EvgetX11::XWrapper& xWrapper,
+    EvgetX11::XDeviceRefresh& xDeviceRefresh
+)
+    : xWrapper{xWrapper}, xDeviceRefresh{xDeviceRefresh} {}
 
-const std::string &EvgetX11::XEventSwitchPointer::getButtonName(int id, int button) const {
+const std::string& EvgetX11::XEventSwitchPointer::getButtonName(int id, int button) const {
     return buttonMap.at(id).at(button);
 }

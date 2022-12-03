@@ -23,19 +23,9 @@
 #include "clioption/OptionFlag.h"
 
 CliOption::OptionFlag::OptionFlag(OptionBuilder<bool> builder) : AbstractOption<bool>(std::move(builder)) {
-    this->addOptionToDesc(
-            this->isRequired(),
-            false,
-            {false},
-            {true},
-            po::bool_switch()
-    );
+    this->addOptionToDesc(this->isRequired(), false, {false}, {true}, po::bool_switch());
 }
 
-std::optional<bool> CliOption::OptionFlag::getDefaultValue() const {
-    return false;
-}
+std::optional<bool> CliOption::OptionFlag::getDefaultValue() const { return false; }
 
-std::optional<bool> CliOption::OptionFlag::getImplicitValue() const {
-    return true;
-}
+std::optional<bool> CliOption::OptionFlag::getImplicitValue() const { return true; }

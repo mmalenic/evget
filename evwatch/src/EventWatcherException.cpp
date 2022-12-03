@@ -22,10 +22,11 @@
 
 #include "evwatch/EventWatcherException.h"
 
-EvWatch::EventWatcherException::EventWatcherException(int errorNumber, const std::string &message,
-                                                      const std::error_category &category) : std::system_error(errorNumber, category, message) {
-}
+EvWatch::EventWatcherException::EventWatcherException(
+    int errorNumber,
+    const std::string& message,
+    const std::error_category& category
+)
+    : std::system_error(errorNumber, category, message) {}
 
-const char *EvWatch::EventWatcherException::what() const noexcept {
-    return std::system_error::what();
-}
+const char* EvWatch::EventWatcherException::what() const noexcept { return std::system_error::what(); }

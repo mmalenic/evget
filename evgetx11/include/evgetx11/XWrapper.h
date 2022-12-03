@@ -24,57 +24,63 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H
 
 #include <X11/Xlib.h>
-#include <functional>
-#include <string>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+
+#include <functional>
 #include <memory>
-#include "evgetcore/Util.h"
+#include <string>
+
 #include "DeleterWithDisplay.h"
+#include "evgetcore/Util.h"
 
 namespace EvgetX11 {
-    class XWrapper {
-    public:
-        using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie *)>>;
+class XWrapper {
+public:
+    using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
 
-        virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
-        virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
+    virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
+    virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
 
-        virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
-        virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
+    virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
+    virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
 
-        virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
+    virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
 
-        virtual XEvent nextEvent() = 0;
-        virtual XEventPointer eventData(XEvent& event) = 0;
+    virtual XEvent nextEvent() = 0;
+    virtual XEventPointer eventData(XEvent& event) = 0;
 
-        virtual Status queryVersion(int& major, int& minor) = 0;
-        virtual void selectEvents(XIEventMask& mask) = 0;
+    virtual Status queryVersion(int& major, int& minor) = 0;
+    virtual void selectEvents(XIEventMask& mask) = 0;
 
-        static std::string keySymToString(KeySym keySym);
-        static void setMask(unsigned char* mask, std::initializer_list<int> events);
-        static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
+    static std::string keySymToString(KeySym keySym);
+    static void setMask(unsigned char* mask, std::initializer_list<int> events);
+    static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
 
-        XWrapper() = default;
-        virtual ~XWrapper() = default;
+    XWrapper() = default;
+    virtual ~XWrapper() = default;
 
-        XWrapper(XWrapper&&) noexcept = delete;
-        XWrapper& operator=(XWrapper&&) noexcept = delete;
+    XWrapper(XWrapper&&) noexcept = delete;
+    XWrapper& operator=(XWrapper&&) noexcept = delete;
 
-        XWrapper(const XWrapper&) = delete;
-        XWrapper& operator=(const XWrapper&) = delete;
+    XWrapper(const XWrapper&) = delete;
+    XWrapper& operator=(const XWrapper&) = delete;
 
-    private:
-        static constexpr int maskBits = 8;
-    };
+private:
+    static constexpr int maskBits = 8;
+};
 
-    void EvgetX11::XWrapper::onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function) {
-        for (int i = 0; i < maskLen * maskBits; i++) {
-            if (XIMaskIsSet(mask, i)) {
-                function(i);
-            }
+void EvgetX11::XWrapper::onMasks(
+    const unsigned char* mask,
+    int maskLen,
+    EvgetCore::Util::Invocable<void, int> auto&& function
+) {
+    for (int i = 0; i < maskLen * maskBits; i++) {
+        if (XIMaskIsSet(mask, i)) {
+            function(i);
         }
     }
 }
+}  // namespace EvgetX11
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H
+#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H

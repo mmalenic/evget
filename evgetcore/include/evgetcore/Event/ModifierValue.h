@@ -25,24 +25,24 @@
 #define EVGET_MODIFIERVALUE_H
 
 namespace EvgetCore::Event {
-    /**
-     * Specify the allowed keyboard modifiers.
-     * Based on https://www.glfw.org/docs/3.3/group__mods.html
-     */
-    enum class ModifierValue {
-        Shift,
-        // X11 - Lock
-        CapsLock,
-        Control,
-        // X11 - Mod1
-        Alt,
-        // X11 - Mod2
-        NumLock,
-        Mod3,
-        // X11 - Mod4, Windows key
-        Super,
-        Mod5
-    };
-}
+/**
+ * Specify the allowed keyboard modifiers.
+ * Based on https://www.glfw.org/docs/3.3/group__mods.html
+ */
+enum class ModifierValue {
+    Shift,
+    // X11 - Lock
+    CapsLock,
+    Control,
+    // X11 - Mod1
+    Alt,
+    // X11 - Mod2
+    NumLock,
+    Mod3,
+    // X11 - Mod4, Windows key
+    Super,
+    Mod5
+};
+}  // namespace EvgetCore::Event
 
-#endif //EVGET_MODIFIERVALUE_H
+#endif  // EVGET_MODIFIERVALUE_H

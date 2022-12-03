@@ -14,10 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
+
 #include <csignal>
+
 #include "evwatchsig/EventWatcherSignal.h"
 
-TEST(EventWatcherSignalTest, HandleSingal) { // NOLINT(cert-err58-cpp)
+TEST(EventWatcherSignalTest, HandleSingal) {  // NOLINT(cert-err58-cpp)
     EvWatch::Sig::EventWatcherSignal handler{};
     ASSERT_FALSE(EvWatch::Sig::EventWatcherSignal::eventOccurred());
     raise(SIGINT);

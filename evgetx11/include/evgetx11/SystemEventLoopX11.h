@@ -24,47 +24,44 @@
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
 #include <filesystem>
-#include "evgetcore/SystemEventLoop.h"
-#include "evgetcore/SystemEvent.h"
-#include "XInputEvent.h"
-#include "XInputHandler.h"
 #include <utility>
 
+#include "XInputEvent.h"
+#include "XInputHandler.h"
+#include "evgetcore/SystemEvent.h"
+#include "evgetcore/SystemEventLoop.h"
+
 namespace EvgetX11 {
-    namespace asio = boost::asio;
+namespace asio = boost::asio;
 
+/**
+ * Class represents processing evgetx11 system events.
+ */
+template <boost::asio::execution::executor E>
+class SystemEventLoopX11 : public EvgetCore::SystemEventLoop<E, XInputEvent> {
+public:
     /**
-     * Class represents processing evgetx11 system events.
+     * Create the system events.
      */
-    template<boost::asio::execution::executor E>
-    class SystemEventLoopX11 : public EvgetCore::SystemEventLoop<E, XInputEvent> {
-    public:
-        /**
-         * Create the system events.
-         */
-        explicit SystemEventLoopX11(E& context, XInputHandler xInputHandler);
+    explicit SystemEventLoopX11(E& context, XInputHandler xInputHandler);
 
-        boost::asio::awaitable<void> eventLoop() override;
+    boost::asio::awaitable<void> eventLoop() override;
 
-    private:
-        XInputHandler handler;
-    };
+private:
+    XInputHandler handler;
+};
 
-    template<boost::asio::execution::executor E>
-    SystemEventLoopX11<E>::SystemEventLoopX11(
-        E& context,
-        XInputHandler xInputHandler
-    ) : EvgetCore::SystemEventLoop<E, XInputEvent>{context},
-        handler{xInputHandler} {
+template <boost::asio::execution::executor E>
+SystemEventLoopX11<E>::SystemEventLoopX11(E& context, XInputHandler xInputHandler)
+    : EvgetCore::SystemEventLoop<E, XInputEvent>{context}, handler{xInputHandler} {}
+
+template <boost::asio::execution::executor E>
+boost::asio::awaitable<void> SystemEventLoopX11<E>::eventLoop() {
+    while (!this->isCancelled()) {
+        this->notify(std::move(handler.getEvent()));
     }
-
-    template<boost::asio::execution::executor E>
-    boost::asio::awaitable<void> SystemEventLoopX11<E>::eventLoop() {
-        while (!this->isCancelled()) {
-            this->notify(std::move(handler.getEvent()));
-        }
-        co_return;
-    }
+    co_return;
 }
+}  // namespace EvgetX11
 
-#endif // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
+#endif  // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H

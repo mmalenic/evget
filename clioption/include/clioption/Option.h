@@ -23,48 +23,57 @@
 #ifndef EVGET_INCLUDE_COMMANDLINEOPTION_H
 #define EVGET_INCLUDE_COMMANDLINEOPTION_H
 
-#include <string>
+#include <fmt/core.h>
+
 #include <boost/program_options.hpp>
 #include <optional>
-#include <fmt/core.h>
-#include "InvalidCommandLineOption.h"
+#include <string>
+
 #include "AbstractOption.h"
+#include "InvalidCommandLineOption.h"
 
 namespace CliOption {
 
+/**
+ * Represents a command line option.
+ * @tparam T _value of command line option
+ */
+template <typename T>
+class Option : public AbstractOption<T> {
+public:
     /**
-     * Represents a command line option.
-     * @tparam T _value of command line option
+     * Create from builder.
      */
-    template<typename T>
-    class Option : public AbstractOption<T> {
-    public:
-        /**
-         * Create from builder.
-         */
-        explicit Option(OptionBuilder<T> builder);
+    explicit Option(OptionBuilder<T> builder);
 
-        /**
-         * Create from builder.
-         */
-        Option(OptionBuilder<T> builder, const std::string& representation);
-    };
+    /**
+     * Create from builder.
+     */
+    Option(OptionBuilder<T> builder, const std::string& representation);
+};
 
-    template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder) : AbstractOption<T>(builder) {
-        this->checkInvariants();
-        this->template addOptionToDesc<T>(this->isRequired(), this->isMultitoken(), this->getDefaultValue(), this->getImplicitValue());
-    }
-
-    template<typename T>
-    Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : AbstractOption<T>(builder) {
-        this->checkInvariants();
-        this->addOptionToDesc(this->isRequired(),
-                              this->isMultitoken(),
-                              this->getDefaultValue(),
-                              this->getImplicitValue(),
-                              representation);
-    }
+template <typename T>
+Option<T>::Option(OptionBuilder<T> builder) : AbstractOption<T>(builder) {
+    this->checkInvariants();
+    this->template addOptionToDesc<T>(
+        this->isRequired(),
+        this->isMultitoken(),
+        this->getDefaultValue(),
+        this->getImplicitValue()
+    );
 }
 
-#endif //EVGET_INCLUDE_COMMANDLINEOPTION_H
+template <typename T>
+Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : AbstractOption<T>(builder) {
+    this->checkInvariants();
+    this->addOptionToDesc(
+        this->isRequired(),
+        this->isMultitoken(),
+        this->getDefaultValue(),
+        this->getImplicitValue(),
+        representation
+    );
+}
+}  // namespace CliOption
+
+#endif  // EVGET_INCLUDE_COMMANDLINEOPTION_H

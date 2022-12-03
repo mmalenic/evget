@@ -21,12 +21,14 @@
 // SOFTWARE.
 
 #include "evwatchsig/EventWatcherSignal.h"
-#include "evwatch/EventWatcherException.h"
 
 #include <csignal>
 
+#include "evwatch/EventWatcherException.h"
+
 EvWatch::Sig::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> registerSignals, int flags) {
-    struct sigaction sigIntHandler{};
+    struct sigaction sigIntHandler {};
+
     sigIntHandler.sa_handler = signalHandler;
     if (sigemptyset(&sigIntHandler.sa_mask) == -1) {
         throw EventWatcherException(errno, "Setting sig handler mask failed.");
@@ -40,6 +42,4 @@ EvWatch::Sig::EventWatcherSignal::EventWatcherSignal(std::initializer_list<int> 
     }
 }
 
-void EvWatch::Sig::EventWatcherSignal::signalHandler([[maybe_unused]] int _) {
-    EventWatcher::setEvent();
-}
+void EvWatch::Sig::EventWatcherSignal::signalHandler([[maybe_unused]] int _) { EventWatcher::setEvent(); }

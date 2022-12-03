@@ -28,33 +28,31 @@
 #include "Task.h"
 
 namespace EvgetCore {
-    namespace asio = boost::asio;
+namespace asio = boost::asio;
 
-    /**
-     * Storage class represents storing event data.
-     */
-    template<asio::execution::executor E>
-    class Storage : Task<E>, EventListener<Event::Data> {
-    public:
-        explicit Storage(E& context);
+/**
+ * Storage class represents storing event data.
+ */
+template <asio::execution::executor E>
+class Storage : Task<E>, EventListener<Event::Data> {
+public:
+    explicit Storage(E& context);
 
-        asio::awaitable<void> start() override;
-        void notify(Event::Data event) override;
-    };
+    asio::awaitable<void> start() override;
+    void notify(Event::Data event) override;
+};
 
-    template<asio::execution::executor E>
-    Storage<E>::Storage(E& context) : Task<E>{context} {
-    }
+template <asio::execution::executor E>
+Storage<E>::Storage(E& context) : Task<E>{context} {}
 
-    template<asio::execution::executor E>
-    boost::asio::awaitable<void> Storage<E>::start() {
-        Task<E>::start();
-        co_return;
-    }
-
-    template<asio::execution::executor E>
-    void Storage<E>::notify(Event::Data event) {
-    }
+template <asio::execution::executor E>
+boost::asio::awaitable<void> Storage<E>::start() {
+    Task<E>::start();
+    co_return;
 }
 
-#endif //EVGET_INCLUDE_STORAGE_H
+template <asio::execution::executor E>
+void Storage<E>::notify(Event::Data event) {}
+}  // namespace EvgetCore
+
+#endif  // EVGET_INCLUDE_STORAGE_H

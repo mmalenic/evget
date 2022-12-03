@@ -23,39 +23,39 @@
 #ifndef EVGET_INCLUDE_SHUTDOWNHANDLER_H
 #define EVGET_INCLUDE_SHUTDOWNHANDLER_H
 
-#include <vector>
 #include <atomic>
+#include <vector>
 
 namespace EvWatch {
+/**
+ * Represents the handler which intercepts program termination.
+ */
+class EventWatcher {
+public:
     /**
-     * Represents the handler which intercepts program termination.
+     * Whether event has occured.
      */
-    class EventWatcher {
-    public:
-        /**
-         * Whether event has occured.
-         */
-        [[nodiscard]] bool static eventOccurred();
+    [[nodiscard]] bool static eventOccurred();
 
-        EventWatcher() = default;
+    EventWatcher() = default;
 
-        virtual ~EventWatcher() = 0;
+    virtual ~EventWatcher() = 0;
 
-        EventWatcher(EventWatcher&&) noexcept = delete;
-        EventWatcher& operator=(EventWatcher&&) noexcept = delete;
+    EventWatcher(EventWatcher&&) noexcept = delete;
+    EventWatcher& operator=(EventWatcher&&) noexcept = delete;
 
-        EventWatcher(const EventWatcher&) = delete;
-        EventWatcher& operator=(const EventWatcher&) = delete;
+    EventWatcher(const EventWatcher&) = delete;
+    EventWatcher& operator=(const EventWatcher&) = delete;
 
-    protected:
-        /**
-         * Set the event flag to true.
-         */
-        void static setEvent();
+protected:
+    /**
+     * Set the event flag to true.
+     */
+    void static setEvent();
 
-    private:
-        static std::atomic_flag eventFlag;
-    };
-}
+private:
+    static std::atomic_flag eventFlag;
+};
+}  // namespace EvWatch
 
-#endif //EVGET_INCLUDE_SHUTDOWNHANDLER_H
+#endif  // EVGET_INCLUDE_SHUTDOWNHANDLER_H

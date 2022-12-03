@@ -23,7 +23,7 @@
 
 #include "evgetcore/Event/Modifier.h"
 
-EvgetCore::Event::Modifier &EvgetCore::Event::Modifier::modifierValue(EvgetCore::Event::ModifierValue modifierValue) {
+EvgetCore::Event::Modifier& EvgetCore::Event::Modifier::modifierValue(EvgetCore::Event::ModifierValue modifierValue) {
     _modifierValue = modifierValue;
     return *this;
 }

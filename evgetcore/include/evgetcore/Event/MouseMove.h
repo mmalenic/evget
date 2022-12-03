@@ -25,126 +25,126 @@
 
 #include <chrono>
 #include <optional>
+
 #include "Data.h"
-#include "Schema.h"
 #include "Modifier.h"
+#include "Schema.h"
 
 namespace EvgetCore::Event {
+/**
+ * Represents a mouse move event.
+ */
+class MouseMove {
+public:
+    using SchemaType = Schema<10, Modifier::SchemaType>;
+
     /**
-     * Represents a mouse move event.
+     * Add interval in microseconds.
      */
-    class MouseMove {
-    public:
-        using SchemaType = Schema<10, Modifier::SchemaType>;
+    MouseMove& interval(SchemaField::Interval interval);
 
-        /**
-         * Add interval in microseconds.
-         */
-        MouseMove& interval(SchemaField::Interval interval);
+    /**
+     * Add interval in microseconds.
+     */
+    MouseMove& interval(std::optional<SchemaField::Interval> interval);
 
-        /**
-         * Add interval in microseconds.
-         */
-        MouseMove& interval(std::optional<SchemaField::Interval> interval);
+    /**
+     * Add date timestamp.
+     */
+    MouseMove& timestamp(SchemaField::Timestamp timestamp);
 
-        /**
-         * Add date timestamp.
-         */
-        MouseMove& timestamp(SchemaField::Timestamp timestamp);
+    /**
+     * Mouse device.
+     */
+    MouseMove& device(Device device);
 
-        /**
-         * Mouse device.
-         */
-        MouseMove& device(Device device);
+    /**
+     * Add position x.
+     */
+    MouseMove& positionX(double x);
 
-        /**
-         * Add position x.
-         */
-        MouseMove& positionX(double x);
+    /**
+     * Add position y.
+     */
+    MouseMove& positionY(double y);
 
-        /**
-         * Add position y.
-         */
-        MouseMove& positionY(double y);
+    /**
+     * Add the focus window name.
+     */
+    MouseMove& focusWindowName(std::string name);
 
-        /**
-         * Add the focus window name.
-         */
-        MouseMove& focusWindowName(std::string name);
+    /**
+     * Add the focus window position x.
+     */
+    MouseMove& focusWindowPositionX(double x);
 
-        /**
-         * Add the focus window position x.
-         */
-        MouseMove& focusWindowPositionX(double x);
+    /**
+     * Add the focus window position y.
+     */
+    MouseMove& focusWindowPositionY(double y);
 
-        /**
-         * Add the focus window position y.
-         */
-        MouseMove& focusWindowPositionY(double y);
+    /**
+     * Add the focus window width.
+     */
+    MouseMove& focusWindowWidth(double width);
 
-        /**
-         * Add the focus window width.
-         */
-        MouseMove& focusWindowWidth(double width);
+    /**
+     * Add the focus window height.
+     */
+    MouseMove& focusWindowHeight(double height);
 
-        /**
-         * Add the focus window height.
-         */
-        MouseMove& focusWindowHeight(double height);
+    /**
+     * Add modifier value.
+     */
+    MouseMove& modifier(ModifierValue modifier);
 
-        /**
-         * Add modifier value.
-         */
-        MouseMove& modifier(ModifierValue modifier);
+    /**
+     * Build key event.
+     */
+    Data build();
 
-        /**
-         * Build key event.
-         */
-        Data build();
+    /**
+     * Get mouse move name value.
+     */
+    static constexpr std::string_view getName();
 
-        /**
-         * Get mouse move name value.
-         */
-        static constexpr std::string_view getName();
+    /**
+     * Generate the MouseMove schema.
+     */
+    static constexpr SchemaType generateSchema();
 
-        /**
-         * Generate the MouseMove schema.
-         */
-        static constexpr SchemaType generateSchema();
+private:
+    Data data{getName()};
 
-    private:
-        Data data{getName()};
+    std::optional<SchemaField::Interval> _interval{};
+    std::optional<SchemaField::Timestamp> _timestamp{};
+    std::optional<Device> _device{};
+    std::optional<double> _positionX{};
+    std::optional<double> _positionY{};
+    std::optional<std::string> _focusWindowName{};
+    std::optional<double> _focusWindowPositionX{};
+    std::optional<double> _focusWindowPositionY{};
+    std::optional<double> _focusWindowWidth{};
+    std::optional<double> _focusWindowHeight{};
+};
 
-        std::optional<SchemaField::Interval> _interval{};
-        std::optional<SchemaField::Timestamp> _timestamp{};
-        std::optional<Device> _device{};
-        std::optional<double> _positionX{};
-        std::optional<double> _positionY{};
-        std::optional<std::string> _focusWindowName{};
-        std::optional<double> _focusWindowPositionX{};
-        std::optional<double> _focusWindowPositionY{};
-        std::optional<double> _focusWindowWidth{};
-        std::optional<double> _focusWindowHeight{};
-    };
+constexpr std::string_view MouseMove::getName() { return "MouseMove"; }
 
-    constexpr std::string_view MouseMove::getName() {
-        return "MouseMove";
-    }
-
-    constexpr EvgetCore::Event::MouseMove::SchemaType EvgetCore::Event::MouseMove::generateSchema() {
-        return {getName(), {
-                SchemaField::INTERVAL_FIELD,
-                SchemaField::TIMESTAMP_FIELD,
-                SchemaField::DEVICE_TYPE_FIELD,
-                SchemaField::POSITIONX_FIELD,
-                SchemaField::POSITIONY_FIELD,
-                SchemaField::FOCUS_WINDOW_NAME_FIELD,
-                SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
-                SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
-                SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
-                SchemaField::FOCUS_WINDOW_HEIGHT_FIELD}, {Modifier::generateSchema(), true}
-        };
-    }
+constexpr EvgetCore::Event::MouseMove::SchemaType EvgetCore::Event::MouseMove::generateSchema() {
+    return {
+        getName(),
+        {SchemaField::INTERVAL_FIELD,
+         SchemaField::TIMESTAMP_FIELD,
+         SchemaField::DEVICE_TYPE_FIELD,
+         SchemaField::POSITIONX_FIELD,
+         SchemaField::POSITIONY_FIELD,
+         SchemaField::FOCUS_WINDOW_NAME_FIELD,
+         SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
+         SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
+         SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
+         SchemaField::FOCUS_WINDOW_HEIGHT_FIELD},
+        {Modifier::generateSchema(), true}};
 }
+}  // namespace EvgetCore::Event
 
-#endif //EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
+#endif  // EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H

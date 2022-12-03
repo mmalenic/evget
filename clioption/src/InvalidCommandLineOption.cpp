@@ -22,9 +22,7 @@
 
 #include "clioption/InvalidCommandLineOption.h"
 
-CliOption::InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message) : po::error{message}, message{message} {
-}
+CliOption::InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message)
+    : po::error{message}, message{message} {}
 
-const char* CliOption::InvalidCommandLineOption::what() const noexcept {
-    return message.c_str();
-}
+const char* CliOption::InvalidCommandLineOption::what() const noexcept { return message.c_str(); }

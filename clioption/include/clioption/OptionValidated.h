@@ -27,79 +27,101 @@
 
 namespace CliOption {
 
+/**
+ * A command line option with custom validation.
+ * @tparam T value device.
+ */
+template <typename T>
+class OptionValidated : public AbstractOption<T> {
+public:
     /**
-     * A command line option with custom validation.
-     * @tparam T value device.
+     * Create from builder.
      */
-    template<typename T>
-    class OptionValidated : public AbstractOption<T> {
-    public:
-        /**
-         * Create from builder.
-         */
-        explicit OptionValidated(OptionBuilder<T> builder,
-                                 typename OptionBuilder<T>::Validator validator);
+    explicit OptionValidated(OptionBuilder<T> builder, typename OptionBuilder<T>::Validator validator);
 
-        /**
-         * Create from builder.
-         */
-        explicit OptionValidated(OptionBuilder<T> builder,
-                                 typename OptionBuilder<T>::Validator validator, const std::string& representation);
+    /**
+     * Create from builder.
+     */
+    explicit OptionValidated(
+        OptionBuilder<T> builder,
+        typename OptionBuilder<T>::Validator validator,
+        const std::string& representation
+    );
 
-        void parseValue(po::variables_map &vm) override;
+    void parseValue(po::variables_map& vm) override;
 
-    private:
-        typename OptionBuilder<T>::Validator validator;
+private:
+    typename OptionBuilder<T>::Validator validator;
 
-        void setOptionDesc(auto&& createRepresentation);
-    };
+    void setOptionDesc(auto&& createRepresentation);
+};
 
+template <typename T>
+OptionValidated<T>::OptionValidated(OptionBuilder<T> builder, typename OptionBuilder<T>::Validator validator)
+    : AbstractOption<T>(builder), validator{validator} {
+    this->checkInvariants();
+    setOptionDesc([](const T& value) {
+        std::ostringstream representation{};
+        representation << value;
+        return representation.str();
+    });
+}
 
-    template<typename T>
-    OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
-                                        typename OptionBuilder<T>::Validator validator)
-            : AbstractOption<T>(builder), validator{validator} {
-        this->checkInvariants();
-        setOptionDesc([](const T& value){
-            std::ostringstream representation{};
-            representation << value;
-            return representation.str();
-        });
-    }
+template <typename T>
+OptionValidated<T>::OptionValidated(
+    OptionBuilder<T> builder,
+    typename OptionBuilder<T>::Validator validator,
+    const std::string& representation
+)
+    : AbstractOption<T>(builder), validator{validator} {
+    this->checkInvariants();
+    setOptionDesc([&representation](const T& _) { return representation; });
+}
 
-    template<typename T>
-    OptionValidated<T>::OptionValidated(OptionBuilder<T> builder,
-                                        typename OptionBuilder<T>::Validator validator, const std::string& representation)
-            : AbstractOption<T>(builder), validator{validator} {
-        this->checkInvariants();
-        setOptionDesc([&representation](const T& _){ return representation; });
-    }
-
-    template<typename T>
-    void OptionValidated<T>::parseValue(po::variables_map &vm) {
-        std::optional<std::string> value = this->template getValueFromVm<std::string>(vm);
-        if (value.has_value() && !value->empty()) {
-            std::optional<T> validatedValue = validator(*value);
-            if (validatedValue.has_value()) {
-                this->setValue(*validatedValue);
-            } else {
-                throw InvalidCommandLineOption(
-                        fmt::format("Could not parse {} _defaultValue, incorrect format", this->getName()));
-            }
-        }
-    }
-
-    template<typename T>
-    void OptionValidated<T>::setOptionDesc(auto&& createRepresentation) {
-        if (this->getDefaultValue().has_value()) {
-            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), "", std::nullopt, createRepresentation(*this->getDefaultValue()));
-        } else if (this->getImplicitValue().has_value()) {
-            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), std::nullopt, "", createRepresentation(*this->getImplicitValue()));
-        } else if (this->getDefaultValue().has_value() && this->getImplicitValue().has_value()) {
-            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken(), "", "", createRepresentation(*this->getDefaultValue()));
+template <typename T>
+void OptionValidated<T>::parseValue(po::variables_map& vm) {
+    std::optional<std::string> value = this->template getValueFromVm<std::string>(vm);
+    if (value.has_value() && !value->empty()) {
+        std::optional<T> validatedValue = validator(*value);
+        if (validatedValue.has_value()) {
+            this->setValue(*validatedValue);
         } else {
-            this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken());
+            throw InvalidCommandLineOption(
+                fmt::format("Could not parse {} _defaultValue, incorrect format", this->getName())
+            );
         }
     }
 }
-#endif //EVGET_OPTIONVALIDATED_H
+
+template <typename T>
+void OptionValidated<T>::setOptionDesc(auto&& createRepresentation) {
+    if (this->getDefaultValue().has_value()) {
+        this->template addOptionToDesc<std::string>(
+            this->isRequired(),
+            this->isMultitoken(),
+            "",
+            std::nullopt,
+            createRepresentation(*this->getDefaultValue())
+        );
+    } else if (this->getImplicitValue().has_value()) {
+        this->template addOptionToDesc<std::string>(
+            this->isRequired(),
+            this->isMultitoken(),
+            std::nullopt,
+            "",
+            createRepresentation(*this->getImplicitValue())
+        );
+    } else if (this->getDefaultValue().has_value() && this->getImplicitValue().has_value()) {
+        this->template addOptionToDesc<std::string>(
+            this->isRequired(),
+            this->isMultitoken(),
+            "",
+            "",
+            createRepresentation(*this->getDefaultValue())
+        );
+    } else {
+        this->template addOptionToDesc<std::string>(this->isRequired(), this->isMultitoken());
+    }
+}
+}  // namespace CliOption
+#endif  // EVGET_OPTIONVALIDATED_H

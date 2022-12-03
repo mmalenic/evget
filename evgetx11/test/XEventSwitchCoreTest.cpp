@@ -20,73 +20,76 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
 #include <X11/keysym.h>
-#include <array>
+#include <gtest/gtest.h>
 #include <xorg/xserver-properties.h>
-#include "evgetx11/XEventSwitchCore.h"
+
+#include <array>
+
 #include "EvgetX11TestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
+#include "evgetx11/XEventSwitchCore.h"
 
-TEST(XEventSwitchCoreTest, TestRefreshDevices) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestRefreshDevices) {  // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-//    EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    //    EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
     XIValuatorClassInfo valuatorInfo{
-            .type = XIValuatorClass,
-            .sourceid = 0,
-            .number = 0,
-            .label = 0,
-            .min = 0,
-            .max = 0,
-            .value = 0,
-            .resolution = 0,
-            .mode = 0
-    };
+        .type = XIValuatorClass,
+        .sourceid = 0,
+        .number = 0,
+        .label = 0,
+        .min = 0,
+        .max = 0,
+        .value = 0,
+        .resolution = 0,
+        .mode = 0};
     XIScrollClassInfo scrollInfo{
-            .type = XIScrollClass,
-            .sourceid = 0,
-            .number = 0,
-            .scroll_type = XIScrollTypeVertical,
-            .increment = 0,
-            .flags = 0
-    };
+        .type = XIScrollClass,
+        .sourceid = 0,
+        .number = 0,
+        .scroll_type = XIScrollTypeVertical,
+        .increment = 0,
+        .flags = 0};
     Atom labels[] = {1};
     unsigned char mask[] = {0};
     XISetMask(mask, 1);
     XIButtonClassInfo buttonInfo{
-            .type = XIButtonClass,
-            .sourceid = 0,
-            .num_buttons = 1,
-            .labels = labels,
-            .state = XIButtonState {
-                    .mask_len = 1,
-                    .mask = mask,
+        .type = XIButtonClass,
+        .sourceid = 0,
+        .num_buttons = 1,
+        .labels = labels,
+        .state =
+            XIButtonState{
+                .mask_len = 1,
+                .mask = mask,
             },
     };
 
-    auto anyValuatorInfo = reinterpret_cast<XIAnyClassInfo *>(&valuatorInfo);
-    auto anyScrollInfo = reinterpret_cast<XIAnyClassInfo *>(&scrollInfo);
-    auto anyButtonInfo = reinterpret_cast<XIAnyClassInfo *>(&buttonInfo);
+    auto anyValuatorInfo = reinterpret_cast<XIAnyClassInfo*>(&valuatorInfo);
+    auto anyScrollInfo = reinterpret_cast<XIAnyClassInfo*>(&scrollInfo);
+    auto anyButtonInfo = reinterpret_cast<XIAnyClassInfo*>(&buttonInfo);
     XIAnyClassInfo* classes[] = {anyValuatorInfo, anyScrollInfo, anyButtonInfo};
 
     char name[] = "name";
     XIDeviceInfo xi2DeviceInfo{
-            .deviceid = 0,
-            .name = name,
-            .use = 0,
-            .attachment = 0,
-            .enabled = true,
-            .num_classes = 1,
-            .classes = classes
-    };
+        .deviceid = 0,
+        .name = name,
+        .use = 0,
+        .attachment = 0,
+        .enabled = true,
+        .num_classes = 1,
+        .classes = classes};
 
-    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0; }})
+        ));
 
-    //xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
+    // xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xi2DeviceInfo);
 }
 
-TEST(XEventSwitchCoreTest, TestButtonEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestButtonEvent) {  // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
@@ -94,7 +97,7 @@ TEST(XEventSwitchCoreTest, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> mask = {1};
     auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
-    std::array<XIAnyClassInfo *, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo *>(&buttonClassInfo)};
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&buttonClassInfo)};
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -106,29 +109,32 @@ TEST(XEventSwitchCoreTest, TestButtonEvent) { // NOLINT(cert-err58-cpp)
     auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
 
     EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
-    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0; }})
+        ));
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-//    EvgetX11::EventData eventData{};
-//    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
-//    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
-//
-//    auto genericData = eventData.at(0);
+    //    EvgetX11::EventData eventData{};
+    //    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    //    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+    //
+    //    auto genericData = eventData.at(0);
 
-//    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "0");
-//    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "0");
-//    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "0");
-//    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
-//    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "name");
+    //    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "0");
+    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "0");
+    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "0");
+    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "name");
 }
 
-TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    //EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
-    std::array<XIAnyClassInfo *, 3> anyClassInfo = {};
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {};
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -140,7 +146,10 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(cert-err58-cpp)
     auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
 
     EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
-    EXPECT_CALL(xWrapperMock, atomName).WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_KEYBOARD, [](void *_){ return 0; }})));
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_KEYBOARD, [](void* _) { return 0; }})
+        ));
     EXPECT_CALL(xWrapperMock, lookupCharacter).WillOnce([](const XIDeviceEvent& _event, KeySym& keySym) {
         keySym = XK_A;
         return "a";
@@ -148,28 +157,28 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(cert-err58-cpp)
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-//    EvgetX11::EventData eventData{};
-//    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Keyboard, "name", xiDeviceInfo);
-//    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
-//
-//    auto genericData = eventData.at(0);
+    //    EvgetX11::EventData eventData{};
+    //    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Keyboard, "name", xiDeviceInfo);
+    //    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+    //
+    //    auto genericData = eventData.at(0);
 
-//    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Keyboard");
-//    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
-//    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "XK_A");
-//    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "a");
+    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Keyboard");
+    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
+    //    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "XK_A");
+    //    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "a");
 }
 
-TEST(XEventSwitchCoreTest, TestMotionEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestMotionEvent) {  // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    //EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
 
-    std::array<XIAnyClassInfo *, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo *>(&valuatorClassInfo)};
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo)};
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -182,30 +191,36 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) { // NOLINT(cert-err58-cpp)
 
     EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})))
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) AXIS_LABEL_PROP_ABS_X, [](void *_){ return 0; }})));
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0; }})
+        ))
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
+            {(char*)AXIS_LABEL_PROP_ABS_X, [](void* _) { return 0; }}
+        )));
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-//    EvgetX11::EventData eventData{};
-//    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
-//    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
-//
-//    auto genericData = eventData.at(0);
+    //    EvgetX11::EventData eventData{};
+    //    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    //    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+    //
+    //    auto genericData = eventData.at(0);
 
-//    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
-//    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
+    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
 }
 
-TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(cert-err58-cpp)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    //EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
 
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
     auto scrollClassInfo = EvgetX11TestUtils::createXIScrollClassInfo();
 
-    std::array<XIAnyClassInfo *, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo *>(&valuatorClassInfo), reinterpret_cast<XIAnyClassInfo *>(&scrollClassInfo)};
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {
+        reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo),
+        reinterpret_cast<XIAnyClassInfo*>(&scrollClassInfo)};
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -218,21 +233,23 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(cert-err58-cpp)
 
     EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(xEvent)));
     EXPECT_CALL(xWrapperMock, atomName)
-            .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char *) XI_MOUSE, [](void *_){ return 0; }})));
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0; }})
+        ));
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-//    EvgetX11::EventData eventData{};
-//    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
-//    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
+    //    EvgetX11::EventData eventData{};
+    //    xEventSwitchCore.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    //    xEventSwitchCore.switchOnEvent(inputEvent, std::chrono::nanoseconds{1}, eventData);
 
-//    auto genericData = eventData.at(1);
+    //    auto genericData = eventData.at(1);
 
-//    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
-//    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "1");
-//    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "");
-//    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "");
-//    ASSERT_EQ(genericData.getFieldAt(8).getEntry(), "");
+    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
+    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "1");
+    //    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "");
+    //    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "");
+    //    ASSERT_EQ(genericData.getFieldAt(8).getEntry(), "");
 }

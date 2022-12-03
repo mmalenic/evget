@@ -52,27 +52,27 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::positionY(double y) {
     return *this;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::focusWindowName(std::string name) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowName(std::string name) {
     _focusWindowName = std::move(name);
     return *this;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::focusWindowPositionX(double x) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowPositionX(double x) {
     _focusWindowPositionX = x;
     return *this;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::focusWindowPositionY(double y) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowPositionY(double y) {
     _focusWindowPositionY = y;
     return *this;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::focusWindowWidth(double width) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowWidth(double width) {
     _focusWindowWidth = width;
     return *this;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::focusWindowHeight(double height) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowHeight(double height) {
     _focusWindowHeight = height;
     return *this;
 }
@@ -92,7 +92,6 @@ EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
     return data;
 }
 
-EvgetCore::Event::MouseMove &EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
     data.contains(Modifier{}.modifierValue(modifierValue).build());
 }
-

@@ -51,4 +51,4 @@ add_library_and_link(EVGETX11_LIBRARY_NAME EVGETCORE_LIBRARY_NAME "")
 
 if (BUILD_TESTING)
     add_subdirectory(test)
-endif()
+endif ()

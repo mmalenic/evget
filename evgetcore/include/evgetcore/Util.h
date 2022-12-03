@@ -26,11 +26,11 @@
 #include <concepts>
 
 namespace EvgetCore::Util {
-    /**
-     * Invocable concept with a checked return type.
-     */
-    template <class F, class R, class... Args>
-    concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
-}
+/**
+ * Invocable concept with a checked return type.
+ */
+template <class F, class R, class... Args>
+concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
+}  // namespace EvgetCore::Util
 
-#endif //EVGET_INCLUDE_EVGET_UTIL_H
+#endif  // EVGET_INCLUDE_EVGET_UTIL_H

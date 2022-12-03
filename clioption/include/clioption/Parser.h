@@ -24,36 +24,37 @@
 #define EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
 
 #include <boost/program_options.hpp>
+
 #include "AbstractOption.h"
 
 namespace CliOption {
-    namespace po = boost::program_options;
+namespace po = boost::program_options;
 
-    class Parser {
-    public:
-        Parser() = default;
+class Parser {
+public:
+    Parser() = default;
 
-        /**
-         * Perform the actual command line parsing. Returns true if operation of the program should continue.
-         *
-         * @param argc from main
-         * @param argv from main
-         * @param vm variables map
-         */
-        virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm) = 0;
+    /**
+     * Perform the actual command line parsing. Returns true if operation of the program should continue.
+     *
+     * @param argc from main
+     * @param argv from main
+     * @param vm variables map
+     */
+    virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm) = 0;
 
-        virtual ~Parser() = 0;
+    virtual ~Parser() = 0;
 
-        /**
-         * Store and notify the variables map.
-         */
-        static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
+    /**
+     * Store and notify the variables map.
+     */
+    static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
-        Parser &operator=(const Parser &) = delete;
-        Parser &operator=(Parser &&) = delete;
-        Parser(const Parser &) = delete;
-        Parser(Parser &&) = delete;
-    };
-}
+    Parser& operator=(const Parser&) = delete;
+    Parser& operator=(Parser&&) = delete;
+    Parser(const Parser&) = delete;
+    Parser(Parser&&) = delete;
+};
+}  // namespace CliOption
 
-#endif //EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
+#endif  // EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H

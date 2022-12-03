@@ -27,46 +27,44 @@
 #include <functional>
 
 namespace EvgetCore::Event {
+/**
+ * A relation between two schemas.
+ */
+template <typename To>
+class Relation {
+public:
     /**
-     * A relation between two schemas.
+     * Create the relation object.
      */
-    template<typename To>
-    class Relation {
-    public:
-        /**
-         * Create the relation object.
-         */
-        constexpr Relation(To schema, bool isUnique);
+    constexpr Relation(To schema, bool isUnique);
 
-        /**
-         * Get the to side of the relation.
-         */
-        constexpr To getToSchema() const;
+    /**
+     * Get the to side of the relation.
+     */
+    constexpr To getToSchema() const;
 
-        /**
-         * Does this relation have unique entries on the `To` side.
-         */
-        [[nodiscard]] constexpr bool isUnique() const;
+    /**
+     * Does this relation have unique entries on the `To` side.
+     */
+    [[nodiscard]] constexpr bool isUnique() const;
 
-    private:
-        To schema{};
-        bool _isUnique{};
-    };
+private:
+    To schema{};
+    bool _isUnique{};
+};
 
-    template<typename To>
-    constexpr
-    Relation<To>::Relation(To schema, bool isUnique) : schema{schema}, _isUnique{isUnique} {
-    }
+template <typename To>
+constexpr Relation<To>::Relation(To schema, bool isUnique) : schema{schema}, _isUnique{isUnique} {}
 
-    template<typename To>
-    constexpr To Relation<To>::getToSchema() const {
-        return schema;
-    }
-
-    template<typename To>
-    constexpr bool Relation<To>::isUnique() const {
-        return _isUnique;
-    }
+template <typename To>
+constexpr To Relation<To>::getToSchema() const {
+    return schema;
 }
 
-#endif //EVGET_RELATION_H
+template <typename To>
+constexpr bool Relation<To>::isUnique() const {
+    return _isUnique;
+}
+}  // namespace EvgetCore::Event
+
+#endif  // EVGET_RELATION_H

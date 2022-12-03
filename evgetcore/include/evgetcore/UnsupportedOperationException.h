@@ -19,21 +19,21 @@
 #include <string>
 
 namespace EvgetCore {
+/**
+ * Exception used for an unsupported operation.
+ */
+class UnsupportedOperationException : public std::exception {
+public:
     /**
-     * Exception used for an unsupported operation.
+     * Create exception with message.
+     * @param message message
      */
-    class UnsupportedOperationException : public std::exception {
-    public:
-        /**
-         * Create exception with message.
-         * @param message message
-         */
-        explicit UnsupportedOperationException(std::string message = "Unsupported Operation");
-        [[nodiscard]] const char* what() const noexcept override;
+    explicit UnsupportedOperationException(std::string message = "Unsupported Operation");
+    [[nodiscard]] const char* what() const noexcept override;
 
-    private:
-        std::string message;
-    };
-}
+private:
+    std::string message;
+};
+}  // namespace EvgetCore
 
-#endif //EVGET_INCLUDE_UNSUPPORTEDOPERATIONEXCEPTION_H
+#endif  // EVGET_INCLUDE_UNSUPPORTEDOPERATIONEXCEPTION_H

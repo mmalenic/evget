@@ -20,8 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <X11/extensions/XInput2.h>
 #include "evgetx11/XSetMaskTouch.h"
+
+#include <X11/extensions/XInput2.h>
+
 #include "evgetx11/XWrapper.h"
 
 void EvgetX11::XSetMaskTouch::setMask(unsigned char* mask) {

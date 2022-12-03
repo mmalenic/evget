@@ -23,23 +23,23 @@
 #ifndef EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 #define EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 
-#include <string>
 #include <boost/program_options.hpp>
+#include <string>
 
 namespace CliOption {
-    namespace po = boost::program_options;
+namespace po = boost::program_options;
 
-    class InvalidCommandLineOption : public po::error {
-    public:
-        /**
-         * Create exception with message.
-         */
-        explicit InvalidCommandLineOption(const std::string& message = "Invalid Command Line Option");
-        [[nodiscard]] const char* what() const noexcept override;
+class InvalidCommandLineOption : public po::error {
+public:
+    /**
+     * Create exception with message.
+     */
+    explicit InvalidCommandLineOption(const std::string& message = "Invalid Command Line Option");
+    [[nodiscard]] const char* what() const noexcept override;
 
-    private:
-        std::string message;
-    };
-}
+private:
+    std::string message;
+};
+}  // namespace CliOption
 
-#endif //EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
+#endif  // EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H

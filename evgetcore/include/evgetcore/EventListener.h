@@ -25,28 +25,28 @@
 
 namespace EvgetCore {
 
+/**
+ * Represents event listeners.
+ * @tparam T event type
+ */
+template <typename T>
+class EventListener {
+public:
     /**
-     * Represents event listeners.
-     * @tparam T event type
+     * Notify if an event.
+     * @param event event
      */
-    template<typename T>
-    class EventListener {
-    public:
-        /**
-         * Notify if an event.
-         * @param event event
-         */
-        virtual void notify(T event) = 0;
+    virtual void notify(T event) = 0;
 
-        EventListener() = default;
+    EventListener() = default;
 
-        virtual ~EventListener() = default;
+    virtual ~EventListener() = default;
 
-        EventListener(const EventListener&) = delete;
-        EventListener(EventListener&&) noexcept = delete;
-        EventListener& operator=(const EventListener&) = delete;
-        EventListener& operator=(EventListener&&) noexcept = delete;
-    };
-}
+    EventListener(const EventListener&) = delete;
+    EventListener(EventListener&&) noexcept = delete;
+    EventListener& operator=(const EventListener&) = delete;
+    EventListener& operator=(EventListener&&) noexcept = delete;
+};
+}  // namespace EvgetCore
 
-#endif //EVGET_INCLUDE_EVENTLISTENER_H
+#endif  // EVGET_INCLUDE_EVENTLISTENER_H

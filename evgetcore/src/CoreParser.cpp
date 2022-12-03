@@ -23,12 +23,13 @@
 #include "evgetcore/CoreParser.h"
 
 #include <clioption/OptionBuilder.h>
+#include <fmt/core.h>
 #include <spdlog/spdlog.h>
+
 #include <boost/algorithm/string.hpp>
+#include <filesystem>
 #include <iostream>
 #include <utility>
-#include <fmt/core.h>
-#include <filesystem>
 
 namespace algorithm = boost::algorithm;
 namespace po = boost::program_options;
@@ -36,82 +37,69 @@ namespace po = boost::program_options;
 static constexpr char SQLITE_STRING[] = "sqlite";
 static constexpr char CSV_STRING[] = "csv";
 static constexpr char PROJECT_NAME[] = "evget";
-static constexpr char DESCRIPTION[] = "Usage: evget [OPTION]...\n"
-                                      "Shows events from input devices.\n"
-                                      "Written by Marko Malenic 2021.\n\n"
-                                      "Options";
+static constexpr char DESCRIPTION[] =
+    "Usage: evget [OPTION]...\n"
+    "Shows events from input devices.\n"
+    "Written by Marko Malenic 2021.\n\n"
+    "Options";
 static constexpr char VERSION[] = "0.1";
-static constexpr char LICENSE_INFO[] = "Copyright (C) 2021 Marko Malenic.\n"
-                                       "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                                       "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
-                                       "Written by Marko Malenic 2021.";
+static constexpr char LICENSE_INFO[] =
+    "Copyright (C) 2021 Marko Malenic.\n"
+    "This program comes with ABSOLUTELY NO WARRANTY.\n"
+    "This is free software, and you are welcome to redistribute it under certain conditions.\n\n"
+    "Written by Marko Malenic 2021.";
 static constexpr char DEFAULT_FOLDER_NAME[] = ".evgetx11";
 static constexpr char DEFAULT_CONFIG_NAME[] = ".evget_config";
 static constexpr char ENVIRONMENT_VARIABLE_PREFIX[] = "EVGET_";
-static constexpr char CONFIG_FILE_COMMENT_LINE[] = "# The following values represent the defaults for evgetx11.\n"
-                                                   "# Commented out values are required to be present, either in the config file or on the command line.";
+static constexpr char CONFIG_FILE_COMMENT_LINE[] =
+    "# The following values represent the defaults for evgetx11.\n"
+    "# Commented out values are required to be present, either in the config file or on the command line.";
 
-EvgetCore::CoreParser::CoreParser(std::string platform) :
-        platformInformation{std::move(platform)},
-        cmdlineDesc{
-        DESCRIPTION
-    },
-        configDesc{},
-        help{
-        CliOption::OptionBuilder<bool>{cmdlineDesc}
-            .shortName('h')
-            .longName("help")
-            .description("Produce help message describing program options.")
-            .buildFlag()
-    },
-        version{
-            CliOption::OptionBuilder<bool>{cmdlineDesc}
-            .shortName('v')
-            .longName("version")
-            .description("Produce version message.")
-            .buildFlag()
-    },
-        config{
-            CliOption::OptionBuilder<fs::path>{cmdlineDesc}
-                    .shortName('c')
-                    .longName("config")
-                    .description("Location of config file.")
-                    .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
-                    .build()
-    },
-        folder{
-            CliOption::OptionBuilder<fs::path>{configDesc}
-            .shortName('o')
-            .longName("folder")
-            .description("Folder location where events are stored.")
-            .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
-            .build()
-    },
-        print{
-            CliOption::OptionBuilder<bool>{configDesc}
-            .shortName('p')
-            .longName("print")
-            .description("Print events.")
-            .buildFlag()
-    },
-        systemEvents{
-            CliOption::OptionBuilder<bool>{configDesc}
-            .shortName('s')
-            .longName("use-system-events")
-            .description("Capture raw system events as well as cross platform events.")
-            .buildFlag()
-    },
-        logLevel{
-            CliOption::OptionBuilder<spdlog::level::level_enum>{configDesc}
-            .shortName('u')
-            .longName("log-level")
-            .description("log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString())
-            .defaultValue(spdlog::level::warn)
-            .representation("warn")
-            .build(validateLogLevel)
-    }
-{
-}
+EvgetCore::CoreParser::CoreParser(std::string platform)
+    : platformInformation{std::move(platform)},
+      cmdlineDesc{DESCRIPTION},
+      configDesc{},
+      help{CliOption::OptionBuilder<bool>{cmdlineDesc}
+               .shortName('h')
+               .longName("help")
+               .description("Produce help message describing program options.")
+               .buildFlag()},
+      version{CliOption::OptionBuilder<bool>{cmdlineDesc}
+                  .shortName('v')
+                  .longName("version")
+                  .description("Produce version message.")
+                  .buildFlag()},
+      config{CliOption::OptionBuilder<fs::path>{cmdlineDesc}
+                 .shortName('c')
+                 .longName("config")
+                 .description("Location of config file.")
+                 .defaultValue(fs::current_path() / DEFAULT_CONFIG_NAME)
+                 .build()},
+      folder{CliOption::OptionBuilder<fs::path>{configDesc}
+                 .shortName('o')
+                 .longName("folder")
+                 .description("Folder location where events are stored.")
+                 .defaultValue(fs::current_path() / DEFAULT_FOLDER_NAME)
+                 .build()},
+      print{CliOption::OptionBuilder<bool>{configDesc}
+                .shortName('p')
+                .longName("print")
+                .description("Print events.")
+                .buildFlag()},
+      systemEvents{CliOption::OptionBuilder<bool>{configDesc}
+                       .shortName('s')
+                       .longName("use-system-events")
+                       .description("Capture raw system events as well as cross platform events.")
+                       .buildFlag()},
+      logLevel{CliOption::OptionBuilder<spdlog::level::level_enum>{configDesc}
+                   .shortName('u')
+                   .longName("log-level")
+                   .description(
+                       "log level to show messages at, defaults to \"warn\".\nValid values are:\n" + logLevelsString()
+                   )
+                   .defaultValue(spdlog::level::warn)
+                   .representation("warn")
+                   .build(validateLogLevel)} {}
 
 bool EvgetCore::CoreParser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
     po::options_description cmdlineOptions{};
@@ -154,47 +142,35 @@ bool EvgetCore::CoreParser::parseCommandLine(int argc, const char* argv[], po::v
     return true;
 }
 
-EvgetCore::fs::path EvgetCore::CoreParser::getFolder() const {
-    return folder.getValue();
-}
+EvgetCore::fs::path EvgetCore::CoreParser::getFolder() const { return folder.getValue(); }
 
-po::options_description& EvgetCore::CoreParser::getCombinedDesc() {
-    return cmdlineDesc.add(configDesc);
-}
+po::options_description& EvgetCore::CoreParser::getCombinedDesc() { return cmdlineDesc.add(configDesc); }
 
-po::options_description& EvgetCore::CoreParser::getCmdlineDesc() {
-    return cmdlineDesc;
-}
+po::options_description& EvgetCore::CoreParser::getCmdlineDesc() { return cmdlineDesc; }
 
-po::options_description& EvgetCore::CoreParser::getConfigDesc() {
-    return configDesc;
-}
+po::options_description& EvgetCore::CoreParser::getConfigDesc() { return configDesc; }
 
-bool EvgetCore::CoreParser::shouldPrint() const {
-    return print.getValue();
-}
+bool EvgetCore::CoreParser::shouldPrint() const { return print.getValue(); }
 
-spdlog::level::level_enum EvgetCore::CoreParser::getLogLevel() const {
-    return logLevel.getValue();
-}
+spdlog::level::level_enum EvgetCore::CoreParser::getLogLevel() const { return logLevel.getValue(); }
 
 std::string EvgetCore::CoreParser::logLevelsString() {
     return fmt::format(
-            "[ {}, {}, {}, {}, {}, {}, {} ]",
-            spdlog::level::to_string_view(spdlog::level::trace),
-            spdlog::level::to_string_view(spdlog::level::debug),
-            spdlog::level::to_string_view(spdlog::level::info),
-            spdlog::level::to_string_view(spdlog::level::warn),
-            spdlog::level::to_string_view(spdlog::level::err),
-            spdlog::level::to_string_view(spdlog::level::critical),
-            spdlog::level::to_string_view(spdlog::level::off)
-            );
+        "[ {}, {}, {}, {}, {}, {}, {} ]",
+        spdlog::level::to_string_view(spdlog::level::trace),
+        spdlog::level::to_string_view(spdlog::level::debug),
+        spdlog::level::to_string_view(spdlog::level::info),
+        spdlog::level::to_string_view(spdlog::level::warn),
+        spdlog::level::to_string_view(spdlog::level::err),
+        spdlog::level::to_string_view(spdlog::level::critical),
+        spdlog::level::to_string_view(spdlog::level::off)
+    );
 }
 
 std::optional<spdlog::level::level_enum> EvgetCore::CoreParser::validateLogLevel(std::string logLevel) {
-	algorithm::to_lower(logLevel);
+    algorithm::to_lower(logLevel);
     if (logLevel == "off" || logLevel == "o") {
-		return spdlog::level::off;
+        return spdlog::level::off;
     }
     auto level = spdlog::level::from_str(logLevel);
     if (level == spdlog::level::off) {
@@ -203,15 +179,11 @@ std::optional<spdlog::level::level_enum> EvgetCore::CoreParser::validateLogLevel
     return level;
 }
 
-bool EvgetCore::CoreParser::useSystemEvents() const {
-    return systemEvents.getValue();
-}
+bool EvgetCore::CoreParser::useSystemEvents() const { return systemEvents.getValue(); }
 
-std::filesystem::path EvgetCore::CoreParser::getConfigFile() const {
-    return config.getValue();
-}
+std::filesystem::path EvgetCore::CoreParser::getConfigFile() const { return config.getValue(); }
 
-template<typename T>
+template <typename T>
 std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option) {
     std::ostringstream value{};
     value << std::boolalpha;
@@ -219,9 +191,9 @@ std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractO
     return formatConfigOption(option, value.str());
 }
 
-
-template<typename T>
-std::string EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value) {
+template <typename T>
+std::string
+EvgetCore::CoreParser::formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value) {
     std::string out{};
     if (option.isRequired()) {
         out += "# ";

@@ -23,60 +23,60 @@
 #ifndef EVGET_INCLUDE_EVGET_DATA_H
 #define EVGET_INCLUDE_EVGET_DATA_H
 
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace EvgetCore::Event {
+/**
+ * Event container to represent event data.
+ */
+class Data {
+public:
+    using Iterator = std::vector<std::string>::const_iterator;
+    using ContainedData = std::unordered_map<std::string_view, std::vector<Data>>;
+
+    Data() = default;
     /**
-     * Event container to represent event data.
+     * Create a Data with the given name.
      */
-    class Data {
-    public:
-        using Iterator = std::vector<std::string>::const_iterator;
-        using ContainedData = std::unordered_map<std::string_view, std::vector<Data>>;
+    explicit Data(std::string_view name);
 
-        Data() = default;
-        /**
-         * Create a Data with the given name.
-         */
-        explicit Data(std::string_view name);
+    /**
+     * Add a field to this data.
+     */
+    void addField(std::string field);
 
-        /**
-         * Add a field to this data.
-         */
-        void addField(std::string field);
+    /**
+     * Specify a data table which is contained within this table
+     */
+    void contains(Data data);
 
-        /**
-         * Specify a data table which is contained within this table
-         */
-        void contains(Data data);
+    /**
+     * Get the data associated with the contains function, i.e. the one-to-many
+     * data.
+     */
+    const ContainedData& getData() const;
 
-        /**
-         * Get the data associated with the contains function, i.e. the one-to-many
-         * data.
-         */
-        const ContainedData& getData() const;
+    /**
+     * Get the field at the position.
+     */
+    [[nodiscard]] const std::string& getFieldAt(size_t position) const;
 
-        /**
-         * Get the field at the position.
-         */
-        [[nodiscard]] const std::string &getFieldAt(size_t position) const;
+    /**
+     * Get the name of the data.
+     */
+    [[nodiscard]] std::string_view getName() const;
 
-        /**
-         * Get the name of the data.
-         */
-        [[nodiscard]] std::string_view getName() const;
+    [[nodiscard]] Iterator begin() const noexcept;
 
-        [[nodiscard]] Iterator begin() const noexcept;
+    [[nodiscard]] Iterator end() const noexcept;
 
-        [[nodiscard]] Iterator end() const noexcept;
+private:
+    std::string_view name{};
+    std::vector<std::string> fields{};
+    ContainedData containsData{};
+};
+}  // namespace EvgetCore::Event
 
-    private:
-        std::string_view name{};
-        std::vector<std::string> fields{};
-        ContainedData containsData{};
-    };
-}
-
-#endif //EVGET_INCLUDE_EVGET_DATA_H
+#endif  // EVGET_INCLUDE_EVGET_DATA_H

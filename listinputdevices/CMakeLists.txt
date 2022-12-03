@@ -22,4 +22,4 @@ add_library_and_link(LISTINPUTDEVICES_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 
 if (BUILD_TESTING)
     add_subdirectory(test)
-endif()
+endif ()

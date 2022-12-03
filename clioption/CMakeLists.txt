@@ -23,4 +23,4 @@ program_dependencies(TARGET ${CLIOPTION_LIBRARY_NAME} DEP PUBLIC Boost ${BOOST_V
 
 if (BUILD_TESTING)
     add_subdirectory(test)
-endif()
+endif ()

@@ -22,10 +22,11 @@
 
 #include "listinputdevices/InputDevice.h"
 
-#include <boost/algorithm/string.hpp>
-#include <utility>
-#include <regex>
 #include <fmt/format.h>
+
+#include <boost/algorithm/string.hpp>
+#include <regex>
+#include <utility>
 
 namespace algorithm = boost::algorithm;
 
@@ -37,54 +38,42 @@ static constexpr char BY_PATH[] = "by-path";
 size_t ListInputDevices::InputDevice::maxNameSize = 0;
 size_t ListInputDevices::InputDevice::maxPathSize = 0;
 
-const ListInputDevices::fs::path& ListInputDevices::InputDevice::getDevice() const {
-    return device;
-}
+const ListInputDevices::fs::path& ListInputDevices::InputDevice::getDevice() const { return device; }
 
 ListInputDevices::InputDevice::InputDevice(
     fs::path device,
-    std::optional<std::string>  byId,
-    std::optional<std::string>  byPath,
-    std::optional<std::string>  name,
-    std::vector<std::pair<int, std::string>>  capabilities
-) : device{std::move(device)}, byId{std::move(byId)}, byPath{std::move(byPath)}, name{std::move(name)}, capabilities{std::move(capabilities)} {
-}
+    std::optional<std::string> byId,
+    std::optional<std::string> byPath,
+    std::optional<std::string> name,
+    std::vector<std::pair<int, std::string>> capabilities
+)
+    : device{std::move(device)},
+      byId{std::move(byId)},
+      byPath{std::move(byPath)},
+      name{std::move(name)},
+      capabilities{std::move(capabilities)} {}
 
-const std::optional<std::string>& ListInputDevices::InputDevice::getById() const {
-    return byId;
-}
+const std::optional<std::string>& ListInputDevices::InputDevice::getById() const { return byId; }
 
-const std::optional<std::string>& ListInputDevices::InputDevice::getByPath() const {
-    return byPath;
-}
+const std::optional<std::string>& ListInputDevices::InputDevice::getByPath() const { return byPath; }
 
-const std::optional<std::string>& ListInputDevices::InputDevice::getName() const {
-    return name;
-}
+const std::optional<std::string>& ListInputDevices::InputDevice::getName() const { return name; }
 
 const std::vector<std::pair<int, std::string>>& ListInputDevices::InputDevice::getCapabilities() const {
     return capabilities;
 }
 
-size_t ListInputDevices::InputDevice::getMaxNameSize() {
-    return maxNameSize;
-}
+size_t ListInputDevices::InputDevice::getMaxNameSize() { return maxNameSize; }
 
-void ListInputDevices::InputDevice::setMaxNameSize(size_t newMaxNameSize) {
-    InputDevice::maxNameSize = newMaxNameSize;
-}
+void ListInputDevices::InputDevice::setMaxNameSize(size_t newMaxNameSize) { InputDevice::maxNameSize = newMaxNameSize; }
 
-size_t ListInputDevices::InputDevice::getMaxPathSize() {
-    return maxPathSize;
-}
+size_t ListInputDevices::InputDevice::getMaxPathSize() { return maxPathSize; }
 
-void ListInputDevices::InputDevice::setMaxPathSize(size_t newMaxPathSize) {
-    InputDevice::maxPathSize = newMaxPathSize;
-}
+void ListInputDevices::InputDevice::setMaxPathSize(size_t newMaxPathSize) { InputDevice::maxPathSize = newMaxPathSize; }
 
 std::partial_ordering ListInputDevices::InputDevice::operator<=>(const InputDevice& eventDevice) const {
-    if ((byId.has_value() && !eventDevice.byId.has_value())
-        || (byPath.has_value() && !eventDevice.byPath.has_value())) {
+    if ((byId.has_value() && !eventDevice.byId.has_value()) ||
+        (byPath.has_value() && !eventDevice.byPath.has_value())) {
         return std::partial_ordering::less;
     }
     if ((!byId.has_value() && eventDevice.byId.has_value()) ||
@@ -106,8 +95,9 @@ std::partial_ordering ListInputDevices::InputDevice::operator<=>(const InputDevi
         std::string matchS1 = i.first->str();
         std::string matchS2 = i.second->str();
 
-        if ((matchS1.find_first_of(nums) != std::string::npos && matchS2.find_first_of(nums) != std::string::npos
-            && stol(matchS1) < stol(matchS2)) || ((matchS1 < matchS2))) {
+        if ((matchS1.find_first_of(nums) != std::string::npos && matchS2.find_first_of(nums) != std::string::npos &&
+             stol(matchS1) < stol(matchS2)) ||
+            ((matchS1 < matchS2))) {
             return std::partial_ordering::less;
         }
     }

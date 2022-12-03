@@ -20,31 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
-#include "listinputdevices/InputDevice.h"
 #include "listinputdevices/InputDeviceLister.h"
+
 #include <fcntl.h>
-#include <fstream>
-#include <iostream>
 #include <linux/input.h>
-#include <regex>
 #include <spdlog/spdlog.h>
 
-#define ULONG_BITS   (CHAR_BIT * sizeof(unsigned long))
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <fstream>
+#include <iostream>
+#include <regex>
+
+#include "listinputdevices/InputDevice.h"
+
+#define ULONG_BITS (CHAR_BIT * sizeof(unsigned long))
 #define STRINGIFY(x) #x
 
-ListInputDevices::InputDeviceLister::InputDeviceLister() :
-    inputDirectory{"/dev/input"},
-    byId{inputDirectory / "by-id"},
-    byPath{inputDirectory / "by-path"},
-    sysClass{"/sys/class/input"},
-    namePath{"device/name"},
-    eventCodeToName{getEventCodeToName()},
-    maxNameSize{0},
-    maxPathSize{0},
-    inputDevices{listInputDevices()} {
-}
+ListInputDevices::InputDeviceLister::InputDeviceLister()
+    : inputDirectory{"/dev/input"},
+      byId{inputDirectory / "by-id"},
+      byPath{inputDirectory / "by-path"},
+      sysClass{"/sys/class/input"},
+      namePath{"device/name"},
+      eventCodeToName{getEventCodeToName()},
+      maxNameSize{0},
+      maxPathSize{0},
+      inputDevices{listInputDevices()} {}
 
 std::vector<ListInputDevices::InputDevice> ListInputDevices::InputDeviceLister::listInputDevices() {
     std::vector<InputDevice> devices{};
@@ -56,8 +58,7 @@ std::vector<ListInputDevices::InputDevice> ListInputDevices::InputDeviceLister::
                 checkSymlink(entry, byId, "Could not read by-id directory: "),
                 checkSymlink(entry, byPath, "Could not read by-path directory: "),
                 getName(entry.path()),
-                getCapabilities(entry.path())
-            };
+                getCapabilities(entry.path())};
 
             if (name.length() > InputDevice::getMaxNameSize()) {
                 InputDevice::setMaxNameSize(name.length());
@@ -78,8 +79,11 @@ const std::vector<ListInputDevices::InputDevice>& ListInputDevices::InputDeviceL
     return inputDevices;
 }
 
-std::optional<ListInputDevices::fs::path>
-ListInputDevices::InputDeviceLister::checkSymlink(const fs::path& entry, const fs::path& path, const std::string& msg) noexcept {
+std::optional<ListInputDevices::fs::path> ListInputDevices::InputDeviceLister::checkSymlink(
+    const fs::path& entry,
+    const fs::path& path,
+    const std::string& msg
+) noexcept {
     try {
         for (auto& symEntry : fs::directory_iterator(path)) {
             if (symEntry.is_symlink() && fs::read_symlink(symEntry.path()).filename() == entry.filename()) {
@@ -152,18 +156,18 @@ std::string ListInputDevices::InputDeviceLister::getName(const fs::path& device)
 
 std::map<int, std::string> ListInputDevices::InputDeviceLister::getEventCodeToName() {
     return {
-        {EV_SYN,       STRINGIFY(EV_SYN)},
-        {EV_KEY,       STRINGIFY(EV_KEY)},
-        {EV_REL,       STRINGIFY(EV_REL)},
-        {EV_ABS,       STRINGIFY(EV_ABS)},
-        {EV_MSC,       STRINGIFY(EV_MSC)},
-        {EV_SW,        STRINGIFY(EV_SW)},
-        {EV_LED,       STRINGIFY(EV_LED)},
-        {EV_SND,       STRINGIFY(EV_SND)},
-        {EV_REP,       STRINGIFY(EV_REP)},
-        {EV_FF,        STRINGIFY(EV_FF)},
-        {EV_PWR,       STRINGIFY(EV_PWR)},
+        {EV_SYN, STRINGIFY(EV_SYN)},
+        {EV_KEY, STRINGIFY(EV_KEY)},
+        {EV_REL, STRINGIFY(EV_REL)},
+        {EV_ABS, STRINGIFY(EV_ABS)},
+        {EV_MSC, STRINGIFY(EV_MSC)},
+        {EV_SW, STRINGIFY(EV_SW)},
+        {EV_LED, STRINGIFY(EV_LED)},
+        {EV_SND, STRINGIFY(EV_SND)},
+        {EV_REP, STRINGIFY(EV_REP)},
+        {EV_FF, STRINGIFY(EV_FF)},
+        {EV_PWR, STRINGIFY(EV_PWR)},
         {EV_FF_STATUS, STRINGIFY(EV_FF_STATUS)},
-        {EV_MAX,       STRINGIFY(EV_MAX)},
+        {EV_MAX, STRINGIFY(EV_MAX)},
     };
 }

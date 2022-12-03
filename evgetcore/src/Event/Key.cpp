@@ -74,27 +74,27 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
     return *this;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowName(std::string name) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowName(std::string name) {
     _focusWindowName = std::move(name);
     return *this;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowPositionX(double x) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionX(double x) {
     _focusWindowPositionX = x;
     return *this;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowPositionY(double y) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionY(double y) {
     _focusWindowPositionY = y;
     return *this;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowWidth(double width) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowWidth(double width) {
     _focusWindowWidth = width;
     return *this;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::focusWindowHeight(double height) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowHeight(double height) {
     _focusWindowHeight = height;
     return *this;
 }
@@ -118,7 +118,6 @@ EvgetCore::Event::Data EvgetCore::Event::Key::build() {
     return data;
 }
 
-EvgetCore::Event::Key &EvgetCore::Event::Key::modifier(EvgetCore::Event::ModifierValue modifierValue) {
+EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::ModifierValue modifierValue) {
     data.contains(Modifier{}.modifierValue(modifierValue).build());
 }
-

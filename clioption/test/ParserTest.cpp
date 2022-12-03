@@ -21,15 +21,16 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "clioption/Parser.h"
-#include "clioption/Option.h"
+
 #include "CliOptionTestUtils.h"
+#include "clioption/Option.h"
+#include "clioption/Parser.h"
 
 namespace po = boost::program_options;
 namespace Utils = CliOptionTestUtils;
 
-TEST(ParserTest, StoreAndNotify) { // NOLINT(cert-err58-cpp)
-    Utils::makeCmd({"program", "-a", "1"}, [](int argc, const char **argv) {
+TEST(ParserTest, StoreAndNotify) {  // NOLINT(cert-err58-cpp)
+    Utils::makeCmd({"program", "-a", "1"}, [](int argc, const char** argv) {
         auto desc = po::options_description{};
         auto vm = po::variables_map{};
         auto option = CliOption::OptionBuilder<int>(desc).shortName('a').required().build();

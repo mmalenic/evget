@@ -23,82 +23,82 @@
 #ifndef EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 #define EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 
-#include <vector>
-#include <chrono>
-#include <boost/fiber/buffered_channel.hpp>
-#include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
-#include "Task.h"
-#include "SystemEvent.h"
+
+#include <boost/asio.hpp>
+#include <boost/fiber/buffered_channel.hpp>
+#include <chrono>
+#include <vector>
+
 #include "EventListener.h"
+#include "SystemEvent.h"
+#include "Task.h"
 
 namespace EvgetCore {
-    
-    namespace asio = boost::asio;
-    
+
+namespace asio = boost::asio;
+
+/**
+ * Class represents processing the system events.
+ * @tparam T type of events to process
+ */
+template <asio::execution::executor E, typename T>
+class SystemEventLoop : public Task<E>, public EventListener<T> {
+public:
     /**
-     * Class represents processing the system events.
-     * @tparam T type of events to process
+     * Create the system events class.
      */
-    template<asio::execution::executor E, typename T>
-    class SystemEventLoop : public Task<E>, public EventListener<T> {
-    public:
-        /**
-         * Create the system events class.
-         */
-        explicit SystemEventLoop(E& context);
+    explicit SystemEventLoop(E& context);
 
-        /**
-         * Set up and run the event loop.
-         */
-        virtual asio::awaitable<void> eventLoop() = 0;
+    /**
+     * Set up and run the event loop.
+     */
+    virtual asio::awaitable<void> eventLoop() = 0;
 
-        /**
-         * Register listeners to notify.
-         * @param systemEventListener lister
-         */
-        void registerSystemEventListener(EventListener<T>& systemEventListener);
+    /**
+     * Register listeners to notify.
+     * @param systemEventListener lister
+     */
+    void registerSystemEventListener(EventListener<T>& systemEventListener);
 
-        asio::awaitable<void> start() override;
-        void notify(T event) override;
+    asio::awaitable<void> start() override;
+    void notify(T event) override;
 
-        virtual ~SystemEventLoop() = default;
+    virtual ~SystemEventLoop() = default;
 
-    protected:
-        SystemEventLoop(SystemEventLoop&&) noexcept = default;
-        SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
+protected:
+    SystemEventLoop(SystemEventLoop&&) noexcept = default;
+    SystemEventLoop& operator=(SystemEventLoop&&) noexcept = default;
 
-        SystemEventLoop(const SystemEventLoop&) = default;
-        SystemEventLoop& operator=(const SystemEventLoop&) = default;
+    SystemEventLoop(const SystemEventLoop&) = default;
+    SystemEventLoop& operator=(const SystemEventLoop&) = default;
 
-    private:
-        std::optional<std::reference_wrapper<EventListener<T>>> eventListener;
-    };
+private:
+    std::optional<std::reference_wrapper<EventListener<T>>> eventListener;
+};
 
-    template<asio::execution::executor E, typename T>
-    asio::awaitable<void> SystemEventLoop<E, T>::start() {
-        co_await Task<E>::start();
-        co_await eventLoop();
-        this->stop();
-        co_return;
-    }
+template <asio::execution::executor E, typename T>
+asio::awaitable<void> SystemEventLoop<E, T>::start() {
+    co_await Task<E>::start();
+    co_await eventLoop();
+    this->stop();
+    co_return;
+}
 
-    template<asio::execution::executor E, typename T>
-    void SystemEventLoop<E, T>::notify(T event) {
-        if (eventListener.has_value()) {
-            eventListener->get().notify(std::move(event));
-        }
-    }
-
-    template<asio::execution::executor E, typename T>
-    void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<T>& systemEventListener) {
-        eventListener = systemEventListener;
-    }
-
-    template<asio::execution::executor E, typename T>
-    SystemEventLoop<E, T>::SystemEventLoop(E& context) : Task<E>{context},
-        eventListener{std::nullopt} {
+template <asio::execution::executor E, typename T>
+void SystemEventLoop<E, T>::notify(T event) {
+    if (eventListener.has_value()) {
+        eventListener->get().notify(std::move(event));
     }
 }
 
-#endif //EVGET_INCLUDE_SYSTEMEVENTLOOP_H
+template <asio::execution::executor E, typename T>
+void SystemEventLoop<E, T>::registerSystemEventListener(EventListener<T>& systemEventListener) {
+    eventListener = systemEventListener;
+}
+
+template <asio::execution::executor E, typename T>
+SystemEventLoop<E, T>::SystemEventLoop(E& context) : Task<E>{context}, eventListener{std::nullopt} {}
+}  // namespace EvgetCore
+
+#endif  // EVGET_INCLUDE_SYSTEMEVENTLOOP_H

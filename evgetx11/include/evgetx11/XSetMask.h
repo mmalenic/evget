@@ -24,23 +24,23 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASK_H
 
 namespace EvgetX11 {
-    class XSetMask {
-    public:
-        /**
-         * Set the mask.
-         */
-        virtual void setMask(unsigned char* mask) = 0;
+class XSetMask {
+public:
+    /**
+     * Set the mask.
+     */
+    virtual void setMask(unsigned char* mask) = 0;
 
-        XSetMask() = default;
+    XSetMask() = default;
 
-        virtual ~XSetMask() = default;
+    virtual ~XSetMask() = default;
 
-        XSetMask(XSetMask&&) noexcept = delete;
-        XSetMask& operator=(XSetMask&&) noexcept = delete;
+    XSetMask(XSetMask&&) noexcept = delete;
+    XSetMask& operator=(XSetMask&&) noexcept = delete;
 
-        XSetMask(const XSetMask&) = delete;
-        XSetMask& operator=(const XSetMask&) = delete;
-    };
-}
+    XSetMask(const XSetMask&) = delete;
+    XSetMask& operator=(const XSetMask&) = delete;
+};
+}  // namespace EvgetX11
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASK_H
+#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASK_H

@@ -26,10 +26,10 @@
 #include "XSetMask.h"
 
 namespace EvgetX11 {
-    class XSetMaskTouch : XSetMask {
-    public:
-        void setMask(unsigned char *mask) override;
-    };
-}
+class XSetMaskTouch : XSetMask {
+public:
+    void setMask(unsigned char* mask) override;
+};
+}  // namespace EvgetX11
 
-#endif //EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKTOUCH_H
+#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XSETMASKTOUCH_H

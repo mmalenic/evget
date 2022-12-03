@@ -25,96 +25,118 @@
 #define EVGET_XEVENTSWITCHPOINTER_H
 
 #include "XDeviceRefresh.h"
-#include "evgetcore/Event/MouseMove.h"
 #include "evgetcore/Event/MouseClick.h"
+#include "evgetcore/Event/MouseMove.h"
 
 namespace EvgetX11 {
+/**
+ * Check whether the template parameter is a builder with a modifier function.
+ */
+template <typename T>
+concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
+                                 { builder.modifier(modifierValue) } -> std::convertible_to<T>;
+                             };
+
+class XEventSwitchPointer {
+public:
+    explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
+
+    void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
+
+    void addButtonEvent(
+        const XIDeviceEvent& event,
+        EvgetCore::Event::SchemaField::Timestamp dateTime,
+        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::ButtonAction action,
+        int button,
+        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    );
+    void addMotionEvent(
+        const XIDeviceEvent& event,
+        EvgetCore::Event::SchemaField::Timestamp dateTime,
+        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    );
+
+    const std::string& getButtonName(int id, int button) const;
+
     /**
-     * Check whether the template parameter is a builder with a modifier function.
+     * Get the xkb modifier value.
      */
-    template<typename T>
-    concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
-        { builder.modifier(modifierValue) } -> std::convertible_to<T>;
-    };
+    template <BuilderHasModifier T>
+    static T& setModifierValue(int modifierState, T& builder);
 
-    class XEventSwitchPointer {
-    public:
-        explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
+private:
+    void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
-        void refreshDevices(int id, EvgetCore::Event::Device device, const std::string &name, const XIDeviceInfo &info);
+    std::reference_wrapper<XWrapper> xWrapper;
+    std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
+    std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
+};
 
-        void addButtonEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Event::ButtonAction action, int button, EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime);
-        void addMotionEvent(const XIDeviceEvent& event, EvgetCore::Event::SchemaField::Timestamp dateTime, std::vector<EvgetCore::Event::Data>& data, EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime);
+void EvgetX11::XEventSwitchPointer::addMotionEvent(
+    const XIDeviceEvent& event,
+    EvgetCore::Event::SchemaField::Timestamp dateTime,
+    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    EvgetCore::Event::MouseMove builder{};
+    builder.interval(getTime(event.time))
+        .timestamp(dateTime)
+        .device(xDeviceRefresh.get().getDevice(event.deviceid))
+        .positionX(event.root_x)
+        .positionY(event.root_y);
+    XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
 
-        const std::string &getButtonName(int id, int button) const;
-
-        /**
-         * Get the xkb modifier value.
-         */
-        template<BuilderHasModifier T>
-        static T& setModifierValue(int modifierState, T& builder);
-
-    private:
-        void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
-
-        std::reference_wrapper<XWrapper> xWrapper;
-        std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
-        std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
-    };
-
-    void EvgetX11::XEventSwitchPointer::addMotionEvent(
-            const XIDeviceEvent& event,
-            EvgetCore::Event::SchemaField::Timestamp dateTime,
-            std::vector<EvgetCore::Event::Data>& data,
-            EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-    ) {
-        EvgetCore::Event::MouseMove builder{};
-        builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x).positionY(event.root_y);
-        XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
-
-        data.emplace_back(builder.build());
-    }
-
-    void EvgetX11::XEventSwitchPointer::addButtonEvent(
-            const XIDeviceEvent& event,
-            EvgetCore::Event::SchemaField::Timestamp dateTime,
-            std::vector<EvgetCore::Event::Data>& data,
-            EvgetCore::Event::ButtonAction action,
-            int button,
-            EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-    ) {
-        EvgetCore::Event::MouseClick builder{};
-        builder.interval(getTime(event.time)).timestamp(dateTime).device(xDeviceRefresh.get().getDevice(event.deviceid)).positionX(event.root_x)
-                .positionY(event.root_y).action(action).button(button).name(buttonMap[event.deviceid][button]);
-        XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
-
-        data.emplace_back(builder.build());
-    }
-
-    template<BuilderHasModifier T>
-    T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder) {
-        // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
-        if (modifierState & ShiftMask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
-        } else if (modifierState & LockMask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
-        } else if (modifierState & ControlMask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Control);
-        } else if (modifierState & Mod1Mask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Alt);
-        } else if (modifierState & Mod2Mask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
-        } else if (modifierState & Mod3Mask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
-        } else if (modifierState & Mod4Mask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Super);
-        } else if (modifierState & Mod5Mask) {
-            return builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
-        } else {
-            return builder;
-        }
-    }
-
+    data.emplace_back(builder.build());
 }
 
-#endif //EVGET_XEVENTSWITCHPOINTER_H
+void EvgetX11::XEventSwitchPointer::addButtonEvent(
+    const XIDeviceEvent& event,
+    EvgetCore::Event::SchemaField::Timestamp dateTime,
+    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::ButtonAction action,
+    int button,
+    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    EvgetCore::Event::MouseClick builder{};
+    builder.interval(getTime(event.time))
+        .timestamp(dateTime)
+        .device(xDeviceRefresh.get().getDevice(event.deviceid))
+        .positionX(event.root_x)
+        .positionY(event.root_y)
+        .action(action)
+        .button(button)
+        .name(buttonMap[event.deviceid][button]);
+    XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
+
+    data.emplace_back(builder.build());
+}
+
+template <BuilderHasModifier T>
+T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder) {
+    // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
+    if (modifierState & ShiftMask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
+    } else if (modifierState & LockMask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
+    } else if (modifierState & ControlMask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Control);
+    } else if (modifierState & Mod1Mask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Alt);
+    } else if (modifierState & Mod2Mask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
+    } else if (modifierState & Mod3Mask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
+    } else if (modifierState & Mod4Mask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Super);
+    } else if (modifierState & Mod5Mask) {
+        return builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
+    } else {
+        return builder;
+    }
+}
+
+}  // namespace EvgetX11
+
+#endif  // EVGET_XEVENTSWITCHPOINTER_H

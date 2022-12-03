@@ -24,12 +24,7 @@
 #define EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 
 namespace EvgetCore::Event {
-    enum class Device {
-        Mouse,
-        Keyboard,
-        Touchpad,
-        Touchscreen
-    };
+enum class Device { Mouse, Keyboard, Touchpad, Touchscreen };
 }
 
-#endif //EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
+#endif  // EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H

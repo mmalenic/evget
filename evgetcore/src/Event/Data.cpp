@@ -21,35 +21,23 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Data.h"
+
 #include <utility>
 
-EvgetCore::Event::Data::Data(std::string_view name) : name{name}, fields{} {
-}
+EvgetCore::Event::Data::Data(std::string_view name) : name{name}, fields{} {}
 
-EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::begin() const noexcept {
-    return fields.begin();
-}
+EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::begin() const noexcept { return fields.begin(); }
 
-EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::end() const noexcept {
-    return fields.end();
-}
+EvgetCore::Event::Data::Iterator EvgetCore::Event::Data::end() const noexcept { return fields.end(); }
 
-std::string_view EvgetCore::Event::Data::getName() const {
-    return name;
-}
+std::string_view EvgetCore::Event::Data::getName() const { return name; }
 
-void EvgetCore::Event::Data::addField(std::string field) {
-    fields.emplace_back(std::move(field));
-}
+void EvgetCore::Event::Data::addField(std::string field) { fields.emplace_back(std::move(field)); }
 
-const std::string& EvgetCore::Event::Data::getFieldAt(size_t position) const {
-    return fields.at(position);
-}
+const std::string& EvgetCore::Event::Data::getFieldAt(size_t position) const { return fields.at(position); }
 
 void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
     containsData.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
 }
 
-const EvgetCore::Event::Data::ContainedData &EvgetCore::Event::Data::getData() const {
-    return containsData;
-}
+const EvgetCore::Event::Data::ContainedData& EvgetCore::Event::Data::getData() const { return containsData; }

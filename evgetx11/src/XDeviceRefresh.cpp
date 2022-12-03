@@ -20,76 +20,81 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <spdlog/spdlog.h>
 #include "evgetx11/XDeviceRefresh.h"
-#include "evgetcore/UnsupportedOperationException.h"
-#include "evgetcore/Event/Data.h"
+
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+#include <spdlog/spdlog.h>
 
-//EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
-//    EvgetCore::Event::Field::Entries entries{};
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/UnsupportedOperationException.h"
+
+// EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
+//     EvgetCore::Event::Field::Entries entries{};
 //
-//    EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
-//        EvgetCore::Event::Data data{"ButtonState"};
-//        data.addField("ButtonActive", std::to_string(mask));
-//        entries.emplace_back(data);
-//    });
+//     EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
+//         EvgetCore::Event::Data data{"ButtonState"};
+//         data.addField("ButtonActive", std::to_string(mask));
+//         entries.emplace_back(data);
+//     });
 //
-//    return entries;
-//}
+//     return entries;
+// }
 //
-//EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState& valuatorState) {
-//    EvgetCore::Event::Field::Entries entries{};
+// EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState&
+// valuatorState) {
+//     EvgetCore::Event::Field::Entries entries{};
 //
-//    auto values = valuatorState.values;
-//    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&entries, &values](int mask) {
-//        EvgetCore::Event::Data data{"Valuators"};
-//        data.addField("Valuator", std::to_string(mask));
-//        data.addField("Value", std::to_string(*values++));
-//        entries.emplace_back(data);
-//    });
+//     auto values = valuatorState.values;
+//     EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&entries, &values](int mask) {
+//         EvgetCore::Event::Data data{"Valuators"};
+//         data.addField("Valuator", std::to_string(mask));
+//         data.addField("Value", std::to_string(*values++));
+//         entries.emplace_back(data);
+//     });
 //
-//    return entries;
-//}
+//     return entries;
+// }
 
 EvgetCore::Event::Data EvgetX11::XDeviceRefresh::createSystemData(const XIDeviceEvent& event, const std::string& name) {
     EvgetCore::Event::Data data{name};
 
-//    data.addField("DeviceName", idToName[event.deviceid]);
-//    data.addField("EventTypeId", std::to_string(event.evtype));
-//    data.addField("EventTypeName", evtypeToName[event.evtype]);
-//    data.addField("XInputTime", std::to_string(event.time));
-//    data.addField("DeviceId", std::to_string(event.deviceid));
-//    data.addField("SourceId", std::to_string(event.sourceid));
-//
-//    data.addField("Flags", formatValue(event.flags));
-//
-//    data.addField({"ButtonState", createButtonEntries(event)});
-//
-//    data.addField({"Valuators", createValuatorEntries(event.valuators)});
-//
-//    data.addField("ModifiersBase", formatValue(event.mods.base));
-//    data.addField("ModifiersEffective", formatValue(event.mods.effective));
-//    data.addField("ModifiersLatched", formatValue(event.mods.latched));
-//    data.addField("ModifiersLocked", formatValue(event.mods.locked));
-//
-//    data.addField("GroupBase", formatValue(event.group.base));
-//    data.addField("GroupEffective", formatValue(event.group.effective));
-//    data.addField("GroupLatched", formatValue(event.group.latched));
-//    data.addField("GroupLocked", formatValue(event.group.locked));
+    //    data.addField("DeviceName", idToName[event.deviceid]);
+    //    data.addField("EventTypeId", std::to_string(event.evtype));
+    //    data.addField("EventTypeName", evtypeToName[event.evtype]);
+    //    data.addField("XInputTime", std::to_string(event.time));
+    //    data.addField("DeviceId", std::to_string(event.deviceid));
+    //    data.addField("SourceId", std::to_string(event.sourceid));
+    //
+    //    data.addField("Flags", formatValue(event.flags));
+    //
+    //    data.addField({"ButtonState", createButtonEntries(event)});
+    //
+    //    data.addField({"Valuators", createValuatorEntries(event.valuators)});
+    //
+    //    data.addField("ModifiersBase", formatValue(event.mods.base));
+    //    data.addField("ModifiersEffective", formatValue(event.mods.effective));
+    //    data.addField("ModifiersLatched", formatValue(event.mods.latched));
+    //    data.addField("ModifiersLocked", formatValue(event.mods.locked));
+    //
+    //    data.addField("GroupBase", formatValue(event.group.base));
+    //    data.addField("GroupEffective", formatValue(event.group.effective));
+    //    data.addField("GroupLatched", formatValue(event.group.latched));
+    //    data.addField("GroupLocked", formatValue(event.group.locked));
 
     return data;
 }
 
-void EvgetX11::XDeviceRefresh::addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData) {
+void EvgetX11::XDeviceRefresh::addTableData(
+    EventData& data,
+    EvgetCore::Event::Data genericData,
+    EvgetCore::Event::Data systemData
+) {
     data.emplace_back(std::move(genericData));
     data.emplace_back(std::move(systemData));
 }
 
-std::string EvgetX11::XDeviceRefresh::formatValue(int value) {
-    return value != 0 ? std::to_string(value) : "";
-}
+std::string EvgetX11::XDeviceRefresh::formatValue(int value) { return value != 0 ? std::to_string(value) : ""; }
 
 std::map<int, int> EvgetX11::XDeviceRefresh::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
@@ -100,40 +105,36 @@ std::map<int, int> EvgetX11::XDeviceRefresh::getValuators(const XIValuatorState&
     return valuators;
 }
 
-void EvgetX11::XDeviceRefresh::refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& _) {
+void EvgetX11::XDeviceRefresh::refreshDevices(
+    int id,
+    EvgetCore::Event::Device device,
+    const std::string& name,
+    const XIDeviceInfo& _
+) {
     devices.emplace(id, device);
     idToName.emplace(id, name);
 }
 
-EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const {
-    return devices.at(id);
-}
+EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const { return devices.at(id); }
 
-const std::string &EvgetX11::XDeviceRefresh::getNameFromId(int id) const {
-    return idToName.at(id);
-}
+const std::string& EvgetX11::XDeviceRefresh::getNameFromId(int id) const { return idToName.at(id); }
 
-const std::string &EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const {
-    return evtypeToName.at(evtype);
-}
+const std::string& EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const { return evtypeToName.at(evtype); }
 
-void EvgetX11::XDeviceRefresh::setDevice(int id, EvgetCore::Event::Device device) {
-    devices.emplace(id, device);
-}
+void EvgetX11::XDeviceRefresh::setDevice(int id, EvgetCore::Event::Device device) { devices.emplace(id, device); }
 
-void EvgetX11::XDeviceRefresh::setNameFromId(int id, const std::string& name) {
-    idToName.emplace(id, name);
-}
+void EvgetX11::XDeviceRefresh::setNameFromId(int id, const std::string& name) { idToName.emplace(id, name); }
 
 void EvgetX11::XDeviceRefresh::setEvtypeName(int evtype, const std::string& name) {
     evtypeToName.emplace(evtype, name);
 }
 
-bool EvgetX11::XDeviceRefresh::containsDevice(int id) {
-    return devices.contains(id);
-}
+bool EvgetX11::XDeviceRefresh::containsDevice(int id) { return devices.contains(id); }
 
-bool EvgetX11::XDeviceRefresh::switchOnEvent(const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp,
-                                             EvgetX11::EventData &data) {
+bool EvgetX11::XDeviceRefresh::switchOnEvent(
+    const EvgetX11::XInputEvent& event,
+    std::chrono::nanoseconds timestamp,
+    EvgetX11::EventData& data
+) {
     return false;
 }

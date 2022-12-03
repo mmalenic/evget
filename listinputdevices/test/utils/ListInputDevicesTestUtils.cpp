@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <linux/input.h>
 #include "ListInputDevicesTestUtils.h"
+
+#include <linux/input.h>
 
 std::vector<std::pair<int, std::string>> ListInputDeviceTestUtils::createCapabilities() {
     return {
         std::make_pair(EV_SYN, std::to_string(EV_SYN)),
         std::make_pair(EV_KEY, std::to_string(EV_KEY)),
         std::make_pair(EV_REL, std::to_string(EV_REL)),
-        std::make_pair(EV_MSC, std::to_string(EV_MSC))
-    };
+        std::make_pair(EV_MSC, std::to_string(EV_MSC))};
 }

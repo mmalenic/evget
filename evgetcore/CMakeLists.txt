@@ -41,4 +41,4 @@ add_library_and_link(EVGETCORE_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
 
 if (BUILD_TESTING)
     add_subdirectory(test)
-endif()
+endif ()

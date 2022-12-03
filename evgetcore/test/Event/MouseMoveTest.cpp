@@ -21,23 +21,32 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
-#include "evgetcore/Event/MouseMove.h"
+
 #include "EventTestUtils.h"
+#include "evgetcore/Event/MouseMove.h"
 
 namespace EventTestUtils = TestUtils::EventTestUtils;
 
-TEST(MouseMoveTest, Time) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(), 0, "1");
+TEST(MouseMoveTest, Time) {  // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(
+        EvgetCore::Event::MouseMove{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
+        0,
+        "1"
+    );
 }
 
-TEST(MouseMoveTest, Device) { // NOLINT(cert-err58-cpp)
-    EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.device(EvgetCore::Event::Device::Mouse).build(), 1, "Mouse");
+TEST(MouseMoveTest, Device) {  // NOLINT(cert-err58-cpp)
+    EventTestUtils::event_entry_at(
+        EvgetCore::Event::MouseMove{}.device(EvgetCore::Event::Device::Mouse).build(),
+        1,
+        "Mouse"
+    );
 }
 
-TEST(MouseMoveTest, PositionX) { // NOLINT(cert-err58-cpp)
+TEST(MouseMoveTest, PositionX) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.positionX(1).build(), 2, "1");
 }
 
-TEST(MouseMoveTest, PositionY) { // NOLINT(cert-err58-cpp)
+TEST(MouseMoveTest, PositionY) {  // NOLINT(cert-err58-cpp)
     EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.positionY(1).build(), 3, "1");
 }

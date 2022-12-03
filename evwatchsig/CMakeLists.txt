@@ -16,4 +16,4 @@ add_library_and_link(EVWATCHSIG_LIBRARY_NAME EVWATCH_LIBRARY_NAME "")
 
 if (BUILD_TESTING)
     add_subdirectory(test)
-endif()
+endif ()

@@ -29,17 +29,17 @@
 
 namespace CliOption {
 
-    class OptionFlag : public AbstractOption<bool> {
-    public:
-        /**
-         * Create from builder.
-         */
-        explicit OptionFlag(OptionBuilder<bool> builder);
+class OptionFlag : public AbstractOption<bool> {
+public:
+    /**
+     * Create from builder.
+     */
+    explicit OptionFlag(OptionBuilder<bool> builder);
 
-        [[nodiscard]] std::optional<bool> getDefaultValue() const override;
+    [[nodiscard]] std::optional<bool> getDefaultValue() const override;
 
-        [[nodiscard]] std::optional<bool> getImplicitValue() const override;
-    };
-}
+    [[nodiscard]] std::optional<bool> getImplicitValue() const override;
+};
+}  // namespace CliOption
 
-#endif //EVGET_OPTIONFLAG_H
+#endif  // EVGET_OPTIONFLAG_H

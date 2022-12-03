@@ -24,29 +24,39 @@
 #define EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 
 #include <string>
-#include "gtest/gtest.h"
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
+#include "gtest/gtest.h"
 
 namespace TestUtils::EventTestUtils {
-    EvgetCore::Event::Data createData();
+EvgetCore::Event::Data createData();
 
-    EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> createSchema();
+EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> createSchema();
 
-    EvgetCore::Event::SchemaField::Field createEntriesData(const std::string& outerName, const std::string& innerDataName, const std::string& innerName, const std::string& innerEntry);
+EvgetCore::Event::SchemaField::Field createEntriesData(
+    const std::string& outerName,
+    const std::string& innerDataName,
+    const std::string& innerName,
+    const std::string& innerEntry
+);
 
-    void getAndSet(auto&& get, std::string entry) {
-//        std::string field_name = "field";
-//        EvgetCore::Event::Data eventData = createData("name", field_name, entry);
-//        const auto& field = get(eventData, field_name, 0);
-//
-//        ASSERT_EQ(field_name, field.getName());
-//        ASSERT_EQ(entry, field.getEntry());
-    }
-
-    void fieldValueAndName(const EvgetCore::Event::SchemaField::Field& field, const std::string& name, const std::string& expected);
-
-    void event_entry_at(const EvgetCore::Event::Data& data, size_t position, const std::string& expected);
+void getAndSet(auto&& get, std::string entry) {
+    //        std::string field_name = "field";
+    //        EvgetCore::Event::Data eventData = createData("name", field_name, entry);
+    //        const auto& field = get(eventData, field_name, 0);
+    //
+    //        ASSERT_EQ(field_name, field.getName());
+    //        ASSERT_EQ(entry, field.getEntry());
 }
 
-#endif //EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
+void fieldValueAndName(
+    const EvgetCore::Event::SchemaField::Field& field,
+    const std::string& name,
+    const std::string& expected
+);
+
+void event_entry_at(const EvgetCore::Event::Data& data, size_t position, const std::string& expected);
+}  // namespace TestUtils::EventTestUtils
+
+#endif  // EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
