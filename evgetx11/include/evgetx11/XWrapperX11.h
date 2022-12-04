@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "XWrapper.h"
@@ -46,6 +47,7 @@ public:
     std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
 
     std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
+    std::optional<Atom> getAtom(const char* atomName) override;
 
     XEvent nextEvent() override;
     XEventPointer eventData(XEvent& event) override;

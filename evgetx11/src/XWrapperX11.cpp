@@ -136,6 +136,14 @@ std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapperX11::atomName(Atom a
     return {XGetAtomName(&display.get(), atom), XFree};
 }
 
+std::optional<Atom> EvgetX11::XWrapperX11::getAtom(const char* atomName) {
+    Atom atom = XInternAtom(&display.get(), atomName, true);
+    if (atom == None) {
+        return std::nullopt;
+    }
+    return atom;
+}
+
 XEvent EvgetX11::XWrapperX11::nextEvent() {
     XEvent event;
     XNextEvent(&display.get(), &event);

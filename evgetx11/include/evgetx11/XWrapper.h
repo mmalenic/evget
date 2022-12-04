@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "DeleterWithDisplay.h"
@@ -46,6 +47,7 @@ public:
     virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
 
     virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
+    virtual std::optional<Atom> getAtom(const char* atomName) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;

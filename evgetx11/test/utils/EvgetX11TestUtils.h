@@ -23,6 +23,8 @@
 #ifndef EVGET_UTILS_H
 #define EVGET_UTILS_H
 
+#include <optional>
+
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XInputEvent.h"
@@ -47,6 +49,7 @@ public:
         (override)
     );
     MOCK_METHOD((std::unique_ptr<char[], decltype(&XFree)>), atomName, (Atom atom), (override));
+    MOCK_METHOD(std::optional<Atom>, getAtom, (const char* atomName), (override));
     MOCK_METHOD(XEvent, nextEvent, (), (override));
     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
     MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
