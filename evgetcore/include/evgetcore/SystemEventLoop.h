@@ -23,10 +23,10 @@
 #ifndef EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 #define EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 
-#include <spdlog/spdlog.h>
-
 #include <boost/asio.hpp>
 #include <boost/fiber/buffered_channel.hpp>
+#include <spdlog/spdlog.h>
+
 #include <chrono>
 #include <vector>
 

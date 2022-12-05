@@ -16,11 +16,11 @@
 #ifndef EVGET_INCLUDE_TASK_H
 #define EVGET_INCLUDE_TASK_H
 
+#include <boost/asio.hpp>
+#include <boost/optional.hpp>
 #include <spdlog/spdlog.h>
 
 #include <atomic>
-#include <boost/asio.hpp>
-#include <boost/optional.hpp>
 #include <optional>
 
 #include "UnsupportedOperationException.h"

@@ -23,13 +23,16 @@
 #ifndef EVGET_UTILS_H
 #define EVGET_UTILS_H
 
+#include <gmock/gmock.h>
+
+#include <X11/Xlib.h>
+
 #include <optional>
 
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
-#include "gmock/gmock.h"
 
 namespace EvgetX11TestUtils {
 class XWrapperMock : public EvgetX11::XWrapper {

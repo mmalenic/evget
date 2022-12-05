@@ -22,9 +22,9 @@
 
 #include "listinputdevices/InputDevice.h"
 
+#include <boost/algorithm/string.hpp>
 #include <fmt/format.h>
 
-#include <boost/algorithm/string.hpp>
 #include <regex>
 #include <utility>
 

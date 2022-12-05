@@ -13,6 +13,27 @@ BinPackArguments: false
 BinPackParameters: false
 ColumnLimit: 120
 DerivePointerAlignment: false
+IncludeCategories:
+  - Regex: '^(<|")(gtest|gmock)/.*\.(h|hpp)(>|")'
+    Priority: 1
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: '^<ext/.*\.(h|hpp)>'
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: '^<.*\.(h|hpp)>'
+    Priority: 2
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: '^<.*'
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: '.*'
+    Priority: 4
+    SortPriority: 0
+    CaseSensitive: false
 IndentWidth: 4
 InsertBraces: true
 QualifierAlignment: Left

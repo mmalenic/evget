@@ -23,11 +23,12 @@
 #ifndef EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 #define EVGET_TEST_TESTUTILS_INCLUDE_TESTUTILS_EVENT_EVENTTESTUTILS_H
 
+#include "gtest/gtest.h"
+
 #include <string>
 
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
-#include "gtest/gtest.h"
 
 namespace TestUtils::EventTestUtils {
 EvgetCore::Event::Data createData();

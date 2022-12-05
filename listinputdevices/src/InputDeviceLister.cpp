@@ -22,12 +22,12 @@
 
 #include "listinputdevices/InputDeviceLister.h"
 
+#include <boost/algorithm/string.hpp>
 #include <fcntl.h>
 #include <linux/input.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
-#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <iostream>
 #include <regex>

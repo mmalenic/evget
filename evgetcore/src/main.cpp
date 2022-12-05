@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <boost/asio.hpp>
+#include <boost/program_options.hpp>
 #include <evgetcore/EventHandler.h>
 #include <spdlog/spdlog.h>
 
 #include <atomic>
-#include <boost/asio.hpp>
-#include <boost/program_options.hpp>
 #include <iostream>
 // #include <linux/input.h>
 // #include "evgetcore/CommandLine/ParserLinux.h"

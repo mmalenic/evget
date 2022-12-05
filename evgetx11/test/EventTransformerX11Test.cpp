@@ -20,8 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <X11/Xlib.h>
 #include <gtest/gtest.h>
+
+#include <X11/Xlib.h>
 
 #include <array>
 

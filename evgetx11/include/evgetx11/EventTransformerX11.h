@@ -24,9 +24,9 @@
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
 #include <X11/extensions/XInput2.h>
+#include <boost/numeric/conversion/cast.hpp>
 #include <spdlog/spdlog.h>
 
-#include <boost/numeric/conversion/cast.hpp>
 #include <concepts>
 #include <map>
 #include <set>
