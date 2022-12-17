@@ -48,6 +48,8 @@ public:
 
     virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
     virtual std::optional<Atom> getAtom(const char* atomName) = 0;
+    virtual std::unique_ptr<unsigned char*, decltype(&XFree)>
+    virtual getProperty(Atom atom, long& nItems, Atom& type, int& size) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;

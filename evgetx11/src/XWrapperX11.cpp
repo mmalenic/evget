@@ -167,3 +167,43 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
     XSync(&display.get(), false);
 }
+
+std::unique_ptr<unsigned char*, decltype(&XFree)>
+EvgetX11::XWrapperX11::getProperty(Atom atom, long& nItems, Atom& type, int& size) {
+    Atom actualType;
+    int actualFormat;
+    unsigned long nItemsReturn, _bytesAfter;
+
+    auto prop = std::unique_ptr<unsigned char*, decltype(&XFree)>{nullptr, XFree};
+
+    Window window = XDefaultRootWindow(&display.get());
+    Status status = XGetWindowProperty(
+        &display.get(),
+        window,
+        atom,
+        0,
+        LONG_MAX,
+        False,
+        AnyPropertyType,
+        &actualType,
+        &actualFormat,
+        &nItemsReturn,
+        &_bytesAfter,
+        prop.get()
+    );
+
+    if (status == BadWindow) {
+        spdlog::warn("window does not exist");
+        return {nullptr, XFree};
+    }
+    if (status != Success) {
+        spdlog::warn("failed to get window property");
+        return {nullptr, XFree};
+    }
+
+    nItems = nItemsReturn;
+    type = actualType;
+    size = actualFormat;
+
+    return prop;
+}

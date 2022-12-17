@@ -53,6 +53,12 @@ public:
     );
     MOCK_METHOD((std::unique_ptr<char[], decltype(&XFree)>), atomName, (Atom atom), (override));
     MOCK_METHOD(std::optional<Atom>, getAtom, (const char* atomName), (override));
+    MOCK_METHOD(
+        (std::unique_ptr<unsigned char*, decltype(&XFree)>),
+        getProperty,
+        (Atom atom, long& nItems, Atom& type, int& size),
+        (override)
+    );
     MOCK_METHOD(XEvent, nextEvent, (), (override));
     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
     MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
