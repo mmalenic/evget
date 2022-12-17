@@ -56,9 +56,11 @@ public:
     MOCK_METHOD(
         (std::unique_ptr<unsigned char*, decltype(&XFree)>),
         getProperty,
-        (Atom atom, long& nItems, Atom& type, int& size),
+        (Atom atom, Window window, unsigned long& nItems, Atom& type, int& size),
         (override)
     );
+    MOCK_METHOD(std::optional<std::string>, getWindowName, (Window window), (override));
+
     MOCK_METHOD(XEvent, nextEvent, (), (override));
     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
     MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));

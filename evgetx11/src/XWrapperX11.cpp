@@ -139,6 +139,7 @@ std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapperX11::atomName(Atom a
 std::optional<Atom> EvgetX11::XWrapperX11::getAtom(const char* atomName) {
     Atom atom = XInternAtom(&display.get(), atomName, true);
     if (atom == None) {
+        spdlog::warn("failed to get {} atom");
         return std::nullopt;
     }
     return atom;
@@ -169,14 +170,13 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
 }
 
 std::unique_ptr<unsigned char*, decltype(&XFree)>
-EvgetX11::XWrapperX11::getProperty(Atom atom, long& nItems, Atom& type, int& size) {
+EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) {
     Atom actualType;
     int actualFormat;
     unsigned long nItemsReturn, _bytesAfter;
 
     auto prop = std::unique_ptr<unsigned char*, decltype(&XFree)>{nullptr, XFree};
 
-    Window window = XDefaultRootWindow(&display.get());
     Status status = XGetWindowProperty(
         &display.get(),
         window,
@@ -206,4 +206,26 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, long& nItems, Atom& type, int& siz
     size = actualFormat;
 
     return prop;
+}
+
+std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
+    auto wmNameAtom = getAtom("_NET_WM_NAME");
+    if (!wmNameAtom) {
+        return std::nullopt;
+    }
+
+    Atom type;
+    int size;
+    unsigned long nItems;
+
+    auto name = getProperty(*wmNameAtom, window, nItems, type, size);
+    if (nItems == 0) {
+        wmNameAtom = getAtom("WM_NAME");
+        if (!wmNameAtom) {
+            return std::nullopt;
+        }
+        name = getProperty(*wmNameAtom, window, nItems, type, size);
+    }
+
+    return std::string{reinterpret_cast<const char*>(*name), nItems};
 }
