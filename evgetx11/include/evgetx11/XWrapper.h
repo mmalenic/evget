@@ -55,6 +55,7 @@ public:
     virtual std::optional<Window> getActiveWindow() = 0;
     virtual std::optional<Window> getFocusWindow() = 0;
     virtual std::optional<std::string> getWindowName(Window window) = 0;
+    virtual std::optional<XWindowAttributes> getWindowAttributes(Window window) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;

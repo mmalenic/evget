@@ -55,6 +55,7 @@ public:
     std::optional<Window> getActiveWindow() override;
     std::optional<Window> getFocusWindow() override;
     std::optional<std::string> getWindowName(Window window) override;
+    std::optional<XWindowAttributes> getWindowAttributes(Window window) override;
 
     XEvent nextEvent() override;
     XEventPointer eventData(XEvent& event) override;

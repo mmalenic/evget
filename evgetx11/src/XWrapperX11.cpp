@@ -261,3 +261,15 @@ std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
 
     return window;
 }
+
+std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Window window) {
+    XWindowAttributes attributes;
+
+    Status status = XGetWindowAttributes(&display.get(), window, &attributes);
+    if (status != Success) {
+        spdlog::warn("failed to get window attributes");
+        return std::nullopt;
+    }
+
+    return attributes;
+}
