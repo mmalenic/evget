@@ -52,6 +52,7 @@ public:
     virtual std::unique_ptr<unsigned char*, decltype(&XFree)>
     getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) = 0;
 
+    virtual std::optional<Window> getActiveWindow() = 0;
     virtual std::optional<std::string> getWindowName(Window window) = 0;
 
     virtual XEvent nextEvent() = 0;

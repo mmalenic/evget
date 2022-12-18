@@ -229,3 +229,22 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
 
     return std::string{reinterpret_cast<const char*>(*name), nItems};
 }
+
+std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
+    auto activeWindow = getAtom("_NET_ACTIVE_WINDOW");
+    if (!activeWindow) {
+        return std::nullopt;
+    }
+
+    Atom type;
+    int size;
+    unsigned long nItems;
+
+    auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()), nItems, type, size);
+    if (nItems > 0 && size == 32) {
+        return *(reinterpret_cast<Window *>(window.get()));
+    }
+
+    spdlog::warn("failed to get active window");
+    return std::nullopt;
+}

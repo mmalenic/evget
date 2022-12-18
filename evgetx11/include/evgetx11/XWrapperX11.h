@@ -48,8 +48,11 @@ public:
 
     std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
     std::optional<Atom> getAtom(const char* atomName) override;
+
     std::unique_ptr<unsigned char*, decltype(&XFree)>
     getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) override;
+
+    std::optional<Window> getActiveWindow() override;
     std::optional<std::string> getWindowName(Window window) override;
 
     XEvent nextEvent() override;
