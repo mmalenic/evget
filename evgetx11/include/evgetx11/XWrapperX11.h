@@ -53,6 +53,7 @@ public:
     getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) override;
 
     std::optional<Window> getActiveWindow() override;
+    std::optional<Window> getFocusWindow() override;
     std::optional<std::string> getWindowName(Window window) override;
 
     XEvent nextEvent() override;

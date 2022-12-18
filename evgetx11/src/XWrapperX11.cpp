@@ -248,3 +248,16 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
     spdlog::warn("failed to get active window");
     return std::nullopt;
 }
+
+std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
+    Window window;
+    int _revert;
+
+    Status status = XGetInputFocus(&display.get(), &window, &_revert);
+    if (status != Success) {
+        spdlog::warn("failed to get focus window");
+        return std::nullopt;
+    }
+
+    return window;
+}
