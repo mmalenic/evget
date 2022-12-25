@@ -36,6 +36,12 @@
 #include "evgetcore/Util.h"
 
 namespace EvgetX11 {
+
+struct XWindowDimensions {
+    unsigned int width;
+    unsigned int height;
+};
+
 class XWrapper {
 public:
     using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
@@ -56,6 +62,7 @@ public:
     virtual std::optional<Window> getFocusWindow() = 0;
     virtual std::optional<std::string> getWindowName(Window window) = 0;
     virtual std::optional<XWindowAttributes> getWindowAttributes(Window window) = 0;
+    virtual std::optional<XWindowDimensions> getWindowSize(Window window) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;

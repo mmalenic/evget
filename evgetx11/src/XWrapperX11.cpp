@@ -227,7 +227,7 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
         name = getProperty(*wmNameAtom, window, nItems, type, size);
     }
 
-    return std::string{reinterpret_cast<const char*>(*name), nItems};
+    return std::string{reinterpret_cast<const char*>(name.get()), nItems};
 }
 
 std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
@@ -272,4 +272,17 @@ std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Wind
     }
 
     return attributes;
+}
+
+std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowSize(Window window) {
+    auto attributes = getWindowAttributes(window);
+
+    if (!attributes.has_value()) {
+        return std::nullopt;
+    }
+
+    unsigned int width = attributes->width;
+    unsigned int height = attributes->width;
+
+    return {{width, height}};
 }
