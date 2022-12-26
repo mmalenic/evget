@@ -57,6 +57,7 @@ public:
     std::optional<std::string> getWindowName(Window window) override;
     std::optional<XWindowAttributes> getWindowAttributes(Window window) override;
     std::optional<XWindowDimensions> getWindowSize(Window window) override;
+    XWindowDimensions translateCoordinates(Window src, Window dest) override;
 
     XEvent nextEvent() override;
     XEventPointer eventData(XEvent& event) override;

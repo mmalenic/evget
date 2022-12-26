@@ -37,6 +37,8 @@
 namespace EvgetX11TestUtils {
 class XWrapperMock : public EvgetX11::XWrapper {
 public:
+    using XWindowDimensions = EvgetX11::XWindowDimensions;
+
     MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
     MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
     MOCK_METHOD(
@@ -63,7 +65,9 @@ public:
     MOCK_METHOD(std::optional<Window>, getActiveWindow, (), (override));
     MOCK_METHOD(std::optional<Window>, getFocusWindow, (), (override));
     MOCK_METHOD(std::optional<XWindowAttributes>, getWindowAttributes, (Window window), (override));
-    MOCK_METHOD(std::optional<EvgetX11::XWindowDimensions>, getWindowSize, (Window window), (override));
+    MOCK_METHOD(std::optional<XWindowDimensions>, getWindowSize, (Window window), (override));
+    MOCK_METHOD(XWindowDimensions, translateCoordinates, (Window src, Window dest), (override));
+
 
     MOCK_METHOD(XEvent, nextEvent, (), (override));
     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));

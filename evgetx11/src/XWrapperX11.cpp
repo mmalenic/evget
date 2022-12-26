@@ -286,3 +286,15 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowSize(
 
     return {{width, height}};
 }
+
+EvgetX11::XWindowDimensions EvgetX11::XWrapperX11::translateCoordinates(Window src, Window dest) {
+    int x, y;
+    Window _unused;
+
+    XTranslateCoordinates(&display.get(), src, dest, 0, 0, &x, &y, &_unused);
+
+    unsigned int width = x;
+    unsigned int height = y;
+
+    return {width, height};
+}
