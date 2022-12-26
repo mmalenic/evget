@@ -287,14 +287,32 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowSize(
     return {{width, height}};
 }
 
-EvgetX11::XWindowDimensions EvgetX11::XWrapperX11::translateCoordinates(Window src, Window dest) {
-    int x, y;
-    Window _unused;
+std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowLocation(Window window) {
+    auto attributes = getWindowAttributes(window);
 
-    XTranslateCoordinates(&display.get(), src, dest, 0, 0, &x, &y, &_unused);
+    if (!attributes.has_value()) {
+        return std::nullopt;
+    }
+
+    Window parent, root;
+    unsigned int nChildren;
+    auto children = std::unique_ptr<Window *, decltype(&XFree)>{nullptr, XFree};
+
+    XQueryTree(&display.get(), window, &root, &parent, children.get(), &nChildren);
+
+    // It shouldn't be necessary to check if the parent is the root, but it shouldn't hurt.
+    // See https://github.com/jordansissel/xdotool/pull/9 for more information.
+    int x, y;
+    if (parent == attributes->root) {
+        x = attributes->x;
+        y = attributes->y;
+    } else {
+        Window _unused;
+        XTranslateCoordinates(&display.get(), window, attributes->root, 0, 0, &x, &y, &_unused);
+    }
 
     unsigned int width = x;
     unsigned int height = y;
 
-    return {width, height};
+    return {{width, height}};
 }

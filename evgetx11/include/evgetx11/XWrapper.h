@@ -63,7 +63,7 @@ public:
     virtual std::optional<std::string> getWindowName(Window window) = 0;
     virtual std::optional<XWindowAttributes> getWindowAttributes(Window window) = 0;
     virtual std::optional<XWindowDimensions> getWindowSize(Window window) = 0;
-    virtual XWindowDimensions translateCoordinates(Window src, Window dest) = 0;
+    virtual std::optional<XWindowDimensions> getWindowLocation(Window window) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;

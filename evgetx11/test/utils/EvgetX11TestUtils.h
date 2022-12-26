@@ -66,8 +66,7 @@ public:
     MOCK_METHOD(std::optional<Window>, getFocusWindow, (), (override));
     MOCK_METHOD(std::optional<XWindowAttributes>, getWindowAttributes, (Window window), (override));
     MOCK_METHOD(std::optional<XWindowDimensions>, getWindowSize, (Window window), (override));
-    MOCK_METHOD(XWindowDimensions, translateCoordinates, (Window src, Window dest), (override));
-
+    MOCK_METHOD(std::optional<XWindowDimensions>, getWindowLocation, (Window window), (override));
 
     MOCK_METHOD(XEvent, nextEvent, (), (override));
     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
