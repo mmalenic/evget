@@ -287,7 +287,7 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowSize(
     return {{width, height}};
 }
 
-std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowLocation(Window window) {
+std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosition(Window window) {
     auto attributes = getWindowAttributes(window);
 
     if (!attributes.has_value()) {

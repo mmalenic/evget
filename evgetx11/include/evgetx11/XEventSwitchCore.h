@@ -160,6 +160,7 @@ void EvgetX11::XEventSwitchCore::keyEvent(
         .character(character)
         .name(name);
     XEventSwitchPointer::setModifierValue(deviceEvent.mods.effective, builder);
+    xEventSwitchPointer.get().setWindowFields(builder);
 
     XDeviceRefresh::addTableData(
         data,
@@ -210,6 +211,7 @@ void EvgetX11::XEventSwitchCore::scrollEvent(
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y);
     XEventSwitchPointer::setModifierValue(deviceEvent.mods.effective, builder);
+    xEventSwitchPointer.get().setWindowFields(builder);
 
     data.emplace_back(builder.build());
     data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));
@@ -233,6 +235,7 @@ void EvgetX11::XEventSwitchCore::motionEvent(
         }
     }
 }
+
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H

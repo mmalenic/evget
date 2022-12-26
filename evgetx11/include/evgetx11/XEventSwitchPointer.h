@@ -24,6 +24,8 @@
 #ifndef EVGET_XEVENTSWITCHPOINTER_H
 #define EVGET_XEVENTSWITCHPOINTER_H
 
+#include <spdlog/spdlog.h>
+
 #include "XDeviceRefresh.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
@@ -36,6 +38,25 @@ template <typename T>
 concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
                                  { builder.modifier(modifierValue) } -> std::convertible_to<T>;
                              };
+
+/**
+ * Check whether the template parameter is a builder with focus window functions.
+ */
+template <typename T>
+concept BuilderHasWindowFunctions = requires(
+    T builder,
+    std::string name,
+    double x,
+    double y,
+    double width,
+    double height
+    ) {
+      { builder.focusWindowName(name) } -> std::convertible_to<T>;
+      { builder.focusWindowPositionX(x) } -> std::convertible_to<T>;
+      { builder.focusWindowPositionY(y) } -> std::convertible_to<T>;
+      { builder.focusWindowWidth(width) } -> std::convertible_to<T>;
+      { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
+    };
 
 class XEventSwitchPointer {
 public:
@@ -61,10 +82,16 @@ public:
     const std::string& getButtonName(int id, int button) const;
 
     /**
-     * Get the xkb modifier value.
+     * Set the modifier state for a builder.
      */
     template <BuilderHasModifier T>
     static T& setModifierValue(int modifierState, T& builder);
+
+    /**
+     * Set the window fields for a builder.
+     */
+    template <BuilderHasWindowFunctions T>
+    T& setWindowFields(T& builder);
 
 private:
     void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
@@ -87,6 +114,7 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
         .positionX(event.root_x)
         .positionY(event.root_y);
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
+    setWindowFields(builder);
 
     data.emplace_back(builder.build());
 }
@@ -109,6 +137,7 @@ void EvgetX11::XEventSwitchPointer::addButtonEvent(
         .button(button)
         .name(buttonMap[event.deviceid][button]);
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
+    setWindowFields(builder);
 
     data.emplace_back(builder.build());
 }
@@ -135,6 +164,42 @@ T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder
     } else {
         return builder;
     }
+}
+
+template <BuilderHasWindowFunctions T>
+T& EvgetX11::XEventSwitchPointer::setWindowFields(T& builder) {
+    auto window = xWrapper.get().getActiveWindow();
+
+    if (!window.has_value()) {
+        spdlog::warn("failed to get active window, falling back on focus window");
+        window = xWrapper.get().getFocusWindow();
+    }
+
+    if (!window.has_value()) {
+        spdlog::warn("failed to get any focus window");
+        return builder;
+    }
+
+
+    auto windowName = xWrapper.get().getWindowName(*window);
+    auto windowPosition = xWrapper.get().getWindowPosition(*window);
+    auto windowSize = xWrapper.get().getWindowSize(*window);
+
+    if (windowName.has_value()) {
+        builder.focusWindowName(*windowName);
+    }
+
+    if (windowPosition.has_value()) {
+        builder.focusWindowPositionX(windowPosition->width);
+        builder.focusWindowPositionY(windowPosition->height);
+    }
+
+    if (windowSize.has_value()) {
+        builder.focusWindowWidth(windowSize->width);
+        builder.focusWindowHeight(windowSize->height);
+    }
+
+    return builder;
 }
 
 }  // namespace EvgetX11
