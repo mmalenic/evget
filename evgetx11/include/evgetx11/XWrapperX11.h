@@ -36,36 +36,38 @@
 #include "evgetcore/Util.h"
 
 namespace EvgetX11 {
-class XWrapperX11 : public XWrapper {
+class XWrapperX11 {
 public:
     explicit XWrapperX11(Display& display);
 
-    std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) override;
-    std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
+    std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym);
+    std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize);
 
-    std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
-    std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
+    std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices);
+    std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices);
 
-    std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
-    std::optional<Atom> getAtom(const char* atomName) override;
+    std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom);
 
-    std::unique_ptr<unsigned char*, decltype(&XFree)>
-    getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) override;
+    std::optional<Window> getActiveWindow();
+    std::optional<Window> getFocusWindow();
+    std::optional<std::string> getWindowName(Window window);
+    std::optional<XWindowDimensions> getWindowSize(Window window);
+    std::optional<XWindowDimensions> getWindowPosition(Window window);
 
-    std::optional<Window> getActiveWindow() override;
-    std::optional<Window> getFocusWindow() override;
-    std::optional<std::string> getWindowName(Window window) override;
-    std::optional<XWindowAttributes> getWindowAttributes(Window window) override;
-    std::optional<XWindowDimensions> getWindowSize(Window window) override;
-    std::optional<XWindowDimensions> getWindowPosition(Window window) override;
+    XEvent nextEvent();
+    XEventPointer eventData(XEvent& event);
 
-    XEvent nextEvent() override;
-    XEventPointer eventData(XEvent& event) override;
-
-    Status queryVersion(int& major, int& minor) override;
-    void selectEvents(XIEventMask& mask) override;
+    Status queryVersion(int& major, int& minor);
+    void selectEvents(XIEventMask& mask);
 
 private:
+    std::optional<XWindowAttributes> getWindowAttributes(Window window);
+
+    std::optional<Atom> getAtom(const char* atomName);
+
+    std::unique_ptr<unsigned char*, decltype(&XFree)>
+    getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size);
+
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
     static constexpr int utf8MaxBytes = 4;

@@ -151,7 +151,7 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
     return event;
 }
 
-EvgetX11::XWrapper::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
+EvgetX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     auto deleter = std::function<void(XGenericEventCookie*)>{DeleterWithDisplay<XFreeEventData>{display.get()}};
     if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
@@ -242,7 +242,7 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
 
     auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()), nItems, type, size);
     if (nItems > 0 && size == 32) {
-        return *(reinterpret_cast<Window *>(window.get()));
+        return *(reinterpret_cast<Window*>(window.get()));
     }
 
     spdlog::warn("failed to get active window");
@@ -296,7 +296,7 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosit
 
     Window parent, root;
     unsigned int nChildren;
-    auto children = std::unique_ptr<Window *, decltype(&XFree)>{nullptr, XFree};
+    auto children = std::unique_ptr<Window*, decltype(&XFree)>{nullptr, XFree};
 
     XQueryTree(&display.get(), window, &root, &parent, children.get(), &nChildren);
 

@@ -38,6 +38,7 @@ namespace EvgetX11TestUtils {
 class XWrapperMock : public EvgetX11::XWrapper {
 public:
     using XWindowDimensions = EvgetX11::XWindowDimensions;
+    using XEventPointer = EvgetX11::XEventPointer;
 
     MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
     MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));

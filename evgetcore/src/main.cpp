@@ -51,12 +51,12 @@ int main(int argc, char* argv[]) {
     Display* display = XOpenDisplay(nullptr);
     EvgetX11::XWrapperX11 wrapper{*display};
     EvgetX11::XDeviceRefresh xDeviceRefresh{};
-    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
-    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
-    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
-    EvgetX11::EventData data{};
-
-    EvgetX11::EventTransformerX11 transformer{wrapper, core};
+//    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
+//    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
+//    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
+//    EvgetX11::EventData data{};
+//
+//    EvgetX11::EventTransformerX11 transformer{wrapper, core};
 
     //    CliOption::ParserLinux cmd{};
     //    cmd.parseCommandLine(argc, (const char**) argv);

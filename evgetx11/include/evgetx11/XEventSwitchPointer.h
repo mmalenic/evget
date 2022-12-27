@@ -43,19 +43,13 @@ concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue
  * Check whether the template parameter is a builder with focus window functions.
  */
 template <typename T>
-concept BuilderHasWindowFunctions = requires(
-    T builder,
-    std::string name,
-    double x,
-    double y,
-    double width,
-    double height
-    ) {
-      { builder.focusWindowName(name) } -> std::convertible_to<T>;
-      { builder.focusWindowPositionX(x) } -> std::convertible_to<T>;
-      { builder.focusWindowPositionY(y) } -> std::convertible_to<T>;
-      { builder.focusWindowWidth(width) } -> std::convertible_to<T>;
-      { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
+concept BuilderHasWindowFunctions =
+    requires(T builder, std::string name, double x, double y, double width, double height) {
+        { builder.focusWindowName(name) } -> std::convertible_to<T>;
+        { builder.focusWindowPositionX(x) } -> std::convertible_to<T>;
+        { builder.focusWindowPositionY(y) } -> std::convertible_to<T>;
+        { builder.focusWindowWidth(width) } -> std::convertible_to<T>;
+        { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
     };
 
 class XEventSwitchPointer {
@@ -179,7 +173,6 @@ T& EvgetX11::XEventSwitchPointer::setWindowFields(T& builder) {
         spdlog::warn("failed to get any focus window");
         return builder;
     }
-
 
     auto windowName = xWrapper.get().getWindowName(*window);
     auto windowPosition = xWrapper.get().getWindowPosition(*window);

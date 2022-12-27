@@ -69,7 +69,7 @@ private:
 
     XEvent event;
     EvgetCore::Event::SchemaField::Timestamp timestamp;
-    XWrapper::XEventPointer cookie;
+    XEventPointer cookie;
 };
 
 template <typename T>
