@@ -101,7 +101,7 @@ std::string EvgetX11::XDeviceRefresh::formatValue(int value) {
 std::map<int, int> EvgetX11::XDeviceRefresh::getValuators(const XIValuatorState& valuatorState) {
     std::map<int, int> valuators{};
     auto* values = valuatorState.values;
-    EvgetX11::XWrapper::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
+    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
         valuators.emplace(mask, *values++);
     });
     return valuators;

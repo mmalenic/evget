@@ -40,10 +40,10 @@
 #include "evgetcore/Util.h"
 
 namespace EvgetX11 {
-template <typename... T>
+template <XWrapper XWrapper, typename... Switches>
 class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
 public:
-    explicit EventTransformerX11(XWrapper& xWrapper, T&... switches);
+    explicit EventTransformerX11(XWrapper& xWrapper, Switches&... switches);
     std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
 
 private:
@@ -56,17 +56,17 @@ private:
     std::unordered_map<int, EvgetCore::Event::Device> devices{};
     std::unordered_map<int, std::string> idToName{};
 
-    std::tuple<T&...> switches;
+    std::tuple<Switches&...> switches;
 };
 
-template <typename... T>
-EvgetX11::EventTransformerX11<T...>::EventTransformerX11(EvgetX11::XWrapper& xWrapper, T&... switches)
+template <XWrapper XWrapper, typename... Switches>
+EvgetX11::EventTransformerX11<XWrapper, Switches...>::EventTransformerX11(XWrapper& xWrapper, Switches&... switches)
     : xWrapper{xWrapper}, switches{switches...} {
     refreshDevices();
 }
 
-template <typename... T>
-void EvgetX11::EventTransformerX11<T...>::refreshDevices() {
+template <XWrapper XWrapper, typename... Switches>
+void EvgetX11::EventTransformerX11<XWrapper, Switches...>::refreshDevices() {
     int nDevices;
     int xi2NDevices;
     // See caveats about mixing XI1 calls with XI2 code:
@@ -133,8 +133,8 @@ void EvgetX11::EventTransformerX11<T...>::refreshDevices() {
     }
 }
 
-template <typename... T>
-std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<T...>::getInterval(Time time) {
+template <XWrapper XWrapper, typename... Switches>
+std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<XWrapper, Switches...>::getInterval(Time time) {
     if (!previous.has_value() || time < *previous) {
         previous = time;
         return std::nullopt;
@@ -146,8 +146,10 @@ std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<T...>::ge
     return interval;
 }
 
-template <typename... T>
-std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11<T...>::transformEvent(XInputEvent event) {
+template <XWrapper XWrapper, typename... Switches>
+std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11<XWrapper, Switches...>::transformEvent(
+    XInputEvent event
+) {
     std::vector<EvgetCore::Event::Data> data{};
     if (event.hasData()) {
         auto type = event.getEventType();

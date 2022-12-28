@@ -60,7 +60,13 @@ public:
     Status queryVersion(int& major, int& minor);
     void selectEvents(XIEventMask& mask);
 
+    static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
+    static std::string keySymToString(KeySym keySym);
+    static void setMask(unsigned char* mask, std::initializer_list<int> events);
+
 private:
+    static constexpr int maskBits = 8;
+
     std::optional<XWindowAttributes> getWindowAttributes(Window window);
 
     std::optional<Atom> getAtom(const char* atomName);
@@ -78,6 +84,18 @@ private:
         std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display.get(), nullptr, nullptr, nullptr), XCloseIM};
     std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic = createIC(display, xim.get());
 };
+
+void EvgetX11::XWrapperX11::onMasks(
+    const unsigned char* mask,
+    int maskLen,
+    EvgetCore::Util::Invocable<void, int> auto&& function
+) {
+    for (int i = 0; i < maskLen * maskBits; i++) {
+        if (XIMaskIsSet(mask, i)) {
+            function(i);
+        }
+    }
+}
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H

@@ -316,3 +316,16 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosit
 
     return {{width, height}};
 }
+
+void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<int> events) {
+    for (auto event : events) {
+        XISetMask(mask, event);
+    }
+}
+
+std::string EvgetX11::XWrapperX11::keySymToString(KeySym keySym) {
+    if (keySym != NoSymbol) {
+        XKeysymToString(keySym);
+    }
+    return {};
+}

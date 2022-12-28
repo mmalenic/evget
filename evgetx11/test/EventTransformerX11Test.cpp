@@ -32,7 +32,7 @@
 #include "evgetx11/XWrapper.h"
 
 TEST(EventTransformerX11Test, TestConstructor) {  // NOLINT(cert-err58-cpp)
-    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    //    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     //    EvgetX11TestUtils::XEventSwitchMock xEventSwitchMock{};
     //
     //    auto xDeviceInfo = EvgetX11TestUtils::createXDeviceInfo();
@@ -54,7 +54,7 @@ TEST(EventTransformerX11Test, TestConstructor) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(EventTransformerX11Test, TestTransformEvent) {  // NOLINT(cert-err58-cpp)
-    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    //    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     //    EvgetX11TestUtils::XEventSwitchMock xEventSwitchMock{};
     //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
     //

@@ -29,9 +29,11 @@
 
 #include "XInputEvent.h"
 #include "XSetMask.h"
+#include "evgetcore/UnsupportedOperationException.h"
 
 namespace EvgetX11 {
 
+template <XWrapper XWrapper>
 class XInputHandler {
 public:
     explicit XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
@@ -51,6 +53,56 @@ private:
 
     static void announceVersion(XWrapper& xWrapper);
 };
+
+template <XWrapper XWrapper>
+EvgetX11::XInputHandler<XWrapper>::XInputHandler(
+    XWrapper& xWrapper,
+    std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters
+)
+    : xWrapper{xWrapper} {
+    announceVersion(xWrapper);
+    setMask(xWrapper, maskSetters);
+}
+
+template <XWrapper XWrapper>
+void EvgetX11::XInputHandler<XWrapper>::announceVersion(XWrapper& xWrapper) {
+    int major = versionMajor;
+    int minor = versionMinor;
+
+    Status status = xWrapper.queryVersion(major, minor);
+    if (status == Success) {
+        spdlog::info("XI2 is supported with version {}.{}", major, minor);
+    } else {
+        throw EvgetCore::UnsupportedOperationException(
+            fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor)
+        );
+    }
+}
+
+template <XWrapper XWrapper>
+void EvgetX11::XInputHandler<XWrapper>::setMask(
+    XWrapper& xWrapper,
+    std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters
+) {
+    XIEventMask mask{};
+    mask.deviceid = XIAllDevices;
+
+    unsigned char eventMask[XI_LASTEVENT] = {0};
+    for (const auto& maskSetter : maskSetters) {
+        maskSetter.get().setMask(eventMask);
+    }
+
+    mask.mask_len = sizeof(eventMask);
+    mask.mask = eventMask;
+
+    xWrapper.selectEvents(mask);
+}
+
+template <XWrapper XWrapper>
+EvgetX11::XInputEvent EvgetX11::XInputHandler<XWrapper>::getEvent() {
+    return XInputEvent::nextEvent(xWrapper);
+}
+
 }  // namespace EvgetX11
 
 #endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H

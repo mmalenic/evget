@@ -44,61 +44,56 @@ struct XWindowDimensions {
 
 using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
 
-class XWrapper {
-public:
-    virtual std::string lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) = 0;
-    virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
-
-    virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
-    virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
-
-    virtual std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) = 0;
-    virtual std::optional<Atom> getAtom(const char* atomName) = 0;
-
-    virtual std::unique_ptr<unsigned char*, decltype(&XFree)>
-    getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) = 0;
-
-    virtual std::optional<Window> getActiveWindow() = 0;
-    virtual std::optional<Window> getFocusWindow() = 0;
-    virtual std::optional<std::string> getWindowName(Window window) = 0;
-    virtual std::optional<XWindowAttributes> getWindowAttributes(Window window) = 0;
-    virtual std::optional<XWindowDimensions> getWindowSize(Window window) = 0;
-    virtual std::optional<XWindowDimensions> getWindowPosition(Window window) = 0;
-
-    virtual XEvent nextEvent() = 0;
-    virtual XEventPointer eventData(XEvent& event) = 0;
-
-    virtual Status queryVersion(int& major, int& minor) = 0;
-    virtual void selectEvents(XIEventMask& mask) = 0;
-
-    static std::string keySymToString(KeySym keySym);
-    static void setMask(unsigned char* mask, std::initializer_list<int> events);
-    static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Util::Invocable<void, int> auto&& function);
-
-    XWrapper() = default;
-    virtual ~XWrapper() = default;
-
-    XWrapper(XWrapper&&) noexcept = delete;
-    XWrapper& operator=(XWrapper&&) noexcept = delete;
-
-    XWrapper(const XWrapper&) = delete;
-    XWrapper& operator=(const XWrapper&) = delete;
-
-private:
-    static constexpr int maskBits = 8;
-};
-
-void EvgetX11::XWrapper::onMasks(
-    const unsigned char* mask,
-    int maskLen,
-    EvgetCore::Util::Invocable<void, int> auto&& function
-) {
-    for (int i = 0; i < maskLen * maskBits; i++) {
-        if (XIMaskIsSet(mask, i)) {
-            function(i);
-        }
-    }
-}
+/**
+ * Concept which defines the interface for a wrapper around X11 functions.
+ */
+template <typename T>
+concept XWrapper =
+    requires(T wrapper, const XIDeviceEvent& event, KeySym& keySym) {
+        { wrapper.lookupCharacter(event, keySym) } -> std::convertible_to<std::string>;
+    } && requires(T wrapper, int id, int mapSize) {
+             { wrapper.getDeviceButtonMapping(id, mapSize) } -> std::convertible_to<std::unique_ptr<unsigned char[]>>;
+         } && requires(T wrapper, int& ndevices) {
+                  {
+                      wrapper.listInputDevices(ndevices)
+                  } -> std::convertible_to<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>;
+              } && requires(T wrapper, int& ndevices) {
+                       {
+                           wrapper.queryDevice(ndevices)
+                       } -> std::convertible_to<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>;
+                   } && requires(T wrapper, Atom atom) {
+                            {
+                                wrapper.atomName(atom)
+                            } -> std::convertible_to<std::unique_ptr<char[], decltype(&XFree)>>;
+                        } && requires(T wrapper) {
+                                 { wrapper.getActiveWindow() } -> std::convertible_to<std::optional<Window>>;
+                             } && requires(T wrapper) {
+                                      { wrapper.getFocusWindow() } -> std::convertible_to<std::optional<Window>>;
+                                  } && requires(T wrapper, Window window) {
+                                           {
+                                               wrapper.getWindowName(window)
+                                           } -> std::convertible_to<std::optional<std::string>>;
+                                       } && requires(T wrapper, Window window) {
+                                                {
+                                                    wrapper.getWindowSize(window)
+                                                } -> std::convertible_to<std::optional<XWindowDimensions>>;
+                                            } && requires(T wrapper, Window window) {
+                                                     {
+                                                         wrapper.getWindowPosition(window)
+                                                     } -> std::convertible_to<std::optional<XWindowDimensions>>;
+                                                 } && requires(T wrapper) {
+                                                          { wrapper.nextEvent() } -> std::convertible_to<XEvent>;
+                                                      } && requires(T wrapper, XEvent& event) {
+                                                               {
+                                                                   wrapper.eventData(event)
+                                                               } -> std::convertible_to<XEventPointer>;
+                                                           } && requires(T wrapper, int& major, int& minor) {
+                                                                    {
+                                                                        wrapper.queryVersion(major, minor)
+                                                                    } -> std::convertible_to<Status>;
+                                                                } && requires(T wrapper, XIEventMask& mask) {
+                                                                         wrapper.selectEvents(mask);
+                                                                     };
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H

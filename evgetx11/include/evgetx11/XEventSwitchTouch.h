@@ -27,9 +27,11 @@
 #include "XEventSwitchCore.h"
 
 namespace EvgetX11 {
+
+template <XWrapper XWrapper>
 class XEventSwitchTouch {
 public:
-    explicit XEventSwitchTouch(XEventSwitchPointer& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh);
+    explicit XEventSwitchTouch(XEventSwitchPointer<XWrapper>& xEventSwitchPointer, XDeviceRefresh& xDeviceRefresh);
 
     bool switchOnEvent(
         const XInputEvent& event,
@@ -50,11 +52,12 @@ private:
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
-    std::reference_wrapper<XEventSwitchPointer> xEventSwitchPointer;
+    std::reference_wrapper<XEventSwitchPointer<XWrapper>> xEventSwitchPointer;
     std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
 };
 
-bool EvgetX11::XEventSwitchTouch::switchOnEvent(
+template <XWrapper XWrapper>
+bool EvgetX11::XEventSwitchTouch<XWrapper>::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     EvgetX11::EventData& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -76,7 +79,8 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     }
 }
 
-void EvgetX11::XEventSwitchTouch::touchButton(
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchTouch<XWrapper>::touchButton(
     const EvgetX11::XInputEvent& event,
     std::vector<EvgetCore::Event::Data>& data,
     EvgetCore::Event::ButtonAction action,
@@ -89,7 +93,8 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     }
 }
 
-void EvgetX11::XEventSwitchTouch::touchMotion(
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchTouch<XWrapper>::touchMotion(
     const EvgetX11::XInputEvent& event,
     std::vector<EvgetCore::Event::Data>& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -99,6 +104,18 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
         xEventSwitchPointer.get().addMotionEvent(deviceEvent, getTime(deviceEvent.time), event.getTimestamp(), data);
     }
 }
+
+template <XWrapper XWrapper>
+EvgetX11::XEventSwitchTouch<XWrapper>::XEventSwitchTouch(
+    XEventSwitchPointer<XWrapper>& xEventSwitchPointer,
+    XDeviceRefresh& xDeviceRefresh
+)
+    : xEventSwitchPointer{xEventSwitchPointer}, xDeviceRefresh{xDeviceRefresh} {
+    xDeviceRefresh.setEvtypeName(XI_TouchBegin, "TouchBegin");
+    xDeviceRefresh.setEvtypeName(XI_TouchUpdate, "TouchUpdate");
+    xDeviceRefresh.setEvtypeName(XI_TouchEnd, "TouchEnd");
+}
+
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H

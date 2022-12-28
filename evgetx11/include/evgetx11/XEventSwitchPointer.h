@@ -52,6 +52,7 @@ concept BuilderHasWindowFunctions =
         { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
     };
 
+template <XWrapper XWrapper>
 class XEventSwitchPointer {
 public:
     explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
@@ -95,7 +96,8 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
 };
 
-void EvgetX11::XEventSwitchPointer::addMotionEvent(
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
     const XIDeviceEvent& event,
     EvgetCore::Event::SchemaField::Timestamp dateTime,
     std::vector<EvgetCore::Event::Data>& data,
@@ -113,7 +115,8 @@ void EvgetX11::XEventSwitchPointer::addMotionEvent(
     data.emplace_back(builder.build());
 }
 
-void EvgetX11::XEventSwitchPointer::addButtonEvent(
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
     const XIDeviceEvent& event,
     EvgetCore::Event::SchemaField::Timestamp dateTime,
     std::vector<EvgetCore::Event::Data>& data,
@@ -136,8 +139,9 @@ void EvgetX11::XEventSwitchPointer::addButtonEvent(
     data.emplace_back(builder.build());
 }
 
+template <XWrapper XWrapper>
 template <BuilderHasModifier T>
-T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder) {
+T& EvgetX11::XEventSwitchPointer<XWrapper>::setModifierValue(int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifierState & ShiftMask) {
         return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
@@ -160,8 +164,9 @@ T& EvgetX11::XEventSwitchPointer::setModifierValue(int modifierState, T& builder
     }
 }
 
+template <XWrapper XWrapper>
 template <BuilderHasWindowFunctions T>
-T& EvgetX11::XEventSwitchPointer::setWindowFields(T& builder) {
+T& EvgetX11::XEventSwitchPointer<XWrapper>::setWindowFields(T& builder) {
     auto window = xWrapper.get().getActiveWindow();
 
     if (!window.has_value()) {
@@ -193,6 +198,57 @@ T& EvgetX11::XEventSwitchPointer::setWindowFields(T& builder) {
     }
 
     return builder;
+}
+
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchPointer<XWrapper>::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
+    auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
+    if (map) {
+        for (int i = 0; i < buttonInfo.num_buttons; i++) {
+            if (buttonInfo.labels[i]) {
+                auto name = xWrapper.get().atomName(buttonInfo.labels[i]);
+                if (name) {
+                    buttonMap[id][map[i]] = name.get();
+                }
+            }
+        }
+    }
+}
+
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitchPointer<XWrapper>::refreshDevices(
+    int id,
+    EvgetCore::Event::Device device,
+    const std::string& name,
+    const XIDeviceInfo& info
+) {
+    xDeviceRefresh.get().refreshDevices(id, device, name, info);
+
+    const XIButtonClassInfo* buttonInfo = nullptr;
+    for (int i = 0; i < info.num_classes; i++) {
+        const auto* classInfo = info.classes[i];
+
+        if (classInfo->type == XIButtonClass) {
+            buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
+            break;
+        }
+    }
+
+    if (buttonInfo && buttonInfo->num_buttons > 0) {
+        setButtonMap(*buttonInfo, info.deviceid);
+    }
+}
+
+template <XWrapper XWrapper>
+EvgetX11::XEventSwitchPointer<XWrapper>::XEventSwitchPointer(
+    XWrapper& xWrapper,
+    EvgetX11::XDeviceRefresh& xDeviceRefresh
+)
+    : xWrapper{xWrapper}, xDeviceRefresh{xDeviceRefresh} {}
+
+template <XWrapper XWrapper>
+const std::string& EvgetX11::XEventSwitchPointer<XWrapper>::getButtonName(int id, int button) const {
+    return buttonMap.at(id).at(button);
 }
 
 }  // namespace EvgetX11
