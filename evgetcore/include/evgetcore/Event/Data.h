@@ -23,6 +23,8 @@
 #ifndef EVGET_INCLUDE_EVGET_DATA_H
 #define EVGET_INCLUDE_EVGET_DATA_H
 
+#include <fmt/format.h>
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -78,5 +80,19 @@ private:
     ContainedData containsData{};
 };
 }  // namespace EvgetCore::Event
+
+template <>
+struct fmt::formatter<EvgetCore::Event::Data> : fmt::formatter<std::string_view> {
+    template <typename FormatContext>
+    auto format(const EvgetCore::Event::Data& data, FormatContext& context) const {
+        fmt::formatter<string_view>::format(data.getName(), context);
+
+        for (const auto& field : data) {
+            fmt::formatter<string_view>::format(field, context);
+        }
+
+        return fmt::formatter<string_view>::format(data.getData(), context);
+    }
+};
 
 #endif  // EVGET_INCLUDE_EVGET_DATA_H
