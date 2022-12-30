@@ -24,6 +24,7 @@
 #define EVGET_INCLUDE_EVGET_DATA_H
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include <string>
 #include <unordered_map>
@@ -84,14 +85,21 @@ private:
 template <>
 struct fmt::formatter<EvgetCore::Event::Data> : fmt::formatter<std::string_view> {
     template <typename FormatContext>
-    auto format(const EvgetCore::Event::Data& data, FormatContext& context) const {
+    auto format(const EvgetCore::Event::Data& data, FormatContext& context) const -> decltype(context.out()) {
         fmt::formatter<string_view>::format(data.getName(), context);
+        fmt::formatter<string_view>::format("\n", context);
 
-        for (const auto& field : data) {
-            fmt::formatter<string_view>::format(field, context);
+        fmt::formatter<string_view>::format(fmt::format("{}", fmt::join(data, " ")), context);
+        fmt::formatter<string_view>::format("\n", context);
+
+        for (const auto& [name, containedData] : data.getData()) {
+            fmt::formatter<string_view>::format(fmt::format("{}:\n", name), context);
+            for (const auto& innerData :containedData) {
+                fmt::formatter<string_view>::format(fmt::format("{}\n", innerData), context);
+            }
         }
 
-        return fmt::formatter<string_view>::format(data.getData(), context);
+        return fmt::formatter<string_view>::format("\n", context);
     }
 };
 

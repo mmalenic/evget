@@ -39,6 +39,7 @@
 #include "evgetx11/XEventSwitchCore.h"
 #include "evgetx11/XEventSwitchPointer.h"
 #include "evgetx11/XWrapperX11.h"
+#include "evgetcore/Event/Data.h"
 
 using namespace std;
 
@@ -48,9 +49,19 @@ int main(int argc, char* argv[]) {
     //
     //    cout << schema.getFields().size() << endl;
 
-    Display* display = XOpenDisplay(nullptr);
-    EvgetX11::XWrapperX11 wrapper{*display};
-    EvgetX11::XDeviceRefresh xDeviceRefresh{};
+    EvgetCore::Event::Data data{"data"};
+    data.addField("field");
+    EvgetCore::Event::Data data1{"data_inner"};
+    data1.addField("inner_field");
+
+    data.contains(data1);
+
+    fmt::print("Data: {}", data);
+
+
+//    Display* display = XOpenDisplay(nullptr);
+//    EvgetX11::XWrapperX11 wrapper{*display};
+//    EvgetX11::XDeviceRefresh xDeviceRefresh{};
     //    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
     //    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
     //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
