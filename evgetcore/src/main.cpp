@@ -54,9 +54,16 @@ int main(int argc, char* argv[]) {
     EvgetCore::Event::Data data1{"data_inner"};
     data1.addField("inner_field");
 
+    EvgetCore::Event::Data data2{"data_inner_2"};
+    data2.addField("inner_field_2");
+    data2.addField("inner_field_3");
+
+    data1.contains(data2);
     data.contains(data1);
 
-    fmt::print("Data: {}", data);
+    data.contains(data2);
+
+    fmt::print("{:*^1000}", data);
 
 
 //    Display* display = XOpenDisplay(nullptr);

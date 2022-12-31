@@ -86,20 +86,13 @@ template <>
 struct fmt::formatter<EvgetCore::Event::Data> : fmt::formatter<std::string_view> {
     template <typename FormatContext>
     auto format(const EvgetCore::Event::Data& data, FormatContext& context) const -> decltype(context.out()) {
-        fmt::formatter<string_view>::format(data.getName(), context);
-        fmt::formatter<string_view>::format("\n", context);
+        auto out = fmt::format("[{}]\n{}\n\n", data.getName(), fmt::join(data, " "));
 
-        fmt::formatter<string_view>::format(fmt::format("{}", fmt::join(data, " ")), context);
-        fmt::formatter<string_view>::format("\n", context);
-
-        for (const auto& [name, containedData] : data.getData()) {
-            fmt::formatter<string_view>::format(fmt::format("{}:\n", name), context);
-            for (const auto& innerData :containedData) {
-                fmt::formatter<string_view>::format(fmt::format("{}\n", innerData), context);
-            }
+        for (const auto& [_, containedData] : data.getData()) {
+            out += fmt::format("[{}] -> {}", data.getName(), fmt::join(containedData, " "));
         }
 
-        return fmt::formatter<string_view>::format("\n", context);
+        return formatter<string_view>::format(out, context);
     }
 };
 
