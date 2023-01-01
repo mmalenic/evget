@@ -75,38 +75,12 @@ public:
     [[nodiscard]] bool isStopped() const;
 
     /**
-     * Spawn a task.
-     */
-    template <typename R>
-    void spawn(
-        std::function<asio::awaitable<R>()> f,
-        std::function<void(std::exception_ptr, R)> callback = [](std::exception_ptr e, R result) {}
-    );
-
-    /**
-     * Spawn a task with void return.
-     */
-    void spawn(
-        std::function<asio::awaitable<void>()> f,
-        std::function<void(std::exception_ptr)> callback = [](std::exception_ptr e) {}
-    );
-
-    /**
      * Start the task.
      */
     virtual asio::awaitable<void> start();
 
-    virtual ~Task() = 0;
-
-protected:
-    Task(Task&&) noexcept = default;
-    Task& operator=(Task&&) noexcept = default;
-
-    Task(const Task&) = default;
-    Task& operator=(const Task&) = default;
-
 private:
-    E& executionContext;
+    std::reference_wrapper<E> executionContext;
 
     std::atomic<bool> started;
     std::atomic<bool> cancelled;
@@ -122,9 +96,6 @@ template <asio::execution::executor E>
 void Task<E>::cancel() {
     cancelled.store(true);
 }
-
-template <asio::execution::executor E>
-Task<E>::~Task() = default;
 
 template <asio::execution::executor E>
 Task<E>::Task(E& context) : executionContext{context}, started{false}, cancelled{false}, stopped{false} {}
@@ -155,26 +126,6 @@ E& Task<E>::getContext() const {
     return executionContext;
 }
 
-template <asio::execution::executor E>
-template <typename R>
-void Task<E>::spawn(std::function<asio::awaitable<R>()> f, std::function<void(std::exception_ptr, R)> callback) {
-    co_spawn(getContext(), f, [callback](std::exception_ptr e, R result) {
-        if (e) {
-            spdlog::info("Exception occurred in coroutine callback");
-        }
-        callback(e, result);
-    });
-}
-
-template <asio::execution::executor E>
-void Task<E>::spawn(std::function<asio::awaitable<void>()> f, std::function<void(std::exception_ptr)> callback) {
-    co_spawn(getContext(), f, [callback](std::exception_ptr e) {
-        if (e) {
-            spdlog::info("Exception occurred in coroutine callback");
-        }
-        callback(e);
-    });
-}
 }  // namespace EvgetCore
 
 #endif  // EVGET_INCLUDE_TASK_H
