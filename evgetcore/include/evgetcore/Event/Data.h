@@ -80,20 +80,7 @@ private:
     std::vector<std::string> fields{};
     ContainedData containsData{};
 };
+
 }  // namespace EvgetCore::Event
-
-template <>
-struct fmt::formatter<EvgetCore::Event::Data> : fmt::formatter<std::string_view> {
-    template <typename FormatContext>
-    auto format(const EvgetCore::Event::Data& data, FormatContext& context) const -> decltype(context.out()) {
-        auto out = fmt::format("[{}]\n{}\n\n", data.getName(), fmt::join(data, " "));
-
-        for (const auto& [_, containedData] : data.getData()) {
-            out += fmt::format("[{}] -> {}", data.getName(), fmt::join(containedData, " "));
-        }
-
-        return formatter<string_view>::format(out, context);
-    }
-};
 
 #endif  // EVGET_INCLUDE_EVGET_DATA_H

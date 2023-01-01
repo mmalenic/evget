@@ -33,13 +33,13 @@
 // #include "evgetcore/EventTransformerLinux.h"
 // #include "evgetcore/SystemEventLoopLinux.h"
 // #include "../checkinput/include/checkinput/EventDeviceLister.h"
+#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XEventSwitchCore.h"
 #include "evgetx11/XEventSwitchPointer.h"
 #include "evgetx11/XWrapperX11.h"
-#include "evgetcore/Event/Data.h"
 
 using namespace std;
 
@@ -63,12 +63,11 @@ int main(int argc, char* argv[]) {
 
     data.contains(data2);
 
-    fmt::print("{:*^1000}", data);
+//    fmt::print("{}", data);
 
-
-//    Display* display = XOpenDisplay(nullptr);
-//    EvgetX11::XWrapperX11 wrapper{*display};
-//    EvgetX11::XDeviceRefresh xDeviceRefresh{};
+    //    Display* display = XOpenDisplay(nullptr);
+    //    EvgetX11::XWrapperX11 wrapper{*display};
+    //    EvgetX11::XDeviceRefresh xDeviceRefresh{};
     //    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
     //    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
     //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
