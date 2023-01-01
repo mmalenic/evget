@@ -34,11 +34,10 @@ namespace EvgetCore::Event {
 template<typename Schema>
 class DataWithSchema {
 public:
-    DataWithSchema() = default;
     /**
      * Create a DataWithSchema.
      */
-    DataWithSchema(const Data& data, const Schema& schema);
+    constexpr DataWithSchema(const Data& data, const Schema& schema);
 
 private:
     std::reference_wrapper<const Data> data;
@@ -46,7 +45,7 @@ private:
 };
 
 template <typename Schema>
-DataWithSchema<Schema>::DataWithSchema(const Data& data, const Schema& schema) : data{data}, schema{schema} {
+constexpr DataWithSchema<Schema>::DataWithSchema(const Data& data, const Schema& schema) : data{data}, schema{schema} {
 }
 
 }
