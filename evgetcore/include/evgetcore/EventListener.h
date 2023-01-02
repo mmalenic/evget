@@ -25,6 +25,7 @@
 
 namespace EvgetCore {
 
+namespace asio = boost::asio;
 /**
  * Represents event listeners.
  * @tparam T event type
@@ -37,6 +38,11 @@ public:
      * @param event event
      */
     virtual void notify(T event) = 0;
+
+    /**
+     * Start the listener processing
+     */
+    virtual asio::awaitable<void> start() = 0;
 
     EventListener() = default;
 

@@ -25,7 +25,6 @@
 
 #include "Event/Data.h"
 #include "EventListener.h"
-#include "Task.h"
 
 namespace EvgetCore {
 namespace asio = boost::asio;
@@ -34,7 +33,7 @@ namespace asio = boost::asio;
  * Storage class represents storing event data.
  */
 template <asio::execution::executor E>
-class Storage : Task<E>, EventListener<Event::Data> {
+class Storage : EventListener<Event::Data> {
 public:
     explicit Storage(E& context);
 
@@ -43,11 +42,10 @@ public:
 };
 
 template <asio::execution::executor E>
-Storage<E>::Storage(E& context) : Task<E>{context} {}
+Storage<E>::Storage(E& context) {}
 
 template <asio::execution::executor E>
 boost::asio::awaitable<void> Storage<E>::start() {
-    Task<E>::start();
     co_return;
 }
 

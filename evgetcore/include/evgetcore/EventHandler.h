@@ -40,7 +40,7 @@ namespace asio = boost::asio;
  * @tparam T type of data
  */
 template <asio::execution::executor E, typename T>
-class EventHandler : Task<E>, EventListener<T> {
+class EventHandler : EventListener<T> {
 public:
     /**
      * Create the event listener with storage.
@@ -51,7 +51,7 @@ public:
     EventHandler(
         E& context,
         Storage<E>& storage,
-        // EventTransformer<T>& transformer,
+         EventTransformer<T>& transformer,
         EventLoop<E, T>& eventLoop
     );
 
@@ -60,15 +60,14 @@ public:
 
 private:
     Storage<E>& storage;
-    // EventTransformer<T>& transformer;
+     EventTransformer<T>& transformer;
     EventLoop<E, T>& eventLoop;
 };
 
 template <asio::execution::executor E, typename T>
 asio::awaitable<void> EventHandler<E, T>::start() {
-    co_await Task<E>::start();
     co_await storage.start();
-    co_await eventLoop.eventLoop();
+    co_await eventLoop.start();
     co_return;
 }
 
@@ -76,16 +75,16 @@ template <asio::execution::executor E, typename T>
 EventHandler<E, T>::EventHandler(
     E& context,
     Storage<E>& storage,
-    // EventTransformer<T>& transformer,
+     EventTransformer<T>& transformer,
     EventLoop<E, T>& eventLoop
 )
-    : Task<E>{context}, storage{storage}, eventLoop{eventLoop} {
+    : storage{storage}, eventLoop{eventLoop} {
     eventLoop.registerSystemEventListener(*this);
 }
 
 template <asio::execution::executor E, typename T>
 void EventHandler<E, T>::notify(T event) {
-    // storage.notify(transformer.transformEvent(event));
+     storage.notify(transformer.transformEvent(event));
 }
 }  // namespace EvgetCore
 

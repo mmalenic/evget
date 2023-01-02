@@ -6,7 +6,6 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     SRCS
-    include/evgetcore/Task.h
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
     include/evgetcore/SystemEvent.h

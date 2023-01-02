@@ -50,13 +50,28 @@ public:
     void notify(XInputEvent event) override;
     void registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
     void stop() override;
+    asio::awaitable<void> start() override;
+    asio::awaitable<bool> isStopped();
 
 private:
     std::optional<std::reference_wrapper<EvgetCore::EventListener<XInputEvent>>> _eventListener;
     XInputHandler<XWrapper> handler;
+    std::reference_wrapper<E> context;
 
     std::atomic<bool> stopped{false};
 };
+
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+asio::awaitable<bool> EventLoopX11<E, XWrapper>::isStopped() {
+    co_return stopped.load();
+}
+
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+asio::awaitable<void> EventLoopX11<E, XWrapper>::start() {
+    asio::co_spawn(context, this->eventLoop(), boost::asio::detached);
+
+    co_return;
+}
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 void EventLoopX11<E, XWrapper>::stop() {
@@ -79,11 +94,11 @@ void EventLoopX11<E, XWrapper>::notify(XInputEvent event) {
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 EventLoopX11<E, XWrapper>::EventLoopX11(E& context, XInputHandler<XWrapper> xInputHandler)
-    : EvgetCore::EventLoop<E, XInputEvent>{context}, handler{xInputHandler} {}
+    : EvgetCore::EventLoop<E, XInputEvent>{context}, handler{xInputHandler}, context{context} {}
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 boost::asio::awaitable<void> EventLoopX11<E, XWrapper>::eventLoop() {
-    while (!stopped.load()) {
+    while (!co_await isStopped()) {
         this->notify(std::move(handler.getEvent()));
     }
     co_return;
