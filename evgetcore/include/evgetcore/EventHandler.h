@@ -29,7 +29,6 @@
 #include "EventLoop.h"
 #include "EventTransformer.h"
 #include "Storage.h"
-#include "SystemEvent.h"
 
 namespace EvgetCore {
 

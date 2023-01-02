@@ -31,7 +31,6 @@
 #include <vector>
 
 #include "EventListener.h"
-#include "SystemEvent.h"
 
 namespace EvgetCore {
 
