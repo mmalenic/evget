@@ -73,7 +73,7 @@ EventHandler<E, T>::EventHandler(
     EventLoop<E, T>& eventLoop
 )
     : storage{storage}, eventLoop{eventLoop} {
-    eventLoop.registerSystemEventListener(*this);
+    eventLoop.registerEventListener(*this);
 }
 
 template <asio::execution::executor E, typename T>

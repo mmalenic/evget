@@ -48,7 +48,7 @@ public:
 
     boost::asio::awaitable<void> eventLoop() override;
     void notify(XInputEvent event) override;
-    void registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
+    void registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
     void stop() override;
     asio::awaitable<void> start() override;
     asio::awaitable<bool> isStopped();
@@ -79,7 +79,7 @@ void EventLoopX11<E, XWrapper>::stop() {
 }
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
-void EventLoopX11<E, XWrapper>::registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
+void EventLoopX11<E, XWrapper>::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
     _eventListener = eventListener;
 }
 

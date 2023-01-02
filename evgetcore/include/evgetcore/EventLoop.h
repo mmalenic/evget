@@ -52,7 +52,7 @@ public:
      * Register listeners to notify.
      * @param eventListener lister
      */
-    virtual void registerSystemEventListener(EventListener<T>& eventListener) = 0;
+    virtual void registerEventListener(EventListener<T>& eventListener) = 0;
 
     /**
      * Stop the event loop.
