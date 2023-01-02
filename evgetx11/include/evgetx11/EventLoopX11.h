@@ -79,9 +79,7 @@ void EventLoopX11<E, XWrapper>::stop() {
 }
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
-void EventLoopX11<E, XWrapper>::registerSystemEventListener(
-    EvgetCore::EventListener<XInputEvent>& eventListener
-) {
+void EventLoopX11<E, XWrapper>::registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
     _eventListener = eventListener;
 }
 

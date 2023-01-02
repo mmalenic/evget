@@ -47,19 +47,14 @@ public:
      * @param transformer transformer
      * @param rawEvents systemEvents
      */
-    EventHandler(
-        E& context,
-        Storage<E>& storage,
-         EventTransformer<T>& transformer,
-        EventLoop<E, T>& eventLoop
-    );
+    EventHandler(E& context, Storage<E>& storage, EventTransformer<T>& transformer, EventLoop<E, T>& eventLoop);
 
     void notify(T event) override;
     asio::awaitable<void> start() override;
 
 private:
     Storage<E>& storage;
-     EventTransformer<T>& transformer;
+    EventTransformer<T>& transformer;
     EventLoop<E, T>& eventLoop;
 };
 
@@ -74,7 +69,7 @@ template <asio::execution::executor E, typename T>
 EventHandler<E, T>::EventHandler(
     E& context,
     Storage<E>& storage,
-     EventTransformer<T>& transformer,
+    EventTransformer<T>& transformer,
     EventLoop<E, T>& eventLoop
 )
     : storage{storage}, eventLoop{eventLoop} {
@@ -83,7 +78,7 @@ EventHandler<E, T>::EventHandler(
 
 template <asio::execution::executor E, typename T>
 void EventHandler<E, T>::notify(T event) {
-     storage.notify(transformer.transformEvent(event));
+    storage.notify(transformer.transformEvent(event));
 }
 }  // namespace EvgetCore
 

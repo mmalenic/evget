@@ -26,6 +26,7 @@
 namespace EvgetCore {
 
 namespace asio = boost::asio;
+
 /**
  * Represents event listeners.
  * @tparam T event type

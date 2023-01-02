@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
     data.contains(data2);
 
-//    fmt::print("{}", data);
+    //    fmt::print("{}", data);
 
     //    Display* display = XOpenDisplay(nullptr);
     //    EvgetX11::XWrapperX11 wrapper{*display};

@@ -31,7 +31,7 @@ namespace EvgetCore::Event {
 /**
  * Event container to represent event data with an associated Schema.
  */
-template<typename Schema>
+template <typename Schema>
 class DataWithSchema {
 public:
     /**
@@ -45,10 +45,9 @@ private:
 };
 
 template <typename Schema>
-constexpr DataWithSchema<Schema>::DataWithSchema(const Data& data, const Schema& schema) : data{data}, schema{schema} {
-}
+constexpr DataWithSchema<Schema>::DataWithSchema(const Data& data, const Schema& schema) : data{data}, schema{schema} {}
 
-}
+}  // namespace EvgetCore::Event
 
 template <typename Schema>
 struct fmt::formatter<EvgetCore::Event::DataWithSchema<Schema>> : fmt::formatter<std::string_view> {
