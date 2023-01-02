@@ -68,7 +68,7 @@ template <asio::execution::executor E, typename T>
 asio::awaitable<void> EventHandler<E, T>::start() {
     co_await Task<E>::start();
     co_await storage.start();
-    co_await eventLoop.start();
+    co_await eventLoop.eventLoop();
     co_return;
 }
 

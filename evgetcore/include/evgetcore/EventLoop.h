@@ -56,6 +56,11 @@ public:
      */
     virtual void registerSystemEventListener(EventListener<T>& eventListener) = 0;
 
+    /**
+     * Stop the event loop.
+     */
+    virtual void stop() = 0;
+
     virtual ~EventLoop() = default;
 
     EventLoop(EventLoop&&) noexcept = delete;

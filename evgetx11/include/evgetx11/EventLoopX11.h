@@ -49,11 +49,19 @@ public:
     boost::asio::awaitable<void> eventLoop() override;
     void notify(XInputEvent event) override;
     void registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
+    void stop() override;
 
 private:
     std::optional<std::reference_wrapper<EvgetCore::EventListener<XInputEvent>>> _eventListener;
     XInputHandler<XWrapper> handler;
+
+    std::atomic<bool> stopped{false};
 };
+
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+void EventLoopX11<E, XWrapper>::stop() {
+    stopped.store(true);
+}
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 void EventLoopX11<E, XWrapper>::registerSystemEventListener(
@@ -75,7 +83,7 @@ EventLoopX11<E, XWrapper>::EventLoopX11(E& context, XInputHandler<XWrapper> xInp
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 boost::asio::awaitable<void> EventLoopX11<E, XWrapper>::eventLoop() {
-    while (!this->isCancelled()) {
+    while (!stopped.load()) {
         this->notify(std::move(handler.getEvent()));
     }
     co_return;
