@@ -26,10 +26,10 @@
 #include <vector>
 
 #include "EventListener.h"
+#include "EventLoop.h"
 #include "EventTransformer.h"
 #include "Storage.h"
 #include "SystemEvent.h"
-#include "SystemEventLoop.h"
 
 namespace EvgetCore {
 
@@ -52,7 +52,7 @@ public:
         E& context,
         Storage<E>& storage,
         // EventTransformer<T>& transformer,
-        SystemEventLoop<E, T>& eventLoop
+        EventLoop<E, T>& eventLoop
     );
 
     void notify(T event) override;
@@ -61,7 +61,7 @@ public:
 private:
     Storage<E>& storage;
     // EventTransformer<T>& transformer;
-    SystemEventLoop<E, T>& eventLoop;
+    EventLoop<E, T>& eventLoop;
 };
 
 template <asio::execution::executor E, typename T>
@@ -77,7 +77,7 @@ EventHandler<E, T>::EventHandler(
     E& context,
     Storage<E>& storage,
     // EventTransformer<T>& transformer,
-    SystemEventLoop<E, T>& eventLoop
+    EventLoop<E, T>& eventLoop
 )
     : Task<E>{context}, storage{storage}, eventLoop{eventLoop} {
     eventLoop.registerSystemEventListener(*this);

@@ -8,7 +8,7 @@ add_program(
     INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include /opt/X11/include
     SRCS
-    include/evgetx11/SystemEventLoopX11.h
+    include/evgetx11/EventLoopX11.h
     include/evgetx11/XInputHandler.h
     include/evgetx11/EventTransformerX11.h
     include/evgetx11/XInputEvent.h

@@ -10,7 +10,7 @@ add_program(
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
     include/evgetcore/SystemEvent.h
-    include/evgetcore/SystemEventLoop.h
+    include/evgetcore/EventLoop.h
     include/evgetcore/Storage.h
     include/evgetcore/Event/Data.h
     include/evgetcore/Event/MouseMove.h

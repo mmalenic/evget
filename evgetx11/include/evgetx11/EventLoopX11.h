@@ -28,8 +28,9 @@
 
 #include "XInputEvent.h"
 #include "XInputHandler.h"
+#include "XWrapper.h"
+#include "evgetcore/EventLoop.h"
 #include "evgetcore/SystemEvent.h"
-#include "evgetcore/SystemEventLoop.h"
 
 namespace EvgetX11 {
 namespace asio = boost::asio;
@@ -37,31 +38,49 @@ namespace asio = boost::asio;
 /**
  * Class represents processing evgetx11 system events.
  */
-template <boost::asio::execution::executor E>
-class SystemEventLoopX11 : public EvgetCore::SystemEventLoop<E, XInputEvent> {
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+class EventLoopX11 : public EvgetCore::EventLoop<E, XInputEvent> {
 public:
     /**
      * Create the system events.
      */
-    explicit SystemEventLoopX11(E& context, XInputHandler xInputHandler);
+    explicit EventLoopX11(E& context, XInputHandler<XWrapper> xInputHandler);
 
     boost::asio::awaitable<void> eventLoop() override;
+    void notify(XInputEvent event) override;
+    void registerSystemEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
 
 private:
-    XInputHandler handler;
+    std::optional<std::reference_wrapper<EvgetCore::EventListener<XInputEvent>>> _eventListener;
+    XInputHandler<XWrapper> handler;
 };
 
-template <boost::asio::execution::executor E>
-SystemEventLoopX11<E>::SystemEventLoopX11(E& context, XInputHandler xInputHandler)
-    : EvgetCore::SystemEventLoop<E, XInputEvent>{context}, handler{xInputHandler} {}
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+void EventLoopX11<E, XWrapper>::registerSystemEventListener(
+    EvgetCore::EventListener<XInputEvent>& eventListener
+) {
+    _eventListener = eventListener;
+}
 
-template <boost::asio::execution::executor E>
-boost::asio::awaitable<void> SystemEventLoopX11<E>::eventLoop() {
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+void EventLoopX11<E, XWrapper>::notify(XInputEvent event) {
+    if (_eventListener.has_value()) {
+        _eventListener->get().notify(std::move(event));
+    }
+}
+
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+EventLoopX11<E, XWrapper>::EventLoopX11(E& context, XInputHandler<XWrapper> xInputHandler)
+    : EvgetCore::EventLoop<E, XInputEvent>{context}, handler{xInputHandler} {}
+
+template <boost::asio::execution::executor E, XWrapper XWrapper>
+boost::asio::awaitable<void> EventLoopX11<E, XWrapper>::eventLoop() {
     while (!this->isCancelled()) {
         this->notify(std::move(handler.getEvent()));
     }
     co_return;
 }
+
 }  // namespace EvgetX11
 
 #endif  // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
