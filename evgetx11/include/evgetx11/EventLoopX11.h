@@ -30,7 +30,6 @@
 #include "XInputHandler.h"
 #include "XWrapper.h"
 #include "evgetcore/EventLoop.h"
-#include "evgetcore/SystemEvent.h"
 
 namespace EvgetX11 {
 namespace asio = boost::asio;

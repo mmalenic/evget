@@ -19,38 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+//
+#include "evgetcore/PrintEvents.h"
 
-#ifndef EVGET_INCLUDE_STORAGE_H
-#define EVGET_INCLUDE_STORAGE_H
-
-#include "Event/Data.h"
-#include "EventListener.h"
-
-namespace EvgetCore {
-namespace asio = boost::asio;
-
-/**
- * Storage class represents storing event data.
- */
-template <asio::execution::executor E>
-class Storage : EventListener<Event::Data> {
-public:
-    explicit Storage(E& context);
-
-    asio::awaitable<void> start() override;
-    void notify(Event::Data event) override;
-};
-
-template <asio::execution::executor E>
-Storage<E>::Storage(E& context) {}
-
-template <asio::execution::executor E>
-boost::asio::awaitable<void> Storage<E>::start() {
+EvgetCore::asio::awaitable<void> EvgetCore::PrintEvents::start() {
     co_return;
 }
 
-template <asio::execution::executor E>
-void Storage<E>::notify(Event::Data event) {}
-}  // namespace EvgetCore
+void EvgetCore::PrintEvents::notify(EvgetCore::Event::Data event) {
 
-#endif  // EVGET_INCLUDE_STORAGE_H
+}

@@ -44,6 +44,10 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+
+    while (true) {
+        std::cout << "Hello World" << std::endl;
+    }
     //    EvgetCore::Event::Key key{};
     //    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
     //
@@ -82,7 +86,7 @@ int main(int argc, char* argv[]) {
     //
     //    boost::asio::thread_pool pool{};
     //    auto context = pool.get_executor();
-    //    evget::Storage<boost::asio::thread_pool::executor_type> storage{context};
+    //    evget::PrintEvents<boost::asio::thread_pool::executor_type> storage{context};
     //    Display* display = XOpenDisplay(nullptr);
     //    evget::EventTransformerLinux transformer{*display};
     //    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};

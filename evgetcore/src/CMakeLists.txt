@@ -8,5 +8,6 @@ add_program(
     Event/MouseMove.cpp
     Event/MouseScroll.cpp
     Event/Modifier.cpp
+    PrintEvents.cpp
     UnsupportedOperationException.cpp
 )
