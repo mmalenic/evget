@@ -44,7 +44,6 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-
     while (true) {
         std::cout << "Hello World" << std::endl;
     }

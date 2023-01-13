@@ -26,6 +26,4 @@ EvgetCore::asio::awaitable<void> EvgetCore::PrintEvents::start() {
     co_return;
 }
 
-void EvgetCore::PrintEvents::notify(EvgetCore::Event::Data event) {
-
-}
+void EvgetCore::PrintEvents::notify(EvgetCore::Event::Data event) {}
