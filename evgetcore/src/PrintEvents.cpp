@@ -26,4 +26,12 @@ EvgetCore::asio::awaitable<void> EvgetCore::PrintEvents::start() {
     co_return;
 }
 
-void EvgetCore::PrintEvents::notify(EvgetCore::Event::Data event) {}
+void EvgetCore::PrintEvents::notify(EvgetCore::Event::Data event) {
+    auto out = fmt::format("[{}]\n{}\n\n", event.getName(), fmt::join(event, " "));
+
+    for (const auto& [_, containedData] : event.getData()) {
+        out += fmt::format("[{}] -> {}", event.getName(), fmt::join(containedData, " "));
+    }
+
+    fmt::print("{}", out);
+}
