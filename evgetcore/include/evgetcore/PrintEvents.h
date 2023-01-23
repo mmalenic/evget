@@ -27,6 +27,7 @@
 
 #include "Event/Data.h"
 #include "EventListener.h"
+#include "Storage.h"
 
 namespace EvgetCore {
 namespace asio = boost::asio;
@@ -34,10 +35,9 @@ namespace asio = boost::asio;
 /**
  * A storage class which prints events to stdout.
  */
-class PrintEvents : EventListener<Event::Data> {
+class PrintEvents : Storage {
 public:
-    asio::awaitable<void> start() override;
-    void notify(Event::Data event) override;
+    void store(Event::Data event) override;
 };
 }  // namespace EvgetCore
 

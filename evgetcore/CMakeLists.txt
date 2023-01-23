@@ -8,6 +8,7 @@ add_program(
     SRCS
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
+    include/evgetcore/Storage.h
     include/evgetcore/EventLoop.h
     include/evgetcore/PrintEvents.h
     include/evgetcore/Event/Data.h

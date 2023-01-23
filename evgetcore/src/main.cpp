@@ -44,9 +44,6 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    while (true) {
-        std::cout << "Hello World" << std::endl;
-    }
     //    EvgetCore::Event::Key key{};
     //    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
     //
@@ -66,7 +63,7 @@ int main(int argc, char* argv[]) {
 
     data.contains(data2);
 
-    //    fmt::print("{}", data);
+    fmt::print("{}", data);
 
     //    Display* display = XOpenDisplay(nullptr);
     //    EvgetX11::XWrapperX11 wrapper{*display};

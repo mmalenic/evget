@@ -20,14 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-#include "evgetcore/PrintEvents.h"
 
-void EvgetCore::PrintEvents::store(EvgetCore::Event::Data event) {
-    auto out = fmt::format("[{}]\n{}\n\n", event.getName(), fmt::join(event, " "));
+#ifndef EVGET_STORAGE_H
+#define EVGET_STORAGE_H
 
-    for (const auto& [_, containedData] : event.getData()) {
-        out += fmt::format("[{}] -> {}", event.getName(), fmt::join(containedData, " "));
-    }
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Schema.h"
 
-    fmt::print("{}", out);
-}
+namespace EvgetCore {
+
+/**
+ * An interface which represents storing data.
+ */
+class Storage {
+public:
+    /**
+     * Store the event data.
+     */
+    virtual void store(Event::Data event) = 0;
+
+    Storage() = default;
+
+    virtual ~Storage() = default;
+
+    Storage(const Storage&) = delete;
+    Storage(Storage&&) noexcept = delete;
+    Storage& operator=(const Storage&) = delete;
+    Storage& operator=(Storage&&) noexcept = delete;
+};
+}  // namespace EvgetCore
+
+#endif  // EVGET_STORAGE_H
