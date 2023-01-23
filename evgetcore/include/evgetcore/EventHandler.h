@@ -28,7 +28,7 @@
 #include "EventListener.h"
 #include "EventLoop.h"
 #include "EventTransformer.h"
-#include "PrintEvents.h"
+#include "Storage.h"
 
 namespace EvgetCore {
 
@@ -47,20 +47,19 @@ public:
      * @param transformer transformer
      * @param rawEvents systemEvents
      */
-    EventHandler(E& context, PrintEvents<E>& storage, EventTransformer<T>& transformer, EventLoop<E, T>& eventLoop);
+    EventHandler(E& context, Storage& storage, EventTransformer<T>& transformer, EventLoop<E, T>& eventLoop);
 
     void notify(T event) override;
     asio::awaitable<void> start() override;
 
 private:
-    PrintEvents<E>& storage;
+    std::reference_wrapper<Storage> storage;
     EventTransformer<T>& transformer;
     EventLoop<E, T>& eventLoop;
 };
 
 template <asio::execution::executor E, typename T>
 asio::awaitable<void> EventHandler<E, T>::start() {
-    co_await storage.start();
     co_await eventLoop.start();
     co_return;
 }
@@ -68,7 +67,7 @@ asio::awaitable<void> EventHandler<E, T>::start() {
 template <asio::execution::executor E, typename T>
 EventHandler<E, T>::EventHandler(
     E& context,
-    PrintEvents<E>& storage,
+    Storage& storage,
     EventTransformer<T>& transformer,
     EventLoop<E, T>& eventLoop
 )
@@ -78,7 +77,7 @@ EventHandler<E, T>::EventHandler(
 
 template <asio::execution::executor E, typename T>
 void EventHandler<E, T>::notify(T event) {
-    storage.notify(transformer.transformEvent(event));
+    storage.get().store(transformer.transformEvent(event));
 }
 }  // namespace EvgetCore
 

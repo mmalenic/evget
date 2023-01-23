@@ -35,10 +35,33 @@ namespace asio = boost::asio;
 /**
  * A storage class which prints events to stdout.
  */
-class PrintEvents : Storage {
+class PrintEvents : public Storage {
 public:
     void store(Event::Data event) override;
+
+    template <std::size_t NFields, typename... To>
+    void defineSchemas(Event::Schema<NFields, To...> schema);
+
+private:
+    std::unordered_map<std::string_view, std::string_view> schemaNameToFields{};
 };
+
+template <std::size_t NFields, typename... To>
+void EvgetCore::PrintEvents::defineSchemas(EvgetCore::Event::Schema<NFields, To...> schema) {
+    if (!schemaNameToFields.contains(schema.getName())) {
+        std::array<std::string_view, NFields> names{};
+        auto fields = schema.getFields();
+
+        std::transform(fields.start(), fields.end(), std::back_inserter(names), [](const auto& field) {
+            return Event::SchemaField::getName(field);
+        });
+
+        schemaNameToFields.emplace(schema.getName(), fmt::format("{}", fmt::join(names, " ")));
+    }
+
+    std::apply([this](auto&&... relation) { ((defineSchemas(relation)), ...); }, schema.getRelations());
+}
+
 }  // namespace EvgetCore
 
 #endif  // EVGET_INCLUDE_STORAGE_H

@@ -35,6 +35,7 @@
 // #include "../checkinput/include/checkinput/EventDeviceLister.h"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Key.h"
+#include "evgetcore/PrintEvents.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XEventSwitchCore.h"
@@ -49,6 +50,7 @@ int main(int argc, char* argv[]) {
     //
     //    cout << schema.getFields().size() << endl;
 
+    EvgetCore::PrintEvents printEvents{};
     EvgetCore::Event::Data data{"data"};
     data.addField("field");
     EvgetCore::Event::Data data1{"data_inner"};

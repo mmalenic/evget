@@ -91,6 +91,13 @@ constexpr Field FOCUS_WINDOW_WIDTH_FIELD{"FocusWindowWidth", DataType::Double};
 constexpr Field FOCUS_WINDOW_HEIGHT_FIELD{"FocusWindowHeight", DataType::Double};
 
 /**
+ * Get the name of the Field.
+ */
+constexpr std::string_view getName(Field field) {
+    return field.first;
+}
+
+/**
  * Create a string from a string value.
  */
 constexpr std::string fromString(std::optional<std::string> value) {
