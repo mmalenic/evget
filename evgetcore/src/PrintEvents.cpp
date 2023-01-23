@@ -23,11 +23,18 @@
 #include "evgetcore/PrintEvents.h"
 
 void EvgetCore::PrintEvents::store(EvgetCore::Event::Data event) {
+    fmt::print("{}", fmtString(event));
+}
+
+std::string EvgetCore::PrintEvents::fmtString(EvgetCore::Event::Data event) {
     auto out = fmt::format("[{}]\n{}\n\n", event.getName(), fmt::join(event, " "));
 
-    for (const auto& [_, containedData] : event.getData()) {
-        out += fmt::format("[{}] -> {}", event.getName(), fmt::join(containedData, " "));
+    for (const auto& [_, contained] : event.getData()) {
+        out += fmt::format("[{}] -> ", event.getName());
+        for (const auto& containedEvent : contained) {
+            out += fmtString(containedEvent);
+        }
     }
 
-    fmt::print("{}", out);
+    return out;
 }

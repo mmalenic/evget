@@ -25,6 +25,8 @@
 
 #include <boost/asio.hpp>
 
+#include <iostream>
+
 #include "Event/Data.h"
 #include "EventListener.h"
 #include "Storage.h"
@@ -39,27 +41,32 @@ class PrintEvents : public Storage {
 public:
     void store(Event::Data event) override;
 
-    template <std::size_t NFields, typename... To>
-    void defineSchemas(Event::Schema<NFields, To...> schema);
+    template <typename Schema>
+    void defineSchemas(Schema schema);
 
 private:
-    std::unordered_map<std::string_view, std::string_view> schemaNameToFields{};
+    std::string fmtString(Event::Data event);
+
+    std::unordered_map<std::string_view, std::string> schemaNameToFields{};
 };
 
-template <std::size_t NFields, typename... To>
-void EvgetCore::PrintEvents::defineSchemas(EvgetCore::Event::Schema<NFields, To...> schema) {
+template <typename Schema>
+void EvgetCore::PrintEvents::defineSchemas(Schema schema) {
     if (!schemaNameToFields.contains(schema.getName())) {
-        std::array<std::string_view, NFields> names{};
+        std::vector<std::string_view> names{};
         auto fields = schema.getFields();
 
-        std::transform(fields.start(), fields.end(), std::back_inserter(names), [](const auto& field) {
+        std::transform(fields.begin(), fields.end(), std::back_inserter(names), [](const auto& field) {
             return Event::SchemaField::getName(field);
         });
 
         schemaNameToFields.emplace(schema.getName(), fmt::format("{}", fmt::join(names, " ")));
     }
 
-    std::apply([this](auto&&... relation) { ((defineSchemas(relation)), ...); }, schema.getRelations());
+    std::apply(
+        [this](auto&&... relation) { ((this->defineSchemas(relation.getToSchema())), ...); },
+        schema.getRelations()
+    );
 }
 
 }  // namespace EvgetCore

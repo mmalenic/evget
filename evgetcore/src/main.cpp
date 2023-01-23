@@ -51,6 +51,19 @@ int main(int argc, char* argv[]) {
     //    cout << schema.getFields().size() << endl;
 
     EvgetCore::PrintEvents printEvents{};
+
+    EvgetCore::Event::Schema<1> innerSchema{"data_inner_2", {EvgetCore::Event::SchemaField::INTERVAL_FIELD}};
+    EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> innerSchema2{
+        "data_inner",
+        {EvgetCore::Event::SchemaField::INTERVAL_FIELD},
+        {innerSchema, false}};
+    EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>>> schema{
+        "data",
+        {EvgetCore::Event::SchemaField::INTERVAL_FIELD},
+        {innerSchema2, false}};
+
+    printEvents.defineSchemas(schema);
+
     EvgetCore::Event::Data data{"data"};
     data.addField("field");
     EvgetCore::Event::Data data1{"data_inner"};
@@ -65,7 +78,7 @@ int main(int argc, char* argv[]) {
 
     data.contains(data2);
 
-    fmt::print("{}", data);
+    printEvents.store(data);
 
     //    Display* display = XOpenDisplay(nullptr);
     //    EvgetX11::XWrapperX11 wrapper{*display};
