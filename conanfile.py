@@ -33,7 +33,7 @@ class App(ConanFile):
     author = 'Marko Malenic'
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
-    requires = 'boost/1.80.0', 'fmt/9.1.0', 'spdlog/1.11.0', 'date/3.0.1'
+    requires = 'boost/1.81.0', 'fmt/9.1.0', 'spdlog/1.11.0', 'date/3.0.1'
     generators = 'cmake', 'CMakeDeps'
     options = {
         'build_tests': [True, False],
@@ -51,7 +51,7 @@ class App(ConanFile):
             self.requires('gtest/cci.20210126')
 
     def package_info(self):
-        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::program_options']
+        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::program_options', 'boost::graph']
 
     def build(self):
         cmake = CMake(self)

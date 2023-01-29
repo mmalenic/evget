@@ -33,7 +33,7 @@ include(CheckIncludeFiles)
 include(CheckCXXSymbolExists)
 include(CTest)
 
-set(BOOST_VERSION 1.80)
+set(BOOST_VERSION 1.81)
 set(FMT_VERSION 9.1)
 set(SPDLOG_VERSION 1.11)
 set(DATE_VERSION 3.0)
