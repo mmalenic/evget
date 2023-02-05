@@ -34,6 +34,7 @@
 // #include "evgetcore/SystemEventLoopLinux.h"
 // #include "../checkinput/include/checkinput/EventDeviceLister.h"
 #include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Graph.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/PrintEvents.h"
 #include "evgetx11/EventTransformerX11.h"
@@ -45,6 +46,9 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    EvgetCore::Event::Graph<int, int> g{};
+    g.addEdge("a", "b", std::nullopt);
+    g.addNode("a", std::nullopt);
     //    EvgetCore::Event::Key key{};
     //    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
     //

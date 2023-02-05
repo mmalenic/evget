@@ -63,23 +63,36 @@ public:
      *
      * @param edgeData optional edge data to include.
      */
-    void addEdge(std::string from, std::string to, std::optional<N> edgeData);
+    void addEdge(std::string from, std::string to, std::optional<E> edgeData);
 
 private:
-    using EdgeLink = std::pair<std::string, std::vector<E>>;
+    template <typename T>
+    void setGraphData(std::string name, auto graph, auto data);
 
-    std::map<std::string, std::vector<EdgeLink>> graph;
+    std::map<std::string, std::map<std::string, std::vector<E>>> graph;
     std::unordered_map<std::string, std::vector<N>> data;
 };
 
 template <typename N, typename E>
-void Graph<N, E>::addNode(std::string name, std::optional<N> nodeData) {
-    graph.try_emplace(name, std::vector<EdgeLink>{});
-    auto element = data.try_emplace(name, std::vector<N>{});
+template <typename T>
+void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
+    auto link = graph.try_emplace(name, T{});
 
-    if (nodeData.has_value()) {
-        element.first->second.emplace_back(std::move(*nodeData));
+    if (data.has_value()) {
+        link.first->second.emplace_back(std::move(*data));
     }
+}
+
+template <typename N, typename E>
+void Graph<N, E>::addNode(std::string name, std::optional<N> nodeData) {
+    graph.try_emplace(name, std::map<std::string, std::vector<E>>{});
+    setGraphData<std::vector<N>>(name, data, nodeData);
+}
+
+template <typename N, typename E>
+void Graph<N, E>::addEdge(std::string from, std::string to, std::optional<E> edgeData) {
+    auto link = graph.try_emplace(from, std::map<std::string, std::vector<E>>{}).first->second;
+    setGraphData<std::vector<E>>(to, link, edgeData);
 }
 
 }  // namespace EvgetCore::Event
