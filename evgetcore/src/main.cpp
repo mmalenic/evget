@@ -52,7 +52,9 @@ int main(int argc, char* argv[]) {
 
     EvgetCore::PrintEvents printEvents{};
 
-    EvgetCore::Event::Schema<2> innerSchema{"data_inner_2", {EvgetCore::Event::SchemaField::INTERVAL_FIELD, EvgetCore::Event::SchemaField::INTERVAL_FIELD}};
+    EvgetCore::Event::Schema<2> innerSchema{
+        "data_inner_2",
+        {EvgetCore::Event::SchemaField::INTERVAL_FIELD, EvgetCore::Event::SchemaField::INTERVAL_FIELD}};
     EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<2>> innerSchema2{
         "data_inner",
         {EvgetCore::Event::SchemaField::INTERVAL_FIELD},
