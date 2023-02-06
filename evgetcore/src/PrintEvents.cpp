@@ -30,12 +30,12 @@ std::string EvgetCore::PrintEvents::fmtString(EvgetCore::Event::Data event) {
     auto eventName = event.getName();
     auto out = fmt::format("[{}]\n{}\n{}\n\n", eventName, schemaNameToFields.at(eventName), fmt::join(event, " "));
 
-    for (const auto& [_, contained] : event.getData()) {
-        out += fmt::format("[{}] -> ", eventName);
-        for (const auto& containedEvent : contained) {
-            out += fmtString(containedEvent);
-        }
-    }
+    //    for (const auto& [_, contained] : event.getData()) {
+    //        out += fmt::format("[{}] -> ", eventName);
+    //        for (const auto& containedEvent : contained) {
+    //            out += fmtString(containedEvent);
+    //        }
+    //    }
 
     return out;
 }

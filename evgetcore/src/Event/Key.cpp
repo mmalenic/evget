@@ -119,5 +119,5 @@ EvgetCore::Event::Data EvgetCore::Event::Key::build() {
 }
 
 EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    data.contains(Modifier{}.modifierValue(modifierValue).build());
+    // data.contains(Modifier{}.modifierValue(modifierValue).build());
 }

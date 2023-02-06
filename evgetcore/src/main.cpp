@@ -46,7 +46,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    EvgetCore::Event::Graph<int, int> g{};
+    EvgetCore::Event::Graph<int> g{};
     g.addEdge("a", "b", std::nullopt);
     g.addNode("a", std::nullopt);
     //    EvgetCore::Event::Key key{};
@@ -79,10 +79,10 @@ int main(int argc, char* argv[]) {
     data2.addField("inner_field_2");
     data2.addField("inner_field_3");
 
-    data1.contains(data2);
-    data.contains(data1);
-
-    data.contains(data2);
+    //    data1.contains(data2);
+    //    data.contains(data1);
+    //
+    //    data.contains(data2);
 
     printEvents.store(data);
 

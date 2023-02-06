@@ -33,12 +33,7 @@
 
 namespace EvgetCore::Event {
 
-/**
- * A node in a graph.
- *
- * @tparam Edge represents data of the edge linking to this node.
- * @tparam Data represents the data of the node.
- */
+struct Nothing {};
 
 /**
  * An adjacency list graph data structure.
@@ -46,7 +41,7 @@ namespace EvgetCore::Event {
  * @tparam N Data stored at a node.
  * @tparam E Data stored at an edge.
  */
-template <typename N, typename E>
+template <typename N = Nothing, typename E = Nothing>
 class Graph {
 public:
     /**

@@ -40,8 +40,8 @@ EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
     EvgetCore::Event::Data secondContained{"contained"};
     secondContained.addField("secondField");
 
-    data.contains(firstContained);
-    data.contains(secondContained);
+    //    data.contains(firstContained);
+    //    data.contains(secondContained);
     //    data.containsUnique(firstContained);
     //    data.containsUnique(secondContained);
 

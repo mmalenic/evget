@@ -113,5 +113,5 @@ EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
 }
 
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    data.contains(Modifier{}.modifierValue(modifierValue).build());
+    // data.contains(Modifier{}.modifierValue(modifierValue).build());
 }

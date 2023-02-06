@@ -117,5 +117,5 @@ EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
 }
 
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    data.contains(Modifier{}.modifierValue(modifierValue).build());
+    // data.contains(Modifier{}.modifierValue(modifierValue).build());
 }

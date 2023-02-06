@@ -45,11 +45,3 @@ void EvgetCore::Event::Data::addField(std::string field) {
 const std::string& EvgetCore::Event::Data::getFieldAt(size_t position) const {
     return fields.at(position);
 }
-
-void EvgetCore::Event::Data::contains(EvgetCore::Event::Data data) {
-    containsData.try_emplace(data.getName(), std::vector<Data>{}).first->second.emplace_back(std::move(data));
-}
-
-const EvgetCore::Event::Data::ContainedData& EvgetCore::Event::Data::getData() const {
-    return containsData;
-}

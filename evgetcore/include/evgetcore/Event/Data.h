@@ -30,14 +30,16 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Graph.h"
+
 namespace EvgetCore::Event {
+
 /**
  * Event container to represent event data.
  */
 class Data {
 public:
     using Iterator = std::vector<std::string>::const_iterator;
-    using ContainedData = std::unordered_map<std::string_view, std::vector<Data>>;
 
     Data() = default;
     /**
@@ -49,17 +51,6 @@ public:
      * Add a field to this data.
      */
     void addField(std::string field);
-
-    /**
-     * Specify a data table which is contained within this table
-     */
-    void contains(Data data);
-
-    /**
-     * Get the data associated with the contains function, i.e. the one-to-many
-     * data.
-     */
-    const ContainedData& getData() const;
 
     /**
      * Get the field at the position.
@@ -78,23 +69,10 @@ public:
 private:
     std::string_view name{};
     std::vector<std::string> fields{};
-    ContainedData containsData{};
 };
+
+using GraphData = Graph<Data>;
 
 }  // namespace EvgetCore::Event
-
-template <>
-struct fmt::formatter<EvgetCore::Event::Data> : fmt::formatter<std::string_view> {
-    template <typename FormatContext>
-    auto format(const EvgetCore::Event::Data& data, FormatContext& context) const -> decltype(context.out()) {
-        auto out = fmt::format("[{}]\n{}\n\n", data.getName(), fmt::join(data, " "));
-
-        for (const auto& [_, containedData] : data.getData()) {
-            out += fmt::format("[{}] -> {}", data.getName(), fmt::join(containedData, " "));
-        }
-
-        return formatter<string_view>::format(out, context);
-    }
-};
 
 #endif  // EVGET_INCLUDE_EVGET_DATA_H
