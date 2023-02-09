@@ -33,7 +33,7 @@
 
 namespace EvgetCore::Event {
 
-struct Nothing {};
+struct [[maybe_unused]] Nothing {};
 
 /**
  * An adjacency list graph data structure.
@@ -50,7 +50,7 @@ public:
      *
      * @param nodeData optional node data to include.
      */
-    void addNode(std::string name, std::optional<N> nodeData);
+    constexpr void addNode(std::string name, std::optional<N> nodeData);
 
     /**
      * Add an edge if it does not already exist and `from` and `to` are valid nodes.
@@ -58,11 +58,11 @@ public:
      *
      * @param edgeData optional edge data to include.
      */
-    void addEdge(std::string from, std::string to, std::optional<E> edgeData);
+    constexpr void addEdge(std::string from, std::string to, std::optional<E> edgeData);
 
 private:
     template <typename T>
-    void setGraphData(std::string name, auto graph, auto data);
+    constexpr void setGraphData(std::string name, auto graph, auto data);
 
     std::map<std::string, std::map<std::string, std::vector<E>>> graph;
     std::unordered_map<std::string, std::vector<N>> data;
@@ -70,7 +70,7 @@ private:
 
 template <typename N, typename E>
 template <typename T>
-void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
+constexpr void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
     auto link = graph.try_emplace(name, T{});
 
     if (data.has_value()) {
@@ -79,13 +79,13 @@ void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
 }
 
 template <typename N, typename E>
-void Graph<N, E>::addNode(std::string name, std::optional<N> nodeData) {
+constexpr void Graph<N, E>::addNode(std::string name, std::optional<N> nodeData) {
     graph.try_emplace(name, std::map<std::string, std::vector<E>>{});
     setGraphData<std::vector<N>>(name, data, nodeData);
 }
 
 template <typename N, typename E>
-void Graph<N, E>::addEdge(std::string from, std::string to, std::optional<E> edgeData) {
+constexpr void Graph<N, E>::addEdge(std::string from, std::string to, std::optional<E> edgeData) {
     auto link = graph.try_emplace(from, std::map<std::string, std::vector<E>>{}).first->second;
     setGraphData<std::vector<E>>(to, link, edgeData);
 }
