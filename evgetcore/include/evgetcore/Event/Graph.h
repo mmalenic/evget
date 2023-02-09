@@ -50,7 +50,7 @@ public:
      *
      * @param nodeData optional node data to include.
      */
-    constexpr void addNode(std::string name, std::optional<N> nodeData);
+    constexpr void addNode(std::string name, N nodeData);
 
     /**
      * Add an edge if it does not already exist and `from` and `to` are valid nodes.
@@ -58,7 +58,21 @@ public:
      *
      * @param edgeData optional edge data to include.
      */
-    constexpr void addEdge(std::string from, std::string to, std::optional<E> edgeData);
+    constexpr void addEdge(std::string from, std::string to, E edgeData);
+
+    /**
+     * Add a node if it does not already exist.
+     *
+     * @param nodeData optional node data to include.
+     */
+    constexpr void addNode(std::string name);
+
+    /**
+     * Add an edge if it does not already exist and `from` and `to` are valid nodes.
+     *
+     * @param edgeData optional edge data to include.
+     */
+    constexpr void addEdge(std::string from, std::string to);
 
 private:
     template <typename T>
@@ -72,22 +86,31 @@ template <typename N, typename E>
 template <typename T>
 constexpr void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
     auto link = graph.try_emplace(name, T{});
-
-    if (data.has_value()) {
-        link.first->second.emplace_back(std::move(*data));
-    }
+    link.first->second.emplace_back(std::move(*data));
 }
 
 template <typename N, typename E>
-constexpr void Graph<N, E>::addNode(std::string name, std::optional<N> nodeData) {
+constexpr void Graph<N, E>::addNode(std::string name, N nodeData) {
     graph.try_emplace(name, std::map<std::string, std::vector<E>>{});
     setGraphData<std::vector<N>>(name, data, nodeData);
 }
 
 template <typename N, typename E>
-constexpr void Graph<N, E>::addEdge(std::string from, std::string to, std::optional<E> edgeData) {
+constexpr void Graph<N, E>::addEdge(std::string from, std::string to, E edgeData) {
     auto link = graph.try_emplace(from, std::map<std::string, std::vector<E>>{}).first->second;
     setGraphData<std::vector<E>>(to, link, edgeData);
+}
+
+template <typename N, typename E>
+constexpr void Graph<N, E>::addNode(std::string name) {
+    graph.try_emplace(name, std::map<std::string, std::vector<E>>{});
+    data.try_emplace(name, std::vector<N>{});
+}
+
+template <typename N, typename E>
+constexpr void Graph<N, E>::addEdge(std::string from, std::string to) {
+    auto link = graph.try_emplace(from, std::map<std::string, std::vector<E>>{}).first->second;
+    link.try_emplace(to, std::vector<E>{});
 }
 
 }  // namespace EvgetCore::Event
