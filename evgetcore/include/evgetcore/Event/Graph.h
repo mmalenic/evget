@@ -62,15 +62,11 @@ public:
 
     /**
      * Add a node if it does not already exist.
-     *
-     * @param nodeData optional node data to include.
      */
     constexpr void addNode(std::string name);
 
     /**
      * Add an edge if it does not already exist and `from` and `to` are valid nodes.
-     *
-     * @param edgeData optional edge data to include.
      */
     constexpr void addEdge(std::string from, std::string to);
 

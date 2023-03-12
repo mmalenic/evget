@@ -11,7 +11,6 @@ add_program(
     include/evgetcore/Storage.h
     include/evgetcore/EventLoop.h
     include/evgetcore/PrintEvents.h
-    include/evgetcore/Event/Data.h
     include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h
     include/evgetcore/Event/MouseScroll.h
@@ -24,12 +23,8 @@ add_program(
     include/evgetcore/CoreParser.h
     include/evgetcore/Event/ModifierValue.h
     include/evgetcore/Event/Schema.h
-    include/evgetcore/Event/DataType.h
-    include/evgetcore/Event/SchemaField.h
     include/evgetcore/Event/Modifier.h
-    include/evgetcore/Event/Relation.h
     include/evgetcore/Event/Graph.h
-    include/evgetcore/Event/DataWithSchema.h
 )
 add_subdirectory(src)
 
