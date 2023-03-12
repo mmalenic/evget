@@ -56,8 +56,8 @@ public:
     void setEvtypeName(int evtype, const std::string& name);
 
     EvgetCore::Event::Data createSystemData(const XIDeviceEvent& event, const std::string& name);
-    //        static EvgetCore::Event::Field::Entries createValuatorEntries(const XIValuatorState& valuatorState);
-    //        static EvgetCore::Event::Field::Entries createButtonEntries(const XIDeviceEvent& event);
+    //        static EvgetCore::Event::FieldDefinition::Entries createValuatorEntries(const XIValuatorState& valuatorState);
+    //        static EvgetCore::Event::FieldDefinition::Entries createButtonEntries(const XIDeviceEvent& event);
 
     static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
     static std::string formatValue(int value);

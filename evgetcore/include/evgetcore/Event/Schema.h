@@ -81,45 +81,46 @@ enum class Relation { OneToOne, OneToMany, ManyToOne, ManyToMany };
 
 using Interval = std::chrono::microseconds;
 using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
-using Field = std::pair<std::string_view, DataType>;
+using FieldDefinition = std::pair<std::string_view, DataType>;
 
+using Fields = std::vector<std::string>;
 /**
  * Data contains the actual entries for the storage component. This is defined as a graph with a vector of strings
  * as node data, which represent the field entries for that node.
  */
-using Data = Graph<std::vector<std::string>>;
+using Data = Graph<Fields>;
 /**
  * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
- * This is defined as a graph with `Field` as node data, and edge data indicating the `Relation`.
+ * This is defined as a graph with `FieldDefinition` as node data, and edge data indicating the `Relation`.
  */
-using Schema = Graph<std::vector<Field>, Relation>;
+using Schema = Graph<FieldDefinition, Relation>;
 
-constexpr Field ACTION_FIELD{"Action", DataType::String};
-constexpr Field CHARACTER_FIELD{"Character", DataType::String};
-constexpr Field IDENTIFIER_FIELD{"Identifier", DataType::Integer};
-constexpr Field NAME_FIELD{"Name", DataType::String};
-constexpr Field TIMESTAMP_FIELD{"Timestamp", DataType::Timestamp};
-constexpr Field DEVICE_TYPE_FIELD{"DeviceType", DataType::String};
-constexpr Field INTERVAL_FIELD{"Interval", DataType::Interval};
-constexpr Field POSITIONX_FIELD{"PositionX", DataType::Double};
-constexpr Field POSITIONY_FIELD{"PositionY", DataType::Double};
-constexpr Field SCROLLDOWN_FIELD{"ScrollDown", DataType::Double};
-constexpr Field SCROLLLEFT_FIELD{"ScrollLeft", DataType::Double};
-constexpr Field SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
-constexpr Field SCROLLUP_FIELD{"ScrollUp", DataType::Double};
-constexpr Field MODIFIER_FIELD{"Modifier", DataType::String};
-constexpr Field LAYOUT_FIELD{"Layout", DataType::String};
-constexpr Field VARIANT_FIELD{"Variant", DataType::String};
-constexpr Field FOCUS_WINDOW_NAME_FIELD{"FocusWindowName", DataType::String};
-constexpr Field FOCUS_WINDOW_POSITION_X_FIELD{"FocusWindowPositionX", DataType::Double};
-constexpr Field FOCUS_WINDOW_POSITION_Y_FIELD{"FocusWindowPositionY", DataType::Double};
-constexpr Field FOCUS_WINDOW_WIDTH_FIELD{"FocusWindowWidth", DataType::Double};
-constexpr Field FOCUS_WINDOW_HEIGHT_FIELD{"FocusWindowHeight", DataType::Double};
+constexpr FieldDefinition ACTION_FIELD{"Action", DataType::String};
+constexpr FieldDefinition CHARACTER_FIELD{"Character", DataType::String};
+constexpr FieldDefinition IDENTIFIER_FIELD{"Identifier", DataType::Integer};
+constexpr FieldDefinition NAME_FIELD{"Name", DataType::String};
+constexpr FieldDefinition TIMESTAMP_FIELD{"Timestamp", DataType::Timestamp};
+constexpr FieldDefinition DEVICE_TYPE_FIELD{"DeviceType", DataType::String};
+constexpr FieldDefinition INTERVAL_FIELD{"Interval", DataType::Interval};
+constexpr FieldDefinition POSITIONX_FIELD{"PositionX", DataType::Double};
+constexpr FieldDefinition POSITIONY_FIELD{"PositionY", DataType::Double};
+constexpr FieldDefinition SCROLLDOWN_FIELD{"ScrollDown", DataType::Double};
+constexpr FieldDefinition SCROLLLEFT_FIELD{"ScrollLeft", DataType::Double};
+constexpr FieldDefinition SCROLLRIGHT_FIELD{"ScrollRight", DataType::Double};
+constexpr FieldDefinition SCROLLUP_FIELD{"ScrollUp", DataType::Double};
+constexpr FieldDefinition MODIFIER_FIELD{"Modifier", DataType::String};
+constexpr FieldDefinition LAYOUT_FIELD{"Layout", DataType::String};
+constexpr FieldDefinition VARIANT_FIELD{"Variant", DataType::String};
+constexpr FieldDefinition FOCUS_WINDOW_NAME_FIELD{"FocusWindowName", DataType::String};
+constexpr FieldDefinition FOCUS_WINDOW_POSITION_X_FIELD{"FocusWindowPositionX", DataType::Double};
+constexpr FieldDefinition FOCUS_WINDOW_POSITION_Y_FIELD{"FocusWindowPositionY", DataType::Double};
+constexpr FieldDefinition FOCUS_WINDOW_WIDTH_FIELD{"FocusWindowWidth", DataType::Double};
+constexpr FieldDefinition FOCUS_WINDOW_HEIGHT_FIELD{"FocusWindowHeight", DataType::Double};
 
 /**
- * Get the name of the Field.
+ * Get the name of the FieldDefinition.
  */
-constexpr std::string_view getName(Field field) {
+constexpr std::string_view getName(FieldDefinition field) {
     return field.first;
 }
 

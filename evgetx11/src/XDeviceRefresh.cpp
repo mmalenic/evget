@@ -29,8 +29,8 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-// EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
-//     EvgetCore::Event::Field::Entries entries{};
+// EvgetCore::Event::FieldDefinition::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
+//     EvgetCore::Event::FieldDefinition::Entries entries{};
 //
 //     EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
 //         EvgetCore::Event::Data data{"ButtonState"};
@@ -41,9 +41,9 @@
 //     return entries;
 // }
 //
-// EvgetCore::Event::Field::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState&
+// EvgetCore::Event::FieldDefinition::Entries EvgetX11::XDeviceRefresh::createValuatorEntries(const XIValuatorState&
 // valuatorState) {
-//     EvgetCore::Event::Field::Entries entries{};
+//     EvgetCore::Event::FieldDefinition::Entries entries{};
 //
 //     auto values = valuatorState.values;
 //     EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&entries, &values](int mask) {
