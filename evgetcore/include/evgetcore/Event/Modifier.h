@@ -26,7 +26,6 @@
 
 #include <optional>
 
-#include "Data.h"
 #include "ModifierValue.h"
 #include "Schema.h"
 
@@ -36,38 +35,36 @@ namespace EvgetCore::Event {
  */
 class Modifier {
 public:
-    using SchemaType = Schema<1>;
-
     /**
      * Add a modifier value.
      */
     Modifier& modifierValue(ModifierValue modifierValue);
 
     /**
-     * Build modifier.
+     * Build modifier in graph data.
      */
-    Data build();
+    Data& build(Data& data);
 
     /**
      * Get modifier name value.
      */
-    static constexpr std::string_view getName();
+    static constexpr std::string getName();
 
     /**
-     * Generate the Modifier schema.
+     * Update the modifier schema.
      */
-    static constexpr SchemaType generateSchema();
+    static constexpr void updateSchema(Schema& schema);
 
 private:
     std::optional<ModifierValue> _modifierValue;
 };
 
-constexpr std::string_view Modifier::getName() {
+constexpr std::string Modifier::getName() {
     return "Modifier";
 }
 
-constexpr EvgetCore::Event::Modifier::SchemaType EvgetCore::Event::Modifier::generateSchema() {
-    return SchemaType{getName(), {SchemaField::MODIFIER_FIELD}};
+constexpr void EvgetCore::Event::Modifier::updateSchema(Schema& schema) {
+    schema.addNode(getName(), MODIFIER_FIELD);
 }
 }  // namespace EvgetCore::Event
 

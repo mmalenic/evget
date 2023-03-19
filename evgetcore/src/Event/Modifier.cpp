@@ -28,10 +28,8 @@ EvgetCore::Event::Modifier& EvgetCore::Event::Modifier::modifierValue(EvgetCore:
     return *this;
 }
 
-EvgetCore::Event::Data EvgetCore::Event::Modifier::build() {
-    auto data = Data{"Modifier"};
-
-    data.addField(SchemaField::fromModifierValue(_modifierValue));
+EvgetCore::Event::Data& EvgetCore::Event::Modifier::build(Data& data) {
+    data.addNode(getName(), {fromModifierValue(_modifierValue)});
 
     return data;
 }
