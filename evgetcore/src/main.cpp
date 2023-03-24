@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     g.addEdge("a", "b", std::nullopt);
     g.addNode("a", std::nullopt);
     //    EvgetCore::Event::Key key{};
-    //    constexpr auto schema = EvgetCore::Event::Key::generateSchema();
+    //    constexpr auto schema = EvgetCore::Event::Key::updateSchema();
     //
     //    cout << schema.getFields().size() << endl;
 

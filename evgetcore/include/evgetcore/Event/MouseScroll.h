@@ -172,7 +172,7 @@ constexpr EvgetCore::Event::MouseScroll::SchemaType EvgetCore::Event::MouseScrol
          SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
          SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
          SchemaField::FOCUS_WINDOW_HEIGHT_FIELD},
-        {Modifier::generateSchema(), true}};
+        {Modifier::updateSchema(), true}};
 }
 }  // namespace EvgetCore::Event
 

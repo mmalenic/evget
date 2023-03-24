@@ -37,22 +37,20 @@ namespace EvgetCore::Event {
  */
 class Key {
 public:
-    using SchemaType = Schema<16, Modifier::SchemaType>;
+    /**
+     * Add interval in microseconds.
+     */
+    Key& interval(Interval interval);
 
     /**
      * Add interval in microseconds.
      */
-    Key& interval(SchemaField::Interval interval);
-
-    /**
-     * Add interval in microseconds.
-     */
-    Key& interval(std::optional<SchemaField::Interval> interval);
+    Key& interval(std::optional<Interval> interval);
 
     /**
      * Add date timestamp.
      */
-    Key& timestamp(SchemaField::Timestamp dateTime);
+    Key& timestamp(Timestamp dateTime);
 
     /**
      * Key device.
@@ -122,23 +120,21 @@ public:
     /**
      * Build key event.
      */
-    Data build();
+    Data build(Data& data);
 
     /**
      * Get key name value.
      */
-    static constexpr std::string_view getName();
+    static constexpr std::string getName();
 
     /**
-     * Generate the schema for this data.
+     * Update the key schema.
      */
-    static constexpr SchemaType generateSchema();
+    static constexpr void updateSchema(Schema& schema);
 
 private:
-    Data data{getName()};
-
-    std::optional<SchemaField::Interval> _interval{};
-    std::optional<SchemaField::Timestamp> _timestamp{};
+    std::optional<Interval> _interval{};
+    std::optional<Timestamp> _timestamp{};
     std::optional<Device> _device{};
     std::optional<double> _positionX{};
     std::optional<double> _positionY{};
@@ -153,32 +149,35 @@ private:
     std::optional<double> _focusWindowPositionY{};
     std::optional<double> _focusWindowWidth{};
     std::optional<double> _focusWindowHeight{};
+
+    Modifier _modifier{};
 };
 
-constexpr std::string_view Key::getName() {
+constexpr std::string Key::getName() {
     return "Key";
 }
 
-constexpr EvgetCore::Event::Key::SchemaType EvgetCore::Event::Key::generateSchema() {
-    return {
-        getName(),
-        {SchemaField::INTERVAL_FIELD,
-         SchemaField::TIMESTAMP_FIELD,
-         SchemaField::DEVICE_TYPE_FIELD,
-         SchemaField::POSITIONX_FIELD,
-         SchemaField::POSITIONY_FIELD,
-         SchemaField::ACTION_FIELD,
-         SchemaField::IDENTIFIER_FIELD,
-         SchemaField::NAME_FIELD,
-         SchemaField::CHARACTER_FIELD,
-         SchemaField::LAYOUT_FIELD,
-         SchemaField::VARIANT_FIELD,
-         SchemaField::FOCUS_WINDOW_NAME_FIELD,
-         SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
-         SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
-         SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
-         SchemaField::FOCUS_WINDOW_HEIGHT_FIELD},
-        {Modifier::generateSchema(), true}};
+constexpr void EvgetCore::Event::Key::updateSchema(Schema& schema) {
+    schema.addNode(getName(), {
+                                  INTERVAL_FIELD,
+                                  TIMESTAMP_FIELD,
+                                  DEVICE_TYPE_FIELD,
+                                  POSITIONX_FIELD,
+                                  POSITIONY_FIELD,
+                                  ACTION_FIELD,
+                                  IDENTIFIER_FIELD,
+                                  NAME_FIELD,
+                                  CHARACTER_FIELD,
+                                  LAYOUT_FIELD,
+                                  VARIANT_FIELD,
+                                    FOCUS_WINDOW_NAME_FIELD,
+                                    FOCUS_WINDOW_POSITION_X_FIELD,
+                                    FOCUS_WINDOW_POSITION_Y_FIELD,
+                                    FOCUS_WINDOW_WIDTH_FIELD,
+                                    FOCUS_WINDOW_HEIGHT_FIELD
+                              });
+
+    schema.addEdge(getName(), Modifier::getName(), Relation::ManyToMany);
 }
 }  // namespace EvgetCore::Event
 

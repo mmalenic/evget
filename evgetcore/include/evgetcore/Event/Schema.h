@@ -84,11 +84,13 @@ using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono
 using FieldDefinition = std::pair<std::string_view, DataType>;
 
 using Fields = std::vector<std::string>;
+
 /**
  * Data contains the actual entries for the storage component. This is defined as a graph with a vector of strings
  * as node data, which represent the field entries for that node.
  */
 using Data = Graph<Fields>;
+
 /**
  * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
  * This is defined as a graph with `FieldDefinition` as node data, and edge data indicating the `Relation`.
