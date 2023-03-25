@@ -26,10 +26,10 @@
 #include <X11/extensions/XInput2.h>
 #include <spdlog/spdlog.h>
 
-#include "evgetcore/Event/Data.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
-// EvgetCore::Event::FieldDefinition::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event) {
+// EvgetCore::Event::FieldDefinition::Entries EvgetX11::XDeviceRefresh::createButtonEntries(const XIDeviceEvent& event)
+// {
 //     EvgetCore::Event::FieldDefinition::Entries entries{};
 //
 //     EvgetX11::XWrapperX11::onMasks(event.buttons.mask, event.buttons.mask_len, [&entries](int mask) {
@@ -57,7 +57,7 @@
 // }
 
 EvgetCore::Event::Data EvgetX11::XDeviceRefresh::createSystemData(const XIDeviceEvent& event, const std::string& name) {
-    EvgetCore::Event::Data data{name};
+    EvgetCore::Event::Data data{};
 
     //    data.addField("DeviceName", idToName[event.deviceid]);
     //    data.addField("EventTypeId", std::to_string(event.evtype));
@@ -83,15 +83,6 @@ EvgetCore::Event::Data EvgetX11::XDeviceRefresh::createSystemData(const XIDevice
     //    data.addField("GroupLocked", formatValue(event.group.locked));
 
     return data;
-}
-
-void EvgetX11::XDeviceRefresh::addTableData(
-    EventData& data,
-    EvgetCore::Event::Data genericData,
-    EvgetCore::Event::Data systemData
-) {
-    data.emplace_back(std::move(genericData));
-    data.emplace_back(std::move(systemData));
 }
 
 std::string EvgetX11::XDeviceRefresh::formatValue(int value) {

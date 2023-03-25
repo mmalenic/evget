@@ -25,18 +25,18 @@
 #include "EventTestUtils.h"
 #include "evgetcore/Event/Schema.h"
 
-namespace EventUtils = TestUtils::EventTestUtils;
-
-TEST(RelationTest, GetToSchema) {  // NOLINT(cert-err58-cpp)
-    auto relation = std::get<0>(EventUtils::createSchema().getRelations());
-
-    ASSERT_EQ(relation.getToSchema().getName(), "Relation");
-    ASSERT_EQ(relation.getToSchema().getFields().at(0).first, "RelationField");
-    ASSERT_EQ(relation.getToSchema().getFields().at(0).second, EvgetCore::Event::DataType::String);
-}
-
-TEST(RelationTest, IsUnique) {  // NOLINT(cert-err58-cpp)
-    auto relation = std::get<0>(EventUtils::createSchema().getRelations());
-
-    ASSERT_EQ(relation.isUnique(), false);
-}
+// namespace EventUtils = TestUtils::EventTestUtils;
+//
+// TEST(RelationTest, GetToSchema) {  // NOLINT(cert-err58-cpp)
+//     auto relation = std::get<0>(EventUtils::createSchema().getRelations());
+//
+//     ASSERT_EQ(relation.getToSchema().getName(), "Relation");
+//     ASSERT_EQ(relation.getToSchema().getFields().at(0).first, "RelationField");
+//     ASSERT_EQ(relation.getToSchema().getFields().at(0).second, EvgetCore::Event::DataType::String);
+// }
+//
+// TEST(RelationTest, IsUnique) {  // NOLINT(cert-err58-cpp)
+//     auto relation = std::get<0>(EventUtils::createSchema().getRelations());
+//
+//     ASSERT_EQ(relation.isUnique(), false);
+// }

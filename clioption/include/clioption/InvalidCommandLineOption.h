@@ -24,6 +24,7 @@
 #define EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 
 #include <boost/program_options.hpp>
+
 #include <string>
 
 namespace CliOption {

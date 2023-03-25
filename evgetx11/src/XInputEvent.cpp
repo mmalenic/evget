@@ -30,6 +30,6 @@ int EvgetX11::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-const EvgetCore::Event::SchemaField::Timestamp& EvgetX11::XInputEvent::getTimestamp() const {
+const EvgetCore::Event::Timestamp& EvgetX11::XInputEvent::getTimestamp() const {
     return timestamp;
 }

@@ -58,23 +58,23 @@ public:
 private:
     void buttonEvent(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void keyEvent(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void motionEvent(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void scrollEvent(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
@@ -117,7 +117,7 @@ bool EvgetX11::XEventSwitchCore<XWrapper>::switchOnEvent(
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchCore<XWrapper>::buttonEvent(
     const XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
@@ -136,7 +136,7 @@ void EvgetX11::XEventSwitchCore<XWrapper>::buttonEvent(
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchCore<XWrapper>::keyEvent(
     const XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
@@ -167,17 +167,13 @@ void EvgetX11::XEventSwitchCore<XWrapper>::keyEvent(
     XEventSwitchPointer<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
-    XDeviceRefresh::addTableData(
-        data,
-        builder.build(),
-        xDeviceRefresh.get().createSystemData(deviceEvent, "KeySystemData")
-    );
+    builder.build(data);
 }
 
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchCore<XWrapper>::scrollEvent(
     const XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
@@ -219,14 +215,13 @@ void EvgetX11::XEventSwitchCore<XWrapper>::scrollEvent(
     XEventSwitchPointer<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
-    data.emplace_back(builder.build());
-    data.emplace_back(xDeviceRefresh.get().createSystemData(deviceEvent, "MouseScrollSystemData"));
+    builder.build(data);
 }
 
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchCore<XWrapper>::motionEvent(
     const XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();

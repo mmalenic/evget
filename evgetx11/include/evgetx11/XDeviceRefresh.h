@@ -31,7 +31,7 @@
 #include "XInputEvent.h"
 
 namespace EvgetX11 {
-using EventData = std::vector<EvgetCore::Event::Data>;
+using EventData = EvgetCore::Event::Data;
 
 class XDeviceRefresh {
 public:
@@ -44,8 +44,6 @@ public:
     bool switchOnEvent(const XInputEvent& event, std::chrono::nanoseconds timestamp, EventData& data);
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
-    static void addTableData(EventData& data, EvgetCore::Event::Data genericData, EvgetCore::Event::Data systemData);
-
     bool containsDevice(int id);
     EvgetCore::Event::Device getDevice(int id) const;
     const std::string& getNameFromId(int id) const;
@@ -56,8 +54,9 @@ public:
     void setEvtypeName(int evtype, const std::string& name);
 
     EvgetCore::Event::Data createSystemData(const XIDeviceEvent& event, const std::string& name);
-    //        static EvgetCore::Event::FieldDefinition::Entries createValuatorEntries(const XIValuatorState& valuatorState);
-    //        static EvgetCore::Event::FieldDefinition::Entries createButtonEntries(const XIDeviceEvent& event);
+    //        static EvgetCore::Event::FieldDefinition::Entries createValuatorEntries(const XIValuatorState&
+    //        valuatorState); static EvgetCore::Event::FieldDefinition::Entries createButtonEntries(const XIDeviceEvent&
+    //        event);
 
     static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
     static std::string formatValue(int value);

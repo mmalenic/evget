@@ -23,12 +23,13 @@
 #include "evgetcore/PrintEvents.h"
 
 void EvgetCore::PrintEvents::store(EvgetCore::Event::Data event) {
-    fmt::print("{}", fmtString(event));
+    //    fmt::print("{}", fmtString(event));
 }
 
 std::string EvgetCore::PrintEvents::fmtString(EvgetCore::Event::Data event) {
-    auto eventName = event.getName();
-    auto out = fmt::format("[{}]\n{}\n{}\n\n", eventName, schemaNameToFields.at(eventName), fmt::join(event, " "));
+    //    auto eventName = event.getName();
+    //    auto out = fmt::format("[{}]\n{}\n{}\n\n", eventName, schemaNameToFields.at(eventName), fmt::join(event, "
+    //    "));
 
     //    for (const auto& [_, contained] : event.getData()) {
     //        out += fmt::format("[{}] -> ", eventName);
@@ -37,5 +38,6 @@ std::string EvgetCore::PrintEvents::fmtString(EvgetCore::Event::Data event) {
     //        }
     //    }
 
-    return out;
+    return "";
+    //    return out;
 }

@@ -27,7 +27,6 @@
 
 #include <iostream>
 
-#include "Event/Data.h"
 #include "EventListener.h"
 #include "Storage.h"
 
@@ -52,21 +51,21 @@ private:
 
 template <typename Schema>
 void EvgetCore::PrintEvents::defineSchemas(Schema schema) {
-    if (!schemaNameToFields.contains(schema.getName())) {
-        std::vector<std::string_view> names{};
-        auto fields = schema.getFields();
-
-        std::transform(fields.begin(), fields.end(), std::back_inserter(names), [](const auto& field) {
-            return Event::SchemaField::getName(field);
-        });
-
-        schemaNameToFields.emplace(schema.getName(), fmt::format("{}", fmt::join(names, " ")));
-    }
-
-    std::apply(
-        [this](auto&&... relation) { ((this->defineSchemas(relation.getToSchema())), ...); },
-        schema.getRelations()
-    );
+    //    if (!schemaNameToFields.contains(schema.getName())) {
+    //        std::vector<std::string_view> names{};
+    //        auto fields = schema.getFields();
+    //
+    //        std::transform(fields.begin(), fields.end(), std::back_inserter(names), [](const auto& field) {
+    //            return Event::getName(field);
+    //        });
+    //
+    //        schemaNameToFields.emplace(schema.getName(), fmt::format("{}", fmt::join(names, " ")));
+    //    }
+    //
+    //    std::apply(
+    //        [this](auto&&... relation) { ((this->defineSchemas(relation.getToSchema())), ...); },
+    //        schema.getRelations()
+    //    );
 }
 
 }  // namespace EvgetCore

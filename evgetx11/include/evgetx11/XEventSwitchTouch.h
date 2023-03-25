@@ -42,13 +42,13 @@ public:
 private:
     void touchButton(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void touchMotion(
         const XInputEvent& event,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
@@ -82,7 +82,7 @@ bool EvgetX11::XEventSwitchTouch<XWrapper>::switchOnEvent(
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchTouch<XWrapper>::touchButton(
     const EvgetX11::XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
@@ -96,7 +96,7 @@ void EvgetX11::XEventSwitchTouch<XWrapper>::touchButton(
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchTouch<XWrapper>::touchMotion(
     const EvgetX11::XInputEvent& event,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();

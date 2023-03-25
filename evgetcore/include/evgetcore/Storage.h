@@ -24,7 +24,6 @@
 #ifndef EVGET_STORAGE_H
 #define EVGET_STORAGE_H
 
-#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore {

@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "XWrapperX11.h"
-#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetX11 {
@@ -38,7 +37,7 @@ public:
     /**
      * Get the date time of the event.
      */
-    [[nodiscard]] const EvgetCore::Event::SchemaField::Timestamp& getTimestamp() const;
+    [[nodiscard]] const EvgetCore::Event::Timestamp& getTimestamp() const;
 
     /**
      * Check if viewData and getEventType is safe to call.
@@ -68,7 +67,7 @@ private:
     explicit XInputEvent(XWrapper auto& xWrapper);
 
     XEvent event;
-    EvgetCore::Event::SchemaField::Timestamp timestamp;
+    EvgetCore::Event::Timestamp timestamp;
     XEventPointer cookie;
 };
 

@@ -36,6 +36,7 @@
 #include "ButtonAction.h"
 #include "Device.h"
 #include "Graph.h"
+#include "ModifierValue.h"
 #include "evgetcore/Util.h"
 
 namespace EvgetCore::Event {

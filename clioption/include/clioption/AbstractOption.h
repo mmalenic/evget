@@ -23,10 +23,10 @@
 #ifndef EVGET_OPTIONBASE_H
 #define EVGET_OPTIONBASE_H
 
+#include <boost/program_options.hpp>
 #include <fmt/core.h>
 #include <fmt/format.h>
 
-#include <boost/program_options.hpp>
 #include <fstream>
 #include <optional>
 #include <string>

@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
-#include "evgetcore/Event/Data.h"
+#include "Event/Schema.h"
 
 namespace EvgetCore {
 
@@ -39,7 +39,7 @@ public:
      * @param event event to transform
      * @return event event for storage
      */
-    virtual std::vector<Event::Data> transformEvent(T event) = 0;
+    virtual Event::Data transformEvent(T event) = 0;
 
     EventTransformer() = default;
 

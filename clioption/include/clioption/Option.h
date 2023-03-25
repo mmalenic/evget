@@ -23,9 +23,9 @@
 #ifndef EVGET_INCLUDE_COMMANDLINEOPTION_H
 #define EVGET_INCLUDE_COMMANDLINEOPTION_H
 
+#include <boost/program_options.hpp>
 #include <fmt/core.h>
 
-#include <boost/program_options.hpp>
 #include <optional>
 #include <string>
 

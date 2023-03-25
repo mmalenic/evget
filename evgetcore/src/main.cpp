@@ -33,7 +33,6 @@
 // #include "evgetcore/EventTransformerLinux.h"
 // #include "evgetcore/SystemEventLoopLinux.h"
 // #include "../checkinput/include/checkinput/EventDeviceLister.h"
-#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Graph.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/PrintEvents.h"
@@ -47,8 +46,6 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     EvgetCore::Event::Graph<int> g{};
-    g.addEdge("a", "b", std::nullopt);
-    g.addNode("a", std::nullopt);
     //    EvgetCore::Event::Key key{};
     //    constexpr auto schema = EvgetCore::Event::Key::updateSchema();
     //
@@ -56,35 +53,10 @@ int main(int argc, char* argv[]) {
 
     EvgetCore::PrintEvents printEvents{};
 
-    EvgetCore::Event::Schema<2> innerSchema{
-        "data_inner_2",
-        {EvgetCore::Event::SchemaField::INTERVAL_FIELD, EvgetCore::Event::SchemaField::INTERVAL_FIELD}};
-    EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<2>> innerSchema2{
-        "data_inner",
-        {EvgetCore::Event::SchemaField::INTERVAL_FIELD},
-        {innerSchema, false}};
-    EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<2>>> schema{
-        "data",
-        {EvgetCore::Event::SchemaField::INTERVAL_FIELD},
-        {innerSchema2, false}};
-
-    printEvents.defineSchemas(schema);
-
-    EvgetCore::Event::Data data{"data"};
-    data.addField("field");
-    EvgetCore::Event::Data data1{"data_inner"};
-    data1.addField("inner_field");
-
-    EvgetCore::Event::Data data2{"data_inner_2"};
-    data2.addField("inner_field_2");
-    data2.addField("inner_field_3");
-
     //    data1.contains(data2);
     //    data.contains(data1);
     //
     //    data.contains(data2);
-
-    printEvents.store(data);
 
     //    Display* display = XOpenDisplay(nullptr);
     //    EvgetX11::XWrapperX11 wrapper{*display};

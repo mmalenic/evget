@@ -22,59 +22,59 @@
 
 #include "EventTestUtils.h"
 
-void TestUtils::EventTestUtils::fieldValueAndName(
-    const EvgetCore::Event::SchemaField::Field& field,
-    const std::string& name,
-    const std::string& expected
-) {
-    //    ASSERT_EQ(name, field.getName());
-    //    ASSERT_EQ(expected, field.getEntry());
-}
-
-EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
-    EvgetCore::Event::Data data{"name"};
-    data.addField("field");
-
-    EvgetCore::Event::Data firstContained{"contained"};
-    firstContained.addField("firstField");
-    EvgetCore::Event::Data secondContained{"contained"};
-    secondContained.addField("secondField");
-
-    //    data.contains(firstContained);
-    //    data.contains(secondContained);
-    //    data.containsUnique(firstContained);
-    //    data.containsUnique(secondContained);
-
-    return data;
-}
-
-EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> TestUtils::EventTestUtils::createSchema() {
-    EvgetCore::Event::Schema<1> relationSchema{
-        "Relation",
-        {EvgetCore::Event::SchemaField::Field{"RelationField", EvgetCore::Event::DataType::String}}};
-    return {
-        "Name",
-        {EvgetCore::Event::SchemaField::Field{"FieldDefinition", EvgetCore::Event::DataType::String}},
-        {relationSchema, false}};
-}
-
-EvgetCore::Event::SchemaField::Field TestUtils::EventTestUtils::createEntriesData(
-    const std::string& outerName,
-    const std::string& innerDataName,
-    const std::string& innerName,
-    const std::string& innerEntry
-) {
-    //    EvgetCore::Event::FieldDefinition::Entries entries{};
-    //    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
-
-    //    entries.emplace_back(data);
-    //    return EvgetCore::Event::FieldDefinition{outerName, std::move(entries)};
-}
-
-void TestUtils::EventTestUtils::event_entry_at(
-    const EvgetCore::Event::Data& data,
-    size_t position,
-    const std::string& expected
-) {
-    //    ASSERT_EQ(data.getFieldAt(position).getEntry(), expected);
-}
+// void TestUtils::EventTestUtils::fieldValueAndName(
+//     const EvgetCore::Event::SchemaField::Field& field,
+//     const std::string& name,
+//     const std::string& expected
+//) {
+//     //    ASSERT_EQ(name, field.getName());
+//     //    ASSERT_EQ(expected, field.getEntry());
+// }
+//
+// EvgetCore::Event::Data TestUtils::EventTestUtils::createData() {
+//     EvgetCore::Event::Data data{"name"};
+//     data.addField("field");
+//
+//     EvgetCore::Event::Data firstContained{"contained"};
+//     firstContained.addField("firstField");
+//     EvgetCore::Event::Data secondContained{"contained"};
+//     secondContained.addField("secondField");
+//
+//     //    data.contains(firstContained);
+//     //    data.contains(secondContained);
+//     //    data.containsUnique(firstContained);
+//     //    data.containsUnique(secondContained);
+//
+//     return data;
+// }
+//
+// EvgetCore::Event::Schema<1, EvgetCore::Event::Schema<1>> TestUtils::EventTestUtils::createSchema() {
+//     EvgetCore::Event::Schema<1> relationSchema{
+//         "Relation",
+//         {EvgetCore::Event::SchemaField::Field{"RelationField", EvgetCore::Event::DataType::String}}};
+//     return {
+//         "Name",
+//         {EvgetCore::Event::SchemaField::Field{"FieldDefinition", EvgetCore::Event::DataType::String}},
+//         {relationSchema, false}};
+// }
+//
+// EvgetCore::Event::SchemaField::Field TestUtils::EventTestUtils::createEntriesData(
+//     const std::string& outerName,
+//     const std::string& innerDataName,
+//     const std::string& innerName,
+//     const std::string& innerEntry
+//) {
+//     //    EvgetCore::Event::FieldDefinition::Entries entries{};
+//     //    EvgetCore::Event::Data data = TestUtils::EventTestUtils::createData(innerDataName, innerName, innerEntry);
+//
+//     //    entries.emplace_back(data);
+//     //    return EvgetCore::Event::FieldDefinition{outerName, std::move(entries)};
+// }
+//
+// void TestUtils::EventTestUtils::event_entry_at(
+//     const EvgetCore::Event::Data& data,
+//     size_t position,
+//     const std::string& expected
+//) {
+//     //    ASSERT_EQ(data.getFieldAt(position).getEntry(), expected);
+// }

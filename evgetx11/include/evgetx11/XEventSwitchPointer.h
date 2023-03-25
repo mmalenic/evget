@@ -61,16 +61,16 @@ public:
 
     void addButtonEvent(
         const XIDeviceEvent& event,
-        EvgetCore::Event::SchemaField::Timestamp dateTime,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Timestamp dateTime,
+        EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
         int button,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void addMotionEvent(
         const XIDeviceEvent& event,
-        EvgetCore::Event::SchemaField::Timestamp dateTime,
-        std::vector<EvgetCore::Event::Data>& data,
+        EvgetCore::Event::Timestamp dateTime,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
@@ -99,8 +99,8 @@ private:
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
     const XIDeviceEvent& event,
-    EvgetCore::Event::SchemaField::Timestamp dateTime,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Timestamp dateTime,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     EvgetCore::Event::MouseMove builder{};
@@ -112,14 +112,14 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
-    data.emplace_back(builder.build());
+    builder.build(data);
 }
 
 template <XWrapper XWrapper>
 void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
     const XIDeviceEvent& event,
-    EvgetCore::Event::SchemaField::Timestamp dateTime,
-    std::vector<EvgetCore::Event::Data>& data,
+    EvgetCore::Event::Timestamp dateTime,
+    EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
     int button,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -136,7 +136,7 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
-    data.emplace_back(builder.build());
+    builder.build(data);
 }
 
 template <XWrapper XWrapper>

@@ -44,7 +44,7 @@ template <XWrapper XWrapper, typename... Switches>
 class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
 public:
     explicit EventTransformerX11(XWrapper& xWrapper, Switches&... switches);
-    std::vector<EvgetCore::Event::Data> transformEvent(XInputEvent event) override;
+    EvgetCore::Event::Data transformEvent(XInputEvent event) override;
 
 private:
     std::optional<std::chrono::microseconds> getInterval(Time time);
@@ -147,10 +147,8 @@ std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<XWrapper,
 }
 
 template <XWrapper XWrapper, typename... Switches>
-std::vector<EvgetCore::Event::Data> EvgetX11::EventTransformerX11<XWrapper, Switches...>::transformEvent(
-    XInputEvent event
-) {
-    std::vector<EvgetCore::Event::Data> data{};
+EvgetCore::Event::Data EvgetX11::EventTransformerX11<XWrapper, Switches...>::transformEvent(XInputEvent event) {
+    EvgetCore::Event::Data data{};
     if (event.hasData()) {
         auto type = event.getEventType();
 

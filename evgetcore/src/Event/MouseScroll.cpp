@@ -22,17 +22,17 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(SchemaField::Interval interval) {
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(Interval interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(std::optional<SchemaField::Interval> interval) {
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(std::optional<Interval> interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::timestamp(SchemaField::Timestamp timestamp) {
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::timestamp(Timestamp timestamp) {
     _timestamp = timestamp;
     return *this;
 }
