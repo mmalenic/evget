@@ -60,7 +60,8 @@
 // }
 //
 // TEST(FieldTest, IsData) { // NOLINT(cert-err58-cpp)
-//     EvgetCore::Event::FieldDefinition field = EventTestUtils::createEntriesData("OuterField", "InnerData", "InnerField",
+//     EvgetCore::Event::FieldDefinition field = EventTestUtils::createEntriesData("OuterField", "InnerData",
+//     "InnerField",
 //                                                                       "InnerEntry");
 //     ASSERT_TRUE(field.isData());
 //     ASSERT_FALSE(field.isEntry());

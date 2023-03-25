@@ -104,23 +104,25 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::Modifie
     return *this;
 }
 
-EvgetCore::Event::Data EvgetCore::Event::Key::build(Data& data) {
+EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
     data.addNode(
         getName(),
         {fromInterval(_interval),
-          fromTimestamp(_timestamp),
-          fromDevice(_device),
-          fromDouble(_positionX),
-          fromDouble(_positionY),
-          fromButtonAction(_action),
-          fromInt(_button),
-          fromString(_name),
-          fromString(_character),
-          fromString(_focusWindowName),
-          fromDouble(_focusWindowPositionX),
-          fromDouble(_focusWindowPositionY),
-          fromDouble(_focusWindowWidth),
-          fromDouble(_focusWindowHeight)}
+         fromTimestamp(_timestamp),
+         fromDevice(_device),
+         fromDouble(_positionX),
+         fromDouble(_positionY),
+         fromButtonAction(_action),
+         fromInt(_button),
+         fromString(_name),
+         fromString(_character),
+         fromString(_layout),
+         fromString(_variant),
+         fromString(_focusWindowName),
+         fromDouble(_focusWindowPositionX),
+         fromDouble(_focusWindowPositionY),
+         fromDouble(_focusWindowWidth),
+         fromDouble(_focusWindowHeight)}
     );
 
     _modifier.build(data);

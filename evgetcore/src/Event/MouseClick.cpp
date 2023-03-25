@@ -24,17 +24,17 @@
 
 #include <utility>
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(SchemaField::Interval interval) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(Interval interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(std::optional<SchemaField::Interval> interval) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(std::optional<Interval> interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::timestamp(SchemaField::Timestamp timestamp) {
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::timestamp(Timestamp timestamp) {
     _timestamp = timestamp;
     return *this;
 }
@@ -94,24 +94,32 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowHeight(do
     return *this;
 }
 
-EvgetCore::Event::Data EvgetCore::Event::MouseClick::build() {
-    data.addField(SchemaField::fromInterval(_interval));
-    data.addField(SchemaField::fromTimestamp(_timestamp));
-    data.addField(SchemaField::fromDevice(_device));
-    data.addField(SchemaField::fromDouble(_positionX));
-    data.addField(SchemaField::fromDouble(_positionY));
-    data.addField(SchemaField::fromButtonAction(_action));
-    data.addField(SchemaField::fromInt(_button));
-    data.addField(SchemaField::fromString(_name));
-    data.addField(SchemaField::fromString(_focusWindowName));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionX));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionY));
-    data.addField(SchemaField::fromDouble(_focusWindowWidth));
-    data.addField(SchemaField::fromDouble(_focusWindowHeight));
-
-    return data;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
+    _modifier = _modifier.modifierValue(modifierValue);
+    return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    // data.contains(Modifier{}.modifierValue(modifierValue).build());
+EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
+    data.addNode(
+        getName(),
+        {fromInterval(_interval),
+         fromTimestamp(_timestamp),
+         fromDevice(_device),
+         fromDouble(_positionX),
+         fromDouble(_positionY),
+         fromButtonAction(_action),
+         fromInt(_button),
+         fromString(_name),
+         fromString(_focusWindowName),
+         fromDouble(_focusWindowPositionX),
+         fromDouble(_focusWindowPositionY),
+         fromDouble(_focusWindowWidth),
+         fromDouble(_focusWindowHeight)}
+    );
+
+    _modifier.build(data);
+
+    data.addEdge(getName(), _modifier.getName());
+
+    return data;
 }

@@ -22,17 +22,17 @@
 
 #include "evgetcore/Event/MouseMove.h"
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::interval(SchemaField::Interval interval) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::interval(Interval interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::interval(std::optional<SchemaField::Interval> interval) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::interval(std::optional<Interval> interval) {
     _interval = interval;
     return *this;
 }
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::timestamp(SchemaField::Timestamp timestamp) {
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::timestamp(Timestamp timestamp) {
     _timestamp = timestamp;
     return *this;
 }
@@ -77,21 +77,29 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowHeight(doub
     return *this;
 }
 
-EvgetCore::Event::Data EvgetCore::Event::MouseMove::build() {
-    data.addField(SchemaField::fromInterval(_interval));
-    data.addField(SchemaField::fromTimestamp(_timestamp));
-    data.addField(SchemaField::fromDevice(_device));
-    data.addField(SchemaField::fromDouble(_positionX));
-    data.addField(SchemaField::fromDouble(_positionY));
-    data.addField(SchemaField::fromString(_focusWindowName));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionX));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionY));
-    data.addField(SchemaField::fromDouble(_focusWindowWidth));
-    data.addField(SchemaField::fromDouble(_focusWindowHeight));
-
-    return data;
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
+    _modifier = _modifier.modifierValue(modifierValue);
+    return *this;
 }
 
-EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    // data.contains(Modifier{}.modifierValue(modifierValue).build());
+EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
+    data.addNode(
+        getName(),
+        {fromInterval(_interval),
+         fromTimestamp(_timestamp),
+         fromDevice(_device),
+         fromDouble(_positionX),
+         fromDouble(_positionY),
+         fromString(_focusWindowName),
+         fromDouble(_focusWindowPositionX),
+         fromDouble(_focusWindowPositionY),
+         fromDouble(_focusWindowWidth),
+         fromDouble(_focusWindowHeight)}
+    );
+
+    _modifier.build(data);
+
+    data.addEdge(getName(), _modifier.getName());
+
+    return data;
 }

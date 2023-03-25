@@ -25,7 +25,6 @@
 
 #include <memory>
 
-#include "Data.h"
 #include "Modifier.h"
 #include "Schema.h"
 
@@ -35,22 +34,20 @@ namespace EvgetCore::Event {
  */
 class MouseClick {
 public:
-    using SchemaType = Schema<13, Modifier::SchemaType>;
+    /**
+     * Add interval in microseconds.
+     */
+    MouseClick& interval(Interval interval);
 
     /**
      * Add interval in microseconds.
      */
-    MouseClick& interval(SchemaField::Interval interval);
-
-    /**
-     * Add interval in microseconds.
-     */
-    MouseClick& interval(std::optional<SchemaField::Interval> interval);
+    MouseClick& interval(std::optional<Interval> interval);
 
     /**
      * Add date timestamp.
      */
-    MouseClick& timestamp(SchemaField::Timestamp timestamp);
+    MouseClick& timestamp(Timestamp timestamp);
 
     /**
      * Mouse device.
@@ -115,23 +112,21 @@ public:
     /**
      * Build mouse click event.
      */
-    Data build();
+    Data& build(Data& data);
 
     /**
      * Get mouse click name value.
      */
-    static constexpr std::string_view getName();
+    static constexpr std::string getName();
 
     /**
-     * Generate the MouseClick schema.
+     * Update the mouse click schema.
      */
-    static constexpr SchemaType generateSchema();
+    static constexpr void updateSchema(Schema& schema);
 
 private:
-    Data data{getName()};
-
-    std::optional<SchemaField::Interval> _interval{};
-    std::optional<SchemaField::Timestamp> _timestamp{};
+    std::optional<Interval> _interval{};
+    std::optional<Timestamp> _timestamp{};
     std::optional<Device> _device{};
     std::optional<double> _positionX{};
     std::optional<double> _positionY{};
@@ -143,29 +138,33 @@ private:
     std::optional<double> _focusWindowPositionY{};
     std::optional<double> _focusWindowWidth{};
     std::optional<double> _focusWindowHeight{};
+
+    Modifier _modifier{};
 };
 
-constexpr std::string_view MouseClick::getName() {
+constexpr std::string MouseClick::getName() {
     return "MouseClick";
 }
 
-constexpr EvgetCore::Event::MouseClick::SchemaType EvgetCore::Event::MouseClick::generateSchema() {
-    return {
+constexpr void EvgetCore::Event::MouseClick::updateSchema(Schema& schema) {
+    schema.addNode(
         getName(),
-        {SchemaField::INTERVAL_FIELD,
-         SchemaField::TIMESTAMP_FIELD,
-         SchemaField::DEVICE_TYPE_FIELD,
-         SchemaField::POSITIONX_FIELD,
-         SchemaField::POSITIONY_FIELD,
-         SchemaField::ACTION_FIELD,
-         SchemaField::IDENTIFIER_FIELD,
-         SchemaField::NAME_FIELD,
-         SchemaField::FOCUS_WINDOW_NAME_FIELD,
-         SchemaField::FOCUS_WINDOW_POSITION_X_FIELD,
-         SchemaField::FOCUS_WINDOW_POSITION_Y_FIELD,
-         SchemaField::FOCUS_WINDOW_WIDTH_FIELD,
-         SchemaField::FOCUS_WINDOW_HEIGHT_FIELD},
-        {Modifier::updateSchema(), true}};
+        {INTERVAL_FIELD,
+         TIMESTAMP_FIELD,
+         DEVICE_TYPE_FIELD,
+         POSITIONX_FIELD,
+         POSITIONY_FIELD,
+         ACTION_FIELD,
+         IDENTIFIER_FIELD,
+         NAME_FIELD,
+         FOCUS_WINDOW_NAME_FIELD,
+         FOCUS_WINDOW_POSITION_X_FIELD,
+         FOCUS_WINDOW_POSITION_Y_FIELD,
+         FOCUS_WINDOW_WIDTH_FIELD,
+         FOCUS_WINDOW_HEIGHT_FIELD}
+    );
+
+    schema.addEdge(getName(), Modifier::getName(), Relation::ManyToMany);
 }
 }  // namespace EvgetCore::Event
 

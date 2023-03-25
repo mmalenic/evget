@@ -97,25 +97,33 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowHeight(
     return *this;
 }
 
-EvgetCore::Event::Data EvgetCore::Event::MouseScroll::build() {
-    data.addField(SchemaField::fromInterval(_interval));
-    data.addField(SchemaField::fromTimestamp(_timestamp));
-    data.addField(SchemaField::fromDevice(_device));
-    data.addField(SchemaField::fromDouble(_positionX));
-    data.addField(SchemaField::fromDouble(_positionY));
-    data.addField(SchemaField::fromDouble(_down));
-    data.addField(SchemaField::fromDouble(_left));
-    data.addField(SchemaField::fromDouble(_right));
-    data.addField(SchemaField::fromDouble(_up));
-    data.addField(SchemaField::fromString(_focusWindowName));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionX));
-    data.addField(SchemaField::fromDouble(_focusWindowPositionY));
-    data.addField(SchemaField::fromDouble(_focusWindowWidth));
-    data.addField(SchemaField::fromDouble(_focusWindowHeight));
-
-    return data;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
+    _modifier = _modifier.modifierValue(modifierValue);
+    return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    // data.contains(Modifier{}.modifierValue(modifierValue).build());
+EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
+    data.addNode(
+        getName(),
+        {fromInterval(_interval),
+         fromTimestamp(_timestamp),
+         fromDevice(_device),
+         fromDouble(_positionX),
+         fromDouble(_positionY),
+         fromDouble(_down),
+         fromDouble(_left),
+         fromDouble(_right),
+         fromDouble(_up),
+         fromString(_focusWindowName),
+         fromDouble(_focusWindowPositionX),
+         fromDouble(_focusWindowPositionY),
+         fromDouble(_focusWindowWidth),
+         fromDouble(_focusWindowHeight)}
+    );
+
+    _modifier.build(data);
+
+    data.addEdge(getName(), _modifier.getName());
+
+    return data;
 }

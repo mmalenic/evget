@@ -27,7 +27,6 @@
 #include <chrono>
 
 #include "ButtonAction.h"
-#include "Data.h"
 #include "Modifier.h"
 #include "Schema.h"
 
@@ -120,7 +119,7 @@ public:
     /**
      * Build key event.
      */
-    Data build(Data& data);
+    Data& build(Data& data);
 
     /**
      * Get key name value.
@@ -158,24 +157,25 @@ constexpr std::string Key::getName() {
 }
 
 constexpr void EvgetCore::Event::Key::updateSchema(Schema& schema) {
-    schema.addNode(getName(), {
-                                  INTERVAL_FIELD,
-                                  TIMESTAMP_FIELD,
-                                  DEVICE_TYPE_FIELD,
-                                  POSITIONX_FIELD,
-                                  POSITIONY_FIELD,
-                                  ACTION_FIELD,
-                                  IDENTIFIER_FIELD,
-                                  NAME_FIELD,
-                                  CHARACTER_FIELD,
-                                  LAYOUT_FIELD,
-                                  VARIANT_FIELD,
-                                    FOCUS_WINDOW_NAME_FIELD,
-                                    FOCUS_WINDOW_POSITION_X_FIELD,
-                                    FOCUS_WINDOW_POSITION_Y_FIELD,
-                                    FOCUS_WINDOW_WIDTH_FIELD,
-                                    FOCUS_WINDOW_HEIGHT_FIELD
-                              });
+    schema.addNode(
+        getName(),
+        {INTERVAL_FIELD,
+         TIMESTAMP_FIELD,
+         DEVICE_TYPE_FIELD,
+         POSITIONX_FIELD,
+         POSITIONY_FIELD,
+         ACTION_FIELD,
+         IDENTIFIER_FIELD,
+         NAME_FIELD,
+         CHARACTER_FIELD,
+         LAYOUT_FIELD,
+         VARIANT_FIELD,
+         FOCUS_WINDOW_NAME_FIELD,
+         FOCUS_WINDOW_POSITION_X_FIELD,
+         FOCUS_WINDOW_POSITION_Y_FIELD,
+         FOCUS_WINDOW_WIDTH_FIELD,
+         FOCUS_WINDOW_HEIGHT_FIELD}
+    );
 
     schema.addEdge(getName(), Modifier::getName(), Relation::ManyToMany);
 }
