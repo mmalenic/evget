@@ -56,7 +56,7 @@ public:
     static constexpr void updateSchema(Schema& schema);
 
 private:
-    std::vector<std::string> _modifierValues{};
+    std::vector<Fields> _modifierValues{};
 };
 
 constexpr std::string Modifier::getName() {

@@ -58,7 +58,7 @@ public:
      *
      * @param nodeData optional node data to include.
      */
-    constexpr void addNodeVector(std::string name, std::vector<N> nodeData);
+    constexpr void addNode(std::string name, std::vector<N> nodeData);
 
     /**
      * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
@@ -104,7 +104,7 @@ constexpr auto Graph<N, E>::setEmptyGraphData(std::string name, auto graph) {
 }
 
 template <typename N, typename E>
-constexpr void Graph<N, E>::addNodeVector(std::string name, std::vector<N> nodeData) {
+constexpr void Graph<N, E>::addNode(std::string name, std::vector<N> nodeData) {
     setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, graph);
 
     auto link = data.try_emplace(name, nodeData);
