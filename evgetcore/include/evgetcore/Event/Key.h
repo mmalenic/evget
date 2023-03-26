@@ -87,6 +87,16 @@ public:
     Key& character(std::string character);
 
     /**
+     * Add the keyboard layout.
+     */
+    Key& layout(std::string layout);
+
+    /**
+     * Add the keyboard variant.
+     */
+    Key& variant(std::string variant);
+
+    /**
      * Add the focus window name.
      */
     Key& focusWindowName(std::string name);
@@ -143,6 +153,7 @@ private:
     std::optional<std::string> _character{};
     std::optional<std::string> _layout{};
     std::optional<std::string> _variant{};
+    std::optional<std::string> _deviceName{};
     std::optional<std::string> _focusWindowName{};
     std::optional<double> _focusWindowPositionX{};
     std::optional<double> _focusWindowPositionY{};

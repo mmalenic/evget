@@ -74,6 +74,16 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
     return *this;
 }
 
+EvgetCore::Event::Key& EvgetCore::Event::Key::layout(std::string layout) {
+    _layout = std::move(layout);
+    return *this;
+}
+
+EvgetCore::Event::Key& EvgetCore::Event::Key::variant(std::string variant) {
+    _variant = std::move(variant);
+    return *this;
+}
+
 EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowName(std::string name) {
     _focusWindowName = std::move(name);
     return *this;
