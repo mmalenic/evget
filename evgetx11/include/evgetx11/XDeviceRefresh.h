@@ -46,7 +46,7 @@ public:
 
     bool containsDevice(int id);
     EvgetCore::Event::Device getDevice(int id) const;
-    const std::string& getNameFromId(int id) const;
+    std::string getDeviceName(const XIDeviceEvent& event) const;
     const std::string& getEvtypeName(int evtype) const;
 
     void setDevice(int id, EvgetCore::Event::Device device);

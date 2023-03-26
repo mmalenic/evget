@@ -52,6 +52,14 @@ concept BuilderHasWindowFunctions =
         { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
     };
 
+/**
+ * Check whether the template parameter is a builder with a device name function.
+ */
+template <typename T>
+concept BuilderHasDeviceNameFunction = requires(T builder, std::string deviceName) {
+                                           { builder.deviceName(deviceName) } -> std::convertible_to<T>;
+                                       };
+
 template <XWrapper XWrapper>
 class XEventSwitchPointer {
 public:
@@ -88,6 +96,12 @@ public:
     template <BuilderHasWindowFunctions T>
     T& setWindowFields(T& builder);
 
+    /**
+     * Set the device name fields for a builder.
+     */
+    template <BuilderHasDeviceNameFunction T>
+    T& setDeviceName(T& builder, const XIDeviceEvent& event);
+
 private:
     void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
@@ -112,6 +126,8 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
+    setDeviceName(builder, event);
+
     builder.build(data);
 }
 
@@ -135,6 +151,8 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
         .name(buttonMap[event.deviceid][button]);
     XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
+
+    setDeviceName(builder, event);
 
     builder.build(data);
 }
@@ -198,6 +216,12 @@ T& EvgetX11::XEventSwitchPointer<XWrapper>::setWindowFields(T& builder) {
     }
 
     return builder;
+}
+
+template <XWrapper XWrapper>
+template <BuilderHasDeviceNameFunction T>
+T& EvgetX11::XEventSwitchPointer<XWrapper>::setDeviceName(T& builder, const XIDeviceEvent& event) {
+    return builder.deviceName(xDeviceRefresh.get().getDeviceName(event));
 }
 
 template <XWrapper XWrapper>

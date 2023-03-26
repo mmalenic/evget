@@ -112,8 +112,8 @@ EvgetCore::Event::Device EvgetX11::XDeviceRefresh::getDevice(int id) const {
     return devices.at(id);
 }
 
-const std::string& EvgetX11::XDeviceRefresh::getNameFromId(int id) const {
-    return idToName.at(id);
+std::string EvgetX11::XDeviceRefresh::getDeviceName(const XIDeviceEvent& event) const {
+    return idToName.at(event.deviceid);
 }
 
 const std::string& EvgetX11::XDeviceRefresh::getEvtypeName(int evtype) const {
