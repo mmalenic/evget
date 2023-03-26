@@ -85,6 +85,11 @@ public:
     MouseScroll& up(double amount);
 
     /**
+     * Add the device name.
+     */
+    MouseScroll& deviceName(std::string deviceName);
+
+    /**
      * Add the focus window name.
      */
     MouseScroll& focusWindowName(std::string name);
@@ -139,6 +144,7 @@ private:
     std::optional<double> _left{};
     std::optional<double> _right{};
     std::optional<double> _up{};
+    std::optional<std::string> _deviceName{};
     std::optional<std::string> _focusWindowName{};
     std::optional<double> _focusWindowPositionX{};
     std::optional<double> _focusWindowPositionY{};
@@ -164,6 +170,7 @@ constexpr void EvgetCore::Event::MouseScroll::updateSchema(Schema& schema) {
          SCROLLLEFT_FIELD,
          SCROLLRIGHT_FIELD,
          SCROLLUP_FIELD,
+         DEVICE_NAME_FIELD,
          FOCUS_WINDOW_NAME_FIELD,
          FOCUS_WINDOW_POSITION_X_FIELD,
          FOCUS_WINDOW_POSITION_Y_FIELD,

@@ -114,6 +114,7 @@ constexpr FieldDefinition SCROLLUP_FIELD{"ScrollUp", DataType::Double};
 constexpr FieldDefinition MODIFIER_FIELD{"Modifier", DataType::String};
 constexpr FieldDefinition LAYOUT_FIELD{"Layout", DataType::String};
 constexpr FieldDefinition VARIANT_FIELD{"Variant", DataType::String};
+constexpr FieldDefinition DEVICE_NAME_FIELD{"DeviceName", DataType::String};
 constexpr FieldDefinition FOCUS_WINDOW_NAME_FIELD{"FocusWindowName", DataType::String};
 constexpr FieldDefinition FOCUS_WINDOW_POSITION_X_FIELD{"FocusWindowPositionX", DataType::Double};
 constexpr FieldDefinition FOCUS_WINDOW_POSITION_Y_FIELD{"FocusWindowPositionY", DataType::Double};

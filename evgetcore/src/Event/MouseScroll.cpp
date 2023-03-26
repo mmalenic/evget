@@ -72,6 +72,11 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) 
     return *this;
 }
 
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::deviceName(std::string deviceName) {
+    _deviceName = std::move(deviceName);
+    return *this;
+}
+
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowName(std::string name) {
     _focusWindowName = std::move(name);
     return *this;
@@ -114,6 +119,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
          fromDouble(_left),
          fromDouble(_right),
          fromDouble(_up),
+         fromString(_deviceName),
          fromString(_focusWindowName),
          fromDouble(_focusWindowPositionX),
          fromDouble(_focusWindowPositionY),

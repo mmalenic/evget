@@ -80,6 +80,11 @@ public:
     MouseClick& name(std::string name);
 
     /**
+     * Add the device name.
+     */
+    MouseClick& deviceName(std::string deviceName);
+
+    /**
      * Add the focus window name.
      */
     MouseClick& focusWindowName(std::string name);
@@ -133,6 +138,7 @@ private:
     std::optional<ButtonAction> _action{};
     std::optional<int> _button{};
     std::optional<std::string> _name{};
+    std::optional<std::string> _deviceName{};
     std::optional<std::string> _focusWindowName{};
     std::optional<double> _focusWindowPositionX{};
     std::optional<double> _focusWindowPositionY{};
@@ -157,6 +163,7 @@ constexpr void EvgetCore::Event::MouseClick::updateSchema(Schema& schema) {
          ACTION_FIELD,
          IDENTIFIER_FIELD,
          NAME_FIELD,
+         DEVICE_NAME_FIELD,
          FOCUS_WINDOW_NAME_FIELD,
          FOCUS_WINDOW_POSITION_X_FIELD,
          FOCUS_WINDOW_POSITION_Y_FIELD,

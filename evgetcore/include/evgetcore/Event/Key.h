@@ -97,6 +97,11 @@ public:
     Key& variant(std::string variant);
 
     /**
+     * Add the device name.
+     */
+    Key& deviceName(std::string deviceName);
+
+    /**
      * Add the focus window name.
      */
     Key& focusWindowName(std::string name);
@@ -181,6 +186,7 @@ constexpr void EvgetCore::Event::Key::updateSchema(Schema& schema) {
          CHARACTER_FIELD,
          LAYOUT_FIELD,
          VARIANT_FIELD,
+         DEVICE_NAME_FIELD,
          FOCUS_WINDOW_NAME_FIELD,
          FOCUS_WINDOW_POSITION_X_FIELD,
          FOCUS_WINDOW_POSITION_Y_FIELD,

@@ -69,6 +69,11 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::name(std::string nam
     return *this;
 }
 
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::deviceName(std::string deviceName) {
+    _deviceName = std::move(deviceName);
+    return *this;
+}
+
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowName(std::string name) {
     _focusWindowName = std::move(name);
     return *this;
@@ -110,6 +115,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
          fromButtonAction(_action),
          fromInt(_button),
          fromString(_name),
+         fromString(_deviceName),
          fromString(_focusWindowName),
          fromDouble(_focusWindowPositionX),
          fromDouble(_focusWindowPositionY),
