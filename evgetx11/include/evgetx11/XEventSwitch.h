@@ -26,6 +26,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <utility>
+
 #include "XWrapperX11.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
@@ -56,14 +58,15 @@ concept BuilderHasWindowFunctions =
  * Check whether the template parameter is a builder with a device name function.
  */
 template <typename T>
-concept BuilderHasDeviceNameFunction = requires(T builder, std::string deviceName) {
+concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName, std::string info) {
                                            { builder.deviceName(deviceName) } -> std::convertible_to<T>;
+                                           { builder.info(info) } -> std::convertible_to<T>;
                                        };
 
 template <XWrapper XWrapper>
 class XEventSwitch {
 public:
-    explicit XEventSwitch(XWrapper& xWrapper);
+    explicit XEventSwitch(XWrapper& xWrapper, std::unordered_map<std::string, std::string> nameToInfo);
 
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
@@ -109,7 +112,7 @@ public:
     /**
      * Set the device name fields for a builder.
      */
-    template <BuilderHasDeviceNameFunction T>
+    template <BuilderHasDeviceNameFunctions T>
     T& setDeviceName(T& builder, const XIDeviceEvent& event);
 
 private:
@@ -119,6 +122,7 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     std::unordered_map<int, EvgetCore::Event::Device> devices{};
     std::unordered_map<int, std::string> idToName{};
+    std::unordered_map<std::string, std::string> nameToInfo{};
 };
 
 template <XWrapper XWrapper>
@@ -240,9 +244,11 @@ T& EvgetX11::XEventSwitch<XWrapper>::setWindowFields(T& builder) {
 }
 
 template <XWrapper XWrapper>
-template <BuilderHasDeviceNameFunction T>
+template <BuilderHasDeviceNameFunctions T>
 T& EvgetX11::XEventSwitch<XWrapper>::setDeviceName(T& builder, const XIDeviceEvent& event) {
-    return builder.deviceName(idToName.at(event.deviceid));
+    auto name = idToName.at(event.deviceid);
+
+    return builder.deviceName(name).info(nameToInfo.at(name));
 }
 
 template <XWrapper XWrapper>
@@ -287,9 +293,10 @@ void EvgetX11::XEventSwitch<XWrapper>::refreshDevices(
 
 template <XWrapper XWrapper>
 EvgetX11::XEventSwitch<XWrapper>::XEventSwitch(
-    XWrapper& xWrapper
+    XWrapper& xWrapper,
+    std::unordered_map<std::string, std::string> nameToInfo
 )
-    : xWrapper{xWrapper} {}
+    : xWrapper{xWrapper}, nameToInfo{std::move(nameToInfo)} {}
 
 template <XWrapper XWrapper>
 const std::string& EvgetX11::XEventSwitch<XWrapper>::getButtonName(int id, int button) const {
