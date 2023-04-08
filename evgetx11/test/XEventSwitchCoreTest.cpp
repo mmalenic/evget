@@ -29,11 +29,11 @@
 
 #include "EvgetX11TestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
-#include "evgetx11/XEventSwitchCore.h"
+#include "evgetx11/XEventSwitchPointerKey.h"
 
 TEST(XEventSwitchCoreTest, TestRefreshDevices) {  // NOLINT(cert-err58-cpp)
     //    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    //    EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    //    EvgetX11::XEventSwitchPointerKey xEventSwitchCore{xWrapperMock};
 
     XIValuatorClassInfo valuatorInfo{
         .type = XIValuatorClass,
@@ -93,7 +93,7 @@ TEST(XEventSwitchCoreTest, TestRefreshDevices) {  // NOLINT(cert-err58-cpp)
 
 TEST(XEventSwitchCoreTest, TestButtonEvent) {  // NOLINT(cert-err58-cpp)
     // EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchPointerKey xEventSwitchCore{xWrapperMock};
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
@@ -135,7 +135,7 @@ TEST(XEventSwitchCoreTest, TestButtonEvent) {  // NOLINT(cert-err58-cpp)
 
 TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(cert-err58-cpp)
     //    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchPointerKey xEventSwitchCore{xWrapperMock};
 
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {};
     char name[] = "name";
@@ -178,7 +178,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(cert-err58-cpp)
 
 TEST(XEventSwitchCoreTest, TestMotionEvent) {  // NOLINT(cert-err58-cpp)
     // EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchPointerKey xEventSwitchCore{xWrapperMock};
 
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
 
@@ -218,7 +218,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {  // NOLINT(cert-err58-cpp)
 
 TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(cert-err58-cpp)
     // EvgetX11TestUtils::XWrapperMock xWrapperMock{};
-    // EvgetX11::XEventSwitchCore xEventSwitchCore{xWrapperMock};
+    // EvgetX11::XEventSwitchPointerKey xEventSwitchCore{xWrapperMock};
 
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
     auto scrollClassInfo = EvgetX11TestUtils::createXIScrollClassInfo();

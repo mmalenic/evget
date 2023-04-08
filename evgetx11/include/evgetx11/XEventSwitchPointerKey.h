@@ -31,8 +31,7 @@
 
 #include <unordered_map>
 
-#include "XDeviceRefresh.h"
-#include "XEventSwitchPointer.h"
+#include "XEventSwitch.h"
 #include "XWrapper.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseScroll.h"
@@ -40,22 +39,22 @@
 namespace EvgetX11 {
 
 template <XWrapper XWrapper>
-class XEventSwitchCore {
+class XEventSwitchPointerKey {
 public:
-    explicit XEventSwitchCore(
-        XWrapper& xWrapper,
-        XEventSwitchPointer<XWrapper>& xEventSwitchPointer,
-        XDeviceRefresh& xDeviceRefresh
+    explicit XEventSwitchPointerKey(
+        XWrapper& xWrapper, XEventSwitch<XWrapper>& xEventSwitchPointer
     );
 
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
     bool switchOnEvent(
         const XInputEvent& event,
-        EventData& data,
+        EvgetCore::Event::Data& data,
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
+    static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
+
     void buttonEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
@@ -79,8 +78,7 @@ private:
     );
 
     std::reference_wrapper<XWrapper> xWrapper;
-    std::reference_wrapper<XEventSwitchPointer<XWrapper>> xEventSwitchPointer;
-    std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
+    std::reference_wrapper<XEventSwitch<XWrapper>> xEventSwitchPointer;
 
     std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
     std::unordered_map<int, std::optional<int>> valuatorX{};
@@ -89,9 +87,9 @@ private:
 };
 
 template <XWrapper XWrapper>
-bool EvgetX11::XEventSwitchCore<XWrapper>::switchOnEvent(
+bool EvgetX11::XEventSwitchPointerKey<XWrapper>::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    EventData& data,
+    EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
@@ -115,7 +113,7 @@ bool EvgetX11::XEventSwitchCore<XWrapper>::switchOnEvent(
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchCore<XWrapper>::buttonEvent(
+void EvgetX11::XEventSwitchPointerKey<XWrapper>::buttonEvent(
     const XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
@@ -123,7 +121,7 @@ void EvgetX11::XEventSwitchCore<XWrapper>::buttonEvent(
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     auto button = xEventSwitchPointer.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
-    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
+    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;
@@ -134,13 +132,13 @@ void EvgetX11::XEventSwitchCore<XWrapper>::buttonEvent(
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchCore<XWrapper>::keyEvent(
+void EvgetX11::XEventSwitchPointerKey<XWrapper>::keyEvent(
     const XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid)) {
+    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
         return;
     }
 
@@ -164,7 +162,7 @@ void EvgetX11::XEventSwitchCore<XWrapper>::keyEvent(
         .button(deviceEvent.detail)
         .character(character)
         .name(name);
-    XEventSwitchPointer<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
+    XEventSwitch<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
     xEventSwitchPointer.get().setDeviceName(builder, deviceEvent);
@@ -173,19 +171,19 @@ void EvgetX11::XEventSwitchCore<XWrapper>::keyEvent(
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchCore<XWrapper>::scrollEvent(
+void EvgetX11::XEventSwitchPointerKey<XWrapper>::scrollEvent(
     const XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
+    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
         (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
     EvgetCore::Event::MouseScroll builder{};
-    auto valuators = XDeviceRefresh::getValuators(deviceEvent.valuators);
+    auto valuators = getValuators(deviceEvent.valuators);
     for (const auto& [valuator, info] : scrollMap[deviceEvent.deviceid]) {
         if (!valuators.contains(valuator)) {
             continue;
@@ -211,10 +209,10 @@ void EvgetX11::XEventSwitchCore<XWrapper>::scrollEvent(
 
     builder.interval(getTime(deviceEvent.time))
         .timestamp(event.getTimestamp())
-        .device(xDeviceRefresh.get().getDevice(deviceEvent.deviceid))
+        .device(xEventSwitchPointer.get().getDevice(deviceEvent.deviceid))
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y);
-    XEventSwitchPointer<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
+    XEventSwitch<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
     xEventSwitchPointer.get().setDeviceName(builder, deviceEvent);
@@ -223,17 +221,17 @@ void EvgetX11::XEventSwitchCore<XWrapper>::scrollEvent(
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchCore<XWrapper>::motionEvent(
+void EvgetX11::XEventSwitchPointerKey<XWrapper>::motionEvent(
     const XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xDeviceRefresh.get().containsDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
+    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
-    auto valuators = XDeviceRefresh::getValuators(deviceEvent.valuators);
+    auto valuators = getValuators(deviceEvent.valuators);
     for (const auto& [valuator, value] : valuators) {
         if (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid]) {
             xEventSwitchPointer.get().addMotionEvent(deviceEvent, event.getTimestamp(), data, getTime);
@@ -243,21 +241,14 @@ void EvgetX11::XEventSwitchCore<XWrapper>::motionEvent(
 }
 
 template <XWrapper XWrapper>
-EvgetX11::XEventSwitchCore<XWrapper>::XEventSwitchCore(
-    XWrapper& xWrapper,
-    XEventSwitchPointer<XWrapper>& xEventSwitchPointer,
-    XDeviceRefresh& xDeviceRefresh
+EvgetX11::XEventSwitchPointerKey<XWrapper>::XEventSwitchPointerKey(
+    XWrapper& xWrapper, XEventSwitch<XWrapper>& xEventSwitchPointer
 )
-    : xWrapper{xWrapper}, xEventSwitchPointer{xEventSwitchPointer}, xDeviceRefresh{xDeviceRefresh} {
-    xDeviceRefresh.setEvtypeName(XI_KeyPress, "KeyPress");
-    xDeviceRefresh.setEvtypeName(XI_KeyRelease, "KeyRelease");
-    xDeviceRefresh.setEvtypeName(XI_ButtonPress, "ButtonPress");
-    xDeviceRefresh.setEvtypeName(XI_ButtonRelease, "ButtonRelease");
-    xDeviceRefresh.setEvtypeName(XI_Motion, "Motion");
+    : xWrapper{xWrapper}, xEventSwitchPointer{xEventSwitchPointer} {
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchCore<XWrapper>::refreshDevices(
+void EvgetX11::XEventSwitchPointerKey<XWrapper>::refreshDevices(
     int id,
     EvgetCore::Event::Device device,
     const std::string& name,
@@ -291,6 +282,17 @@ void EvgetX11::XEventSwitchCore<XWrapper>::refreshDevices(
         }
         valuatorValues[id][valuatorInfo->number] = valuatorInfo->value;
     }
+}
+
+
+template <XWrapper XWrapper>
+std::map<int, int> EvgetX11::XEventSwitchPointerKey<XWrapper>::getValuators(const XIValuatorState& valuatorState) {
+    std::map<int, int> valuators{};
+    auto* values = valuatorState.values;
+    EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
+        valuators.emplace(mask, *values++);
+    });
+    return valuators;
 }
 
 }  // namespace EvgetX11

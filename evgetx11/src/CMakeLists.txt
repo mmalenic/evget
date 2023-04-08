@@ -3,7 +3,6 @@ add_program(
     FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
     SRCS
     XInputEvent.cpp
-    XDeviceRefresh.cpp
     XSetMaskRefresh.cpp
     XSetMaskCore.cpp
     XWrapperX11.cpp

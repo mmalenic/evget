@@ -25,10 +25,9 @@
 #include <array>
 
 #include "EvgetX11TestUtils.h"
-#include "evgetx11/XDeviceRefresh.h"
 
 TEST(XEventSwitchTest, TestAddTableData) {  // NOLINT(cert-err58-cpp)
-    EvgetX11::EventData data{};
+//    EvgetX11::EventData data{};
     //    EvgetX11::XDeviceRefresh::addTableData(data, EvgetCore::Event::Data{"Test"}, EvgetCore::Event::Data{"Test"});
 
     //    ASSERT_EQ(data.at(0).begin()->getName(), "Test");

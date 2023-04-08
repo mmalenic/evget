@@ -30,7 +30,6 @@
 #include <optional>
 
 #include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XDeviceRefresh.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 

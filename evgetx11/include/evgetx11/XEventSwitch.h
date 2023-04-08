@@ -21,12 +21,12 @@
 // SOFTWARE.
 //
 
-#ifndef EVGET_XEVENTSWITCHPOINTER_H
-#define EVGET_XEVENTSWITCHPOINTER_H
+#ifndef EVGET_XEVENTSWITCH_H
+#define EVGET_XEVENTSWITCH_H
 
 #include <spdlog/spdlog.h>
 
-#include "XDeviceRefresh.h"
+#include "XWrapperX11.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
 
@@ -61,9 +61,9 @@ concept BuilderHasDeviceNameFunction = requires(T builder, std::string deviceNam
                                        };
 
 template <XWrapper XWrapper>
-class XEventSwitchPointer {
+class XEventSwitch {
 public:
-    explicit XEventSwitchPointer(XWrapper& xWrapper, XDeviceRefresh& xDeviceRefresh);
+    explicit XEventSwitch(XWrapper& xWrapper);
 
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
@@ -83,6 +83,16 @@ public:
     );
 
     const std::string& getButtonName(int id, int button) const;
+
+    /**
+     * Get the device with the given id.
+     */
+    EvgetCore::Event::Device getDevice(int id) const;
+
+    /**
+     * Check whether the device with the given id is present.
+     */
+    bool hasDevice(int id);
 
     /**
      * Set the modifier state for a builder.
@@ -106,12 +116,23 @@ private:
     void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
     std::reference_wrapper<XWrapper> xWrapper;
-    std::reference_wrapper<XDeviceRefresh> xDeviceRefresh;
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
+    std::unordered_map<int, EvgetCore::Event::Device> devices{};
+    std::unordered_map<int, std::string> idToName{};
 };
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
+EvgetCore::Event::Device XEventSwitch<XWrapper>::getDevice(int id) const {
+    return devices.at(id);
+}
+
+template <XWrapper XWrapper>
+bool XEventSwitch<XWrapper>::hasDevice(int id) {
+    return devices.contains(id);
+}
+
+template <XWrapper XWrapper>
+void EvgetX11::XEventSwitch<XWrapper>::addMotionEvent(
     const XIDeviceEvent& event,
     EvgetCore::Event::Timestamp dateTime,
     EvgetCore::Event::Data& data,
@@ -120,10 +141,10 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
     EvgetCore::Event::MouseMove builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
-        .device(xDeviceRefresh.get().getDevice(event.deviceid))
+        .device(getDevice(event.deviceid))
         .positionX(event.root_x)
         .positionY(event.root_y);
-    XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
+    XEventSwitch::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
     setDeviceName(builder, event);
@@ -132,7 +153,7 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addMotionEvent(
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
+void EvgetX11::XEventSwitch<XWrapper>::addButtonEvent(
     const XIDeviceEvent& event,
     EvgetCore::Event::Timestamp dateTime,
     EvgetCore::Event::Data& data,
@@ -143,13 +164,13 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
     EvgetCore::Event::MouseClick builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
-        .device(xDeviceRefresh.get().getDevice(event.deviceid))
+        .device(getDevice(event.deviceid))
         .positionX(event.root_x)
         .positionY(event.root_y)
         .action(action)
         .button(button)
         .name(buttonMap[event.deviceid][button]);
-    XEventSwitchPointer::setModifierValue(event.mods.effective, builder);
+    XEventSwitch::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
     setDeviceName(builder, event);
@@ -159,7 +180,7 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::addButtonEvent(
 
 template <XWrapper XWrapper>
 template <BuilderHasModifier T>
-T& EvgetX11::XEventSwitchPointer<XWrapper>::setModifierValue(int modifierState, T& builder) {
+T& EvgetX11::XEventSwitch<XWrapper>::setModifierValue(int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifierState & ShiftMask) {
         return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
@@ -184,7 +205,7 @@ T& EvgetX11::XEventSwitchPointer<XWrapper>::setModifierValue(int modifierState, 
 
 template <XWrapper XWrapper>
 template <BuilderHasWindowFunctions T>
-T& EvgetX11::XEventSwitchPointer<XWrapper>::setWindowFields(T& builder) {
+T& EvgetX11::XEventSwitch<XWrapper>::setWindowFields(T& builder) {
     auto window = xWrapper.get().getActiveWindow();
 
     if (!window.has_value()) {
@@ -220,12 +241,12 @@ T& EvgetX11::XEventSwitchPointer<XWrapper>::setWindowFields(T& builder) {
 
 template <XWrapper XWrapper>
 template <BuilderHasDeviceNameFunction T>
-T& EvgetX11::XEventSwitchPointer<XWrapper>::setDeviceName(T& builder, const XIDeviceEvent& event) {
-    return builder.deviceName(xDeviceRefresh.get().getDeviceName(event));
+T& EvgetX11::XEventSwitch<XWrapper>::setDeviceName(T& builder, const XIDeviceEvent& event) {
+    return builder.deviceName(idToName.at(event.deviceid));
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchPointer<XWrapper>::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
+void EvgetX11::XEventSwitch<XWrapper>::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
     auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
     if (map) {
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
@@ -240,13 +261,14 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::setButtonMap(const XIButtonClassIn
 }
 
 template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchPointer<XWrapper>::refreshDevices(
+void EvgetX11::XEventSwitch<XWrapper>::refreshDevices(
     int id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info
 ) {
-    xDeviceRefresh.get().refreshDevices(id, device, name, info);
+    devices.emplace(id, device);
+    idToName.emplace(id, name);
 
     const XIButtonClassInfo* buttonInfo = nullptr;
     for (int i = 0; i < info.num_classes; i++) {
@@ -264,17 +286,16 @@ void EvgetX11::XEventSwitchPointer<XWrapper>::refreshDevices(
 }
 
 template <XWrapper XWrapper>
-EvgetX11::XEventSwitchPointer<XWrapper>::XEventSwitchPointer(
-    XWrapper& xWrapper,
-    EvgetX11::XDeviceRefresh& xDeviceRefresh
+EvgetX11::XEventSwitch<XWrapper>::XEventSwitch(
+    XWrapper& xWrapper
 )
-    : xWrapper{xWrapper}, xDeviceRefresh{xDeviceRefresh} {}
+    : xWrapper{xWrapper} {}
 
 template <XWrapper XWrapper>
-const std::string& EvgetX11::XEventSwitchPointer<XWrapper>::getButtonName(int id, int button) const {
+const std::string& EvgetX11::XEventSwitch<XWrapper>::getButtonName(int id, int button) const {
     return buttonMap.at(id).at(button);
 }
 
 }  // namespace EvgetX11
 
-#endif  // EVGET_XEVENTSWITCHPOINTER_H
+#endif  // EVGET_XEVENTSWITCH_H

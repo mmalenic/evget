@@ -37,9 +37,8 @@
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/PrintEvents.h"
 #include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XDeviceRefresh.h"
-#include "evgetx11/XEventSwitchCore.h"
-#include "evgetx11/XEventSwitchPointer.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XEventSwitchPointerKey.h"
 #include "evgetx11/XWrapperX11.h"
 
 using namespace std;
@@ -61,8 +60,8 @@ int main(int argc, char* argv[]) {
     //    Display* display = XOpenDisplay(nullptr);
     //    EvgetX11::XWrapperX11 wrapper{*display};
     //    EvgetX11::XDeviceRefresh xDeviceRefresh{};
-    //    EvgetX11::XEventSwitchPointer xEventSwitchPointer{wrapper, xDeviceRefresh};
-    //    EvgetX11::XEventSwitchCore core{wrapper, xEventSwitchPointer, xDeviceRefresh};
+    //    EvgetX11::XEventSwitch xEventSwitchPointer{wrapper, xDeviceRefresh};
+    //    EvgetX11::XEventSwitchPointerKey core{wrapper, xEventSwitchPointer, xDeviceRefresh};
     //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
     //    EvgetX11::EventData data{};
     //

@@ -12,9 +12,8 @@ add_program(
     include/evgetx11/XInputHandler.h
     include/evgetx11/EventTransformerX11.h
     include/evgetx11/XInputEvent.h
-    include/evgetx11/XDeviceRefresh.h
-    include/evgetx11/XEventSwitchCore.h
-    include/evgetx11/XEventSwitchPointer.h
+    include/evgetx11/XEventSwitchPointerKey.h
+    include/evgetx11/XEventSwitch.h
     include/evgetx11/XSetMask.h
     include/evgetx11/XSetMaskRefresh.h
     include/evgetx11/XSetMaskCore.h

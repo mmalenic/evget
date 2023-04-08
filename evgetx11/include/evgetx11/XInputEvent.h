@@ -28,7 +28,7 @@
 #include <chrono>
 #include <memory>
 
-#include "XWrapperX11.h"
+#include "XWrapper.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetX11 {
