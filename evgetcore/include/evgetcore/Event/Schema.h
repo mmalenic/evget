@@ -118,6 +118,7 @@ constexpr FieldDefinition FOCUS_WINDOW_POSITION_X_FIELD{"FocusWindowPositionX", 
 constexpr FieldDefinition FOCUS_WINDOW_POSITION_Y_FIELD{"FocusWindowPositionY", DataType::Double};
 constexpr FieldDefinition FOCUS_WINDOW_WIDTH_FIELD{"FocusWindowWidth", DataType::Double};
 constexpr FieldDefinition FOCUS_WINDOW_HEIGHT_FIELD{"FocusWindowHeight", DataType::Double};
+constexpr FieldDefinition INFO_FIELD{"Info", DataType::String};
 
 /**
  * Get the name of the FieldDefinition.

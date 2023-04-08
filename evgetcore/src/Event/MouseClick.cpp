@@ -99,6 +99,11 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowHeight(do
     return *this;
 }
 
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::info(std::string info) {
+    _info = std::move(info);
+    return *this;
+}
+
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
     _modifier = _modifier.modifierValue(modifierValue);
     return *this;
@@ -120,7 +125,8 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
          fromDouble(_focusWindowPositionX),
          fromDouble(_focusWindowPositionY),
          fromDouble(_focusWindowWidth),
-         fromDouble(_focusWindowHeight)}
+         fromDouble(_focusWindowHeight),
+         fromString(_info)}
     );
 
     _modifier.build(data);

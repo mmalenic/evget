@@ -117,6 +117,11 @@ public:
     Key& focusWindowHeight(double height);
 
     /**
+     * Add optional user configured info.
+     */
+    Key& info(std::string info);
+
+    /**
      * Add modifier value.
      */
     Key& modifier(ModifierValue modifier);
@@ -152,6 +157,7 @@ private:
     std::optional<double> _focusWindowPositionY{};
     std::optional<double> _focusWindowWidth{};
     std::optional<double> _focusWindowHeight{};
+    std::optional<std::string> _info{};
 
     Modifier _modifier{};
 };
@@ -177,7 +183,8 @@ constexpr void EvgetCore::Event::Key::updateSchema(Schema& schema) {
          FOCUS_WINDOW_POSITION_X_FIELD,
          FOCUS_WINDOW_POSITION_Y_FIELD,
          FOCUS_WINDOW_WIDTH_FIELD,
-         FOCUS_WINDOW_HEIGHT_FIELD}
+         FOCUS_WINDOW_HEIGHT_FIELD,
+         INFO_FIELD}
     );
 
     schema.addEdge(getName(), Modifier::getName(), Relation::ManyToMany);
