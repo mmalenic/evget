@@ -87,16 +87,6 @@ public:
     Key& character(std::string character);
 
     /**
-     * Add the keyboard layout.
-     */
-    Key& layout(std::string layout);
-
-    /**
-     * Add the keyboard variant.
-     */
-    Key& variant(std::string variant);
-
-    /**
      * Add the device name.
      */
     Key& deviceName(std::string deviceName);
@@ -156,8 +146,6 @@ private:
     std::optional<int> _button{};
     std::optional<std::string> _name{};
     std::optional<std::string> _character{};
-    std::optional<std::string> _layout{};
-    std::optional<std::string> _variant{};
     std::optional<std::string> _deviceName{};
     std::optional<std::string> _focusWindowName{};
     std::optional<double> _focusWindowPositionX{};
@@ -184,8 +172,6 @@ constexpr void EvgetCore::Event::Key::updateSchema(Schema& schema) {
          IDENTIFIER_FIELD,
          NAME_FIELD,
          CHARACTER_FIELD,
-         LAYOUT_FIELD,
-         VARIANT_FIELD,
          DEVICE_NAME_FIELD,
          FOCUS_WINDOW_NAME_FIELD,
          FOCUS_WINDOW_POSITION_X_FIELD,

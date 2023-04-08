@@ -74,16 +74,6 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::character(std::string character) {
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::layout(std::string layout) {
-    _layout = std::move(layout);
-    return *this;
-}
-
-EvgetCore::Event::Key& EvgetCore::Event::Key::variant(std::string variant) {
-    _variant = std::move(variant);
-    return *this;
-}
-
 EvgetCore::Event::Key& EvgetCore::Event::Key::deviceName(std::string deviceName) {
     _deviceName = std::move(deviceName);
     return *this;
@@ -131,8 +121,6 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
          fromInt(_button),
          fromString(_name),
          fromString(_character),
-         fromString(_layout),
-         fromString(_variant),
          fromString(_deviceName),
          fromString(_focusWindowName),
          fromDouble(_focusWindowPositionX),
