@@ -78,7 +78,7 @@ EventHandler<E, T>::EventHandler(
 
 template <asio::execution::executor E, typename T>
 void EventHandler<E, T>::notify(T event) {
-    storage.get().store(transformer.transformEvent(event));
+    storage.get().store(transformer.transformEvent(std::move(event)));
 }
 }  // namespace EvgetCore
 

@@ -100,7 +100,7 @@ void EvgetX11::XInputHandler<XWrapper>::setMask(
 
 template <XWrapper XWrapper>
 EvgetX11::XInputEvent EvgetX11::XInputHandler<XWrapper>::getEvent() {
-    return XInputEvent::nextEvent(xWrapper);
+    return XInputEvent::nextEvent(xWrapper.get());
 }
 
 }  // namespace EvgetX11

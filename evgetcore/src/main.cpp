@@ -94,11 +94,11 @@ int main(int argc, char* argv[]) {
 
         EvgetX11::XInputHandler xInputHandler{xWrapperX11, {setCore, setRefresh}};
 
-        EvgetX11::EventLoopX11 eventLoop{context, xInputHandler};
+        EvgetX11::EventLoopX11 eventLoop{xInputHandler};
 
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
-//        boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+        boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //
     //    if (cmd.isListEventDevices()) {
     //        evget::EventDeviceLister lister{};
