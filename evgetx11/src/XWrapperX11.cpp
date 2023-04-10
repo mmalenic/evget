@@ -169,14 +169,12 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XSync(&display.get(), false);
 }
 
-std::unique_ptr<unsigned char*, decltype(&XFree)>
+std::unique_ptr<unsigned char[], decltype(&XFree)>
 EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) {
-    Atom actualType;
-    int actualFormat;
-    unsigned long nItemsReturn, _bytesAfter;
+    auto prop = std::unique_ptr<unsigned char[], decltype(&XFree)>{nullptr, XFree};
+    auto data = prop.get();
 
-    auto prop = std::unique_ptr<unsigned char*, decltype(&XFree)>{nullptr, XFree};
-
+    unsigned long _bytesAfter;
     Status status = XGetWindowProperty(
         &display.get(),
         window,
@@ -185,11 +183,11 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nIte
         LONG_MAX,
         False,
         AnyPropertyType,
-        &actualType,
-        &actualFormat,
-        &nItemsReturn,
+        &type,
+        &size,
+        &nItems,
         &_bytesAfter,
-        prop.get()
+        &data
     );
 
     if (status == BadWindow) {
@@ -201,11 +199,7 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nIte
         return {nullptr, XFree};
     }
 
-    nItems = nItemsReturn;
-    type = actualType;
-    size = actualFormat;
-
-    return prop;
+     return prop;
 }
 
 std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {

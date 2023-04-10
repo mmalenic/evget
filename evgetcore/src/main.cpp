@@ -98,7 +98,11 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
-        boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+        auto event = xInputHandler.getEvent();
+
+        auto transformed = transformer.transformEvent(std::move(event));
+
+        //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //
     //    if (cmd.isListEventDevices()) {
     //        evget::EventDeviceLister lister{};

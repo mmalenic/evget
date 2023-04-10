@@ -163,7 +163,9 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<XWrapper, Switches...>::tra
             [&event, &data, this](auto&&... eventSwitches) {
                 ((eventSwitches.switchOnEvent(event, data, [this](Time time) {
                      auto interval = getInterval(time);
-                     std::cout << "Interval: " << interval.value().count() << std::endl;
+                     if (interval.has_value()) {
+                         std::cout << "Interval: " << interval.value().count() << std::endl;
+                     }
                      return getInterval(time);
                  })) || ...);
             },

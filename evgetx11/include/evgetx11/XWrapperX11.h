@@ -71,7 +71,7 @@ private:
 
     std::optional<Atom> getAtom(const char* atomName);
 
-    std::unique_ptr<unsigned char*, decltype(&XFree)>
+    std::unique_ptr<unsigned char[], decltype(&XFree)>
     getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size);
 
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
