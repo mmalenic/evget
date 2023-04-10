@@ -40,7 +40,7 @@ namespace asio = boost::asio;
  * Class represents processing events.
  * @tparam T type of events to process
  */
-template <asio::execution::executor E, typename T>
+template <typename T>
 class EventLoop : public EventListener<T> {
 public:
     /**
@@ -58,6 +58,8 @@ public:
      * Stop the event loop.
      */
     virtual void stop() = 0;
+
+    EventLoop() = default;
 
     virtual ~EventLoop() = default;
 

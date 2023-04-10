@@ -38,7 +38,7 @@ namespace asio = boost::asio;
  * Class represents processing evgetx11 system events.
  */
 template <boost::asio::execution::executor E, XWrapper XWrapper>
-class EventLoopX11 : public EvgetCore::EventLoop<E, XInputEvent> {
+class EventLoopX11 : public EvgetCore::EventLoop<XInputEvent> {
 public:
     /**
      * Create the system events.
@@ -91,7 +91,7 @@ void EventLoopX11<E, XWrapper>::notify(XInputEvent event) {
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 EventLoopX11<E, XWrapper>::EventLoopX11(E& context, XInputHandler<XWrapper> xInputHandler)
-    : EvgetCore::EventLoop<E, XInputEvent>{context}, handler{xInputHandler}, context{context} {}
+    : handler{xInputHandler}, context{context} {}
 
 template <boost::asio::execution::executor E, XWrapper XWrapper>
 boost::asio::awaitable<void> EventLoopX11<E, XWrapper>::eventLoop() {

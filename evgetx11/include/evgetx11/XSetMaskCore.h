@@ -26,7 +26,7 @@
 #include "XSetMask.h"
 
 namespace EvgetX11 {
-class XSetMaskCore : XSetMask {
+class XSetMaskCore : public XSetMask {
 public:
     void setMask(unsigned char* mask) override;
 };

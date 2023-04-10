@@ -165,7 +165,7 @@ void EvgetX11::XEventSwitchPointerKey<XWrapper>::keyEvent(
     XEventSwitch<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
-    xEventSwitchPointer.get().setDeviceName(builder, deviceEvent);
+    xEventSwitchPointer.get().setDeviceNameFields(builder, deviceEvent);
 
     builder.build(data);
 }
@@ -215,7 +215,7 @@ void EvgetX11::XEventSwitchPointerKey<XWrapper>::scrollEvent(
     XEventSwitch<XWrapper>::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
-    xEventSwitchPointer.get().setDeviceName(builder, deviceEvent);
+    xEventSwitchPointer.get().setDeviceNameFields(builder, deviceEvent);
 
     builder.build(data);
 }

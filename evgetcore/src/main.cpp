@@ -36,6 +36,12 @@
 #include "evgetcore/Event/Graph.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/PrintEvents.h"
+#include "evgetx11/EventLoopX11.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XSetMask.h"
+#include "evgetx11/XSetMaskCore.h"
+#include "evgetx11/XSetMaskRefresh.h"
+#include "evgetx11/XInputHandler.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
@@ -72,17 +78,27 @@ int main(int argc, char* argv[]) {
     //
     //    spdlog::set_level(cmd.getLogLevel());
     //
-    //    boost::asio::thread_pool pool{};
-    //    auto context = pool.get_executor();
-    //    evget::PrintEvents<boost::asio::thread_pool::executor_type> storage{context};
-    //    Display* display = XOpenDisplay(nullptr);
-    //    evget::EventTransformerLinux transformer{*display};
-    //    evget::SystemEventLoopLinux eventLoop{context, evget::XInputHandler{*display}};
-    //
-    //    evget::EventHandler<boost::asio::thread_pool::executor_type, evget::XInputEvent> handler{context, storage,
-    //    eventLoop};
-    //
-    //    boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
+        boost::asio::thread_pool pool{};
+        auto context = pool.get_executor();
+
+        Display* display = XOpenDisplay(nullptr);
+        EvgetX11::XWrapperX11 xWrapperX11{*display};
+
+        EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
+        EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
+
+        EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
+
+        EvgetX11::XSetMaskCore setCore{};
+        EvgetX11::XSetMaskRefresh setRefresh{};
+
+        EvgetX11::XInputHandler xInputHandler{xWrapperX11, {setCore, setRefresh}};
+
+        EvgetX11::EventLoopX11 eventLoop{context, xInputHandler};
+
+        EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
+
+//        boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //
     //    if (cmd.isListEventDevices()) {
     //        evget::EventDeviceLister lister{};

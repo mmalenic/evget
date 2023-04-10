@@ -113,7 +113,7 @@ public:
      * Set the device name fields for a builder.
      */
     template <BuilderHasDeviceNameFunctions T>
-    T& setDeviceName(T& builder, const XIDeviceEvent& event);
+    T& setDeviceNameFields(T& builder, const XIDeviceEvent& event);
 
 private:
     void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
@@ -151,7 +151,7 @@ void EvgetX11::XEventSwitch<XWrapper>::addMotionEvent(
     XEventSwitch::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
-    setDeviceName(builder, event);
+    setDeviceNameFields(builder, event);
 
     builder.build(data);
 }
@@ -177,7 +177,7 @@ void EvgetX11::XEventSwitch<XWrapper>::addButtonEvent(
     XEventSwitch::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 
-    setDeviceName(builder, event);
+    setDeviceNameFields(builder, event);
 
     builder.build(data);
 }
@@ -245,7 +245,7 @@ T& EvgetX11::XEventSwitch<XWrapper>::setWindowFields(T& builder) {
 
 template <XWrapper XWrapper>
 template <BuilderHasDeviceNameFunctions T>
-T& EvgetX11::XEventSwitch<XWrapper>::setDeviceName(T& builder, const XIDeviceEvent& event) {
+T& EvgetX11::XEventSwitch<XWrapper>::setDeviceNameFields(T& builder, const XIDeviceEvent& event) {
     auto name = idToName.at(event.deviceid);
 
     return builder.deviceName(name).info(nameToInfo.at(name));

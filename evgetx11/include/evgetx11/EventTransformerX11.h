@@ -41,7 +41,7 @@
 
 namespace EvgetX11 {
 template <XWrapper XWrapper, typename... Switches>
-class EventTransformerX11 : EvgetCore::EventTransformer<XInputEvent> {
+class EventTransformerX11 : public EvgetCore::EventTransformer<XInputEvent> {
 public:
     explicit EventTransformerX11(XWrapper& xWrapper, Switches&... switches);
     EvgetCore::Event::Data transformEvent(XInputEvent event) override;
@@ -52,6 +52,7 @@ private:
 
     std::reference_wrapper<XWrapper> xWrapper;
     std::optional<Time> previous{std::nullopt};
+    std::optional<Time> previousFromEvent{std::nullopt};
 
     std::unordered_map<int, EvgetCore::Event::Device> devices{};
     std::unordered_map<int, std::string> idToName{};
@@ -160,7 +161,11 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<XWrapper, Switches...>::tra
         // Iterate through switches until the first one returns true.
         std::apply(
             [&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, data, [this](Time time) { return getInterval(time); })) || ...);
+                ((eventSwitches.switchOnEvent(event, data, [this](Time time) {
+                     auto interval = getInterval(time);
+                     std::cout << "Interval: " << interval.value().count() << std::endl;
+                     return getInterval(time);
+                 })) || ...);
             },
             switches
         );

@@ -36,7 +36,7 @@ namespace EvgetX11 {
 template <XWrapper XWrapper>
 class XInputHandler {
 public:
-    explicit XInputHandler(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+    explicit XInputHandler(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
 
     /**
      * Get the next event.
@@ -49,7 +49,7 @@ private:
 
     std::reference_wrapper<XWrapper> xWrapper;
 
-    static void setMask(XWrapper& xWrapper, std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters);
+    static void setMask(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
 
     static void announceVersion(XWrapper& xWrapper);
 };
@@ -57,7 +57,7 @@ private:
 template <XWrapper XWrapper>
 EvgetX11::XInputHandler<XWrapper>::XInputHandler(
     XWrapper& xWrapper,
-    std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters
+    std::vector<std::reference_wrapper<XSetMask>> maskSetters
 )
     : xWrapper{xWrapper} {
     announceVersion(xWrapper);
@@ -82,7 +82,7 @@ void EvgetX11::XInputHandler<XWrapper>::announceVersion(XWrapper& xWrapper) {
 template <XWrapper XWrapper>
 void EvgetX11::XInputHandler<XWrapper>::setMask(
     XWrapper& xWrapper,
-    std::initializer_list<std::reference_wrapper<XSetMask>> maskSetters
+    std::vector<std::reference_wrapper<XSetMask>> maskSetters
 ) {
     XIEventMask mask{};
     mask.deviceid = XIAllDevices;
