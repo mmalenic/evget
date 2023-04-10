@@ -235,7 +235,7 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
     unsigned long nItems;
 
     auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()), nItems, type, size);
-    if (nItems > 0 && size == 32) {
+    if (nItems > 0 && size == 32 && window != nullptr) {
         return *(reinterpret_cast<Window*>(window.get()));
     }
 
