@@ -76,8 +76,10 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
     if (xim) {
-        auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{nullptr, XFree};
-        auto values = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
+        XIMStyles *styles_ptr;
+        auto values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, NULL);
+        auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{styles_ptr, XFree};
+
         if (values || !xim_styles) {
             spdlog::warn(
                 "The input method does not support any styles, falling back to encoding key events in ISO Latin-1."
@@ -171,9 +173,7 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
 
 std::unique_ptr<unsigned char[], decltype(&XFree)>
 EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) {
-    auto prop = std::unique_ptr<unsigned char[], decltype(&XFree)>{nullptr, XFree};
-    auto data = prop.get();
-
+    unsigned char* data;
     unsigned long _bytesAfter;
     Status status = XGetWindowProperty(
         &display.get(),
@@ -189,6 +189,8 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nIte
         &_bytesAfter,
         &data
     );
+
+    auto prop = std::unique_ptr<unsigned char[], decltype(&XFree)>{data, XFree};
 
     if (status == BadWindow) {
         spdlog::warn("window does not exist");
@@ -290,9 +292,10 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosit
 
     Window parent, root;
     unsigned int nChildren;
-    auto children = std::unique_ptr<Window*, decltype(&XFree)>{nullptr, XFree};
+    Window* children_return;
+    XQueryTree(&display.get(), window, &root, &parent, &children_return, &nChildren);
 
-    XQueryTree(&display.get(), window, &root, &parent, children.get(), &nChildren);
+    auto children = std::unique_ptr<Window[], decltype(&XFree)>{children_return, XFree};
 
     // It shouldn't be necessary to check if the parent is the root, but it shouldn't hurt.
     // See https://github.com/jordansissel/xdotool/pull/9 for more information.
