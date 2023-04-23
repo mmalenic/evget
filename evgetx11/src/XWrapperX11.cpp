@@ -292,10 +292,10 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosit
 
     Window parent, root;
     unsigned int nChildren;
-    Window* children_return;
-    XQueryTree(&display.get(), window, &root, &parent, &children_return, &nChildren);
+    Window* childrenReturn;
 
-    auto children = std::unique_ptr<Window[], decltype(&XFree)>{children_return, XFree};
+    XQueryTree(&display.get(), window, &root, &parent, &childrenReturn, &nChildren);
+    auto children = std::unique_ptr<Window[], decltype(&XFree)>{childrenReturn, XFree};
 
     // It shouldn't be necessary to check if the parent is the root, but it shouldn't hurt.
     // See https://github.com/jordansissel/xdotool/pull/9 for more information.
