@@ -98,9 +98,11 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
-        auto event = xInputHandler.getEvent();
+        while (true) {
+            auto event = xInputHandler.getEvent();
 
-        auto transformed = transformer.transformEvent(std::move(event));
+            auto transformed = transformer.transformEvent(std::move(event));
+        }
 
         //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //

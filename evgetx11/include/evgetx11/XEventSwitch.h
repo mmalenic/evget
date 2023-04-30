@@ -248,11 +248,11 @@ template <BuilderHasDeviceNameFunctions T>
 T& EvgetX11::XEventSwitch<XWrapper>::setDeviceNameFields(T& builder, const XIDeviceEvent& event) {
     auto name = idToName.at(event.deviceid);
 
-    auto setBuilder = builder.deviceName(name);
+    builder.deviceName(name);
     if (nameToInfo.contains(name)) {
-        return setBuilder.info(nameToInfo.at(name));
+        return builder.info(nameToInfo.at(name));
     } else {
-        return setBuilder;
+        return builder;
     }
 }
 
