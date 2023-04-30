@@ -261,8 +261,8 @@ std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
 std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Window window) {
     XWindowAttributes attributes;
 
-    Status status = XGetWindowAttributes(&display.get(), window, &attributes);
-    if (status != Success) {
+    // XGetWindowAttributes returns non-zero on success.
+    if (!XGetWindowAttributes(&display.get(), window, &attributes)) {
         spdlog::warn("failed to get window attributes");
         return std::nullopt;
     }
