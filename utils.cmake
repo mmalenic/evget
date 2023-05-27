@@ -1,4 +1,56 @@
 include(CheckIncludeFiles)
+include(CheckCXXSymbolExists)
+
+#[==========================================================================[
+find_symbol
+----------------
+
+A wrapper function around ``check_cxx_symbol_exists``.
+
+.. code:: cmake
+
+   find_symbol(
+       SYMBOL [symbol]
+       FILES [files...]
+       INCLUDE_DIRS [directories...]
+       OUT [out_variable]
+   )
+
+Check if the given ``SYMBOL`` can be found after constructing a ``CXX`` file and
+including ``FILES``. Optionally add header includes by setting the ``INCLUDE_DIRS``
+argument.
+
+Writes the cached result to ``OUT`` and defines a compilation definition macro
+with the name contained in the ``OUT`` variable.
+#]==========================================================================]
+function(find_symbol)
+    set(one_value_args OUT SYMBOL)
+    set(multi_value_args FILES INCLUDE_DIRS)
+    cmake_parse_arguments(FIND_SYMBOL "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    check_required_arg(FIND_SYMBOL_SYMBOL SYMBOL)
+    check_required_arg(FIND_SYMBOL_OUT OUT)
+
+    if(DEFINED ${FIND_SYMBOL_OUT})
+        add_compile_definitions("${FIND_SYMBOL_OUT}=1")
+
+        message(
+            STATUS
+            "utils: find_symbol result for \"${FIND_SYMBOL_SYMBOL}\" cached with value: ${${FIND_SYMBOL_OUT}}"
+        )
+        return()
+    endif()
+
+    if(DEFINED FIND_SYMBOL_INCLUDE_DIRS)
+        set(CMAKE_REQUIRED_INCLUDES "${FIND_SYMBOL_INCLUDE_DIRS}")
+    endif()
+
+    check_cxx_symbol_exists(${FIND_SYMBOL_SYMBOL} ${FIND_SYMBOL_FILES} ${FIND_SYMBOL_OUT})
+
+    if (${FIND_SYMBOL_OUT})
+        add_compile_definitions("${FIND_SYMBOL_OUT}=1")
+    endif()
+endfunction()
 
 #[==========================================================================[
 program_dependencies
@@ -44,14 +96,15 @@ A wrapper function around ``check_include_files`` for ``CXX`` files.
    feature_check(
        REQUIRES [requires...]
        INCLUDE_DIRS [directories...]
-       OUT
+       OUT [out_variable]
    )
 
 Check if the given ``REQUIRES`` may be included in a ``CXX`` source file.
 Optionally search through additional header includes by setting the
 ``INCLUDE_DIRS`` argument.
 
-Writes the cached result to ``OUT``.
+Writes the cached result to ``OUT`` and defines a compilation definition macro
+with the name contained in the ``OUT`` variable.
 #]==========================================================================]
 function(feature_check)
     set(one_value_args OUT)
@@ -62,6 +115,8 @@ function(feature_check)
     check_required_arg(FEATURE_CHECK_OUT OUT)
 
     if(DEFINED ${FEATURE_CHECK_OUT})
+        add_compile_definitions("${FEATURE_CHECK_OUT}=1")
+
         message(
             STATUS
                 "utils: feature_check result for \"${FEATURE_CHECK_REQUIRES}\" cached with value: ${${FEATURE_CHECK_OUT}}"
@@ -72,7 +127,12 @@ function(feature_check)
     if(DEFINED FEATURE_CHECK_INCLUDE_DIRS)
         set(CMAKE_REQUIRED_INCLUDES "${FEATURE_CHECK_INCLUDE_DIRS}")
     endif()
+
     check_include_files("${FEATURE_CHECK_REQUIRES}" "${FEATURE_CHECK_OUT}" LANGUAGE CXX)
+
+    if (${FEATURE_CHECK_OUT})
+        add_compile_definitions("${FEATURE_CHECK_OUT}=1")
+    endif()
 endfunction()
 
 #[==========================================================================[
