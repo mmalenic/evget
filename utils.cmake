@@ -2,53 +2,42 @@ include(CheckIncludeFiles)
 include(CheckCXXSymbolExists)
 
 #[==========================================================================[
-find_symbol
+check_symbol
 ----------------
 
 A wrapper function around ``check_cxx_symbol_exists``.
 
 .. code:: cmake
 
-   find_symbol(
+   check_symbol(
        SYMBOL [symbol]
        FILES [files...]
        INCLUDE_DIRS [directories...]
-       OUT [out_variable]
+       RETURN_VAR [return_variable]
    )
 
 Check if the given ``SYMBOL`` can be found after constructing a ``CXX`` file and
 including ``FILES``. Optionally add header includes by setting the ``INCLUDE_DIRS``
 argument.
 
-Writes the cached result to ``OUT`` and defines a compilation definition macro
-with the name contained in the ``OUT`` variable.
+Writes the cached result to ``RETURN_VAR`` and defines a compilation definition macro
+with the name contained in the ``RETURN_VAR`` variable.
 #]==========================================================================]
-function(find_symbol)
-    set(one_value_args OUT SYMBOL)
+function(check_symbol)
+    set(one_value_args RETURN_VAR SYMBOL)
     set(multi_value_args FILES INCLUDE_DIRS)
-    cmake_parse_arguments(FIND_SYMBOL "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments(CHECK_SYMBOL "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    check_required_arg(FIND_SYMBOL_SYMBOL SYMBOL)
-    check_required_arg(FIND_SYMBOL_OUT OUT)
+    check_required_arg(CHECK_SYMBOL_SYMBOL SYMBOL)
+    check_required_arg(CHECK_SYMBOL_RETURN_VAR RETURN_VAR)
+    check_required_arg(CHECK_SYMBOL_FILES FILES)
 
-    if(DEFINED ${FIND_SYMBOL_OUT})
-        add_compile_definitions("${FIND_SYMBOL_OUT}=1")
+    prepare_check_function(CHECK_SYMBOL_RETURN_VAR CHECK_SYMBOL_INCLUDE_DIRS)
 
-        message(
-            STATUS
-            "utils: find_symbol result for \"${FIND_SYMBOL_SYMBOL}\" cached with value: ${${FIND_SYMBOL_OUT}}"
-        )
-        return()
-    endif()
+    check_cxx_symbol_exists(${CHECK_SYMBOL_SYMBOL} ${CHECK_SYMBOL_FILES} ${CHECK_SYMBOL_RETURN_VAR})
 
-    if(DEFINED FIND_SYMBOL_INCLUDE_DIRS)
-        set(CMAKE_REQUIRED_INCLUDES "${FIND_SYMBOL_INCLUDE_DIRS}")
-    endif()
-
-    check_cxx_symbol_exists(${FIND_SYMBOL_SYMBOL} ${FIND_SYMBOL_FILES} ${FIND_SYMBOL_OUT})
-
-    if (${FIND_SYMBOL_OUT})
-        add_compile_definitions("${FIND_SYMBOL_OUT}=1")
+    if(${CHECK_SYMBOL_RETURN_VAR})
+        add_compile_definitions("${CHECK_SYMBOL_RETURN_VAR}=1")
     endif()
 endfunction()
 
@@ -86,54 +75,73 @@ function(program_dependencies TARGET DEPENDENCY_NAME)
 endfunction()
 
 #[==========================================================================[
-feature_check
+check_includes
 ----------------
 
 A wrapper function around ``check_include_files`` for ``CXX`` files.
 
 .. code:: cmake
 
-   feature_check(
+   check_includes(
        REQUIRES [requires...]
        INCLUDE_DIRS [directories...]
-       OUT [out_variable]
+       RETURN_VAR [return_variable]
    )
 
 Check if the given ``REQUIRES`` may be included in a ``CXX`` source file.
 Optionally search through additional header includes by setting the
 ``INCLUDE_DIRS`` argument.
 
-Writes the cached result to ``OUT`` and defines a compilation definition macro
-with the name contained in the ``OUT`` variable.
+Writes the cached result to ``RETURN_VAR`` and defines a compilation definition macro
+with the name contained in the ``RETURN_VAR`` variable.
 #]==========================================================================]
-function(feature_check)
-    set(one_value_args OUT)
+function(check_includes)
+    set(one_value_args RETURN_VAR)
     set(multi_value_args REQUIRES INCLUDE_DIRS)
-    cmake_parse_arguments(FEATURE_CHECK "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    check_required_arg(FEATURE_CHECK_REQUIRES REQUIRES)
-    check_required_arg(FEATURE_CHECK_OUT OUT)
+    cmake_parse_arguments(CHECK_INCLUDES "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    if(DEFINED ${FEATURE_CHECK_OUT})
-        add_compile_definitions("${FEATURE_CHECK_OUT}=1")
+    check_required_arg(CHECK_INCLUDES_REQUIRES REQUIRES)
+    check_required_arg(CHECK_INCLUDES_RETURN_VAR RETURN_VAR)
 
-        message(
-            STATUS
-                "utils: feature_check result for \"${FEATURE_CHECK_REQUIRES}\" cached with value: ${${FEATURE_CHECK_OUT}}"
-        )
+    prepare_check_function(CHECK_INCLUDES_RETURN_VAR CHECK_INCLUDES_INCLUDE_DIRS)
+
+    check_include_files("${CHECK_INCLUDES_REQUIRES}" "${CHECK_INCLUDES_RETURN_VAR}" LANGUAGE CXX)
+
+    if(${CHECK_INCLUDES_RETURN_VAR})
+        add_compile_definitions("${CHECK_INCLUDES_RETURN_VAR}=1")
+    endif()
+endfunction()
+
+#[==========================================================================[
+prepare_check_function
+----------------
+
+A macro which is used within ``check_includes`` and ``check_symbol`` to set up
+common logic and variables.
+
+.. code:: cmake
+
+   prepare_check_function(
+       <RETURN_VAR>
+       <INCLUDE_DIRS>
+   )
+
+Returns early if ``RETURN_VAR`` is defined. Sets ``CMAKE_REQUIRED_INCLUDES``
+if ``INCLUDE_DIRS`` is defined.
+#]==========================================================================]
+macro(prepare_check_function RETURN_VAR INCLUDE_DIRS)
+    if(DEFINED ${${RETURN_VAR}})
+        add_compile_definitions("${${RETURN_VAR}}=1")
+
+        message(STATUS "utils: check result for \"${${RETURN_VAR}}\" cached with value: ${${${RETURN_VAR}}}")
         return()
     endif()
 
-    if(DEFINED FEATURE_CHECK_INCLUDE_DIRS)
-        set(CMAKE_REQUIRED_INCLUDES "${FEATURE_CHECK_INCLUDE_DIRS}")
+    if(DEFINED ${INCLUDE_DIRS})
+        set(CMAKE_REQUIRED_INCLUDES "${${INCLUDE_DIRS}}")
     endif()
-
-    check_include_files("${FEATURE_CHECK_REQUIRES}" "${FEATURE_CHECK_OUT}" LANGUAGE CXX)
-
-    if (${FEATURE_CHECK_OUT})
-        add_compile_definitions("${FEATURE_CHECK_OUT}=1")
-    endif()
-endfunction()
+endmacro()
 
 #[==========================================================================[
 check_required_arg
