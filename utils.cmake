@@ -52,6 +52,8 @@ Adds program dependencies using ``find_package`` and ``target_link_libraries``.
    program_dependencies(
        <TARGET>
        <DEPENDENCY_NAME>
+       VERSION [version]
+       VISIBILITY [visibility]
        COMPONENTS [components...]
    )
 
