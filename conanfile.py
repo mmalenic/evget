@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-from conans import ConanFile, CMake
+from conan.tools.cmake import cmake_layout
+from conan import ConanFile
 
 
 class App(ConanFile):
@@ -33,8 +33,9 @@ class App(ConanFile):
     author = 'Marko Malenic'
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
-    requires = 'boost/1.81.0', 'fmt/9.1.0', 'spdlog/1.11.0', 'date/3.0.1'
-    generators = 'cmake', 'CMakeDeps'
+    requires = 'boost/[^1.82]', 'fmt/[^9.1]', 'spdlog/[^1.11]', 'date/[^3.0]'
+    test_requires = 'gtest/cci.20210126'
+    generators = 'CMakeDeps', 'CMakeToolchain'
     options = {
         'build_tests': [True, False],
         'download_dependencies': [True, False],
@@ -46,21 +47,8 @@ class App(ConanFile):
         'shared': True
     }
 
-    def requirements(self):
-        if self.options.build_tests:
-            self.requires('gtest/cci.20210126')
+    def layout(self):
+        cmake_layout(self)
 
     def package_info(self):
         self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::program_options']
-
-    def build(self):
-        cmake = CMake(self)
-        cmake.configure()
-
-        cmake.definitions['BUILD_TESTING'] = self.options.build_tests
-        cmake.definitions['DOWNLOAD_DEPENDENCIES'] = self.options.download_dependencies
-
-        if self.options.build_tests:
-            cmake.test()
-
-        cmake.build()
