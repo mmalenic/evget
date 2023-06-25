@@ -72,8 +72,19 @@ function(program_dependencies TARGET DEPENDENCY_NAME)
         )
     endif()
 
-    target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME})
-    message(STATUS "linked ${DEPENDENCY_NAME} to ${TARGET}")
+    if(DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
+        list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
+        math(EXPR LOOP "${COMPONENTS_LENGTH} - 1")
+
+        foreach(INDEX RANGE 0 ${LOOP})
+            list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP)
+            target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
+        endforeach()
+    else()
+        target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
+    endif()
+
+    message(STATUS "utils: linked ${DEPENDENCY_NAME} to ${TARGET}")
 endfunction()
 
 #[==========================================================================[
