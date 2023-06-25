@@ -130,7 +130,8 @@ common logic and variables.
    )
 
 Returns early if ``RETURN_VAR`` is defined. Sets ``CMAKE_REQUIRED_INCLUDES``
-if ``INCLUDE_DIRS`` is defined.
+if ``INCLUDE_DIRS`` is defined. Assumes that ``RETURN_VAR`` and ``INCLUDE_DIRS``
+is passed as a variable name and not a variable value.
 #]==========================================================================]
 macro(prepare_check_function RETURN_VAR INCLUDE_DIRS)
     if(DEFINED ${${RETURN_VAR}})
@@ -142,6 +143,49 @@ macro(prepare_check_function RETURN_VAR INCLUDE_DIRS)
 
     if(DEFINED ${INCLUDE_DIRS})
         set(CMAKE_REQUIRED_INCLUDES "${${INCLUDE_DIRS}}")
+    endif()
+endmacro()
+
+#[==========================================================================[
+setup_testing
+----------------
+
+A macro which sets up testing for an executable.
+
+.. code:: cmake
+
+   setup_testing(
+       <TEST_EXECUTABLE_NAME>
+       <LIBRARY_NAME>
+   )
+
+Enabled testing and links ``GTest`` to ``TEST_EXECUTABLE_NAME``. Links ``LIBRARY_NAME``
+to ``TEST_EXECUTABLE_NAME``.
+#]==========================================================================]
+macro(setup_testing TEST_EXECUTABLE_NAME LIBRARY_NAME)
+    target_link_libraries(${TEST_EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME})
+
+    include(GoogleTest)
+    enable_testing()
+
+    program_dependencies(
+        ${TEST_EXECUTABLE_NAME}
+        GTest
+        COMPONENTS
+        gtest
+        gtest_main
+        gmock
+        VISIBILITY
+        PUBLIC
+    )
+
+    set(gtest_force_shared_crt
+        ON
+        CACHE BOOL "" FORCE
+    )
+
+    if(TARGET ${TEST_EXECUTABLE_NAME})
+        gtest_discover_tests(${TEST_EXECUTABLE_NAME})
     endif()
 endmacro()
 
