@@ -1,11 +1,9 @@
-set_and_get_variable(EVGETCORE_LIBRARY_NAME libevgetcore)
-set_and_get_variable(EVGETCORE_TEST_EXECUTABLE_NAME libevgetcoretest)
+include("${CMAKE_SOURCE_DIR}/utils.cmake")
 
-add_program(
-    TARGET ${EVGETCORE_LIBRARY_NAME} MAKE_LIBRARY
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    SRCS
+project(evgetcore)
+
+add_library(
+    ${PROJECT_NAME}
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
     include/evgetcore/Storage.h
@@ -26,14 +24,16 @@ add_program(
     include/evgetcore/Event/Modifier.h
     include/evgetcore/Event/Graph.h
 )
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+
 add_subdirectory(src)
 
-program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC fmt ${FMT_VERSION})
-program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC spdlog ${SPDLOG_VERSION})
-program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC Boost ${BOOST_VERSION} FIND_ALL COMPONENTS program_options headers)
-program_dependencies(TARGET ${EVGETCORE_LIBRARY_NAME} DEP PUBLIC date ${DATE_VERSION} COMPONENTS date-tz)
+target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
-add_library_and_link(EVGETCORE_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
+program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} Boost COMPONENTS program_options VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} date COMPONENTS date-tz VISIBILITY PUBLIC)
 
 if (BUILD_TESTING)
     add_subdirectory(test)

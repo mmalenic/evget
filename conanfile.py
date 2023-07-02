@@ -33,7 +33,7 @@ class App(ConanFile):
     author = 'Marko Malenic'
     topics = 'ev', 'evdev', 'events'
     settings = 'os', 'arch', 'compiler', 'build_type'
-    requires = 'boost/[^1.82]', 'fmt/[^9.1]', 'spdlog/[^1.11]', 'date/[^3.0]'
+    requires = 'boost/[^1.82]', 'fmt/[^9.1]', 'spdlog/[^1.11]', 'date/[^3.0]', 'zlib/[^1.2]'
     test_requires = 'gtest/cci.20210126'
     generators = 'CMakeDeps', 'CMakeToolchain'
     options = {

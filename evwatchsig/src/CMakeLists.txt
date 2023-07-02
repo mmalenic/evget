@@ -1,6 +1,5 @@
-add_program(
-    TARGET ${EVWATCHSIG_LIBRARY_NAME}
-    FEATURE_CHECK EVWATCHSIG_HAS_DEPENDENCIES
-    SRCS
+target_sources(
+    ${PROJECT_NAME}
+    PRIVATE
     EventWatcherSignal.cpp
 )

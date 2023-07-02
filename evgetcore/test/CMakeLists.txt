@@ -1,8 +1,7 @@
-add_program(
-    TARGET ${EVGETCORE_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    SRCS
+set(TEST_EXECUTABLE_NAME evgetcoretest)
+
+add_executable(
+    ${TEST_EXECUTABLE_NAME}
     Event/MouseMoveTest.cpp
     Event/MouseClickTest.cpp
     Event/KeyTest.cpp
@@ -13,5 +12,6 @@ add_program(
     utils/EventTestUtils.h
     utils/EventTestUtils.cpp
 )
+target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
 
-link_testing(EVGETCORE_TEST_EXECUTABLE_NAME EVGETCORE_LIBRARY_NAME)
+setup_testing(${TEST_EXECUTABLE_NAME} ${PROJECT_NAME})

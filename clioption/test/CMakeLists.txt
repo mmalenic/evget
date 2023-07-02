@@ -1,8 +1,7 @@
-add_program(
-    TARGET ${CLIOPTION_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    SRCS
+set(TEST_EXECUTABLE_NAME clioptiontest)
+
+add_executable(
+    ${TEST_EXECUTABLE_NAME}
     AbstractOptionTest.cpp
     OptionFlagTest.cpp
     OptionTest.cpp
@@ -10,5 +9,6 @@ add_program(
     ParserTest.cpp
     utils/CliOptionTestUtils.h
 )
+target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
 
-link_testing(CLIOPTION_TEST_EXECUTABLE_NAME CLIOPTION_LIBRARY_NAME)
+setup_testing(${TEST_EXECUTABLE_NAME} ${PROJECT_NAME})

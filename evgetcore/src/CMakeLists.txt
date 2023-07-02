@@ -1,6 +1,7 @@
-add_program(
-    TARGET ${EVGETCORE_LIBRARY_NAME}
-    SRCS
+target_sources(
+    ${PROJECT_NAME}
+    PRIVATE
+    main.cpp
     CoreParser.cpp
     Event/Key.cpp
     Event/MouseClick.cpp

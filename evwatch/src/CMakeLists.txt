@@ -1,6 +1,6 @@
-add_program(
-    TARGET ${EVWATCH_LIBRARY_NAME}
-    SRCS
+target_sources(
+    ${PROJECT_NAME}
+    PRIVATE
     EventWatcher.cpp
     EventWatcherException.cpp
 )

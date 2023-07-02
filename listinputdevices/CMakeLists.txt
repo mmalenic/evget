@@ -1,25 +1,28 @@
-set_and_get_variable(LISTINPUTDEVICES_LIBRARY_NAME liblistinputdevices)
-set_and_get_variable(LISTINPUTDEVICES_TEST_EXECUTABLE_NAME listinputdevicestest)
+include("${CMAKE_SOURCE_DIR}/utils.cmake")
 
-add_program(
-    TARGET ${LISTINPUTDEVICES_LIBRARY_NAME} MAKE_LIBRARY
-    FEATURE_REQUIRES fcntl.h linux/input.h
-    FEATURE_CHECK LISTINPUTDEVICES_HAS_DEPENDENCIES
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    SRCS
-    include/listinputdevices/InputDevice.h
-    include/listinputdevices/InputDeviceLister.h
-)
+check_includes(RETURN_VAR LISTINPUTDEVICES_HAS_FEATURE
+    REQUIRES fcntl.h linux/input.h
+    )
 
-add_subdirectory(src)
+if (LISTINPUTDEVICES_HAS_FEATURE)
+    project(listinputdevices)
 
-program_dependencies(TARGET ${LISTINPUTDEVICES_LIBRARY_NAME} DEP PUBLIC fmt ${FMT_VERSION})
-program_dependencies(TARGET ${LISTINPUTDEVICES_LIBRARY_NAME} DEP PUBLIC spdlog ${SPDLOG_VERSION})
-program_dependencies(TARGET ${LISTINPUTDEVICES_LIBRARY_NAME} DEP PUBLIC Boost ${BOOST_VERSION} FIND_ALL COMPONENTS headers)
+    add_library(
+        ${PROJECT_NAME}
+        include/listinputdevices/InputDevice.h
+        include/listinputdevices/InputDeviceLister.h
+    )
+    target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-add_library_and_link(LISTINPUTDEVICES_LIBRARY_NAME CLIOPTION_LIBRARY_NAME "")
+    add_subdirectory(src)
 
-if (BUILD_TESTING)
-    add_subdirectory(test)
+    target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
+
+    program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
+    program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
+    program_dependencies(${PROJECT_NAME} Boost COMPONENTS headers VISIBILITY PUBLIC)
+
+    if (BUILD_TESTING)
+        add_subdirectory(test)
+    endif ()
 endif ()

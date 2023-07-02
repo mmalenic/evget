@@ -1,19 +1,23 @@
-set_and_get_variable(EVWATCHSIG_LIBRARY_NAME libevwatchsig)
-set_and_get_variable(EVWATCHSIG_TEST_EXECUTABLE_NAME libevwatchsigtest)
+include("${CMAKE_SOURCE_DIR}/utils.cmake")
 
-add_program(
-    TARGET ${EVWATCHSIG_LIBRARY_NAME} MAKE_LIBRARY
-    FEATURE_REQUIRES csignal
-    FEATURE_CHECK EVWATCHSIG_HAS_DEPENDENCIES
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    SRCS
-    include/evwatchsig/EventWatcherSignal.h
-)
-add_subdirectory(src)
+check_includes(RETURN_VAR EVWATCHSIG_HAS_FEATURE
+    REQUIRES signal.h
+    )
 
-add_library_and_link(EVWATCHSIG_LIBRARY_NAME EVWATCH_LIBRARY_NAME "")
+if (EVWATCHSIG_HAS_FEATURE)
+    project(evwatchsig)
 
-if (BUILD_TESTING)
-    add_subdirectory(test)
+    add_library(
+        ${PROJECT_NAME}
+        include/evwatchsig/EventWatcherSignal.h
+    )
+    target_include_directories(${PROJECT_NAME} PUBLIC include)
+
+    add_subdirectory(src)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC evwatch)
+
+    if (BUILD_TESTING)
+        add_subdirectory(test)
+    endif ()
 endif ()

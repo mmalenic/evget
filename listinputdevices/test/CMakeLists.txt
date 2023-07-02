@@ -1,14 +1,12 @@
-add_program(
-    TARGET ${LISTINPUTDEVICES_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-    FEATURE_REQUIRES fcntl.h linux/input.h
-    FEATURE_CHECK LISTINPUTDEVICES_HAS_DEPENDENCIES
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    SRCS
+set(TEST_EXECUTABLE_NAME listinputdevicestest)
+
+add_executable(
+    ${TEST_EXECUTABLE_NAME}
     InputDeviceListerTest.cpp
     InputDeviceTest.cpp
     utils/ListInputDevicesTestUtils.h
     utils/ListInputDevicesTestUtils.cpp
 )
+target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
 
-link_testing(LISTINPUTDEVICES_TEST_EXECUTABLE_NAME LISTINPUTDEVICES_LIBRARY_NAME)
+setup_testing(${TEST_EXECUTABLE_NAME} ${PROJECT_NAME})

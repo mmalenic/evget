@@ -1,10 +1,7 @@
-add_program(
-    TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} MAKE_EXECUTABLE
-    FEATURE_REQUIRES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h X11/Xutil.h xorg/xserver-properties.h
-    FEATURE_CHECK EVGETX11_HAS_DEPENDENCIES
-    INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    SRCS
+set(TEST_EXECUTABLE_NAME evgetx11test)
+
+add_executable(
+    ${TEST_EXECUTABLE_NAME}
     EventTransformerX11Test.cpp
     XEventSwitchTest.cpp
     XEventSwitchPointerTest.cpp
@@ -12,6 +9,6 @@ add_program(
     utils/EvgetX11TestUtils.h
     utils/Evgetx11TestUtils.cpp
 )
-program_dependencies(TARGET ${EVGETX11_TEST_EXECUTABLE_NAME} DEP PUBLIC X11 COMPONENTS Xtst)
+target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
 
-link_testing(EVGETX11_TEST_EXECUTABLE_NAME EVGETX11_LIBRARY_NAME)
+setup_testing(${TEST_EXECUTABLE_NAME} ${PROJECT_NAME})
