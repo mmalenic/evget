@@ -1,10 +1,19 @@
+cmake_minimum_required(VERSION 3.19)
+set(CMAKE_CXX_STANDARD 20)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
 
-check_includes(RETURN_VAR EVGETX11_HAS_FEATURE
-    REQUIRES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h X11/Xutil.h xorg/xserver-properties.h
+check_includes(
+    RETURN_VAR
+    EVGETX11_HAS_FEATURE
+    REQUIRES
+    X11/Xlib.h
+    X11/extensions/XInput.h
+    X11/extensions/XInput2.h
+    X11/Xutil.h
+    xorg/xserver-properties.h
 )
 
-if (EVGETX11_HAS_FEATURE)
+if(EVGETX11_HAS_FEATURE)
     project(evgetx11)
 
     add_library(
@@ -24,13 +33,10 @@ if (EVGETX11_HAS_FEATURE)
     )
     target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-    check_symbol(RETURN_VAR EVGETX11_HAS_TOUCH_SUPPORT
-        SYMBOL XI_TouchBegin
-        FILES X11/extensions/XInput2.h
-        )
-    if (EVGETX11_HAS_TOUCH_SUPPORT)
+    check_symbol(RETURN_VAR EVGETX11_HAS_TOUCH_SUPPORT SYMBOL XI_TouchBegin FILES X11/extensions/XInput2.h)
+    if(EVGETX11_HAS_TOUCH_SUPPORT)
         target_sources(${PROJECT_NAME} PUBLIC include/evgetx11/XEventSwitchTouch.h include/evgetx11/XSetMaskTouch.h)
-    endif ()
+    endif()
 
     add_subdirectory(src)
 
@@ -39,9 +45,17 @@ if (EVGETX11_HAS_FEATURE)
 
     program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
     program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
-    program_dependencies(${PROJECT_NAME} X11 COMPONENTS Xi Xkb VISIBILITY PUBLIC)
+    program_dependencies(
+        ${PROJECT_NAME}
+        X11
+        COMPONENTS
+        Xi
+        Xkb
+        VISIBILITY
+        PUBLIC
+    )
 
-    if (BUILD_TESTING)
+    if(BUILD_TESTING)
         add_subdirectory(test)
-    endif ()
-endif ()
+    endif()
+endif()

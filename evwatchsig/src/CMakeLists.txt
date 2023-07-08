@@ -1,5 +1,1 @@
-target_sources(
-    ${PROJECT_NAME}
-    PRIVATE
-    EventWatcherSignal.cpp
-)
+target_sources(${PROJECT_NAME} PRIVATE EventWatcherSignal.cpp)

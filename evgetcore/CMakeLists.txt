@@ -1,5 +1,6 @@
+cmake_minimum_required(VERSION 3.19)
+set(CMAKE_CXX_STANDARD 20)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
-
 project(evgetcore)
 
 add_library(
@@ -35,6 +36,6 @@ program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} Boost COMPONENTS program_options VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} date COMPONENTS date-tz VISIBILITY PUBLIC)
 
-if (BUILD_TESTING)
+if(BUILD_TESTING)
     add_subdirectory(test)
-endif ()
+endif()

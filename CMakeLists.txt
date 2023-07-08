@@ -21,9 +21,8 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.19)
-
-include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
-
+set (CMAKE_CXX_STANDARD 20)
+include("${CMAKE_SOURCE_DIR}/utils.cmake")
 project(evget)
 
 add_subdirectory(clioption)
