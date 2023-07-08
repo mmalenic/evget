@@ -1,24 +1,19 @@
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_CXX_STANDARD 20)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
+project(listinputdevices)
 
-check_includes(RETURN_VAR LISTINPUTDEVICES_HAS_FEATURE REQUIRES fcntl.h linux/input.h)
+add_library(${PROJECT_NAME} include/listinputdevices/InputDevice.h include/listinputdevices/InputDeviceLister.h)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-if(LISTINPUTDEVICES_HAS_FEATURE)
-    project(listinputdevices)
+add_subdirectory(src)
 
-    add_library(${PROJECT_NAME} include/listinputdevices/InputDevice.h include/listinputdevices/InputDeviceLister.h)
-    target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
-    add_subdirectory(src)
+program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} Boost COMPONENTS headers VISIBILITY PUBLIC)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
-
-    program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
-    program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
-    program_dependencies(${PROJECT_NAME} Boost COMPONENTS headers VISIBILITY PUBLIC)
-
-    if(BUILD_TESTING)
-        add_subdirectory(test)
-    endif()
+if(BUILD_TESTING)
+    add_subdirectory(test)
 endif()

@@ -1,20 +1,15 @@
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_CXX_STANDARD 20)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
+project(evwatchsig)
 
-check_includes(RETURN_VAR EVWATCHSIG_HAS_FEATURE REQUIRES signal.h)
+add_library(${PROJECT_NAME} include/evwatchsig/EventWatcherSignal.h)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-if(EVWATCHSIG_HAS_FEATURE)
-    project(evwatchsig)
+add_subdirectory(src)
 
-    add_library(${PROJECT_NAME} include/evwatchsig/EventWatcherSignal.h)
-    target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_link_libraries(${PROJECT_NAME} PUBLIC evwatch)
 
-    add_subdirectory(src)
-
-    target_link_libraries(${PROJECT_NAME} PUBLIC evwatch)
-
-    if(BUILD_TESTING)
-        add_subdirectory(test)
-    endif()
+if(BUILD_TESTING)
+    add_subdirectory(test)
 endif()
