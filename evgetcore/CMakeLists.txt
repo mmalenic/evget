@@ -33,7 +33,17 @@ target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
 program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
-program_dependencies(${PROJECT_NAME} Boost COMPONENTS program_options VISIBILITY PUBLIC)
+program_dependencies(
+    ${PROJECT_NAME}
+    Boost
+    COMPONENTS
+    program_options
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    program_options
+    headers
+)
 program_dependencies(${PROJECT_NAME} date COMPONENTS date-tz VISIBILITY PUBLIC)
 
 if(BUILD_TESTING)

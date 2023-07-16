@@ -30,6 +30,7 @@ add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PUBLIC evgetcore)
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
+program_dependencies(${PROJECT_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS headers)
 program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
 program_dependencies(

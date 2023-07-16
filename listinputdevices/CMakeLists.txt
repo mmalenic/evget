@@ -12,7 +12,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
 program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
-program_dependencies(${PROJECT_NAME} Boost COMPONENTS headers VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS headers)
 
 if(BUILD_TESTING)
     add_subdirectory(test)
