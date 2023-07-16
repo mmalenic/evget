@@ -55,15 +55,18 @@ Adds program dependencies using ``find_package`` and ``target_link_libraries``.
        VERSION [version]
        VISIBILITY [visibility]
        COMPONENTS [components...]
+       LINK_COMPONENTS [link_components...]
    )
 
 Finds a program dependency using ``find_package`` and then links it to an
 existing target using ``target_link_libraries``. Treats all dependencies
-and components as ``REQUIRED``.
+and components as ``REQUIRED``. ``LINK_COMPONENTS`` optionally specifies the
+the components that should be linked to the target, and if not present defaults
+to ``COMPONENTS``.
 #]==========================================================================]
 function(program_dependencies TARGET DEPENDENCY_NAME)
     set(one_value_args VERSION VISIBILITY)
-    set(multi_value_args COMPONENTS)
+    set(multi_value_args COMPONENTS LINK_COMPONENTS)
     cmake_parse_arguments(PROGRAM_DEPENDENCIES "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     if(NOT ${DEPENDENCY_NAME}_FOUND)
@@ -72,12 +75,16 @@ function(program_dependencies TARGET DEPENDENCY_NAME)
         )
     endif()
 
-    if(DEFINED PROGRAM_DEPENDENCIES_COMPONENTS)
-        list(LENGTH PROGRAM_DEPENDENCIES_COMPONENTS COMPONENTS_LENGTH)
+    if(NOT DEFINED PROGRAM_DEPENDENCIES_LINK_COMPONENTS)
+        set(PROGRAM_DEPENDENCIES_LINK_COMPONENTS ${PROGRAM_DEPENDENCIES_COMPONENTS})
+    endif()
+
+    if(DEFINED PROGRAM_DEPENDENCIES_LINK_COMPONENTS)
+        list(LENGTH PROGRAM_DEPENDENCIES_LINK_COMPONENTS COMPONENTS_LENGTH)
         math(EXPR LOOP "${COMPONENTS_LENGTH} - 1")
 
         foreach(INDEX RANGE 0 ${LOOP})
-            list(GET PROGRAM_DEPENDENCIES_COMPONENTS ${INDEX} COMP)
+            list(GET PROGRAM_DEPENDENCIES_LINK_COMPONENTS ${INDEX} COMP)
             target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
         endforeach()
     else()
