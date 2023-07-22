@@ -24,7 +24,6 @@
 #define EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 
 #include <boost/asio.hpp>
-#include <boost/fiber/buffered_channel.hpp>
 #include <spdlog/spdlog.h>
 
 #include <chrono>

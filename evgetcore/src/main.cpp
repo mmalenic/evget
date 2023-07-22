@@ -30,9 +30,14 @@
 #include <iostream>
 
 #include "clioption/InvalidCommandLineOption.h"
+#include "evgetcore/EventHandler.h"
+#include "evgetcore/PrintEvents.h"
+#include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/XSetMaskCore.h"
+#include "evgetx11/XSetMaskRefresh.h"
 #include "evgetx11/XWrapperX11.h"
 
 int main(int argc, char* argv[]) {
@@ -81,6 +86,8 @@ int main(int argc, char* argv[]) {
 //    //
 //    //    spdlog::set_level(cmd.getLogLevel());
 //    //
+        spdlog::set_level(spdlog::level::trace);
+
         boost::asio::thread_pool pool{};
         auto context = pool.get_executor();
 
@@ -99,6 +106,7 @@ int main(int argc, char* argv[]) {
 
         EvgetX11::EventLoopX11 eventLoop{xInputHandler};
 
+        EvgetCore::PrintEvents printEvents{};
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
         while (true) {
