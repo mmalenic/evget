@@ -20,64 +20,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <X11/Xlib.h>
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
-#include <evgetcore/EventHandler.h>
+#include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
-#include <atomic>
+#include <cstring>
 #include <iostream>
-// #include <linux/input.h>
-// #include "evgetcore/CommandLine/ParserLinux.h"
-// #include "evgetcore/XInputHandler.h"
-// #include "evgetcore/EventTransformerLinux.h"
-// #include "evgetcore/SystemEventLoopLinux.h"
-// #include "../checkinput/include/checkinput/EventDeviceLister.h"
-#include "evgetcore/Event/Graph.h"
-#include "evgetcore/Event/Key.h"
-#include "evgetcore/PrintEvents.h"
-#include "evgetx11/EventLoopX11.h"
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XSetMask.h"
-#include "evgetx11/XSetMaskCore.h"
-#include "evgetx11/XSetMaskRefresh.h"
-#include "evgetx11/XInputHandler.h"
+
+#include "clioption/InvalidCommandLineOption.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
 #include "evgetx11/XWrapperX11.h"
 
-using namespace std;
-
 int main(int argc, char* argv[]) {
-    EvgetCore::Event::Graph<int> g{};
-    //    EvgetCore::Event::Key key{};
-    //    constexpr auto schema = EvgetCore::Event::Key::updateSchema();
-    //
-    //    cout << schema.getFields().size() << endl;
 
-    EvgetCore::PrintEvents printEvents{};
+//    #if defined(EVGETX11_HAS_TOUCH_SUPPORT)
+//        std::cout << "Touch support is enabled" << std::endl;
+//    #endif
+//
+//    #if !defined(EVGETX11_HAS_TOUCH_SUPPORT)
+//        std::cout << "Touch support not is enabled" << std::endl;
+//    #endif
+//
+//    #if defined(EVGETX11_HAS_FEATURE)
+//            std::cout << "FEATURE ENABLED" << std::endl;
+//    #endif
+//
+//    #if !defined(EVGETX11_HAS_FEATURE)
+//            std::cout << "FEATUER NOT ENABLED" << std::endl;
+//    #endif
 
-    //    data1.contains(data2);
-    //    data.contains(data1);
-    //
-    //    data.contains(data2);
-
-    //    Display* display = XOpenDisplay(nullptr);
-    //    EvgetX11::XWrapperX11 wrapper{*display};
-    //    EvgetX11::XDeviceRefresh xDeviceRefresh{};
-    //    EvgetX11::XEventSwitch xEventSwitchPointer{wrapper, xDeviceRefresh};
-    //    EvgetX11::XEventSwitchPointerKey core{wrapper, xEventSwitchPointer, xDeviceRefresh};
-    //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
-    //    EvgetX11::EventData data{};
-    //
-    //    EvgetX11::EventTransformerX11 transformer{wrapper, core};
-
-    //    CliOption::ParserLinux cmd{};
-    //    cmd.parseCommandLine(argc, (const char**) argv);
-    //
-    //    spdlog::set_level(cmd.getLogLevel());
-    //
+//    EvgetCore::Event::Graph<int> g{};
+//    //    EvgetCore::Event::Key key{};
+//    //    constexpr auto schema = EvgetCore::Event::Key::updateSchema();
+//    //
+//    //    cout << schema.getFields().size() << endl;
+//
+//    EvgetCore::PrintEvents printEvents{};
+//
+//    //    data1.contains(data2);
+//    //    data.contains(data1);
+//    //
+//    //    data.contains(data2);
+//
+//    //    Display* display = XOpenDisplay(nullptr);
+//    //    EvgetX11::XWrapperX11 wrapper{*display};
+//    //    EvgetX11::XDeviceRefresh xDeviceRefresh{};
+//    //    EvgetX11::XEventSwitch xEventSwitchPointer{wrapper, xDeviceRefresh};
+//    //    EvgetX11::XEventSwitchPointerKey core{wrapper, xEventSwitchPointer, xDeviceRefresh};
+//    //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
+//    //    EvgetX11::EventData data{};
+//    //
+//    //    EvgetX11::EventTransformerX11 transformer{wrapper, core};
+//
+//    //    CliOption::ParserLinux cmd{};
+//    //    cmd.parseCommandLine(argc, (const char**) argv);
+//    //
+//    //    spdlog::set_level(cmd.getLogLevel());
+//    //
         boost::asio::thread_pool pool{};
         auto context = pool.get_executor();
 

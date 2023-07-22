@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 20)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
 project(evget)
 
-add_executable(${CMAKE_PROJECT_NAME} evgetcore/src/main.cpp)
+add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
 
 add_subdirectory(clioption)
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)

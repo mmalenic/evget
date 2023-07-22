@@ -161,12 +161,17 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<XWrapper, Switches...>::tra
         // Iterate through switches until the first one returns true.
         std::apply(
             [&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, data, [this](Time time) {
+                ((eventSwitches.switchOnEvent(event, data, [this, &event](Time time) {
                      auto interval = getInterval(time);
                      if (interval.has_value()) {
-                         std::cout << "Interval: " << interval.value().count() << std::endl;
+                         spdlog::trace(
+                             "interval {} with event type {}",
+                             interval.value().count(),
+                             event.getEventType()
+                         );
                      }
-                     return getInterval(time);
+
+                     return interval;
                  })) || ...);
             },
             switches
