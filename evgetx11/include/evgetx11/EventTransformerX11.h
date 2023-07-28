@@ -40,7 +40,7 @@
 #include "evgetcore/Util.h"
 
 namespace EvgetX11 {
-template <XWrapper XWrapper, typename... Switches>
+template <typename... Switches>
 class EventTransformerX11 : public EvgetCore::EventTransformer<XInputEvent> {
 public:
     explicit EventTransformerX11(XWrapper& xWrapper, Switches&... switches);
@@ -60,14 +60,14 @@ private:
     std::tuple<Switches&...> switches;
 };
 
-template <XWrapper XWrapper, typename... Switches>
-EvgetX11::EventTransformerX11<XWrapper, Switches...>::EventTransformerX11(XWrapper& xWrapper, Switches&... switches)
+template <typename... Switches>
+EvgetX11::EventTransformerX11<Switches...>::EventTransformerX11(XWrapper& xWrapper, Switches&... switches)
     : xWrapper{xWrapper}, switches{switches...} {
     refreshDevices();
 }
 
-template <XWrapper XWrapper, typename... Switches>
-void EvgetX11::EventTransformerX11<XWrapper, Switches...>::refreshDevices() {
+template <typename... Switches>
+void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
     int nDevices;
     int xi2NDevices;
     // See caveats about mixing XI1 calls with XI2 code:
@@ -134,8 +134,8 @@ void EvgetX11::EventTransformerX11<XWrapper, Switches...>::refreshDevices() {
     }
 }
 
-template <XWrapper XWrapper, typename... Switches>
-std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<XWrapper, Switches...>::getInterval(Time time) {
+template <typename... Switches>
+std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<Switches...>::getInterval(Time time) {
     if (!previous.has_value() || time < *previous) {
         previous = time;
         return std::nullopt;
@@ -147,8 +147,8 @@ std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<XWrapper,
     return interval;
 }
 
-template <XWrapper XWrapper, typename... Switches>
-EvgetCore::Event::Data EvgetX11::EventTransformerX11<XWrapper, Switches...>::transformEvent(XInputEvent event) {
+template <typename... Switches>
+EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEvent(XInputEvent event) {
     EvgetCore::Event::Data data{};
     if (event.hasData()) {
         auto type = event.getEventType();

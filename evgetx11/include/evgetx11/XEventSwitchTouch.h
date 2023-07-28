@@ -29,10 +29,9 @@
 
 namespace EvgetX11 {
 
-template <XWrapper XWrapper>
 class XEventSwitchTouch {
 public:
-    explicit XEventSwitchTouch(XEventSwitch<XWrapper>& xEventSwitchPointer);
+    explicit XEventSwitchTouch(XEventSwitch& xEventSwitchPointer);
 
     bool switchOnEvent(
         const XInputEvent& event,
@@ -53,11 +52,10 @@ private:
         EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
-    std::reference_wrapper<XEventSwitch<XWrapper>> xEventSwitchPointer;
+    std::reference_wrapper<XEventSwitch> xEventSwitchPointer;
 };
 
-template <XWrapper XWrapper>
-bool EvgetX11::XEventSwitchTouch<XWrapper>::switchOnEvent(
+bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -79,8 +77,7 @@ bool EvgetX11::XEventSwitchTouch<XWrapper>::switchOnEvent(
     }
 }
 
-template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchTouch<XWrapper>::touchButton(
+void EvgetX11::XEventSwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
@@ -93,8 +90,7 @@ void EvgetX11::XEventSwitchTouch<XWrapper>::touchButton(
     }
 }
 
-template <XWrapper XWrapper>
-void EvgetX11::XEventSwitchTouch<XWrapper>::touchMotion(
+void EvgetX11::XEventSwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -105,8 +101,7 @@ void EvgetX11::XEventSwitchTouch<XWrapper>::touchMotion(
     }
 }
 
-template <XWrapper XWrapper>
-EvgetX11::XEventSwitchTouch<XWrapper>::XEventSwitchTouch(XEventSwitch<XWrapper>& xEventSwitchPointer
+EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitch& xEventSwitchPointer
 )
     : xEventSwitchPointer{xEventSwitchPointer} {
 }

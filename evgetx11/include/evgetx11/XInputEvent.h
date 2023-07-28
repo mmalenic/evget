@@ -61,20 +61,20 @@ public:
      * the event mask set on the display. This function will block if there are no events on the event
      * queue.
      */
-    static XInputEvent nextEvent(XWrapper auto& xWrapper);
+    static XInputEvent nextEvent(XWrapper& xWrapper);
 
 private:
-    explicit XInputEvent(XWrapper auto& xWrapper);
+    explicit XInputEvent(XWrapper& xWrapper);
 
     XEvent event;
     EvgetCore::Event::Timestamp timestamp;
     XEventPointer cookie;
 };
 
-EvgetX11::XInputEvent::XInputEvent(XWrapper auto& xWrapper)
+EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper)
     : event{xWrapper.nextEvent()}, timestamp{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {}
 
-EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper auto& xWrapper) {
+EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper& xWrapper) {
     return XInputEvent{xWrapper};
 }
 

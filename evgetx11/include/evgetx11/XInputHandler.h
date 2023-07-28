@@ -33,7 +33,6 @@
 
 namespace EvgetX11 {
 
-template <XWrapper XWrapper>
 class XInputHandler {
 public:
     explicit XInputHandler(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
@@ -54,8 +53,7 @@ private:
     static void announceVersion(XWrapper& xWrapper);
 };
 
-template <XWrapper XWrapper>
-EvgetX11::XInputHandler<XWrapper>::XInputHandler(
+EvgetX11::XInputHandler::XInputHandler(
     XWrapper& xWrapper,
     std::vector<std::reference_wrapper<XSetMask>> maskSetters
 )
@@ -64,8 +62,7 @@ EvgetX11::XInputHandler<XWrapper>::XInputHandler(
     setMask(xWrapper, maskSetters);
 }
 
-template <XWrapper XWrapper>
-void EvgetX11::XInputHandler<XWrapper>::announceVersion(XWrapper& xWrapper) {
+void EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
     int minor = versionMinor;
 
@@ -79,8 +76,7 @@ void EvgetX11::XInputHandler<XWrapper>::announceVersion(XWrapper& xWrapper) {
     }
 }
 
-template <XWrapper XWrapper>
-void EvgetX11::XInputHandler<XWrapper>::setMask(
+void EvgetX11::XInputHandler::setMask(
     XWrapper& xWrapper,
     std::vector<std::reference_wrapper<XSetMask>> maskSetters
 ) {
@@ -98,8 +94,7 @@ void EvgetX11::XInputHandler<XWrapper>::setMask(
     xWrapper.selectEvents(mask);
 }
 
-template <XWrapper XWrapper>
-EvgetX11::XInputEvent EvgetX11::XInputHandler<XWrapper>::getEvent() {
+EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
     return XInputEvent::nextEvent(xWrapper.get());
 }
 

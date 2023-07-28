@@ -37,13 +37,12 @@ namespace asio = boost::asio;
 /**
  * Class represents processing evgetx11 system events.
  */
-template <XWrapper XWrapper>
 class EventLoopX11 : public EvgetCore::EventLoop<XInputEvent> {
 public:
     /**
      * Create the system events.
      */
-    explicit EventLoopX11(XInputHandler<XWrapper> xInputHandler);
+    explicit EventLoopX11(XInputHandler xInputHandler);
 
     boost::asio::awaitable<void> eventLoop() override;
     void notify(XInputEvent event) override;
@@ -54,46 +53,39 @@ public:
 
 private:
     std::optional<std::reference_wrapper<EvgetCore::EventListener<XInputEvent>>> _eventListener;
-    XInputHandler<XWrapper> handler;
+    XInputHandler handler;
 
     std::atomic<bool> stopped{false};
 };
 
-template <XWrapper XWrapper>
-asio::awaitable<bool> EventLoopX11<XWrapper>::isStopped() {
+asio::awaitable<bool> EventLoopX11::isStopped() {
     co_return stopped.load();
 }
 
-template <XWrapper XWrapper>
-asio::awaitable<void> EventLoopX11<XWrapper>::start() {
+asio::awaitable<void> EventLoopX11::start() {
     co_await this->eventLoop();
 
     co_return;
 }
 
-template <XWrapper XWrapper>
-void EventLoopX11<XWrapper>::stop() {
+void EventLoopX11::stop() {
     stopped.store(true);
 }
 
-template <XWrapper XWrapper>
-void EventLoopX11<XWrapper>::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
+void EventLoopX11::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
     _eventListener = eventListener;
 }
 
-template <XWrapper XWrapper>
-void EventLoopX11<XWrapper>::notify(XInputEvent event) {
+void EventLoopX11::notify(XInputEvent event) {
     if (_eventListener.has_value()) {
         _eventListener->get().notify(std::move(event));
     }
 }
 
-template <XWrapper XWrapper>
-EventLoopX11<XWrapper>::EventLoopX11(XInputHandler<XWrapper> xInputHandler)
+EventLoopX11::EventLoopX11(XInputHandler xInputHandler)
     : handler{xInputHandler} {}
 
-template <XWrapper XWrapper>
-boost::asio::awaitable<void> EventLoopX11<XWrapper>::eventLoop() {
+boost::asio::awaitable<void> EventLoopX11::eventLoop() {
     while (!co_await isStopped()) {
         this->notify(std::move(handler.getEvent()));
     }
