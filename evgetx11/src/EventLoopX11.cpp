@@ -20,23 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evgetx11/XInputEvent.h"
+#include "evgetx11/EventLoopX11.h"
 
-EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper)
-    : event{xWrapper.nextEvent()}, timestamp{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {}
-
-bool EvgetX11::XInputEvent::hasData() const {
-    return cookie != nullptr;
+EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
+    co_return stopped.load();
 }
 
-int EvgetX11::XInputEvent::getEventType() const {
-    return cookie->evtype;
+EvgetX11::asio::awaitable<void> EvgetX11::EventLoopX11::start() {
+    co_await this->eventLoop();
+
+    co_return;
 }
 
-const EvgetCore::Event::Timestamp& EvgetX11::XInputEvent::getTimestamp() const {
-    return timestamp;
+void EvgetX11::EventLoopX11::stop() {
+    stopped.store(true);
 }
 
-EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper& xWrapper) {
-    return XInputEvent{xWrapper};
+void EvgetX11::EventLoopX11::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
+    _eventListener = eventListener;
+}
+
+void EvgetX11::EventLoopX11::notify(XInputEvent event) {
+    if (_eventListener.has_value()) {
+        _eventListener->get().notify(std::move(event));
+    }
+}
+
+EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler)
+    : handler{xInputHandler} {}
+
+boost::asio::awaitable<void> EvgetX11::EventLoopX11::eventLoop() {
+    while (!co_await isStopped()) {
+        this->notify(handler.getEvent());
+    }
+    co_return;
 }

@@ -124,59 +124,6 @@ private:
     std::unordered_map<std::string, std::string> nameToInfo{};
 };
 
-EvgetCore::Event::Device XEventSwitch::getDevice(int id) const {
-    return devices.at(id);
-}
-
-bool XEventSwitch::hasDevice(int id) {
-    return devices.contains(id);
-}
-
-void EvgetX11::XEventSwitch::addMotionEvent(
-    const XIDeviceEvent& event,
-    EvgetCore::Event::Timestamp dateTime,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-) {
-    EvgetCore::Event::MouseMove builder{};
-    builder.interval(getTime(event.time))
-        .timestamp(dateTime)
-        .device(getDevice(event.deviceid))
-        .positionX(event.root_x)
-        .positionY(event.root_y);
-    XEventSwitch::setModifierValue(event.mods.effective, builder);
-    setWindowFields(builder);
-
-    setDeviceNameFields(builder, event);
-
-    builder.build(data);
-}
-
-void EvgetX11::XEventSwitch::addButtonEvent(
-    const XIDeviceEvent& event,
-    EvgetCore::Event::Timestamp dateTime,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Event::ButtonAction action,
-    int button,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-) {
-    EvgetCore::Event::MouseClick builder{};
-    builder.interval(getTime(event.time))
-        .timestamp(dateTime)
-        .device(getDevice(event.deviceid))
-        .positionX(event.root_x)
-        .positionY(event.root_y)
-        .action(action)
-        .button(button)
-        .name(buttonMap[event.deviceid][button]);
-    XEventSwitch::setModifierValue(event.mods.effective, builder);
-    setWindowFields(builder);
-
-    setDeviceNameFields(builder, event);
-
-    builder.build(data);
-}
-
 template <BuilderHasModifier T>
 T& EvgetX11::XEventSwitch::setModifierValue(int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
@@ -248,54 +195,50 @@ T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIDeviceEvent& 
     }
 }
 
-void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
-    auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
-    if (map) {
-        for (int i = 0; i < buttonInfo.num_buttons; i++) {
-            if (buttonInfo.labels[i]) {
-                auto name = xWrapper.get().atomName(buttonInfo.labels[i]);
-                if (name) {
-                    buttonMap[id][map[i]] = name.get();
-                }
-            }
-        }
-    }
-}
-
-void EvgetX11::XEventSwitch::refreshDevices(
-    int id,
-    EvgetCore::Event::Device device,
-    const std::string& name,
-    const XIDeviceInfo& info
+void EvgetX11::XEventSwitch::addMotionEvent(
+    const XIDeviceEvent& event,
+    EvgetCore::Event::Timestamp dateTime,
+    EvgetCore::Event::Data& data,
+    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
-    devices.emplace(id, device);
-    idToName.emplace(id, name);
+    EvgetCore::Event::MouseMove builder{};
+    builder.interval(getTime(event.time))
+        .timestamp(dateTime)
+        .device(getDevice(event.deviceid))
+        .positionX(event.root_x)
+        .positionY(event.root_y);
+    XEventSwitch::setModifierValue(event.mods.effective, builder);
+    setWindowFields(builder);
 
-    const XIButtonClassInfo* buttonInfo = nullptr;
-    for (int i = 0; i < info.num_classes; i++) {
-        const auto* classInfo = info.classes[i];
+    setDeviceNameFields(builder, event);
 
-        if (classInfo->type == XIButtonClass) {
-            buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
-            break;
-        }
-    }
-
-    if (buttonInfo && buttonInfo->num_buttons > 0) {
-        setButtonMap(*buttonInfo, info.deviceid);
-    }
+    builder.build(data);
 }
 
-EvgetX11::XEventSwitch::XEventSwitch(
-    XWrapper& xWrapper,
-    std::unordered_map<std::string, std::string> nameToInfo
-)
-    : xWrapper{xWrapper}, nameToInfo{std::move(nameToInfo)} {}
+void EvgetX11::XEventSwitch::addButtonEvent(
+    const XIDeviceEvent& event,
+    EvgetCore::Event::Timestamp dateTime,
+    EvgetCore::Event::Data& data,
+    EvgetCore::Event::ButtonAction action,
+    int button,
+    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    EvgetCore::Event::MouseClick builder{};
+    builder.interval(getTime(event.time))
+        .timestamp(dateTime)
+        .device(getDevice(event.deviceid))
+        .positionX(event.root_x)
+        .positionY(event.root_y)
+        .action(action)
+        .button(button)
+        .name(buttonMap[event.deviceid][button]);
+    XEventSwitch::setModifierValue(event.mods.effective, builder);
+    setWindowFields(builder);
 
-const std::string& EvgetX11::XEventSwitch::getButtonName(int id, int button) const {
-    return buttonMap.at(id).at(button);
+    setDeviceNameFields(builder, event);
+
+    builder.build(data);
 }
-
 }  // namespace EvgetX11
 
 #endif  // EVGET_XEVENTSWITCH_H

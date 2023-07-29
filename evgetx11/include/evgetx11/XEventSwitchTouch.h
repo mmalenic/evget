@@ -54,58 +54,6 @@ private:
 
     std::reference_wrapper<XEventSwitch> xEventSwitchPointer;
 };
-
-bool EvgetX11::XEventSwitchTouch::switchOnEvent(
-    const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-) {
-    switch (event.getEventType()) {
-        case XI_TouchBegin:
-            touchMotion(event, data, getTime);
-            touchButton(event, data, EvgetCore::Event::ButtonAction::Press, getTime);
-            return true;
-        case XI_TouchUpdate:
-            touchMotion(event, data, getTime);
-            return true;
-        case XI_TouchEnd:
-            touchMotion(event, data, getTime);
-            touchButton(event, data, EvgetCore::Event::ButtonAction::Release, getTime);
-            return true;
-        default:
-            return false;
-    }
-}
-
-void EvgetX11::XEventSwitchTouch::touchButton(
-    const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Event::ButtonAction action,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get()
-            .addButtonEvent(deviceEvent, getTime(deviceEvent.time), event.getTimestamp(), data, action, 1);
-    }
-}
-
-void EvgetX11::XEventSwitchTouch::touchMotion(
-    const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
-) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addMotionEvent(deviceEvent, getTime(deviceEvent.time), event.getTimestamp(), data);
-    }
-}
-
-EvgetX11::XEventSwitchTouch::XEventSwitchTouch(XEventSwitch& xEventSwitchPointer
-)
-    : xEventSwitchPointer{xEventSwitchPointer} {
-}
-
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H

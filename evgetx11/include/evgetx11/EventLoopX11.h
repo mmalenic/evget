@@ -57,41 +57,6 @@ private:
 
     std::atomic<bool> stopped{false};
 };
-
-asio::awaitable<bool> EventLoopX11::isStopped() {
-    co_return stopped.load();
-}
-
-asio::awaitable<void> EventLoopX11::start() {
-    co_await this->eventLoop();
-
-    co_return;
-}
-
-void EventLoopX11::stop() {
-    stopped.store(true);
-}
-
-void EventLoopX11::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
-    _eventListener = eventListener;
-}
-
-void EventLoopX11::notify(XInputEvent event) {
-    if (_eventListener.has_value()) {
-        _eventListener->get().notify(std::move(event));
-    }
-}
-
-EventLoopX11::EventLoopX11(XInputHandler xInputHandler)
-    : handler{xInputHandler} {}
-
-boost::asio::awaitable<void> EventLoopX11::eventLoop() {
-    while (!co_await isStopped()) {
-        this->notify(std::move(handler.getEvent()));
-    }
-    co_return;
-}
-
 }  // namespace EvgetX11
 
 #endif  // EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H

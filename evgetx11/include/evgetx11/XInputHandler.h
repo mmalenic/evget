@@ -52,52 +52,6 @@ private:
 
     static void announceVersion(XWrapper& xWrapper);
 };
-
-EvgetX11::XInputHandler::XInputHandler(
-    XWrapper& xWrapper,
-    std::vector<std::reference_wrapper<XSetMask>> maskSetters
-)
-    : xWrapper{xWrapper} {
-    announceVersion(xWrapper);
-    setMask(xWrapper, maskSetters);
-}
-
-void EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
-    int major = versionMajor;
-    int minor = versionMinor;
-
-    Status status = xWrapper.queryVersion(major, minor);
-    if (status == Success) {
-        spdlog::info("XI2 is supported with version {}.{}", major, minor);
-    } else {
-        throw EvgetCore::UnsupportedOperationException(
-            fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor)
-        );
-    }
-}
-
-void EvgetX11::XInputHandler::setMask(
-    XWrapper& xWrapper,
-    std::vector<std::reference_wrapper<XSetMask>> maskSetters
-) {
-    XIEventMask mask{};
-    mask.deviceid = XIAllDevices;
-
-    unsigned char eventMask[XI_LASTEVENT] = {0};
-    for (const auto& maskSetter : maskSetters) {
-        maskSetter.get().setMask(eventMask);
-    }
-
-    mask.mask_len = sizeof(eventMask);
-    mask.mask = eventMask;
-
-    xWrapper.selectEvents(mask);
-}
-
-EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
-    return XInputEvent::nextEvent(xWrapper.get());
-}
-
 }  // namespace EvgetX11
 
 #endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H

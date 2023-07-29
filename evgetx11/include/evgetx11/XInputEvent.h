@@ -71,13 +71,6 @@ private:
     XEventPointer cookie;
 };
 
-EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper)
-    : event{xWrapper.nextEvent()}, timestamp{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {}
-
-EvgetX11::XInputEvent EvgetX11::XInputEvent::nextEvent(XWrapper& xWrapper) {
-    return XInputEvent{xWrapper};
-}
-
 template <typename T>
 const T& EvgetX11::XInputEvent::viewData() const {
     return *static_cast<T*>(cookie->data);
