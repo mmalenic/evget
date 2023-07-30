@@ -53,14 +53,6 @@ public:
     constexpr void addNode(std::string name, N nodeData);
 
     /**
-     * Add a node if it does not already exist. Adds a vector of node data even if node
-     * already exists.
-     *
-     * @param nodeData optional node data to include.
-     */
-    constexpr void addNode(std::string name, std::vector<N> nodeData);
-
-    /**
      * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
      * do not already exist. Adds edge data even if edge already exists.
      *
@@ -101,17 +93,6 @@ template <typename N, typename E>
 template <typename T>
 constexpr auto Graph<N, E>::setEmptyGraphData(std::string name, auto graph) {
     return graph.try_emplace(name, T{});
-}
-
-template <typename N, typename E>
-constexpr void Graph<N, E>::addNode(std::string name, std::vector<N> nodeData) {
-    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, graph);
-
-    auto link = data.try_emplace(name, nodeData);
-    if (!link.second) {
-        auto insertInto = link.first->second;
-        insertInto.insert(insertInto.end(), nodeData.begin(), nodeData.end());
-    }
 }
 
 template <typename N, typename E>
