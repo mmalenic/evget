@@ -50,21 +50,12 @@ public:
      */
     static constexpr std::string getName();
 
-    /**
-     * Update the modifier schema.
-     */
-    static constexpr void updateSchema(Schema& schema);
-
 private:
     std::vector<Fields> _modifierValues{};
 };
 
 constexpr std::string Modifier::getName() {
     return "Modifier";
-}
-
-constexpr void EvgetCore::Event::Modifier::updateSchema(Schema& schema) {
-    schema.addNode(getName(), MODIFIER_FIELD);
 }
 }  // namespace EvgetCore::Event
 

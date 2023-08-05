@@ -82,21 +82,24 @@ enum class Relation { OneToOne, OneToMany, ManyToOne, ManyToMany };
 
 using Interval = std::chrono::microseconds;
 using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+
 using FieldDefinition = std::pair<std::string_view, DataType>;
 
-using Fields = std::vector<std::string>;
+/**
+ * A field represents the name, data type and data of a field.
+ */
+struct Field {
+    FieldDefinition fieldDefinition;
+    std::string data;
+};
+
+using Fields = std::vector<Field>;
 
 /**
- * Data contains the actual entries for the storage component. This is defined as a graph with a vector of strings
- * as node data, which represent the field entries for that node.
+ * Data contains the actual entries for the storage component. This is defined as a graph with a vector of Fields
+ * as the node data, which represent the field entries for that node. There is also a `Relation` between the nodes.
  */
-using Data = Graph<Fields>;
-
-/**
- * A Schema defines the shape of a `Data` entry. This tells the storage component how to store the `Data`.
- * This is defined as a graph with `FieldDefinition` as node data, and edge data indicating the `Relation`.
- */
-using Schema = Graph<FieldDefinition, Relation>;
+using Data = Graph<Fields, Relation>;
 
 constexpr FieldDefinition ACTION_FIELD{"Action", DataType::String};
 constexpr FieldDefinition CHARACTER_FIELD{"Character", DataType::String};

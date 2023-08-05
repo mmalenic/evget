@@ -129,11 +129,6 @@ public:
      */
     static constexpr std::string getName();
 
-    /**
-     * Update the mouse click schema.
-     */
-    static constexpr void updateSchema(Schema& schema);
-
 private:
     std::optional<Interval> _interval{};
     std::optional<Timestamp> _timestamp{};
@@ -156,29 +151,6 @@ private:
 
 constexpr std::string MouseClick::getName() {
     return "MouseClick";
-}
-
-constexpr void EvgetCore::Event::MouseClick::updateSchema(Schema& schema) {
-    schema.addNode(
-        getName(),
-        {INTERVAL_FIELD,
-         TIMESTAMP_FIELD,
-         DEVICE_TYPE_FIELD,
-         POSITIONX_FIELD,
-         POSITIONY_FIELD,
-         ACTION_FIELD,
-         IDENTIFIER_FIELD,
-         NAME_FIELD,
-         DEVICE_NAME_FIELD,
-         FOCUS_WINDOW_NAME_FIELD,
-         FOCUS_WINDOW_POSITION_X_FIELD,
-         FOCUS_WINDOW_POSITION_Y_FIELD,
-         FOCUS_WINDOW_WIDTH_FIELD,
-         FOCUS_WINDOW_HEIGHT_FIELD,
-         INFO_FIELD}
-    );
-
-    schema.addEdge(getName(), Modifier::getName(), Relation::ManyToMany);
 }
 }  // namespace EvgetCore::Event
 

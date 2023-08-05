@@ -24,12 +24,14 @@
 #include "evgetcore/Event/Modifier.h"
 
 EvgetCore::Event::Modifier& EvgetCore::Event::Modifier::modifierValue(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifierValues.push_back({fromModifierValue(modifierValue)});
+    _modifierValues.push_back({{MODIFIER_FIELD, fromModifierValue(modifierValue)}});
     return *this;
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::Modifier::build(Data& data) {
-    data.addNode(getName(), _modifierValues);
+    for (auto& value : _modifierValues) {
+        data.addNode(getName(), std::move(value));
+    }
 
     return data;
 }

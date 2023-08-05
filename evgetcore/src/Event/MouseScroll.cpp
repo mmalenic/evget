@@ -115,22 +115,22 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
     data.addNode(
         getName(),
-        {fromInterval(_interval),
-         fromTimestamp(_timestamp),
-         fromDevice(_device),
-         fromDouble(_positionX),
-         fromDouble(_positionY),
-         fromDouble(_down),
-         fromDouble(_left),
-         fromDouble(_right),
-         fromDouble(_up),
-         fromString(_deviceName),
-         fromString(_focusWindowName),
-         fromDouble(_focusWindowPositionX),
-         fromDouble(_focusWindowPositionY),
-         fromDouble(_focusWindowWidth),
-         fromDouble(_focusWindowHeight),
-         fromString(_info)}
+        {{INTERVAL_FIELD, fromInterval(_interval)},
+         {TIMESTAMP_FIELD, fromTimestamp(_timestamp)},
+         {DEVICE_TYPE_FIELD, fromDevice(_device)},
+         {POSITIONX_FIELD, fromDouble(_positionX)},
+         {POSITIONY_FIELD, fromDouble(_positionY)},
+         {SCROLLDOWN_FIELD, fromDouble(_down)},
+         {SCROLLLEFT_FIELD, fromDouble(_left)},
+         {SCROLLRIGHT_FIELD, fromDouble(_right)},
+         {SCROLLUP_FIELD, fromDouble(_up)},
+         {DEVICE_NAME_FIELD, fromString(_deviceName)},
+         {FOCUS_WINDOW_NAME_FIELD, fromString(_focusWindowName)},
+         {FOCUS_WINDOW_POSITION_X_FIELD, fromDouble(_focusWindowPositionX)},
+         {FOCUS_WINDOW_POSITION_Y_FIELD, fromDouble(_focusWindowPositionY)},
+         {FOCUS_WINDOW_WIDTH_FIELD, fromDouble(_focusWindowWidth)},
+         {FOCUS_WINDOW_HEIGHT_FIELD, fromDouble(_focusWindowHeight)},
+         {INFO_FIELD, fromString(_info)}}
     );
 
     _modifier.build(data);
