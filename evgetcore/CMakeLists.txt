@@ -24,6 +24,7 @@ add_library(
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/Modifier.h
     include/evgetcore/Event/Graph.h
+    include/evgetcore/JsonStorage.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
