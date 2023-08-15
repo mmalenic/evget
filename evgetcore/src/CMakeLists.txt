@@ -8,4 +8,5 @@ target_sources(
             Event/Modifier.cpp
             PrintEvents.cpp
             UnsupportedOperationException.cpp
+            JsonStorage.cpp
 )

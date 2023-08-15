@@ -46,6 +46,7 @@ program_dependencies(
     headers
 )
 program_dependencies(${PROJECT_NAME} date COMPONENTS date-tz VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} nlohmann_json VISIBILITY PUBLIC)
 
 if(BUILD_TESTING)
     add_subdirectory(test)
