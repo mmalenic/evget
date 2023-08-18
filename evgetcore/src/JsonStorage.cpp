@@ -24,3 +24,6 @@
 void EvgetCore::JsonStorage::store(Event::Data event) {
     
 }
+
+EvgetCore::JsonStorage::JsonStorage(std::ofstream ostream) : ostream{} {
+}

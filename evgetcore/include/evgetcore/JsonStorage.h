@@ -23,6 +23,8 @@
 #ifndef EVGET_JSONSTORAGE_H
 #define EVGET_JSONSTORAGE_H
 
+#include <fstream>
+
 #include "EventListener.h"
 #include "Storage.h"
 
@@ -32,7 +34,12 @@ namespace EvgetCore {
  */
 class JsonStorage : public Storage {
 public:
+    explicit JsonStorage(std::ofstream ostream);
+
     void store(Event::Data event) override;
+
+private:
+    std::ofstream ostream;
 };
 }
 
