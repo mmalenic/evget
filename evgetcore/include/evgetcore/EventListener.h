@@ -23,6 +23,8 @@
 #ifndef EVGET_INCLUDE_EVENTLISTENER_H
 #define EVGET_INCLUDE_EVENTLISTENER_H
 
+#include <boost/asio.hpp>
+
 namespace EvgetCore {
 
 namespace asio = boost::asio;
