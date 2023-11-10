@@ -71,6 +71,8 @@ public:
      */
     constexpr void addEdge(std::string from, std::string to);
 
+    constexpr std::map<std::string, std::vector<std::string>> getAdjacencyList();
+
 private:
     template <typename T>
     constexpr void setGraphData(std::string name, auto graph, auto data);
@@ -125,6 +127,20 @@ constexpr void Graph<N, E>::addEdge(std::string from, std::string to) {
     setEmptyGraphData<std::vector<N>>(to, data);
 }
 
+template <typename N, typename E>
+constexpr std::map<std::string, std::vector<std::string>> Graph<N, E>::getAdjacencyList() {
+    std::map<std::string, std::vector<std::string>> adjacencyList{};
+    for (const auto& value : graph) {
+        std::vector<std::string> list{};
+        for (const auto& listValue : value.second) {
+            list.push_back(listValue.first);
+        }
+
+        adjacencyList.try_emplace(value.first, std::move(list));
+    }
+
+    return adjacencyList;
+}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_GRAPH_H
