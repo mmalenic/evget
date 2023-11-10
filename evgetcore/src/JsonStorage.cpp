@@ -21,9 +21,19 @@
 // SOFTWARE.
 #include "evgetcore/JsonStorage.h"
 
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
+
+#include <iostream>
+
 void EvgetCore::JsonStorage::store(Event::Data event) {
-    
+    nlohmann::json output{};
+
+    output["nodes"] = {};
+    output["edges"] = {};
+
+    ostream.get() << output.dump(4);
 }
 
-EvgetCore::JsonStorage::JsonStorage(std::ofstream ostream) : ostream{} {
+EvgetCore::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {
 }

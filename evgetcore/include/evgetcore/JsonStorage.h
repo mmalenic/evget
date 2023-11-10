@@ -34,12 +34,12 @@ namespace EvgetCore {
  */
 class JsonStorage : public Storage {
 public:
-    explicit JsonStorage(std::ofstream ostream);
+    explicit JsonStorage(std::ostream& ostream);
 
     void store(Event::Data event) override;
 
 private:
-    std::ofstream ostream;
+    std::reference_wrapper<std::ostream> ostream;
 };
 }
 

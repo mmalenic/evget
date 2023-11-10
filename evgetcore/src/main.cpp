@@ -31,6 +31,7 @@
 
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
+#include "evgetcore/JsonStorage.h"
 #include "evgetcore/PrintEvents.h"
 #include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
@@ -109,10 +110,15 @@ int main(int argc, char* argv[]) {
         EvgetCore::PrintEvents printEvents{};
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
+
+        EvgetCore::JsonStorage storage{std::cout};
+
         while (true) {
             auto event = xInputHandler.getEvent();
 
             auto transformed = transformer.transformEvent(std::move(event));
+
+            storage.store(transformed);
         }
 
         //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
