@@ -71,7 +71,15 @@ public:
      */
     constexpr void addEdge(std::string from, std::string to);
 
+    /**
+     * Get an adjacency list representation of the graph.
+     */
     constexpr std::map<std::string, std::vector<std::string>> getAdjacencyList();
+
+    /**
+     * Get the nodes of the graph.
+     */
+    constexpr std::unordered_map<std::string, std::vector<N>>& getNodes();
 
 private:
     template <typename T>
@@ -141,6 +149,12 @@ constexpr std::map<std::string, std::vector<std::string>> Graph<N, E>::getAdjace
 
     return adjacencyList;
 }
+
+template <typename N, typename E>
+constexpr std::unordered_map<std::string, std::vector<N>>& Graph<N, E>::getNodes() {
+    return data;
+}
+
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_GRAPH_H
