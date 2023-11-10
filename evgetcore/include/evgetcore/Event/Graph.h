@@ -78,7 +78,7 @@ private:
     constexpr void setGraphData(std::string name, auto graph, auto data);
 
     template <typename T>
-    constexpr auto setEmptyGraphData(std::string name, auto graph);
+    constexpr auto setEmptyGraphData(std::string name, auto& graph);
 
     std::map<std::string, std::map<std::string, std::vector<E>>> graph;
     std::unordered_map<std::string, std::vector<N>> data;
@@ -93,7 +93,7 @@ constexpr void Graph<N, E>::setGraphData(std::string name, auto graph, auto data
 
 template <typename N, typename E>
 template <typename T>
-constexpr auto Graph<N, E>::setEmptyGraphData(std::string name, auto graph) {
+constexpr auto Graph<N, E>::setEmptyGraphData(std::string name, auto& graph) {
     return graph.try_emplace(name, T{});
 }
 
@@ -105,7 +105,7 @@ constexpr void Graph<N, E>::addNode(std::string name, N nodeData) {
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addEdge(std::string from, std::string to, E edgeData) {
-    auto link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
     setGraphData<std::vector<E>>(to, link, edgeData);
 
     setEmptyGraphData<std::vector<N>>(from, data);
@@ -120,7 +120,7 @@ constexpr void Graph<N, E>::addNode(std::string name) {
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addEdge(std::string from, std::string to) {
-    auto link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
     setEmptyGraphData<std::vector<E>>(to, link);
 
     setEmptyGraphData<std::vector<N>>(from, data);
