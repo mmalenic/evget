@@ -53,11 +53,15 @@ void EvgetCore::JsonStorage::store(Event::Data event) {
     auto formattedEdges = std::vector<nlohmann::json>{};
     for (const auto& from : edges) {
         for (const auto& to : from.second) {
+            std::string relation = "";
+            if (to.second.size() >= 1) {
+                relation = getRelation(to.second[0]);
+            }
+
             formattedEdges.push_back(nlohmann::json{
                         {"from", from.first},
                         {"to", to.first},
-                // todo make this not use vectors
-                        {"relation", getRelation(to.second[0])},
+                        {"relation", relation},
                     });
         }
     }
