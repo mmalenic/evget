@@ -83,7 +83,7 @@ public:
 
 private:
     template <typename T>
-    constexpr void setGraphData(std::string name, auto graph, auto data);
+    constexpr void setGraphData(std::string name, auto& graph, auto data);
 
     template <typename T>
     constexpr auto setEmptyGraphData(std::string name, auto& graph);
@@ -94,9 +94,9 @@ private:
 
 template <typename N, typename E>
 template <typename T>
-constexpr void Graph<N, E>::setGraphData(std::string name, auto graph, auto data) {
-    auto link = setEmptyGraphData<T>(name, graph);
-    link.first->second.emplace_back(std::move(data));
+constexpr void Graph<N, E>::setGraphData(std::string name, auto& graph, auto data) {
+    auto& link = setEmptyGraphData<T>(name, graph).first->second;
+    link.emplace_back(std::move(data));
 }
 
 template <typename N, typename E>
