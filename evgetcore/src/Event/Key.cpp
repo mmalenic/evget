@@ -137,7 +137,7 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
 
     _modifier.build(data);
 
-    data.addEdge(getName(), _modifier.getName());
+    data.addEdge(getName(), _modifier.getName(), Relation::ManyToMany);
 
     return data;
 }
