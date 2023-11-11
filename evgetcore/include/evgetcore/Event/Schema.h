@@ -66,6 +66,11 @@ constexpr std::string_view DATA_TYPE_TIMESTAMP{"Timestamp"};
 constexpr std::string_view DATA_TYPE_INTERVAL{"Interval"};
 constexpr std::string_view DATA_TYPE_DOUBLE{"Double"};
 
+constexpr std::string_view RELATION_ONE_TO_ONE{"OneToOne"};
+constexpr std::string_view RELATION_ONE_TO_MANY{"OneToMany"};
+constexpr std::string_view RELATION_MANY_TO_ONE{"ManyToOne"};
+constexpr std::string_view RELATION_MANY_TO_MANY{"ManyToMany"};
+
 template <typename T>
 constexpr std::string
 optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
@@ -155,6 +160,25 @@ constexpr std::string_view getType(FieldDefinition field) {
 
     return "";
 }
+
+/**
+ * Get the type of the FieldDefinition.
+ */
+constexpr std::string_view getRelation(Relation relation) {
+    switch (relation) {
+        case Relation::OneToOne:
+            return detail::RELATION_ONE_TO_ONE;
+        case Relation::OneToMany:
+            return detail::RELATION_ONE_TO_MANY;
+        case Relation::ManyToOne:
+            return detail::RELATION_MANY_TO_ONE;
+        case Relation::ManyToMany:
+            return detail::RELATION_MANY_TO_MANY;
+    }
+
+    return "";
+}
+
 
 /**
  * Create a string from a string value.
