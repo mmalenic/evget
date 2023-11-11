@@ -79,7 +79,12 @@ public:
     /**
      * Get the nodes of the graph.
      */
-    constexpr std::unordered_map<std::string, std::vector<N>>& getNodes();
+    constexpr std::map<std::string, std::vector<N>>& getNodes();
+
+    /**
+     * Get the edges of the graph.
+     */
+    constexpr std::map<std::string, std::map<std::string, std::vector<E>>>& getEdges();
 
 private:
     template <typename T>
@@ -88,8 +93,8 @@ private:
     template <typename T>
     constexpr auto setEmptyGraphData(std::string name, auto& graph);
 
-    std::map<std::string, std::map<std::string, std::vector<E>>> graph;
-    std::unordered_map<std::string, std::vector<N>> data;
+    std::map<std::string, std::map<std::string, std::vector<E>>> edges;
+    std::map<std::string, std::vector<N>> nodes;
 };
 
 template <typename N, typename E>
@@ -107,38 +112,38 @@ constexpr auto Graph<N, E>::setEmptyGraphData(std::string name, auto& graph) {
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addNode(std::string name, N nodeData) {
-    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, graph);
-    setGraphData<std::vector<N>>(name, data, nodeData);
+    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges);
+    setGraphData<std::vector<N>>(name, nodes, nodeData);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addEdge(std::string from, std::string to, E edgeData) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, edges).first->second;
     setGraphData<std::vector<E>>(to, link, edgeData);
 
-    setEmptyGraphData<std::vector<N>>(from, data);
-    setEmptyGraphData<std::vector<N>>(to, data);
+    setEmptyGraphData<std::vector<N>>(from, nodes);
+    setEmptyGraphData<std::vector<N>>(to, nodes);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addNode(std::string name) {
-    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, graph);
-    setEmptyGraphData<std::vector<N>>(name, data);
+    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges);
+    setEmptyGraphData<std::vector<N>>(name, nodes);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::addEdge(std::string from, std::string to) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, graph).first->second;
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, edges).first->second;
     setEmptyGraphData<std::vector<E>>(to, link);
 
-    setEmptyGraphData<std::vector<N>>(from, data);
-    setEmptyGraphData<std::vector<N>>(to, data);
+    setEmptyGraphData<std::vector<N>>(from, nodes);
+    setEmptyGraphData<std::vector<N>>(to, nodes);
 }
 
 template <typename N, typename E>
 constexpr std::map<std::string, std::vector<std::string>> Graph<N, E>::getAdjacencyList() {
     std::map<std::string, std::vector<std::string>> adjacencyList{};
-    for (const auto& value : graph) {
+    for (const auto& value : edges) {
         std::vector<std::string> list{};
         for (const auto& listValue : value.second) {
             list.push_back(listValue.first);
@@ -151,8 +156,13 @@ constexpr std::map<std::string, std::vector<std::string>> Graph<N, E>::getAdjace
 }
 
 template <typename N, typename E>
-constexpr std::unordered_map<std::string, std::vector<N>>& Graph<N, E>::getNodes() {
-    return data;
+constexpr std::map<std::string, std::vector<N>>& Graph<N, E>::getNodes() {
+    return nodes;
+}
+
+template <typename N, typename E>
+constexpr std::map<std::string, std::map<std::string, std::vector<E>>>& Graph<N, E>::getEdges() {
+    return edges;
 }
 
 }  // namespace EvgetCore::Event

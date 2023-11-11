@@ -37,7 +37,7 @@ void EvgetCore::JsonStorage::store(Event::Data event) {
             std::ranges::transform(field.begin(), field.end(),
                                    std::back_inserter(out), [](const auto& field) {
                 return nlohmann::json{
-                    {"definition", getName(field.fieldDefinition)},
+                    {"name", getName(field.fieldDefinition)},
                     {"type", getType(field.fieldDefinition)},
                     {"data", field.data},
                 };
