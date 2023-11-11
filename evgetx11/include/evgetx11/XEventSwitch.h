@@ -128,24 +128,31 @@ template <BuilderHasModifier T>
 T& EvgetX11::XEventSwitch::setModifierValue(int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifierState & ShiftMask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Shift);
-    } else if (modifierState & LockMask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
-    } else if (modifierState & ControlMask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Control);
-    } else if (modifierState & Mod1Mask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Alt);
-    } else if (modifierState & Mod2Mask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
-    } else if (modifierState & Mod3Mask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
-    } else if (modifierState & Mod4Mask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Super);
-    } else if (modifierState & Mod5Mask) {
-        return builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
-    } else {
-        return builder;
+        builder.modifier(EvgetCore::Event::ModifierValue::Shift);
     }
+    if (modifierState & LockMask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
+    }
+    if (modifierState & ControlMask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::Control);
+    }
+    if (modifierState & Mod1Mask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::Alt);
+    }
+    if (modifierState & Mod2Mask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
+    }
+    if (modifierState & Mod3Mask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
+    }
+    if (modifierState & Mod4Mask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::Super);
+    }
+    if (modifierState & Mod5Mask) {
+        builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
+    }
+
+    return builder;
 }
 
 template <BuilderHasWindowFunctions T>
