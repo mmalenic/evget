@@ -60,6 +60,12 @@ constexpr std::string_view MODIFIER_VALUE_MOD3{"Mod3"};
 constexpr std::string_view MODIFIER_VALUE_SUPER{"Super"};
 constexpr std::string_view MODIFIER_VALUE_MOD5{"Mod5"};
 
+constexpr std::string_view DATA_TYPE_STRING{"String"};
+constexpr std::string_view DATA_TYPE_INTEGER{"Integer"};
+constexpr std::string_view DATA_TYPE_TIMESTAMP{"Timestamp"};
+constexpr std::string_view DATA_TYPE_INTERVAL{"Interval"};
+constexpr std::string_view DATA_TYPE_DOUBLE{"Double"};
+
 template <typename T>
 constexpr std::string
 optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
@@ -128,6 +134,26 @@ constexpr FieldDefinition INFO_FIELD{"Info", DataType::String};
  */
 constexpr std::string_view getName(FieldDefinition field) {
     return field.first;
+}
+
+/**
+ * Get the type of the FieldDefinition.
+ */
+constexpr std::string_view getType(FieldDefinition field) {
+    switch (field.second) {
+        case DataType::String:
+            return detail::DATA_TYPE_STRING;
+        case DataType::Integer:
+            return detail::DATA_TYPE_INTEGER;
+        case DataType::Timestamp:
+            return detail::DATA_TYPE_TIMESTAMP;
+        case DataType::Interval:
+            return detail::DATA_TYPE_INTERVAL;
+        case DataType::Double:
+            return detail::DATA_TYPE_DOUBLE;
+    }
+
+    return "";
 }
 
 /**

@@ -23,13 +23,33 @@
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
-
-#include <iostream>
+#include <evgetcore/Event/Schema.h>
 
 void EvgetCore::JsonStorage::store(Event::Data event) {
     nlohmann::json output{};
 
-    output["nodes"] = {};
+    auto nodes = event.getNodes();
+    auto formattedNodes = std::vector<nlohmann::json>{};
+    for (const auto& node : nodes) {
+        auto processedFields = std::vector<std::vector<nlohmann::json>>{};
+        for (const auto& field : node.second) {
+            auto out = std::vector<nlohmann::json>{};
+            std::ranges::transform(field.begin(), field.end(),
+                                   std::back_inserter(out), [](const auto& field) {
+                return nlohmann::json{
+                    {"definition", getName(field.fieldDefinition)},
+                    {"type", getType(field.fieldDefinition)},
+                    {"data", field.data},
+                };
+            });
+
+            processedFields.push_back(out);
+        }
+
+        formattedNodes.push_back({node.first, processedFields});
+    }
+
+    output["nodes"] = formattedNodes;
     output["edges"] = {};
 
     ostream.get() << output.dump(4);
