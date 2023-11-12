@@ -174,17 +174,24 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
-        (deviceEvent.flags & XIPointerEmulated)) {
+        deviceEvent.flags & XIPointerEmulated) {
         return;
     }
 
     EvgetCore::Event::MouseScroll builder{};
     auto valuators = getValuators(deviceEvent.valuators);
+    std::unordered_map<int, XIScrollClassInfo> processedValuators{};
     for (const auto& [valuator, info] : scrollMap[deviceEvent.deviceid]) {
         if (!valuators.contains(valuator)) {
-            continue;
+            processedValuators.try_emplace(valuator, info);
         }
+    }
 
+    if (processedValuators.empty()) {
+        return;
+    }
+
+    for (const auto& [valuator, info] : processedValuators) {
         auto value = valuators[valuator] - valuatorValues[deviceEvent.deviceid][valuator];
         valuatorValues[deviceEvent.deviceid][valuator] = value;
 
