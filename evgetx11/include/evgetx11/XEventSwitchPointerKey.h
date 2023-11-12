@@ -30,6 +30,7 @@
 #include <xorg/xserver-properties.h>
 
 #include <unordered_map>
+#include <cmath>
 
 #include "XEventSwitch.h"
 #include "XWrapper.h"
@@ -193,7 +194,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
 
     for (const auto& [valuator, info] : processedValuators) {
         auto value = valuators[valuator] - valuatorValues[deviceEvent.deviceid][valuator];
-        valuatorValues[deviceEvent.deviceid][valuator] = value;
+        valuatorValues[deviceEvent.deviceid][valuator] = valuators[valuator];
 
         if (info.scroll_type == XIScrollTypeHorizontal) {
             if (info.increment * value >= 0) {
