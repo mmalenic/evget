@@ -54,9 +54,11 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     for (auto valuatorInfo : valuatorInfos) {
         auto valuatorName = xWrapper.get().atomName(valuatorInfo->label);
         if (valuatorName) {
-            if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0) {
+            if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0 |
+                strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_X) == 0) {
                 valuatorX[id] = valuatorInfo->number;
-            } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0) {
+            } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0 |
+                strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
                 valuatorY[id] = valuatorInfo->number;
             }
         }
