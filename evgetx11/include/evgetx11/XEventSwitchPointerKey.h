@@ -182,7 +182,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     auto valuators = getValuators(deviceEvent.valuators);
     std::unordered_map<int, XIScrollClassInfo> processedValuators{};
     for (const auto& [valuator, info] : scrollMap[deviceEvent.deviceid]) {
-        if (!valuators.contains(valuator)) {
+        if (valuators.contains(valuator)) {
             processedValuators.try_emplace(valuator, info);
         }
     }
