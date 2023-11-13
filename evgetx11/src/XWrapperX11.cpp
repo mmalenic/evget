@@ -37,7 +37,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
         // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
         // relationship.
         XKeyEvent keyEvent{
-            .type = ButtonPress,
+            .type = KeyPress,
             .serial = event.serial,
             .send_event = event.send_event,
             .display = event.display,
@@ -58,7 +58,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
         if (xic) {
             Status status;
             bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
-            if (status == XBufferOverflow) {
+            if (status != Success || status == XBufferOverflow || bytes == 0) {
                 spdlog::warn(
                     "Buffer overflowed when looking up string, falling back to encoding key events in ISO Latin-1."
                 );
@@ -77,7 +77,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
     if (xim) {
         XIMStyles *styles_ptr;
-        auto values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, NULL);
+        auto values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, nullptr);
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{styles_ptr, XFree};
 
         if (values || !xim_styles) {
