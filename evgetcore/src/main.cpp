@@ -110,7 +110,6 @@ int main(int argc, char* argv[]) {
         EvgetCore::PrintEvents printEvents{};
         EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
-
         EvgetCore::JsonStorage storage{std::cout};
 
         while (true) {

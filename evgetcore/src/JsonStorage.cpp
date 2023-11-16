@@ -66,10 +66,12 @@ void EvgetCore::JsonStorage::store(Event::Data event) {
         }
     }
 
-    output["nodes"] = formattedNodes;
-    output["edges"] = formattedEdges;
+    if (!formattedEdges.empty() || !formattedNodes.empty()) {
+        output["nodes"] = formattedNodes;
+        output["edges"] = formattedEdges;
 
-    ostream.get() << output.dump(4);
+        ostream.get() << output.dump(4);
+    }
 }
 
 EvgetCore::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {
