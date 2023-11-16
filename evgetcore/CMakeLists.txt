@@ -9,8 +9,7 @@ add_library(
     include/evgetcore/EventHandler.h
     include/evgetcore/Storage.h
     include/evgetcore/EventLoop.h
-    include/evgetcore/PrintEvents.h
-    include/evgetcore/Event/MouseMove.h
+        include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h
     include/evgetcore/Event/MouseScroll.h
     include/evgetcore/Event/Direction.h
