@@ -155,6 +155,8 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 
     EvgetCore::Event::Key builder{};
     builder.interval(getTime(deviceEvent.time))
+        .positionX(deviceEvent.root_x)
+        .positionY(deviceEvent.root_y)
         .timestamp(event.getTimestamp())
         .action(action)
         .button(deviceEvent.detail)
