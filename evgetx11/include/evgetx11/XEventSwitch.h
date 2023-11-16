@@ -214,6 +214,7 @@ void EvgetX11::XEventSwitch::addMotionEvent(
         .device(getDevice(event.deviceid))
         .positionX(event.root_x)
         .positionY(event.root_y);
+
     XEventSwitch::setModifierValue(event.mods.effective, builder);
     setWindowFields(builder);
 

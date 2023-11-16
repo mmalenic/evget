@@ -141,7 +141,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     }
 
     std::string character;
-    KeySym keySym;
+    KeySym keySym = NoSymbol;
 
     character = xWrapper.get().lookupCharacter(deviceEvent, keySym);
 
@@ -157,11 +157,13 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     builder.interval(getTime(deviceEvent.time))
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y)
+        .device(xEventSwitchPointer.get().getDevice(deviceEvent.deviceid))
         .timestamp(event.getTimestamp())
         .action(action)
         .button(deviceEvent.detail)
         .character(character)
         .name(name);
+
     XEventSwitch::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
@@ -218,6 +220,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
         .device(xEventSwitchPointer.get().getDevice(deviceEvent.deviceid))
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y);
+
     XEventSwitch::setModifierValue(deviceEvent.mods.effective, builder);
     xEventSwitchPointer.get().setWindowFields(builder);
 
