@@ -26,6 +26,10 @@
 #include <evgetcore/Event/Schema.h>
 
 void EvgetCore::JsonStorage::store(Event::Data event) {
+    if (event.empty()) {
+        return;
+    }
+
     nlohmann::json output{};
 
     auto nodes = event.getNodes();
@@ -66,12 +70,10 @@ void EvgetCore::JsonStorage::store(Event::Data event) {
         }
     }
 
-    if (!formattedEdges.empty() || !formattedNodes.empty()) {
-        output["nodes"] = formattedNodes;
-        output["edges"] = formattedEdges;
+    output["nodes"] = formattedNodes;
+    output["edges"] = formattedEdges;
 
-        ostream.get() << output.dump(4);
-    }
+    ostream.get() << output.dump(4);
 }
 
 EvgetCore::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {

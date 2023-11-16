@@ -86,6 +86,11 @@ public:
      */
     constexpr std::map<std::string, std::map<std::string, std::vector<E>>>& getEdges();
 
+    /**
+     * Check if both the edges and the nodes are empty.
+     */
+    constexpr bool empty();
+
 private:
     template <typename T>
     constexpr void setGraphData(std::string name, auto& graph, auto data);
@@ -165,6 +170,10 @@ constexpr std::map<std::string, std::map<std::string, std::vector<E>>>& Graph<N,
     return edges;
 }
 
+template <typename N, typename E>
+constexpr bool Graph<N, E>::empty() {
+    return nodes.empty() && edges.empty();
+}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_GRAPH_H
