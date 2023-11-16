@@ -322,7 +322,10 @@ void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<i
 
 std::string EvgetX11::XWrapperX11::keySymToString(KeySym keySym) {
     if (keySym != NoSymbol) {
-        XKeysymToString(keySym);
+        auto name = XKeysymToString(keySym);
+        if (name != nullptr) {
+            return {name};
+        }
     }
-    return {};
+    return "";
 }
