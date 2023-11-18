@@ -13,13 +13,7 @@ do $$ begin
         -- X11 - Mod4, Mac - Command, Windows - Windows key
         'Super',
         'Mod5'
-    );
+        );
 exception
     when duplicate_object then null;
 end $$;
-
--- A modifier table containing the type of modifier in effect.
-create table if not exists modifier (
-    modifier_id uuid primary key default gen_random_uuid(),
-    modifier_value modifier_type not null
-);
