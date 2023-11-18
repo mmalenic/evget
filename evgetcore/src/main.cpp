@@ -32,7 +32,6 @@
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/JsonStorage.h"
-#include "evgetcore/PrintEvents.h"
 #include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
@@ -107,8 +106,7 @@ int main(int argc, char* argv[]) {
 
         EvgetX11::EventLoopX11 eventLoop{xInputHandler};
 
-        EvgetCore::PrintEvents printEvents{};
-        EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
+        //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
         EvgetCore::JsonStorage storage{std::cout};
 

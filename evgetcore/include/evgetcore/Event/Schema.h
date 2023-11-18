@@ -252,7 +252,7 @@ constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
             case ModifierValue::Control:
                 return std::string{detail::MODIFIER_VALUE_CONTROL};
             case ModifierValue::Alt:
-                return std::string{detail::ACTION_PRESS};
+                return std::string{detail::MODIFIER_VALUE_ALT};
             case ModifierValue::NumLock:
                 return std::string{detail::MODIFIER_VALUE_NUMLOCK};
             case ModifierValue::Mod3:
