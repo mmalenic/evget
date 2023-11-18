@@ -34,12 +34,12 @@ enum class ModifierValue {
     // X11 - Lock
     CapsLock,
     Control,
-    // X11 - Mod1
+    // X11 - Mod1, Mac - Option
     Alt,
     // X11 - Mod2
     NumLock,
     Mod3,
-    // X11 - Mod4, Windows key
+    // X11 - Mod4, Mac - Command, Windows - Windows key
     Super,
     Mod5
 };
