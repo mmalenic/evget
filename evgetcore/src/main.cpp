@@ -31,7 +31,7 @@
 
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
-#include "evgetcore/JsonStorage.h"
+#include "evgetcore/Storage/JsonStorage.h"
 #include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"

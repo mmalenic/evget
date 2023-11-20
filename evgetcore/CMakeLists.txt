@@ -7,7 +7,7 @@ add_library(
     ${PROJECT_NAME}
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
-    include/evgetcore/Storage.h
+        include/evgetcore/Storage/Storage.h
     include/evgetcore/EventLoop.h
         include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h
@@ -23,7 +23,8 @@ add_library(
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/Modifier.h
     include/evgetcore/Event/Graph.h
-    include/evgetcore/JsonStorage.h
+        include/evgetcore/Storage/JsonStorage.h
+        include/evgetcore/Storage/SQLite.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
