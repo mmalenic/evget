@@ -65,24 +65,14 @@ public:
     MouseScroll& positionY(double y);
 
     /**
-     * Add scroll down.
+     * Add vertical scroll.
      */
-    MouseScroll& down(double amount);
+    MouseScroll& vertical(double amount);
 
     /**
-     * Add scroll left.
+     * Add horizontal scroll.
      */
-    MouseScroll& left(double amount);
-
-    /**
-     * Add scroll right.
-     */
-    MouseScroll& right(double amount);
-
-    /**
-     * Add scroll up.
-     */
-    MouseScroll& up(double amount);
+    MouseScroll& horizontal(double amount);
 
     /**
      * Add the device name.
@@ -140,10 +130,8 @@ private:
     std::optional<Device> _device{};
     std::optional<double> _positionX{};
     std::optional<double> _positionY{};
-    std::optional<double> _down{};
-    std::optional<double> _left{};
-    std::optional<double> _right{};
-    std::optional<double> _up{};
+    std::optional<double> _vertical{};
+    std::optional<double> _horizontal{};
     std::optional<std::string> _deviceName{};
     std::optional<std::string> _focusWindowName{};
     std::optional<double> _focusWindowPositionX{};

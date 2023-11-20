@@ -52,23 +52,13 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionY(double y
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::down(double amount) {
-    _down = amount;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::vertical(double amount) {
+    _vertical = amount;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::left(double amount) {
-    _left = amount;
-    return *this;
-}
-
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::right(double amount) {
-    _right = amount;
-    return *this;
-}
-
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::up(double amount) {
-    _up = amount;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::horizontal(double amount) {
+    _horizontal = amount;
     return *this;
 }
 
@@ -120,10 +110,8 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
          {DEVICE_TYPE_FIELD, fromDevice(_device)},
          {POSITIONX_FIELD, fromDouble(_positionX)},
          {POSITIONY_FIELD, fromDouble(_positionY)},
-         {SCROLLDOWN_FIELD, fromDouble(_down)},
-         {SCROLLLEFT_FIELD, fromDouble(_left)},
-         {SCROLLRIGHT_FIELD, fromDouble(_right)},
-         {SCROLLUP_FIELD, fromDouble(_up)},
+         {SCROLL_VERTICAL_FIELD, fromDouble(_vertical)},
+         {SCROLL_HORIZONTAL_FIELD, fromDouble(_horizontal)},
          {DEVICE_NAME_FIELD, fromString(_deviceName)},
          {FOCUS_WINDOW_NAME_FIELD, fromString(_focusWindowName)},
          {FOCUS_WINDOW_POSITION_X_FIELD, fromDouble(_focusWindowPositionX)},

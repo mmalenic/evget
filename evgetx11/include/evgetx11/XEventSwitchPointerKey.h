@@ -197,21 +197,13 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     }
 
     for (const auto& [valuator, info] : processedValuators) {
-        auto value = valuators[valuator] - valuatorValues[deviceEvent.deviceid][valuator];
+        auto value = valuatorValues[deviceEvent.deviceid][valuator] - valuators[valuator];
         valuatorValues[deviceEvent.deviceid][valuator] = valuators[valuator];
 
         if (info.scroll_type == XIScrollTypeHorizontal) {
-            if (info.increment * value >= 0) {
-                builder.left(value);
-            } else {
-                builder.right(value);
-            }
+            builder.horizontal(value);
         } else {
-            if (info.increment * value >= 0) {
-                builder.down(value);
-            } else {
-                builder.up(value);
-            }
+            builder.vertical(value);
         }
     }
 
