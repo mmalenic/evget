@@ -29,6 +29,7 @@ add_library(
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 add_subdirectory(src)
+add_subdirectory(database)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
