@@ -230,3 +230,44 @@ macro(check_required_arg ARG ARG_NAME)
         return()
     endif()
 endmacro()
+
+#[==========================================================================[
+create_header_file
+----------------
+
+A function which creates a header file containing to contents of a ```file_name``.
+
+.. code:: cmake
+
+   create_header_file(
+       <TARGET_FILE_NAME>
+       <HEADER_FILE_NAME>
+       <VARIABLE_NAME>
+   )
+
+Read ``TARGET_FILE_NAME`` and create a string_view inside ``HEADER_FILE_NAME`` with
+the name ``VARIABLE_NAME`` and namespace ``NAMESPACE``.
+#]==========================================================================]
+function(create_header_file TARGET_FILE_NAME HEADER_FILE_NAME VARIABLE_NAME NAMESPACE)
+    cmake_path(GET HEADER_FILE_NAME STEM HEADER_STEM)
+    string(TOUPPER "${HEADER_STEM}" HEADER_STEM)
+    string(TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
+    string(REPLACE "::" "_" NAMESPACE_UPPER ${NAMESPACE_UPPER})
+
+    file(READ "${TARGET_FILE_NAME}" STRING_CONTENT)
+    string(STRIP "${STRING_CONTENT}" STRING_CONTENT)
+
+    string(CONCAT HEADER
+            "// Auto-generated file.\n\n"
+            "#ifndef ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n"
+            "#define ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n\n"
+            "#include <string_view>\n\n"
+            "namespace ${NAMESPACE} {\n"
+            "    using namespace std::literals;\n\n"
+            "    inline constexpr auto ${VARIABLE_NAME} = \"${STRING_CONTENT}\"sv;\n"
+            "}\n\n"
+            "#endif // ${NAMESPACE_UPPER}_${HEADER_STEM}_H"
+    )
+
+    file(WRITE "${HEADER_FILE_NAME}" "${HEADER}")
+endfunction()
