@@ -34,14 +34,3 @@ insert into device_type values (1, 'Mouse'),
     (2, 'Keyboard'),
     (3, 'Touchpad'),
     (4, 'Touchscreen');
-
--- Enum type representing scroll directions.
-create table direction (
-    id integer primary key,
-    enum text not null unique
-);
-insert into direction values (1, 'Down'),
-    (2, 'Left'),
-    (3, 'Right'),
-    (4, 'Up');
-
