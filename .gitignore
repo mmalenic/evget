@@ -6,3 +6,4 @@
 /out/
 /venv/
 /vcpkg_installed/
+/evgetcore/database/generated/
