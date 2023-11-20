@@ -11,6 +11,7 @@ create table mouse_move (
     focus_window_position_x real,
     focus_window_position_y real,
     focus_window_width real,
+    focus_window_height real,
     info text
 );
 
