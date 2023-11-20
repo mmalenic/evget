@@ -1,7 +1,7 @@
 -- Enum table representing possible modifier values.
 create table modifier_type (
     id integer primary key,
-    enum text unique
+    enum text not null unique
 );
 insert into modifier_type values (1, 'Shift'),
     -- X11 - Lock
@@ -19,7 +19,7 @@ insert into modifier_type values (1, 'Shift'),
 -- Enum type representing button action types.
 create table button_action (
     id integer primary key,
-    enum text unique
+    enum text not null unique
 );
 insert into button_action values (1, 'Press'),
     (2, 'Release'),
@@ -28,7 +28,7 @@ insert into button_action values (1, 'Press'),
 -- Enum type representing device types.
 create table device_type (
     id integer primary key,
-    enum text unique
+    enum text not null unique
 );
 insert into device_type values (1, 'Mouse'),
     (2, 'Keyboard'),
@@ -38,7 +38,7 @@ insert into device_type values (1, 'Mouse'),
 -- Enum type representing scroll directions.
 create table direction (
     id integer primary key,
-    enum text unique
+    enum text not null unique
 );
 insert into direction values (1, 'Down'),
     (2, 'Left'),
