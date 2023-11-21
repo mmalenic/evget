@@ -24,7 +24,7 @@
 #define SQLITE_H
 
 #include "Storage.h"
-#include "../Event/Schema.h"
+#include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore {
 /**
