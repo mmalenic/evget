@@ -62,12 +62,14 @@ Finds a program dependency using ``find_package`` and then links it to an
 existing target using ``target_link_libraries``. Treats all dependencies
 and components as ``REQUIRED``. ``LINK_COMPONENTS`` optionally specifies the
 the components that should be linked to the target, and if not present defaults
-to ``COMPONENTS``.
+to ``COMPONENTS``. ``DIRECT_LINK`` species linking a dependency as
+``${DEPENDENCY_NAME}`` rather than ``${DEPENDENCY_NAME}::${DEPENDENCY_NAME}``.
 #]==========================================================================]
 function(program_dependencies TARGET DEPENDENCY_NAME)
+    set(options DIRECT_LINK)
     set(one_value_args VERSION VISIBILITY)
     set(multi_value_args COMPONENTS LINK_COMPONENTS)
-    cmake_parse_arguments(PROGRAM_DEPENDENCIES "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments(PROGRAM_DEPENDENCIES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     if(NOT ${DEPENDENCY_NAME}_FOUND)
         find_package(
@@ -88,7 +90,11 @@ function(program_dependencies TARGET DEPENDENCY_NAME)
             target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${COMP})
         endforeach()
     else()
-        target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
+        if(PROGRAM_DEPENDENCIES_DIRECT_LINK)
+            target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME})
+        else()
+            target_link_libraries(${TARGET} ${PROGRAM_DEPENDENCIES_VISIBILITY} ${DEPENDENCY_NAME}::${DEPENDENCY_NAME})
+        endif()
     endif()
 
     message(STATUS "utils: linked ${DEPENDENCY_NAME} to ${TARGET}")
