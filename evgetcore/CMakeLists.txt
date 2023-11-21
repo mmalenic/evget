@@ -25,7 +25,7 @@ add_library(
     include/evgetcore/Event/Graph.h
         include/evgetcore/Storage/JsonStorage.h
         include/evgetcore/Storage/SQLite.h
-        src/Storage/SQLite.cpp
+        include/evgetcore/Storage/Error.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
@@ -49,6 +49,7 @@ program_dependencies(
 )
 program_dependencies(${PROJECT_NAME} date COMPONENTS date-tz VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} nlohmann_json VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} SQLiteCpp VISIBILITY PUBLIC DIRECT_LINK)
 
 if(BUILD_TESTING)
     add_subdirectory(test)
