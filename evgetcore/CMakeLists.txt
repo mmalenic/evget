@@ -25,6 +25,7 @@ add_library(
     include/evgetcore/Event/Graph.h
         include/evgetcore/Storage/JsonStorage.h
         include/evgetcore/Storage/SQLite.h
+        src/Storage/SQLite.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

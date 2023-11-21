@@ -20,25 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_H
-#define SQLITE_H
+#include "evgetcore/Storage/SQLite.h"
 
-#include "Storage.h"
-#include "evgetcore/Event/Schema.h"
+#include <utility>
 
-namespace EvgetCore::Storage {
-/**
- * A storage class which stores events in an SQLite database.
- */
-class SQLite : public Storage {
-public:
-    explicit SQLite(std::string database = "evget.sqlite");
-
-    void store(Event::Data event) override;
-
-private:
-    std::string database;
-};
+EvgetCore::Storage::SQLite::SQLite(std::string database) : database{std::move(database)} {
 }
 
-#endif //SQLITE_H
+void EvgetCore::Storage::SQLite::store(Event::Data event) {
+}

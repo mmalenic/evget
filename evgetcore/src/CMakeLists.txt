@@ -8,4 +8,5 @@ target_sources(
             Event/Modifier.cpp
             UnsupportedOperationException.cpp
         Storage/JsonStorage.cpp
+        Storage/SQLite.cpp
 )
