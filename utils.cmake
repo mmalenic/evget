@@ -254,8 +254,12 @@ function(create_header_file TARGET_FILE_NAME HEADER_FILE_NAME VARIABLE_NAME NAME
     string(TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
     string(REPLACE "::" "_" NAMESPACE_UPPER ${NAMESPACE_UPPER})
 
-    file(READ "${TARGET_FILE_NAME}" STRING_CONTENT)
-    string(STRIP "${STRING_CONTENT}" STRING_CONTENT)
+    file(STRINGS "${TARGET_FILE_NAME}" LINES)
+    foreach(LINE IN LISTS LINES)
+        string(STRIP "${LINE}" LINE)
+        set(OUTPUT_STRING "${OUTPUT_STRING}\"${LINE}\"\n")
+    endforeach()
+    string(STRIP "${OUTPUT_STRING}" OUTPUT_STRING)
 
     string(CONCAT HEADER
             "// Auto-generated file.\n\n"
@@ -264,8 +268,8 @@ function(create_header_file TARGET_FILE_NAME HEADER_FILE_NAME VARIABLE_NAME NAME
             "#include <string_view>\n\n"
             "namespace ${NAMESPACE} {\n"
             "    using namespace std::literals;\n\n"
-            "    inline constexpr auto ${VARIABLE_NAME} = \"${STRING_CONTENT}\"sv;\n"
-            "}\n\n"
+            "    inline constexpr auto ${VARIABLE_NAME} = ${OUTPUT_STRING}sv;\n"
+            "} // ${NAMESPACE}\n\n"
             "#endif // ${NAMESPACE_UPPER}_${HEADER_STEM}_H"
     )
 
