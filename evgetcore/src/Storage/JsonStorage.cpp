@@ -25,7 +25,7 @@
 #include <nlohmann/json.hpp>
 #include <evgetcore/Event/Schema.h>
 
-void EvgetCore::JsonStorage::store(Event::Data event) {
+void EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
         return;
     }
@@ -76,5 +76,5 @@ void EvgetCore::JsonStorage::store(Event::Data event) {
     ostream.get() << output.dump(4);
 }
 
-EvgetCore::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {
+EvgetCore::Storage::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {
 }

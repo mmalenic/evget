@@ -28,7 +28,7 @@
 #include "../EventListener.h"
 #include "Storage.h"
 
-namespace EvgetCore {
+namespace EvgetCore::Storage {
 /**
  * A storage class which prints events to stdout.
  */

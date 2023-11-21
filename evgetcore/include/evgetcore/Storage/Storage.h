@@ -26,7 +26,7 @@
 
 #include "evgetcore/Event/Schema.h"
 
-namespace EvgetCore {
+namespace EvgetCore::Storage {
 
 /**
  * An interface which represents storing data.

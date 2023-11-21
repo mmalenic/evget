@@ -26,7 +26,7 @@
 #include "Storage.h"
 #include "evgetcore/Event/Schema.h"
 
-namespace EvgetCore {
+namespace EvgetCore::Storage {
 /**
  * A storage class which stores events in an SQLite database.
  */

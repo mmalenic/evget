@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 
         //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
 
-        EvgetCore::JsonStorage storage{std::cout};
+        EvgetCore::Storage::JsonStorage storage{std::cout};
 
         while (true) {
             auto event = xInputHandler.getEvent();

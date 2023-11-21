@@ -47,14 +47,14 @@ public:
      * @param transformer transformer
      * @param rawEvents systemEvents
      */
-    EventHandler(E& context, Storage& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop);
+    EventHandler(E& context, Storage::Storage& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop);
 
     void notify(T event) override;
     asio::awaitable<void> start() override;
 
 private:
     std::reference_wrapper<E> context;
-    std::reference_wrapper<Storage> storage;
+    std::reference_wrapper<Storage::Storage> storage;
     EventTransformer<T>& transformer;
     EventLoop<T>& eventLoop;
 };
@@ -68,7 +68,7 @@ asio::awaitable<void> EventHandler<E, T>::start() {
 template <asio::execution::executor E, typename T>
 EventHandler<E, T>::EventHandler(
     E& context,
-    Storage& storage,
+    Storage::Storage& storage,
     EventTransformer<T>& transformer,
     EventLoop<T>& eventLoop
 )
