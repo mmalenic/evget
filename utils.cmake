@@ -251,19 +251,26 @@ A function which creates a header file containing to contents of a ```file_name`
        <VARIABLE_NAME>
    )
 
-Read ``TARGET_FILE_NAME`` and create a string_view inside ``HEADER_FILE_NAME`` with
-the name ``VARIABLE_NAME`` and namespace ``NAMESPACE``.
+Read ``TARGET_FILE_NAMES`` and create a string_view with their contents inside
+``HEADER_FILE_NAME`` with the name ``VARIABLE_NAME`` and namespace ``NAMESPACE``.
 #]==========================================================================]
-function(create_header_file TARGET_FILE_NAME HEADER_FILE_NAME VARIABLE_NAME NAMESPACE)
+function(create_header_file HEADER_FILE_NAME VARIABLE_NAME NAMESPACE)
+    set(multi_value_args TARGET_FILE_NAMES)
+    cmake_parse_arguments(CREATE_HEADER_FILE "" "" "${multi_value_args}" ${ARGN})
+
+    check_required_arg(CREATE_HEADER_FILE_TARGET_FILE_NAMES TARGET_FILE_NAMES)
+
     cmake_path(GET HEADER_FILE_NAME STEM HEADER_STEM)
     string(TOUPPER "${HEADER_STEM}" HEADER_STEM)
     string(TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
     string(REPLACE "::" "_" NAMESPACE_UPPER ${NAMESPACE_UPPER})
 
-    file(STRINGS "${TARGET_FILE_NAME}" LINES)
-    foreach(LINE IN LISTS LINES)
-        string(STRIP "${LINE}" LINE)
-        set(OUTPUT_STRING "${OUTPUT_STRING}\"${LINE}\"\n")
+    foreach(TARGET_FILE_NAME IN LISTS CREATE_HEADER_FILE_TARGET_FILE_NAMES)
+        file(STRINGS "${TARGET_FILE_NAME}" LINES)
+        foreach(LINE IN LISTS LINES)
+            string(STRIP "${LINE}" LINE)
+            set(OUTPUT_STRING "${OUTPUT_STRING}\"${LINE}\"\n")
+        endforeach()
     endforeach()
     string(STRIP "${OUTPUT_STRING}" OUTPUT_STRING)
 
