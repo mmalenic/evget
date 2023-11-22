@@ -23,21 +23,40 @@
 #ifndef SQLITE_H
 #define SQLITE_H
 
+#include <SQLiteCpp/Database.h>
+
+#include "Error.h"
 #include "Storage.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore::Storage {
+
 /**
  * A storage class which stores events in an SQLite database.
  */
 class SQLite : public Storage {
 public:
-    explicit SQLite(std::string database = "evget.sqlite");
+    explicit SQLite(const std::string& database = "evget.sqlite");
 
     void store(Event::Data event) override;
 
+    /**
+     * \brief Iniitalize the database with tables.
+     * \return A result indicating void if successful or an error otherwise.
+     */
+    Result<void> init();
+
 private:
-    std::string database;
+    ::SQLite::Database database;
+    ::SQLite::Statement initialize;
+    ::SQLite::Statement insertKey;
+    ::SQLite::Statement insertKeyModifier;
+    ::SQLite::Statement insertMouseClick;
+    ::SQLite::Statement insertMouseClickModifier;
+    ::SQLite::Statement insertMouseMove;
+    ::SQLite::Statement insertMouseMoveModifier;
+    ::SQLite::Statement insertMouseScroll;
+    ::SQLite::Statement insertMouseScrollModifier;
 };
 }
 

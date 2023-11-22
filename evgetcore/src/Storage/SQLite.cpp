@@ -21,11 +21,37 @@
 // SOFTWARE.
 
 #include "evgetcore/Storage/SQLite.h"
+#include "schema/initialize.h"
+#include "queries/insert_key.h"
+#include "queries/insert_key_modifier.h"
+#include "queries/insert_mouse_move.h"
+#include "queries/insert_mouse_move_modifier.h"
+#include "queries/insert_mouse_click.h"
+#include "queries/insert_mouse_click_modifier.h"
+#include "queries/insert_mouse_scroll.h"
+#include "queries/insert_mouse_scroll_modifier.h"
+
+
+#include <SQLiteCpp/SQLiteCpp.h>
 
 #include <utility>
 
-EvgetCore::Storage::SQLite::SQLite(std::string database) : database{std::move(database)} {
+EvgetCore::Storage::SQLite::SQLite(const std::string& database)
+    : database{database},
+initialize{this->database, Database::detail::initialize},
+insertKey{this->database, Database::detail::insert_key},
+insertKeyModifier{this->database, Database::detail::insert_key_modifier},
+insertMouseClick{this->database, Database::detail::insert_mouse_click},
+      insertMouseClickModifier{this->database, Database::detail::insert_mouse_click_modifier},
+      insertMouseMove{this->database, Database::detail::insert_mouse_move},
+      insertMouseMoveModifier{this->database, Database::detail::insert_mouse_move_modifier},
+      insertMouseScroll{this->database, Database::detail::insert_mouse_scroll},
+      insertMouseScrollModifier{this->database, Database::detail::insert_mouse_scroll_modifier} {
 }
 
 void EvgetCore::Storage::SQLite::store(Event::Data event) {
+}
+
+EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
+    return {};
 }
