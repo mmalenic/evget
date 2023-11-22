@@ -31,8 +31,9 @@
 #include "queries/insert_mouse_scroll.h"
 #include "queries/insert_mouse_scroll_modifier.h"
 
-
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <spdlog/spdlog.h>
+#include "evgetcore/Storage/Error.h"
 
 #include <utility>
 
@@ -44,5 +45,16 @@ void EvgetCore::Storage::SQLite::store(Event::Data event) {
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
-    return {};
+    try {
+        ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+
+        ::SQLite::Statement query{db, Database::detail::initialize};
+        query.exec();
+
+        return {};
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error initializing SQLite database: {}", what);
+        return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
+    }
 }

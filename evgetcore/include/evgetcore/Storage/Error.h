@@ -48,6 +48,11 @@ namespace EvgetCore::Storage {
      */
     template<typename T>
     using Result = std::expected<T, Error>;
+
+    /**
+     * \brief Error type.
+     */
+    using Err = std::unexpected<Error>;
 }
 
 #endif //ERROR_H
