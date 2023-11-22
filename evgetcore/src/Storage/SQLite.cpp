@@ -48,8 +48,11 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
     try {
         ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
 
-        ::SQLite::Statement query{db, Database::detail::initialize};
-        query.exec();
+        ::SQLite::Transaction transaction{db};
+
+        db.exec(Database::detail::initialize);
+
+        transaction.commit();
 
         return {};
     } catch (std::exception& e) {

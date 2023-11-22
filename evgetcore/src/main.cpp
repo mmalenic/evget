@@ -32,6 +32,7 @@
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/JsonStorage.h"
+#include "evgetcore/Storage/SQLite.h"
 #include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
@@ -110,13 +111,15 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::Storage::JsonStorage storage{std::cout};
 
-        while (true) {
-            auto event = xInputHandler.getEvent();
-
-            auto transformed = transformer.transformEvent(std::move(event));
-
-            storage.store(transformed);
-        }
+        EvgetCore::Storage::SQLite sqlite{};
+        sqlite.init();
+        // while (true) {
+        //     auto event = xInputHandler.getEvent();
+        //
+        //     auto transformed = transformer.transformEvent(std::move(event));
+        //
+        //     storage.store(transformed);
+        // }
 
         //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //
