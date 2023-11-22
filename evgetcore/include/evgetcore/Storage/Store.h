@@ -31,21 +31,21 @@ namespace EvgetCore::Storage {
 /**
  * An interface which represents storing data.
  */
-class Storage {
+class Store {
 public:
     /**
      * Store the event data.
      */
     virtual void store(Event::Data event) = 0;
 
-    Storage() = default;
+    Store() = default;
 
-    virtual ~Storage() = default;
+    virtual ~Store() = default;
 
-    Storage(const Storage&) = delete;
-    Storage(Storage&&) noexcept = delete;
-    Storage& operator=(const Storage&) = delete;
-    Storage& operator=(Storage&&) noexcept = delete;
+    Store(const Store&) = delete;
+    Store(Store&&) noexcept = delete;
+    Store& operator=(const Store&) = delete;
+    Store& operator=(Store&&) noexcept = delete;
 };
 }  // namespace EvgetCore
 

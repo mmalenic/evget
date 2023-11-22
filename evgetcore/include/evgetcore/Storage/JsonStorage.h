@@ -26,13 +26,13 @@
 #include <fstream>
 
 #include "../EventListener.h"
-#include "Storage.h"
+#include "Store.h"
 
 namespace EvgetCore::Storage {
 /**
  * A storage class which prints events to stdout.
  */
-class JsonStorage : public Storage {
+class JsonStorage : public Store {
 public:
     explicit JsonStorage(std::ostream& ostream);
 

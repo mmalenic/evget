@@ -7,7 +7,7 @@ add_library(
     ${PROJECT_NAME}
     include/evgetcore/EventTransformer.h
     include/evgetcore/EventHandler.h
-        include/evgetcore/Storage/Storage.h
+        include/evgetcore/Storage/Store.h
     include/evgetcore/EventLoop.h
         include/evgetcore/Event/MouseMove.h
     include/evgetcore/Event/MouseClick.h

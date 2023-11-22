@@ -54,6 +54,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
 
         transaction.commit();
 
+        spdlog::info("initialized sqlite database at: {}", this->database);
         return {};
     } catch (std::exception& e) {
         auto what = e.what();
