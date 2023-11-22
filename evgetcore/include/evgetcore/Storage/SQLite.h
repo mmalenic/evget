@@ -36,7 +36,7 @@ namespace EvgetCore::Storage {
  */
 class SQLite : public Storage {
 public:
-    explicit SQLite(const std::string& database = "evget.sqlite");
+    explicit SQLite(std::string database = "evget.sqlite");
 
     void store(Event::Data event) override;
 
@@ -47,16 +47,7 @@ public:
     Result<void> init();
 
 private:
-    ::SQLite::Database database;
-    ::SQLite::Statement initialize;
-    ::SQLite::Statement insertKey;
-    ::SQLite::Statement insertKeyModifier;
-    ::SQLite::Statement insertMouseClick;
-    ::SQLite::Statement insertMouseClickModifier;
-    ::SQLite::Statement insertMouseMove;
-    ::SQLite::Statement insertMouseMoveModifier;
-    ::SQLite::Statement insertMouseScroll;
-    ::SQLite::Statement insertMouseScrollModifier;
+    std::string database;
 };
 }
 

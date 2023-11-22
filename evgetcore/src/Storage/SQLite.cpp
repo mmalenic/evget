@@ -36,17 +36,8 @@
 
 #include <utility>
 
-EvgetCore::Storage::SQLite::SQLite(const std::string& database)
-    : database{database},
-initialize{this->database, Database::detail::initialize},
-insertKey{this->database, Database::detail::insert_key},
-insertKeyModifier{this->database, Database::detail::insert_key_modifier},
-insertMouseClick{this->database, Database::detail::insert_mouse_click},
-      insertMouseClickModifier{this->database, Database::detail::insert_mouse_click_modifier},
-      insertMouseMove{this->database, Database::detail::insert_mouse_move},
-      insertMouseMoveModifier{this->database, Database::detail::insert_mouse_move_modifier},
-      insertMouseScroll{this->database, Database::detail::insert_mouse_scroll},
-      insertMouseScrollModifier{this->database, Database::detail::insert_mouse_scroll_modifier} {
+EvgetCore::Storage::SQLite::SQLite(std::string database)
+    : database{std::move(database)} {
 }
 
 void EvgetCore::Storage::SQLite::store(Event::Data event) {
