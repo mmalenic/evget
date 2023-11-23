@@ -4,12 +4,12 @@ set(NAMESPACE EvgetCore::Database::detail)
 
 create_header_file(
         ${SCHEMA}/initialize.h initialize ${NAMESPACE}
-        TARGET_FILE_NAMES schema/001_schema_types.sql
-        schema/002_schema_modifier.sql
-        schema/003_schema_key.sql
-        schema/004_schema_mouse_click.sql
-        schema/005_schema_mouse_move.sql
-        schema/006_schema_mouse_scroll.sql
+        TARGET_FILE_NAMES schema/000_schema_types.sql
+        schema/001_schema_modifier.sql
+        schema/002_schema_key.sql
+        schema/003_schema_mouse_click.sql
+        schema/004_schema_mouse_move.sql
+        schema/005_schema_mouse_scroll.sql
 )
 
 create_header_file(${QUERIES}/insert_key.h insert_key ${NAMESPACE} TARGET_FILE_NAMES queries/insert_key.sql)
