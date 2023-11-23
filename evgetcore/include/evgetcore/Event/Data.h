@@ -46,7 +46,7 @@ struct Entry {
 
 class Data {
 public:
-    [[nodiscard]] std::vector<Entry> entries() const;
+    [[nodiscard]] const std::vector<Entry>& entries() const;
 
 private:
     std::vector<Entry> _entries;

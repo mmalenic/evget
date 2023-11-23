@@ -23,6 +23,6 @@
 
 #include "../../include/evgetcore/Event/Data.h"
 
-std::vector<EvgetCore::Event::Entry> EvgetCore::Event::Data::entries() const {
+const std::vector<EvgetCore::Event::Entry>& EvgetCore::Event::Data::entries() const {
     return _entries;
 }
