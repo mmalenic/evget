@@ -30,8 +30,6 @@ void EvgetCore::Storage::JsonStorage::store(Event::Data event) {
         return;
     }
 
-    nlohmann::json output{};
-
     auto nodes = event.getNodes();
     auto formattedNodes = std::vector<nlohmann::json>{};
     for (const auto& node : nodes) {
@@ -70,6 +68,7 @@ void EvgetCore::Storage::JsonStorage::store(Event::Data event) {
         }
     }
 
+    nlohmann::json output{};
     output["nodes"] = formattedNodes;
     output["edges"] = formattedEdges;
 
