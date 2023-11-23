@@ -1,6 +1,6 @@
 -- A table for mouse move events.
 create table mouse_move (
-    id integer primary key,
+    uuid text primary key,
     interval real,
     timestamp text not null,
     device_type integer not null references device_type(id),
@@ -17,7 +17,7 @@ create table mouse_move (
 
 -- Linking table to modifier
 create table mouse_move_modifier (
-    id integer primary key,
+    uuid text primary key,
     mouse_click_id integer not null references mouse_move(id),
     modifier_id integer not null references modifier(id)
 );

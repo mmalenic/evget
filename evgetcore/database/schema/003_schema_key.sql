@@ -1,6 +1,6 @@
 -- A key table for key events.
 create table key (
-    id integer primary key,
+    uuid text primary key,
     interval real,
     timestamp text not null,
     device_type integer not null references device_type(id),
@@ -21,7 +21,7 @@ create table key (
 
 -- Linking table to modifier
 create table key_modifier (
-    id integer primary key,
+    uuid text primary key,
     key_id integer not null references key(id),
     modifier_id integer not null references modifier(id)
 );

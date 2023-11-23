@@ -1,6 +1,6 @@
 -- A table for mouse click events.
 create table mouse_click (
-    id integer primary key,
+    uuid text primary key,
     interval real,
     timestamp text not null,
     device_type integer not null references device_type(id),
@@ -20,7 +20,7 @@ create table mouse_click (
 
 -- Linking table to modifier
 create table mouse_click_modifier (
-    id integer primary key,
+    uuid text primary key,
     mouse_click_id integer not null references mouse_click(id),
     modifier_id integer not null references modifier(id)
 );

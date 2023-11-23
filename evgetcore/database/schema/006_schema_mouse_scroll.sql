@@ -1,6 +1,6 @@
 -- A table for mouse scroll events.
 create table mouse_scroll (
-    id integer primary key,
+    uuid text primary key,
     interval real,
     timestamp text not null,
     device_type integer not null references device_type(id),
@@ -19,7 +19,7 @@ create table mouse_scroll (
 
 -- Linking table to modifier
 create table mouse_scroll_modifier (
-    id integer primary key,
+    uuid text primary key,
     mouse_click_id integer not null references mouse_scroll(id),
     modifier_id integer not null references modifier(id)
 );
