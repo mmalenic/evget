@@ -3,15 +3,15 @@ create table modifier (
     id integer primary key,
     value text not null unique
 );
-insert into modifier values (1, 'Shift'),
+insert into modifier values (0, 'Shift'),
     -- X11 - Lock
-    (2, 'CapsLock'),
-    (3, 'Control'),
+    (1, 'CapsLock'),
+    (2, 'Control'),
     -- X11 - Mod1, Mac - Option
-    (4, 'Alt'),
+    (3, 'Alt'),
     -- X11 - Mod2
-    (5, 'NumLock'),
-    (6, 'Mod3'),
+    (4, 'NumLock'),
+    (5, 'Mod3'),
     -- X11 - Mod4, Mac - Command, Windows - Windows key
-    (7, 'Super'),
-    (8, 'Mod5');
+    (6, 'Super'),
+    (7, 'Mod5');
