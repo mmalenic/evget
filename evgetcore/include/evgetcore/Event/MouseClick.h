@@ -25,6 +25,7 @@
 
 #include <memory>
 
+#include "Data.h"
 #include "Modifier.h"
 #include "Schema.h"
 
@@ -124,11 +125,6 @@ public:
      */
     Data& build(Data& data);
 
-    /**
-     * Get mouse click name value.
-     */
-    static constexpr std::string getName();
-
 private:
     std::optional<Interval> _interval{};
     std::optional<Timestamp> _timestamp{};
@@ -146,12 +142,8 @@ private:
     std::optional<double> _focusWindowHeight{};
     std::optional<std::string> _info{};
 
-    Modifier _modifier{};
+    std::vector<ModifierValue> _modifiers{};
 };
-
-constexpr std::string MouseClick::getName() {
-    return "MouseClick";
-}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_SRC_EVENT_MOUSECLICK_H

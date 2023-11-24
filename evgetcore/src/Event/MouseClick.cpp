@@ -105,33 +105,34 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::info(std::string inf
 }
 
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifier = _modifier.modifierValue(modifierValue);
+    _modifiers.push_back(modifierValue);
     return *this;
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
-    data.addNode(
-        getName(),
-        {{INTERVAL_FIELD, fromInterval(_interval)},
-         {TIMESTAMP_FIELD, fromTimestamp(_timestamp)},
-         {DEVICE_TYPE_FIELD, fromDevice(_device)},
-         {POSITIONX_FIELD, fromDouble(_positionX)},
-         {POSITIONY_FIELD, fromDouble(_positionY)},
-         {ACTION_FIELD, fromButtonAction(_action)},
-         {IDENTIFIER_FIELD, fromInt(_button)},
-         {NAME_FIELD, fromString(_name)},
-         {DEVICE_NAME_FIELD, fromString(_deviceName)},
-         {FOCUS_WINDOW_NAME_FIELD, fromString(_focusWindowName)},
-         {FOCUS_WINDOW_POSITION_X_FIELD, fromDouble(_focusWindowPositionX)},
-         {FOCUS_WINDOW_POSITION_Y_FIELD, fromDouble(_focusWindowPositionY)},
-         {FOCUS_WINDOW_WIDTH_FIELD, fromDouble(_focusWindowWidth)},
-         {FOCUS_WINDOW_HEIGHT_FIELD, fromDouble(_focusWindowHeight)},
-         {INFO_FIELD, fromString(_info)}}
-    );
+    Entry entry{
+        .type = EntryType::MouseClick,
+        .data = {
+            fromInterval(_interval),
+            fromTimestamp(_timestamp),
+            fromDevice(_device),
+            fromDouble(_positionX),
+            fromDouble(_positionY),
+            fromButtonAction(_action),
+            fromInt(_button),
+            fromString(_name),
+            fromString(_deviceName),
+            fromString(_focusWindowName),
+            fromDouble(_focusWindowPositionX),
+            fromDouble(_focusWindowPositionY),
+            fromDouble(_focusWindowWidth),
+            fromDouble(_focusWindowHeight),
+            fromString(_info)
+        },
+        .modifiers = _modifiers
+    };
 
-    _modifier.build(data);
-
-    data.addEdge(getName(), _modifier.getName(), Relation::ManyToMany);
+    data.addEntry(entry);
 
     return data;
 }
