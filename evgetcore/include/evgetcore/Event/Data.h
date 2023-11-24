@@ -30,7 +30,9 @@
 #include "ModifierValue.h"
 
 namespace EvgetCore::Event {
-
+/**
+ * \brief An entry type.
+ */
 enum class EntryType {
     Key,
     MouseClick,
@@ -38,19 +40,44 @@ enum class EntryType {
     MouseScroll
 };
 
+/**
+ * \brief An entry contains data, modifiers, and its type.
+ */
 struct Entry {
     EntryType type;
     std::vector<std::string> data;
     std::vector<ModifierValue> modifiers;
 };
 
+/**
+ * \brief Data represents the actual entries that are generated from device events. The order
+ * of the entries defines the final insertion order in the storage component.
+ */
 class Data {
 public:
+    /**
+     * \brief Get a reference to the entries.
+     * \return Entries reference.
+     */
     [[nodiscard]] const std::vector<Entry>& entries() const;
 
+    /**
+     * \brief Merge with another data object by extending the entries of this object.
+     * \param data the data object to merge with.
+     */
     void mergeWith(Data&& data);
 
+    /**
+     * \brief Take the entries out of this object
+     * \return Entries moved out of object.
+     */
     std::vector<Entry> intoEntries() &&;
+
+    /**
+     * \brief Add an entry.
+     * \param entry entry to insert.
+     */
+    void addEntry(Entry entry);
 
 private:
     std::vector<Entry> _entries;

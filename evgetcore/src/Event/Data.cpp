@@ -36,3 +36,7 @@ void EvgetCore::Event::Data::mergeWith(Data&& data) {
 std::vector<EvgetCore::Event::Entry> EvgetCore::Event::Data::intoEntries() && {
     return std::move(_entries);
 }
+
+void EvgetCore::Event::Data::addEntry(Entry entry) {
+    _entries.emplace_back(std::move(entry));
+}

@@ -106,12 +106,6 @@ struct Field {
 
 using Fields = std::vector<Field>;
 
-/**
- * Data contains the actual entries for the storage component. This is defined as a graph with a vector of Fields
- * as the node data, which represent the field entries for that node. There is also a `Relation` between the nodes.
- */
-using Data = Graph<Fields, Relation>;
-
 constexpr FieldDefinition ACTION_FIELD{"Action", DataType::String};
 constexpr FieldDefinition CHARACTER_FIELD{"Character", DataType::String};
 constexpr FieldDefinition IDENTIFIER_FIELD{"Identifier", DataType::Integer};

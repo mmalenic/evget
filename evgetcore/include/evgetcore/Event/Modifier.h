@@ -43,7 +43,7 @@ public:
     /**
      * Get the modifiers
      */
-    std::vector<ModifierValue> intoModifiers() &&;
+    const std::vector<ModifierValue>& getModifiers();
 
 private:
     std::vector<ModifierValue> _modifierValues{};

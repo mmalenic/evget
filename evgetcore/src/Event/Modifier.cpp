@@ -24,10 +24,10 @@
 #include "evgetcore/Event/Modifier.h"
 
 EvgetCore::Event::Modifier& EvgetCore::Event::Modifier::modifierValue(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifierValues.push_back(std::move(modifierValue));
+    _modifierValues.push_back(modifierValue);
     return *this;
 }
 
-std::vector<EvgetCore::Event::ModifierValue> EvgetCore::Event::Modifier::intoModifiers() && {
-    return std::move(_modifierValues);
+const std::vector<EvgetCore::Event::ModifierValue>& EvgetCore::Event::Modifier::getModifiers() {
+    return _modifierValues;
 }
