@@ -98,32 +98,33 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::info(std::string i
 }
 
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifier = _modifier.modifierValue(modifierValue);
+    _modifiers.push_back(modifierValue);
     return *this;
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
-    data.addNode(
-        getName(),
-        {{INTERVAL_FIELD, fromInterval(_interval)},
-         {TIMESTAMP_FIELD, fromTimestamp(_timestamp)},
-         {DEVICE_TYPE_FIELD, fromDevice(_device)},
-         {POSITIONX_FIELD, fromDouble(_positionX)},
-         {POSITIONY_FIELD, fromDouble(_positionY)},
-         {SCROLL_VERTICAL_FIELD, fromDouble(_vertical)},
-         {SCROLL_HORIZONTAL_FIELD, fromDouble(_horizontal)},
-         {DEVICE_NAME_FIELD, fromString(_deviceName)},
-         {FOCUS_WINDOW_NAME_FIELD, fromString(_focusWindowName)},
-         {FOCUS_WINDOW_POSITION_X_FIELD, fromDouble(_focusWindowPositionX)},
-         {FOCUS_WINDOW_POSITION_Y_FIELD, fromDouble(_focusWindowPositionY)},
-         {FOCUS_WINDOW_WIDTH_FIELD, fromDouble(_focusWindowWidth)},
-         {FOCUS_WINDOW_HEIGHT_FIELD, fromDouble(_focusWindowHeight)},
-         {INFO_FIELD, fromString(_info)}}
-    );
+    Entry entry{
+        .type = EntryType::MouseScroll,
+        .data = {
+            fromInterval(_interval),
+            fromTimestamp(_timestamp),
+            fromDevice(_device),
+            fromDouble(_positionX),
+            fromDouble(_positionY),
+            fromDouble(_vertical),
+            fromDouble(_horizontal),
+            fromString(_deviceName),
+            fromString(_focusWindowName),
+            fromDouble(_focusWindowPositionX),
+            fromDouble(_focusWindowPositionY),
+            fromDouble(_focusWindowWidth),
+            fromDouble(_focusWindowHeight),
+            fromString(_info)
+        },
+        .modifiers = _modifiers
+    };
 
-    _modifier.build(data);
-
-    data.addEdge(getName(), _modifier.getName(), Relation::ManyToMany);
+    data.addEntry(entry);
 
     return data;
 }

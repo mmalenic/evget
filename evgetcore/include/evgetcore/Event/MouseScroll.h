@@ -25,6 +25,7 @@
 
 #include <chrono>
 
+#include "Data.h"
 #include "Modifier.h"
 #include "Schema.h"
 
@@ -119,11 +120,6 @@ public:
      */
     Data& build(Data& data);
 
-    /**
-     * Get mouse scroll name value.
-     */
-    static constexpr std::string getName();
-
 private:
     std::optional<Interval> _interval{};
     std::optional<Timestamp> _timestamp{};
@@ -140,12 +136,8 @@ private:
     std::optional<double> _focusWindowHeight{};
     std::optional<std::string> _info{};
 
-    Modifier _modifier{};
+    std::vector<ModifierValue> _modifiers{};
 };
-
-constexpr std::string MouseScroll::getName() {
-    return "MouseScroll";
-}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_SRC_EVENT_MOUSEWHEEL_H
