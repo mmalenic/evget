@@ -5,7 +5,6 @@ target_sources(
             Event/MouseClick.cpp
             Event/MouseMove.cpp
             Event/MouseScroll.cpp
-            Event/Modifier.cpp
         Event/Data.cpp
             UnsupportedOperationException.cpp
         Storage/JsonStorage.cpp

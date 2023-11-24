@@ -21,7 +21,6 @@ add_library(
     include/evgetcore/CoreParser.h
     include/evgetcore/Event/ModifierValue.h
     include/evgetcore/Event/Schema.h
-    include/evgetcore/Event/Modifier.h
     include/evgetcore/Event/Graph.h
         include/evgetcore/Storage/JsonStorage.h
         include/evgetcore/Storage/SQLite.h
