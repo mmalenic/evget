@@ -26,7 +26,7 @@
 #include <chrono>
 #include <optional>
 
-#include "Modifier.h"
+#include "Data.h"
 #include "Schema.h"
 
 namespace EvgetCore::Event {
@@ -110,11 +110,6 @@ public:
      */
     Data& build(Data& data);
 
-    /**
-     * Get mouse move name value.
-     */
-    static constexpr std::string getName();
-
 private:
     std::optional<Interval> _interval{};
     std::optional<Timestamp> _timestamp{};
@@ -129,12 +124,8 @@ private:
     std::optional<double> _focusWindowHeight{};
     std::optional<std::string> _info{};
 
-    Modifier _modifier{};
+    std::vector<ModifierValue> _modifiers{};
 };
-
-constexpr std::string MouseMove::getName() {
-    return "MouseMove";
-}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
