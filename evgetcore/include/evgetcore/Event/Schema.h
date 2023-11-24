@@ -41,6 +41,11 @@
 
 namespace EvgetCore::Event {
 
+constexpr auto mouseMoveNFields = 12;
+constexpr auto mouseScrollNFields = 14;
+constexpr auto mouseClickNFields = 15;
+constexpr auto keyNFields = 16;
+
 namespace detail {
 constexpr std::string_view ACTION_PRESS{"Press"};
 constexpr std::string_view ACTION_RELEASE{"Release"};
@@ -100,7 +105,7 @@ addToArray(std::array<std::string, From> from, AddElements addElements) {
     return out;
 }
 
-constexpr std::array<std::string, 12> mouseMoveFields{
+constexpr std::array<std::string, mouseMoveNFields> mouseMoveFields{
     "interval",
     "timestamp",
     "device_type",
@@ -115,18 +120,18 @@ constexpr std::array<std::string, 12> mouseMoveFields{
     "info",
 };
 
-constexpr std::array<std::string, 14> mouseScrollFields = addToArray<12, 14>(mouseMoveFields, std::vector{
+constexpr std::array<std::string, mouseScrollNFields> mouseScrollFields = addToArray<mouseMoveNFields, mouseScrollNFields>(mouseMoveFields, std::vector{
     "scroll_vertical",
-    "scroll_horizontal"
+    "scroll_horizontal",
 });
 
-constexpr std::array<std::string, 15> mouseClickFields = addToArray<12, 15>(mouseMoveFields, std::vector{
+constexpr std::array<std::string, mouseClickNFields> mouseClickFields = addToArray<mouseMoveNFields, mouseClickNFields>(mouseMoveFields, std::vector{
     "button_action",
     "button_id",
     "button_name"
 });
 
-constexpr std::array<std::string, 16> ketFields = addToArray<15, 16>(mouseClickFields, std::vector{
+constexpr std::array<std::string, keyNFields> ketFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
     "character",
 });
 
@@ -224,6 +229,23 @@ constexpr std::string_view getRelation(Relation relation) {
     return "";
 }
 
+/**
+ * Convert an enum to its underlying value as a string.
+ */
+template<class Enum>
+constexpr std::string toUnderlyingOptional(std::optional<Enum> value) {
+    return detail::optionalToString(value, [](auto value) {
+        return std::to_string(std::to_underlying(value));
+    });
+}
+
+/**
+ * Convert an enum to its underlying value as a string.
+ */
+template<class Enum>
+constexpr std::string toUnderlying(Enum value) {
+    return std::to_string(std::to_underlying(value));
+}
 
 /**
  * Create a string from a string value.

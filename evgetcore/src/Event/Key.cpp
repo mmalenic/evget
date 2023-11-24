@@ -110,7 +110,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::info(std::string info) {
 }
 
 EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifiers.push_back(modifierValue);
+    _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
 }
 
@@ -120,7 +120,7 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
         .data = {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            fromDevice(_device),
+            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
@@ -130,7 +130,7 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
             fromString(_info),
-            fromButtonAction(_action),
+            toUnderlyingOptional(_action),
             fromInt(_button),
             fromString(_name),
             fromString(_character),

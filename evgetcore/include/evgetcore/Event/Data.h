@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "ModifierValue.h"
+#include "Schema.h"
 
 namespace EvgetCore::Event {
 /**
@@ -46,7 +47,7 @@ enum class EntryType {
 struct Entry {
     EntryType type;
     std::vector<std::string> data;
-    std::vector<ModifierValue> modifiers;
+    std::vector<std::string> modifiers;
 };
 
 /**

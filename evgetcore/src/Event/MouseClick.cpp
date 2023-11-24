@@ -105,7 +105,7 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::info(std::string inf
 }
 
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifiers.push_back(modifierValue);
+    _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
 }
 
@@ -115,7 +115,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
         .data = {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            fromDevice(_device),
+            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
@@ -125,7 +125,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
             fromString(_info),
-            fromButtonAction(_action),
+            toUnderlyingOptional(_action),
             fromInt(_button),
             fromString(_name),
         },

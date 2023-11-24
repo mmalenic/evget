@@ -98,7 +98,7 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::info(std::string i
 }
 
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifiers.push_back(modifierValue);
+    _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
 }
 
@@ -108,7 +108,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
         .data = {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            fromDevice(_device),
+            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),

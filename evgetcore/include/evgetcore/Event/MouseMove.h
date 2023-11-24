@@ -124,7 +124,7 @@ private:
     std::optional<double> _focusWindowHeight{};
     std::optional<std::string> _info{};
 
-    std::vector<ModifierValue> _modifiers{};
+    std::vector<std::string> _modifiers{};
 };
 }  // namespace EvgetCore::Event
 

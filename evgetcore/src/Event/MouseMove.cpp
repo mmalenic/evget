@@ -88,7 +88,7 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::info(std::string info)
 }
 
 EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifiers.push_back(modifierValue);
+    _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
 }
 
@@ -98,7 +98,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
         .data = {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            fromDevice(_device),
+            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
