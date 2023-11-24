@@ -118,16 +118,16 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
             fromDevice(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
-            fromButtonAction(_action),
-            fromInt(_button),
-            fromString(_name),
             fromString(_deviceName),
             fromString(_focusWindowName),
             fromDouble(_focusWindowPositionX),
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
-            fromString(_info)
+            fromString(_info),
+            fromButtonAction(_action),
+            fromInt(_button),
+            fromString(_name),
         },
         .modifiers = _modifiers
     };

@@ -26,7 +26,6 @@
 #include <memory>
 
 #include "Data.h"
-#include "Modifier.h"
 #include "Schema.h"
 
 namespace EvgetCore::Event {

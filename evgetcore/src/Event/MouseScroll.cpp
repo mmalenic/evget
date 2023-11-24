@@ -111,15 +111,15 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
             fromDevice(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
-            fromDouble(_vertical),
-            fromDouble(_horizontal),
             fromString(_deviceName),
             fromString(_focusWindowName),
             fromDouble(_focusWindowPositionX),
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
-            fromString(_info)
+            fromString(_info),
+            fromDouble(_vertical),
+            fromDouble(_horizontal),
         },
         .modifiers = _modifiers
     };
