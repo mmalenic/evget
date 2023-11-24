@@ -110,7 +110,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::info(std::string info) {
 }
 
 EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::ModifierValue modifierValue) {
-    _modifier = _modifier.modifierValue(modifierValue);
+    _modifiers.push_back(modifierValue);
     return *this;
 }
 
@@ -135,9 +135,7 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
             fromDouble(_focusWindowHeight),
             fromString(_info)
         },
-        .modifiers = {
-            _modifier.getModifiers()
-        }
+        .modifiers = _modifiers
     };
 
     data.addEntry(entry);

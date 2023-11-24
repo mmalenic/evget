@@ -132,11 +132,6 @@ public:
      */
     Data& build(Data& data);
 
-    /**
-     * Get key name value.
-     */
-    static constexpr std::string getName();
-
 private:
     std::optional<Interval> _interval{};
     std::optional<Timestamp> _timestamp{};
@@ -155,12 +150,8 @@ private:
     std::optional<double> _focusWindowHeight{};
     std::optional<std::string> _info{};
 
-    Modifier _modifier{};
+    std::vector<ModifierValue> _modifiers{};
 };
-
-constexpr std::string Key::getName() {
-    return "Key";
-}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_SRC_KEY_H
