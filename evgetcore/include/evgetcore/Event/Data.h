@@ -79,6 +79,12 @@ public:
      */
     void addEntry(Entry entry);
 
+    /**
+     * \brief Are there any entries in this data.
+     * \return if there are any entries.
+     */
+    bool empty();
+
 private:
     std::vector<Entry> _entries;
 };

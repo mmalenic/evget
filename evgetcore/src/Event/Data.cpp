@@ -40,3 +40,7 @@ std::vector<EvgetCore::Event::Entry> EvgetCore::Event::Data::intoEntries() && {
 void EvgetCore::Event::Data::addEntry(Entry entry) {
     _entries.emplace_back(std::move(entry));
 }
+
+bool EvgetCore::Event::Data::empty() {
+    return _entries.empty();
+}
