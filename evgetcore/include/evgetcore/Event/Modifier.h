@@ -41,22 +41,13 @@ public:
     Modifier& modifierValue(ModifierValue modifierValue);
 
     /**
-     * Build modifier in graph data.
+     * Get the modifiers
      */
-    Data& build(Data& data);
-
-    /**
-     * Get modifier name value.
-     */
-    static constexpr std::string getName();
+    std::vector<ModifierValue> intoModifiers() &&;
 
 private:
-    std::vector<Fields> _modifierValues{};
+    std::vector<ModifierValue> _modifierValues{};
 };
-
-constexpr std::string Modifier::getName() {
-    return "Modifier";
-}
 }  // namespace EvgetCore::Event
 
 #endif  // EVGET_MODIFIER_H
