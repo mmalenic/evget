@@ -6,15 +6,15 @@ create table mouse_scroll (
     device_type integer not null references device_type(id),
     position_x real,
     position_y real,
-    scroll_vertical real,
-    scroll_horizontal real,
     device_name text,
     focus_window_name text,
     focus_window_position_x real,
     focus_window_position_y real,
     focus_window_width real,
     focus_window_height real,
-    info text
+    info text,
+    scroll_vertical real,
+    scroll_horizontal real
 );
 
 -- Linking table to modifier

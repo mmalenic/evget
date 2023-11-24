@@ -6,16 +6,16 @@ create table mouse_click (
     device_type integer not null references device_type(id),
     position_x real,
     position_y real,
-    button_action integer not null references button_action(id),
-    button_id integer,
-    button_name text,
     device_name text,
     focus_window_name text,
     focus_window_position_x real,
     focus_window_position_y real,
     focus_window_width real,
     focus_window_height real,
-    info text
+    info text,
+    button_action integer not null references button_action(id),
+    button_id integer,
+    button_name text
 );
 
 -- Linking table to modifier
