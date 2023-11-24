@@ -79,6 +79,57 @@ optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::stri
     }
     return function(*optional);
 }
+
+template <std::size_t From, std::size_t To, typename AddElements>
+concept AddToArray = std::ranges::range<AddElements> && To > From && requires(AddElements addElements) {
+    addElements.size() <= To - From;
+};
+
+/**
+ * \brief Add additional elements to an array.
+ */
+template <std::size_t From, std::size_t To, typename AddElements>
+requires AddToArray<From, To, AddElements>
+constexpr std::array<std::string, To>
+addToArray(std::array<std::string, From> from, AddElements addElements) {
+    std::array<std::string, To> out{};
+
+    std::copy(from.begin(), from.end(), out.begin());
+    std::copy(addElements.begin(), addElements.end(), out.end());
+
+    return out;
+}
+
+constexpr std::array<std::string, 12> mouseMoveFields{
+    "interval",
+    "timestamp",
+    "device_type",
+    "position_x",
+    "position_y",
+    "device_name",
+    "focus_window_name",
+    "focus_window_position_x",
+    "focus_window_position_y",
+    "focus_window_width",
+    "focus_window_height",
+    "info",
+};
+
+constexpr std::array<std::string, 14> mouseScrollFields = addToArray<12, 14>(mouseMoveFields, std::vector{
+    "scroll_vertical",
+    "scroll_horizontal"
+});
+
+constexpr std::array<std::string, 15> mouseClickFields = addToArray<12, 15>(mouseMoveFields, std::vector{
+    "button_action",
+    "button_id",
+    "button_name"
+});
+
+constexpr std::array<std::string, 16> ketFields = addToArray<15, 16>(mouseClickFields, std::vector{
+    "character",
+});
+
 }  // namespace detail
 
 /**
