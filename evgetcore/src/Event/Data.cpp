@@ -21,8 +21,18 @@
 // SOFTWARE.
 //
 
-#include "../../include/evgetcore/Event/Data.h"
+#include "evgetcore/Event/Data.h"
 
 const std::vector<EvgetCore::Event::Entry>& EvgetCore::Event::Data::entries() const {
     return _entries;
+}
+
+void EvgetCore::Event::Data::mergeWith(Data&& data) {
+    auto entries = std::move(data).intoEntries();
+    this->_entries.insert(this->_entries.end(),std::make_move_iterator(entries.begin()),
+    std::make_move_iterator(entries.end()));
+}
+
+std::vector<EvgetCore::Event::Entry> EvgetCore::Event::Data::intoEntries() && {
+    return std::move(_entries);
 }

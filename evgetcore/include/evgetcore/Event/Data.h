@@ -48,6 +48,10 @@ class Data {
 public:
     [[nodiscard]] const std::vector<Entry>& entries() const;
 
+    void mergeWith(Data&& data);
+
+    std::vector<Entry> intoEntries() &&;
+
 private:
     std::vector<Entry> _entries;
 };
