@@ -180,7 +180,7 @@ constexpr std::string_view getRelation(Relation relation) {
 template<class Enum>
 constexpr std::string toUnderlyingOptional(std::optional<Enum> value) {
     return detail::optionalToString(value, [](auto value) {
-        return std::to_string(std::to_underlying(value));
+        return toUnderlying(value);
     });
 }
 
@@ -190,6 +190,19 @@ constexpr std::string toUnderlyingOptional(std::optional<Enum> value) {
 template<class Enum>
 constexpr std::string toUnderlying(Enum value) {
     return std::to_string(std::to_underlying(value));
+}
+
+
+/**
+ * Convert an integer string representation to an enum.
+ */
+template<class Enum>
+constexpr std::string fromUnderlying(const std::string& value) {
+    if (value.empty()) {
+        return "";
+    }
+
+    return fromDevice({static_cast<Enum>(std::stoi(value))});
 }
 
 /**

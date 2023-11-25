@@ -23,6 +23,8 @@
 
 #include "evgetcore/Event/Entry.h"
 
+#include "evgetcore/Event/Schema.h"
+
 EvgetCore::Event::Entry::Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers)
     : _type{type}, _data{std::move(data)}, _modifiers{std::move(modifiers)} {
 }
@@ -33,6 +35,29 @@ const std::vector<std::string>& EvgetCore::Event::Entry::data() const {
 
 const std::vector<std::string>& EvgetCore::Event::Entry::modifiers() const {
     return _modifiers;
+}
+
+EvgetCore::Event::Entry EvgetCore::Event::Entry::getNamedRepresentation() {
+    auto data{_data};
+
+    if (data.size() >= detail::mouseMoveNFields) {
+        data[detail::mouseMoveNFields - 1] = fromUnderlying<Device>(data[detail::mouseMoveNFields - 1]);
+    }
+    if (data.size() >= detail::mouseClickNFields) {
+        data[detail::mouseClickNFields - 1] = fromUnderlying<ButtonAction>(data[detail::mouseClickNFields - 1]);
+    }
+
+    std::vector<std::string> modifiers{};
+    modifiers.reserve(_modifiers.size());
+    std::transform(_data.begin(), _data.end(), std::back_inserter(modifiers), [](auto value) {
+        return fromUnderlying<ModifierValue>(value);
+    });
+
+    return {
+        this->type(),
+        data,
+        modifiers
+    };
 }
 
 EvgetCore::Event::EntryType EvgetCore::Event::Entry::type() const {

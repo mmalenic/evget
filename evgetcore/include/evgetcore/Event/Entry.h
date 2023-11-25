@@ -77,9 +77,9 @@ constexpr std::array<std::string, mouseScrollNFields> mouseScrollFields = addToA
 });
 
 constexpr std::array<std::string, mouseClickNFields> mouseClickFields = addToArray<mouseMoveNFields, mouseClickNFields>(mouseMoveFields, std::vector{
-    "button_action",
     "button_id",
-    "button_name"
+    "button_name",
+    "button_action",
 });
 
 constexpr std::array<std::string, keyNFields> ketFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
@@ -107,6 +107,11 @@ public:
     [[nodiscard]] EntryType type() const;
     [[nodiscard]] const std::vector<std::string>& data() const;
     [[nodiscard]] const std::vector<std::string>& modifiers() const;
+
+    /**
+     * \brief Rearrange the entry fields from an integer to named representation.
+     */
+    Entry getNamedRepresentation();
 private:
     EntryType _type;
     std::vector<std::string> _data;

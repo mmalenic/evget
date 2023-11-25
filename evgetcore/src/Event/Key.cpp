@@ -131,9 +131,9 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
             fromDouble(_focusWindowHeight),
             fromString(_info),
             toUnderlyingOptional(_device),
-            toUnderlyingOptional(_action),
             fromInt(_button),
             fromString(_name),
+            toUnderlyingOptional(_action),
             fromString(_character),
         },
         _modifiers
