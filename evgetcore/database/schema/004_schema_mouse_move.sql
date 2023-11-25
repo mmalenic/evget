@@ -3,7 +3,6 @@ create table mouse_move (
     uuid text primary key,
     interval real,
     timestamp text not null,
-    device_type integer not null references device_type(id),
     position_x real,
     position_y real,
     device_name text,
@@ -12,7 +11,8 @@ create table mouse_move (
     focus_window_position_y real,
     focus_window_width real,
     focus_window_height real,
-    info text
+    info text,
+    device_type integer not null references device_type(id)
 );
 
 -- Linking table to modifier

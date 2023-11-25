@@ -59,7 +59,6 @@ addToArray(std::array<std::string, From> from, AddElements addElements) {
 constexpr std::array<std::string, mouseMoveNFields> mouseMoveFields{
     "interval",
     "timestamp",
-    "device_type",
     "position_x",
     "position_y",
     "device_name",
@@ -69,6 +68,7 @@ constexpr std::array<std::string, mouseMoveNFields> mouseMoveFields{
     "focus_window_width",
     "focus_window_height",
     "info",
+    "device_type",
 };
 
 constexpr std::array<std::string, mouseScrollNFields> mouseScrollFields = addToArray<mouseMoveNFields, mouseScrollNFields>(mouseMoveFields, std::vector{

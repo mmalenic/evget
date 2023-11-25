@@ -115,7 +115,6 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
         {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
@@ -125,6 +124,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
             fromString(_info),
+            toUnderlyingOptional(_device),
             toUnderlyingOptional(_action),
             fromInt(_button),
             fromString(_name),

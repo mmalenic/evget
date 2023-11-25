@@ -98,7 +98,6 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
         {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
@@ -107,7 +106,8 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
-            fromString(_info)
+            fromString(_info),
+            toUnderlyingOptional(_device)
         },
         _modifiers
     };

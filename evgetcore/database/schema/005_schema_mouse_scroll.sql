@@ -3,7 +3,6 @@ create table mouse_scroll (
     uuid text primary key,
     interval real,
     timestamp text not null,
-    device_type integer not null references device_type(id),
     position_x real,
     position_y real,
     device_name text,
@@ -13,6 +12,7 @@ create table mouse_scroll (
     focus_window_width real,
     focus_window_height real,
     info text,
+    device_type integer not null references device_type(id),
     scroll_vertical real,
     scroll_horizontal real
 );

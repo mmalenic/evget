@@ -108,7 +108,6 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
         {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
-            toUnderlyingOptional(_device),
             fromDouble(_positionX),
             fromDouble(_positionY),
             fromString(_deviceName),
@@ -118,8 +117,9 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
             fromString(_info),
+            toUnderlyingOptional(_device),
             fromDouble(_vertical),
-            fromDouble(_horizontal),
+            fromDouble(_horizontal)
         },
         _modifiers
     };
