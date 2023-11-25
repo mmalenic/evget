@@ -94,8 +94,8 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Ev
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
     Entry entry{
-        .type = EntryType::MouseMove,
-        .data = {
+        EntryType::MouseMove,
+        {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
             toUnderlyingOptional(_device),
@@ -109,7 +109,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
             fromDouble(_focusWindowHeight),
             fromString(_info)
         },
-        .modifiers = _modifiers
+        _modifiers
     };
 
     data.addEntry(entry);

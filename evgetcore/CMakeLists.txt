@@ -26,6 +26,7 @@ add_library(
         include/evgetcore/Storage/SQLite.h
         include/evgetcore/Storage/Error.h
         include/evgetcore/Event/Data.h
+        include/evgetcore/Event/Entry.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

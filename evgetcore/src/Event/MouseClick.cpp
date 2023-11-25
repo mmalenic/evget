@@ -111,8 +111,8 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
     Entry entry{
-        .type = EntryType::MouseClick,
-        .data = {
+        EntryType::MouseClick,
+        {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
             toUnderlyingOptional(_device),
@@ -129,7 +129,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
             fromInt(_button),
             fromString(_name),
         },
-        .modifiers = _modifiers
+        _modifiers
     };
 
     data.addEntry(entry);

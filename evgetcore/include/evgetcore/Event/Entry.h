@@ -21,56 +21,40 @@
 // SOFTWARE.
 //
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef ENTRY_H
+#define ENTRY_H
 
 #include <string>
 #include <vector>
 
-#include "Entry.h"
-#include "ModifierValue.h"
-#include "Schema.h"
-
 namespace EvgetCore::Event {
+
 /**
- * \brief Data represents the actual entries that are generated from device events. The order
- * of the entries defines the final insertion order in the storage component.
+ * \brief An entry type.
  */
-class Data {
-public:
-    /**
-     * \brief Get a reference to the entries.
-     * \return Entries reference.
-     */
-    [[nodiscard]] const std::vector<Entry>& entries() const;
-
-    /**
-     * \brief Merge with another data object by extending the entries of this object.
-     * \param data the data object to merge with.
-     */
-    void mergeWith(Data&& data);
-
-    /**
-     * \brief Take the entries out of this object
-     * \return Entries moved out of object.
-     */
-    std::vector<Entry> intoEntries() &&;
-
-    /**
-     * \brief Add an entry.
-     * \param entry entry to insert.
-     */
-    void addEntry(Entry entry);
-
-    /**
-     * \brief Are there any entries in this data.
-     * \return if there are any entries.
-     */
-    bool empty();
-
-private:
-    std::vector<Entry> _entries;
+enum class EntryType {
+    Key,
+    MouseClick,
+    MouseMove,
+    MouseScroll
 };
-}
 
-#endif // DATA_H
+/**
+ * \brief An entry contains data, modifiers, and its type.
+ */
+class Entry {
+public:
+    Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers);
+
+    [[nodiscard]] EntryType type() const;
+    [[nodiscard]] const std::vector<std::string>& data() const;
+    [[nodiscard]] const std::vector<std::string>& modifiers() const;
+private:
+    EntryType _type;
+    std::vector<std::string> _data;
+    std::vector<std::string> _modifiers;
+};
+
+} // EvgetCore
+
+#endif //ENTRY_H

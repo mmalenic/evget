@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Key.h"
+#include "evgetcore/Event/Entry.h"
 
 #include <utility>
 
@@ -116,8 +117,8 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::Modifie
 
 EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
     Entry entry{
-        .type = EntryType::Key,
-        .data = {
+        EntryType::Key,
+        {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
             toUnderlyingOptional(_device),
@@ -135,7 +136,7 @@ EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
             fromString(_name),
             fromString(_character),
         },
-        .modifiers = _modifiers
+        _modifiers
     };
 
     data.addEntry(entry);

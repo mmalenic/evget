@@ -9,4 +9,5 @@ target_sources(
             UnsupportedOperationException.cpp
         Storage/JsonStorage.cpp
         Storage/SQLite.cpp
+        Event/Entry.cpp
 )

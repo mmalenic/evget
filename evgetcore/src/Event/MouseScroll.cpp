@@ -104,8 +104,8 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
     Entry entry{
-        .type = EntryType::MouseScroll,
-        .data = {
+        EntryType::MouseScroll,
+        {
             fromInterval(_interval),
             fromTimestamp(_timestamp),
             toUnderlyingOptional(_device),
@@ -121,7 +121,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
             fromDouble(_vertical),
             fromDouble(_horizontal),
         },
-        .modifiers = _modifiers
+        _modifiers
     };
 
     data.addEntry(entry);
