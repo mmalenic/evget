@@ -59,8 +59,8 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
             Status status;
             bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
             if (status != Success || status == XBufferOverflow || bytes == 0) {
-                spdlog::warn(
-                    "Buffer overflowed when looking up string, falling back to encoding key events in ISO Latin-1."
+                spdlog::info(
+                    "Xutf8LookupString did not return a value, falling back on XLookupString"
                 );
                 bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
             }
