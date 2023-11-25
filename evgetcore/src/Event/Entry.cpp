@@ -52,23 +52,28 @@ void EvgetCore::Event::Entry::toNamedRepresentation() {
 
 EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() {
     std::vector<std::string> fields;
+    std::string type;
     switch (this->type()) {
         case EntryType::Key:
             fields = {detail::keyFields.begin(), detail::keyFields.end()};
+            type = "key";
             break;
         case EntryType::MouseClick:
             fields = {detail::mouseClickFields.begin(), detail::mouseClickFields.end()};
+            type = "mouse_click";
             break;
         case EntryType::MouseMove:
             fields = {detail::mouseMoveFields.begin(), detail::mouseMoveFields.end()};
+            type = "mouse_move";
             break;
         case EntryType::MouseScroll:
             fields = {detail::mouseScrollFields.begin(), detail::mouseScrollFields.end()};
+            type = "mouse_scroll";
             break;
     }
 
     return {
-        .type = type(),
+        .type = type,
         .fields = fields,
         .data = data(),
         .modifiers = modifiers()
