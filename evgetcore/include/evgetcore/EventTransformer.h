@@ -23,6 +23,7 @@
 #ifndef EVGET_INCLUDE_EVENTTRANSFORMER_H
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
+#include "Event/Data.h"
 #include "Event/Schema.h"
 
 namespace EvgetCore {

@@ -25,54 +25,34 @@
 #include <nlohmann/json.hpp>
 #include <evgetcore/Event/Schema.h>
 
-void EvgetCore::Storage::JsonStorage::store(Event::Data event) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
-        return;
+        return {};
     }
 
-    auto nodes = event.getNodes();
-    auto formattedNodes = std::vector<nlohmann::json>{};
-    for (const auto& node : nodes) {
-        auto processedFields = std::vector<std::vector<nlohmann::json>>{};
-        for (const auto& field : node.second) {
-            auto out = std::vector<nlohmann::json>{};
-            std::ranges::transform(field.begin(), field.end(),
-                                   std::back_inserter(out), [](const auto& field) {
-                return nlohmann::json{
-                    {"name", getName(field.fieldDefinition)},
-                    {"type", getType(field.fieldDefinition)},
-                    {"data", field.data},
-                };
+    auto formattedEntries = std::vector<nlohmann::json>{};
+    for (auto entry : event.entries()) {
+        entry.toNamedRepresentation();
+        auto entryWithFields = entry.getEntryWithFields();
+
+        auto formattedFields = std::vector<nlohmann::json>{};
+        for (auto i = 0; i < entryWithFields.data.size(); i++) {
+            formattedFields.push_back({
+                {"type", entryWithFields.type},
+                {"name", entryWithFields.fields[i]},
+                {"data", entryWithFields.data[i]},
+                {"modifiers", entryWithFields.modifiers[i]}
             });
-
-            processedFields.push_back(out);
         }
-
-        formattedNodes.push_back({node.first, processedFields});
-    }
-
-    auto edges = event.getEdges();
-    auto formattedEdges = std::vector<nlohmann::json>{};
-    for (const auto& from : edges) {
-        for (const auto& to : from.second) {
-            std::string relation = "";
-            if (to.second.size() >= 1) {
-                relation = getRelation(to.second[0]);
-            }
-
-            formattedEdges.push_back(nlohmann::json{
-                        {"from", from.first},
-                        {"to", to.first},
-                        {"relation", relation},
-                    });
-        }
+        formattedEntries.emplace_back(formattedFields);
     }
 
     nlohmann::json output{};
-    output["nodes"] = formattedNodes;
-    output["edges"] = formattedEdges;
+    output["entries"] = formattedEntries;
 
     ostream.get() << output.dump(4);
+
+    return {};
 }
 
 EvgetCore::Storage::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {

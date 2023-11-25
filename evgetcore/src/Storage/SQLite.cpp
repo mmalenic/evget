@@ -41,7 +41,23 @@ EvgetCore::Storage::SQLite::SQLite(std::string database)
     : database{std::move(database)} {
 }
 
-void EvgetCore::Storage::SQLite::store(Event::Data event) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data event) {
+    try {
+        ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE};
+
+        ::SQLite::Transaction transaction{db};
+
+        // todo
+        db.exec(Database::detail::initialize);
+
+        transaction.commit();
+
+        return {};
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error inserting event data: {}", what);
+        return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
+    }
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {

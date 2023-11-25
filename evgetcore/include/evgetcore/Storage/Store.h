@@ -24,6 +24,8 @@
 #ifndef EVGET_STORAGE_H
 #define EVGET_STORAGE_H
 
+#include "Error.h"
+#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore::Storage {
@@ -36,7 +38,7 @@ public:
     /**
      * Store the event data.
      */
-    virtual void store(Event::Data event) = 0;
+    virtual Result<void> store(Event::Data event) = 0;
 
     Store() = default;
 

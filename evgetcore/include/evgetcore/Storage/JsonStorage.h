@@ -36,7 +36,7 @@ class JsonStorage : public Store {
 public:
     explicit JsonStorage(std::ostream& ostream);
 
-    void store(Event::Data event) override;
+    Result<void> store(Event::Data event) override;
 
 private:
     std::reference_wrapper<std::ostream> ostream;

@@ -39,14 +39,14 @@ const std::vector<std::string>& EvgetCore::Event::Entry::modifiers() const {
 
 void EvgetCore::Event::Entry::toNamedRepresentation() {
     if (_data.size() >= detail::mouseMoveNFields) {
-        _data[detail::mouseMoveNFields - 1] = fromUnderlying<Device>(_data[detail::mouseMoveNFields - 1]);
+        _data[detail::mouseMoveNFields - 1] = fromDevice(fromUnderlying<Device>(_data[detail::mouseMoveNFields - 1]));
     }
     if (_data.size() >= detail::mouseClickNFields) {
-        _data[detail::mouseClickNFields - 1] = fromUnderlying<ButtonAction>(_data[detail::mouseClickNFields - 1]);
+        _data[detail::mouseClickNFields - 1] = fromButtonAction(fromUnderlying<ButtonAction>(_data[detail::mouseClickNFields - 1]));
     }
 
    std::ranges::for_each(_modifiers.begin(), _modifiers.end(), [](std::string &modifier) {
-       modifier = fromUnderlying<ModifierValue>(modifier);
+       modifier = fromModifierValue(fromUnderlying<ModifierValue>(modifier));
    });
 }
 

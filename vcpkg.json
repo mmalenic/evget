@@ -8,7 +8,7 @@
       "dependencies": [
         {
           "name": "boost-program-options",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
@@ -28,17 +28,17 @@
       "dependencies": [
         {
           "name": "boost-program-options",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
           "name": "boost-asio",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
           "name": "boost-algorithm",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
@@ -73,12 +73,12 @@
       "dependencies": [
         {
           "name": "boost-asio",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
           "name": "boost-numeric-conversion",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
@@ -104,7 +104,7 @@
       "dependencies": [
         {
           "name": "boost-algorithm",
-          "version>=": "1.82.0",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {

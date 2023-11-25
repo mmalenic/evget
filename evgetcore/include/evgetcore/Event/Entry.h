@@ -26,7 +26,7 @@
 
 #include <string>
 #include <vector>
-#include <c++/11/array>
+#include <array>
 
 namespace EvgetCore::Event {
 
@@ -46,17 +46,17 @@ concept AddToArray = std::ranges::range<AddElements> && To > From && requires(Ad
  */
 template <std::size_t From, std::size_t To, typename AddElements>
 requires AddToArray<From, To, AddElements>
-constexpr std::array<std::string, To>
-addToArray(std::array<std::string, From> from, AddElements addElements) {
-    std::array<std::string, To> out{};
+constexpr std::array<std::string_view, To>
+addToArray(std::array<std::string_view, From> from, AddElements addElements) {
+    std::array<std::string_view, To> out{};
 
-    std::copy(from.begin(), from.end(), out.begin());
-    std::copy(addElements.begin(), addElements.end(), out.end());
+    auto next = std::copy(from.begin(), from.end(), out.begin());
+    std::copy(addElements.begin(), addElements.end(), next);
 
     return out;
 }
 
-constexpr std::array<std::string, mouseMoveNFields> mouseMoveFields{
+constexpr std::array<std::string_view, mouseMoveNFields> mouseMoveFields{
     "interval",
     "timestamp",
     "position_x",
@@ -71,18 +71,18 @@ constexpr std::array<std::string, mouseMoveNFields> mouseMoveFields{
     "device_type",
 };
 
-constexpr std::array<std::string, mouseScrollNFields> mouseScrollFields = addToArray<mouseMoveNFields, mouseScrollNFields>(mouseMoveFields, std::vector{
+constexpr std::array<std::string_view, mouseScrollNFields> mouseScrollFields = addToArray<mouseMoveNFields, mouseScrollNFields>(mouseMoveFields, std::vector{
     "scroll_vertical",
     "scroll_horizontal",
 });
 
-constexpr std::array<std::string, mouseClickNFields> mouseClickFields = addToArray<mouseMoveNFields, mouseClickNFields>(mouseMoveFields, std::vector{
+constexpr std::array<std::string_view, mouseClickNFields> mouseClickFields = addToArray<mouseMoveNFields, mouseClickNFields>(mouseMoveFields, std::vector{
     "button_id",
     "button_name",
     "button_action",
 });
 
-constexpr std::array<std::string, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
+constexpr std::array<std::string_view, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
     "character",
 });
 }

@@ -192,19 +192,6 @@ constexpr std::string toUnderlying(Enum value) {
     return std::to_string(std::to_underlying(value));
 }
 
-
-/**
- * Convert an integer string representation to an enum.
- */
-template<class Enum>
-constexpr std::string fromUnderlying(const std::string& value) {
-    if (value.empty()) {
-        return "";
-    }
-
-    return fromDevice({static_cast<Enum>(std::stoi(value))});
-}
-
 /**
  * Create a string from a string value.
  */
@@ -288,6 +275,18 @@ constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
                 return std::string{detail::MODIFIER_VALUE_MOD5};
         }
     });
+}
+
+/**
+ * Convert an integer string representation to an enum.
+ */
+template<class Enum>
+constexpr std::optional<Enum> fromUnderlying(const std::string& value) {
+    if (value.empty()) {
+        return {};
+    }
+
+    return std::optional{static_cast<Enum>(std::stoi(value))};
 }
 
 /**

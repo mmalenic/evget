@@ -27,6 +27,7 @@
 
 #include "Error.h"
 #include "Store.h"
+#include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore::Storage {
@@ -34,11 +35,11 @@ namespace EvgetCore::Storage {
 /**
  * A storage class which stores events in an SQLite database.
  */
-class SQLite : public Store {
+class SQLite : Store {
 public:
     explicit SQLite(std::string database = "evget.sqlite");
 
-    void store(Event::Data event) override;
+    Result<void> store(Event::Data events) override;
 
     /**
      * \brief Iniitalize the database with tables.
