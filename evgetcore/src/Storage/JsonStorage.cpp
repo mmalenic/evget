@@ -38,13 +38,15 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::D
         auto formattedFields = std::vector<nlohmann::json>{};
         for (auto i = 0; i < entryWithFields.data.size(); i++) {
             formattedFields.push_back({
-                {"type", entryWithFields.type},
                 {"name", entryWithFields.fields[i]},
-                {"data", entryWithFields.data[i]},
-                {"modifiers", entryWithFields.modifiers[i]}
+                {"data", entryWithFields.data[i]}
             });
         }
-        formattedEntries.emplace_back(formattedFields);
+        formattedEntries.push_back({
+                {"type", entryWithFields.type},
+            {"field", formattedFields},
+            {"modifiers", entryWithFields.modifiers}
+            });
     }
 
     nlohmann::json output{};
