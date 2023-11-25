@@ -37,27 +37,17 @@ const std::vector<std::string>& EvgetCore::Event::Entry::modifiers() const {
     return _modifiers;
 }
 
-EvgetCore::Event::Entry EvgetCore::Event::Entry::getNamedRepresentation() {
-    auto data{_data};
-
-    if (data.size() >= detail::mouseMoveNFields) {
-        data[detail::mouseMoveNFields - 1] = fromUnderlying<Device>(data[detail::mouseMoveNFields - 1]);
+void EvgetCore::Event::Entry::toNamedRepresentation() {
+    if (_data.size() >= detail::mouseMoveNFields) {
+        _data[detail::mouseMoveNFields - 1] = fromUnderlying<Device>(_data[detail::mouseMoveNFields - 1]);
     }
-    if (data.size() >= detail::mouseClickNFields) {
-        data[detail::mouseClickNFields - 1] = fromUnderlying<ButtonAction>(data[detail::mouseClickNFields - 1]);
+    if (_data.size() >= detail::mouseClickNFields) {
+        _data[detail::mouseClickNFields - 1] = fromUnderlying<ButtonAction>(_data[detail::mouseClickNFields - 1]);
     }
 
-    std::vector<std::string> modifiers{};
-    modifiers.reserve(_modifiers.size());
-    std::transform(_data.begin(), _data.end(), std::back_inserter(modifiers), [](auto value) {
-        return fromUnderlying<ModifierValue>(value);
-    });
-
-    return {
-        this->type(),
-        data,
-        modifiers
-    };
+   std::ranges::for_each(_modifiers.begin(), _modifiers.end(), [](std::string &modifier) {
+       modifier = fromUnderlying<ModifierValue>(modifier);
+   });
 }
 
 std::string EvgetCore::Event::Entry::keyFieldName(size_t position) {

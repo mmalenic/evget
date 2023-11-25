@@ -97,6 +97,13 @@ enum class EntryType {
     MouseScroll
 };
 
+struct EntryWithFields {
+    EntryType type;
+    std::vector<std::string> fieldNames;
+    std::vector<std::string> data;
+    std::vector<std::string> modifiers;
+};
+
 /**
  * \brief An entry contains data, modifiers, and its type.
  */
@@ -111,7 +118,7 @@ public:
     /**
      * \brief Rearrange the entry fields from an integer to named representation.
      */
-    Entry getNamedRepresentation();
+    void toNamedRepresentation();
 
     /**
      * \brief Get the mouse move field name.
