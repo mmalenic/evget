@@ -38,6 +38,7 @@
 #include "Graph.h"
 #include "ModifierValue.h"
 #include "evgetcore/Util.h"
+#include "Entry.h"
 
 namespace EvgetCore::Event {
 
@@ -70,6 +71,11 @@ constexpr std::string_view RELATION_ONE_TO_ONE{"OneToOne"};
 constexpr std::string_view RELATION_ONE_TO_MANY{"OneToMany"};
 constexpr std::string_view RELATION_MANY_TO_ONE{"ManyToOne"};
 constexpr std::string_view RELATION_MANY_TO_MANY{"ManyToMany"};
+
+constexpr std::string_view ENTRY_TYPE_KEY{"Key"};
+constexpr std::string_view ENTRY_TYPE_MOUSE_MOVE{"MouseMove"};
+constexpr std::string_view ENTRY_TYPE_MOUSE_CLICK{"MouseClick"};
+constexpr std::string_view ENTRY_TYPE_MOUSE_SCROLL{"MouseScroll"};
 
 template <typename T>
 constexpr std::string
@@ -273,6 +279,24 @@ constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
                 return std::string{detail::MODIFIER_VALUE_SUPER};
             case ModifierValue::Mod5:
                 return std::string{detail::MODIFIER_VALUE_MOD5};
+        }
+    });
+}
+
+/**
+ * Format a string from a `EntryType`.
+ */
+constexpr std::string fromEntryType(std::optional<EntryType> value) {
+    return detail::optionalToString(value, [](auto value) {
+        switch (value) {
+            case EntryType::Key:
+                return std::string{detail::ENTRY_TYPE_KEY};
+            case EntryType::MouseMove:
+                return std::string{detail::ENTRY_TYPE_MOUSE_MOVE};
+            case EntryType::MouseClick:
+                return std::string{detail::ENTRY_TYPE_MOUSE_CLICK};
+            case EntryType::MouseScroll:
+                return std::string{detail::ENTRY_TYPE_MOUSE_SCROLL};
         }
     });
 }

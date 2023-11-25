@@ -43,7 +43,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::D
             });
         }
         formattedEntries.push_back({
-                {"type", entryWithFields.type},
+                {"type", fromEntryType(entryWithFields.type)},
             {"field", formattedFields},
             {"modifiers", entryWithFields.modifiers}
             });

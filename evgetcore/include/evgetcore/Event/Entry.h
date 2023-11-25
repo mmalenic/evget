@@ -98,7 +98,7 @@ enum class EntryType {
 };
 
 struct EntryWithFields {
-    std::string type;
+    EntryType type;
     std::vector<std::string> fields;
     std::vector<std::string> data;
     std::vector<std::string> modifiers;
