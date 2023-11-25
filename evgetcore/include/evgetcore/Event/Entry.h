@@ -82,7 +82,7 @@ constexpr std::array<std::string, mouseClickNFields> mouseClickFields = addToArr
     "button_action",
 });
 
-constexpr std::array<std::string, keyNFields> ketFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
+constexpr std::array<std::string, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
     "character",
 });
 }
@@ -112,6 +112,35 @@ public:
      * \brief Rearrange the entry fields from an integer to named representation.
      */
     Entry getNamedRepresentation();
+
+    /**
+     * \brief Get the mouse move field name.
+     * \param position the position of the field.
+     * \return mouse move field name.
+     */
+    static std::string mouseMoveFieldName(size_t position);
+
+    /**
+     * \brief Get the mouse scroll field name.
+     * \param position the position of the field.
+     * \return mouse scroll field name.
+     */
+    static std::string mouseScrollFieldName(size_t position);
+
+    /**
+     * \brief Get the mouse click field name.
+     * \param position the position of the field.
+     * \return mouse click field name.
+     */
+    static std::string mouseClickFieldName(size_t position);
+
+    /**
+     * \brief Get the key field name.
+     * \param position the position of the field.
+     * \return key field name.
+     */
+    static std::string keyFieldName(size_t position);
+
 private:
     EntryType _type;
     std::vector<std::string> _data;

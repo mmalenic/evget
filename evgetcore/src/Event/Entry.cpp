@@ -60,6 +60,22 @@ EvgetCore::Event::Entry EvgetCore::Event::Entry::getNamedRepresentation() {
     };
 }
 
+std::string EvgetCore::Event::Entry::keyFieldName(size_t position) {
+    return detail::keyFields.at(position);
+}
+
+std::string EvgetCore::Event::Entry::mouseMoveFieldName(size_t position) {
+    return detail::mouseMoveFields.at(position);
+}
+
+std::string EvgetCore::Event::Entry::mouseScrollFieldName(size_t position) {
+    return detail::mouseScrollFields.at(position);
+}
+
+std::string EvgetCore::Event::Entry::mouseClickFieldName(size_t position) {
+    return detail::mouseClickFields.at(position);
+}
+
 EvgetCore::Event::EntryType EvgetCore::Event::Entry::type() const {
     return _type;
 }
