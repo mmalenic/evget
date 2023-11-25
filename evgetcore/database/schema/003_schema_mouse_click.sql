@@ -13,9 +13,9 @@ create table mouse_click (
     focus_window_height real,
     info text,
     device_type integer not null references device_type(id),
-    button_action integer not null references button_action(id),
     button_id integer,
-    button_name text
+    button_name text,
+    button_action integer not null references button_action(id)
 );
 
 -- Linking table to modifier
