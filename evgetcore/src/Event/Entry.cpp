@@ -64,6 +64,19 @@ std::string EvgetCore::Event::Entry::keyFieldName(size_t position) {
     return detail::keyFields.at(position);
 }
 
+std::string EvgetCore::Event::Entry::fieldName(size_t position) {
+    switch (this->type()) {
+        case EntryType::Key:
+            return keyFieldName(position);
+        case EntryType::MouseClick:
+            return mouseClickFieldName(position);
+        case EntryType::MouseMove:
+            return mouseMoveFieldName(position);
+        case EntryType::MouseScroll:
+            return mouseScrollFieldName(position);
+    }
+}
+
 std::string EvgetCore::Event::Entry::mouseMoveFieldName(size_t position) {
     return detail::mouseMoveFields.at(position);
 }

@@ -141,6 +141,13 @@ public:
      */
     static std::string keyFieldName(size_t position);
 
+    /**
+     * \brief Get the field name based on the type.
+     * \param position the position of the field.
+     * \return field name.
+     */
+    std::string fieldName(size_t position);
+
 private:
     EntryType _type;
     std::vector<std::string> _data;
