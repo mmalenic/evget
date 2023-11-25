@@ -47,9 +47,9 @@ EvgetCore::Storage::SQLite::SQLite(std::string database)
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data event) {
     try {
-        ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE};
+        ::SQLite::Database database{this->database, ::SQLite::OPEN_READWRITE};
 
-        ::SQLite::Transaction transaction{db};
+        ::SQLite::Transaction transaction{database};
 
         std::optional<::SQLite::Statement> insertKey{};
         std::optional<::SQLite::Statement> insertKeyModifier{};
@@ -60,70 +60,38 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
         std::optional<::SQLite::Statement> insertMouseScroll{};
         std::optional<::SQLite::Statement> insertMouseScrollModifier{};
 
-        auto setOptional = [&db](auto& statement, auto query) {
-            if (!statement.has_value()) {
-                statement = {db, query};
-            }
-        };
-
-        auto bindValues = [](auto& statement, auto& data) {
-            auto entryUuid = to_string(uuids::random_generator()());
-
-            statement->bind(0, entryUuid);
-            for (auto i = 0; i < data.size(); i++) {
-                statement->bind(i + 1, data[i]);
-
-                statement->exec();
-                statement->reset();
-            }
-
-            return entryUuid;
-        };
-
-        auto bindValuesModifier = [](auto& statement, auto& modifiers, auto entryUuid) {
-            for (auto modifier : modifiers) {
-                auto modifierUuid = to_string(uuids::random_generator()());
-                statement->bind(0, modifierUuid);
-                statement->bind(1, entryUuid);
-                statement->bind(2, modifier);
-
-                statement->exec();
-                statement->reset();
-            }
-        };
-
         for (auto entry : event.entries()) {
             std::string entryUuid;
             switch (entry.type()) {
                 case Event::EntryType::Key:
-                    setOptional(insertKey, Database::detail::insert_key);
-                    setOptional(insertKeyModifier, Database::detail::insert_key_modifier);
+                    setOptionalStatement(database, insertKey, Database::detail::insert_key);
+                    setOptionalStatement(database, insertKeyModifier, Database::detail::insert_key_modifier);
 
-                    entryUuid = bindValues(insertKey, entry.data());
-                    bindValuesModifier(insertKeyModifier, entry.modifiers(), entryUuid);
+                    entryUuid = bindValues(*insertKey, entry.data());
+                    bindValuesModifier(*insertKeyModifier, entry.modifiers(), entryUuid);
                     break;
                 case Event::EntryType::MouseClick:
-                    setOptional(insertMouseClick, Database::detail::insert_mouse_click);
-                    setOptional(insertMouseClickModifier, Database::detail::insert_mouse_click_modifier);
+                    setOptionalStatement(database, insertMouseClick, Database::detail::insert_mouse_click);
+                    setOptionalStatement(database, insertMouseClickModifier, Database::detail::insert_mouse_click_modifier);
 
-                    entryUuid = bindValues(insertMouseClick, entry.data());
-                    bindValuesModifier(insertMouseClickModifier, entry.modifiers(), entryUuid);
+                    entryUuid = bindValues(*insertMouseClick, entry.data());
+                    bindValuesModifier(*insertMouseClickModifier, entry.modifiers(), entryUuid);
 
                     break;
                 case Event::EntryType::MouseMove:
-                    setOptional(insertMouseMove, Database::detail::insert_mouse_move);
-                    setOptional(insertMouseMoveModifier, Database::detail::insert_mouse_move_modifier);
+                    setOptionalStatement(database, insertMouseMove, Database::detail::insert_mouse_move);
+                    setOptionalStatement(database, insertMouseMoveModifier, Database::detail::insert_mouse_move_modifier);
 
-                    entryUuid = bindValues(insertMouseMove, entry.data());
-                    bindValuesModifier(insertMouseMoveModifier, entry.modifiers(), entryUuid);
+                    entryUuid = bindValues(*insertMouseMove, entry.data());
+                    bindValuesModifier(*insertMouseMoveModifier, entry.modifiers(), entryUuid);
 
                     break;
                 case Event::EntryType::MouseScroll:
-                    setOptional(insertMouseScroll, Database::detail::insert_mouse_scroll);
-                    setOptional(insertMouseClickModifier, Database::detail::insert_mouse_scroll_modifier);
+                    setOptionalStatement(database, insertMouseScroll, Database::detail::insert_mouse_scroll);
+                    setOptionalStatement(database, insertMouseClickModifier, Database::detail::insert_mouse_scroll_modifier);
 
-                    entryUuid = bindValues(insertMouseScroll, entry.data());
-                    bindValuesModifier(insertMouseScrollModifier, entry.modifiers(), entryUuid);
+                    entryUuid = bindValues(*insertMouseScroll, entry.data());
+                    bindValuesModifier(*insertMouseScrollModifier, entry.modifiers(), entryUuid);
 
                     break;
             }
@@ -155,5 +123,41 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
         auto what = e.what();
         spdlog::error("error initializing SQLite database: {}", what);
         return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
+    }
+}
+
+void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& database,
+    std::optional<::SQLite::Statement>& statement,
+    const char* query) {
+    if (!statement.has_value()) {
+        statement = {database, query};
+    }
+}
+
+std::string EvgetCore::Storage::SQLite::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
+    auto entryUuid = to_string(uuids::random_generator()());
+
+    statement.bind(0, entryUuid);
+    for (auto i = 0; i < data.size(); i++) {
+        statement.bind(i + 1, data[i]);
+
+        statement.exec();
+        statement.reset();
+    }
+
+    return entryUuid;
+}
+
+std::string EvgetCore::Storage::SQLite::bindValuesModifier(::SQLite::Statement& statement,
+    std::vector<std::string> modifiers,
+    std::string entryUuid) {
+    for (auto modifier : modifiers) {
+        auto modifierUuid = to_string(uuids::random_generator()());
+        statement.bind(0, modifierUuid);
+        statement.bind(1, entryUuid);
+        statement.bind(2, modifier);
+
+        statement.exec();
+        statement.reset();
     }
 }
