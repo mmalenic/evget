@@ -18,6 +18,6 @@ create table mouse_move (
 -- Linking table to modifier
 create table mouse_move_modifier (
     uuid text primary key,
-    mouse_click_id integer not null references mouse_move(id),
+    mouse_click_uuid integer not null references mouse_move(uuid),
     modifier_id integer not null references modifier(id)
 );

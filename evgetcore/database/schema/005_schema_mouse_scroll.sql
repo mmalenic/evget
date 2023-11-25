@@ -20,6 +20,6 @@ create table mouse_scroll (
 -- Linking table to modifier
 create table mouse_scroll_modifier (
     uuid text primary key,
-    mouse_click_id integer not null references mouse_scroll(id),
+    mouse_click_uuid integer not null references mouse_scroll(uuid),
     modifier_id integer not null references modifier(id)
 );

@@ -22,6 +22,6 @@ create table key (
 -- Linking table to modifier
 create table key_modifier (
     uuid text primary key,
-    key_id integer not null references key(id),
-    modifier_id integer not null references modifier(id)
+    key_uuid text not null references key(uuid),
+    modifier_id text not null references modifier(id)
 );

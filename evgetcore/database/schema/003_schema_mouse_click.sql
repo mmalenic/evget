@@ -21,6 +21,6 @@ create table mouse_click (
 -- Linking table to modifier
 create table mouse_click_modifier (
     uuid text primary key,
-    mouse_click_id integer not null references mouse_click(id),
+    mouse_click_uuid integer not null references mouse_click(uuid),
     modifier_id integer not null references modifier(id)
 );
