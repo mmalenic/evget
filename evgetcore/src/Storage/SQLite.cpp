@@ -35,6 +35,10 @@
 #include <spdlog/spdlog.h>
 #include "evgetcore/Storage/Error.h"
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
+
 #include <utility>
 
 EvgetCore::Storage::SQLite::SQLite(std::string database)
@@ -47,8 +51,83 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
 
         ::SQLite::Transaction transaction{db};
 
-        // todo
-        db.exec(Database::detail::initialize);
+        std::optional<::SQLite::Statement> insertKey{};
+        std::optional<::SQLite::Statement> insertKeyModifier{};
+        std::optional<::SQLite::Statement> insertMouseMove{};
+        std::optional<::SQLite::Statement> insertMouseMoveModifier{};
+        std::optional<::SQLite::Statement> insertMouseClick{};
+        std::optional<::SQLite::Statement> insertMouseClickModifier{};
+        std::optional<::SQLite::Statement> insertMouseScroll{};
+        std::optional<::SQLite::Statement> insertMouseScrollModifier{};
+
+        auto setOptional = [&db](auto& statement, auto query) {
+            if (!statement.has_value()) {
+                statement = {db, query};
+            }
+        };
+
+        auto bindValues = [](auto& statement, auto& data) {
+            auto entryUuid = to_string(uuids::random_generator()());
+
+            statement->bind(0, entryUuid);
+            for (auto i = 0; i < data.size(); i++) {
+                statement->bind(i + 1, data[i]);
+
+                statement->exec();
+                statement->reset();
+            }
+
+            return entryUuid;
+        };
+
+        auto bindValuesModifier = [](auto& statement, auto& modifiers, auto entryUuid) {
+            for (auto modifier : modifiers) {
+                auto modifierUuid = to_string(uuids::random_generator()());
+                statement->bind(0, modifierUuid);
+                statement->bind(1, entryUuid);
+                statement->bind(2, modifier);
+
+                statement->exec();
+                statement->reset();
+            }
+        };
+
+        for (auto entry : event.entries()) {
+            std::string entryUuid;
+            switch (entry.type()) {
+                case Event::EntryType::Key:
+                    setOptional(insertKey, Database::detail::insert_key);
+                    setOptional(insertKeyModifier, Database::detail::insert_key_modifier);
+
+                    entryUuid = bindValues(insertKey, entry.data());
+                    bindValuesModifier(insertKeyModifier, entry.modifiers(), entryUuid);
+                    break;
+                case Event::EntryType::MouseClick:
+                    setOptional(insertMouseClick, Database::detail::insert_mouse_click);
+                    setOptional(insertMouseClickModifier, Database::detail::insert_mouse_click_modifier);
+
+                    entryUuid = bindValues(insertMouseClick, entry.data());
+                    bindValuesModifier(insertMouseClickModifier, entry.modifiers(), entryUuid);
+
+                    break;
+                case Event::EntryType::MouseMove:
+                    setOptional(insertMouseMove, Database::detail::insert_mouse_move);
+                    setOptional(insertMouseMoveModifier, Database::detail::insert_mouse_move_modifier);
+
+                    entryUuid = bindValues(insertMouseMove, entry.data());
+                    bindValuesModifier(insertMouseMoveModifier, entry.modifiers(), entryUuid);
+
+                    break;
+                case Event::EntryType::MouseScroll:
+                    setOptional(insertMouseScroll, Database::detail::insert_mouse_scroll);
+                    setOptional(insertMouseClickModifier, Database::detail::insert_mouse_scroll_modifier);
+
+                    entryUuid = bindValues(insertMouseScroll, entry.data());
+                    bindValuesModifier(insertMouseScrollModifier, entry.modifiers(), entryUuid);
+
+                    break;
+            }
+        }
 
         transaction.commit();
 

@@ -30,7 +30,11 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
+#include "boost/uuid/uuid.hpp"
+
 namespace EvgetCore::Storage {
+
+namespace uuids = boost::uuids;
 
 /**
  * A storage class which stores events in an SQLite database.
