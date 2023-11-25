@@ -50,33 +50,29 @@ void EvgetCore::Event::Entry::toNamedRepresentation() {
    });
 }
 
-std::string EvgetCore::Event::Entry::keyFieldName(size_t position) {
-    return detail::keyFields.at(position);
-}
-
-std::string EvgetCore::Event::Entry::fieldName(size_t position) {
+EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() {
+    std::vector<std::string> fields;
     switch (this->type()) {
         case EntryType::Key:
-            return keyFieldName(position);
+            fields = {detail::keyFields.begin(), detail::keyFields.end()};
+            break;
         case EntryType::MouseClick:
-            return mouseClickFieldName(position);
+            fields = {detail::mouseClickFields.begin(), detail::mouseClickFields.end()};
+            break;
         case EntryType::MouseMove:
-            return mouseMoveFieldName(position);
+            fields = {detail::mouseMoveFields.begin(), detail::mouseMoveFields.end()};
+            break;
         case EntryType::MouseScroll:
-            return mouseScrollFieldName(position);
+            fields = {detail::mouseScrollFields.begin(), detail::mouseScrollFields.end()};
+            break;
     }
-}
 
-std::string EvgetCore::Event::Entry::mouseMoveFieldName(size_t position) {
-    return detail::mouseMoveFields.at(position);
-}
-
-std::string EvgetCore::Event::Entry::mouseScrollFieldName(size_t position) {
-    return detail::mouseScrollFields.at(position);
-}
-
-std::string EvgetCore::Event::Entry::mouseClickFieldName(size_t position) {
-    return detail::mouseClickFields.at(position);
+    return {
+        .type = type(),
+        .fields = fields,
+        .data = data(),
+        .modifiers = modifiers()
+    };
 }
 
 EvgetCore::Event::EntryType EvgetCore::Event::Entry::type() const {

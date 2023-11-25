@@ -99,7 +99,7 @@ enum class EntryType {
 
 struct EntryWithFields {
     EntryType type;
-    std::vector<std::string> fieldNames;
+    std::vector<std::string> fields;
     std::vector<std::string> data;
     std::vector<std::string> modifiers;
 };
@@ -121,39 +121,9 @@ public:
     void toNamedRepresentation();
 
     /**
-     * \brief Get the mouse move field name.
-     * \param position the position of the field.
-     * \return mouse move field name.
+     * \brief Get the entry with fields.
      */
-    static std::string mouseMoveFieldName(size_t position);
-
-    /**
-     * \brief Get the mouse scroll field name.
-     * \param position the position of the field.
-     * \return mouse scroll field name.
-     */
-    static std::string mouseScrollFieldName(size_t position);
-
-    /**
-     * \brief Get the mouse click field name.
-     * \param position the position of the field.
-     * \return mouse click field name.
-     */
-    static std::string mouseClickFieldName(size_t position);
-
-    /**
-     * \brief Get the key field name.
-     * \param position the position of the field.
-     * \return key field name.
-     */
-    static std::string keyFieldName(size_t position);
-
-    /**
-     * \brief Get the field name based on the type.
-     * \param position the position of the field.
-     * \return field name.
-     */
-    std::string fieldName(size_t position);
+    EntryWithFields getEntryWithFields();
 
 private:
     EntryType _type;
