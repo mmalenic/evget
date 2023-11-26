@@ -56,7 +56,7 @@ private:
 
     void setOptionalStatement(::SQLite::Database& database, std::optional<::SQLite::Statement>& statement, const char* query);
     std::string bindValues(::SQLite::Statement& statement, std::vector<std::string> data);
-    std::string bindValuesModifier(::SQLite::Statement& statement, std::vector<std::string> modifiers, std::string entryUuid);
+    void bindValuesModifier(::SQLite::Statement& statement, std::vector<std::string> modifiers, std::string entryUuid);
 };
 }
 

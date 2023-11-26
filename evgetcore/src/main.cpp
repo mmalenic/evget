@@ -111,14 +111,15 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::Storage::JsonStorage storage{std::cout};
 
-        // EvgetCore::Storage::SQLite sqlite{};
-        // sqlite.init();
+        EvgetCore::Storage::SQLite sqlite{};
+        sqlite.init();
         while (true) {
             auto event = xInputHandler.getEvent();
 
             auto transformed = transformer.transformEvent(std::move(event));
 
             storage.store(transformed);
+            sqlite.store(transformed);
         }
 
         //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);

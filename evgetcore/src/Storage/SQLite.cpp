@@ -61,6 +61,10 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
         std::optional<::SQLite::Statement> insertMouseScrollModifier{};
 
         for (auto entry : event.entries()) {
+            if (entry.data().empty()) {
+                continue;
+            }
+
             std::string entryUuid;
             switch (entry.type()) {
                 case Event::EntryType::Key:
@@ -137,25 +141,25 @@ void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& databa
 std::string EvgetCore::Storage::SQLite::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
     auto entryUuid = to_string(uuids::random_generator()());
 
-    statement.bind(0, entryUuid);
+    statement.bind(1, entryUuid);
     for (auto i = 0; i < data.size(); i++) {
-        statement.bind(i + 1, data[i]);
-
-        statement.exec();
-        statement.reset();
+        statement.bind(i + 2, data[i]);
     }
+
+    statement.exec();
+    statement.reset();
 
     return entryUuid;
 }
 
-std::string EvgetCore::Storage::SQLite::bindValuesModifier(::SQLite::Statement& statement,
+void EvgetCore::Storage::SQLite::bindValuesModifier(::SQLite::Statement& statement,
     std::vector<std::string> modifiers,
     std::string entryUuid) {
-    for (auto modifier : modifiers) {
+    for (const auto& modifier : modifiers) {
         auto modifierUuid = to_string(uuids::random_generator()());
-        statement.bind(0, modifierUuid);
-        statement.bind(1, entryUuid);
-        statement.bind(2, modifier);
+        statement.bind(1, modifierUuid);
+        statement.bind(2, entryUuid);
+        statement.bind(3, modifier);
 
         statement.exec();
         statement.reset();
