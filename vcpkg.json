@@ -47,6 +47,11 @@
           "default-features": false
         },
         {
+          "name": "boost-lockfree",
+          "version>=": "1.83.0",
+          "default-features": false
+        },
+        {
           "name": "fmt",
           "version>=": "10.0.0",
           "default-features": false
