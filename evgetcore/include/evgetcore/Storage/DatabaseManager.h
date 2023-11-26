@@ -25,8 +25,12 @@
 #define DATABASEMANAGER_H
 
 #include "Store.h"
+#include <boost/lockfree/queue.hpp>
 
 namespace EvgetCore::Storage {
+
+namespace lockfree = boost::lockfree;
+
 class DatabaseManager : public Store {
 public:
     /**
@@ -39,6 +43,7 @@ public:
 
 private:
     size_t nEvents;
+    lockfree::queue<Event::Data> events;
 };
 }
 

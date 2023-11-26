@@ -23,8 +23,20 @@
 
 #include "evgetcore/Storage/DatabaseManager.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(size_t nEvents) : nEvents{nEvents} {
+#include <spdlog/spdlog.h>
+
+EvgetCore::Storage::DatabaseManager::DatabaseManager(size_t nEvents) : nEvents{nEvents},
+                                                                       events{nEvents} {
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
+    auto success = events.push(std::move(event));
+
+    if (!success) {
+        auto message = "failed to push event to queue";
+        spdlog::error(message);
+        return Err{{.errorType = ErrorType::SQLiteError, .message = message}};
+    }
+
+    return {};
 }
