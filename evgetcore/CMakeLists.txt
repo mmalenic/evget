@@ -27,6 +27,7 @@ add_library(
         include/evgetcore/Storage/Error.h
         include/evgetcore/Event/Data.h
         include/evgetcore/Event/Entry.h
+        include/evgetcore/Storage/DatabaseManager.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
