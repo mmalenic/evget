@@ -30,10 +30,12 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 
+#include <boost/asio.hpp>
 #include "boost/uuid/uuid.hpp"
 
 namespace EvgetCore::Storage {
 
+namespace asio = boost::asio;
 namespace uuids = boost::uuids;
 
 /**
@@ -43,7 +45,7 @@ class SQLite : Store {
 public:
     explicit SQLite(std::string database = "evget.sqlite");
 
-    Result<void> store(Event::Data events) override;
+    asio::awaitable<Result<void>> store(Event::Data events) override;
 
     /**
      * \brief Iniitalize the database with tables.

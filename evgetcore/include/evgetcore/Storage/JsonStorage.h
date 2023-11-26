@@ -28,7 +28,12 @@
 #include "../EventListener.h"
 #include "Store.h"
 
+#include <boost/asio.hpp>
+
 namespace EvgetCore::Storage {
+
+namespace asio = boost::asio;
+
 /**
  * A storage class which prints events to stdout.
  */
@@ -36,7 +41,7 @@ class JsonStorage : public Store {
 public:
     explicit JsonStorage(std::ostream& ostream);
 
-    Result<void> store(Event::Data event) override;
+    asio::awaitable<Result<void>> store(Event::Data event) override;
 
 private:
     std::reference_wrapper<std::ostream> ostream;

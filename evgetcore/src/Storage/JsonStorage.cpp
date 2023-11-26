@@ -25,9 +25,9 @@
 #include <nlohmann/json.hpp>
 #include <evgetcore/Event/Schema.h>
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
+EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
-        return {};
+        co_return Result<void>{};
     }
 
     auto formattedEntries = std::vector<nlohmann::json>{};
@@ -54,7 +54,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::D
 
     ostream.get() << output.dump(4);
 
-    return {};
+    co_return Result<void>{};
 }
 
 EvgetCore::Storage::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {

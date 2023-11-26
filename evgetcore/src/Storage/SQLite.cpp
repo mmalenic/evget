@@ -45,7 +45,7 @@ EvgetCore::Storage::SQLite::SQLite(std::string database)
     : database{std::move(database)} {
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data event) {
+EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::SQLite::store(Event::Data event) {
     try {
         ::SQLite::Database database{this->database, ::SQLite::OPEN_READWRITE};
 
@@ -103,11 +103,11 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
 
         transaction.commit();
 
-        return {};
+        co_return Result<void>{};
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error inserting event data: {}", what);
-        return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
+        co_return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
     }
 }
 

@@ -27,8 +27,11 @@
 #include "Error.h"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
+#include <boost/asio.hpp>
 
 namespace EvgetCore::Storage {
+
+namespace asio = boost::asio;
 
 /**
  * An interface which represents storing data.
@@ -38,7 +41,7 @@ public:
     /**
      * Store the event data.
      */
-    virtual Result<void> store(Event::Data event) = 0;
+    virtual asio::awaitable<Result<void>> store(Event::Data event) = 0;
 
     Store() = default;
 
