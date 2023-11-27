@@ -31,6 +31,7 @@
 
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
+#include "evgetcore/Storage/DatabaseManager.h"
 #include "evgetcore/Storage/JsonStorage.h"
 #include "evgetcore/Storage/SQLite.h"
 #include "evgetx11/EventLoopX11.h"
@@ -112,6 +113,8 @@ int main(int argc, char* argv[]) {
         EvgetCore::Storage::JsonStorage storage{std::cout};
 
         EvgetCore::Storage::SQLite sqlite{};
+
+        EvgetCore::Storage::DatabaseManager manager{context, sqlite, 100};
         sqlite.init();
         while (true) {
             auto event = xInputHandler.getEvent();

@@ -41,7 +41,7 @@ namespace uuids = boost::uuids;
 /**
  * A storage class which stores events in an SQLite database.
  */
-class SQLite : Store {
+class SQLite : public Store {
 public:
     explicit SQLite(std::string database = "evget.sqlite");
 
