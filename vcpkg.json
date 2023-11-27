@@ -3,8 +3,8 @@
   "version-string": "0.1.0",
   "builtin-baseline": "dafef74af53669ef1cc9015f55e0ce809ead62aa",
   "features": {
-    "clioption": {
-      "description": "Dependencies for clioption",
+    "async": {
+      "description": "Dependencies for async",
       "dependencies": [
         {
           "name": "boost-program-options",
@@ -14,6 +14,21 @@
         {
           "name": "fmt",
           "version>=": "10.0.0",
+          "default-features": false
+        },
+        {
+          "name": "spdlog",
+          "version>=": "1.11.0",
+          "default-features": false
+        }
+      ]
+    },
+    "clioption": {
+      "description": "Dependencies for clioption",
+      "dependencies": [
+        {
+          "name": "boost-asio",
+          "version>=": "1.83.0",
           "default-features": false
         },
         {
@@ -141,6 +156,7 @@
     }
   },
   "default-features": [
+    "async",
     "clioption",
     "evgetcore",
     "evgetx11",

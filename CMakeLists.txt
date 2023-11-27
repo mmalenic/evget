@@ -22,6 +22,9 @@ project(evget)
 
 add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
 
+add_subdirectory(async)
+target_link_libraries(${PROJECT_NAME} PUBLIC async)
+
 add_subdirectory(clioption)
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
