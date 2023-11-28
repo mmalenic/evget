@@ -46,5 +46,6 @@ void Async::Scheduler::log_exception(std::exception_ptr e) {
         }
     } catch (const std::exception& e) {
         spdlog::error("Exception in coroutine: {}", e.what());
+        stop();
     }
 }
