@@ -6,6 +6,7 @@ project(async)
 add_library(
         ${PROJECT_NAME}
         include/async/coroutine/Scheduler.h
+        include/async/Util.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

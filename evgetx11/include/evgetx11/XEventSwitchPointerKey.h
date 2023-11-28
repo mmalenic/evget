@@ -50,7 +50,7 @@ public:
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
@@ -60,22 +60,22 @@ private:
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void keyEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void motionEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void scrollEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     std::reference_wrapper<XWrapper> xWrapper;
@@ -90,7 +90,7 @@ private:
 bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
         case XI_Motion:
@@ -116,7 +116,7 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     auto button = xEventSwitchPointer.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
@@ -133,7 +133,7 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
 void EvgetX11::XEventSwitchPointerKey::keyEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
@@ -175,7 +175,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
@@ -224,7 +224,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
 void EvgetX11::XEventSwitchPointerKey::motionEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {

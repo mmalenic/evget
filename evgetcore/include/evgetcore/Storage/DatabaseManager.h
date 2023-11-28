@@ -49,47 +49,47 @@ private:
     std::reference_wrapper<E> context;
     std::reference_wrapper<Store> storeIn;
     size_t nEvents;
-    lockfree::queue<Event::Data> events;
+    // lockfree::queue<Event::Data> events;
 
     asio::awaitable<Result<void>> storeWith(Event::Data event);
 };
 
 template <asio::execution::executor E>
 DatabaseManager<E>::DatabaseManager(E& context, Store& storeIn, size_t nEvents) :
-context{context}, storeIn{storeIn}, nEvents{nEvents}, events{nEvents} {
+context{context}, storeIn{storeIn}, nEvents{nEvents} {
 }
 
 template <asio::execution::executor E>
 asio::awaitable<Result<void>> DatabaseManager<E>::store(Event::Data event) {
-    auto success = events.bounded_push(std::move(event));
+    // auto success = events.bounded_push(std::move(event));
 
     Result<void> outResult = {};
-    if (!success) {
-        spdlog::info("reached end of queue, storing events.");
-
-        Event::Data out{};
-        Event::Data value{};
-        while (events.pop(value)) {
-            out.mergeWith(std::move(value));
-        }
-
-        asio::co_spawn(context, [this, out]() {
-            return this->storeWith(std::move(out));
-        }, [&outResult](std::exception_ptr e, Result<void> result) {
-            if (e != nullptr) {
-              try {
-                std::rethrow_exception(e);
-              } catch (std::exception &e) {
-                  auto what = e.what();
-                  spdlog::error("error when storing in database manager: {}", what);
-                  outResult = Err{{.errorType = ErrorType::DatabaseManager, .message = what}};
-              }
-            }
-            if (!result.has_value()) {
-                outResult = Err{result.error()};
-            }
-        });
-    }
+    // if (!success) {
+    //     spdlog::info("reached end of queue, storing events.");
+    //
+    //     Event::Data out{};
+    //     Event::Data value{};
+    //     while (events.pop(value)) {
+    //         out.mergeWith(std::move(value));
+    //     }
+    //
+    //     asio::co_spawn(context, [this, out]() {
+    //         return this->storeWith(std::move(out));
+    //     }, [&outResult](std::exception_ptr e, Result<void> result) {
+    //         if (e != nullptr) {
+    //           try {
+    //             std::rethrow_exception(e);
+    //           } catch (std::exception &e) {
+    //               auto what = e.what();
+    //               spdlog::error("error when storing in database manager: {}", what);
+    //               outResult = Err{{.errorType = ErrorType::DatabaseManager, .message = what}};
+    //           }
+    //         }
+    //         if (!result.has_value()) {
+    //             outResult = Err{result.error()};
+    //         }
+    //     });
+    // }
 
     co_return outResult;
 }

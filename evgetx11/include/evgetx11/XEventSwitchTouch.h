@@ -36,7 +36,7 @@ public:
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
@@ -44,12 +44,12 @@ private:
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void touchMotion(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        EvgetCore::Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     std::reference_wrapper<XEventSwitch> xEventSwitchPointer;

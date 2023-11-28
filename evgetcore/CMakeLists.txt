@@ -16,7 +16,6 @@ add_library(
     include/evgetcore/Event/ButtonAction.h
     include/evgetcore/Event/Device.h
     include/evgetcore/EventListener.h
-    include/evgetcore/Util.h
     include/evgetcore/UnsupportedOperationException.h
     include/evgetcore/CoreParser.h
     include/evgetcore/Event/ModifierValue.h

@@ -25,12 +25,12 @@
 
 #include <concepts>
 
-namespace EvgetCore::Util {
+namespace Async {
 /**
  * Invocable concept with a checked return type.
  */
 template <class F, class R, class... Args>
 concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
-}  // namespace EvgetCore::Util
+}  // namespace Async
 
 #endif  // EVGET_INCLUDE_EVGET_UTIL_H

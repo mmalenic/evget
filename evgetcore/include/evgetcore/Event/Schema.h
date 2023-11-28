@@ -37,7 +37,7 @@
 #include "Device.h"
 #include "Graph.h"
 #include "ModifierValue.h"
-#include "evgetcore/Util.h"
+#include "../../../../async/include/async/Util.h"
 #include "Entry.h"
 
 namespace EvgetCore::Event {
@@ -79,7 +79,7 @@ constexpr std::string_view ENTRY_TYPE_MOUSE_SCROLL{"MouseScroll"};
 
 template <typename T>
 constexpr std::string
-optionalToString(std::optional<T> optional, EvgetCore::Util::Invocable<std::string, T> auto&& function) {
+optionalToString(std::optional<T> optional, Async::Invocable<std::string, T> auto&& function) {
     if (!optional.has_value()) {
         return "";
     }
