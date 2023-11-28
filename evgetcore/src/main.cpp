@@ -41,6 +41,7 @@
 #include "evgetx11/XSetMaskCore.h"
 #include "evgetx11/XSetMaskRefresh.h"
 #include "evgetx11/XWrapperX11.h"
+#include "async/coroutine/Scheduler.h"
 
 int main(int argc, char* argv[]) {
 
@@ -89,6 +90,8 @@ int main(int argc, char* argv[]) {
 //    //    spdlog::set_level(cmd.getLogLevel());
 //    //
         spdlog::set_level(spdlog::level::trace);
+
+        Async::Scheduler scheduler{};
 
         boost::asio::thread_pool pool{};
         auto context = pool.get_executor();

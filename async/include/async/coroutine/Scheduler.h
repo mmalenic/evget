@@ -24,10 +24,19 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <boost/asio.hpp>
+
 namespace Async {
 
-class Scheduler {
+namespace asio = boost::asio;
 
+class Scheduler {
+public:
+    Scheduler() = default;
+    explicit Scheduler(std::size_t nThreads);
+
+private:
+    asio::thread_pool pool;
 };
 
 } // Async

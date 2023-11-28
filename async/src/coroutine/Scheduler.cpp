@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-#include "Scheduler.h"
+#include "async/coroutine/Scheduler.h"
 
-namespace Async {
-} // Async
+Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
+}
