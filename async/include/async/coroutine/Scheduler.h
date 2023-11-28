@@ -42,6 +42,9 @@ public:
     template<typename T>
     void spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, std::exception_ptr, T, const Scheduler&> auto&& handler);
 
+    void join();
+    void stop();
+
 private:
     asio::thread_pool pool;
 

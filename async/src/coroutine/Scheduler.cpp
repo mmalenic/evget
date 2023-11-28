@@ -26,6 +26,14 @@
 Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
 }
 
+void Async::Scheduler::join() {
+    pool.join();
+}
+
+void Async::Scheduler::stop() {
+    pool.stop();
+}
+
 void Async::Scheduler::log_exception(std::exception_ptr e) {
     try {
         if (e) {
