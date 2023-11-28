@@ -93,46 +93,70 @@ int main(int argc, char* argv[]) {
 
         Async::Scheduler scheduler{};
 
-        scheduler.spawn([]() -> boost::asio::awaitable<void> {
-            throw std::exception{};
-        }, [](std::exception_ptr e, const Async::Scheduler& scheduler) {
-            std::cout << "hello";
+        scheduler.spawn<int>([](Async::Scheduler& scheduler) -> boost::asio::awaitable<int> {
+            while (!co_await scheduler.isStopped()) {
+                std::cout << "value2" << "\n";
+            }
+            co_return 2;
+        }, [](std::exception_ptr e, int value, Async::Scheduler& scheduler) {
+            scheduler.stop();
+            std::cout << value << "\n";
         });
 
-        boost::asio::thread_pool pool{};
-        auto context = pool.get_executor();
 
-        Display* display = XOpenDisplay(nullptr);
-        EvgetX11::XWrapperX11 xWrapperX11{*display};
+        scheduler.spawn([](Async::Scheduler& scheduler) -> boost::asio::awaitable<void> {
+            while (!co_await scheduler.isStopped()) {
+                std::cout << "value1" << "\n";
+            }
+            co_return;
+        }, [](std::exception_ptr e, Async::Scheduler& scheduler) {
+            scheduler.stop();
+            std::cout << "exception\n";
+        });
 
-        EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
-        EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
+        scheduler.spawn<int>([](Async::Scheduler& scheduler) -> boost::asio::awaitable<int> {
+            co_return 1;
+        }, [](std::exception_ptr e, int value, Async::Scheduler& scheduler) {
+            scheduler.stop();
+            std::cout << value << "\n";
+        });
 
-        EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
+        scheduler.join();
 
-        EvgetX11::XSetMaskCore setCore{};
-        EvgetX11::XSetMaskRefresh setRefresh{};
-
-        EvgetX11::XInputHandler xInputHandler{xWrapperX11, {setCore, setRefresh}};
-
-        EvgetX11::EventLoopX11 eventLoop{xInputHandler};
-
-        //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
-
-        EvgetCore::Storage::JsonStorage storage{std::cout};
-
-        EvgetCore::Storage::SQLite sqlite{};
-
-        EvgetCore::Storage::DatabaseManager manager{context, sqlite, 100};
-        sqlite.init();
-        while (true) {
-            auto event = xInputHandler.getEvent();
-
-            auto transformed = transformer.transformEvent(std::move(event));
-
-            storage.store(transformed);
-            sqlite.store(transformed);
-        }
+        // boost::asio::thread_pool pool{};
+        // auto context = pool.get_executor();
+        //
+        // Display* display = XOpenDisplay(nullptr);
+        // EvgetX11::XWrapperX11 xWrapperX11{*display};
+        //
+        // EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
+        // EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
+        //
+        // EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
+        //
+        // EvgetX11::XSetMaskCore setCore{};
+        // EvgetX11::XSetMaskRefresh setRefresh{};
+        //
+        // EvgetX11::XInputHandler xInputHandler{xWrapperX11, {setCore, setRefresh}};
+        //
+        // EvgetX11::EventLoopX11 eventLoop{xInputHandler};
+        //
+        // //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
+        //
+        // EvgetCore::Storage::JsonStorage storage{std::cout};
+        //
+        // EvgetCore::Storage::SQLite sqlite{};
+        //
+        // EvgetCore::Storage::DatabaseManager manager{context, sqlite, 100};
+        // sqlite.init();
+        // while (true) {
+        //     auto event = xInputHandler.getEvent();
+        //
+        //     auto transformed = transformer.transformEvent(std::move(event));
+        //
+        //     storage.store(transformed);
+        //     sqlite.store(transformed);
+        // }
 
         //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
     //

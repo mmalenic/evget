@@ -10,4 +10,5 @@ target_sources(
         Storage/JsonStorage.cpp
         Storage/SQLite.cpp
         Event/Entry.cpp
+        Storage/DatabaseManager.cpp
 )
