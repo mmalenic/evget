@@ -42,13 +42,13 @@ public:
      * \brief Construct a database manager
      * \param nEvents the number of events to hold before inserting.
      */
-    DatabaseManager(Async::Scheduler& scheduler, Store& storeIn, size_t nEvents);
+    DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents);
 
     asio::awaitable<Result<void>> store(Event::Data event) override;
 
 private:
     std::reference_wrapper<Async::Scheduler> scheduler;
-    std::reference_wrapper<Store> storeIn;
+    std::vector<std::reference_wrapper<Store>> storeIn;
     size_t nEvents;
     // lockfree::queue<Event::Data> events;
 

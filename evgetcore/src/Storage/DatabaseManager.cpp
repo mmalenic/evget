@@ -23,7 +23,7 @@
 
 #include "evgetcore/Storage/DatabaseManager.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, Store& storeIn, size_t nEvents) :
+EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents) :
 scheduler{scheduler}, storeIn{storeIn}, nEvents{nEvents} {
 }
 
@@ -62,5 +62,5 @@ EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore:
 }
 
 EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
-    co_return co_await storeIn.get().store(std::move(event));
+    // co_return co_await storeIn.get().store(std::move(event));
 }
