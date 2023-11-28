@@ -23,7 +23,7 @@
 
 #include "async/coroutine/Scheduler.h"
 
-Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
+Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads}, stopped{false} {
 }
 
 void Async::Scheduler::join() {
@@ -31,7 +31,12 @@ void Async::Scheduler::join() {
 }
 
 void Async::Scheduler::stop() {
+    stopped.store(true);
     pool.stop();
+}
+
+boost::asio::awaitable<bool> Async::Scheduler::isStopped() {
+    co_return stopped.load();
 }
 
 void Async::Scheduler::log_exception(std::exception_ptr e) {

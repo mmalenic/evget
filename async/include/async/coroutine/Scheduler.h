@@ -37,25 +37,30 @@ public:
     Scheduler() = default;
     explicit Scheduler(std::size_t nThreads);
 
-    void spawn(Invocable<asio::awaitable<void>> auto&& task, Invocable<void, std::exception_ptr, const Scheduler&> auto&& handler);
+    void spawn(Invocable<asio::awaitable<void>, Scheduler&> auto&& task, Invocable<void, std::exception_ptr, Scheduler&> auto&& handler);
 
     template<typename T>
-    void spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, std::exception_ptr, T, const Scheduler&> auto&& handler);
+    void spawn(Invocable<asio::awaitable<T>, Scheduler&> auto&& task, Invocable<void, std::exception_ptr, T, Scheduler&> auto&& handler);
 
     void join();
     void stop();
 
+    asio::awaitable<bool> isStopped();
+
 private:
-    asio::thread_pool pool;
+    asio::thread_pool pool{};
+    std::atomic<bool> stopped{false};
 
     void log_exception(std::exception_ptr e);
 };
 
 void Scheduler::spawn(
-    Invocable<asio::awaitable<void>> auto&& task,
-    Invocable<void, std::exception_ptr, const Scheduler&> auto&& handler
+    Invocable<asio::awaitable<void>, Scheduler&> auto&& task,
+    Invocable<void, std::exception_ptr, Scheduler&> auto&& handler
 ) {
-    asio::co_spawn(pool, task, [this, handler](std::exception_ptr e) {
+    asio::co_spawn(pool, [this, task]() {
+        return task(*this);
+    }, [this, handler](std::exception_ptr e) {
         log_exception(e);
         handler(e, *this);
     });
@@ -63,10 +68,12 @@ void Scheduler::spawn(
 
 template <typename T>
 void Scheduler::spawn(
-    Invocable<asio::awaitable<T>> auto&& task,
-    Invocable<void, std::exception_ptr, T, const Scheduler&> auto&& handler
+    Invocable<asio::awaitable<T>, Async::Scheduler&> auto&& task,
+    Invocable<void, std::exception_ptr, T, Scheduler&> auto&& handler
 ) {
-    asio::co_spawn(pool, task, [this, handler](std::exception_ptr e, T value) {
+    asio::co_spawn(pool, [this, task]() {
+        return task(*this);
+    }, [this, handler](std::exception_ptr e, T value) {
         log_exception(e);
         handler(e, value, *this);
     });
