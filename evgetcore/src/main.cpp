@@ -93,6 +93,12 @@ int main(int argc, char* argv[]) {
 
         Async::Scheduler scheduler{};
 
+        scheduler.spawn([]() -> boost::asio::awaitable<void> {
+            throw std::exception{};
+        }, [](std::exception_ptr e, const Async::Scheduler& scheduler) {
+            std::cout << "hello";
+        });
+
         boost::asio::thread_pool pool{};
         auto context = pool.get_executor();
 

@@ -25,6 +25,8 @@
 #define SCHEDULER_H
 
 #include <boost/asio.hpp>
+#include <async/Util.h>
+#include <spdlog/spdlog.h>
 
 namespace Async {
 
@@ -35,9 +37,37 @@ public:
     Scheduler() = default;
     explicit Scheduler(std::size_t nThreads);
 
+    void spawn(Invocable<asio::awaitable<void>> auto&& task, Invocable<void, std::exception_ptr, const Scheduler&> auto&& handler);
+
+    template<typename T>
+    void spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, std::exception_ptr, T, const Scheduler&> auto&& handler);
+
 private:
     asio::thread_pool pool;
+
+    void log_exception(std::exception_ptr e);
 };
+
+void Scheduler::spawn(
+    Invocable<asio::awaitable<void>> auto&& task,
+    Invocable<void, std::exception_ptr, const Scheduler&> auto&& handler
+) {
+    asio::co_spawn(pool, task, [this, handler](std::exception_ptr e) {
+        log_exception(e);
+        handler(e, *this);
+    });
+}
+
+template <typename T>
+void Scheduler::spawn(
+    Invocable<asio::awaitable<T>> auto&& task,
+    Invocable<void, std::exception_ptr, T, const Scheduler&> auto&& handler
+) {
+    asio::co_spawn(pool, task, [this, handler](std::exception_ptr e, T value) {
+        log_exception(e);
+        handler(e, value, *this);
+    });
+}
 
 } // Async
 

@@ -25,3 +25,13 @@
 
 Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
 }
+
+void Async::Scheduler::log_exception(std::exception_ptr e) {
+    try {
+        if (e) {
+            std::rethrow_exception(e);
+        }
+    } catch (const std::exception& e) {
+        spdlog::error("Exception in coroutine: {}", e.what());
+    }
+}
