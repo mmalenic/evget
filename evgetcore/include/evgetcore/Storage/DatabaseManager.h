@@ -51,7 +51,8 @@ private:
     size_t nEvents;
     Async::LockingVector<Event::Data> data;
 
-    asio::awaitable<Result<void>> storeWith(Event::Data event);
+    asio::awaitable<Result<void>> storeWith(Event::Data event, Async::Scheduler& scheduler);
+    void resultHandler(Result<void> result, Async::Scheduler& scheduler);
 };
 
 }

@@ -30,36 +30,41 @@ scheduler{scheduler}, storeIn{storeIn}, nEvents{nEvents}, data{} {
 EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
     data.push_back(std::move(event));
     Result<void> outResult = {};
-    // if (!success) {
-    //     spdlog::info("reached end of queue, storing events.");
-    //
-    //     Event::Data out{};
-    //     Event::Data value{};
-    //     while (events.pop(value)) {
-    //         out.mergeWith(std::move(value));
-    //     }
-    //
-    //     asio::co_spawn(context, [this, out]() {
-    //         return this->storeWith(std::move(out));
-    //     }, [&outResult](std::exception_ptr e, Result<void> result) {
-    //         if (e != nullptr) {
-    //           try {
-    //             std::rethrow_exception(e);
-    //           } catch (std::exception &e) {
-    //               auto what = e.what();
-    //               spdlog::error("error when storing in database manager: {}", what);
-    //               outResult = Err{{.errorType = ErrorType::DatabaseManager, .message = what}};
-    //           }
-    //         }
-    //         if (!result.has_value()) {
-    //             outResult = Err{result.error()};
-    //         }
-    //     });
-    // }
+
+    auto intoInner = data.into_inner_at(nEvents);
+    if (intoInner.has_value()) {
+        spdlog::info("reached event number threshold, storing events.");
+
+        Event::Data out{};
+        for (auto data : intoInner) {
+            out.mergeWith(std::move(data));
+        }
+
+        scheduler.get().spawn<Result<void>>([this, out](Async::Scheduler& scheduler) -> asio::awaitable<Result<void>> {
+            co_return co_await this->storeWith(out, scheduler);
+        }, [this](Result<void> result, Async::Scheduler& scheduler) {
+            this->resultHandler(result, scheduler);
+        });
+    }
 
     co_return outResult;
 }
 
-EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
-    // co_return co_await storeIn.get().store(std::move(event));
+EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event, Async::Scheduler& scheduler) {
+    for (auto store : storeIn) {
+        auto result = co_await store.get().store(event);
+
+        if (!result.has_value()) {
+            co_return result;
+        }
+    }
+
+    co_return Result<void>{};
+}
+
+void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result, Async::Scheduler& scheduler) {
+    if (!result.has_value()) {
+        spdlog::error("Error storing events: {}", result.error());
+        scheduler.stop();
+    }
 }
