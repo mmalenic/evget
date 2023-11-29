@@ -47,6 +47,8 @@ public:
 
     asio::awaitable<bool> isStopped();
 
+    asio::thread_pool::executor_type get_executor();
+
 private:
     asio::thread_pool pool{};
     std::atomic<bool> stopped{false};

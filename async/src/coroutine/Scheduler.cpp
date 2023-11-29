@@ -39,6 +39,10 @@ boost::asio::awaitable<bool> Async::Scheduler::isStopped() {
     co_return stopped.load();
 }
 
+boost::asio::thread_pool::executor_type Async::Scheduler::get_executor() {
+    return pool.get_executor();
+}
+
 void Async::Scheduler::log_exception(std::exception_ptr e) {
     try {
         if (e) {
