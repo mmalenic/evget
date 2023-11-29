@@ -24,7 +24,7 @@
 #include "evgetcore/Storage/DatabaseManager.h"
 
 EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents) :
-scheduler{scheduler}, storeIn{storeIn}, nEvents{nEvents}, data{} {
+scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, data{} {
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {

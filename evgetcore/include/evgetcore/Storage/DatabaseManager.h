@@ -41,7 +41,7 @@ public:
      * \brief Construct a database manager
      * \param nEvents the number of events to hold before inserting.
      */
-    DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents);
+    DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents = 100);
 
     Result<void> store(Event::Data event) override;
 
