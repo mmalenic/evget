@@ -50,8 +50,25 @@ public:
      * \param value value to move.
      */
     constexpr void push_back(T&& value);
+
+    /**
+     * \brief Consume the inner vector when its size is greater than or equal to
+     * the size parameter without locking. Not thread-safe.
+     * \param size size to consume at.
+     * \return the optionally consumed vector.
+     */
+    constexpr std::optional<std::vector<T>> unsafe_into_inner_at(std::size_t size);
+
+    /**
+     * \brief Consume the inner vector when its size is greater than or equal to
+     * the size parameter by locking. Thread-safe.
+     * \param size size to consume at.
+     * \return the optionally consumed vector.
+     */
+    constexpr std::optional<std::vector<T>> into_inner_at(std::size_t size);
+
 private:
-    std::vector<T> inner;
+    std::vector<T> inner{};
     std::mutex lock{};
 };
 
@@ -63,7 +80,24 @@ constexpr void LockingVector<T>::unsafe_push_back(T&& value) {
 template <class T>
 constexpr void LockingVector<T>::push_back(T&& value) {
     std::lock_guard guard{lock};
-    inner.push_back(value);
+    unsafe_push_back(value);
+}
+
+template <class T>
+constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner_at(std::size_t size) {
+    if (inner.size() >= size) {
+        auto out{std::move(inner)};
+        inner.clear();
+        return out;
+    }
+
+    return {};
+}
+
+template <class T>
+constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner_at(std::size_t size) {
+    std::lock_guard guard{lock};
+    return unsafe_into_inner_at(size);
 }
 
 template <class T>

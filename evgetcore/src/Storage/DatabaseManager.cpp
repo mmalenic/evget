@@ -28,8 +28,7 @@ scheduler{scheduler}, storeIn{storeIn}, nEvents{nEvents}, data{} {
 }
 
 EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
-    // auto success = events.bounded_push(std::move(event));
-
+    data.push_back(std::move(event));
     Result<void> outResult = {};
     // if (!success) {
     //     spdlog::info("reached end of queue, storing events.");
