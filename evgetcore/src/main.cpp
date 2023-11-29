@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "value2" << "\n";
             }
             co_return 2;
-        }, [](std::exception_ptr e, int value, Async::Scheduler& scheduler) {
+        }, [](int value, Async::Scheduler& scheduler) {
             scheduler.stop();
             std::cout << value << "\n";
         });
@@ -109,14 +109,14 @@ int main(int argc, char* argv[]) {
                 std::cout << "value1" << "\n";
             }
             co_return;
-        }, [](std::exception_ptr e, Async::Scheduler& scheduler) {
+        }, [](Async::Scheduler& scheduler) {
             scheduler.stop();
             std::cout << "exception\n";
         });
 
         scheduler.spawn<int>([](Async::Scheduler& scheduler) -> boost::asio::awaitable<int> {
             co_return 1;
-        }, [](std::exception_ptr e, int value, Async::Scheduler& scheduler) {
+        }, [](int value, Async::Scheduler& scheduler) {
             scheduler.stop();
             std::cout << value << "\n";
         });
