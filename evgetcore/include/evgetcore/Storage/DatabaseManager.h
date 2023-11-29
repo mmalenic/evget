@@ -25,16 +25,15 @@
 #define DATABASEMANAGER_H
 
 #include "Store.h"
-#include <boost/lockfree/queue.hpp>
 #include <spdlog/spdlog.h>
 #include <boost/asio.hpp>
 
+#include "async/container/LockingVector.h"
 #include "async/coroutine/Scheduler.h"
 
 namespace EvgetCore::Storage {
 
 namespace asio = boost::asio;
-namespace lockfree = boost::lockfree;
 
 class DatabaseManager : public Store {
 public:
@@ -50,7 +49,7 @@ private:
     std::reference_wrapper<Async::Scheduler> scheduler;
     std::vector<std::reference_wrapper<Store>> storeIn;
     size_t nEvents;
-    // lockfree::queue<Event::Data> events;
+    Async::LockingVector<Event::Data> data;
 
     asio::awaitable<Result<void>> storeWith(Event::Data event);
 };
