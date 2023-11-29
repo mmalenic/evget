@@ -7,6 +7,7 @@ add_library(
         ${PROJECT_NAME}
         include/async/coroutine/Scheduler.h
         include/async/Util.h
+        include/async/container/LockingVector.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
