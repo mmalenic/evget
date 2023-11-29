@@ -37,10 +37,10 @@ public:
     Scheduler() = default;
     explicit Scheduler(std::size_t nThreads);
 
-    void spawn(Invocable<asio::awaitable<void>, Scheduler&> auto&& task, Invocable<void, Scheduler&> auto&& handler);
+    void spawn(Invocable<asio::awaitable<void>> auto&& task, Invocable<void> auto&& handler);
 
     template<typename T>
-    void spawn(Invocable<asio::awaitable<T>, Scheduler&> auto&& task, Invocable<void, T, Scheduler&> auto&& handler);
+    void spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, T> auto&& handler);
 
     void join();
     void stop();
@@ -55,27 +55,27 @@ private:
 };
 
 void Scheduler::spawn(
-    Invocable<asio::awaitable<void>, Scheduler&> auto&& task,
-    Invocable<void, Scheduler&> auto&& handler
+    Invocable<asio::awaitable<void>> auto&& task,
+    Invocable<void> auto&& handler
 ) {
-    asio::co_spawn(pool, [this, task]() {
-        return task(*this);
+    asio::co_spawn(pool, [task]() {
+        return task();
     }, [this, handler](std::exception_ptr e) {
         log_exception(e);
-        handler(*this);
+        handler();
     });
 }
 
 template <typename T>
 void Scheduler::spawn(
-    Invocable<asio::awaitable<T>, Async::Scheduler&> auto&& task,
-    Invocable<void, T, Scheduler&> auto&& handler
+    Invocable<asio::awaitable<T>> auto&& task,
+    Invocable<void, T> auto&& handler
 ) {
     asio::co_spawn(pool, [this, task]() {
-        return task(*this);
+        return task();
     }, [this, handler](std::exception_ptr e, T value) {
         log_exception(e);
-        handler(value, *this);
+        handler(value);
     });
 }
 

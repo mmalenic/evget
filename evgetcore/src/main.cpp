@@ -93,31 +93,30 @@ int main(int argc, char* argv[]) {
 
         Async::Scheduler scheduler{};
 
-        scheduler.spawn<int>([](Async::Scheduler& scheduler) -> boost::asio::awaitable<int> {
+        scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
             while (!co_await scheduler.isStopped()) {
                 std::cout << "value2" << "\n";
             }
             co_return 2;
-        }, [](int value, Async::Scheduler& scheduler) {
+        }, [&scheduler](int value) {
             scheduler.stop();
             std::cout << value << "\n";
         });
 
 
-        scheduler.spawn([](Async::Scheduler& scheduler) -> boost::asio::awaitable<void> {
+        scheduler.spawn([&scheduler]() -> boost::asio::awaitable<void> {
             while (!co_await scheduler.isStopped()) {
                 std::cout << "value1" << "\n";
             }
             co_return;
-        }, [](Async::Scheduler& scheduler) {
+        }, [&scheduler]() {
             scheduler.stop();
             std::cout << "exception\n";
         });
 
-        scheduler.spawn<int>([](Async::Scheduler& scheduler) -> boost::asio::awaitable<int> {
+        scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
             co_return 1;
-        }, [](int value, Async::Scheduler& scheduler) {
-            scheduler.stop();
+        }, [&scheduler](int value) {
             std::cout << value << "\n";
         });
 

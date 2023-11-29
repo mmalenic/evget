@@ -92,7 +92,7 @@ constexpr void LockingVector<T>::unsafe_push_back(T&& value) {
 template <class T>
 constexpr void LockingVector<T>::push_back(T&& value) {
     std::lock_guard guard{lock};
-    unsafe_push_back(value);
+    unsafe_push_back(std::move(value));
 }
 
 template <class T>

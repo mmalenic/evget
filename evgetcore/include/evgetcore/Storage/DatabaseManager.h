@@ -51,8 +51,8 @@ private:
     size_t nEvents;
     Async::LockingVector<Event::Data> data;
 
-    Result<void> storeWith(Event::Data event, Async::Scheduler& scheduler);
-    void resultHandler(Result<void> result, Async::Scheduler& scheduler);
+    Result<void> storeWith(Event::Data event);
+    void resultHandler(Result<void> result);
 };
 
 }

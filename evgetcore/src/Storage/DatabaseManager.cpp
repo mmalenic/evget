@@ -36,21 +36,21 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Even
         spdlog::info("reached event number threshold, storing events.");
 
         Event::Data out{};
-        for (auto data : intoInner) {
+        for (auto data : *intoInner) {
             out.mergeWith(std::move(data));
         }
 
-        scheduler.get().spawn<Result<void>>([this, out](Async::Scheduler& scheduler) -> asio::awaitable<Result<void>> {
-            co_return this->storeWith(out, scheduler);
-        }, [this](Result<void> result, Async::Scheduler& scheduler) {
-            this->resultHandler(result, scheduler);
+        scheduler.get().spawn<Result<void>>([this, out]() -> asio::awaitable<Result<void>> {
+            co_return this->storeWith(out);
+        }, [this](Result<void> result) {
+            this->resultHandler(result);
         });
     }
 
     return outResult;
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event, Async::Scheduler& scheduler) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
     for (auto store : storeIn) {
         auto result = store.get().store(event);
 
@@ -62,9 +62,9 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(
     return Result<void>{};
 }
 
-void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result, Async::Scheduler& scheduler) {
+void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result) {
     if (!result.has_value()) {
-        spdlog::error("Error storing events: {}", result.error());
-        scheduler.stop();
+        spdlog::error("Error storing events: {}", result.error().message);
+        scheduler.get().stop();
     }
 }
