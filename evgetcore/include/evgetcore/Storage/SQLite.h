@@ -45,7 +45,7 @@ class SQLite : public Store {
 public:
     explicit SQLite(std::string database = "evget.sqlite");
 
-    asio::awaitable<Result<void>> store(Event::Data events) override;
+    Result<void> store(Event::Data events) override;
 
     /**
      * \brief Iniitalize the database with tables.

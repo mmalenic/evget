@@ -27,7 +27,7 @@ EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler
 scheduler{scheduler}, storeIn{storeIn}, nEvents{nEvents}, data{} {
 }
 
-EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
     data.push_back(std::move(event));
     Result<void> outResult = {};
 
@@ -41,25 +41,25 @@ EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore:
         }
 
         scheduler.get().spawn<Result<void>>([this, out](Async::Scheduler& scheduler) -> asio::awaitable<Result<void>> {
-            co_return co_await this->storeWith(out, scheduler);
+            co_return this->storeWith(out, scheduler);
         }, [this](Result<void> result, Async::Scheduler& scheduler) {
             this->resultHandler(result, scheduler);
         });
     }
 
-    co_return outResult;
+    return outResult;
 }
 
-EvgetCore::Storage::asio::awaitable<EvgetCore::Storage::Result<void>> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event, Async::Scheduler& scheduler) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event, Async::Scheduler& scheduler) {
     for (auto store : storeIn) {
-        auto result = co_await store.get().store(event);
+        auto result = store.get().store(event);
 
         if (!result.has_value()) {
-            co_return result;
+            return result;
         }
     }
 
-    co_return Result<void>{};
+    return Result<void>{};
 }
 
 void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result, Async::Scheduler& scheduler) {

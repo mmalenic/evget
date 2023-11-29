@@ -43,7 +43,7 @@ public:
      */
     DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents);
 
-    asio::awaitable<Result<void>> store(Event::Data event) override;
+    Result<void> store(Event::Data event) override;
 
 private:
     std::reference_wrapper<Async::Scheduler> scheduler;
@@ -51,7 +51,7 @@ private:
     size_t nEvents;
     Async::LockingVector<Event::Data> data;
 
-    asio::awaitable<Result<void>> storeWith(Event::Data event, Async::Scheduler& scheduler);
+    Result<void> storeWith(Event::Data event, Async::Scheduler& scheduler);
     void resultHandler(Result<void> result, Async::Scheduler& scheduler);
 };
 

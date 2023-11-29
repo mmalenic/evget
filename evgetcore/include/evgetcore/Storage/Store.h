@@ -41,7 +41,7 @@ public:
     /**
      * Store the event data.
      */
-    virtual asio::awaitable<Result<void>> store(Event::Data event) = 0;
+    virtual Result<void> store(Event::Data event) = 0;
 
     Store() = default;
 
