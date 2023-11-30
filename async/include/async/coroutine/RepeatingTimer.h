@@ -31,14 +31,31 @@ namespace Async {
 
 namespace asio = boost::asio;
 
+/**
+ * \brief A repeating timer indefinitely repeats until it is stopped.
+ */
 class RepeatingTimer {
 public:
     using Err = Err<boost::system::error_code>;
     using Result = Result<void, boost::system::error_code>;
 
+    /**
+     * \brief construct a repeating timer.
+     * \param interval interval for repeat
+     */
     explicit RepeatingTimer(std::chrono::seconds interval);
 
+    /**
+     * \brief Await on the timer.
+     * \param callback callback for each interval.
+     * \return resulting indicating success or failure.
+     */
     asio::awaitable<Result> await(Invocable<asio::awaitable<void>> auto&& callback);
+
+    /**
+     * \brief Stop the timer.
+     */
+    void stop();
 
 private:
     static asio::awaitable<Result> repeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback);

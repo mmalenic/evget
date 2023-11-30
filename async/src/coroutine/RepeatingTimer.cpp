@@ -36,6 +36,11 @@ Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::rep
 
     auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
     if (error) {
+        if (error.value() == asio::error::operation_aborted) {
+            timer = {};
+            co_return Result{};
+        }
+
         co_return Err{error};
     }
 
@@ -45,4 +50,8 @@ Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::rep
 }
 
 Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{interval} {
+}
+
+void Async::RepeatingTimer::stop() {
+    timer->cancel();
 }
