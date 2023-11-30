@@ -24,6 +24,7 @@
 #define EVGET_INCLUDE_EVGET_UTIL_H
 
 #include <concepts>
+#include <expected>
 
 namespace Async {
 /**
@@ -31,6 +32,19 @@ namespace Async {
  */
 template <class F, class R, class... Args>
 concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
+
+/**
+ * \brief Result type.
+ */
+template<typename T, typename E>
+using Result = std::expected<T, E>;
+
+/**
+ * \brief Error type.
+ */
+template<typename E>
+using Err = std::unexpected<E>;
+
 }  // namespace Async
 
 #endif  // EVGET_INCLUDE_EVGET_UTIL_H
