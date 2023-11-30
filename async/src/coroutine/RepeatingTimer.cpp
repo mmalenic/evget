@@ -21,13 +21,26 @@
 // SOFTWARE.
 //
 
-#include "async/coroutine/Timer.h"
+#include "async/coroutine/RepeatingTimer.h"
 
-Async::asio::awaitable<void> Async::Timer::await(std::chrono::seconds fromNow) {
+Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::await() {
     if (!timer.has_value()) {
         timer = asio::steady_timer{co_await asio::this_coro::executor};
     }
 
-    timer->expires_from_now(fromNow);
-    co_return co_await timer->async_wait(asio::use_awaitable);
+    co_return co_await repeat(&*timer, interval);
+}
+
+Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::repeat(asio::steady_timer* timer, std::chrono::seconds& interval) {
+    timer->expires_at(timer->expiry() + interval);
+
+    auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
+    if (error) {
+        co_return Err{error};
+    }
+
+    co_return co_await repeat(timer, interval);
+}
+
+Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{interval} {
 }

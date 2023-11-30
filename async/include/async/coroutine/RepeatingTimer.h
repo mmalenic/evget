@@ -31,13 +31,19 @@ namespace Async {
 
 namespace asio = boost::asio;
 
-class Timer {
+class RepeatingTimer {
 public:
-    Timer() = default;
+    using Err = Err<boost::system::error_code>;
+    using Result = Result<void, boost::system::error_code>;
 
-    asio::awaitable<void> await(std::chrono::seconds fromNow);
+    explicit RepeatingTimer(std::chrono::seconds interval);
+
+    asio::awaitable<Result> await();
 
 private:
+    static asio::awaitable<Result> repeat(asio::steady_timer* timer, std::chrono::seconds& interval);
+
+    std::chrono::seconds interval;
     std::optional<asio::steady_timer> timer;
 };
 }
