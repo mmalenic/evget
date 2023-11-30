@@ -25,6 +25,9 @@
 #define TIMER_H
 
 #include <boost/asio.hpp>
+
+#include <iostream>
+
 #include "async/Util.h"
 
 namespace Async {
@@ -46,68 +49,68 @@ public:
     explicit RepeatingTimer(std::chrono::seconds interval);
 
     /**
-     * \brief Await on the timer.
-     * \param callback callback for each interval.
+     * \brief Await on the timer. Extends any existing awaits with the interval value.
+     * This means that callbacks on existing awaits are delayed until the new interval
+     * is reached.
+     *
+     * \param callback the callback.
      * \return resulting indicating success or failure.
      */
     asio::awaitable<Result> await(Invocable<asio::awaitable<void>> auto&& callback);
 
     /**
-     * \brief Stop the timer.
+     * \brief Stop the timer. Callbacks on existing awaits are run but only after the
+     * timer expires.
      */
     void stop();
 
     /**
-     * \brief is the timer stopped.
-     * \return stopped flag.
+     * \brief Is the timer stopped.
      */
-    asio::awaitable<bool> isStopped();
+    [[nodiscard]] asio::awaitable<bool> isStopped() const;
 
 private:
     asio::awaitable<Result> repeat(Invocable<asio::awaitable<void>> auto&& callback);
     asio::awaitable<Result> awaitRepeat(Invocable<asio::awaitable<void>> auto&& callback);
 
-    std::atomic<bool> stopped{true};
     std::chrono::seconds interval;
+    std::atomic_bool stopped;
     std::optional<asio::steady_timer> timer;
 };
 
 asio::awaitable<RepeatingTimer::Result> RepeatingTimer::await(Invocable<asio::awaitable<void>> auto&& callback) {
-    if (timer.has_value()) {
-        stop();
-    }
-
-    timer = asio::steady_timer{co_await asio::this_coro::executor, interval};
-    stopped.store(false);
-
-    auto result = co_await awaitRepeat(callback);
-    if (!result.has_value()) {
-        co_return result;
+    if (!timer.has_value()) {
+        timer = asio::steady_timer{co_await asio::this_coro::executor};
     }
 
     co_return co_await repeat(callback);
 }
 
 asio::awaitable<RepeatingTimer::Result> RepeatingTimer::repeat(Invocable<asio::awaitable<void>> auto&& callback) {
-    while(!co_await isStopped()) {
-        timer->expires_at(timer->expiry() + interval);
+    // The first await will always occur even if cancelled early.
+    stopped.store(false);
 
+    do {
         auto result = co_await awaitRepeat(callback);
         if (!result.has_value()) {
             co_return result;
         }
-    }
+    } while (!co_await isStopped());
 
+    // Timer has been stopped.
     co_return Result{};
 }
 
 asio::awaitable<RepeatingTimer::Result> RepeatingTimer::awaitRepeat(
     Invocable<asio::awaitable<void>> auto&& callback
     ) {
+    // Set the correct expirey time, even if the timer is already in progress.
+    timer->expires_after(interval);
+
+    // Multiple threads are allowed to async_wait on the same timer.
     auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
     if (error) {
         if (error.value() == asio::error::operation_aborted) {
-            timer = {};
             co_return Result{};
         }
 

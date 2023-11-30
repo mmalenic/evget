@@ -23,14 +23,17 @@
 
 #include "async/coroutine/RepeatingTimer.h"
 
+#include <spdlog/spdlog.h>
+
 Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{interval} {
 }
 
 void Async::RepeatingTimer::stop() {
+    spdlog::trace("stopping timer");
+    // timer->cancel() is not thread safe so use a flag to cancel.
     stopped.store(true);
-    timer->cancel();
 }
 
-boost::asio::awaitable<bool> Async::RepeatingTimer::isStopped() {
+Async::asio::awaitable<bool> Async::RepeatingTimer::isStopped() const {
     co_return stopped.load();
 }
