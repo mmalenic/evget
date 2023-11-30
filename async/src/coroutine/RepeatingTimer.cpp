@@ -27,5 +27,10 @@ Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{
 }
 
 void Async::RepeatingTimer::stop() {
+    stopped.store(true);
     timer->cancel();
+}
+
+boost::asio::awaitable<bool> Async::RepeatingTimer::isStopped() {
+    co_return stopped.load();
 }

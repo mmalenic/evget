@@ -57,11 +57,17 @@ public:
      */
     void stop();
 
+    /**
+     * \brief is the timer stopped.
+     * \return stopped flag.
+     */
+    asio::awaitable<bool> isStopped();
+
 private:
-    static asio::awaitable<Result> repeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback);
-    static asio::awaitable<Result> awaitRepeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback);
+    asio::awaitable<Result> repeat(Invocable<asio::awaitable<void>> auto&& callback);
+    asio::awaitable<Result> awaitRepeat(Invocable<asio::awaitable<void>> auto&& callback);
 
-
+    std::atomic<bool> stopped{true};
     std::chrono::seconds interval;
     std::optional<asio::steady_timer> timer;
 };
@@ -72,17 +78,32 @@ asio::awaitable<RepeatingTimer::Result> RepeatingTimer::await(Invocable<asio::aw
     }
 
     timer = asio::steady_timer{co_await asio::this_coro::executor, interval};
-    co_return co_await awaitRepeat(&*timer, interval, callback);
+    stopped.store(false);
+
+    auto result = co_await awaitRepeat(callback);
+    if (!result.has_value()) {
+        co_return result;
+    }
+
+    co_return co_await repeat(callback);
 }
 
-asio::awaitable<RepeatingTimer::Result> RepeatingTimer::repeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback) {
-    timer->expires_at(timer->expiry() + interval);
-    co_return co_await awaitRepeat(timer, interval, callback);
+asio::awaitable<RepeatingTimer::Result> RepeatingTimer::repeat(Invocable<asio::awaitable<void>> auto&& callback) {
+    while(!co_await isStopped()) {
+        timer->expires_at(timer->expiry() + interval);
+
+        auto result = co_await awaitRepeat(callback);
+        if (!result.has_value()) {
+            co_return result;
+        }
+    }
+
+    co_return Result{};
 }
 
-asio::awaitable<RepeatingTimer::Result> RepeatingTimer::awaitRepeat(asio::steady_timer* timer,
-    std::chrono::seconds& interval,
-    Invocable<asio::awaitable<void>> auto&& callback) {
+asio::awaitable<RepeatingTimer::Result> RepeatingTimer::awaitRepeat(
+    Invocable<asio::awaitable<void>> auto&& callback
+    ) {
     auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
     if (error) {
         if (error.value() == asio::error::operation_aborted) {
@@ -95,7 +116,7 @@ asio::awaitable<RepeatingTimer::Result> RepeatingTimer::awaitRepeat(asio::steady
 
     co_await callback();
 
-    co_return co_await repeat(timer, interval, std::forward<decltype(callback)>(callback));
+    co_return Result{};
 }
 }
 
