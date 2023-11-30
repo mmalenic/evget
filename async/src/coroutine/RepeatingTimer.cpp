@@ -23,15 +23,15 @@
 
 #include "async/coroutine/RepeatingTimer.h"
 
-Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::await() {
+Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::await(Invocable<asio::awaitable<void>> auto&& callback) {
     if (!timer.has_value()) {
         timer = asio::steady_timer{co_await asio::this_coro::executor};
     }
 
-    co_return co_await repeat(&*timer, interval);
+    co_return co_await repeat(&*timer, interval, callback);
 }
 
-Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::repeat(asio::steady_timer* timer, std::chrono::seconds& interval) {
+Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::repeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback) {
     timer->expires_at(timer->expiry() + interval);
 
     auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
@@ -39,7 +39,9 @@ Async::asio::awaitable<Async::RepeatingTimer::Result> Async::RepeatingTimer::rep
         co_return Err{error};
     }
 
-    co_return co_await repeat(timer, interval);
+    co_await callback();
+
+    co_return co_await repeat(timer, interval, std::forward<decltype(callback)>(callback));
 }
 
 Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{interval} {

@@ -38,10 +38,10 @@ public:
 
     explicit RepeatingTimer(std::chrono::seconds interval);
 
-    asio::awaitable<Result> await();
+    asio::awaitable<Result> await(Invocable<asio::awaitable<void>> auto&& callback);
 
 private:
-    static asio::awaitable<Result> repeat(asio::steady_timer* timer, std::chrono::seconds& interval);
+    static asio::awaitable<Result> repeat(asio::steady_timer* timer, std::chrono::seconds& interval, Invocable<asio::awaitable<void>> auto&& callback);
 
     std::chrono::seconds interval;
     std::optional<asio::steady_timer> timer;
