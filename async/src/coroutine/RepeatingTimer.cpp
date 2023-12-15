@@ -30,10 +30,9 @@ Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{
 
 void Async::RepeatingTimer::stop() {
     spdlog::trace("stopping timer");
-    // timer->cancel() is not thread safe so use a flag to cancel.
-    stopped.store(true);
+    timer->expires_at(timepoint::min());
 }
 
 Async::asio::awaitable<bool> Async::RepeatingTimer::isStopped() const {
-    co_return stopped.load();
+    co_return timer->expiry() == timepoint::min();
 }

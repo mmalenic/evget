@@ -70,11 +70,12 @@ public:
     [[nodiscard]] asio::awaitable<bool> isStopped() const;
 
 private:
+    using timepoint = asio::steady_timer::clock_type::time_point;
+
     asio::awaitable<Result> repeat(Invocable<asio::awaitable<void>> auto&& callback);
     asio::awaitable<Result> awaitRepeat(Invocable<asio::awaitable<void>> auto&& callback);
 
     std::chrono::seconds interval;
-    std::atomic_bool stopped;
     std::optional<asio::steady_timer> timer;
 };
 
@@ -87,9 +88,6 @@ asio::awaitable<RepeatingTimer::Result> RepeatingTimer::await(Invocable<asio::aw
 }
 
 asio::awaitable<RepeatingTimer::Result> RepeatingTimer::repeat(Invocable<asio::awaitable<void>> auto&& callback) {
-    // The first await will always occur even if cancelled early.
-    stopped.store(false);
-
     do {
         auto result = co_await awaitRepeat(callback);
         if (!result.has_value()) {
@@ -117,7 +115,9 @@ asio::awaitable<RepeatingTimer::Result> RepeatingTimer::awaitRepeat(
         co_return Err{error};
     }
 
-    co_await callback();
+    if (timer->expires_at() != timepoint::min()) {
+        co_await callback();
+    }
 
     co_return Result{};
 }
