@@ -29,6 +29,8 @@
 #include <cstring>
 #include <iostream>
 
+#include "async/coroutine/RepeatingTimer.h"
+#include "async/coroutine/Scheduler.h"
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
@@ -41,7 +43,6 @@
 #include "evgetx11/XSetMaskCore.h"
 #include "evgetx11/XSetMaskRefresh.h"
 #include "evgetx11/XWrapperX11.h"
-#include "async/coroutine/Scheduler.h"
 
 int main(int argc, char* argv[]) {
 
@@ -147,19 +148,71 @@ int main(int argc, char* argv[]) {
         EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
         sqlite.init();
 
+        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        //     while (!co_await scheduler.isStopped()) {
+        //         auto event = xInputHandler.getEvent();
+        //
+        //         auto transformed = transformer.transformEvent(std::move(event));
+        //
+        //         // storage.store(transformed);
+        //         manager.store(transformed);
+        //     }
+        //     co_return;
+        // }, [&scheduler]() {
+        //     scheduler.stop();
+        //     std::cout << "exception\n";
+        // });
+
+        auto timeNow = std::chrono::steady_clock::now();
+
+        Async::RepeatingTimer timer{std::chrono::seconds{5}};
+
         scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            while (!co_await scheduler.isStopped()) {
-                auto event = xInputHandler.getEvent();
+            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
+                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+                co_return;
+            });
 
-                auto transformed = transformer.transformEvent(std::move(event));
-
-                // storage.store(transformed);
-                manager.store(transformed);
+            if (!result.has_value()) {
+                std::cout << result.error();
             }
+
             co_return;
-        }, [&scheduler]() {
-            scheduler.stop();
-            std::cout << "exception\n";
+        }, [&]() {
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        });
+
+        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
+                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+                co_return;
+            });
+
+            if (!result.has_value()) {
+                std::cout << result.error();
+            }
+
+            co_return;
+        }, [&]() {
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        });
+
+        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+            sleep(7);
+            timer.stop();
+            // sleep(1);
+            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
+                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+                co_return;
+            });
+
+            if (!result.has_value()) {
+                std::cout << result.error();
+            }
+
+            co_return;
+        }, [&]() {
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
         });
 
         scheduler.join();

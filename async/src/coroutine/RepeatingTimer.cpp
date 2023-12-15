@@ -32,7 +32,3 @@ void Async::RepeatingTimer::stop() {
     spdlog::trace("stopping timer");
     timer->expires_at(timepoint::min());
 }
-
-Async::asio::awaitable<bool> Async::RepeatingTimer::isStopped() const {
-    co_return timer->expiry() == timepoint::min();
-}
