@@ -29,7 +29,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "async/coroutine/RepeatingTimer.h"
+#include "..\..\async\include\async\coroutine\Interval.h"
 #include "async/coroutine/Scheduler.h"
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
 
         auto timeNow = std::chrono::steady_clock::now();
 
-        Async::RepeatingTimer timer{std::chrono::seconds{5}};
+        Async::Interval timer{std::chrono::seconds{5}};
 
         scheduler.spawn([&]() -> boost::asio::awaitable<void> {
             auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {

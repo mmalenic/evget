@@ -8,7 +8,7 @@ add_library(
         include/async/coroutine/Scheduler.h
         include/async/Util.h
         include/async/container/LockingVector.h
-        include/async/coroutine/RepeatingTimer.h
+        include/async/coroutine/Interval.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

@@ -21,14 +21,14 @@
 // SOFTWARE.
 //
 
-#include "async/coroutine/RepeatingTimer.h"
-
 #include <spdlog/spdlog.h>
 
-Async::RepeatingTimer::RepeatingTimer(std::chrono::seconds interval) : interval{interval} {
+#include "..\..\include\async\coroutine\Interval.h"
+
+Async::Interval::Interval(std::chrono::seconds interval) : interval{interval} {
 }
 
-void Async::RepeatingTimer::stop() {
+void Async::Interval::stop() {
     spdlog::trace("stopping timer");
     timer->expires_at(timepoint::min());
 }
