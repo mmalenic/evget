@@ -23,12 +23,15 @@
 
 #include <spdlog/spdlog.h>
 
-#include "..\..\include\async\coroutine\Interval.h"
+#include "async\coroutine\Interval.h"
 
-Async::Interval::Interval(std::chrono::seconds interval) : interval{interval} {
+Async::Interval::Interval(std::chrono::seconds period) : period{period} {
 }
 
-void Async::Interval::stop() {
-    spdlog::trace("stopping timer");
-    timer->expires_at(timepoint::min());
+Async::asio::awaitable<Async::Result<void, boost::system::error_code>> Async::Interval::tick() {
+    if (!timer.has_value()) {
+        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period};
+    }
 }
+
+void Async::Interval::reset() {}

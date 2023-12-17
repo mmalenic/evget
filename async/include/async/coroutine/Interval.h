@@ -41,87 +41,24 @@ class Interval {
 public:
     /**
      * \brief construct a repeating timer.
-     * \param interval interval for repeat
+     * \param period period for the interval
      */
-    explicit Interval(std::chrono::seconds interval);
+    explicit Interval(std::chrono::seconds period);
 
     /**
-     * \brief Await on the timer. Extends any existing awaits with the interval value.
-     * This means that callbacks on existing awaits are delayed until the new interval
-     * is reached.
-     *
-     * \param callback the callback.
-     * \return resulting indicating success or failure.
+     * \brief Completes when the next period in the interval has been reached.
      */
-    asio::awaitable<Result<void, boost::system::error_code>> await(Invocable<asio::awaitable<void>> auto&& callback);
+    asio::awaitable<Result<void, boost::system::error_code>> tick();
 
     /**
-     * \brief Stop the timer. Callbacks on existing awaits are run but only after the
-     * timer expires.
+     * \brief Reset the interval to expire one period after the current time.
      */
-    void stop();
+    void reset();
 
 private:
-    using timepoint = asio::steady_timer::clock_type::time_point;
-
-    asio::awaitable<Result<void, boost::system::error_code>> repeat(Invocable<asio::awaitable<void>> auto&& callback);
-    asio::awaitable<Result<timepoint, boost::system::error_code>> awaitRepeat(Invocable<asio::awaitable<void>> auto&& callback);
-
-    std::chrono::seconds interval;
-    std::optional<asio::steady_timer> timer;
+    std::chrono::seconds period;
+    std::optional<asio::steady_timer> timer{};
 };
-
-asio::awaitable<Result<void, boost::system::error_code>> Interval::await(Invocable<asio::awaitable<void>> auto&& callback) {
-    if (!timer.has_value()) {
-        timer = asio::steady_timer{co_await asio::this_coro::executor};
-    }
-
-    co_return co_await repeat(callback);
-}
-
-asio::awaitable<Result<void, boost::system::error_code>> Interval::repeat(Invocable<asio::awaitable<void>> auto&& callback) {
-    auto time = timepoint::min();
-
-    // Start with one loop and only repeat until the timer is cancelled via a min timepoint.
-    do {
-        auto result = co_await awaitRepeat(callback);
-        if (!result.has_value()) {
-            co_return Err{result.error()};
-        }
-
-        time = result.value();
-    } while (time != timepoint::min());
-
-    // Timer has been stopped.
-    co_return Result<void, boost::system::error_code>{};
-}
-
-asio::awaitable<Result<Interval::timepoint, boost::system::error_code>> Interval::awaitRepeat(
-    Invocable<asio::awaitable<void>> auto&& callback
-    ) {
-    // Set the correct expirey time, even if the timer is already in progress.
-    timer->expires_after(interval);
-
-    // Multiple threads are allowed to async_wait on the same timer.
-    auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
-    // Todo solve race condition here.
-    auto time = timer->expiry();
-
-    if (error) {
-        // Changing the timer value while mid async_wait causes the value to be operation_aborted.
-        if (error.value() == asio::error::operation_aborted) {
-            co_return Result<timepoint, boost::system::error_code>{time};
-        }
-
-        co_return Err{error};
-    }
-
-    if (time != timepoint::min()) {
-        co_await callback();
-    }
-
-    co_return Result<timepoint, boost::system::error_code>{time};
-}
 }
 
 #endif //TIMER_H
