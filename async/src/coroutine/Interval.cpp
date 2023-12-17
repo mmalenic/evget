@@ -23,7 +23,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "async\coroutine\Interval.h"
+#include "async/coroutine/Interval.h"
 
 Async::Interval::Interval(std::chrono::seconds period) : period{period} {
 }
@@ -32,6 +32,22 @@ Async::asio::awaitable<Async::Result<void, boost::system::error_code>> Async::In
     if (!timer.has_value()) {
         timer = asio::steady_timer{co_await asio::this_coro::executor, this->period};
     }
+
+    auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
+    reset();
+
+    if (error) {
+        // Changing the timer value while mid async_wait causes the value to be operation_aborted.
+        if (error.value() == asio::error::operation_aborted) {
+            co_return Result<void, boost::system::error_code>{};
+        }
+
+        co_return Err{error};
+    }
+
+    co_return Result<void, boost::system::error_code>{};
 }
 
-void Async::Interval::reset() {}
+void Async::Interval::reset() {
+    timer->expires_after(this->period);
+}

@@ -46,7 +46,8 @@ public:
     explicit Interval(std::chrono::seconds period);
 
     /**
-     * \brief Completes when the next period in the interval has been reached.
+     * \brief Completes when the next period in the interval has been reached. If a tick has been
+     * missed, then the timer keeps firing until the time has caught up.
      */
     asio::awaitable<Result<void, boost::system::error_code>> tick();
 

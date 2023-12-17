@@ -29,7 +29,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "..\..\async\include\async\coroutine\Interval.h"
+#include "async/coroutine/Interval.h"
 #include "async/coroutine/Scheduler.h"
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
@@ -168,52 +168,39 @@ int main(int argc, char* argv[]) {
         Async::Interval timer{std::chrono::seconds{5}};
 
         scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
+            while (true) {
+                co_await timer.tick();
                 std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-                co_return;
-            });
-
-            if (!result.has_value()) {
-                std::cout << result.error();
             }
-
             co_return;
         }, [&]() {
             std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
         });
 
         scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
+            while (true) {
+                co_await timer.tick();
                 std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-                co_return;
-            });
-
-            if (!result.has_value()) {
-                std::cout << result.error();
             }
-
             co_return;
         }, [&]() {
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+            std::cout
+            << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
         });
-
-        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            sleep(7);
-            timer.stop();
-            // sleep(1);
-            auto result = co_await timer.await([&]() -> boost::asio::awaitable<void> {
-                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-                co_return;
-            });
-
-            if (!result.has_value()) {
-                std::cout << result.error();
-            }
-
-            co_return;
-        }, [&]() {
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        });
+        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        //     sleep(7);
+        //     timer.reset();
+        //     sleep(1);
+        //
+        //     while (true) {
+        //         co_await timer.tick();
+        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        //     }
+        //
+        //     co_return;
+        // }, [&]() {
+        //     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        // });
 
         scheduler.join();
 
