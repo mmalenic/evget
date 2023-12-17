@@ -24,12 +24,12 @@
 #ifndef DATABASEMANAGER_H
 #define DATABASEMANAGER_H
 
-#include "Store.h"
-#include <spdlog/spdlog.h>
 #include <boost/asio.hpp>
+#include <spdlog/spdlog.h>
 
+#include "Store.h"
 #include "async/container/LockingVector.h"
-#include "async/coroutine/Scheduler.h"
+#include "async/scheduler/Scheduler.h"
 
 namespace EvgetCore::Storage {
 

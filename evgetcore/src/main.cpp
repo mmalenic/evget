@@ -29,8 +29,8 @@
 #include <cstring>
 #include <iostream>
 
-#include "async/coroutine/Interval.h"
-#include "async/coroutine/Scheduler.h"
+#include "async/scheduler/Interval.h"
+#include "async/scheduler/Scheduler.h"
 #include "clioption/InvalidCommandLineOption.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"

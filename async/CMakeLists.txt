@@ -5,10 +5,10 @@ project(async)
 
 add_library(
         ${PROJECT_NAME}
-        include/async/coroutine/Scheduler.h
+        include/async/scheduler/Scheduler.h
         include/async/Util.h
         include/async/container/LockingVector.h
-        include/async/coroutine/Interval.h
+        include/async/scheduler/Interval.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

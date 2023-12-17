@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-#include "async/coroutine/Scheduler.h"
+#include "async/scheduler/Scheduler.h"
 
 Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads}, stopped{false} {
 }

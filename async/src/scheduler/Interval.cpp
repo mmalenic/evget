@@ -21,9 +21,9 @@
 // SOFTWARE.
 //
 
-#include <spdlog/spdlog.h>
+#include "async/scheduler/Interval.h"
 
-#include "async/coroutine/Interval.h"
+#include <spdlog/spdlog.h>
 
 Async::Interval::Interval(std::chrono::seconds period) : period{period} {
 }

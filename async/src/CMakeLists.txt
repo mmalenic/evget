@@ -1,6 +1,6 @@
 target_sources(
         ${PROJECT_NAME}
         PRIVATE
-        coroutine/Scheduler.cpp
-        coroutine/Interval.cpp
+        scheduler/Scheduler.cpp
+        scheduler/Interval.cpp
 )
