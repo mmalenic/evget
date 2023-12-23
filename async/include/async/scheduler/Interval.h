@@ -35,7 +35,8 @@ namespace Async {
 namespace asio = boost::asio;
 
 /**
- * \brief A repeating timer indefinitely repeats until it is stopped.
+ * \brief A repeating timer indefinitely repeats until it is stopped. This class does not have thread-safe
+ * functionality.
  */
 class Interval {
 public:
@@ -47,12 +48,12 @@ public:
 
     /**
      * \brief Completes when the next period in the interval has been reached. If a tick has been
-     * missed, then the timer keeps firing until the time has caught up.
+     * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
     asio::awaitable<Result<void, boost::system::error_code>> tick();
 
     /**
-     * \brief Reset the interval to expire one period after the current time.
+     * \brief Reset the interval to expire one period after the current time. Not thread-safe.
      */
     void reset();
 
