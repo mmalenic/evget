@@ -33,7 +33,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Even
 
     auto intoInner = data.into_inner_at(nEvents);
     if (intoInner.has_value()) {
-        spdlog::info("reached event number threshold, storing events.");
+        spdlog::info(fmt::format("reached event number threshold, storing {} events.", intoInner->size()));
 
         Event::Data out{};
         for (auto data : *intoInner) {

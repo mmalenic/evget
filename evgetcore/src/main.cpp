@@ -148,45 +148,45 @@ int main(int argc, char* argv[]) {
         EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
         sqlite.init();
 
-        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         auto event = xInputHandler.getEvent();
-        //
-        //         auto transformed = transformer.transformEvent(std::move(event));
-        //
-        //         // storage.store(transformed);
-        //         manager.store(transformed);
-        //     }
-        //     co_return;
-        // }, [&scheduler]() {
-        //     scheduler.stop();
-        //     std::cout << "exception\n";
-        // });
+        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+            while (!co_await scheduler.isStopped()) {
+                auto event = xInputHandler.getEvent();
+
+                auto transformed = transformer.transformEvent(std::move(event));
+
+                // storage.store(transformed);
+                manager.store(transformed);
+            }
+            co_return;
+        }, [&scheduler]() {
+            scheduler.stop();
+            std::cout << "exception\n";
+        });
 
         auto timeNow = std::chrono::steady_clock::now();
 
-        Async::Interval timer{std::chrono::seconds{5}};
-
-        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            while (true) {
-                co_await timer.tick();
-                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-            }
-            co_return;
-        }, [&]() {
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        });
-
-        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            while (true) {
-                co_await timer.tick();
-                std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-            }
-            co_return;
-        }, [&]() {
-            std::cout
-            << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        });
+        // Async::Interval timer{std::chrono::seconds{5}};
+        //
+        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        //     while (true) {
+        //         co_await timer.tick();
+        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        //     }
+        //     co_return;
+        // }, [&]() {
+        //     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        // });
+        //
+        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        //     while (true) {
+        //         co_await timer.tick();
+        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        //     }
+        //     co_return;
+        // }, [&]() {
+        //     std::cout
+        //     << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
+        // });
         // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         //     sleep(7);
         //     timer.reset();
