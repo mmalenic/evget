@@ -23,29 +23,16 @@
 
 #include "evgetcore/Storage/DatabaseManager.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents) :
-scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, data{} {
+EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
+scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, storeAfterInterval{storeAfter}, data{} {
+    storeAfterTask();
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
     data.push_back(std::move(event));
     Result<void> outResult = {};
 
-    auto intoInner = data.into_inner_at(nEvents);
-    if (intoInner.has_value()) {
-        spdlog::info(fmt::format("reached event number threshold, storing {} events.", intoInner->size()));
-
-        Event::Data out{};
-        for (auto data : *intoInner) {
-            out.mergeWith(std::move(data));
-        }
-
-        scheduler.get().spawn<Result<void>>([this, out]() -> asio::awaitable<Result<void>> {
-            co_return this->storeWith(out);
-        }, [this](Result<void> result) {
-            this->resultHandler(result);
-        });
-    }
+    storeEventsTask(data.into_inner_at(nEvents));
 
     return outResult;
 }
@@ -60,6 +47,47 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(
     }
 
     return Result<void>{};
+}
+
+void EvgetCore::Storage::DatabaseManager::storeEventsTask(std::optional<std::vector<Event::Data>> events) {
+    if (events.has_value()) {
+        spdlog::info(fmt::format("reached threshold, storing {} events", events->size()));
+
+        Event::Data out{};
+        for (auto data : *events) {
+            out.mergeWith(std::move(data));
+        }
+
+        scheduler.get().spawn<Result<void>>([this, out]() -> asio::awaitable<Result<void>> {
+            co_return this->storeWith(out);
+        }, [this](Result<void> result) {
+            this->resultHandler(result);
+        });
+    }
+
+}
+
+void EvgetCore::Storage::DatabaseManager::storeAfterTask() {
+    scheduler.get().spawn<Result<void>>([this]() -> asio::awaitable<Result<void>> {
+        while (!co_await scheduler.get().isStopped()) {
+            auto result = co_await storeAfterInterval.tick();
+
+            spdlog::debug(fmt::format("timer threshold of {} seconds reached", storeAfterInterval.period().count()));
+
+            if (!result.has_value()) {
+                co_return Err{Error {
+                    .errorType = ErrorType::DatabaseManager,
+                    .message = result.error().message()
+                }};
+            }
+
+            storeEventsTask(data.into_inner());
+        }
+
+        co_return Result<void>{};
+    }, [this](Result<void> result) {
+        this->resultHandler(result);
+    });
 }
 
 void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result) {

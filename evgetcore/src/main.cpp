@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
         EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
         sqlite.init();
 
-        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
             while (!co_await scheduler.isStopped()) {
                 auto event = xInputHandler.getEvent();
 

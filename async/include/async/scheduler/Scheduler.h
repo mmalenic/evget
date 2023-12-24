@@ -117,6 +117,7 @@ public:
     asio::thread_pool::executor_type getBlockingExecutor();
 
 private:
+    // Todo: way to store event results so that they can be accessed by the caller.
     void spawnImpl(Invocable<asio::awaitable<void>> auto&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
 
     template <typename T>
