@@ -53,15 +53,15 @@ public:
 
     /**
      * \brief Consume the inner without locking. Not thread-safe.
-     * \return the consumed vector.
+     * \return the consumed vector if there are elements in it.
      */
-    constexpr std::vector<T> unsafe_into_inner();
+    constexpr std::optional<std::vector<T>> unsafe_into_inner();
 
     /**
      * \brief Consume the inner vector by locking. Thread-safe.
-     * \return the consumed vector.
+     * \return the consumed vector if there are elements in it.
      */
-    constexpr std::vector<T> into_inner();
+    constexpr std::optional<std::vector<T>> into_inner();
 
     /**
      * \brief Consume the inner vector when its size is greater than or equal to
@@ -96,14 +96,14 @@ constexpr void LockingVector<T>::push_back(T&& value) {
 }
 
 template <class T>
-constexpr std::vector<T> LockingVector<T>::unsafe_into_inner() {
+constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner() {
     auto out{std::move(inner)};
     inner.clear();
     return out;
 }
 
 template <class T>
-constexpr std::vector<T> LockingVector<T>::into_inner() {
+constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner() {
     std::lock_guard guard{lock};
     return unsafe_into_inner();
 }
