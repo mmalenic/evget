@@ -57,8 +57,14 @@ public:
      */
     void reset();
 
+    /**
+     * \brief Get the timer's period.
+     * \return period.
+     */
+    [[nodiscard]] std::chrono::seconds period() const;
+
 private:
-    std::chrono::seconds period;
+    std::chrono::seconds _period;
     std::optional<asio::steady_timer> timer{};
 };
 }

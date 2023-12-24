@@ -25,12 +25,12 @@
 
 #include <spdlog/spdlog.h>
 
-Async::Interval::Interval(std::chrono::seconds period) : period{period} {
+Async::Interval::Interval(std::chrono::seconds period) : _period{period} {
 }
 
 Async::asio::awaitable<Async::Result<void, boost::system::error_code>> Async::Interval::tick() {
     if (!timer.has_value()) {
-        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period};
+        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period()};
     }
 
     auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
@@ -49,5 +49,9 @@ Async::asio::awaitable<Async::Result<void, boost::system::error_code>> Async::In
 }
 
 void Async::Interval::reset() {
-    timer->expires_after(this->period);
+    timer->expires_after(this->period());
+}
+
+std::chrono::seconds Async::Interval::period() const {
+    return _period;
 }
