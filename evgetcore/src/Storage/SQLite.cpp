@@ -68,35 +68,44 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
             std::string entryUuid;
             switch (entry.type()) {
                 case Event::EntryType::Key:
-                    setOptionalStatement(database, insertKey, Database::detail::insert_key);
-                    setOptionalStatement(database, insertKeyModifier, Database::detail::insert_key_modifier);
-
-                    entryUuid = bindValues(*insertKey, entry.data());
-                    bindValuesModifier(*insertKeyModifier, entry.modifiers(), entryUuid);
+                    insertEvents(
+                        database,
+                        entry,
+                        insertKey,
+                        insertKeyModifier,
+                        Database::detail::insert_key,
+                        Database::detail::insert_key_modifier
+                    );
                     break;
                 case Event::EntryType::MouseClick:
-                    setOptionalStatement(database, insertMouseClick, Database::detail::insert_mouse_click);
-                    setOptionalStatement(database, insertMouseClickModifier, Database::detail::insert_mouse_click_modifier);
-
-                    entryUuid = bindValues(*insertMouseClick, entry.data());
-                    bindValuesModifier(*insertMouseClickModifier, entry.modifiers(), entryUuid);
-
+                    insertEvents(
+                        database,
+                        entry,
+                        insertMouseClick,
+                        insertMouseClickModifier,
+                        Database::detail::insert_mouse_click,
+                        Database::detail::insert_mouse_click_modifier
+                    );
                     break;
                 case Event::EntryType::MouseMove:
-                    setOptionalStatement(database, insertMouseMove, Database::detail::insert_mouse_move);
-                    setOptionalStatement(database, insertMouseMoveModifier, Database::detail::insert_mouse_move_modifier);
-
-                    entryUuid = bindValues(*insertMouseMove, entry.data());
-                    bindValuesModifier(*insertMouseMoveModifier, entry.modifiers(), entryUuid);
-
+                    insertEvents(
+                        database,
+                        entry,
+                        insertMouseMove,
+                        insertMouseMoveModifier,
+                        Database::detail::insert_mouse_move,
+                        Database::detail::insert_mouse_move_modifier
+                    );
                     break;
                 case Event::EntryType::MouseScroll:
-                    setOptionalStatement(database, insertMouseScroll, Database::detail::insert_mouse_scroll);
-                    setOptionalStatement(database, insertMouseClickModifier, Database::detail::insert_mouse_scroll_modifier);
-
-                    entryUuid = bindValues(*insertMouseScroll, entry.data());
-                    bindValuesModifier(*insertMouseScrollModifier, entry.modifiers(), entryUuid);
-
+                    insertEvents(
+                        database,
+                        entry,
+                        insertMouseScroll,
+                        insertMouseClickModifier,
+                        Database::detail::insert_mouse_scroll,
+                        Database::detail::insert_mouse_scroll_modifier
+                    );
                     break;
             }
         }
@@ -128,6 +137,21 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
         spdlog::error("error initializing SQLite database: {}", what);
         return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
     }
+}
+
+void EvgetCore::Storage::SQLite::insertEvents(
+    ::SQLite::Database& database,
+    const Event::Entry& entry,
+    std::optional<::SQLite::Statement>& insertStatement,
+    std::optional<::SQLite::Statement>& insertModifierStatement,
+    const char* insertQuery,
+    const char* insertModifierQuery
+) {
+    setOptionalStatement(database, insertStatement, insertQuery);
+    setOptionalStatement(database, insertModifierStatement, insertModifierQuery);
+
+    auto entryUuid = bindValues(*insertStatement, entry.data());
+    bindValuesModifier(*insertModifierStatement, entry.modifiers(), entryUuid);
 }
 
 void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& database,

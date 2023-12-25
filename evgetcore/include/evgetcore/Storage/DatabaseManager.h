@@ -45,7 +45,7 @@ public:
      * \param nEvents the number of events to hold before inserting.
      * \param storeAfter store events after this time event if nEvents is not reached.
      */
-    DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents = 100, std::chrono::seconds storeAfter = std::chrono::seconds{5});
+    DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents = 100, std::chrono::seconds storeAfter = std::chrono::seconds{60});
 
     Result<void> store(Event::Data event) override;
 
