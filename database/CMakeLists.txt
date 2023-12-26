@@ -6,10 +6,15 @@ project(database)
 add_library(
         ${PROJECT_NAME}
         include/database/Migrate.h
+        include/database/sqlite/SQLite.h
+        include/database/Connection.h
+        include/database/Error.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 add_subdirectory(src)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC util)
 
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} SQLiteCpp VISIBILITY PUBLIC DIRECT_LINK)
