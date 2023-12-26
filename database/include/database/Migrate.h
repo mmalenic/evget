@@ -19,44 +19,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-#ifndef EVGET_STORAGE_H
-#define EVGET_STORAGE_H
+#ifndef MIGRATE_H
+#define MIGRATE_H
 
-#include "Error.h"
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Schema.h"
-#include <boost/asio.hpp>
+namespace Database {
+class Migrate {
 
-namespace EvgetCore::Storage {
-
-namespace asio = boost::asio;
-
-/**
- * An interface which represents storing data.
- */
-class Store {
-public:
-    /**
-     * Store the event data.
-     */
-    virtual Result<void> store(Event::Data event) = 0;
-
-    /**
-     * Perform a database migration.
-     */
-    virtual Result<void> migrate() = 0;
-
-    Store() = default;
-
-    virtual ~Store() = default;
-
-    Store(const Store&) = delete;
-    Store(Store&&) noexcept = delete;
-    Store& operator=(const Store&) = delete;
-    Store& operator=(Store&&) noexcept = delete;
 };
-}  // namespace EvgetCore
+}
 
-#endif  // EVGET_STORAGE_H
+#endif //MIGRATE_H
