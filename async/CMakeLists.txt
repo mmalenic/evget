@@ -6,13 +6,14 @@ project(async)
 add_library(
         ${PROJECT_NAME}
         include/async/scheduler/Scheduler.h
-        include/async/Util.h
         include/async/container/LockingVector.h
         include/async/scheduler/Interval.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 add_subdirectory(src)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC util)
 
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME}

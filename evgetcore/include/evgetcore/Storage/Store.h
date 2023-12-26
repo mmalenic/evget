@@ -43,10 +43,10 @@ public:
      */
     virtual Result<void> store(Event::Data event) = 0;
 
-    /**
-     * Perform a database migration.
-     */
-    virtual Result<void> migrate() = 0;
+    // /**
+    //  * Perform a database migration.
+    //  */
+    // virtual Result<void> migrate() = 0;
 
     Store() = default;
 

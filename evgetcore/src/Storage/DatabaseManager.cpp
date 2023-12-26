@@ -75,9 +75,9 @@ void EvgetCore::Storage::DatabaseManager::storeAfterTask() {
             spdlog::debug(fmt::format("timer threshold of {} seconds reached", storeAfterInterval.period().count()));
 
             if (!result.has_value()) {
-                co_return Err{Error {
+                co_return Err{Util::Error {
                     .errorType = ErrorType::DatabaseManager,
-                    .message = result.error().message()
+                    .message = result.error().message
                 }};
             }
 

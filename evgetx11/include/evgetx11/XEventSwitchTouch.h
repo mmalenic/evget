@@ -26,6 +26,7 @@
 #include "XEventSwitch.h"
 #include "XInputEvent.h"
 #include "XWrapper.h"
+#include "util/Util.h"
 
 namespace EvgetX11 {
 
@@ -36,7 +37,7 @@ public:
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
@@ -44,12 +45,12 @@ private:
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
-        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void touchMotion(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     std::reference_wrapper<XEventSwitch> xEventSwitchPointer;

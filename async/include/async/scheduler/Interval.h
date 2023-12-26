@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#include "async/Util.h"
+#include "util/Util.h"
 
 namespace Async {
 
@@ -50,7 +50,7 @@ public:
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
-    asio::awaitable<Result<void, boost::system::error_code>> tick();
+    asio::awaitable<Util::Result<void, boost::system::error_code>> tick();
 
     /**
      * \brief Reset the interval to expire one period after the current time. Not thread-safe.

@@ -21,11 +21,13 @@
 // SOFTWARE.
 //
 
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef EVGETCORE_STORAGE_ERROR_H
+#define EVGETCORE_STORAGE_ERROR_H
+
 #include <exception>
-#include <string>
 #include <expected>
+
+#include "util/Util.h"
 
 namespace EvgetCore::Storage {
     /**
@@ -37,23 +39,15 @@ namespace EvgetCore::Storage {
     };
 
     /**
-     * \brief Error struct.
-     */
-    struct Error {
-        ErrorType errorType;
-        std::string message;
-    };
-
-    /**
      * \brief Result type.
      */
     template<typename T>
-    using Result = std::expected<T, Error>;
+    using Result = Util::Result<T, ErrorType>;
 
     /**
-     * \brief Error type.
-     */
-    using Err = std::unexpected<Error>;
+    * \brief Error type.
+    */
+    using Err = Util::Err<ErrorType>;
 }
 
-#endif //ERROR_H
+#endif // EVGETCORE_STORAGE_ERROR_H

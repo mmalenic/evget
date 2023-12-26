@@ -19,39 +19,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-#include "async/scheduler/Interval.h"
+#ifndef UTIL_H
+#define UTIL_H
 
-#include <spdlog/spdlog.h>
+#include <expected>
+#include <string>
 
-Async::Interval::Interval(std::chrono::seconds period) : _period{period} {
+namespace Util {
+/**
+ * Invocable concept with a checked return type.
+ */
+template <class F, class R, class... Args>
+concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
+
+/**
+ * \brief Error struct.
+ */
+template<typename E>
+struct Error {
+    E errorType;
+    std::string message;
+};
+
+/**
+ * \brief Result type.
+ */
+template<typename T, typename E>
+using Result = std::expected<T, Error<E>>;
+
+/**
+ * \brief Error type.
+ */
+template<typename E>
+using Err = std::unexpected<Error<E>>;
 }
 
-Async::asio::awaitable<Util::Result<void, boost::system::error_code>> Async::Interval::tick() {
-    if (!timer.has_value()) {
-        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period()};
-    }
-
-    auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
-    reset();
-
-    if (error) {
-        // Changing the timer value while mid async_wait causes the value to be operation_aborted.
-        if (error.value() == asio::error::operation_aborted) {
-            co_return Util::Result<void, boost::system::error_code>{};
-        }
-
-        co_return Util::Err{Util::Error{.errorType = error, .message = error.message()}};
-    }
-
-    co_return Util::Result<void, boost::system::error_code>{};
-}
-
-void Async::Interval::reset() {
-    timer->expires_after(this->period());
-}
-
-std::chrono::seconds Async::Interval::period() const {
-    return _period;
-}
+#endif //UTIL_H

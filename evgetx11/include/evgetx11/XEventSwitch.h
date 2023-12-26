@@ -75,13 +75,13 @@ public:
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
         int button,
-        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void addMotionEvent(
         const XIDeviceEvent& event,
         EvgetCore::Event::Timestamp dateTime,
         EvgetCore::Event::Data& data,
-        Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     const std::string& getButtonName(int id, int button) const;
@@ -206,7 +206,7 @@ void EvgetX11::XEventSwitch::addMotionEvent(
     const XIDeviceEvent& event,
     EvgetCore::Event::Timestamp dateTime,
     EvgetCore::Event::Data& data,
-    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     EvgetCore::Event::MouseMove builder{};
     builder.interval(getTime(event.time))
@@ -229,7 +229,7 @@ void EvgetX11::XEventSwitch::addButtonEvent(
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
     int button,
-    Async::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     EvgetCore::Event::MouseClick builder{};
     builder.interval(getTime(event.time))

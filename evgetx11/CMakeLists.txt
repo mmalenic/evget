@@ -27,6 +27,7 @@ endif()
 
 add_subdirectory(src)
 
+target_link_libraries(${PROJECT_NAME} PUBLIC util)
 target_link_libraries(${PROJECT_NAME} PUBLIC evgetcore)
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
