@@ -20,23 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_H
-#define SQLITE_H
-#include <optional>
+#ifndef QUERY_H
+#define QUERY_H
 
-#include "database/Connection.h"
-#include <SQLiteCpp/Database.h>
+#include "Field.h"
+#include "database/Error.h"
 
-namespace Database {
-class SQLiteConnection : public Connection {
+namespace Database::Query {
+
+/**
+ * \brief An interface representing a database query row.
+ */
+class Row {
 public:
-    SQLiteConnection() = default;
+    /**
+     * \brief Get the field at the position.
+     * \return a result with the returned field.
+     */
+    virtual Result<Field> getField(std::size_t at) = 0;
 
-    Result<void> connect(std::string database, ConnectOptions options) override;
+    Row() = default;
 
-private:
-    std::optional<SQLite::Database> database;
+    virtual ~Row() = default;
+
+    Row(const Row&) = delete;
+    Row(Row&&) noexcept = delete;
+    Row& operator=(const Row&) = delete;
+    Row& operator=(Row&&) noexcept = delete;
 };
 }
 
-#endif //SQLITE_H
+#endif //QUERY_H

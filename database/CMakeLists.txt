@@ -9,6 +9,8 @@ add_library(
         include/database/sqlite/SQLiteConnection.h
         include/database/Connection.h
         include/database/Error.h
+        include/database/query/Row.h
+        include/database/query/Field.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
