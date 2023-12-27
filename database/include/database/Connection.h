@@ -30,15 +30,19 @@ namespace Database {
 /**
  * \brief Connection options for connecting to a database.
  */
-enum class ConnectionOptions {
+enum class ConnectOptions {
     /**
      * Read only connection.
      */
     READ_ONLY,
     /**
-     * Write access connection.
+     * Write connection, does not create database.
      */
     READ_WRITE,
+    /**
+     * Write connection, creates the database if it does not exist.
+     */
+    READ_WRITE_CREATE,
 };
 
 /**
@@ -50,7 +54,7 @@ public:
      * \brief Connect to the database.
      * \return a result indicating whether the connection was successful.
      */
-    virtual Result<void> connect(std::string database) = 0;
+    virtual Result<void> connect(std::string database, ConnectOptions options) = 0;
 
     // /**
     //  * \brief Query the database.

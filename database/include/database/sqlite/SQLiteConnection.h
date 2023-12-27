@@ -32,7 +32,7 @@ class SQLiteConnection : public Connection {
 public:
     SQLiteConnection() = default;
 
-    Result<void> connect(std::string database) override;
+    Result<void> connect(std::string database, ConnectOptions options) override;
 
 private:
     std::optional<SQLite::Database> database;
