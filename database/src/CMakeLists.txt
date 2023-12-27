@@ -2,6 +2,6 @@ target_sources(
         ${PROJECT_NAME}
         PRIVATE
         Migrate.cpp
-        sqlite/SQLite.cpp
+        sqlite/SQLiteConnection.cpp
         Connection.cpp
 )

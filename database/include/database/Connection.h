@@ -26,10 +26,37 @@
 #include "Error.h"
 
 namespace Database {
+
+/**
+ * \brief Connection options for connecting to a database.
+ */
+enum class ConnectionOptions {
+    /**
+     * Read only connection.
+     */
+    READ_ONLY,
+    /**
+     * Write access connection.
+     */
+    READ_WRITE,
+};
+
+/**
+ * \brief An interface representing classes that can connect to databases and perform queries.
+ */
 class Connection {
 public:
-    virtual Result<void> connect() = 0;
-    virtual Result<void> query() = 0;
+    /**
+     * \brief Connect to the database.
+     * \return a result indicating whether the connection was successful.
+     */
+    virtual Result<void> connect(std::string database) = 0;
+
+    // /**
+    //  * \brief Query the database.
+    //  * \return a result indicating whether the query was successful.
+    //  */
+    // virtual Result<void> query() = 0;
 
     Connection() = default;
 

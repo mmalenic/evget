@@ -6,7 +6,7 @@ project(database)
 add_library(
         ${PROJECT_NAME}
         include/database/Migrate.h
-        include/database/sqlite/SQLite.h
+        include/database/sqlite/SQLiteConnection.h
         include/database/Connection.h
         include/database/Error.h
 )

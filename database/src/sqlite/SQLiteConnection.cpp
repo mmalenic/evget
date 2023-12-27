@@ -20,13 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_H
-#define SQLITE_H
+#include <spdlog/spdlog.h>
 
-namespace Database {
-class SQLite {
+#include "database\sqlite\SQLiteConnection.h"
 
-};
+Database::Result<void> Database::SQLiteConnection::connect(std::string database) {
+    try {
+        this->database = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+        spdlog::info("created SQLite database: {}", database);
+        return {};
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error creating SQLite database: {}", what);
+        return Err{{.errorType = ErrorType::ConnectError, .message = what}};
+    }
 }
-
-#endif //SQLITE_H

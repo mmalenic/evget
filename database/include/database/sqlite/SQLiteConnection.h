@@ -20,4 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "database/sqlite/SQLite.h"
+#ifndef SQLITE_H
+#define SQLITE_H
+#include <optional>
+
+#include "database/Connection.h"
+#include <SQLiteCpp/Database.h>
+
+namespace Database {
+class SQLiteConnection : public Connection {
+public:
+    SQLiteConnection() = default;
+
+    Result<void> connect(std::string database) override;
+
+private:
+    std::optional<SQLite::Database> database;
+
+};
+}
+
+#endif //SQLITE_H
