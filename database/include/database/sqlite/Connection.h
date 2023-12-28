@@ -20,29 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <spdlog/spdlog.h>
+#ifndef SQLITE_H
+#define SQLITE_H
 
-#include "database/sqlite/SQLiteConnection.h"
+#include <optional>
 
-Database::Result<void> Database::SQLiteConnection::connect(std::string database, ConnectOptions options) {
-    try {
-        switch (options) {
-            case ConnectOptions::READ_ONLY:
-                this->database = {database, ::SQLite::OPEN_READONLY};
-                break;
-            case ConnectOptions::READ_WRITE:
-                this->database = {database, ::SQLite::OPEN_READWRITE};
-                break;
-            case ConnectOptions::READ_WRITE_CREATE:
-                this->database = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
-                break;
-        }
+#include "database/Connection.h"
+#include <SQLiteCpp/Database.h>
 
-        spdlog::info("connected to SQLite database: {}", database);
-        return {};
-    } catch (std::exception& e) {
-        auto what = e.what();
-        spdlog::error("error connecting to SQLite database: {}", what);
-        return Err{{.errorType = ErrorType::ConnectError, .message = what}};
-    }
+namespace Database::SQLite {
+class Connection : public Database::Connection {
+public:
+    Connection() = default;
+
+    Result<void> connect(std::string database, ConnectOptions options) override;
+
+private:
+    std::optional<::SQLite::Database> database;
+};
 }
+
+#endif //SQLITE_H
