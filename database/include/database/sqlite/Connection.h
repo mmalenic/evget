@@ -35,8 +35,14 @@ public:
 
     Result<void> connect(std::string database, ConnectOptions options) override;
 
+    /**
+     * \brief Get the underyling database.
+     * \return the database.
+     */
+    [[nodiscard]] std::optional<std::reference_wrapper<::SQLite::Database>> database();
+
 private:
-    std::optional<::SQLite::Database> database;
+    std::optional<::SQLite::Database> database_;
 };
 }
 

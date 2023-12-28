@@ -28,13 +28,13 @@ Database::Result<void> Database::SQLite::Connection::connect(std::string databas
     try {
         switch (options) {
             case ConnectOptions::READ_ONLY:
-                this->database = {database, ::SQLite::OPEN_READONLY};
+                this->database_ = {database, ::SQLite::OPEN_READONLY};
                 break;
             case ConnectOptions::READ_WRITE:
-                this->database = {database, ::SQLite::OPEN_READWRITE};
+                this->database_ = {database, ::SQLite::OPEN_READWRITE};
                 break;
             case ConnectOptions::READ_WRITE_CREATE:
-                this->database = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+                this->database_ = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
                 break;
         }
 
@@ -45,4 +45,10 @@ Database::Result<void> Database::SQLite::Connection::connect(std::string databas
         spdlog::error("error connecting to SQLite database: {}", what);
         return Err{{.errorType = ErrorType::ConnectError, .message = what}};
     }
+}
+
+std::optional<std::reference_wrapper<::SQLite::Database>> Database::SQLite::Connection::database() {
+    return database_.transform([](::SQLite::Database& database) {
+        return std::ref(database);
+    });
 }
