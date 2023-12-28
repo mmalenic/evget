@@ -11,6 +11,7 @@ add_library(
         include/database/Error.h
         include/database/query/Row.h
         include/database/query/Field.h
+        include/database/query/Builder.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

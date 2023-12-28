@@ -37,7 +37,7 @@ public:
      * \brief Get the field at the position.
      * \return a result with the returned field.
      */
-    virtual Result<Field> getField(std::size_t at) = 0;
+    virtual Result<std::reference_wrapper<Field>> getField(std::size_t at) = 0;
 
     Row() = default;
 
