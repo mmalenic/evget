@@ -20,29 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <spdlog/spdlog.h>
+#ifndef ROWITERATOR_H
+#define ROWITERATOR_H
 
-#include "database/sqlite/SQLiteConnection.h"
+#include <optional>
 
-Database::Result<void> Database::SQLiteConnection::connect(std::string database, ConnectOptions options) {
-    try {
-        switch (options) {
-            case ConnectOptions::READ_ONLY:
-                this->database = {database, ::SQLite::OPEN_READONLY};
-                break;
-            case ConnectOptions::READ_WRITE:
-                this->database = {database, ::SQLite::OPEN_READWRITE};
-                break;
-            case ConnectOptions::READ_WRITE_CREATE:
-                this->database = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
-                break;
-        }
+#include "Row.h"
 
-        spdlog::info("connected to SQLite database: {}", database);
-        return {};
-    } catch (std::exception& e) {
-        auto what = e.what();
-        spdlog::error("error connecting to SQLite database: {}", what);
-        return Err{{.errorType = ErrorType::ConnectError, .message = what}};
-    }
+namespace Database::Query {
+
+/**
+ * \brief An interface representing an iterator over database rows.
+ */
+class RowIterator {
+public:
+    /**
+     * \brief Get the next row. Note that an iterator may need to be progressed to actually
+     * perform any database queries.
+     * \return an optional value of rows, where a null value indicates that there are no more rows.
+     */
+    virtual Result<std::optional<std::reference_wrapper<Row>>> next() = 0;
+
+    RowIterator() = default;
+
+    virtual ~RowIterator() = default;
+
+    RowIterator(const RowIterator&) = delete;
+    RowIterator(RowIterator&&) noexcept = delete;
+    RowIterator& operator=(const RowIterator&) = delete;
+    RowIterator& operator=(RowIterator&&) noexcept = delete;
+};
 }
+
+#endif //ROWITERATOR_H

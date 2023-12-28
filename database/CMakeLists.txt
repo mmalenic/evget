@@ -12,6 +12,7 @@ add_library(
         include/database/query/Row.h
         include/database/query/Field.h
         include/database/query/Builder.h
+        include/database/query/RowIterator.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

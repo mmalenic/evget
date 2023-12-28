@@ -22,6 +22,7 @@
 
 #ifndef SQLITE_H
 #define SQLITE_H
+
 #include <optional>
 
 #include "database/Connection.h"

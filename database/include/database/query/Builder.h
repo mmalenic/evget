@@ -23,7 +23,7 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 
-#include "Row.h"
+#include "RowIterator.h"
 #include "database/Error.h"
 
 namespace Database::Query {
@@ -65,7 +65,7 @@ public:
     /**
      * \brief Build the query, returning a row that needs to be iterated over.
      */
-    virtual Result<std::reference_wrapper<Row>> build() = 0;
+    virtual Result<std::reference_wrapper<RowIterator>> build() = 0;
 
     Builder() = default;
 
