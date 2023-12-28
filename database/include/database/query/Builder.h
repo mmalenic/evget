@@ -63,6 +63,12 @@ public:
     virtual Result<void> reset() = 0;
 
     /**
+     * \brief Use the connection to build the query.
+     * \return a result indicating whether the query was built successfully.
+     */
+    virtual Result<void> withConnection(Connection& connection) = 0;
+
+    /**
      * \brief Build the query, returning a row that needs to be iterated over.
      */
     virtual Result<std::reference_wrapper<RowIterator>> build() = 0;
