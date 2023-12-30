@@ -55,9 +55,9 @@ public:
     virtual void bindBool(std::size_t position, bool value) = 0;
 
     /**
-     * \brief Reset this query.
+     * \brief Reset this query. This should not reset a transaction.
      */
-    virtual void reset() = 0;
+    virtual Result<void> reset() = 0;
 
     /**
      * \brief Build the query, returning a row that needs to be iterated over.

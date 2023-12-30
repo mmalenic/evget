@@ -19,36 +19,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
 
-#ifndef DATABASE_ERROR_H
-#define DATABASE_ERROR_H
+#ifndef SQLITE_BUILDER_H
+#define SQLITE_BUILDER_H
 
-#include <exception>
-#include <expected>
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Transaction.h>
 
-#include "util/Util.h"
+#include "database/query/Builder.h"
+#include "database/sqlite/Connection.h"
 
-namespace Database {
-    /**
-     * \brief Error type enum.
-     */
-    enum class ErrorType {
-        ConnectError,
-        QueryError,
-        BuildError,
-    };
+namespace Database::SQLite {
+class Builder : Query::Builder {
+public:
+    explicit Builder(Connection& connection);
 
-    /**
-     * \brief Result type.
-     */
-    template<typename T>
-    using Result = Util::Result<T, ErrorType>;
+    void bindInt(std::size_t position, int value) override;
+    void bindDouble(std::size_t position, double value) override;
+    void bindChars(std::size_t position, const char* value) override;
+    void bindBool(std::size_t position, bool value) override;
+    Result<void> reset() override;
+    Result<std::reference_wrapper<Query::RowIterator>> build() override;
+private:
+    std::reference_wrapper<Connection> _connection;
 
-    /**
-    * \brief Error type.
-    */
-    using Err = Util::Err<ErrorType>;
+    std::map<std::size_t, int> ints;
+    std::map<std::size_t, double> doubles;
+    std::map<std::size_t, const char*> chars;
+    std::map<std::size_t, bool> bools;
+
+    std::optional<::SQLite::Transaction> transaction{};
+    std::optional<::SQLite::Statement> statement{};
+};
 }
 
-#endif // DATABASE_ERROR_H
+
+#endif // SQLITE_BUILDER_H

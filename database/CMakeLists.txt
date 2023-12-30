@@ -13,6 +13,7 @@ add_library(
         include/database/query/Field.h
         include/database/query/Builder.h
         include/database/query/RowIterator.h
+        include/database/sqlite/Builder.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

@@ -4,4 +4,5 @@ target_sources(
         Migrate.cpp
         sqlite/Connection.cpp
         Connection.cpp
+        sqlite/Builder.cpp
 )
