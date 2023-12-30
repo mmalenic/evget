@@ -24,6 +24,7 @@
 #define BUILDER_H
 
 #include "RowIterator.h"
+#include "database/Connection.h"
 #include "database/Error.h"
 
 namespace Database::Query {
@@ -35,43 +36,34 @@ class Builder {
 public:
     /**
      * \brief Bind an integer to the position.
-     * \return a result indicating whether the bind was successful.
      */
-    virtual Result<void> bindInt(std::size_t position, int value) = 0;
+    virtual void bindInt(std::size_t position, int value) = 0;
 
     /**
      * \brief Bind a double to the position.
-     * \return a result indicating whether the bind was successful.
      */
-    virtual Result<void> bindDouble(std::size_t position, double value) = 0;
+    virtual void bindDouble(std::size_t position, double value) = 0;
 
     /**
      * \brief Bind a character array to the position.
-     * \return a result indicating whether the bind was successful.
      */
-    virtual Result<void> bindChars(std::size_t position, const char* value) = 0;
+    virtual void bindChars(std::size_t position, const char* value) = 0;
 
     /**
      * \brief Bind a boolean to the position.
-     * \return a result indicating whether the bind was successful.
      */
-    virtual Result<void> bindBool(std::size_t position, bool value) = 0;
+    virtual void bindBool(std::size_t position, bool value) = 0;
 
     /**
      * \brief Reset this query.
      */
-    virtual Result<void> reset() = 0;
-
-    /**
-     * \brief Use the connection to build the query.
-     * \return a result indicating whether the query was built successfully.
-     */
-    virtual Result<void> withConnection(Connection& connection) = 0;
+    virtual void reset() = 0;
 
     /**
      * \brief Build the query, returning a row that needs to be iterated over.
+     * \return the row iterator.
      */
-    virtual Result<std::reference_wrapper<RowIterator>> build() = 0;
+    virtual Result<std::reference_wrapper<RowIterator>> build(Connection& connection) = 0;
 
     Builder() = default;
 
