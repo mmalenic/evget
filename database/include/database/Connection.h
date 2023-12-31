@@ -64,7 +64,7 @@ public:
     virtual Result<void> transaction();
 
     /**
-     * \brief Commit the transaction. RAII should ensure that that this is called when the object is destroyed.
+     * \brief Commit the transaction.
      * \return a result indicating whether committing the transaction was successful.
      */
     virtual Result<void> commit();

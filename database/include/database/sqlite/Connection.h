@@ -23,10 +23,12 @@
 #ifndef SQLITE_H
 #define SQLITE_H
 
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Transaction.h>
+
 #include <optional>
 
 #include "database/Connection.h"
-#include <SQLiteCpp/Database.h>
 
 namespace Database::SQLite {
 class Connection : public Database::Connection {
@@ -34,6 +36,8 @@ public:
     Connection() = default;
 
     Result<void> connect(std::string database, ConnectOptions options) override;
+    Result<void> transaction() override;
+    Result<void> commit() override;
 
     /**
      * \brief Get the underyling database.
@@ -43,6 +47,9 @@ public:
 
 private:
     std::optional<::SQLite::Database> database_;
+    std::optional<::SQLite::Transaction> transaction_;
+
+    static Err connectError(const char* message);
 };
 }
 

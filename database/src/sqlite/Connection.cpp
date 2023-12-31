@@ -43,7 +43,7 @@ Database::Result<void> Database::SQLite::Connection::connect(std::string databas
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error connecting to SQLite database: {}", what);
-        return Err{{.errorType = ErrorType::ConnectError, .message = what}};
+        return connectError(what);
     }
 }
 
@@ -52,3 +52,42 @@ std::optional<std::reference_wrapper<::SQLite::Database>> Database::SQLite::Conn
         return std::ref(database);
     });
 }
+
+Database::Result<void> Database::SQLite::Connection::commit() {
+    if (!this->transaction_.has_value()) {
+        return connectError("transaction not started");
+    }
+
+    try {
+        transaction_->commit();
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error committing transaction: {}", what);
+        return connectError(what);
+    }
+
+    return {};
+}
+
+Database::Result<void> Database::SQLite::Connection::transaction() {
+    if (!this->database_.has_value()) {
+        return connectError("no database connected");
+    }
+
+    try {
+        this->transaction_.emplace(*this->database_);
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error creating transaction: {}", what);
+        return connectError(what);
+    }
+
+    return {};
+}
+
+Database::Err Database::SQLite::Connection::connectError(const char* message) {
+    return Err{{.errorType = ErrorType::ConnectError, .message = message}};
+}
+
+
+
