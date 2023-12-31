@@ -56,11 +56,18 @@ public:
      */
     virtual Result<void> connect(std::string database, ConnectOptions options) = 0;
 
-    // /**
-    //  * \brief Query the database.
-    //  * \return a result indicating whether the query was successful.
-    //  */
-    // virtual Result<void> query() = 0;
+    /**
+     * \brief Start a transaction. Only one transaction is allowed per connection, however this can be called again
+     * after the transaction is committed.
+     * \return a result indicating whether creating the transaction was successful.
+     */
+    virtual Result<void> transaction();
+
+    /**
+     * \brief Commit the transaction. RAII should ensure that that this is called when the object is destroyed.
+     * \return a result indicating whether committing the transaction was successful.
+     */
+    virtual Result<void> commit();
 
     Connection() = default;
 
