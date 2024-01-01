@@ -63,7 +63,7 @@ public:
      * \brief Build the query, returning a row that needs to be iterated over.
      * \return the row iterator.
      */
-    virtual Result<RowIterator> build() = 0;
+    virtual Result<std::reference_wrapper<RowIterator>> build() = 0;
 
     Builder() = default;
 

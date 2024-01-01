@@ -20,37 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_BUILDER_H
-#define SQLITE_BUILDER_H
+#ifndef SQLITE_ROWITERATOR_H
+#define SQLITE_ROWITERATOR_H
 
-#include <SQLiteCpp/Database.h>
-#include <SQLiteCpp/Transaction.h>
+#include <SQLiteCpp/Statement.h>
 
-#include <variant>
-
-#include "RowIterator.h"
-#include "database/query/Builder.h"
-#include "database/sqlite/Connection.h"
+#include "database/query/RowIterator.h"
 
 namespace Database::SQLite {
-class Builder : Query::Builder {
+class RowIterator : public Query::RowIterator {
 public:
-    explicit Builder(Connection& connection);
+    explicit RowIterator(::SQLite::Statement& statement);
 
-    void bindInt(std::size_t position, int value) override;
-    void bindDouble(std::size_t position, double value) override;
-    void bindChars(std::size_t position, const char* value) override;
-    void bindBool(std::size_t position, bool value) override;
-    Result<void> reset() override;
-    Result<std::reference_wrapper<Query::RowIterator>> build() override;
-
+    Result<std::optional<std::reference_wrapper<Query::Row>>> next() override;
 private:
-    std::reference_wrapper<Connection> _connection;
-    std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
-    std::optional<::SQLite::Statement> statement{};
-    std::optional<RowIterator> rowIterator{};
+    std::reference_wrapper<::SQLite::Statement> statement;
 };
 }
 
 
-#endif // SQLITE_BUILDER_H
+
+#endif // SQLITE_ROWITERATOR_H

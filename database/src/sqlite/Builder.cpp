@@ -24,42 +24,32 @@
 
 #include <spdlog/spdlog.h>
 
+#include "database/sqlite/RowIterator.h"
+
 Database::SQLite::Builder::Builder(Connection& connection) : _connection{connection} {
 }
 
 Database::Result<std::reference_wrapper<Database::Query::RowIterator>> Database::SQLite::Builder::build() {
     try {
-        this->transaction.emplace(this->_connection.get().database().value());
-
-        for (auto [position, value] : this->ints) {
-            this->statement->bind(position, value);
-        }
-        for (auto [position, value] : this->bools) {
-            this->statement->bind(position, value);
-        }
-        for (auto [position, value] : this->chars) {
-            this->statement->bind(position, value);
-        }
-        for (auto [position, value] : this->doubles) {
-            this->statement->bind(position, value);
+        for (auto [position, value] : this->binds) {
+            std::visit([this](auto&& value) {
+                this->statement->bind(position, value);
+            }, value);
         }
 
-        this->statement->exec();
+        rowIterator.emplace(*this->statement);
+
+        return *rowIterator;
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error building query: {}", what);
         return Err{{.errorType = ErrorType::BuildError, .message = what}};
     }
-
-    // todo
-    return Query::RowIterator{this->statement.value()};
 }
 
 Database::Result<void> Database::SQLite::Builder::reset() {
-    bools.clear();
-    chars.clear();
-    doubles.clear();
-    ints.clear();
+    this->binds.clear();
+    this->rowIterator.reset();
 
     try {
         if (statement.has_value()) {
@@ -75,17 +65,17 @@ Database::Result<void> Database::SQLite::Builder::reset() {
 }
 
 void Database::SQLite::Builder::bindBool(std::size_t position, bool value) {
-    bools[position] = value;
+    binds[position] = value;
 }
 
 void Database::SQLite::Builder::bindChars(std::size_t position, const char* value) {
-    chars[position] = value;
+    binds[position] = value;
 }
 
 void Database::SQLite::Builder::bindDouble(std::size_t position, double value) {
-    doubles[position] = value;
+    binds[position] = value;
 }
 
 void Database::SQLite::Builder::bindInt(std::size_t position, int value) {
-    ints[position] = value;
+    binds[position] = value;
 }
