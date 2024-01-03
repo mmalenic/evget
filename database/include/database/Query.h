@@ -20,19 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef BUILDER_H
-#define BUILDER_H
+#ifndef DATABASE_QUERY_H
+#define DATABASE_QUERY_H
 
-#include "RowIterator.h"
-#include "database/Connection.h"
-#include "database/Error.h"
+#include "Error.h"
 
-namespace Database::Query {
+namespace Database {
 
 /**
  * \brief An interface representing a query builder.
  */
-class Builder {
+class Query {
 public:
     /**
      * \brief Bind an integer to the position.
@@ -60,21 +58,45 @@ public:
     virtual Result<void> reset() = 0;
 
     /**
-     * \brief Build the query, returning a row that needs to be iterated over.
-     * \return the row iterator.
+     * \brief Get the next query.
+     * \return result indicating if successful.
      */
-    virtual Result<std::reference_wrapper<RowIterator>> build() = 0;
+    virtual Result<void> next() = 0;
 
-    Builder() = default;
+    /**
+     * \brief Get the field as an integer.
+     * \return a result with the returned integer.
+     */
+    virtual Result<int> asInt(std::size_t at) = 0;
 
-    virtual ~Builder() = default;
+    /**
+     * \brief Get the field as a double.
+     * \return a result with the returned double.
+     */
+    virtual Result<double> asDouble(std::size_t at) = 0;
 
-    Builder(const Builder&) = delete;
-    Builder(Builder&&) noexcept = delete;
-    Builder& operator=(const Builder&) = delete;
-    Builder& operator=(Builder&&) noexcept = delete;
+    /**
+     * \brief Get the field as a string.
+     * \return a result with the returned string.
+     */
+    virtual Result<std::string> asString(std::size_t at) = 0;
+
+    /**
+     * \brief Get the field as a boolean.
+     * \return a result with the returned boolean.
+     */
+    virtual Result<bool> asBool(std::size_t at) = 0;
+
+    Query() = default;
+
+    virtual ~Query() = default;
+
+    Query(const Query&) = delete;
+    Query(Query&&) noexcept = delete;
+    Query& operator=(const Query&) = delete;
+    Query& operator=(Query&&) noexcept = delete;
 };
 }
 
 
-#endif //BUILDER_H
+#endif // DATABASE_QUERY_H
