@@ -37,6 +37,7 @@ namespace Database {
         ConnectError,
         QueryError,
         BuildError,
+        RowIteratorError,
     };
 
     /**

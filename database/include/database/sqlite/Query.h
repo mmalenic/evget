@@ -25,31 +25,43 @@
 
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
+#include <spdlog/spdlog.h>
 
 #include <variant>
 
-#include "RowIterator.h"
-#include "database/query/Builder.h"
+#include "database/Query.h"
 #include "database/sqlite/Connection.h"
 
 namespace Database::SQLite {
-class Builder : Query::Builder {
+class Query : Database::Query {
 public:
-    explicit Builder(Connection& connection);
+    explicit Query(Connection& connection);
 
     void bindInt(std::size_t position, int value) override;
     void bindDouble(std::size_t position, double value) override;
     void bindChars(std::size_t position, const char* value) override;
     void bindBool(std::size_t position, bool value) override;
     Result<void> reset() override;
-    Result<std::reference_wrapper<Query::RowIterator>> build() override;
+    Result<bool> next() override;
+    Result<bool> asBool(std::size_t at) override;
+    Result<double> asDouble(std::size_t at) override;
+    Result<int> asInt(std::size_t at) override;
+    Result<std::string> asString(std::size_t at) override;
 
 private:
+    Err asError(std::exception& e);
+
     std::reference_wrapper<Connection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
     std::optional<::SQLite::Statement> statement{};
-    std::optional<RowIterator> rowIterator{};
 };
+
+Err Query::asError(std::exception& e) {
+    auto what = e.what();
+    spdlog::error("error getting column value: {}", what);
+    return Err{{.errorType = ErrorType::QueryError, .message = what}};
+}
+
 }
 
 
