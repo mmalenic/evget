@@ -59,9 +59,9 @@ public:
 
     /**
      * \brief Get the next query.
-     * \return result indicating if successful.
+     * \return result indicating if successful. True means that there are more steps to execute.
      */
-    virtual Result<void> next() = 0;
+    virtual Result<bool> next() = 0;
 
     /**
      * \brief Get the field as an integer.
