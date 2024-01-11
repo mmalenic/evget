@@ -49,18 +49,12 @@ public:
     Result<std::string> asString(std::size_t at) override;
 
 private:
-    Err asError(std::exception& e);
+    static Err asError(std::exception& e);
 
     std::reference_wrapper<Connection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
     std::optional<::SQLite::Statement> statement{};
 };
-
-Err Query::asError(std::exception& e) {
-    auto what = e.what();
-    spdlog::error("error getting column value: {}", what);
-    return Err{{.errorType = ErrorType::QueryError, .message = what}};
-}
 
 }
 

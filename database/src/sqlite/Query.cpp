@@ -107,3 +107,10 @@ Database::Result<std::string> Database::SQLite::Query::asString(std::size_t at) 
         return asError(e);
     }
 }
+
+Database::Err Database::SQLite::Query::asError(std::exception& e) {
+    auto what = e.what();
+    spdlog::error("error getting column value: {}", what);
+    return Err{{.errorType = ErrorType::QueryError, .message = what}};
+}
+

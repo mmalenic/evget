@@ -23,9 +23,33 @@
 #ifndef MIGRATE_H
 #define MIGRATE_H
 
-namespace Database {
-class Migrate {
+#include "Error.h"
 
+namespace Database {
+
+struct Migration {
+    int version;
+    std::string description;
+    std::string sql;
+    std::string checksum;
+};
+
+class Migrate {
+public:
+    /**
+     * \brief Apply the migration.
+     * \return a result indicating whether the migration was successful.
+     */
+    virtual Result<void> apply(Migration migration) = 0;
+
+    Migrate() = default;
+
+    virtual ~Migrate() = default;
+
+    Migrate(const Migrate&) = delete;
+    Migrate(Migrate&&) noexcept = delete;
+    Migrate& operator=(const Migrate&) = delete;
+    Migrate& operator=(Migrate&&) noexcept = delete;
 };
 }
 
