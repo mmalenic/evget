@@ -23,6 +23,8 @@
 #ifndef MIGRATE_H
 #define MIGRATE_H
 
+#include <vector>
+
 #include "Error.h"
 
 namespace Database {
@@ -37,10 +39,28 @@ struct Migration {
 class Migrate {
 public:
     /**
-     * \brief Apply the migration.
+     * \brief Apply a single migration.
      * \return a result indicating whether the migration was successful.
      */
     virtual Result<void> apply(Migration migration) = 0;
+
+    /**
+     * \brief Lock the database so no other migrations can occur.
+     * \return a result indicating whether the lock was successful.
+     */
+    virtual Result<void> lock() = 0;
+
+    /**
+     * \brief Unlock the database.
+     * \return a result indicating whether the unlock was successful.
+     */
+    virtual Result<void> unlock() = 0;
+
+    /**
+     * \brief Get a list of the currently applied migrations.
+     * \return a result with the list of migrations.
+     */
+    virtual Result<std::vector<Migration>> listMigrations() = 0;
 
     Migrate() = default;
 
