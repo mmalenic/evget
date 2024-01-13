@@ -5,4 +5,5 @@ target_sources(
         sqlite/Connection.cpp
         Connection.cpp
         sqlite/Query.cpp
+        sqlite/Migrate.cpp
 )

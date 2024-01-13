@@ -20,45 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MIGRATE_H
-#define MIGRATE_H
+#ifndef SQLITE_MIGRATE_H
+#define SQLITE_MIGRATE_H
 
-#include <vector>
+#include "database/sqlite/Connection.h"
+#include "database/Error.h"
+#include "database/Migrate.h"
 
-#include "Error.h"
-
-namespace Database {
-
-struct Migration {
-    int version;
-    std::string description;
-    std::string sql;
-    std::string checksum;
-};
-
-class Migrate {
+namespace Database::SQLite {
+class Migrate : public Database::Migrate {
 public:
-    /**
-     * \brief Apply a single migration.
-     * \return a result indicating whether the migration was successful.
-     */
-    virtual Result<void> apply(Migration migration) = 0;
+    explicit Migrate(Connection& connection);
 
-    /**
-     * \brief Get a list of the currently applied migrations.
-     * \return a result with the list of migrations.
-     */
-    virtual Result<std::vector<Migration>> listMigrations() = 0;
-
-    Migrate() = default;
-
-    virtual ~Migrate() = default;
-
-    Migrate(const Migrate&) = delete;
-    Migrate(Migrate&&) noexcept = delete;
-    Migrate& operator=(const Migrate&) = delete;
-    Migrate& operator=(Migrate&&) noexcept = delete;
+    Result<std::vector<Migration>> listMigrations() override;
+    Result<void> apply(Migration migration) override;
+private:
+    std::reference_wrapper<Connection> connection_;
 };
 }
 
-#endif //MIGRATE_H
+#endif // SQLITE_MIGRATE_H
