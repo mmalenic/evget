@@ -28,7 +28,7 @@
 namespace Database {
 
 /**
- * \brief An interface representing a query builder.
+ * \brief An interface representing a query.
  */
 class Query {
 public:
