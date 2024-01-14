@@ -50,6 +50,7 @@ public:
 
 private:
     static Err asError(std::exception& e);
+    static Err statementError();
 
     std::reference_wrapper<Connection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;

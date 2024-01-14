@@ -81,35 +81,57 @@ Database::Result<bool> Database::SQLite::Query::next() {
 }
 
 Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
+    if (!this->statement.has_value()) {
+        return statementError();
+    }
+
     try {
-        return this->statement.value().getColumn(at).getInt();
+        return this->statement->getColumn(at).getInt();
     } catch (std::exception& e) {
         return asError(e);
     }
 }
 
 Database::Result<double> Database::SQLite::Query::asDouble(std::size_t at) {
+    if (!this->statement.has_value()) {
+        return statementError();
+    }
+
     try {
-        return this->statement.value().getColumn(at);
+        return this->statement->getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }
 }
 
 Database::Result<int> Database::SQLite::Query::asInt(std::size_t at) {
+    if (!this->statement.has_value()) {
+        return statementError();
+    }
+
     try {
-        return this->statement.value().getColumn(at);
+        return this->statement->getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }
 }
 
 Database::Result<std::string> Database::SQLite::Query::asString(std::size_t at) {
+    if (!this->statement.has_value()) {
+        return statementError();
+    }
+
     try {
-        return this->statement.value().getColumn(at);
+        return this->statement->getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }
+}
+
+Database::Err Database::SQLite::Query::statementError() {
+    auto what = "statement has not been initialized";
+    spdlog::error(what);
+    return Err{{.errorType = ErrorType::QueryError, .message = what}};
 }
 
 Database::Err Database::SQLite::Query::asError(std::exception& e) {
