@@ -24,6 +24,8 @@
 #define CONNECTION_H
 
 #include "Error.h"
+#include "Query.h"
+#include <memory>
 
 namespace Database {
 
@@ -68,6 +70,13 @@ public:
      * \return a result indicating whether committing the transaction was successful.
      */
     virtual Result<void> commit();
+
+    /**
+     * \brief Create a query using this connection.
+     * \param query the query string.
+     * \return a pointer to a query object.
+     */
+    virtual std::unique_ptr<Query> buildQuery(const char* query);
 
     Connection() = default;
 

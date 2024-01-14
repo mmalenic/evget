@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "database/sqlite/Connection.h"
+
 #include <spdlog/spdlog.h>
 
-#include "database/sqlite/Connection.h"
+#include "database/sqlite/Query.h"
 
 Database::Result<void> Database::SQLite::Connection::connect(std::string database, ConnectOptions options) {
     try {
@@ -84,6 +86,11 @@ Database::Result<void> Database::SQLite::Connection::transaction() {
 
     return {};
 }
+
+std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQuery(const char* query) {
+    std::make_unique<Query>(*this, query);
+}
+
 
 Database::Err Database::SQLite::Connection::connectError(const char* message) {
     return Err{{.errorType = ErrorType::ConnectError, .message = message}};

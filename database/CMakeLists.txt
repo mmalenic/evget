@@ -12,7 +12,6 @@ add_library(
         include/database/Query.h
         include/database/sqlite/Query.h
         include/database/sqlite/Migrate.h
-        include/database/Builder.h
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

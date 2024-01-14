@@ -24,7 +24,7 @@
 
 #include <spdlog/spdlog.h>
 
-Database::SQLite::Query::Query(Connection& connection, const char * query) : _connection{connection}, statement{_connection.get().database()->get(), query} {
+Database::SQLite::Query::Query(Connection& connection, const char * query) : _connection{connection}, query{query} {
 }
 
 void Database::SQLite::Query::bindInt(std::size_t position, int value) {
@@ -47,7 +47,9 @@ Database::Result<void> Database::SQLite::Query::reset() {
     this->binds.clear();
 
     try {
-        statement.reset();
+        if (statement.has_value()) {
+            statement->reset();
+        }
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error resetting statements: {}", what);
@@ -59,14 +61,18 @@ Database::Result<void> Database::SQLite::Query::reset() {
 
 Database::Result<bool> Database::SQLite::Query::next() {
     try {
+        if (!statement.has_value()) {
+            statement = {_connection.get().database()->get(), query};
+        }
+
         for (auto [position, value] : this->binds) {
             std::visit([this, &position](auto&& value) {
-                this->statement.bind(position, value);
+                this->statement->bind(position, value);
             }, value);
         }
         this->binds.clear();
 
-        return this->statement.executeStep();
+        return this->statement->executeStep();
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error building query: {}", what);
@@ -76,7 +82,7 @@ Database::Result<bool> Database::SQLite::Query::next() {
 
 Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
     try {
-        return this->statement.getColumn(at).getInt();
+        return this->statement.value().getColumn(at).getInt();
     } catch (std::exception& e) {
         return asError(e);
     }
@@ -84,7 +90,7 @@ Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
 
 Database::Result<double> Database::SQLite::Query::asDouble(std::size_t at) {
     try {
-        return this->statement.getColumn(at);
+        return this->statement.value().getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }
@@ -92,7 +98,7 @@ Database::Result<double> Database::SQLite::Query::asDouble(std::size_t at) {
 
 Database::Result<int> Database::SQLite::Query::asInt(std::size_t at) {
     try {
-        return this->statement.getColumn(at);
+        return this->statement.value().getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }
@@ -100,7 +106,7 @@ Database::Result<int> Database::SQLite::Query::asInt(std::size_t at) {
 
 Database::Result<std::string> Database::SQLite::Query::asString(std::size_t at) {
     try {
-        return this->statement.getColumn(at);
+        return this->statement.value().getColumn(at);
     } catch (std::exception& e) {
         return asError(e);
     }

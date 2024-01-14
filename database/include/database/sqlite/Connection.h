@@ -29,6 +29,7 @@
 #include <optional>
 
 #include "database/Connection.h"
+#include "database/Query.h"
 
 namespace Database::SQLite {
 class Connection : public Database::Connection {
@@ -38,6 +39,7 @@ public:
     Result<void> connect(std::string database, ConnectOptions options) override;
     Result<void> transaction() override;
     Result<void> commit() override;
+    std::unique_ptr<Query> buildQuery(const char* query) override;
 
     /**
      * \brief Get the underyling database.

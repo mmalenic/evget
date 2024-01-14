@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_BUILDER_H
-#define SQLITE_BUILDER_H
+#ifndef SQLITE_QUERY_H
+#define SQLITE_QUERY_H
 
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
@@ -33,7 +33,7 @@
 #include "database/sqlite/Connection.h"
 
 namespace Database::SQLite {
-class Query : Database::Query {
+class Query : public Database::Query {
 public:
     explicit Query(Connection& connection, const char* query);
 
@@ -53,10 +53,11 @@ private:
 
     std::reference_wrapper<Connection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
-    ::SQLite::Statement statement{};
+    std::optional<::SQLite::Statement> statement;
+    const char* query;
 };
 
 }
 
 
-#endif // SQLITE_BUILDER_H
+#endif // SQLITE_QUERY_H
