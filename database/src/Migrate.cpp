@@ -21,3 +21,6 @@
 // SOFTWARE.
 
 #include "database/Migrate.h"
+
+Database::Migrate::Migrate(Connection& connection, std::string migrationsDirectory) : connection{connection}, migrationsDirectory{std::move(migrationsDirectory)} {
+}

@@ -25,6 +25,7 @@
 
 #include <vector>
 
+#include "Connection.h"
 #include "Error.h"
 
 namespace Database {
@@ -38,26 +39,17 @@ struct Migration {
 
 class Migrate {
 public:
+    Migrate(Connection& connection, std::string migrationsDirectory);
+
     /**
      * \brief Apply a single migration.
      * \return a result indicating whether the migration was successful.
      */
-    virtual Result<void> apply(Migration migration) = 0;
+    Result<void> migrate();
 
-    /**
-     * \brief Get a list of the currently applied migrations.
-     * \return a result with the list of migrations.
-     */
-    virtual Result<std::vector<Migration>> listMigrations() = 0;
-
-    Migrate() = default;
-
-    virtual ~Migrate() = default;
-
-    Migrate(const Migrate&) = delete;
-    Migrate(Migrate&&) noexcept = delete;
-    Migrate& operator=(const Migrate&) = delete;
-    Migrate& operator=(Migrate&&) noexcept = delete;
+private:
+    std::reference_wrapper<Connection> connection;
+    std::string migrationsDirectory;
 };
 }
 
