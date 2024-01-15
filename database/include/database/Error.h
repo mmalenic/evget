@@ -38,6 +38,7 @@ namespace Database {
         QueryError,
         BuildError,
         RowIteratorError,
+        MigrateError,
     };
 
     /**

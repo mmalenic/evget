@@ -3,6 +3,5 @@ target_sources(
         PRIVATE
         Migrate.cpp
         sqlite/Connection.cpp
-        Connection.cpp
         sqlite/Query.cpp
 )

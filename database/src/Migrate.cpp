@@ -21,6 +21,35 @@
 // SOFTWARE.
 
 #include "database/Migrate.h"
+#include <filesystem>
 
-Database::Migrate::Migrate(Connection& connection, std::string migrationsDirectory) : connection{connection}, migrationsDirectory{std::move(migrationsDirectory)} {
+Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection}, migrations{std::move(migrations)} {
 }
+
+Database::Result<void> Database::Migrate::createMigrationsTable() {
+    auto query = this->connection.get().buildQuery(
+        "CREATE TABLE IF NOT EXISTS _migrations ("
+            "version integer primary key,"
+            "description text not null,"
+            "installed_on timestamp not null default current_timestamp,"
+            "checksum text not null"
+        ");"
+    );
+
+    auto next = query->next();
+    while (next.has_value() && *next) {
+        next = query->next();
+    }
+
+    if (!next.has_value()) {
+        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+    }
+
+    auto reset = query->reset();
+    if (!reset.has_value()) {
+        return Err{{.errorType = ErrorType::MigrateError, .message = reset.error().message}};
+    }
+
+    return {};
+}
+

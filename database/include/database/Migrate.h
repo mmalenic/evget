@@ -34,22 +34,23 @@ struct Migration {
     int version;
     std::string description;
     std::string sql;
-    std::string checksum;
 };
 
 class Migrate {
 public:
-    Migrate(Connection& connection, std::string migrationsDirectory);
+    Migrate(Connection& connection, std::vector<Migration> migrations);
 
     /**
-     * \brief Apply a single migration.
+     * \brief Apply the migrations.
      * \return a result indicating whether the migration was successful.
      */
     Result<void> migrate();
 
 private:
+    Result<void> createMigrationsTable();
+
     std::reference_wrapper<Connection> connection;
-    std::string migrationsDirectory;
+    std::vector<Migration> migrations;
 };
 }
 
