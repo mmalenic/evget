@@ -47,6 +47,7 @@ public:
     Result<void> migrate();
 
 private:
+    Result<std::vector<Migration>> getMigrations();
     Result<void> createMigrationsTable();
 
     std::reference_wrapper<Connection> connection;

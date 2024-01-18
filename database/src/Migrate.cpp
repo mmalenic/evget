@@ -53,3 +53,10 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
     return {};
 }
 
+Database::Result<std::vector<Database::Migration>> Database::Migrate::getMigrations() {
+    auto query = this->connection.get().buildQuery(
+        "select version, description, installed_on, checksum from _migrations order by version;"
+    );
+}
+
+
