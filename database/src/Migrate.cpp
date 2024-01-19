@@ -45,18 +45,40 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
         return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
     }
 
-    auto reset = query->reset();
-    if (!reset.has_value()) {
-        return Err{{.errorType = ErrorType::MigrateError, .message = reset.error().message}};
-    }
-
     return {};
 }
 
-Database::Result<std::vector<Database::Migration>> Database::Migrate::getMigrations() {
+Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::getAppliedMigrations() {
     auto query = this->connection.get().buildQuery(
-        "select version, description, installed_on, checksum from _migrations order by version;"
+        "select version, checksum from _migrations order by version;"
     );
+
+    std::vector<Migration> migrations{};
+    auto next = query->next();
+    while (next.has_value() && *next) {
+        auto version = query->asBool(0);
+        if (!version.has_value()) {
+            return Err{{.errorType = ErrorType::MigrateError, .message = version.error().message}};
+        }
+
+        auto checksum = query->asString(2);
+        if (!checksum.has_value()) {
+            return Err{{.errorType = ErrorType::MigrateError, .message = checksum.error().message}};
+        }
+
+        migrations.emplace_back(
+            *version,
+            *checksum
+        );
+
+        next = query->next();
+    }
+
+    if (!next.has_value()) {
+        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+    }
+
+    return {};
 }
 
 
