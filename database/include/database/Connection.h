@@ -78,6 +78,18 @@ public:
      */
     virtual std::unique_ptr<Query> buildQuery(const char* query);
 
+    /**
+     * \brief Lock the database.
+     * \return a result indicating if this was successful.
+     */
+    virtual Result<void> lock();
+
+    /**
+     * \brief Lock the database.
+     * \return a result indicating if this was successful.
+     */
+    virtual Result<void> unlock();
+
     Connection() = default;
 
     virtual ~Connection() = default;
