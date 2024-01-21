@@ -67,7 +67,7 @@ Database::Result<bool> Database::SQLite::Query::next() {
 
         for (auto [position, value] : this->binds) {
             std::visit([this, &position](auto&& value) {
-                this->statement->bind(position, value);
+                this->statement->bind(position + 1, value);
             }, value);
         }
         this->binds.clear();

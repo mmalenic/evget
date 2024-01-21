@@ -28,7 +28,7 @@ Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrat
 
 Database::Result<void> Database::Migrate::createMigrationsTable() {
     auto query = this->connection.get().buildQuery(
-        "CREATE TABLE IF NOT EXISTS _migrations ("
+        "create table if not exists _migrations ("
             "version integer primary key,"
             "description text not null,"
             "installed_on timestamp not null default current_timestamp,"
@@ -75,6 +75,39 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
     }
 
     if (!next.has_value()) {
+        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+    }
+
+    return {};
+}
+
+Database::Result<void> Database::Migrate::applyMigration(const Migration& migration) {
+    auto query = this->connection.get().buildQuery(migration.sql.c_str());
+
+    auto next = query->next();
+    while (next.has_value() && *next) {
+        next = query->next();
+    }
+
+    if (!next.has_value()) {
+        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+    }
+
+    auto migrationQuery = this->connection.get().buildQuery(
+        "insert into _migrations (version, description, checksum)"
+        "values ($1, $2, $3);"
+    );
+
+    migrationQuery->bindInt(0, migration.version);
+    migrationQuery->bindChars(0, migration.description.c_str());
+    migrationQuery->bindChars(0, migration.checksum.c_str());
+
+    auto migrationNext = migrationQuery->next();
+    while (migrationNext.has_value() && *migrationNext) {
+        migrationNext = migrationQuery->next();
+    }
+
+    if (!migrationNext.has_value()) {
         return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
     }
 
