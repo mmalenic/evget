@@ -43,6 +43,7 @@ public:
     void bindBool(std::size_t position, bool value) override;
     Result<void> reset() override;
     Result<bool> next() override;
+    Result<void> nextWhile() override;
     Result<bool> asBool(std::size_t at) override;
     Result<double> asDouble(std::size_t at) override;
     Result<int> asInt(std::size_t at) override;

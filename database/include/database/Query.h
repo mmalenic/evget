@@ -64,6 +64,12 @@ public:
     virtual Result<bool> next() = 0;
 
     /**
+     * \brief Advance the query until there are no more steps to execute.
+     * \return result indicating if successful.
+     */
+    virtual Result<void> nextWhile() = 0;
+
+    /**
      * \brief Get the field as an integer.
      * \return a result with the returned integer.
      */

@@ -80,6 +80,20 @@ Database::Result<bool> Database::SQLite::Query::next() {
     }
 }
 
+Database::Result<void> Database::SQLite::Query::nextWhile() {
+    auto next = this->next();
+    while (next.has_value() && *next) {
+        next = this->next();
+    }
+
+    if (!next.has_value()) {
+        return Err{next.error()};
+    }
+
+    return {};
+}
+
+
 Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
     if (!this->statement.has_value()) {
         return statementError();

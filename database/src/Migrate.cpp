@@ -36,13 +36,9 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
         ");"
     );
 
-    auto next = query->next();
-    while (next.has_value() && *next) {
-        next = query->next();
-    }
-
+    auto next = query->nextWhile();
     if (!next.has_value()) {
-        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+        return Err{next.error()};
     }
 
     return {};
@@ -61,7 +57,7 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
             return Err{{.errorType = ErrorType::MigrateError, .message = version.error().message}};
         }
 
-        auto checksum = query->asString(2);
+        auto checksum = query->asString(1);
         if (!checksum.has_value()) {
             return Err{{.errorType = ErrorType::MigrateError, .message = checksum.error().message}};
         }
@@ -84,13 +80,9 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
 Database::Result<void> Database::Migrate::applyMigration(const Migration& migration) {
     auto query = this->connection.get().buildQuery(migration.sql.c_str());
 
-    auto next = query->next();
-    while (next.has_value() && *next) {
-        next = query->next();
-    }
-
+    auto next = query->nextWhile();
     if (!next.has_value()) {
-        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+        return Err{next.error()};
     }
 
     auto migrationQuery = this->connection.get().buildQuery(
@@ -102,13 +94,10 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
     migrationQuery->bindChars(0, migration.description.c_str());
     migrationQuery->bindChars(0, migration.checksum.c_str());
 
-    auto migrationNext = migrationQuery->next();
-    while (migrationNext.has_value() && *migrationNext) {
-        migrationNext = migrationQuery->next();
-    }
 
+    auto migrationNext = query->nextWhile();
     if (!migrationNext.has_value()) {
-        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
+        return Err{migrationNext.error()};
     }
 
     return {};
