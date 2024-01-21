@@ -96,5 +96,17 @@ Database::Err Database::SQLite::Connection::connectError(const char* message) {
     return Err{{.errorType = ErrorType::ConnectError, .message = message}};
 }
 
+Database::Result<void> Database::SQLite::Connection::lock() {
+    // No locks for SQLite.
+    return {};
+}
+
+
+Database::Result<void> Database::SQLite::Connection::unlock() {
+    // No locks for SQLite.
+    return {};
+}
+
+
 
 
