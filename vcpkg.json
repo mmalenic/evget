@@ -75,11 +75,6 @@
           "name": "nlohmann-json",
           "version>=": "3.11.2",
           "default-features": false
-        },
-        {
-          "name": "sqlitecpp",
-          "version>=": "3.3.1",
-          "default-features": false
         }
       ]
     },
@@ -113,6 +108,26 @@
     },
     "evwatchsig": {
       "description": "Dependencies for evwatchsig"
+    },
+    "database": {
+      "description": "Dependencies for database",
+      "dependencies": [
+        {
+          "name": "cryptopp",
+          "version>=": "8.9.0",
+          "default-features": false
+        },
+        {
+          "name": "spdlog",
+          "version>=": "1.11.0",
+          "default-features": false
+        },
+        {
+          "name": "sqlitecpp",
+          "version>=": "3.3.1",
+          "default-features": false
+        }
+      ]
     },
     "listinputdevices": {
       "description": "Dependencies for listinputdevices",
@@ -152,6 +167,7 @@
     "evgetx11",
     "evwatch",
     "evwatchsig",
+    "database",
     "listinputdevices",
     "test"
   ]

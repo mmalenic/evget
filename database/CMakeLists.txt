@@ -19,6 +19,7 @@ add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PUBLIC util)
 
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
+program_dependencies(${PROJECT_NAME} cryptopp VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} SQLiteCpp VISIBILITY PUBLIC DIRECT_LINK)
 
 #if(BUILD_TESTING)

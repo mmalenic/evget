@@ -34,7 +34,6 @@ struct Migration {
     int version;
     std::string description;
     std::string sql;
-    std::string checksum;
 };
 
 struct AppliedMigration {
@@ -56,6 +55,7 @@ private:
     Result<std::vector<AppliedMigration>> getAppliedMigrations();
     Result<void> createMigrationsTable();
     Result<void> applyMigration(const Migration& migration);
+    std::string checksum(const Migration& migration);
 
     std::reference_wrapper<Connection> connection;
     std::vector<Migration> migrations;

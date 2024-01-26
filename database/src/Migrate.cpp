@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "database/Migrate.h"
+#include "cryptopp/sha3.h"
+#include "cryptopp/hex.h"
 #include <filesystem>
 
 Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection}, migrations{std::move(migrations)} {
@@ -92,8 +94,7 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
 
     migrationQuery->bindInt(0, migration.version);
     migrationQuery->bindChars(0, migration.description.c_str());
-    migrationQuery->bindChars(0, migration.checksum.c_str());
-
+    migrationQuery->bindChars(0, this->checksum(migration).c_str());
 
     auto migrationNext = query->nextWhile();
     if (!migrationNext.has_value()) {
@@ -102,5 +103,31 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
 
     return {};
 }
+
+std::string Database::Migrate::checksum(const Migration& migration) {
+    CryptoPP::SHA3_512 sha3{};
+    CryptoPP::byte digest[CryptoPP::SHA3_512::DIGESTSIZE];
+
+    sha3.CalculateDigest(
+        digest,
+        reinterpret_cast<const CryptoPP::byte*>(migration.sql.c_str()),
+        migration.sql.length()
+    );
+
+    CryptoPP::HexEncoder encoder;
+    std::string output;
+
+    encoder.Put(digest, sizeof(digest));
+    encoder.MessageEnd();
+
+    CryptoPP::word64 size = encoder.MaxRetrievable();
+    if (size) {
+        output.resize(size);
+        encoder.Get(reinterpret_cast<CryptoPP::byte *>(&output[0]), output.size());
+    }
+
+    return output;
+}
+
 
 
