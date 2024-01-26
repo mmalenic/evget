@@ -21,11 +21,19 @@
 // SOFTWARE.
 
 #include "database/Migrate.h"
-#include "cryptopp/sha3.h"
-#include "cryptopp/hex.h"
-#include <filesystem>
 
-Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection}, migrations{std::move(migrations)} {
+#include <filesystem>
+#include <ranges>
+
+#include "cryptopp/hex.h"
+#include "cryptopp/sha3.h"
+
+Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection} {
+    std::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
+        return a.version < b.version;
+    });
+
+    this->migrations = migrations;
 }
 
 Database::Result<void> Database::Migrate::createMigrationsTable() {
@@ -79,7 +87,7 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
     return {};
 }
 
-Database::Result<void> Database::Migrate::applyMigration(const Migration& migration) {
+Database::Result<void> Database::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {
     auto query = this->connection.get().buildQuery(migration.sql.c_str());
 
     auto next = query->nextWhile();
@@ -94,7 +102,7 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
 
     migrationQuery->bindInt(0, migration.version);
     migrationQuery->bindChars(0, migration.description.c_str());
-    migrationQuery->bindChars(0, this->checksum(migration).c_str());
+    migrationQuery->bindChars(0, checksum.c_str());
 
     auto migrationNext = query->nextWhile();
     if (!migrationNext.has_value()) {
@@ -128,6 +136,51 @@ std::string Database::Migrate::checksum(const Migration& migration) {
 
     return output;
 }
+
+Database::Result<void> Database::Migrate::migrate() {
+    auto transactionResult = this->connection.get().transaction();
+    if (!rollbackOnError(transactionResult).has_value()) {
+        return Err{transactionResult.error()};
+    }
+
+    auto createTableResult = this->createMigrationsTable();
+    if (!rollbackOnError(createTableResult).has_value()) {
+        return Err{createTableResult.error()};
+    }
+
+    auto applied = this->getAppliedMigrations();
+    if (!rollbackOnError(applied).has_value()) {
+        return Err{applied.error()};
+    }
+
+    for (auto i = 0; i < migrations.size(); i++) {
+        auto migration = migrations[i];
+        auto checksum = this->checksum(migration);
+
+        if (i < applied->size()) {
+            auto appliedMigration = (*applied)[i];
+            if (appliedMigration.version != migration.version || appliedMigration.checksum != checksum) {
+                return rollbackOnError<void>(Err{{.errorType = ErrorType::MigrateError, .message = "applied migrations do not match current migrations"}});
+            }
+
+            continue;
+        }
+
+        auto migrationResult = applyMigration(migration, checksum);
+        if (!rollbackOnError(migrationResult).has_value()) {
+            return Err{migrationResult.error()};
+        }
+    }
+
+    auto commitResult = this->connection.get().commit();
+    if (!rollbackOnError(commitResult).has_value()) {
+        return Err{commitResult.error()};
+    }
+
+    return {};
+}
+
+
 
 
 

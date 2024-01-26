@@ -54,12 +54,29 @@ public:
 private:
     Result<std::vector<AppliedMigration>> getAppliedMigrations();
     Result<void> createMigrationsTable();
-    Result<void> applyMigration(const Migration& migration);
+    Result<void> applyMigration(const Migration& migration, const std::string& checksum);
     std::string checksum(const Migration& migration);
+
+    template<typename T>
+    const Result<T>& rollbackOnError(const Result<T>& result);
 
     std::reference_wrapper<Connection> connection;
     std::vector<Migration> migrations;
 };
+
+template <typename T>
+const Result<T>& Migrate::rollbackOnError(const Result<T>& result) {
+    if (result.has_value()) {
+        return result;
+    }
+
+    auto rollbackResult = this->connection.get().rollback();
+    if (!rollbackResult.has_value()) {
+        return Err{rollbackResult.error()};
+    }
+
+    return Err{result.error()};
+}
 }
 
 #endif //MIGRATE_H
