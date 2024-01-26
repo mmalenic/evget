@@ -96,6 +96,17 @@ Database::Err Database::SQLite::Connection::connectError(const char* message) {
     return Err{{.errorType = ErrorType::ConnectError, .message = message}};
 }
 
+Database::Result<void> Database::SQLite::Connection::rollback() {
+    try {
+        this->transaction_->rollback();
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error rolling back transaction: {}", what);
+        return connectError(what);
+    }
+}
+
+
 Database::Result<void> Database::SQLite::Connection::lock() {
     // No locks for SQLite.
     return {};

@@ -39,6 +39,7 @@ public:
     Result<void> connect(std::string database, ConnectOptions options) override;
     Result<void> transaction() override;
     Result<void> commit() override;
+    Result<void> rollback() override;
     std::unique_ptr<Query> buildQuery(const char* query) override;
 
     Result<void> lock() override;

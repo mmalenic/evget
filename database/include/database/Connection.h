@@ -72,6 +72,12 @@ public:
     virtual Result<void> commit();
 
     /**
+     * \brief Rollback the transaction.
+     * \return a result indicating whether rollback was successful.
+     */
+    virtual Result<void> rollback();
+
+    /**
      * \brief Create a query using this connection.
      * \param query the query string.
      * \return a pointer to a query object.
