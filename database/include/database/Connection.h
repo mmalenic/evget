@@ -63,38 +63,38 @@ public:
      * after the transaction is committed.
      * \return a result indicating whether creating the transaction was successful.
      */
-    virtual Result<void> transaction();
+    virtual Result<void> transaction() = 0;
 
     /**
      * \brief Commit the transaction.
      * \return a result indicating whether committing the transaction was successful.
      */
-    virtual Result<void> commit();
+    virtual Result<void> commit() = 0;
 
     /**
      * \brief Rollback the transaction.
      * \return a result indicating whether rollback was successful.
      */
-    virtual Result<void> rollback();
+    virtual Result<void> rollback() = 0;
 
     /**
      * \brief Create a query using this connection.
      * \param query the query string.
      * \return a pointer to a query object.
      */
-    virtual std::unique_ptr<Query> buildQuery(const char* query);
+    virtual std::unique_ptr<Query> buildQuery(const char* query) = 0;
 
     /**
      * \brief Lock the database.
      * \return a result indicating if this was successful.
      */
-    virtual Result<void> lock();
+    virtual Result<void> lock() = 0;
 
     /**
      * \brief Lock the database.
      * \return a result indicating if this was successful.
      */
-    virtual Result<void> unlock();
+    virtual Result<void> unlock() = 0;
 
     Connection() = default;
 
