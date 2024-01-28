@@ -55,6 +55,7 @@ private:
     Result<std::vector<AppliedMigration>> getAppliedMigrations();
     Result<void> createMigrationsTable();
     Result<void> applyMigration(const Migration& migration, const std::string& checksum);
+    Result<void> applyMigrationSql(const Migration& migration);
     std::string checksum(const Migration& migration);
 
     template<typename T>

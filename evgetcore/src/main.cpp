@@ -32,6 +32,9 @@
 #include "async/scheduler/Interval.h"
 #include "async/scheduler/Scheduler.h"
 #include "clioption/InvalidCommandLineOption.h"
+#include "database/Migrate.h"
+#include "database/sqlite/Connection.h"
+#include "database/sqlite/Query.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
 #include "evgetcore/Storage/JsonStorage.h"
@@ -43,6 +46,7 @@
 #include "evgetx11/XSetMaskCore.h"
 #include "evgetx11/XSetMaskRefresh.h"
 #include "evgetx11/XWrapperX11.h"
+#include "schema/initialize.h"
 
 int main(int argc, char* argv[]) {
 
@@ -143,25 +147,46 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::Storage::JsonStorage storage{std::cout};
 
-        EvgetCore::Storage::SQLite sqlite{};
+        // EvgetCore::Storage::SQLite sqlite{};
 
-        EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
-        sqlite.init();
+        // EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
+        // sqlite.init();
+        //
+        // scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
+        //     while (!co_await scheduler.isStopped()) {
+        //         auto event = xInputHandler.getEvent();
+        //
+        //         auto transformed = transformer.transformEvent(std::move(event));
+        //
+        //         // storage.store(transformed);
+        //         manager.store(transformed);
+        //     }
+        //     co_return;
+        // }, [&scheduler]() {
+        //     scheduler.stop();
+        //     std::cout << "exception\n";
+        // });
 
-        scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
-            while (!co_await scheduler.isStopped()) {
-                auto event = xInputHandler.getEvent();
+        auto a = ::SQLite::Database{"evget_database", ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+        auto connect = Database::SQLite::Connection{};
+        auto value = connect.connect("evget_database", Database::ConnectOptions::READ_WRITE_CREATE);
+        if (!value.has_value()) {
+            return 1;
+        }
 
-                auto transformed = transformer.transformEvent(std::move(event));
-
-                // storage.store(transformed);
-                manager.store(transformed);
+        auto migrations = std::vector{
+            Database::Migration {
+                .version = 1,
+                .description = "first migration",
+                .sql = EvgetCore::Database::detail::initialize
             }
-            co_return;
-        }, [&scheduler]() {
-            scheduler.stop();
-            std::cout << "exception\n";
-        });
+        };
+        auto migrate = Database::Migrate{connect, migrations};
+        auto migrateValue = migrate.migrate();
+        if (!migrateValue.has_value()) {
+            return 1;
+        }
+
 
         auto timeNow = std::chrono::steady_clock::now();
 

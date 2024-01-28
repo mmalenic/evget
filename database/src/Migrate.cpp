@@ -29,7 +29,7 @@
 #include "cryptopp/sha3.h"
 
 Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection} {
-    std::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
+    std::ranges::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
         return a.version < b.version;
     });
 
@@ -49,6 +49,11 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
     auto next = query->nextWhile();
     if (!next.has_value()) {
         return Err{next.error()};
+    }
+
+    auto reset = query->reset();
+    if (!reset.has_value()) {
+        return Err{reset.error()};
     }
 
     return {};
@@ -84,15 +89,18 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
         return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
     }
 
+    auto reset = query->reset();
+    if (!reset.has_value()) {
+        return Err{reset.error()};
+    }
+
     return {};
 }
 
 Database::Result<void> Database::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {
-    auto query = this->connection.get().buildQuery(migration.sql.c_str());
-
-    auto next = query->nextWhile();
-    if (!next.has_value()) {
-        return Err{next.error()};
+    auto applyMigration = applyMigrationSql(migration);
+    if (!applyMigration.has_value()) {
+        return Err{applyMigration.error()};
     }
 
     auto migrationQuery = this->connection.get().buildQuery(
@@ -101,16 +109,38 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
     );
 
     migrationQuery->bindInt(0, migration.version);
-    migrationQuery->bindChars(0, migration.description.c_str());
-    migrationQuery->bindChars(0, checksum.c_str());
+    migrationQuery->bindChars(1, migration.description.c_str());
+    migrationQuery->bindChars(2, checksum.c_str());
 
-    auto migrationNext = query->nextWhile();
+    auto migrationNext = migrationQuery->nextWhile();
     if (!migrationNext.has_value()) {
         return Err{migrationNext.error()};
     }
 
+    auto migrationReset = migrationQuery->reset();
+    if (!migrationReset.has_value()) {
+        return Err{migrationReset.error()};
+    }
+
     return {};
 }
+
+Database::Result<void> Database::Migrate::applyMigrationSql(const Migration& migration) {
+    auto query = this->connection.get().buildQuery(migration.sql.c_str());
+
+    auto next = query->nextWhile();
+    if (!next.has_value()) {
+        return Err{next.error()};
+    }
+
+    auto reset = query->reset();
+    if (!reset.has_value()) {
+        return Err{reset.error()};
+    }
+
+    return {};
+}
+
 
 std::string Database::Migrate::checksum(const Migration& migration) {
     CryptoPP::SHA3_512 sha3{};
