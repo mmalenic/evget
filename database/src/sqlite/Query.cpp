@@ -93,6 +93,17 @@ Database::Result<void> Database::SQLite::Query::nextWhile() {
     return {};
 }
 
+Database::Result<void> Database::SQLite::Query::exec() {
+    try {
+        _connection.get().database()->get().exec(query);
+        return {};
+    } catch (std::exception& e) {
+        auto what = e.what();
+        spdlog::error("error building query: {}", what);
+        return Err{{.errorType = ErrorType::QueryError, .message = what}};
+    }
+}
+
 
 Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
     if (!this->statement.has_value()) {

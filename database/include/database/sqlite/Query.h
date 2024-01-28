@@ -44,6 +44,7 @@ public:
     Result<void> reset() override;
     Result<bool> next() override;
     Result<void> nextWhile() override;
+    Result<void> exec() override;
     Result<bool> asBool(std::size_t at) override;
     Result<double> asDouble(std::size_t at) override;
     Result<int> asInt(std::size_t at) override;

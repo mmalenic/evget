@@ -70,6 +70,12 @@ public:
     virtual Result<void> nextWhile() = 0;
 
     /**
+     * \brief Execute a query directly against the database connection without preparing it.
+     * \return result indicating if successful.
+     */
+    virtual Result<void> exec() = 0;
+
+    /**
      * \brief Get the field as an integer.
      * \return a result with the returned integer.
      */

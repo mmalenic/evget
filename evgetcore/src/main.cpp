@@ -178,7 +178,8 @@ int main(int argc, char* argv[]) {
             Database::Migration {
                 .version = 1,
                 .description = "first migration",
-                .sql = EvgetCore::Database::detail::initialize
+                .sql = EvgetCore::Database::detail::initialize,
+                .exec = true,
             }
         };
         auto migrate = Database::Migrate{connect, migrations};

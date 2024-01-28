@@ -34,6 +34,7 @@ struct Migration {
     int version;
     std::string description;
     std::string sql;
+    bool exec;
 };
 
 struct AppliedMigration {

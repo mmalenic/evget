@@ -128,6 +128,15 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
 Database::Result<void> Database::Migrate::applyMigrationSql(const Migration& migration) {
     auto query = this->connection.get().buildQuery(migration.sql.c_str());
 
+    if (migration.exec) {
+        auto exec = query->exec();
+        if (!exec.has_value()) {
+            return Err{exec.error()};
+        }
+
+        return {};
+    }
+
     auto next = query->nextWhile();
     if (!next.has_value()) {
         return Err{next.error()};
