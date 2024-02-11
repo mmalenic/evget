@@ -56,7 +56,7 @@ std::optional<std::reference_wrapper<::SQLite::Database>> Database::SQLite::Conn
 }
 
 Database::Result<void> Database::SQLite::Connection::commit() {
-    if (!this->transaction_.has_value()) {
+    if (!transaction_.has_value()) {
         return connectError("transaction not started");
     }
 
@@ -97,13 +97,19 @@ Database::Err Database::SQLite::Connection::connectError(const char* message) {
 }
 
 Database::Result<void> Database::SQLite::Connection::rollback() {
+    if (!transaction_.has_value()) {
+        return connectError("transaction not started");
+    }
+
     try {
-        this->transaction_->rollback();
+        transaction_->rollback();
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error rolling back transaction: {}", what);
         return connectError(what);
     }
+
+    return {};
 }
 
 

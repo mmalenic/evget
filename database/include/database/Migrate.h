@@ -77,7 +77,7 @@ const Result<T>& Migrate::rollbackOnError(const Result<T>& result) {
         return Err{rollbackResult.error()};
     }
 
-    return Err{result.error()};
+    return result;
 }
 }
 

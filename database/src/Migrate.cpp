@@ -64,7 +64,7 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
         "select version, checksum from _migrations order by version;"
     );
 
-    std::vector<Migration> migrations{};
+    std::vector<AppliedMigration> migrations{};
     auto next = query->next();
     while (next.has_value() && *next) {
         auto version = query->asBool(0);
@@ -94,7 +94,7 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
         return Err{reset.error()};
     }
 
-    return {};
+    return migrations;
 }
 
 Database::Result<void> Database::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {

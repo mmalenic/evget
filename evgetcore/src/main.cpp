@@ -185,6 +185,7 @@ int main(int argc, char* argv[]) {
         auto migrate = Database::Migrate{connect, migrations};
         auto migrateValue = migrate.migrate();
         if (!migrateValue.has_value()) {
+            spdlog::error(migrateValue.error().message);
             return 1;
         }
 
