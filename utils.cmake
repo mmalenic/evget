@@ -62,7 +62,7 @@ Finds a program dependency using ``find_package`` and then links it to an
 existing target using ``target_link_libraries``. Treats all dependencies
 and components as ``REQUIRED``. ``LINK_COMPONENTS`` optionally specifies the
 the components that should be linked to the target, and if not present defaults
-to ``COMPONENTS``. ``DIRECT_LINK`` species linking a dependency as
+to ``COMPONENTS``. ``DIRECT_LINK`` specifies linking a dependency as
 ``${DEPENDENCY_NAME}`` rather than ``${DEPENDENCY_NAME}::${DEPENDENCY_NAME}``.
 #]==========================================================================]
 function(program_dependencies TARGET DEPENDENCY_NAME)
@@ -195,7 +195,7 @@ macro(setup_testing TEST_EXECUTABLE_NAME LIBRARY_NAME)
     program_dependencies(
         ${TEST_EXECUTABLE_NAME}
         GTest
-        COMPONENTS
+        LINK_COMPONENTS
         gtest
         gtest_main
         gmock

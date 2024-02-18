@@ -20,6 +20,8 @@ set(CMAKE_CXX_STANDARD 23)
 include("${CMAKE_SOURCE_DIR}/utils.cmake")
 project(evget)
 
+set(BUILD_TESTING 1)
+
 add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
 
 add_subdirectory(util)
