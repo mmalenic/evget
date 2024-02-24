@@ -6,6 +6,6 @@ add_executable(
         common/DatabaseTest.cpp
         common/DatabaseTest.h
 )
-target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC ccommon)
+target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC common)
 
 setup_testing(${TEST_EXECUTABLE_NAME} ${PROJECT_NAME})

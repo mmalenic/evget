@@ -23,6 +23,14 @@
 #include <gtest/gtest.h>
 
 #include "database/sqlite/Connection.h"
+#include "DatabaseTest.h"
 
-TEST(ConnectionTest, CreateDatabase) {  // NOLINT(cert-err58-cpp)
+using DatabaseTest = Test::Database::DatabaseTest;
+
+TEST_F(DatabaseTest, CreateDatabase) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    ASSERT_TRUE(connect.has_value());
 }
