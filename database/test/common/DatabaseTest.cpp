@@ -20,4 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "ConnectionTest.h"
+#include "DatabaseTest.h"
+
+Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / "test_database"} {
+}
+
+Test::Database::DatabaseTest::~DatabaseTest() {
+    try {
+        remove_all(directory);
+    } catch (std::exception& _) {
+        // Ok, no throw in destructor.
+    }
+}

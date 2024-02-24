@@ -3,8 +3,8 @@ set(TEST_EXECUTABLE_NAME databasetest)
 add_executable(
         ${TEST_EXECUTABLE_NAME}
         sqlite/Connection.cpp
-        common/ConnectionTest.cpp
-        common/ConnectionTest.h
+        common/DatabaseTest.cpp
+        common/DatabaseTest.h
 )
 target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC ccommon)
 

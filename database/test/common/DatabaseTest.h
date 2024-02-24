@@ -23,13 +23,21 @@
 #ifndef CONNECTIONTEST_H
 #define CONNECTIONTEST_H
 
+#include <filesystem>
 #include <gtest/gtest.h>
 
 namespace Test::Database {
 
-class ConnectionTest : public testing::Test {
+/**
+ * \brief Creates a temporary directory and database file for database tests.
+ */
+class DatabaseTest : public testing::Test {
 protected:
+    DatabaseTest();
+    ~DatabaseTest() override;
 
+    std::filesystem::path directory;
+    std::filesystem::path databaseFile;
 };
 
 }
