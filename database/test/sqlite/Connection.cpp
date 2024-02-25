@@ -34,3 +34,20 @@ TEST_F(DatabaseTest, CreateDatabase) {  // NOLINT(cert-err58-cpp)
 
     ASSERT_TRUE(connect.has_value());
 }
+
+TEST_F(DatabaseTest, StartTransaction) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto transaction = connection.transaction();
+
+    ASSERT_TRUE(transaction.has_value());
+}
+
+TEST_F(DatabaseTest, StartTransactionNoConnection) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto transaction = connection.transaction();
+
+    ASSERT_FALSE(transaction.has_value());
+}
