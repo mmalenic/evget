@@ -27,7 +27,7 @@
 
 using DatabaseTest = Test::Database::DatabaseTest;
 
-TEST_F(DatabaseTest, CreateDatabase) {  // NOLINT(cert-err58-cpp)
+TEST_F(DatabaseTest, Connect) {  // NOLINT(cert-err58-cpp)
     Database::SQLite::Connection connection{};
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
@@ -35,7 +35,7 @@ TEST_F(DatabaseTest, CreateDatabase) {  // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(connect.has_value());
 }
 
-TEST_F(DatabaseTest, StartTransaction) {  // NOLINT(cert-err58-cpp)
+TEST_F(DatabaseTest, Transaction) {  // NOLINT(cert-err58-cpp)
     Database::SQLite::Connection connection{};
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
@@ -44,10 +44,48 @@ TEST_F(DatabaseTest, StartTransaction) {  // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(transaction.has_value());
 }
 
-TEST_F(DatabaseTest, StartTransactionNoConnection) {  // NOLINT(cert-err58-cpp)
+TEST_F(DatabaseTest, TransactionNoConnection) {  // NOLINT(cert-err58-cpp)
     Database::SQLite::Connection connection{};
 
     auto transaction = connection.transaction();
 
     ASSERT_FALSE(transaction.has_value());
+}
+
+TEST_F(DatabaseTest, Commit) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto transaction = connection.transaction();
+    auto commit = connection.commit();
+
+    ASSERT_TRUE(commit.has_value());
+}
+
+TEST_F(DatabaseTest, CommitNoTransaction) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto commit = connection.commit();
+
+    ASSERT_FALSE(commit.has_value());
+}
+
+TEST_F(DatabaseTest, Rollback) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto transaction = connection.transaction();
+    auto rollback = connection.rollback();
+
+    ASSERT_TRUE(rollback.has_value());
+}
+
+TEST_F(DatabaseTest, RollbackNoTransaction) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto rollback = connection.rollback();
+
+    ASSERT_FALSE(rollback.has_value());
 }
