@@ -33,11 +33,10 @@ TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
     Database::SQLite::Connection connection{};
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
-    auto query = connection.buildQuery(std::format("select * from {}", testTableName).c_str());
-    query->exec();
-    auto result = query->asString(0);
 
-    std::cout << result.value();
+    auto insert = std::format("insert into {} ({}) values (\"value\")", testTableName, testTableColumn);
+    auto insertQuery = connection.buildQuery(insert.c_str());
+    auto exec = insertQuery->exec();
 
-    ASSERT_TRUE(connect.has_value());
+    ASSERT_TRUE(exec.has_value());
 }

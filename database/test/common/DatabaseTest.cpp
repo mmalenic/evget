@@ -24,6 +24,7 @@
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <fcntl.h>
 
 #include <format>
 
@@ -38,7 +39,7 @@ Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_d
 
     auto createTable = std::format(
             "create table if not exists {} ("
-                "id integer primary key auto increment,"
+                "id integer primary key autoincrement,"
                 "{} text"
             ");",
             testTableName, testTableColumn);
