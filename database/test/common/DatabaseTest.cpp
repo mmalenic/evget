@@ -22,7 +22,25 @@
 
 #include "DatabaseTest.h"
 
+#include <format>
+
+#include "database/sqlite/Connection.h"
+
 Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / "test_database"} {
+    ::Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), ::Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto createTable = std::format(
+            "create table if not exists {} ("
+                "id integer primary key auto increment,"
+                "{} text"
+            ");",
+            testTableName, testTableColumn);
+    auto insert = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue);
+
+    auto createTableQuery = connection.buildQuery(createTable.c_str())->exec();
+    auto insertQuery = connection.buildQuery(insert.c_str())->exec();
 }
 
 Test::Database::DatabaseTest::~DatabaseTest() {

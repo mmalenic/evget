@@ -33,6 +33,10 @@ namespace Test::Database {
  */
 class DatabaseTest : public testing::Test {
 protected:
+    const std::string_view testTableName = "table";
+    const std::string_view testTableColumn = "column";
+    const std::string_view testTableValue = "value";
+
     DatabaseTest();
     ~DatabaseTest() override;
 
