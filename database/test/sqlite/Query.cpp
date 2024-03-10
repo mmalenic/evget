@@ -20,34 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef CONNECTIONTEST_H
-#define CONNECTIONTEST_H
-
-#include <filesystem>
 #include <gtest/gtest.h>
 
-namespace Test::Database {
+#include <format>
 
-/**
- * \brief Creates a temporary directory and database file for database tests.
- */
-class DatabaseTest : public testing::Test {
-protected:
-    const std::string_view testTableName = "table";
-    const std::string_view testTableColumn = "column";
-    const std::string_view testTableValue = "value";
+#include "DatabaseTest.h"
+#include "database/sqlite/Connection.h"
 
-    DatabaseTest();
-    ~DatabaseTest() override;
+using DatabaseTest = Test::Database::DatabaseTest;
 
-    std::filesystem::path directory;
-    std::filesystem::path databaseFile;
+TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
 
-private:
-    static std::string testDatabaseName();
-};
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto query = connection.buildQuery(std::format("select * from {}", testTableName).c_str());
+    query->exec();
+    auto result = query->asString(0);
 
+    std::cout << result.value();
+
+    ASSERT_TRUE(connect.has_value());
 }
-
-
-#endif //CONNECTIONTEST_H

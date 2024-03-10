@@ -22,11 +22,16 @@
 
 #include "DatabaseTest.h"
 
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <format>
 
 #include "database/sqlite/Connection.h"
 
-Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / "test_database"} {
+namespace uuids = boost::uuids;
+
+Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / testDatabaseName()} {
     ::Database::SQLite::Connection connection{};
 
     auto connect = connection.connect(databaseFile.string(), ::Database::ConnectOptions::READ_WRITE_CREATE);
@@ -49,4 +54,9 @@ Test::Database::DatabaseTest::~DatabaseTest() {
     } catch (std::exception& _) {
         // Ok, no throw in destructor.
     }
+}
+
+std::string Test::Database::DatabaseTest::testDatabaseName() {
+    auto uuid = uuids::to_string(uuids::random_generator()());
+    return std::format("test-database-{}", uuid);
 }

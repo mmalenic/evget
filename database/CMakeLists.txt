@@ -23,5 +23,12 @@ program_dependencies(${PROJECT_NAME} cryptopp VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} SQLiteCpp VISIBILITY PUBLIC DIRECT_LINK)
 
 if(BUILD_TESTING)
+    program_dependencies(${PROJECT_NAME}
+        Boost
+        VISIBILITY
+        PUBLIC
+        LINK_COMPONENTS
+        headers
+    )
     add_subdirectory(test)
 endif()

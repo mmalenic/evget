@@ -163,7 +163,7 @@ void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& databa
 }
 
 std::string EvgetCore::Storage::SQLite::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
-    auto entryUuid = to_string(uuids::random_generator()());
+    auto entryUuid = uuids::to_string(uuids::random_generator()());
 
     statement.bind(1, entryUuid);
     for (auto i = 0; i < data.size(); i++) {
