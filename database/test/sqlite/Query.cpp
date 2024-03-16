@@ -34,7 +34,7 @@ TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
 
-    auto insert = std::format("insert into {} ({}) values (\"value\")", testTableName, testTableColumn);
+    auto insert = std::format("insert into {} ({}) values (\"value\");", testTableName, testTableColumn);
     auto insertQuery = connection.buildQuery(insert.c_str());
     auto exec = insertQuery->exec();
 
@@ -46,7 +46,7 @@ TEST_F(DatabaseTest, Next) {  // NOLINT(cert-err58-cpp)
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
 
-    auto select = std::format("select * from {}", testTableName);
+    auto select = std::format("select * from {};", testTableName);
     auto selectQuery = connection.buildQuery(select.c_str());
 
     selectQuery->next();
@@ -63,10 +63,143 @@ TEST_F(DatabaseTest, NextWhile) {  // NOLINT(cert-err58-cpp)
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
 
-    auto select = std::format("select * from {}", testTableName);
+    auto select = std::format("select * from {};", testTableName);
     auto selectQuery = connection.buildQuery(select.c_str());
 
     auto next = selectQuery->nextWhile();
 
     ASSERT_TRUE(next.has_value());
+}
+
+TEST_F(DatabaseTest, Reset) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQuery(select.c_str());
+
+    auto reset = selectQuery->reset();
+
+    ASSERT_TRUE(reset.has_value());
+}
+
+TEST_F(DatabaseTest, BindBool) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto selectQuery = connection.buildQuery("select $1;");
+
+    selectQuery->bindBool(0, true);
+    selectQuery->next();
+
+    auto result = selectQuery->asString(0);
+
+    ASSERT_EQ(result.value(), "1");
+}
+
+TEST_F(DatabaseTest, BindInt) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto selectQuery = connection.buildQuery("select $1;");
+
+    selectQuery->bindInt(0, 1);
+    selectQuery->next();
+
+    auto result = selectQuery->asString(0);
+
+    ASSERT_EQ(result.value(), "1");
+}
+
+TEST_F(DatabaseTest, BindDouble) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto selectQuery = connection.buildQuery("select $1;");
+
+    selectQuery->bindDouble(0, 1.0);
+    selectQuery->next();
+
+    auto result = selectQuery->asString(0);
+
+    ASSERT_EQ(result.value(), "1.0");
+}
+
+TEST_F(DatabaseTest, BindChars) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto selectQuery = connection.buildQuery("select $1;");
+
+    selectQuery->bindChars(0, "1");
+    selectQuery->next();
+
+    auto result = selectQuery->asString(0);
+
+    ASSERT_EQ(result.value(), "1");
+}
+
+TEST_F(DatabaseTest, AsBool) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQuery(select.c_str());
+
+    selectQuery->next();
+
+    auto id = selectQuery->asBool(0);
+
+    ASSERT_EQ(id.value(), true);
+}
+
+TEST_F(DatabaseTest, AsInt) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQuery(select.c_str());
+
+    selectQuery->next();
+
+    auto id = selectQuery->asInt(0);
+
+    ASSERT_EQ(id.value(), 1);
+}
+
+TEST_F(DatabaseTest, AsDouble) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQuery(select.c_str());
+
+    selectQuery->next();
+
+    auto id = selectQuery->asDouble(0);
+
+    ASSERT_EQ(id.value(), 1.0);
+}
+
+TEST_F(DatabaseTest, AsString) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQuery(select.c_str());
+
+    selectQuery->next();
+
+    auto id = selectQuery->asString(0);
+
+    ASSERT_EQ(id.value(), "1");
 }

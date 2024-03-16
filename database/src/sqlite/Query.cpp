@@ -49,6 +49,7 @@ Database::Result<void> Database::SQLite::Query::reset() {
     try {
         if (statement.has_value()) {
             statement->reset();
+            statement->clearBindings();
         }
     } catch (std::exception& e) {
         auto what = e.what();
