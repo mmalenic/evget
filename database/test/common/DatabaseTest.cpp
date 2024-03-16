@@ -51,7 +51,7 @@ Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_d
 
 Test::Database::DatabaseTest::~DatabaseTest() {
     try {
-        remove_all(directory);
+        remove_all(databaseFile);
     } catch (std::exception& _) {
         // Ok, no throw in destructor.
     }
