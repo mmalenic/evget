@@ -113,17 +113,4 @@ Database::Result<void> Database::SQLite::Connection::rollback() {
 }
 
 
-Database::Result<void> Database::SQLite::Connection::lock() {
-    // No locks for SQLite.
-    return {};
-}
-
-
-Database::Result<void> Database::SQLite::Connection::unlock() {
-    // No locks for SQLite.
-    return {};
-}
-
-
-
 

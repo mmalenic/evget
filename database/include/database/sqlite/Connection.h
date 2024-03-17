@@ -42,9 +42,6 @@ public:
     Result<void> rollback() override;
     std::unique_ptr<Query> buildQuery(const char* query) override;
 
-    Result<void> lock() override;
-    Result<void> unlock() override;
-
     /**
      * \brief Get the underyling database.
      * \return the database.
