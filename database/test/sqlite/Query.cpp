@@ -34,7 +34,7 @@ TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
 
     auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
 
-    auto insert = std::format("insert into {} ({}) values (\"value\");", testTableName, testTableColumn);
+    auto insert = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue);
     auto insertQuery = connection.buildQuery(insert.c_str());
     auto exec = insertQuery->exec();
 
