@@ -41,6 +41,7 @@ public:
     Result<void> commit() override;
     Result<void> rollback() override;
     std::unique_ptr<Query> buildQuery(const char* query) override;
+    std::unique_ptr<Query> buildQueryFromString(std::string query) override;
 
     /**
      * \brief Get the underyling database.

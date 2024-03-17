@@ -36,6 +36,7 @@ namespace Database::SQLite {
 class Query : public Database::Query {
 public:
     Query(Connection& connection, const char* query);
+    Query(Connection& connection, std::string query);
 
     void bindInt(std::size_t position, int value) override;
     void bindDouble(std::size_t position, double value) override;
@@ -57,7 +58,7 @@ private:
     std::reference_wrapper<Connection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
     std::optional<::SQLite::Statement> statement;
-    const char* query;
+    std::string query;
 };
 
 }

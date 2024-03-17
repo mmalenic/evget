@@ -24,7 +24,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include <utility>
+
 Database::SQLite::Query::Query(Connection& connection, const char * query) : _connection{connection}, query{query} {
+}
+
+Database::SQLite::Query::Query(Connection& connection, std::string query) : _connection{connection}, query{std::move(query)} {
 }
 
 void Database::SQLite::Query::bindInt(std::size_t position, int value) {

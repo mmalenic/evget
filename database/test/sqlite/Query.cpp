@@ -58,6 +58,23 @@ TEST_F(DatabaseTest, Next) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(entry.value(), testTableValue);
 }
 
+TEST_F(DatabaseTest, NextFromString) {  // NOLINT(cert-err58-cpp)
+    Database::SQLite::Connection connection{};
+
+    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+
+    auto select = std::format("select * from {};", testTableName);
+    auto selectQuery = connection.buildQueryFromString(select);
+
+    selectQuery->next();
+
+    auto id = selectQuery->asString(0);
+    auto entry = selectQuery->asString(1);
+
+    ASSERT_EQ(id.value(), "1");
+    ASSERT_EQ(entry.value(), testTableValue);
+}
+
 TEST_F(DatabaseTest, NextWhile) {  // NOLINT(cert-err58-cpp)
     Database::SQLite::Connection connection{};
 

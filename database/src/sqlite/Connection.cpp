@@ -91,6 +91,9 @@ std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQuery(const 
     return std::make_unique<Query>(*this, query);
 }
 
+std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQueryFromString(std::string query) {
+    return std::make_unique<Query>(*this, query);
+}
 
 Database::Err Database::SQLite::Connection::connectError(const char* message) {
     return Err{{.errorType = ErrorType::ConnectError, .message = message}};
