@@ -82,14 +82,7 @@ public:
      * \param query the query string.
      * \return a pointer to a query object.
      */
-    virtual std::unique_ptr<Query> buildQuery(const char* query) = 0;
-
-    /**
-     * \brief Create a query using this connection.
-     * \param query the query string.
-     * \return a pointer to a query object.
-     */
-    virtual std::unique_ptr<Query> buildQueryFromString(std::string query) = 0;
+    virtual std::unique_ptr<Query> buildQuery(std::string query) = 0;
 
     Connection() = default;
 

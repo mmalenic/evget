@@ -35,7 +35,6 @@
 namespace Database::SQLite {
 class Query : public Database::Query {
 public:
-    Query(Connection& connection, const char* query);
     Query(Connection& connection, std::string query);
 
     void bindInt(std::size_t position, int value) override;

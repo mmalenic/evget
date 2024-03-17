@@ -87,11 +87,7 @@ Database::Result<void> Database::SQLite::Connection::transaction() {
     return {};
 }
 
-std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQuery(const char* query) {
-    return std::make_unique<Query>(*this, query);
-}
-
-std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQueryFromString(std::string query) {
+std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQuery(std::string query) {
     return std::make_unique<Query>(*this, query);
 }
 

@@ -49,8 +49,7 @@ TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
 
     ASSERT_TRUE(migrateResult.has_value());
 
-    auto selectMigration = std::format("select * from _migrations;");
-    auto selectMigrationQuery = connection.buildQuery(selectMigration.c_str());
+    auto selectMigrationQuery = connection.buildQuery(std::format("select * from _migrations;"));
 
     selectMigrationQuery->next();
 
@@ -64,8 +63,7 @@ TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(installedOn.has_value());
     ASSERT_TRUE(checksum.has_value());
 
-    auto select = std::format("select * from {};", testTableName);
-    auto selectQuery = connection.buildQuery(select.c_str());
+    auto selectQuery = connection.buildQuery( std::format("select * from {};", testTableName));
 
     selectQuery->next();
 
