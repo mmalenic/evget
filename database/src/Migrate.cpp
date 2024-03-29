@@ -46,17 +46,7 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
         ");"
     );
 
-    auto next = query->nextWhile();
-    if (!next.has_value()) {
-        return Err{next.error()};
-    }
-
-    auto reset = query->reset();
-    if (!reset.has_value()) {
-        return Err{reset.error()};
-    }
-
-    return {};
+    return query->nextWhile().and_then([&query] { return query->reset(); });
 }
 
 Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::getAppliedMigrations() {
@@ -68,13 +58,10 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
     auto next = query->next();
     while (next.has_value() && *next) {
         auto version = query->asBool(0);
-        if (!version.has_value()) {
-            return Err{{.errorType = ErrorType::MigrateError, .message = version.error().message}};
-        }
-
         auto checksum = query->asString(1);
-        if (!checksum.has_value()) {
-            return Err{{.errorType = ErrorType::MigrateError, .message = checksum.error().message}};
+
+        if (!version.has_value() || !checksum.has_value()) {
+            return Err{{.errorType = ErrorType::MigrateError, .message = "missing version or checksum"}};
         }
 
         migrations.emplace_back(
@@ -85,69 +72,39 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
         next = query->next();
     }
 
-    if (!next.has_value()) {
-        return Err{{.errorType = ErrorType::MigrateError, .message = next.error().message}};
-    }
-
-    auto reset = query->reset();
-    if (!reset.has_value()) {
-        return Err{reset.error()};
-    }
-
-    return migrations;
+    return next.and_then([&query, &migrations](bool _) {
+        return query->reset()
+            .and_then([&migrations] {
+                return Database::Result<std::vector<AppliedMigration>>{migrations};
+            });
+    });
 }
 
 Database::Result<void> Database::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {
-    auto applyMigration = applyMigrationSql(migration);
-    if (!applyMigration.has_value()) {
-        return Err{applyMigration.error()};
-    }
+    return applyMigrationSql(migration).and_then([this, &migration, &checksum] {
+        auto query = this->connection.get().buildQuery(
+            "insert into _migrations (version, description, checksum)"
+            "values ($1, $2, $3);"
+        );
 
-    auto migrationQuery = this->connection.get().buildQuery(
-        "insert into _migrations (version, description, checksum)"
-        "values ($1, $2, $3);"
-    );
+        query->bindInt(0, migration.version);
+        query->bindChars(1, migration.description.c_str());
+        query->bindChars(2, checksum.c_str());
 
-    migrationQuery->bindInt(0, migration.version);
-    migrationQuery->bindChars(1, migration.description.c_str());
-    migrationQuery->bindChars(2, checksum.c_str());
+        auto next = query->nextWhile();
 
-    auto migrationNext = migrationQuery->nextWhile();
-    if (!migrationNext.has_value()) {
-        return Err{migrationNext.error()};
-    }
-
-    auto migrationReset = migrationQuery->reset();
-    if (!migrationReset.has_value()) {
-        return Err{migrationReset.error()};
-    }
-
-    return {};
+        return next.and_then([&query] { return query->reset(); });
+    });
 }
 
 Database::Result<void> Database::Migrate::applyMigrationSql(const Migration& migration) {
     auto query = this->connection.get().buildQuery(migration.sql.c_str());
 
     if (migration.exec) {
-        auto exec = query->exec();
-        if (!exec.has_value()) {
-            return Err{exec.error()};
-        }
-
-        return {};
+        return query->exec();
     }
 
-    auto next = query->nextWhile();
-    if (!next.has_value()) {
-        return Err{next.error()};
-    }
-
-    auto reset = query->reset();
-    if (!reset.has_value()) {
-        return Err{reset.error()};
-    }
-
-    return {};
+    return query->nextWhile().and_then([&query] { return query->reset(); });
 }
 
 
@@ -177,46 +134,38 @@ std::string Database::Migrate::checksum(const Migration& migration) {
 }
 
 Database::Result<void> Database::Migrate::migrate() {
-    auto transactionResult = this->connection.get().transaction();
-    if (!rollbackOnError(transactionResult).has_value()) {
-        return Err{transactionResult.error()};
-    }
+    return this->connection.get().transaction().and_then([this] {
+        return this->createMigrationsTable();
+    }).and_then([this] {
+        return this->getAppliedMigrations();
+    }).and_then([this](const std::vector<AppliedMigration>& applied) {
+        for (auto i = 0; i < migrations.size(); i++) {
+            auto migration = migrations[i];
+            auto checksum = this->checksum(migration);
 
-    auto createTableResult = this->createMigrationsTable();
-    if (!rollbackOnError(createTableResult).has_value()) {
-        return Err{createTableResult.error()};
-    }
+            if (i < applied.size()) {
+                auto appliedMigration = applied[i];
+                if (appliedMigration.version != migration.version || appliedMigration.checksum != checksum) {
+                    return Database::Result<void>{Err{{.errorType = ErrorType::MigrateError, .message = "applied migrations do not match current migrations"}}};
+                }
 
-    auto applied = this->getAppliedMigrations();
-    if (!rollbackOnError(applied).has_value()) {
-        return Err{applied.error()};
-    }
-
-    for (auto i = 0; i < migrations.size(); i++) {
-        auto migration = migrations[i];
-        auto checksum = this->checksum(migration);
-
-        if (i < applied->size()) {
-            auto appliedMigration = (*applied)[i];
-            if (appliedMigration.version != migration.version || appliedMigration.checksum != checksum) {
-                return rollbackOnError<void>(Err{{.errorType = ErrorType::MigrateError, .message = "applied migrations do not match current migrations"}});
+                continue;
             }
 
-            continue;
+            auto migrationResult = applyMigration(migration, checksum);
+            if (!migrationResult.has_value()) {
+                return migrationResult;
+            }
         }
 
-        auto migrationResult = applyMigration(migration, checksum);
-        if (!rollbackOnError(migrationResult).has_value()) {
-            return Err{migrationResult.error()};
-        }
-    }
-
-    auto commitResult = this->connection.get().commit();
-    if (!rollbackOnError(commitResult).has_value()) {
-        return Err{commitResult.error()};
-    }
-
-    return {};
+        return Database::Result<void>{};
+    }).and_then([this] {
+        return this->connection.get().commit();
+    }).or_else([this](Util::Error<ErrorType> err) {
+        return this->connection.get().rollback().and_then([&err] {
+            return Database::Result<void>{Err{err}};
+        });
+    });
 }
 
 

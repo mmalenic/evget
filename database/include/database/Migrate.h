@@ -59,26 +59,9 @@ private:
     Result<void> applyMigrationSql(const Migration& migration);
     std::string checksum(const Migration& migration);
 
-    template<typename T>
-    const Result<T>& rollbackOnError(const Result<T>& result);
-
     std::reference_wrapper<Connection> connection;
     std::vector<Migration> migrations;
 };
-
-template <typename T>
-const Result<T>& Migrate::rollbackOnError(const Result<T>& result) {
-    if (result.has_value()) {
-        return result;
-    }
-
-    auto rollbackResult = this->connection.get().rollback();
-    if (!rollbackResult.has_value()) {
-        return Err{rollbackResult.error()};
-    }
-
-    return result;
-}
 }
 
 #endif //MIGRATE_H
