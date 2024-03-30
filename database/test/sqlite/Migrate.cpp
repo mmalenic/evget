@@ -122,8 +122,11 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     Database::Migrate migrateOne{connection, migrationsOne};
 
     auto migrateOneResult = migrateOne.migrate();
-
     ASSERT_TRUE(migrateOneResult.has_value());
+
+    auto selectOneQuery = connection.buildQuery(std::format("select * from {};", testTableName));
+    auto selectOneResult = selectOneQuery->next();
+    ASSERT_TRUE(selectOneResult.has_value());
 
     auto migrationTwo = Database::Migration{
         .version = 1,
@@ -136,8 +139,12 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     Database::Migrate migrateTwo{connection, migrationsTwo};
 
     auto migrateTwoResult = migrateTwo.migrate();
-
     ASSERT_FALSE(migrateTwoResult.has_value());
+
+    auto selectTwoQuery = connection.buildQuery(std::format("select * from {};", testTableName));
+    auto selectTwoResult = selectTwoQuery->next();
+    ASSERT_TRUE(selectTwoResult.has_value());
+
 }
 
 TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
@@ -155,8 +162,11 @@ TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
     Database::Migrate migrateOne{connection, migrationsOne};
 
     auto migrateOneResult = migrateOne.migrate();
-
     ASSERT_TRUE(migrateOneResult.has_value());
+
+    auto selectOneQuery = connection.buildQuery(std::format("select * from {};", testTableName));
+    auto selectOneResult = selectOneQuery->next();
+    ASSERT_TRUE(selectOneResult.has_value());
 
     auto migrationTwo = Database::Migration{
         .version = 2,
@@ -169,6 +179,9 @@ TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
     Database::Migrate migrateTwo{connection, migrationsTwo};
 
     auto migrateTwoResult = migrateTwo.migrate();
-
     ASSERT_FALSE(migrateTwoResult.has_value());
+
+    auto selectTwoQuery = connection.buildQuery(std::format("select * from {};", testTableName));
+    auto selectTwoResult = selectTwoQuery->next();
+    ASSERT_TRUE(selectTwoResult.has_value());
 }
