@@ -20,32 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "evgetcore/Storage/SQLite.h"
-#include "schema/initialize.h"
-#include "queries/insert_key.h"
-#include "queries/insert_key_modifier.h"
-#include "queries/insert_mouse_move.h"
-#include "queries/insert_mouse_move_modifier.h"
-#include "queries/insert_mouse_click.h"
-#include "queries/insert_mouse_click_modifier.h"
-#include "queries/insert_mouse_scroll.h"
-#include "queries/insert_mouse_scroll_modifier.h"
-
 #include <SQLiteCpp/SQLiteCpp.h>
-#include <spdlog/spdlog.h>
-#include "evgetcore/Storage/Error.h"
-
+#include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/random_generator.hpp>
+#include <spdlog/spdlog.h>
 
 #include <utility>
 
-EvgetCore::Storage::SQLite::SQLite(std::string database)
+#include "evgetcore/Storage/DatabaseStorage.h"
+#include "evgetcore/Storage/Error.h"
+#include "queries/insert_key.h"
+#include "queries/insert_key_modifier.h"
+#include "queries/insert_mouse_click.h"
+#include "queries/insert_mouse_click_modifier.h"
+#include "queries/insert_mouse_move.h"
+#include "queries/insert_mouse_move_modifier.h"
+#include "queries/insert_mouse_scroll.h"
+#include "queries/insert_mouse_scroll_modifier.h"
+#include "schema/initialize.h"
+
+EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::string database)
     : database{std::move(database)} {
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data event) {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data event) {
     try {
         ::SQLite::Database database{this->database, ::SQLite::OPEN_READWRITE};
 
@@ -120,7 +119,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::store(Event::Data e
     }
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
     try {
         ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
 
@@ -139,7 +138,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::SQLite::init() {
     }
 }
 
-void EvgetCore::Storage::SQLite::insertEvents(
+void EvgetCore::Storage::DatabaseStorage::insertEvents(
     ::SQLite::Database& database,
     const Event::Entry& entry,
     std::optional<::SQLite::Statement>& insertStatement,
@@ -154,7 +153,7 @@ void EvgetCore::Storage::SQLite::insertEvents(
     bindValuesModifier(*insertModifierStatement, entry.modifiers(), entryUuid);
 }
 
-void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& database,
+void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(::SQLite::Database& database,
     std::optional<::SQLite::Statement>& statement,
     const char* query) {
     if (!statement.has_value()) {
@@ -162,7 +161,7 @@ void EvgetCore::Storage::SQLite::setOptionalStatement(::SQLite::Database& databa
     }
 }
 
-std::string EvgetCore::Storage::SQLite::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
+std::string EvgetCore::Storage::DatabaseStorage::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
     auto entryUuid = uuids::to_string(uuids::random_generator()());
 
     statement.bind(1, entryUuid);
@@ -176,7 +175,7 @@ std::string EvgetCore::Storage::SQLite::bindValues(::SQLite::Statement& statemen
     return entryUuid;
 }
 
-void EvgetCore::Storage::SQLite::bindValuesModifier(::SQLite::Statement& statement,
+void EvgetCore::Storage::DatabaseStorage::bindValuesModifier(::SQLite::Statement& statement,
     std::vector<std::string> modifiers,
     std::string entryUuid) {
     for (const auto& modifier : modifiers) {

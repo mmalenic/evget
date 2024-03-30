@@ -22,7 +22,7 @@ add_library(
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/Graph.h
         include/evgetcore/Storage/JsonStorage.h
-        include/evgetcore/Storage/SQLite.h
+        include/evgetcore/Storage/DatabaseStorage.h
         include/evgetcore/Storage/Error.h
         include/evgetcore/Event/Data.h
         include/evgetcore/Event/Entry.h

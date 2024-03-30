@@ -39,11 +39,11 @@ namespace asio = boost::asio;
 namespace uuids = boost::uuids;
 
 /**
- * A storage class which stores events in an SQLite database.
+ * A storage class which stores events in a database.
  */
-class SQLite : public Store {
+class DatabaseStorage : public Store {
 public:
-    explicit SQLite(std::string database = "evget.sqlite");
+    explicit DatabaseStorage(std::string database = "evget.sqlite");
 
     Result<void> store(Event::Data events) override;
 

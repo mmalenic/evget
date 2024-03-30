@@ -8,7 +8,7 @@ target_sources(
         Event/Data.cpp
             UnsupportedOperationException.cpp
         Storage/JsonStorage.cpp
-        Storage/SQLite.cpp
+        Storage/DatabaseStorage.cpp
         Event/Entry.cpp
         Storage/DatabaseManager.cpp
 )
