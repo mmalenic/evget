@@ -24,14 +24,14 @@
 #define SQLITE_H
 
 #include <SQLiteCpp/Database.h>
+#include <boost/asio.hpp>
 
+#include "../../../../database/include/database/Connection.h"
 #include "Error.h"
 #include "Store.h"
+#include "boost/uuid/uuid.hpp"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
-
-#include <boost/asio.hpp>
-#include "boost/uuid/uuid.hpp"
 
 namespace EvgetCore::Storage {
 
@@ -43,7 +43,7 @@ namespace uuids = boost::uuids;
  */
 class DatabaseStorage : public Store {
 public:
-    explicit DatabaseStorage(std::string database = "evget.sqlite");
+    DatabaseStorage(std::reference_wrapper<Database::Connection> connection, std::string database);
 
     Result<void> store(Event::Data events) override;
 
@@ -54,19 +54,19 @@ public:
     Result<void> init();
 
 private:
+    std::reference_wrapper<Database::Connection> connection;
     std::string database;
 
-    void insertEvents(
-        ::SQLite::Database& database,
+    Result<void> insertEvents(
         const Event::Entry& entry,
-        std::optional<::SQLite::Statement>& insertStatement,
-        std::optional<::SQLite::Statement>& insertModifierStatement,
-        const char* insertQuery,
-        const char* insertModifierQuery
+        std::optional<std::unique_ptr<::Database::Query>>& insertStatement,
+        std::optional<std::unique_ptr<::Database::Query>>& insertModifierStatement,
+        std::string insertQuery,
+        std::string insertModifierQuery
         );
-    void setOptionalStatement(::SQLite::Database& database, std::optional<::SQLite::Statement>& statement, const char* query);
-    std::string bindValues(::SQLite::Statement& statement, std::vector<std::string> data);
-    void bindValuesModifier(::SQLite::Statement& statement, std::vector<std::string> modifiers, std::string entryUuid);
+    void setOptionalStatement(std::optional<std::unique_ptr<::Database::Query>>& query, std::string queryString);
+    Result<void> bindValues(std::unique_ptr<::Database::Query>& query, std::vector<std::string> data, std::string entryUuid);
+    Result<void> bindValuesModifier(std::unique_ptr<::Database::Query>& query, std::vector<std::string> modifiers, std::string entryUuid);
 };
 }
 

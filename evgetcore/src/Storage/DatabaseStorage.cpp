@@ -40,35 +40,34 @@
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
 
-EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::string database)
-    : database{std::move(database)} {
+EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::reference_wrapper<::Database::Connection> connection, std::string database)
+    : connection{connection}, database{std::move(database)} {
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data event) {
-    try {
-        ::SQLite::Database database{this->database, ::SQLite::OPEN_READWRITE};
-
-        ::SQLite::Transaction transaction{database};
-
-        std::optional<::SQLite::Statement> insertKey{};
-        std::optional<::SQLite::Statement> insertKeyModifier{};
-        std::optional<::SQLite::Statement> insertMouseMove{};
-        std::optional<::SQLite::Statement> insertMouseMoveModifier{};
-        std::optional<::SQLite::Statement> insertMouseClick{};
-        std::optional<::SQLite::Statement> insertMouseClickModifier{};
-        std::optional<::SQLite::Statement> insertMouseScroll{};
-        std::optional<::SQLite::Statement> insertMouseScrollModifier{};
+    return connection.get().connect(database, ::Database::ConnectOptions::READ_WRITE_CREATE).and_then([this] {
+        return connection.get().transaction();
+    }).transform_error([](Util::Error<::Database::ErrorType> error) {
+        return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+    }).and_then([this, &event] {
+        std::optional<std::unique_ptr<::Database::Query>>insertKey{};
+        std::optional<std::unique_ptr<::Database::Query>> insertKeyModifier{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseMove{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseMoveModifier{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseClick{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseClickModifier{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseScroll{};
+        std::optional<std::unique_ptr<::Database::Query>> insertMouseScrollModifier{};
 
         for (auto entry : event.entries()) {
             if (entry.data().empty()) {
                 continue;
             }
 
-            std::string entryUuid;
+            Result<void> result;
             switch (entry.type()) {
                 case Event::EntryType::Key:
-                    insertEvents(
-                        database,
+                    result = insertEvents(
                         entry,
                         insertKey,
                         insertKeyModifier,
@@ -77,8 +76,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
                     );
                     break;
                 case Event::EntryType::MouseClick:
-                    insertEvents(
-                        database,
+                    result = insertEvents(
                         entry,
                         insertMouseClick,
                         insertMouseClickModifier,
@@ -87,8 +85,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
                     );
                     break;
                 case Event::EntryType::MouseMove:
-                    insertEvents(
-                        database,
+                    result = insertEvents(
                         entry,
                         insertMouseMove,
                         insertMouseMoveModifier,
@@ -97,8 +94,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
                     );
                     break;
                 case Event::EntryType::MouseScroll:
-                    insertEvents(
-                        database,
+                    result = insertEvents(
                         entry,
                         insertMouseScroll,
                         insertMouseClickModifier,
@@ -107,16 +103,14 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
                     );
                     break;
             }
+
+            if (!result.has_value()) {
+                return result;
+            }
         }
 
-        transaction.commit();
-
         return Result<void>{};
-    } catch (std::exception& e) {
-        auto what = e.what();
-        spdlog::error("error inserting event data: {}", what);
-        return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
-    }
+    });
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
@@ -138,53 +132,64 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
     }
 }
 
-void EvgetCore::Storage::DatabaseStorage::insertEvents(
-    ::SQLite::Database& database,
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::insertEvents(
     const Event::Entry& entry,
-    std::optional<::SQLite::Statement>& insertStatement,
-    std::optional<::SQLite::Statement>& insertModifierStatement,
-    const char* insertQuery,
-    const char* insertModifierQuery
+    std::optional<std::unique_ptr<::Database::Query>>& insertStatement,
+    std::optional<std::unique_ptr<::Database::Query>>& insertModifierStatement,
+    std::string insertQuery,
+    std::string insertModifierQuery
 ) {
-    setOptionalStatement(database, insertStatement, insertQuery);
-    setOptionalStatement(database, insertModifierStatement, insertModifierQuery);
+    setOptionalStatement(insertStatement, std::move(insertQuery));
+    setOptionalStatement(insertModifierStatement, std::move(insertModifierQuery));
 
-    auto entryUuid = bindValues(*insertStatement, entry.data());
-    bindValuesModifier(*insertModifierStatement, entry.modifiers(), entryUuid);
+    auto entryUuid = to_string(uuids::random_generator()());
+
+    return bindValues(*insertStatement, entry.data(), entryUuid).and_then([this, &insertModifierStatement, &entry, &entryUuid] {
+        return bindValuesModifier(*insertModifierStatement, entry.modifiers(), entryUuid);
+    });
 }
 
-void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(::SQLite::Database& database,
-    std::optional<::SQLite::Statement>& statement,
-    const char* query) {
-    if (!statement.has_value()) {
-        statement = {database, query};
+void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(
+    std::optional<std::unique_ptr<::Database::Query>>& query,
+    std::string queryString
+) {
+    if (!query.has_value()) {
+        query = {connection.get().buildQuery(std::move(queryString))};
     }
 }
 
-std::string EvgetCore::Storage::DatabaseStorage::bindValues(::SQLite::Statement& statement, std::vector<std::string> data) {
-    auto entryUuid = uuids::to_string(uuids::random_generator()());
-
-    statement.bind(1, entryUuid);
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues(
+    std::unique_ptr<::Database::Query>& query,
+    std::vector<std::string> data,
+    std::string entryUuid) {
+    query->bindChars(0, entryUuid.c_str());
     for (auto i = 0; i < data.size(); i++) {
-        statement.bind(i + 2, data[i]);
+        query->bindChars(i + 1, data[i].c_str());
     }
 
-    statement.exec();
-    statement.reset();
-
-    return entryUuid;
+    return query->exec().and_then([&query] {
+        return query->reset();
+    }).transform_error([](Util::Error<::Database::ErrorType> error) {
+        return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+    });
 }
 
-void EvgetCore::Storage::DatabaseStorage::bindValuesModifier(::SQLite::Statement& statement,
+EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::bindValuesModifier(std::unique_ptr<::Database::Query>& query,
     std::vector<std::string> modifiers,
     std::string entryUuid) {
     for (const auto& modifier : modifiers) {
         auto modifierUuid = to_string(uuids::random_generator()());
-        statement.bind(1, modifierUuid);
-        statement.bind(2, entryUuid);
-        statement.bind(3, modifier);
+        query->bindChars(0, modifierUuid.c_str());
+        query->bindChars(1, entryUuid.c_str());
+        query->bindChars(2, modifier.c_str());
 
-        statement.exec();
-        statement.reset();
+        auto result = query->exec().and_then([&query] {
+            return query->reset();
+        });
+        if (!result.has_value()) {
+            return Err{{.errorType = ErrorType::DatabaseError, .message = result.error().message}};
+        }
     }
+
+    return {};
 }

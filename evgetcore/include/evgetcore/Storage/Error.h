@@ -36,6 +36,7 @@ namespace EvgetCore::Storage {
     enum class ErrorType {
         SQLiteError,
         DatabaseManager,
+        DatabaseError,
     };
 
     /**
