@@ -22,6 +22,8 @@
 
 #include "database/Migrate.h"
 
+#include <spdlog/spdlog.h>
+
 #include <filesystem>
 #include <ranges>
 
@@ -156,6 +158,8 @@ Database::Result<void> Database::Migrate::migrate() {
             if (!migrationResult.has_value()) {
                 return migrationResult;
             }
+
+            spdlog::info("applied migration with checksum: {}", migration.version, checksum);
         }
 
         return Database::Result<void>{};

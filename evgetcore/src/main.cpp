@@ -169,28 +169,6 @@ int main(int argc, char* argv[]) {
             std::cout << "exception\n";
         });
 
-        // auto a = ::SQLite::Database{"evget_database", ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
-        // auto connect = Database::SQLite::Connection{};
-        // auto value = connect.connect("evget_database", Database::ConnectOptions::READ_WRITE_CREATE);
-        // if (!value.has_value()) {
-        //     return 1;
-        // }
-        //
-        // auto migrations = std::vector{
-        //     Database::Migration {
-        //         .version = 1,
-        //         .description = "first migration",
-        //         .sql = EvgetCore::Database::detail::initialize,
-        //         .exec = true,
-        //     }
-        // };
-        // auto migrate = Database::Migrate{connect, migrations};
-        // auto migrateValue = migrate.migrate();
-        // if (!migrateValue.has_value()) {
-        //     spdlog::error(migrateValue.error().message);
-        //     return 1;
-        // }
-
 
         auto timeNow = std::chrono::steady_clock::now();
 

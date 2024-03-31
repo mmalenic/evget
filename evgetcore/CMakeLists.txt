@@ -36,6 +36,7 @@ add_subdirectory(database)
 target_link_libraries(${PROJECT_NAME} PUBLIC util)
 target_link_libraries(${PROJECT_NAME} PUBLIC async)
 target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
+target_link_libraries(${PROJECT_NAME} PUBLIC database)
 
 program_dependencies(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
 program_dependencies(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)

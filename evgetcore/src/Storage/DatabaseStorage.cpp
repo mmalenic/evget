@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "evgetcore/Storage/DatabaseStorage.h"
+
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -28,7 +30,6 @@
 
 #include <utility>
 
-#include "evgetcore/Storage/DatabaseStorage.h"
 #include "evgetcore/Storage/Error.h"
 #include "queries/insert_key.h"
 #include "queries/insert_key_modifier.h"
@@ -39,6 +40,7 @@
 #include "queries/insert_mouse_scroll.h"
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
+#include "database/Migrate.h"
 
 EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::reference_wrapper<::Database::Connection> connection, std::string database)
     : connection{connection}, database{std::move(database)} {
@@ -116,22 +118,25 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
-    try {
-        ::SQLite::Database db{this->database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+    auto result = connection.get().connect(database, ::Database::ConnectOptions::READ_WRITE_CREATE).transform_error([](Util::Error<::Database::ErrorType> error) {
+        return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+    }).and_then([this] {
+        auto migrations = std::vector{
+            ::Database::Migration {
+                .version = 1,
+                .description = "initialize database tables",
+                .sql = Database::detail::initialize,
+                .exec = true,
+            }
+        };
+        auto migrate = ::Database::Migrate{this->connection, migrations};
 
-        ::SQLite::Transaction transaction{db};
+        return migrate.migrate().transform_error([](Util::Error<::Database::ErrorType> error) {
+            return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+        });
+    });
 
-        db.exec(Database::detail::initialize);
-
-        transaction.commit();
-
-        spdlog::info("initialized sqlite database at: {}", this->database);
-        return {};
-    } catch (std::exception& e) {
-        auto what = e.what();
-        spdlog::error("error initializing SQLite database: {}", what);
-        return Err{{.errorType = ErrorType::SQLiteError, .message = what}};
-    }
+    return result;
 }
 
 EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::insertEvents(

@@ -26,7 +26,7 @@
 #include <SQLiteCpp/Database.h>
 #include <boost/asio.hpp>
 
-#include "../../../../database/include/database/Connection.h"
+#include "database/Connection.h"
 #include "Error.h"
 #include "Store.h"
 #include "boost/uuid/uuid.hpp"

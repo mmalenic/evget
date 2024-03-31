@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MIGRATE_H
-#define MIGRATE_H
+#ifndef DATABASE_MIGRATE_H
+#define DATABASE_MIGRATE_H
 
 #include <vector>
 
@@ -64,4 +64,4 @@ private:
 };
 }
 
-#endif //MIGRATE_H
+#endif //DATABASE_MIGRATE_H
