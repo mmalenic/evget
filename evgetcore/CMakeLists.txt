@@ -27,7 +27,6 @@ add_library(
         include/evgetcore/Event/Data.h
         include/evgetcore/Event/Entry.h
         include/evgetcore/Storage/DatabaseManager.h
-        src/Storage/DatabaseManager.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

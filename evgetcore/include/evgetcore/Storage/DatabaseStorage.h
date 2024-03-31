@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_H
-#define SQLITE_H
+#ifndef DATABASE_STORAGE_H
+#define DATABASE_STORAGE_H
 
 #include <SQLiteCpp/Database.h>
 #include <boost/asio.hpp>
@@ -70,4 +70,4 @@ private:
 };
 }
 
-#endif //SQLITE_H
+#endif //DATABASE_STORAGE_H

@@ -147,47 +147,49 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::Storage::JsonStorage storage{std::cout};
 
-        // EvgetCore::Storage::SQLite sqlite{};
-
-        // EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
-        // sqlite.init();
-        //
-        // scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         auto event = xInputHandler.getEvent();
-        //
-        //         auto transformed = transformer.transformEvent(std::move(event));
-        //
-        //         // storage.store(transformed);
-        //         manager.store(transformed);
-        //     }
-        //     co_return;
-        // }, [&scheduler]() {
-        //     scheduler.stop();
-        //     std::cout << "exception\n";
-        // });
-
-        auto a = ::SQLite::Database{"evget_database", ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
         auto connect = Database::SQLite::Connection{};
-        auto value = connect.connect("evget_database", Database::ConnectOptions::READ_WRITE_CREATE);
-        if (!value.has_value()) {
-            return 1;
-        }
 
-        auto migrations = std::vector{
-            Database::Migration {
-                .version = 1,
-                .description = "first migration",
-                .sql = EvgetCore::Database::detail::initialize,
-                .exec = true,
+        EvgetCore::Storage::DatabaseStorage sqlite{connect, "evget_database"};
+
+        EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
+        sqlite.init();
+
+        scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
+            while (!co_await scheduler.isStopped()) {
+                auto event = xInputHandler.getEvent();
+
+                auto transformed = transformer.transformEvent(std::move(event));
+
+                // storage.store(transformed);
+                manager.store(transformed);
             }
-        };
-        auto migrate = Database::Migrate{connect, migrations};
-        auto migrateValue = migrate.migrate();
-        if (!migrateValue.has_value()) {
-            spdlog::error(migrateValue.error().message);
-            return 1;
-        }
+            co_return;
+        }, [&scheduler]() {
+            scheduler.stop();
+            std::cout << "exception\n";
+        });
+
+        // auto a = ::SQLite::Database{"evget_database", ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+        // auto connect = Database::SQLite::Connection{};
+        // auto value = connect.connect("evget_database", Database::ConnectOptions::READ_WRITE_CREATE);
+        // if (!value.has_value()) {
+        //     return 1;
+        // }
+        //
+        // auto migrations = std::vector{
+        //     Database::Migration {
+        //         .version = 1,
+        //         .description = "first migration",
+        //         .sql = EvgetCore::Database::detail::initialize,
+        //         .exec = true,
+        //     }
+        // };
+        // auto migrate = Database::Migrate{connect, migrations};
+        // auto migrateValue = migrate.migrate();
+        // if (!migrateValue.has_value()) {
+        //     spdlog::error(migrateValue.error().message);
+        //     return 1;
+        // }
 
 
         auto timeNow = std::chrono::steady_clock::now();

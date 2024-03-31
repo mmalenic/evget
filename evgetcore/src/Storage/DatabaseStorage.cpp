@@ -50,7 +50,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
     }).transform_error([](Util::Error<::Database::ErrorType> error) {
         return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
     }).and_then([this, &event] {
-        std::optional<std::unique_ptr<::Database::Query>>insertKey{};
+        std::optional<std::unique_ptr<::Database::Query>> insertKey{};
         std::optional<std::unique_ptr<::Database::Query>> insertKeyModifier{};
         std::optional<std::unique_ptr<::Database::Query>> insertMouseMove{};
         std::optional<std::unique_ptr<::Database::Query>> insertMouseMoveModifier{};
@@ -109,7 +109,9 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::store(Even
             }
         }
 
-        return Result<void>{};
+        return this->connection.get().commit().transform_error([](Util::Error<::Database::ErrorType> error) {
+            return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+        });
     });
 }
 
@@ -167,7 +169,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues
         query->bindChars(i + 1, data[i].c_str());
     }
 
-    return query->exec().and_then([&query] {
+    return query->nextWhile().and_then([&query] {
         return query->reset();
     }).transform_error([](Util::Error<::Database::ErrorType> error) {
         return Util::Error{.errorType = ErrorType::DatabaseError, .message = error.message};
@@ -183,7 +185,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues
         query->bindChars(1, entryUuid.c_str());
         query->bindChars(2, modifier.c_str());
 
-        auto result = query->exec().and_then([&query] {
+        auto result = query->nextWhile().and_then([&query] {
             return query->reset();
         });
         if (!result.has_value()) {
