@@ -24,6 +24,6 @@ program_dependencies(${PROJECT_NAME}
         headers
 )
 
-#if(BUILD_TESTING)
-#    add_subdirectory(test)
-#endif()
+if(BUILD_TESTING)
+    add_subdirectory(test)
+endif()
