@@ -137,7 +137,7 @@ template <typename T>
 void Scheduler::spawn(
     Util::Invocable<asio::awaitable<T>> auto&& task
 ) {
-    spawnImpl<T>(std::forward<decltype(task)>(task), [this] {
+    spawnImpl<T>(std::forward<decltype(task)>(task), [this](auto _) {
         this->stop();
     }, pool);
 }
