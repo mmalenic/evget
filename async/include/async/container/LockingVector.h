@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <mutex>
+#include <optional>
 
 namespace Async {
 
@@ -58,7 +59,8 @@ public:
     constexpr std::optional<std::vector<T>> unsafe_into_inner();
 
     /**
-     * \brief Consume the inner vector by locking. Thread-safe.
+     * \brief Consume the inner vector when its size is greater than or equal to
+     * the size parameter without locking. Thread-safe.
      * \return the consumed vector if there are elements in it.
      */
     constexpr std::optional<std::vector<T>> into_inner();

@@ -25,10 +25,48 @@
 
 #include <gtest/gtest.h>
 
-TEST(LockingVectorTest, PushBack) {  // NOLINT(cert-err58-cpp)
+#include <fmt/format.h>
+
+TEST(LockingVectorTest, PushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
     auto vector = Async::LockingVector<int>{};
     vector.push_back(1);
 
-    auto inner = vector.into_inner();
-    ASSERT_EQ(inner, {1});
+    auto inner = *vector.into_inner();
+    std::vector expected{1};
+    ASSERT_EQ(inner, std::vector{1});
+}
+
+TEST(LockingVectorTest, IntoInnerAt) {  // NOLINT(cert-err58-cpp)
+    auto vector = Async::LockingVector<int>{};
+    vector.push_back(1);
+    vector.push_back(2);
+    vector.push_back(3);
+
+    ASSERT_FALSE(vector.into_inner_at(4).has_value());
+
+    auto inner = vector.into_inner_at(2);
+    std::vector expected{1, 2, 3};
+    ASSERT_EQ(inner, expected);
+}
+
+TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
+    auto vector = Async::LockingVector<int>{};
+    vector.unsafe_push_back(1);
+
+    auto inner = *vector.unsafe_into_inner();
+    std::vector expected{1};
+    ASSERT_EQ(inner, std::vector{1});
+}
+
+TEST(LockingVectorTest, UnsafeIntoInnerAt) {  // NOLINT(cert-err58-cpp)
+    auto vector = Async::LockingVector<int>{};
+    vector.unsafe_push_back(1);
+    vector.unsafe_push_back(2);
+    vector.unsafe_push_back(3);
+
+    ASSERT_FALSE(vector.unsafe_into_inner_at(4).has_value());
+
+    auto inner = vector.unsafe_into_inner_at(2);
+    std::vector expected{1, 2, 3};
+    ASSERT_EQ(inner, expected);
 }
