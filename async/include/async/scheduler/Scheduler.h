@@ -38,23 +38,15 @@ namespace asio = boost::asio;
 class Scheduler {
 public:
     /**
-     * \brief Create a default scheduler with `2 * std::thread::hardware_concurrency()` threads, and
-     * twice that for the blocking pool.
+     * \brief Create a default scheduler with `2 * std::thread::hardware_concurrency()` threads.
      */
     Scheduler() = default;
 
     /**
-     * \brief Create a scheduler with `nThreads` threads, and twice that for the blocking pool.
+     * \brief Create a scheduler with `nThreads` threads.
      * \param nThreads number of threads.
      */
     explicit Scheduler(std::size_t nThreads);
-
-    /**
-     * \brief Create a scheduler with `nThreads` threads, and `nBlockingThreads` threads for the blocking pool.
-     * \param nThreads number of threads.
-     * \param nBlockingThreads number of blocking threads.
-     */
-    Scheduler(std::size_t nThreads, std::size_t nBlockingThreads);
 
     /**
      * \brief Spawn a task.
@@ -71,22 +63,6 @@ public:
      */
     template <typename T>
     void spawn(Util::Invocable<asio::awaitable<T>> auto&& task, Util::Invocable<void, T> auto&& handler);
-
-    /**
-     * \brief Spawn a task on the blocking pool, where it is acceptable to block.
-     * \param task task awaitable.
-     * \param handler handler on completion.
-     */
-    void spawnBlocking(Util::Invocable<asio::awaitable<void>> auto&& task, Util::Invocable<void> auto&& handler);
-
-    /**
-     * \brief Spawn a task on the blocking pool, where it is acceptable to block.
-     * \tparam T return type for task.
-     * \param task task awaitable.
-     * \param handler handler on completion.
-     */
-    template <typename T>
-    void spawnBlocking(Util::Invocable<asio::awaitable<T>> auto&& task, Util::Invocable<void, T> auto&& handler);
 
     /**
      * \brief Join the scheduler, awaiting for all tasks to complete.
@@ -110,26 +86,15 @@ public:
      */
     asio::thread_pool::executor_type getExecutor();
 
-    /**
-     * \brief Get the executor for the blocking thread pool.
-     * \return executor.
-     */
-    asio::thread_pool::executor_type getBlockingExecutor();
-
 private:
-    // Todo: way to store event results so that they can be accessed by the caller.
-    void spawnImpl(Util::Invocable<asio::awaitable<void>> auto&& task, Util::Invocable<void> auto&& handler, asio::thread_pool& pool);
+    asio::thread_pool pool{default_thread_pool_size()};
+    std::atomic<bool> stopped{false};
 
+    void spawnImpl(Util::Invocable<asio::awaitable<void>> auto&& task, Util::Invocable<void> auto&& handler, asio::thread_pool& pool);
     template <typename T>
     void spawnImpl(Util::Invocable<asio::awaitable<T>> auto&& task, Util::Invocable<void, T> auto&& handler, asio::thread_pool& pool);
 
     static constexpr std::size_t default_thread_pool_size();
-
-    asio::thread_pool pool{default_thread_pool_size()};
-    // Double the number of threads for the blocking pool.
-    asio::thread_pool blockingPool{default_thread_pool_size() * 2};
-    std::atomic<bool> stopped{false};
-
     void log_exception(std::exception_ptr e);
 };
 
@@ -160,14 +125,6 @@ void Scheduler::spawn(
     spawnImpl<T>(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), pool);
 }
 
-template <typename T>
-void Scheduler::spawnBlocking(
-    Util::Invocable<asio::awaitable<T>> auto&& task,
-    Util::Invocable<void, T> auto&& handler
-) {
-    spawnImpl<T>(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), blockingPool);
-}
-
 void Scheduler::spawnImpl(
     Util::Invocable<asio::awaitable<void>> auto&& task,
     Util::Invocable<void> auto&& handler,
@@ -187,14 +144,6 @@ void Scheduler::spawn(
 ) {
     spawnImpl(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), pool);
 }
-
-void Scheduler::spawnBlocking(
-    Util::Invocable<asio::awaitable<void>> auto&& task,
-    Util::Invocable<void> auto&& handler
-) {
-    spawnImpl(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), blockingPool);
-}
-
 
 } // Async
 

@@ -23,21 +23,16 @@
 
 #include "async/scheduler/Scheduler.h"
 
-Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads}, blockingPool{nThreads * 2} {
-}
-
-Async::Scheduler::Scheduler(std::size_t nThreads, std::size_t nBlockingThreads) : pool{nThreads}, blockingPool{nBlockingThreads} {
+Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
 }
 
 void Async::Scheduler::join() {
     pool.join();
-    blockingPool.join();
 }
 
 void Async::Scheduler::stop() {
     stopped.store(true);
     pool.stop();
-    blockingPool.stop();
 }
 
 boost::asio::awaitable<bool> Async::Scheduler::isStopped() {
@@ -46,10 +41,6 @@ boost::asio::awaitable<bool> Async::Scheduler::isStopped() {
 
 boost::asio::thread_pool::executor_type Async::Scheduler::getExecutor() {
     return pool.get_executor();
-}
-
-boost::asio::thread_pool::executor_type Async::Scheduler::getBlockingExecutor() {
-    return blockingPool.get_executor();
 }
 
 void Async::Scheduler::log_exception(std::exception_ptr e) {
