@@ -32,12 +32,9 @@ TEST(IntervalTest, Tick) {  // NOLINT(cert-err58-cpp)
     Async::Interval interval{std::chrono::seconds{0}};
     std::optional<Util::Result<void, boost::system::error_code>> result{};
 
-    auto task = [&]() -> boost::asio::awaitable<void> {
+    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         result = co_await interval.tick();
         co_return;
-    };
-    scheduler.spawn(task, [&scheduler]() {
-            scheduler.stop();
     });
     scheduler.join();
 

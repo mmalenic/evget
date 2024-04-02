@@ -49,6 +49,22 @@ public:
     explicit Scheduler(std::size_t nThreads);
 
     /**
+     * \brief Spawn a task. Stops the thread pool on an exception.
+     * \param task task awaitable.
+     * \param handler handler on completion.
+     */
+    void spawn(Util::Invocable<asio::awaitable<void>> auto&& task);
+
+    /**
+     * \brief Spawn a task. Stops the thread pool on an exception.
+     * \tparam T return type for task.
+     * \param task task awaitable.
+     * \param handler handler on completion.
+     */
+    template <typename T>
+    void spawn(Util::Invocable<asio::awaitable<T>> auto&& task);
+
+    /**
      * \brief Spawn a task.
      * \param task task awaitable.
      * \param handler handler on completion.
@@ -119,6 +135,15 @@ void Scheduler::spawnImpl(
 
 template <typename T>
 void Scheduler::spawn(
+    Util::Invocable<asio::awaitable<T>> auto&& task
+) {
+    spawnImpl<T>(std::forward<decltype(task)>(task), [this] {
+        this->stop();
+    }, pool);
+}
+
+template <typename T>
+void Scheduler::spawn(
     Util::Invocable<asio::awaitable<T>> auto&& task,
     Util::Invocable<void, T> auto&& handler
 ) {
@@ -136,6 +161,14 @@ void Scheduler::spawnImpl(
         log_exception(e);
         handler();
     });
+}
+
+void Scheduler::spawn(
+    Util::Invocable<asio::awaitable<void>> auto&& task
+) {
+    spawnImpl(std::forward<decltype(task)>(task), [this] {
+        this->stop();
+    }, pool);
 }
 
 void Scheduler::spawn(
