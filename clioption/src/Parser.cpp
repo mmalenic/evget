@@ -22,7 +22,15 @@
 
 #include "clioption/Parser.h"
 
-CliOption::Parser::~Parser() = default;
+CliOption::Parser::Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc) :
+    cmdlineDesc{cmdlineDesc},
+    configDesc{configDesc},
+    envDesc{envDesc}
+{}
+
+bool CliOption::Parser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
+    storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineDesc).allow_unregistered().run(), vm);
+}
 
 void CliOption::Parser::storeAndNotify(
     const boost::program_options::parsed_options& parsedOptions,

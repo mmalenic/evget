@@ -34,6 +34,8 @@ class Parser {
 public:
     Parser() = default;
 
+    Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc);
+
     /**
      * Perform the actual command line parsing. Returns true if operation of the program should continue.
      *
@@ -41,19 +43,19 @@ public:
      * @param argv from main
      * @param vm variables map
      */
-    virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm) = 0;
-
-    virtual ~Parser() = 0;
+    virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm);
 
     /**
      * Store and notify the variables map.
      */
     static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
-    Parser& operator=(const Parser&) = delete;
-    Parser& operator=(Parser&&) = delete;
-    Parser(const Parser&) = delete;
-    Parser(Parser&&) = delete;
+private:
+    po::variables_map vm{};
+
+    po::options_description cmdlineDesc{};
+    po::options_description configDesc{};
+    po::options_description envDesc{};
 };
 }  // namespace CliOption
 
