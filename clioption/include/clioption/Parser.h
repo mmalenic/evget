@@ -51,12 +51,20 @@ public:
      */
     void parseConfig(std::istream& stream);
 
-        /**
+    /**
      * Perform the environment variable parsing.
      *
      * @param prefix environment variable prefix
      */
     void parseEnv(const char* prefix);
+
+    /**
+     * Parse an option and register it with the variables map.
+     *
+     * @param option option to parse
+     */
+    template <typename T>
+    void parseOption(AbstractOption<T> option);
 
     /**
      * Store and notify the variables map.
@@ -70,6 +78,12 @@ private:
     po::options_description configDesc{};
     po::options_description envDesc{};
 };
+
+template <typename T>
+void Parser::parseOption(AbstractOption<T> option) {
+    option.run(vm);
+}
+
 }  // namespace CliOption
 
 #endif  // EVGET_CLIOPTION_INCLUDE_CLIOPTION_PARSER_H
