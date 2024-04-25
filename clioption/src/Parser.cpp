@@ -22,13 +22,18 @@
 
 #include "clioption/Parser.h"
 
-CliOption::Parser::Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc) :
-    cmdlineDesc{cmdlineDesc},
-    configDesc{configDesc},
-    envDesc{envDesc}
-{}
+CliOption::Parser::Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc)
+    : cmdlineDesc{cmdlineDesc}, configDesc{configDesc}, envDesc{envDesc} {}
 
-bool CliOption::Parser::parseCommandLine(int argc, const char* argv[], po::variables_map& vm) {
+void CliOption::Parser::parseConfig(std::istream& stream) {
+    storeAndNotify(parse_config_file(stream, configDesc), vm);
+}
+
+void CliOption::Parser::parseEnv(const char* prefix) {
+    storeAndNotify(parse_environment(envDesc, prefix), vm);
+}
+
+void CliOption::Parser::parseCommandLine(int argc, const char* argv[]) {
     storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineDesc).allow_unregistered().run(), vm);
 }
 

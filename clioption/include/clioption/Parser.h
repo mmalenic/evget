@@ -37,13 +37,26 @@ public:
     Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc);
 
     /**
-     * Perform the actual command line parsing. Returns true if operation of the program should continue.
+     * Perform the command line parsing.
      *
      * @param argc from main
      * @param argv from main
-     * @param vm variables map
      */
-    virtual bool parseCommandLine(int argc, const char* argv[], po::variables_map& vm);
+    void parseCommandLine(int argc, const char* argv[]);
+
+    /**
+     * Perform the config parsing.
+     *
+     * @param stream config file stream
+     */
+    void parseConfig(std::istream& stream);
+
+        /**
+     * Perform the environment variable parsing.
+     *
+     * @param prefix environment variable prefix
+     */
+    void parseEnv(const char* prefix);
 
     /**
      * Store and notify the variables map.
