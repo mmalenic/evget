@@ -23,18 +23,18 @@
 #include "clioption/Parser.h"
 
 CliOption::Parser::Parser(const std::string& cmdlineDesc, const std::string& configDesc, const std::string& envDesc)
-    : cmdlineDesc{cmdlineDesc}, configDesc{configDesc}, envDesc{envDesc} {}
+    : _cmdlineDesc{cmdlineDesc}, _configDesc{configDesc}, _envDesc{envDesc} {}
 
 void CliOption::Parser::parseConfig(std::istream& stream) {
-    storeAndNotify(parse_config_file(stream, configDesc), vm);
+    storeAndNotify(parse_config_file(stream, _configDesc), vm);
 }
 
 void CliOption::Parser::parseEnv(const char* prefix) {
-    storeAndNotify(parse_environment(envDesc, prefix), vm);
+    storeAndNotify(parse_environment(_envDesc, prefix), vm);
 }
 
 void CliOption::Parser::parseCommandLine(int argc, const char* argv[]) {
-    storeAndNotify(po::command_line_parser(argc, argv).options(cmdlineDesc).allow_unregistered().run(), vm);
+    storeAndNotify(po::command_line_parser(argc, argv).options(_cmdlineDesc).allow_unregistered().run(), vm);
 }
 
 void CliOption::Parser::storeAndNotify(
@@ -43,4 +43,16 @@ void CliOption::Parser::storeAndNotify(
 ) {
     po::store(parsedOptions, vm);
     po::notify(vm);
+}
+
+boost::program_options::options_description& CliOption::Parser::cmdlineDesc() {
+    return _cmdlineDesc;
+}
+
+boost::program_options::options_description& CliOption::Parser::configDesc() {
+    return _configDesc;
+}
+
+boost::program_options::options_description& CliOption::Parser::envDesc() {
+    return _envDesc;
 }

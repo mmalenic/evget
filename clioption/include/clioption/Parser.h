@@ -71,12 +71,27 @@ public:
      */
     static void storeAndNotify(const po::parsed_options& parsedOptions, po::variables_map& vm);
 
+    /**
+     * Get the cmdline description.
+     */
+    [[nodiscard]] po::options_description& cmdlineDesc();
+
+    /**
+     * Get the config description.
+     */
+    [[nodiscard]] po::options_description& configDesc();
+
+    /**
+     * Get the environment variable description.
+     */
+    [[nodiscard]] po::options_description& envDesc();
+
 private:
     po::variables_map vm{};
 
-    po::options_description cmdlineDesc{};
-    po::options_description configDesc{};
-    po::options_description envDesc{};
+    po::options_description _cmdlineDesc{};
+    po::options_description _configDesc{};
+    po::options_description _envDesc{};
 };
 
 template <typename T>
