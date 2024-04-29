@@ -17,7 +17,7 @@ add_library(
     include/evgetcore/Event/Device.h
     include/evgetcore/EventListener.h
     include/evgetcore/UnsupportedOperationException.h
-    include/evgetcore/CoreParser.h
+        include/evgetcore/Parser.h
     include/evgetcore/Event/ModifierValue.h
     include/evgetcore/Event/Schema.h
     include/evgetcore/Event/Graph.h

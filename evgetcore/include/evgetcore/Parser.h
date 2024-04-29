@@ -23,7 +23,6 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINE_H
 #define INPUT_EVENT_RECORDER_COMMANDLINE_H
 
-#include <boost/program_options.hpp>
 #include <clioption/Option.h>
 #include <clioption/OptionFlag.h>
 #include <clioption/OptionValidated.h>
@@ -34,20 +33,19 @@
 
 namespace EvgetCore {
 
-namespace po = boost::program_options;
 namespace fs = std::filesystem;
 
 /**
  * The CoreParser class controls command line options.
  */
-class CoreParser : CliOption::Parser {
+class Parser {
 public:
     /**
      * Create a CoreParser object.
      *
      * @param platform platform information string
      */
-    explicit CoreParser(std::string platform);
+    explicit Parser(std::string platform);
 
     /**
      * Get config file location.
@@ -77,29 +75,18 @@ public:
      */
     [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
-    bool parseCommandLine(int argc, const char** argv, po::variables_map& vm) override;
-
-protected:
     /**
-     * Get description.
-     * @return description
+     * Parse the command line and return a value indicating with the program should continue.
+     *
+     * @param argc from main
+     * @param argv from main
+     * @return whether to continue execution
      */
-    po::options_description& getCombinedDesc();
-
-    /**
-     * Get commandline description.
-     */
-    po::options_description& getCmdlineDesc();
-
-    /**
-     * Get config description.
-     */
-    po::options_description& getConfigDesc();
+    bool parseCommandLine(int argc, const char** argv);
 
 private:
+    CliOption::Parser parser;
     std::string platformInformation;
-    po::options_description cmdlineDesc;
-    po::options_description configDesc;
 
     CliOption::OptionFlag help;
     CliOption::OptionFlag version;

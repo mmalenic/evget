@@ -56,3 +56,15 @@ boost::program_options::options_description& CliOption::Parser::configDesc() {
 boost::program_options::options_description& CliOption::Parser::envDesc() {
     return _envDesc;
 }
+
+boost::program_options::options_description& CliOption::Parser::addCmdline(const po::options_description& description) {
+    return _cmdlineDesc.add(description);
+}
+
+boost::program_options::options_description& CliOption::Parser::addConfig(const po::options_description& description) {
+    return _configDesc.add(description);
+}
+
+boost::program_options::options_description& CliOption::Parser::addEnv(const po::options_description& description) {
+    return _envDesc.add(description);
+}

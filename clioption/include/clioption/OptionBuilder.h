@@ -79,7 +79,7 @@ public:
 
     friend class AbstractOption<T>;
 
-    OptionBuilder() = default;
+    explicit OptionBuilder(po::options_description& desc);
 
     /**
      * Set short name, representing one dash option.
@@ -162,32 +162,32 @@ public:
      * Build flag option.
      */
     template <typename U = T>
-    EnableIfBool<OptionFlag, U> buildFlag(po::options_description& desc);
+    EnableIfBool<OptionFlag, U> buildFlag();
 
     /**
      * Build Option.
      */
     template <typename U = T>
-    EnableIfOStreamable<Option<T>, U> build(po::options_description& desc);
+    EnableIfOStreamable<Option<T>, U> build();
 
     /**
      * Build Option. Note if no representation for default or implicit values is specified, an
      * empty string is used as the representation.
      */
     template <typename U = T>
-    EnableIfNotOStreamable<Option<T>, U> build(po::options_description& desc);
+    EnableIfNotOStreamable<Option<T>, U> build();
 
     /**
      * Build Option with validator.
      */
     template <typename U = T>
-    EnableIfOStreamable<OptionValidated<T>, U> build(Validator validator, po::options_description& desc);
+    EnableIfOStreamable<OptionValidated<T>, U> build(Validator validator);
 
     /**
      * Build Option with validator.
      */
     template <typename U = T>
-    EnableIfNotOStreamable<OptionValidated<T>, U> build(Validator validator, po::options_description& desc);
+    EnableIfNotOStreamable<OptionValidated<T>, U> build(Validator validator);
 
 private:
     std::reference_wrapper<po::options_description> _desc;
@@ -206,6 +206,24 @@ private:
     bool _representationOptionSet;
     std::optional<T> _defaultValue;
 };
+
+template<typename T>
+OptionBuilder<T>::OptionBuilder(po::options_description &desc) :
+        _desc{desc},
+        _positionalDesc{std::nullopt},
+        _shortName{},
+        _longName{},
+        _description{},
+        _required{false},
+        _multitoken{false},
+        _conflictsWith{},
+        _atLeast{},
+        _implicitValue{std::nullopt},
+        _positionalAmount{std::nullopt},
+        _representation{},
+        _representationOptionSet{false},
+        _defaultValue{std::nullopt} {
+}
 
 template <typename T>
 OptionBuilder<T>& OptionBuilder<T>::shortName(char shortName) {
@@ -304,8 +322,7 @@ OptionBuilder<T>& OptionBuilder<T>::positional(int amount, po::positional_option
 
 template <typename T>
 template <typename U>
-typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U> OptionBuilder<T>::build(po::options_description& desc) {
-    _desc = desc;
+typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U> OptionBuilder<T>::build() {
     if (_representationOptionSet) {
         return Option(*this, _representation);
     }
@@ -314,25 +331,21 @@ typename OptionBuilder<T>::template EnableIfOStreamable<Option<T>, U> OptionBuil
 
 template <typename T>
 template <typename U>
-typename OptionBuilder<T>::template EnableIfNotOStreamable<Option<T>, U> OptionBuilder<T>::build(po::options_description& desc) {
-    _desc = desc;
+typename OptionBuilder<T>::template EnableIfNotOStreamable<Option<T>, U> OptionBuilder<T>::build() {
     return Option(*this, _representation);
 }
 
 template <typename T>
 template <typename U>
-typename OptionBuilder<T>::template EnableIfBool<OptionFlag, U> OptionBuilder<T>::buildFlag(po::options_description& desc) {
-    _desc = desc;
+typename OptionBuilder<T>::template EnableIfBool<OptionFlag, U> OptionBuilder<T>::buildFlag() {
     return OptionFlag(*this);
 }
 
 template <typename T>
 template <typename U>
 typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidated<T>, U> OptionBuilder<T>::build(
-    Validator validator,
-    po::options_description& desc
+    Validator validator
 ) {
-    _desc = desc;
     if (_representationOptionSet) {
         return OptionValidated(*this, validator, _representation);
     }
@@ -342,10 +355,8 @@ typename OptionBuilder<T>::template EnableIfOStreamable<OptionValidated<T>, U> O
 template <typename T>
 template <typename U>
 typename OptionBuilder<T>::template EnableIfNotOStreamable<OptionValidated<T>, U> OptionBuilder<T>::build(
-    Validator validator,
-    po::options_description& desc
+    Validator validator
 ) {
-    _desc = desc;
     return OptionValidated(*this, validator, _representation);
 }
 }  // namespace CliOption

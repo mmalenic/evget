@@ -1,6 +1,6 @@
 target_sources(
     ${PROJECT_NAME}
-    PRIVATE CoreParser.cpp
+    PRIVATE Parser.cpp
             Event/Key.cpp
             Event/MouseClick.cpp
             Event/MouseMove.cpp

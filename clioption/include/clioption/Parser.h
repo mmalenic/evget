@@ -64,7 +64,7 @@ public:
      * @param option option to parse
      */
     template <typename T>
-    void parseOption(AbstractOption<T> option);
+    void parseOption(AbstractOption<T>& option);
 
     /**
      * Store and notify the variables map.
@@ -86,6 +86,30 @@ public:
      */
     [[nodiscard]] po::options_description& envDesc();
 
+    /**
+     * Add a description to the command line options.
+     *
+     * @param description to add
+     * @return combined description.
+     */
+    po::options_description& addCmdline(const po::options_description& description);
+
+    /**
+     * Add a description to the config options.
+     *
+     * @param description to add
+     * @return combined description.
+     */
+    po::options_description& addConfig(const po::options_description& description);
+
+    /**
+     * Add a description to the env options.
+     *
+     * @param description to add
+     * @return combined description.
+     */
+    po::options_description& addEnv(const po::options_description& description);
+
 private:
     po::variables_map vm{};
 
@@ -95,7 +119,7 @@ private:
 };
 
 template <typename T>
-void Parser::parseOption(AbstractOption<T> option) {
+void Parser::parseOption(AbstractOption<T>& option) {
     option.run(vm);
 }
 
