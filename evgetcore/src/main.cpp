@@ -31,7 +31,7 @@
 
 #include "async/scheduler/Interval.h"
 #include "async/scheduler/Scheduler.h"
-#include "clioption/InvalidCommandLineOption.h"
+#include "clioption/Error.h"
 #include "database/Migrate.h"
 #include "database/sqlite/Connection.h"
 #include "database/sqlite/Query.h"

@@ -30,7 +30,7 @@
 #include <string>
 
 #include "AbstractOption.h"
-#include "InvalidCommandLineOption.h"
+#include "Error.h"
 
 namespace CliOption {
 
@@ -54,7 +54,6 @@ public:
 
 template <typename T>
 Option<T>::Option(OptionBuilder<T> builder) : AbstractOption<T>(builder) {
-    this->checkInvariants();
     this->template addOptionToDesc<T>(
         this->isRequired(),
         this->isMultitoken(),
@@ -65,7 +64,6 @@ Option<T>::Option(OptionBuilder<T> builder) : AbstractOption<T>(builder) {
 
 template <typename T>
 Option<T>::Option(OptionBuilder<T> builder, const std::string& representation) : AbstractOption<T>(builder) {
-    this->checkInvariants();
     this->addOptionToDesc(
         this->isRequired(),
         this->isMultitoken(),

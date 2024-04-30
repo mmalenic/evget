@@ -31,7 +31,7 @@
 #include <optional>
 #include <string>
 
-#include "InvalidCommandLineOption.h"
+#include "Error.h"
 #include "OptionBuilder.h"
 
 namespace CliOption {
@@ -103,7 +103,7 @@ public:
      *
      * @throws InvalidCommandLineOption if conditions are not satisfied
      */
-    virtual void run(po::variables_map& vm);
+    virtual Result<void> run(po::variables_map& vm);
 
     virtual ~AbstractOption() = 0;
 
@@ -133,12 +133,6 @@ protected:
      * Get conflicting options.
      */
     [[nodiscard]] const std::vector<std::string>& getConflicting() const;
-
-    /**
-     * Checks whether the option is at least, default or required. Throws
-     * UnsupportedOperationException if not.
-     */
-    void checkInvariants();
 
     /**
      * Check if the value is present in the option.
@@ -206,7 +200,7 @@ protected:
     /**
      * Parse value component.
      */
-    virtual void parseValue(po::variables_map& vm);
+    virtual Result<void> parseValue(po::variables_map& vm);
 
 private:
     std::string shortName;
@@ -302,10 +296,6 @@ AbstractOption<T>::AbstractOption(OptionBuilder<T> builder)
       representation{builder._representation},
       _value{builder._defaultValue},
       desc{builder._desc} {
-    if (shortName.empty() && longName.empty()) {
-        throw InvalidCommandLineOption("Option should contain at least a short name, or a long name.");
-    }
-
     if (builder._positionalDesc.has_value() && builder._positionalAmount.has_value()) {
         if (!longName.empty()) {
             addPositionalOption(builder, longNameKey);
@@ -320,30 +310,42 @@ AbstractOption<T>::AbstractOption(OptionBuilder<T> builder)
 }
 
 template <typename T>
-void AbstractOption<T>::run(po::variables_map& vm) {
+Result<void> AbstractOption<T>::run(po::variables_map& vm) {
+    // Check if short or long name present.
+    if (shortName.empty() && longName.empty()) {
+        return Err{{.type = ErrorType::OptionError, .message = "option must contain a short or long name"}};
+    }
+
+    // Check if default or required.
+    if (!this->getDefaultValue().has_value() && !this->isRequired()) {
+        return Err{{.type = ErrorType::OptionError, .message = "value must at least be required, or have a default specified"}};
+    }
+
     parseValue(vm);
 
     auto conflict = checkPresence(conflictsWith, vm);
     if (conflict.has_value() && isSelfPresent(vm)) {
-        throw InvalidCommandLineOption{fmt::format("Conflicting options {}, and {} specified", getName(), *conflict)};
+        return Err{{.type = ErrorType::OptionError, .message = fmt::format("conflicting options {} and {}", getName(), *conflict)}};
     }
 
     if (atLeastSet) {
         if (!checkPresence(except, vm).has_value() && !checkPresence(atLeast, vm).has_value()) {
-            throw InvalidCommandLineOption{
-                fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", "))};
+            return Err{{.type = ErrorType::OptionError, .message = fmt::format("At least one option out of {} must be present", fmt::join(atLeast, ", "))}};
         }
     }
 
     // Unsupported use of option.
     if (!_value.has_value()) {
-        throw InvalidCommandLineOption{"Unsupported use of option."};
+        return Err{{.type = ErrorType::OptionError, .message = "option does not contain value"}};
     }
+
+    return {};
 }
 
 template <typename T>
-void AbstractOption<T>::parseValue(po::variables_map& vm) {
+Result<void> AbstractOption<T>::parseValue(po::variables_map& vm) {
     _value = getValueFromVm<T>(vm);
+    return {};
 }
 
 template <typename T>
@@ -384,13 +386,6 @@ std::optional<T> AbstractOption<T>::getImplicitValue() const {
 template <typename T>
 std::string AbstractOption<T>::getRepresentation() const {
     return representation;
-}
-
-template <typename T>
-void AbstractOption<T>::checkInvariants() {
-    if (!this->getDefaultValue().has_value() && !this->isRequired()) {
-        throw InvalidCommandLineOption{"Value must at least be required, or have a default specified."};
-    }
 }
 
 template <typename T>

@@ -20,11 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "clioption/InvalidCommandLineOption.h"
+#ifndef EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
+#define EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H
 
-CliOption::InvalidCommandLineOption::InvalidCommandLineOption(const std::string& message)
-    : po::error{message}, message{message} {}
+#include <boost/program_options.hpp>
 
-const char* CliOption::InvalidCommandLineOption::what() const noexcept {
-    return message.c_str();
+#include <expected>
+#include <string>
+
+namespace CliOption {
+/**
+ * \brief Error type enum.
+ */
+enum class ErrorType {
+    OptionError
+};
+
+/**
+ * \brief Error struct.
+ */
+struct Error {
+    ErrorType type;
+    std::string message;
+};
+
+/**
+ * \brief Result type.
+ */
+template<typename T>
+using Result = std::expected<T, Error>;
+
+/**
+ * \brief Error type.
+ */
+using Err = std::unexpected<Error>;
+
 }
+
+#endif  // EVGET_INCLUDE_INVALIDCOMMANDLINEOPTION_H

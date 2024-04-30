@@ -48,7 +48,7 @@ public:
         const std::string& representation
     );
 
-    void parseValue(po::variables_map& vm) override;
+    Result<void> parseValue(po::variables_map& vm) override;
 
 private:
     typename OptionBuilder<T>::Validator validator;
@@ -59,7 +59,6 @@ private:
 template <typename T>
 OptionValidated<T>::OptionValidated(OptionBuilder<T> builder, typename OptionBuilder<T>::Validator validator)
     : AbstractOption<T>(builder), validator{validator} {
-    this->checkInvariants();
     setOptionDesc([](const T& value) {
         std::ostringstream representation{};
         representation << value;
@@ -74,21 +73,18 @@ OptionValidated<T>::OptionValidated(
     const std::string& representation
 )
     : AbstractOption<T>(builder), validator{validator} {
-    this->checkInvariants();
     setOptionDesc([&representation](const T& _) { return representation; });
 }
 
 template <typename T>
-void OptionValidated<T>::parseValue(po::variables_map& vm) {
+Result<void> OptionValidated<T>::parseValue(po::variables_map& vm) {
     std::optional<std::string> value = this->template getValueFromVm<std::string>(vm);
     if (value.has_value() && !value->empty()) {
         std::optional<T> validatedValue = validator(*value);
         if (validatedValue.has_value()) {
             this->setValue(*validatedValue);
         } else {
-            throw InvalidCommandLineOption(
-                fmt::format("Could not parse {} _defaultValue, incorrect format", this->getName())
-            );
+            return Err{{.type = ErrorType::OptionError, .message = fmt::format("could not validate value: {}", this->getName())}};
         }
     }
 }

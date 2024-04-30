@@ -6,7 +6,7 @@ project(clioption)
 add_library(
     ${PROJECT_NAME}
     include/clioption/AbstractOption.h
-    include/clioption/InvalidCommandLineOption.h
+        include/clioption/Error.h
     include/clioption/Option.h
     include/clioption/OptionBuilder.h
     include/clioption/OptionFlag.h
