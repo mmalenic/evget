@@ -64,7 +64,7 @@ public:
      * @param option option to parse
      */
     template <typename T>
-    void parseOption(AbstractOption<T>& option);
+    Result<void> parseOption(AbstractOption<T>& option);
 
     /**
      * Store and notify the variables map.
@@ -119,8 +119,8 @@ private:
 };
 
 template <typename T>
-void Parser::parseOption(AbstractOption<T>& option) {
-    option.run(vm);
+Result<void> Parser::parseOption(AbstractOption<T>& option) {
+    return option.run(vm);
 }
 
 }  // namespace CliOption
