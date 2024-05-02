@@ -321,7 +321,10 @@ Result<void> AbstractOption<T>::run(po::variables_map& vm) {
         return Err{{.type = ErrorType::OptionError, .message = "value must at least be required, or have a default specified"}};
     }
 
-    parseValue(vm);
+    auto result = parseValue(vm);
+    if (!result.has_value()) {
+        return result;
+    }
 
     auto conflict = checkPresence(conflictsWith, vm);
     if (conflict.has_value() && isSelfPresent(vm)) {

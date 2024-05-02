@@ -46,54 +46,59 @@ namespace fs = std::filesystem;
  * Store and notify vm and option.
  */
 template <typename T>
-void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map& vm) {
+CliOption::Result<void> storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map& vm) {
     CliOption::Parser::storeAndNotify(parse.run(), vm);
-    option.run(vm);
+    return option.run(vm);
 }
 
 /**
  * Store and notify vm and option.
  */
 template <typename T>
-void storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map&& vm) {
-    storeAndNotifyOption(option, parse, vm);
+CliOption::Result<void> storeAndNotifyOption(T& option, po::command_line_parser& parse, po::variables_map&& vm) {
+    return storeAndNotifyOption(option, parse, vm);
 }
 
 /**
  * Store and notify vm and option.
  */
 template <typename T>
-void storeAndNotifyOption(T& option, po::options_description& desc, int argc, const char** argv) {
+CliOption::Result<void> storeAndNotifyOption(T& option, po::options_description& desc, int argc, const char** argv) {
     po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-    storeAndNotifyOption(option, parse, {});
+    return storeAndNotifyOption(option, parse, {});
 }
 
 /**
  * Store and notify vm and options.
  */
 template <typename T>
-void storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map& vm) {
+CliOption::Result<void> storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map& vm) {
     CliOption::Parser::storeAndNotify(parse.run(), vm);
     for (T& option : options) {
-        option.run(vm);
+        auto result = option.run(vm);
+        if (!result.has_value()) {
+            return result;
+        }
     }
+
+    return {};
 }
 
 /**
  * Store and notify vm and options.
  */
 template <typename T>
-void storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map&& vm) {
-    storeAndNotifyOption(options, parse, vm);
+CliOption::Result<void> storeAndNotifyOption(std::vector<T>& options, po::command_line_parser& parse, po::variables_map&& vm) {
+    return storeAndNotifyOption(options, parse, vm);
 }
 
 /**
  * Store and notify vm and options.
  */
 template <typename T>
-void storeAndNotifyOption(std::vector<T>& options, po::options_description& desc, int argc, const char** argv) {
+CliOption::Result<void> storeAndNotifyOption(std::vector<T>& options, po::options_description& desc, int argc, const char** argv) {
     po::command_line_parser parse = po::command_line_parser(argc, argv).options(desc);
-    storeAndNotifyOption(options, parse, {});
+    return storeAndNotifyOption(options, parse, {});
 }
 
 /**

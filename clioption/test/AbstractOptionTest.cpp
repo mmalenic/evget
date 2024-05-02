@@ -185,6 +185,7 @@ TEST(AbstractOptionTest, PositionalOptionNotPresent) {  // NOLINT(cert-err58-cpp
 
 TEST(AbstractOptionTest, NoDefaultAndNotRequired) {  // NOLINT(cert-err58-cpp)
     po::options_description desc{};
-    // todo
-    // ASSERT_THROW(CliOption::OptionBuilder<int>(desc).shortName('a').build(), CliOption::InvalidCommandLineOption);
+    po::variables_map vm{};
+    auto option = CliOption::OptionBuilder<int>(desc).shortName('a').build();
+    ASSERT_FALSE(option.run(vm).has_value());
 }

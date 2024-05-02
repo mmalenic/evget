@@ -144,8 +144,7 @@ TEST(OptionTest, ConflictingOptionsPresent) {  // NOLINT(cert-err58-cpp)
                 CliOption::OptionBuilder<int>(desc).shortName('b').required().conflictsWith("a").build()};
         },
         [](po::variables_map& vm, auto& options, po::command_line_parser& parse) {
-            // todo
-            // ASSERT_THROW(Utils::storeAndNotifyOption(options, parse, vm), CliOption::InvalidCommandLineOption);
+            ASSERT_FALSE(Utils::storeAndNotifyOption(options, parse, vm).has_value());
         }
     );
 }
@@ -159,8 +158,7 @@ TEST(OptionTest, ConflictingOptionsList) {  // NOLINT(cert-err58-cpp)
                 CliOption::OptionBuilder<int>(desc).shortName('b').required().conflictsWith({"a", "c"}).build()};
         },
         [](po::variables_map& vm, auto& options, po::command_line_parser& parse) {
-            // todo
-            // ASSERT_THROW(Utils::storeAndNotifyOption(options, parse, vm), CliOption::InvalidCommandLineOption);
+            ASSERT_FALSE(Utils::storeAndNotifyOption(options, parse, vm).has_value());
         }
     );
 }
@@ -190,8 +188,7 @@ TEST(OptionTest, AtLeastNotPresent) {  // NOLINT(cert-err58-cpp)
                 CliOption::OptionBuilder<int>(desc).shortName('b').defaultValue(1).atLeast({"a", "c"}).build()};
         },
         [](po::variables_map& vm, auto& options, po::command_line_parser& parse) {
-            // todo
-            // ASSERT_THROW(Utils::storeAndNotifyOption(options, parse, vm), CliOption::InvalidCommandLineOption);
+            ASSERT_FALSE(Utils::storeAndNotifyOption(options, parse, vm).has_value());
         }
     );
 }
@@ -240,8 +237,7 @@ TEST(OptionTest, AtLeastExceptNotPresent) {  // NOLINT(cert-err58-cpp)
                 CliOption::OptionBuilder<int>(desc).shortName('d').defaultValue(1).build()};
         },
         [](po::variables_map& vm, auto& options, po::command_line_parser& parse) {
-            // todo
-            // ASSERT_THROW(Utils::storeAndNotifyOption(options, parse, vm), CliOption::InvalidCommandLineOption);
+            ASSERT_FALSE(Utils::storeAndNotifyOption(options, parse, vm).has_value());
         }
     );
 }
