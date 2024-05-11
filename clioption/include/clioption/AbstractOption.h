@@ -103,7 +103,7 @@ public:
      *
      * @throws InvalidCommandLineOption if conditions are not satisfied
      */
-    virtual Result<void> run(po::variables_map& vm);
+    Result<void> run(po::variables_map& vm);
 
     virtual ~AbstractOption() = 0;
 

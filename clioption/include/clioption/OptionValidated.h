@@ -87,6 +87,8 @@ Result<void> OptionValidated<T>::parseValue(po::variables_map& vm) {
             return Err{{.type = ErrorType::OptionError, .message = fmt::format("could not validate value: {}", this->getName())}};
         }
     }
+
+    return {};
 }
 
 template <typename T>
