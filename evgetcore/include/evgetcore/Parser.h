@@ -82,7 +82,7 @@ public:
      * @param argv from main
      * @return whether to continue execution
      */
-    bool parseCommandLine(int argc, const char** argv);
+    CliOption::Result<bool> parseCommandLine(int argc, const char** argv);
 
 private:
     CliOption::Parser parser;

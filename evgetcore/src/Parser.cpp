@@ -57,7 +57,7 @@ static constexpr char CONFIG_FILE_COMMENT_LINE[] =
 
 EvgetCore::Parser::Parser(std::string platform)
     : parser{DESCRIPTION, "", ""},
-        platformInformation{std::move(platform)},
+      platformInformation{std::move(platform)},
       help{CliOption::OptionBuilder<bool>{parser.cmdlineDesc()}
                .shortName('h')
                .longName("help")
@@ -100,13 +100,19 @@ EvgetCore::Parser::Parser(std::string platform)
                    .representation("warn")
                    .build(validateLogLevel)} {}
 
-bool EvgetCore::Parser::parseCommandLine(int argc, const char* argv[]) {
+CliOption::Result<bool> EvgetCore::Parser::parseCommandLine(int argc, const char* argv[]) {
     parser.addCmdline(parser.configDesc());
     parser.parseCommandLine(argc, argv);
 
-    parser.parseOption(help);
-    parser.parseOption(version);
-    parser.parseOption(config);
+    auto result = parser.parseOption(help).and_then([this]() {
+        return parser.parseOption(version);
+    }).and_then([this]() {
+        return parser.parseOption(config);
+    });
+
+    if (!result.has_value()) {
+        return CliOption::Err{result.error()};
+    }
 
     if (help.getValue()) {
         std::cout << parser.cmdlineDesc() << "\n";
@@ -125,19 +131,20 @@ bool EvgetCore::Parser::parseCommandLine(int argc, const char* argv[]) {
 
     std::ifstream stream{config.getValue()};
     if (!stream) {
-        throw std::ios_base::failure{"failed to read config file."};
-    } else {
-        parser.parseConfig(stream);
+        return CliOption::Err{{.type = CliOption::ErrorType::OptionError, .message = "failed to read config file."}};
     }
+
+    parser.parseConfig(stream);
 
     parser.parseEnv(ENVIRONMENT_VARIABLE_PREFIX);
 
-    parser.parseOption(folder);
-    parser.parseOption(print);
-    parser.parseOption(systemEvents);
-    parser.parseOption(logLevel);
-
-    return true;
+    return parser.parseOption(folder).and_then([this]() {
+        return parser.parseOption(print);
+    }).and_then([this]() {
+        return parser.parseOption(systemEvents);
+    }).and_then([this]() {
+        return parser.parseOption(logLevel);
+    }).transform([](){ return true; });
 }
 
 EvgetCore::fs::path EvgetCore::Parser::getFolder() const {
