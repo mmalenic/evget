@@ -32,5 +32,21 @@
 
 [comment]: <> (SOFTWARE.)
 
-# Work in progress
-Work in progress
+# evget
+Show system input events.
+
+## Build
+This project using [vcpkg] to download dependencies, and cmake to build using FindPackage. It's recommended
+to use the CMakePresets.json file to configure the vcpkg toolchain. This following command can be used to
+build the project, if `VCPKG_ROOT` has been set as an environment variable:
+
+```sh
+cmake -B build -S . --preset debug
+```
+
+[vcpkg]: https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration
+
+## Usage
+```sh
+./build/evget --help
+```
