@@ -37,6 +37,7 @@ namespace EvgetCore::Storage {
         SQLiteError,
         DatabaseManager,
         DatabaseError,
+        EventHandlerError,
     };
 
     /**

@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
         EvgetX11::XSetMaskCore setCore{};
         EvgetX11::XSetMaskRefresh setRefresh{};
 
-        EvgetX11::XInputHandler xInputHandler{xWrapperX11, {setCore, setRefresh}};
+        EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
 
         EvgetX11::EventLoopX11 eventLoop{xInputHandler};
 

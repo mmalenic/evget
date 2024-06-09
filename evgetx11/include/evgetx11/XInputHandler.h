@@ -29,13 +29,14 @@
 
 #include "XInputEvent.h"
 #include "XSetMask.h"
+#include "evgetcore/Storage/Error.h"
 #include "evgetcore/UnsupportedOperationException.h"
 
 namespace EvgetX11 {
 
 class XInputHandler {
 public:
-    explicit XInputHandler(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
+    static EvgetCore::Storage::Result<XInputHandler> build(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
 
     /**
      * Get the next event.
@@ -43,6 +44,8 @@ public:
     XInputEvent getEvent();
 
 private:
+    explicit XInputHandler(XWrapper& xWrapper);
+
     static constexpr int versionMajor = 2;
     static constexpr int versionMinor = 2;
 
@@ -50,7 +53,7 @@ private:
 
     static void setMask(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
 
-    static void announceVersion(XWrapper& xWrapper);
+    static EvgetCore::Storage::Result<void> announceVersion(XWrapper& xWrapper);
 };
 }  // namespace EvgetX11
 
