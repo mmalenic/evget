@@ -91,9 +91,6 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
         const auto& device = info[i];
         int id = boost::numeric_cast<int>(device.id);
 
-        if (!xi2Devices.contains(id)) {
-            throw EvgetCore::UnsupportedOperationException{"Device id from XDeviceInfo not found in XIDeviceInfo."};
-        }
         const auto& xi2Device = xi2Devices.at(id).get();
 
         if (xi2Device.enabled && device.type != None &&
