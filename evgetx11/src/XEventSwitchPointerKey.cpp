@@ -41,6 +41,11 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     for (int i = 0; i < info.num_classes; i++) {
         const auto* classInfo = info.classes[i];
 
+        if (classInfo == nullptr) {
+            spdlog::error("unexpected null pointer XIAnyClassInfo");
+            return;
+        }
+
         if (classInfo->type == XIScrollClass) {
             scrollInfos.emplace_back(reinterpret_cast<const XIScrollClassInfo*>(classInfo));
         } else if (classInfo->type == XIValuatorClass) {

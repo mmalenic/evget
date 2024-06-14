@@ -99,7 +99,7 @@ XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(
         .time = 1,
         .deviceid = 1,
         .sourceid = 1,
-        .detail = 1,
+        .detail = 0,
         .root = 0,
         .event = 0,
         .child = 0,

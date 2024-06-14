@@ -34,52 +34,44 @@
 #include "evgetx11/XWrapper.h"
 
 namespace EvgetX11TestUtils {
-// class XWrapperMock : public EvgetX11::XWrapper {
-// public:
-//     using XWindowDimensions = EvgetX11::XWindowDimensions;
-//     using XEventPointer = EvgetX11::XEventPointer;
-//
-//     MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
-//     MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
-//     MOCK_METHOD(
-//         (std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>),
-//         listInputDevices,
-//         (int& ndevices),
-//         (override)
-//     );
-//     MOCK_METHOD(
-//         (std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>),
-//         queryDevice,
-//         (int& ndevices),
-//         (override)
-//     );
-//     MOCK_METHOD((std::unique_ptr<char[], decltype(&XFree)>), atomName, (Atom atom), (override));
-//     MOCK_METHOD(std::optional<Atom>, getAtom, (const char* atomName), (override));
-//     MOCK_METHOD(
-//         (std::unique_ptr<unsigned char*, decltype(&XFree)>),
-//         getProperty,
-//         (Atom atom, Window window, unsigned long& nItems, Atom& type, int& size),
-//         (override)
-//     );
-//     MOCK_METHOD(std::optional<std::string>, getWindowName, (Window window), (override));
-//     MOCK_METHOD(std::optional<Window>, getActiveWindow, (), (override));
-//     MOCK_METHOD(std::optional<Window>, getFocusWindow, (), (override));
-//     MOCK_METHOD(std::optional<XWindowAttributes>, getWindowAttributes, (Window window), (override));
-//     MOCK_METHOD(std::optional<XWindowDimensions>, getWindowSize, (Window window), (override));
-//     MOCK_METHOD(std::optional<XWindowDimensions>, getWindowPosition, (Window window), (override));
-//
-//     MOCK_METHOD(XEvent, nextEvent, (), (override));
-//     MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
-//     MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
-//     MOCK_METHOD(void, selectEvents, (XIEventMask & mask), (override));
-// };
+class XWrapperMock : public EvgetX11::XWrapper {
+public:
+    using XWindowDimensions = EvgetX11::XWindowDimensions;
+    using XEventPointer = EvgetX11::XEventPointer;
 
-//    class XEventSwitchMock : public EvgetX11::XDeviceRefresh {
-//    public:
-//        MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp,
-//        EvgetX11::EventData &data), (override)); MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Device
-//        device, const std::string& name, const XIDeviceInfo& info), (override));
-//    };
+    MOCK_METHOD(std::string, lookupCharacter, (const XIDeviceEvent& event, KeySym& keySym), (override));
+    MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
+    MOCK_METHOD(
+        (std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>),
+        listInputDevices,
+        (int& ndevices),
+        (override)
+    );
+    MOCK_METHOD(
+        (std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>),
+        queryDevice,
+        (int& ndevices),
+        (override)
+    );
+    MOCK_METHOD((std::unique_ptr<char[], decltype(&XFree)>), atomName, (Atom atom), (override));
+    MOCK_METHOD(std::optional<std::string>, getWindowName, (Window window), (override));
+    MOCK_METHOD(std::optional<Window>, getActiveWindow, (), (override));
+    MOCK_METHOD(std::optional<Window>, getFocusWindow, (), (override));
+    MOCK_METHOD(std::optional<XWindowDimensions>, getWindowSize, (Window window), (override));
+    MOCK_METHOD(std::optional<XWindowDimensions>, getWindowPosition, (Window window), (override));
+
+    MOCK_METHOD(XEvent, nextEvent, (), (override));
+    MOCK_METHOD(XEventPointer, eventData, (XEvent & event), (override));
+    MOCK_METHOD(Status, queryVersion, (int& major, int& minor), (override));
+    MOCK_METHOD(void, selectEvents, (XIEventMask & mask), (override));
+};
+//
+// class XEventSwitchMock : public EvgetX11::XDeviceRefresh {
+// public:
+//     MOCK_METHOD(bool, switchOnEvent, (const EvgetX11::XInputEvent &event, std::chrono::nanoseconds timestamp,
+//     EvgetX11::EventData &data), (override)); MOCK_METHOD(void, refreshDevices, (int id, EvgetCore::Event::Device
+//     device, const std::string& name, const XIDeviceInfo& info), (override));
+// };
 
 XIValuatorClassInfo createXIValuatorClassInfo();
 XIScrollClassInfo createXIScrollClassInfo();
