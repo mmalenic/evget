@@ -151,23 +151,23 @@ int main(int argc, char* argv[]) {
 
         EvgetCore::Storage::DatabaseStorage sqlite{connect, "evget_database"};
 
-        EvgetCore::Storage::DatabaseManager manager{scheduler, {sqlite}, 100};
-        sqlite.init();
+        EvgetCore::Storage::DatabaseManager manager{scheduler, {storage}, 1};
+        // sqlite.init();
 
-        // scheduler.spawnBlocking([&]() -> boost::asio::awaitable<void> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         auto event = xInputHandler.getEvent();
-        //
-        //         auto transformed = transformer.transformEvent(std::move(event));
-        //
-        //         // storage.store(transformed);
-        //         manager.store(transformed);
-        //     }
-        //     co_return;
-        // }, [&scheduler]() {
-        //     scheduler.stop();
-        //     std::cout << "exception\n";
-        // });
+        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+            while (!co_await scheduler.isStopped()) {
+                auto event = xInputHandler.getEvent();
+
+                auto transformed = transformer.transformEvent(std::move(event));
+
+                // storage.store(transformed);
+                manager.store(transformed);
+            }
+            co_return;
+        }, [&scheduler]() {
+            scheduler.stop();
+            std::cout << "exception\n";
+        });
 
 
         auto timeNow = std::chrono::steady_clock::now();

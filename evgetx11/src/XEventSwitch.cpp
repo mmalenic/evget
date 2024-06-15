@@ -57,7 +57,7 @@ void EvgetX11::XEventSwitch::refreshDevices(
     for (int i = 0; i < info.num_classes; i++) {
         const auto* classInfo = info.classes[i];
 
-        if (classInfo->type == XIButtonClass) {
+        if (classInfo != nullptr && classInfo->type == XIButtonClass) {
             buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
             break;
         }

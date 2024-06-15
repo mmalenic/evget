@@ -43,7 +43,7 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
 
         if (classInfo == nullptr) {
             spdlog::error("unexpected null pointer XIAnyClassInfo");
-            return;
+            continue;
         }
 
         if (classInfo->type == XIScrollClass) {

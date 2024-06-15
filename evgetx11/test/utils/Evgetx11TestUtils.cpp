@@ -27,7 +27,7 @@
 XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
     return {
         .type = XIValuatorClass,
-        .sourceid = 1,
+        .sourceid = 0,
         .number = 1,
         .label = 1,
         .min = 0,
@@ -41,7 +41,7 @@ XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
     return {
         .type = XIScrollClass,
         .sourceid = 1,
-        .number = 1,
+        .number = 0,
         .scroll_type = XIScrollTypeVertical,
         .increment = 1,
         .flags = 0};
@@ -127,7 +127,7 @@ XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
             .send_event = false,
             .display = nullptr,
             .extension = 0,
-            .evtype = XI_ButtonPress,
+            .evtype = event.evtype,
             .cookie = 0,
             .data = &event,
         }};
