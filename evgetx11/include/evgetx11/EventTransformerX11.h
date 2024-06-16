@@ -68,8 +68,8 @@ EvgetX11::EventTransformerX11<Switches...>::EventTransformerX11(XWrapper& xWrapp
 
 template <typename... Switches>
 void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
-    int nDevices;
-    int xi2NDevices;
+    int nDevices = 0;
+    int xi2NDevices = 0;
     // See caveats about mixing XI1 calls with XI2 code:
     // https://github.com/freedesktop/xorg-xorgproto/blob/master/specs/XI2proto.txt
     // This should capture all devices with ids in the range 0-128.

@@ -43,7 +43,7 @@ namespace EvgetX11 {
 class XEventSwitchPointerKey {
 public:
     explicit XEventSwitchPointerKey(
-        XWrapper& xWrapper, XEventSwitch& xEventSwitchPointer
+        XWrapper& xWrapper, XEventSwitch& xEventSwitch
     );
 
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
@@ -79,7 +79,7 @@ private:
     );
 
     std::reference_wrapper<XWrapper> xWrapper;
-    std::reference_wrapper<XEventSwitch> xEventSwitchPointer;
+    std::reference_wrapper<XEventSwitch> xEventSwitch;
 
     std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
     std::unordered_map<int, std::optional<int>> valuatorX{};
@@ -119,14 +119,14 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
     Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    auto button = xEventSwitchPointer.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
-    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
+    auto button = xEventSwitch.get().getButtonName(deviceEvent.deviceid, deviceEvent.detail);
+    if (!xEventSwitch.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated) ||
         button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;
     }
 
-    xEventSwitchPointer.get()
+    xEventSwitch.get()
         .addButtonEvent(deviceEvent, event.getTimestamp(), data, action, deviceEvent.detail, getTime);
 }
 
@@ -136,7 +136,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
+    if (!xEventSwitch.get().hasDevice(deviceEvent.deviceid)) {
         return;
     }
 
@@ -157,7 +157,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     builder.interval(getTime(deviceEvent.time))
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y)
-        .device(xEventSwitchPointer.get().getDevice(deviceEvent.deviceid))
+        .device(xEventSwitch.get().getDevice(deviceEvent.deviceid))
         .timestamp(event.getTimestamp())
         .action(action)
         .button(deviceEvent.detail)
@@ -165,9 +165,9 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
         .name(name);
 
     XEventSwitch::setModifierValue(deviceEvent.mods.effective, builder);
-    xEventSwitchPointer.get().setWindowFields(builder);
+    xEventSwitch.get().setWindowFields(builder);
 
-    xEventSwitchPointer.get().setDeviceNameFields(builder, deviceEvent);
+    xEventSwitch.get().setDeviceNameFields(builder, deviceEvent);
 
     builder.build(data);
 }
@@ -178,7 +178,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
+    if (!xEventSwitch.get().hasDevice(deviceEvent.deviceid) || !scrollMap.contains(deviceEvent.deviceid) ||
         deviceEvent.flags & XIPointerEmulated) {
         return;
     }
@@ -209,14 +209,14 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
 
     builder.interval(getTime(deviceEvent.time))
         .timestamp(event.getTimestamp())
-        .device(xEventSwitchPointer.get().getDevice(deviceEvent.deviceid))
+        .device(xEventSwitch.get().getDevice(deviceEvent.deviceid))
         .positionX(deviceEvent.root_x)
         .positionY(deviceEvent.root_y);
 
     XEventSwitch::setModifierValue(deviceEvent.mods.effective, builder);
-    xEventSwitchPointer.get().setWindowFields(builder);
+    xEventSwitch.get().setWindowFields(builder);
 
-    xEventSwitchPointer.get().setDeviceNameFields(builder, deviceEvent);
+    xEventSwitch.get().setDeviceNameFields(builder, deviceEvent);
 
     builder.build(data);
 }
@@ -227,14 +227,14 @@ void EvgetX11::XEventSwitchPointerKey::motionEvent(
     Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (!xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
+    if (!xEventSwitch.get().hasDevice(deviceEvent.deviceid) || (deviceEvent.flags & XIPointerEmulated)) {
         return;
     }
 
     auto valuators = getValuators(deviceEvent.valuators);
     for (const auto& [valuator, value] : valuators) {
         if (valuator == valuatorX[deviceEvent.deviceid] || valuator == valuatorY[deviceEvent.deviceid]) {
-            xEventSwitchPointer.get().addMotionEvent(deviceEvent, event.getTimestamp(), data, getTime);
+            xEventSwitch.get().addMotionEvent(deviceEvent, event.getTimestamp(), data, getTime);
             break;
         }
     }

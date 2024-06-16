@@ -23,9 +23,9 @@
 #include "evgetx11/XEventSwitchPointerKey.h"
 
 EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(
-    XWrapper& xWrapper, XEventSwitch& xEventSwitchPointer
+    XWrapper& xWrapper, XEventSwitch& xEventSwitch
 )
-    : xWrapper{xWrapper}, xEventSwitchPointer{xEventSwitchPointer} {
+    : xWrapper{xWrapper}, xEventSwitch{xEventSwitch} {
 }
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
@@ -34,7 +34,7 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     const std::string& name,
     const XIDeviceInfo& info
 ) {
-    xEventSwitchPointer.get().refreshDevices(id, device, name, info);
+    xEventSwitch.get().refreshDevices(id, device, name, info);
 
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};
