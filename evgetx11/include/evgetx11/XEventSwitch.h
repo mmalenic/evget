@@ -114,9 +114,14 @@ public:
     template <BuilderHasDeviceNameFunctions T>
     T& setDeviceNameFields(T& builder, const XIDeviceEvent& event);
 
-private:
+    /**
+     * Set the button map for a device.
+     * @param buttonInfo button info
+     * @param id device id
+     */
     void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
 
+private:
     std::reference_wrapper<XWrapper> xWrapper;
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     std::unordered_map<int, EvgetCore::Event::Device> devices{};

@@ -28,22 +28,98 @@
 #include "evgetx11/XEventSwitch.h"
 
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperMock, {}};
+
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
     auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
+    deviceEvent.deviceid = 1;
 
-    std::vector<EvgetCore::Event::Data> data{};
-    //    EvgetX11::XEventSwitch::addButtonEvent(deviceEvent, std::chrono::nanoseconds{1}, {}, data,
-    //    EvgetCore::Event::ButtonAction::Press, 1);
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
-    auto genericData = data.at(0);
+    EXPECT_CALL(xWrapperMock, getDeviceButtonMapping)
+    .WillOnce(testing::Return(
+        testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1))
+    ));
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0;
+            }})
+        ));
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+    .WillOnce(testing::Return(
+        testing::ByMove<std::optional<Window> >({std::nullopt})
+    ));
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+    .WillOnce(testing::Return(
+        testing::ByMove<std::optional<Window> >({std::nullopt})
+    ));
 
-    //    ASSERT_EQ(genericData.getFieldAt(0).getEntry(), "1");
-    //    ASSERT_EQ(genericData.getFieldAt(2).getEntry(), "Mouse");
-    //    ASSERT_EQ(genericData.getFieldAt(3).getEntry(), "1");
-    //    ASSERT_EQ(genericData.getFieldAt(4).getEntry(), "1");
-    //    ASSERT_EQ(genericData.getFieldAt(5).getEntry(), "Press");
-    //    ASSERT_EQ(genericData.getFieldAt(6).getEntry(), "1");
-    //    ASSERT_EQ(genericData.getFieldAt(7).getEntry(), "1");
+    xEventSwitch.setButtonMap(buttonClassInfo, 1);
+    xEventSwitch.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", {});
+
+    EvgetCore::Event::Data data{};
+    xEventSwitch.addButtonEvent(deviceEvent, EvgetCore::Event::Timestamp{}, data, EvgetCore::Event::ButtonAction::Press, 0, [](Time _) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    auto entries = data.entries();
+
+    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(0).data().at(0), "1");
+    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(4), "name");
+    ASSERT_EQ(entries.at(0).data().at(11), "0");
+    ASSERT_EQ(entries.at(0).data().at(12), "0");
+    ASSERT_EQ(entries.at(0).data().at(13), "MOUSE");
+    ASSERT_EQ(entries.at(0).data().at(14), "0");
+}
+
+TEST(XEventSwitchPointerTest, TestAddMotionEvent) {  // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperMock, {}};
+
+    auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
+    valuatorClassInfo.number = 0;
+
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo)};
+    char name[] = "name";
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
+    xiDeviceInfo.deviceid = 0;
+
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_Motion, buttonMask, valuatorMask, values);
+    deviceEvent.deviceid = 0;
+
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+    .WillOnce(testing::Return(
+        testing::ByMove<std::optional<Window> >({std::nullopt})
+    ));
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+    .WillOnce(testing::Return(
+        testing::ByMove<std::optional<Window> >({std::nullopt})
+    ));
+
+    xEventSwitch.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", {});
+
+    EvgetCore::Event::Data data{};
+    xEventSwitch.addMotionEvent(deviceEvent, EvgetCore::Event::Timestamp{}, data, [](Time _) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    auto entries = data.entries();
+
+    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).data().at(0), "1");
+    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(4), "name");
+    ASSERT_EQ(entries.at(0).data().at(11), "0");
 }
