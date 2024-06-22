@@ -64,14 +64,14 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     switch (event.getEventType()) {
         case XI_TouchBegin:
             touchMotion(event, data, getTime);
-        touchButton(event, data, EvgetCore::Event::ButtonAction::Press, getTime);
+            touchButton(event, data, EvgetCore::Event::ButtonAction::Press, getTime);
         return true;
         case XI_TouchUpdate:
             touchMotion(event, data, getTime);
         return true;
         case XI_TouchEnd:
             touchMotion(event, data, getTime);
-        touchButton(event, data, EvgetCore::Event::ButtonAction::Release, getTime);
+            touchButton(event, data, EvgetCore::Event::ButtonAction::Release, getTime);
         return true;
         default:
             return false;

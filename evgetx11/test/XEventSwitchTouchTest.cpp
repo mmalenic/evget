@@ -51,7 +51,7 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
     std::array<unsigned char, 1> buttonMask = {1};
     std::array<unsigned char, 1> valuatorMask = {1};
     std::array<double, 1> values = {1};
-    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_ButtonPress, buttonMask, valuatorMask, values);
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_TouchBegin, buttonMask, valuatorMask, values);
 
     auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
     EXPECT_CALL(xWrapperMock, eventData)
@@ -65,17 +65,17 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
         ));
     EXPECT_CALL(xWrapperMock, atomName)
         .WillOnce(testing::Return(
-            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_MOUSE, [](void* _) { return 0;
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_TOUCHSCREEN, [](void* _) { return 0;
             }})
         ));
     EXPECT_CALL(xWrapperMock, getActiveWindow)
-    .WillOnce(testing::Return(
-        testing::ByMove<std::optional<Window> >({std::nullopt})
-    ));
+    .WillRepeatedly([]() {
+        return std::nullopt;
+    });
     EXPECT_CALL(xWrapperMock, getFocusWindow)
-    .WillOnce(testing::Return(
-        testing::ByMove<std::optional<Window> >({std::nullopt})
-    ));
+    .WillRepeatedly([]() {
+        return std::nullopt;
+    });
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
@@ -88,13 +88,141 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
     ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
-    ASSERT_EQ(entries.at(0).data().at(12), "0");
-    ASSERT_EQ(entries.at(0).data().at(13), "MOUSE");
-    ASSERT_EQ(entries.at(0).data().at(14), "0");
+
+    ASSERT_EQ(entries.at(1).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(1).data().at(0), "1");
+    ASSERT_EQ(entries.at(1).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(4), "name");
+    ASSERT_EQ(entries.at(1).data().at(11), "0");
+    ASSERT_EQ(entries.at(1).data().at(12), "0");
+    ASSERT_EQ(entries.at(1).data().at(13), "TOUCHSCREEN");
+    ASSERT_EQ(entries.at(1).data().at(14), "0");
+}
+
+TEST(XEventSwitchTouchTest, TestTouchUpdate) {  // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperMock, {}};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{xEventSwitch};
+
+    auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
+    valuatorClassInfo.number = 0;
+
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo)};
+    char name[] = "name";
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
+    xiDeviceInfo.deviceid = 0;
+
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_TouchUpdate, buttonMask, valuatorMask, values);
+    deviceEvent.deviceid = 0;
+
+    auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
+    EXPECT_CALL(xWrapperMock, eventData)
+        .WillOnce(
+            testing::Return(testing::ByMove<EvgetX11::XEventPointer>({&xEvent.xcookie, [](XGenericEventCookie*) {}}))
+        );
+    EXPECT_CALL(xWrapperMock, nextEvent)
+        .WillOnce(testing::Return(testing::ByMove(EvgetX11TestUtils::createXEvent(deviceEvent))));
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+
+    auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
+
+    xEventSwitch.refreshDevices(0, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+
+    auto data = EvgetCore::Event::Data{};
+    xEventSwitchTouch.switchOnEvent(inputEvent, data, [](Time _) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    auto entries = data.entries();
+
+    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).data().at(0), "1");
+    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(4), "name");
+    ASSERT_EQ(entries.at(0).data().at(11), "0");
+}
+
+TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(cert-err58-cpp)
+    EvgetX11TestUtils::XWrapperMock xWrapperMock{};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperMock, {}};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{xEventSwitch};
+
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
+
+    std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&buttonClassInfo)};
+    char name[] = "name";
+    auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
+
+    std::array<unsigned char, 1> buttonMask = {1};
+    std::array<unsigned char, 1> valuatorMask = {1};
+    std::array<double, 1> values = {1};
+    auto deviceEvent = EvgetX11TestUtils::createXIDeviceEvent(XI_TouchEnd, buttonMask, valuatorMask, values);
+
+    auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
+    EXPECT_CALL(xWrapperMock, eventData)
+        .WillOnce(testing::Return(
+            testing::ByMove<EvgetX11::XEventPointer>({&xEvent.xcookie, [](XGenericEventCookie*) {}})
+        ));
+    EXPECT_CALL(xWrapperMock, nextEvent).WillOnce(testing::Return(testing::ByMove(EvgetX11TestUtils::createXEvent(deviceEvent))));
+    EXPECT_CALL(xWrapperMock, getDeviceButtonMapping)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1))
+        ));
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(testing::Return(
+            testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_TOUCHSCREEN, [](void* _) { return 0;
+            }})
+        ));
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+    .WillRepeatedly([]() {
+        return std::nullopt;
+    });
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+    .WillRepeatedly([]() {
+        return std::nullopt;
+    });
+
+    auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
+
+    xEventSwitch.refreshDevices(1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+
+    auto data = EvgetCore::Event::Data{};
+    xEventSwitchTouch.switchOnEvent(inputEvent, data, [](Time _) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    auto entries = data.entries();
+
+    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).data().at(0), "1");
+    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(4), "name");
+    ASSERT_EQ(entries.at(0).data().at(11), "0");
+
+    ASSERT_EQ(entries.at(1).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(1).data().at(0), "1");
+    ASSERT_EQ(entries.at(1).data().at(2), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(4), "name");
+    ASSERT_EQ(entries.at(1).data().at(11), "0");
+    ASSERT_EQ(entries.at(1).data().at(12), "0");
+    ASSERT_EQ(entries.at(1).data().at(13), "TOUCHSCREEN");
+    ASSERT_EQ(entries.at(1).data().at(14), "1");
 }
