@@ -7,10 +7,9 @@ target_sources(
             EventLoopX11.cpp
             XEventSwitch.cpp
             XEventSwitchPointerKey.cpp
-            XEventSwitchTouch.cpp
             XInputHandler.cpp
 )
 
 if(EVGETX11_HAS_TOUCH_SUPPORT)
-    target_sources(${PROJECT_NAME} PRIVATE XSetMaskTouch.cpp)
+    target_sources(${PROJECT_NAME} PRIVATE XEventSwitchTouch.cpp XSetMaskTouch.cpp)
 endif()

@@ -55,6 +55,52 @@ private:
 
     std::reference_wrapper<XEventSwitch> xEventSwitchPointer;
 };
+
+bool EvgetX11::XEventSwitchTouch::switchOnEvent(
+    const EvgetX11::XInputEvent& event,
+    EvgetCore::Event::Data& data,
+    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    switch (event.getEventType()) {
+        case XI_TouchBegin:
+            touchMotion(event, data, getTime);
+        touchButton(event, data, EvgetCore::Event::ButtonAction::Press, getTime);
+        return true;
+        case XI_TouchUpdate:
+            touchMotion(event, data, getTime);
+        return true;
+        case XI_TouchEnd:
+            touchMotion(event, data, getTime);
+        touchButton(event, data, EvgetCore::Event::ButtonAction::Release, getTime);
+        return true;
+        default:
+            return false;
+    }
+}
+
+void EvgetX11::XEventSwitchTouch::touchButton(
+    const EvgetX11::XInputEvent& event,
+    EvgetCore::Event::Data& data,
+    EvgetCore::Event::ButtonAction action,
+    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
+        xEventSwitchPointer.get()
+            .addButtonEvent(deviceEvent, event.getTimestamp(), data, action, deviceEvent.detail, getTime);
+    }
+}
+
+void EvgetX11::XEventSwitchTouch::touchMotion(
+    const EvgetX11::XInputEvent& event,
+    EvgetCore::Event::Data& data,
+    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+) {
+    auto deviceEvent = event.viewData<XIDeviceEvent>();
+    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
+        xEventSwitchPointer.get().addMotionEvent(deviceEvent, event.getTimestamp(), data, getTime);
+    }
+}
 }  // namespace EvgetX11
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
