@@ -54,15 +54,3 @@ if(EVGETX11_HAS_FEATURE)
     add_subdirectory(evgetx11)
     target_link_libraries(${PROJECT_NAME} PUBLIC evgetx11)
 endif()
-
-add_subdirectory(evwatch)
-
-check_includes(RETURN_VAR LISTINPUTDEVICES_HAS_FEATURE REQUIRES fcntl.h linux/input.h)
-if(LISTINPUTDEVICES_HAS_FEATURE)
-    add_subdirectory(listinputdevices)
-endif()
-
-check_includes(RETURN_VAR EVWATCHSIG_HAS_FEATURE REQUIRES signal.h)
-if(EVWATCHSIG_HAS_FEATURE)
-    add_subdirectory(evwatchsig)
-endif()
