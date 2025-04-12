@@ -15,12 +15,31 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 23)
-include("${CMAKE_SOURCE_DIR}/utils.cmake")
-project(evget)
 
-set(BUILD_TESTING 1)
+# x-release-please-start-version
+project(
+    evget
+    VERSION 1.0.4
+    DESCRIPTION "record input device events"
+    HOMEPAGE_URL "https://github.com/mmalenic/evget"
+)
+# x-release-please-end
+
+if(NOT DEFINED toolbelt_SOURCE_DIR)
+    include(FetchContent)
+    # Fetch content from this repo.
+    FetchContent_Declare(
+            toolbelt
+            GIT_REPOSITORY https://github.com/mmalenic/cmake-toolbelt
+            GIT_TAG v0.3.1
+    )
+    FetchContent_MakeAvailable(toolbelt)
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${toolbelt_SOURCE_DIR}/src")
+include(toolbelt)
 
 add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
 
