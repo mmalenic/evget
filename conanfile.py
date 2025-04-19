@@ -1,28 +1,6 @@
-# MIT License
-#
-# Copyright (c) 2021 Marko Malenic
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import cmake_layout, CMakeToolchain, CMake
 from conan import ConanFile
-
 
 
 class EvgetRecipe(ConanFile):
@@ -32,7 +10,7 @@ class EvgetRecipe(ConanFile):
     license = 'MIT'
     author = "Marko Malenic (mmalenic1@gmail.com)"
     # x-release-please-start-version
-    version = "0.1"
+    version = "0.1.0"
     # x-release-please-end
 
     requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]'
@@ -76,14 +54,14 @@ class EvgetRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
 
-        tc.variables["EVLIST_BUILD_BIN"] = self.options.build_bin
+        tc.variables["EVGET_BUILD_BIN"] = self.options.build_bin
         tc.variables["BUILD_TESTING"] = self.options.build_testing
-        tc.variables["EVLIST_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
-        tc.variables["EVLIST_INSTALL_BIN"] = self.options.install_bin
-        tc.variables["EVLIST_INSTALL_LIB"] = self.options.install_lib
+        tc.variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
+        tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
+        tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
 
         if self.options.clang_tidy_executable:
-            tc.variables["EVLIST_CLANG_TIDY_EXECUTABLE"] = (
+            tc.variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
                 self.options.clang_tidy_executable
             )
         if self.options.compiler_launcher:
@@ -92,8 +70,13 @@ class EvgetRecipe(ConanFile):
 
         tc.generate()
 
+    def package_info(self):
+        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::uuid', 'boost::numeric-conversion']
+
     def layout(self):
         cmake_layout(self)
 
-    def package_info(self):
-        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::uuid', 'boost::numeric-conversion']
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()

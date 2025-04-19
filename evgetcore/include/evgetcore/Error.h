@@ -26,7 +26,7 @@
 #include <expected>
 #include <string>
 
-namespace Util {
+namespace EvgetCore {
 /**
  * Invocable concept with a checked return type.
  */
