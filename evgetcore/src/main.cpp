@@ -29,23 +29,15 @@
 #include <cstring>
 #include <iostream>
 
-#include "async/scheduler/Interval.h"
-#include "async/scheduler/Scheduler.h"
-#include "clioption/Error.h"
-#include "database/Migrate.h"
-#include "database/sqlite/Connection.h"
-#include "database/sqlite/Query.h"
+#include "evgetcore/async/scheduler/Interval.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
+#include "evgetcore/database/Migrate.h"
+#include "evgetcore/database/sqlite/Connection.h"
+#include "evgetcore/database/sqlite/Query.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
 #include "evgetcore/Storage/DatabaseStorage.h"
 #include "evgetcore/Storage/JsonStorage.h"
-#include "evgetx11/EventLoopX11.h"
-#include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XEventSwitchPointerKey.h"
-#include "evgetx11/XSetMaskCore.h"
-#include "evgetx11/XSetMaskRefresh.h"
-#include "evgetx11/XWrapperX11.h"
 #include "schema/initialize.h"
 
 int main(int argc, char* argv[]) {

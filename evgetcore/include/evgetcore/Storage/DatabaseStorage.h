@@ -24,9 +24,8 @@
 #define DATABASE_STORAGE_H
 
 #include <SQLiteCpp/Database.h>
-#include <boost/asio.hpp>
 
-#include "database/Connection.h"
+#include "evgetcore/database/Connection.h"
 #include "Error.h"
 #include "Store.h"
 #include "boost/uuid/uuid.hpp"

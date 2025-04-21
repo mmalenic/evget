@@ -10,7 +10,7 @@ update:
 
 # Build evget.
 build build_type='Debug' $COMPILER_VERSION='' *build_options='': profile clean_cache
-    conan build . -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ build_options }}
+    conan build . --build=missing -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ build_options }}
 
 # Build with the clang profile.
 build_clang build_type='Debug' $COMPILER_VERSION='19' *build_options='': \

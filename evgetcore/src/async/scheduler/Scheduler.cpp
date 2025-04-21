@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-#include "async/scheduler/Scheduler.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
 }

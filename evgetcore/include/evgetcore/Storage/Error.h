@@ -27,8 +27,6 @@
 #include <exception>
 #include <expected>
 
-#include "util/Util.h"
-
 namespace EvgetCore::Storage {
     /**
      * \brief Error type enum.

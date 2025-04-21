@@ -37,7 +37,6 @@
 #include "Device.h"
 #include "Graph.h"
 #include "ModifierValue.h"
-#include "util/Util.h"
 #include "Entry.h"
 
 namespace EvgetCore::Event {

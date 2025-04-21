@@ -29,8 +29,8 @@
 
 #include <variant>
 
-#include "database/Query.h"
-#include "database/sqlite/Connection.h"
+#include "evgetcore/database/Query.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 namespace Database::SQLite {
 class Query : public Database::Query {

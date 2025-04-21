@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-#include "async/scheduler/Interval.h"
+#include "evgetcore/async/scheduler/Interval.h"
 
 #include <spdlog/spdlog.h>
 

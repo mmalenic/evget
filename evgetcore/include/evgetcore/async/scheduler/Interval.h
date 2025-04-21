@@ -24,11 +24,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <boost/asio.hpp>
+#include <chrono>
 
 #include <iostream>
-
-#include "util/Util.h"
+#include <boost/asio.hpp>
 
 namespace Async {
 

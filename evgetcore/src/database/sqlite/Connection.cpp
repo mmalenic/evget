@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "database/sqlite/Connection.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 #include <spdlog/spdlog.h>
 
-#include "database/sqlite/Query.h"
+#include "evgetcore/database/sqlite/Query.h"
 
 Database::Result<void> Database::SQLite::Connection::connect(std::string database, ConnectOptions options) {
     try {

@@ -23,10 +23,6 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINE_H
 #define INPUT_EVENT_RECORDER_COMMANDLINE_H
 
-#include <clioption/Option.h>
-#include <clioption/OptionFlag.h>
-#include <clioption/OptionValidated.h>
-#include <clioption/Parser.h>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>

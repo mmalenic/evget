@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "database/sqlite/Query.h"
+#include "evgetcore/database/sqlite/Query.h"
 
 #include <spdlog/spdlog.h>
 

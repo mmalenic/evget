@@ -27,8 +27,6 @@
 #include <exception>
 #include <expected>
 
-#include "util/Util.h"
-
 namespace Database {
     /**
      * \brief Error type enum.

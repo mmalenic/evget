@@ -13,7 +13,7 @@ class EvgetRecipe(ConanFile):
     version = "0.1.0"
     # x-release-please-end
 
-    requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]'
+    requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]', 'asio/[^1]'
     test_requires = "gtest/[^1]"
 
     settings = "os", "compiler", "build_type", "arch"
@@ -36,6 +36,9 @@ class EvgetRecipe(ConanFile):
         # Add a cmake install command after for the library target:
         # https://cmake.org/cmake/help/latest/command/install.html
         "install_lib": [True, False],
+        # Export a compilation database using CMAKE_EXPORT_COMPILE_COMMANDS:
+        # https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
+        "export_compilation_database": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -45,6 +48,7 @@ class EvgetRecipe(ConanFile):
         "compiler_launcher": None,
         "install_bin": True,
         "install_lib": True,
+        "export_compilation_database": True,
     }
 
     def validate(self):
@@ -67,6 +71,8 @@ class EvgetRecipe(ConanFile):
         if self.options.compiler_launcher:
             tc.variables["CMAKE_C_COMPILER_LAUNCHER"] = self.options.compiler_launcher
             tc.variables["CMAKE_CXX_COMPILER_LAUNCHER"] = self.options.compiler_launcher
+        if self.options.export_compilation_database:
+            tc.variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
 
         tc.generate()
 

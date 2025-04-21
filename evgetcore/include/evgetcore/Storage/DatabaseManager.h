@@ -28,9 +28,9 @@
 #include <spdlog/spdlog.h>
 
 #include "Store.h"
-#include "async/container/LockingVector.h"
-#include "async/scheduler/Interval.h"
-#include "async/scheduler/Scheduler.h"
+#include "evgetcore/async/container/LockingVector.h"
+#include "evgetcore/async/scheduler/Interval.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 namespace EvgetCore::Storage {
 

@@ -28,8 +28,8 @@
 
 #include <optional>
 
-#include "database/Connection.h"
-#include "database/Query.h"
+#include "evgetcore/database/Connection.h"
+#include "evgetcore/database/Query.h"
 
 namespace Database::SQLite {
 class Connection : public Database::Connection {

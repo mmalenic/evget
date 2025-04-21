@@ -88,6 +88,7 @@ toolbelt_embed(${QUERIES_GENERATED}/insert_mouse_scroll_modifier.h insert_mouse_
 target_include_directories(${PROJECT_NAME} PRIVATE ${cmake_toolbelt_ret})
 
 toolbelt_add_dep(${PROJECT_NAME} spdlog VISIBILITY PUBLIC LINK_COMPONENTS spdlog::spdlog)
+toolbelt_add_dep(${PROJECT_NAME} asio VISIBILITY PUBLIC LINK_COMPONENTS asio::asio)
 toolbelt_add_dep(
     ${PROJECT_NAME}
     Boost

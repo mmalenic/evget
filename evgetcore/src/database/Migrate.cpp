@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "database/Migrate.h"
+#include "evgetcore/database/Migrate.h"
 
 #include <spdlog/spdlog.h>
 

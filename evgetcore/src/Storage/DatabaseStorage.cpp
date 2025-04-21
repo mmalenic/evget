@@ -40,7 +40,7 @@
 #include "queries/insert_mouse_scroll.h"
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
-#include "database/Migrate.h"
+#include "evgetcore/database/Migrate.h"
 
 EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::reference_wrapper<::Database::Connection> connection, std::string database)
     : connection{connection}, database{std::move(database)} {
