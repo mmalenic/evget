@@ -29,7 +29,9 @@
 #include <iostream>
 #include <boost/asio.hpp>
 
-namespace Async {
+#include "evgetcore/Error.h"
+
+namespace EvgetCore {
 
 namespace asio = boost::asio;
 
@@ -49,7 +51,7 @@ public:
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
-    asio::awaitable<Util::Result<void, boost::system::error_code>> tick();
+    asio::awaitable<Result<void>> tick();
 
     /**
      * \brief Reset the interval to expire one period after the current time. Not thread-safe.

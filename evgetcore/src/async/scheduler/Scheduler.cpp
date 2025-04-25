@@ -23,27 +23,27 @@
 
 #include "evgetcore/async/scheduler/Scheduler.h"
 
-Async::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
+EvgetCore::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
 }
 
-void Async::Scheduler::join() {
+void EvgetCore::Scheduler::join() {
     pool.join();
 }
 
-void Async::Scheduler::stop() {
+void EvgetCore::Scheduler::stop() {
     stopped.store(true);
     pool.stop();
 }
 
-boost::asio::awaitable<bool> Async::Scheduler::isStopped() {
+boost::asio::awaitable<bool> EvgetCore::Scheduler::isStopped() {
     co_return stopped.load();
 }
 
-boost::asio::thread_pool::executor_type Async::Scheduler::getExecutor() {
+boost::asio::thread_pool::executor_type EvgetCore::Scheduler::getExecutor() {
     return pool.get_executor();
 }
 
-void Async::Scheduler::log_exception(std::exception_ptr e) {
+void EvgetCore::Scheduler::log_exception(std::exception_ptr e) {
     try {
         if (e) {
             std::rethrow_exception(e);

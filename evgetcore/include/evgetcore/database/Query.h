@@ -23,9 +23,9 @@
 #ifndef DATABASE_QUERY_H
 #define DATABASE_QUERY_H
 
-#include "Error.h"
+#include "evgetcore/Error.h"
 
-namespace Database {
+namespace EvgetCore {
 
 /**
  * \brief An interface representing a query.

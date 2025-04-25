@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 //    //
         spdlog::set_level(spdlog::level::trace);
 
-        Async::Scheduler scheduler{};
+        EvgetCore::Scheduler scheduler{};
 
         // scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
         //     while (!co_await scheduler.isStopped()) {
@@ -117,49 +117,49 @@ int main(int argc, char* argv[]) {
         //     std::cout << value << "\n";
         // });
 
-        boost::asio::thread_pool pool{};
-        auto context = pool.get_executor();
+        // boost::asio::thread_pool pool{};
+        // auto context = pool.get_executor();
+        //
+        // Display* display = XOpenDisplay(nullptr);
+        // EvgetX11::XWrapperX11 xWrapperX11{*display};
+        //
+        // EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
+        // EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
+        //
+        // EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
+        //
+        // EvgetX11::XSetMaskCore setCore{};
+        // EvgetX11::XSetMaskRefresh setRefresh{};
+        //
+        // EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
+        //
+        // EvgetX11::EventLoopX11 eventLoop{xInputHandler};
+        //
+        // //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
+        //
+        // EvgetCore::Storage::JsonStorage storage{std::cout};
+        //
+        // auto connect = EvgetCore::SQLite::Connection{};
 
-        Display* display = XOpenDisplay(nullptr);
-        EvgetX11::XWrapperX11 xWrapperX11{*display};
-
-        EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
-        EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
-
-        EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
-
-        EvgetX11::XSetMaskCore setCore{};
-        EvgetX11::XSetMaskRefresh setRefresh{};
-
-        EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
-
-        EvgetX11::EventLoopX11 eventLoop{xInputHandler};
-
-        //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
-
-        EvgetCore::Storage::JsonStorage storage{std::cout};
-
-        auto connect = Database::SQLite::Connection{};
-
-        EvgetCore::Storage::DatabaseStorage sqlite{connect, "evget_database"};
-
-        EvgetCore::Storage::DatabaseManager manager{scheduler, {storage}, 1};
-        // sqlite.init();
-
-        scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-            while (!co_await scheduler.isStopped()) {
-                auto event = xInputHandler.getEvent();
-
-                auto transformed = transformer.transformEvent(std::move(event));
-
-                // storage.store(transformed);
-                manager.store(transformed);
-            }
-            co_return;
-        }, [&scheduler]() {
-            scheduler.stop();
-            std::cout << "exception\n";
-        });
+        // EvgetCore::Storage::DatabaseStorage sqlite{connect, "evget_database"};
+        //
+        // EvgetCore::Storage::DatabaseManager manager{scheduler, {storage}, 1};
+        // // sqlite.init();
+        //
+        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
+        //     while (!co_await scheduler.isStopped()) {
+        //         auto event = xInputHandler.getEvent();
+        //
+        //         auto transformed = transformer.transformEvent(std::move(event));
+        //
+        //         // storage.store(transformed);
+        //         manager.store(transformed);
+        //     }
+        //     co_return;
+        // }, [&scheduler]() {
+        //     scheduler.stop();
+        //     std::cout << "exception\n";
+        // });
 
 
         auto timeNow = std::chrono::steady_clock::now();

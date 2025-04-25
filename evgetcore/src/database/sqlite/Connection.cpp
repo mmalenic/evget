@@ -26,7 +26,7 @@
 
 #include "evgetcore/database/sqlite/Query.h"
 
-Database::Result<void> Database::SQLite::Connection::connect(std::string database, ConnectOptions options) {
+EvgetCore::Result<void> EvgetCore::SQLiteConnection::connect(std::string database, ConnectOptions options) {
     try {
         switch (options) {
             case ConnectOptions::READ_ONLY:
@@ -49,13 +49,13 @@ Database::Result<void> Database::SQLite::Connection::connect(std::string databas
     }
 }
 
-std::optional<std::reference_wrapper<::SQLite::Database>> Database::SQLite::Connection::database() {
+std::optional<std::reference_wrapper<::SQLite::Database>> EvgetCore::SQLiteConnection::database() {
     return database_.transform([](::SQLite::Database& database) {
         return std::ref(database);
     });
 }
 
-Database::Result<void> Database::SQLite::Connection::commit() {
+EvgetCore::Result<void> EvgetCore::SQLiteConnection::commit() {
     if (!transaction_.has_value()) {
         return connectError("transaction not started");
     }
@@ -71,7 +71,7 @@ Database::Result<void> Database::SQLite::Connection::commit() {
     return {};
 }
 
-Database::Result<void> Database::SQLite::Connection::transaction() {
+EvgetCore::Result<void> EvgetCore::SQLiteConnection::transaction() {
     if (!this->database_.has_value()) {
         return connectError("no database connected");
     }
@@ -87,15 +87,15 @@ Database::Result<void> Database::SQLite::Connection::transaction() {
     return {};
 }
 
-std::unique_ptr<Database::Query> Database::SQLite::Connection::buildQuery(std::string query) {
-    return std::make_unique<Query>(*this, query);
+std::unique_ptr<EvgetCore::Query> EvgetCore::SQLiteConnection::buildQuery(std::string query) {
+    return std::make_unique<EvgetCore::SQLiteQuery>(*this, query);
 }
 
-Database::Err Database::SQLite::Connection::connectError(const char* message) {
-    return Err{{.errorType = ErrorType::ConnectError, .message = message}};
+EvgetCore::Err EvgetCore::SQLiteConnection::connectError(const char* message) {
+    return Err{Error{.errorType = ErrorType::DatabaseError, .message = message}};
 }
 
-Database::Result<void> Database::SQLite::Connection::rollback() {
+EvgetCore::Result<void> EvgetCore::SQLiteConnection::rollback() {
     if (!transaction_.has_value()) {
         return connectError("transaction not started");
     }

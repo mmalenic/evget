@@ -23,12 +23,12 @@
 
 #include "evgetcore/Storage/DatabaseManager.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(Async::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
+EvgetCore::Storage::DatabaseManager::DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
 scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, storeAfterInterval{storeAfter}, data{} {
     storeAfterTask();
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
+EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data event) {
     data.push_back(std::move(event));
     Result<void> outResult = {};
 
@@ -37,7 +37,7 @@ EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::store(Even
     return outResult;
 }
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
+EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
     for (auto store : storeIn) {
         auto result = store.get().store(event);
 
@@ -75,7 +75,7 @@ void EvgetCore::Storage::DatabaseManager::storeAfterTask() {
             spdlog::debug(fmt::format("timer threshold of {} seconds reached", storeAfterInterval.period().count()));
 
             if (!result.has_value()) {
-                co_return Err{Util::Error {
+                co_return Err{Error {
                     .errorType = ErrorType::DatabaseManager,
                     .message = result.error().message
                 }};

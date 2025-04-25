@@ -7,7 +7,6 @@ target_sources(
         ${INCLUDE}/database/sqlite/Connection.h
         ${INCLUDE}/database/sqlite/Query.h
         ${INCLUDE}/database/Connection.h
-        ${INCLUDE}/database/Error.h
         ${INCLUDE}/database/Migrate.h
         ${INCLUDE}/database/Query.h
         ${INCLUDE}/EventTransformer.h
@@ -28,7 +27,6 @@ target_sources(
     ${INCLUDE}/Event/Graph.h
         ${INCLUDE}/Storage/JsonStorage.h
         ${INCLUDE}/Storage/DatabaseStorage.h
-        ${INCLUDE}/Storage/Error.h
         ${INCLUDE}/Event/Data.h
         ${INCLUDE}/Event/Entry.h
         ${INCLUDE}/Storage/DatabaseManager.h
@@ -100,6 +98,7 @@ toolbelt_add_dep(
 toolbelt_add_dep(${PROJECT_NAME} date VISIBILITY PUBLIC LINK_COMPONENTS date::date)
 toolbelt_add_dep(${PROJECT_NAME} nlohmann_json VISIBILITY PUBLIC LINK_COMPONENTS nlohmann_json::nlohmann_json)
 toolbelt_add_dep(${PROJECT_NAME} SQLiteCpp VISIBILITY PUBLIC LINK_COMPONENTS SQLiteCpp)
+toolbelt_add_dep(${PROJECT_NAME} cryptopp VISIBILITY PUBLIC LINK_COMPONENTS cryptopp::cryptopp)
 
 #if(BUILD_TESTING)
 #    set(TEST_EXECUTABLE_NAME evgetcoretest)

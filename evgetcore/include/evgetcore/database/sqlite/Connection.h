@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SQLITE_H
-#define SQLITE_H
+#ifndef SQLITE_CPP_H
+#define SQLITE_CPP_H
 
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
@@ -31,10 +31,10 @@
 #include "evgetcore/database/Connection.h"
 #include "evgetcore/database/Query.h"
 
-namespace Database::SQLite {
-class Connection : public Database::Connection {
+namespace EvgetCore {
+class SQLiteConnection : public Connection {
 public:
-    Connection() = default;
+    SQLiteConnection() = default;
 
     Result<void> connect(std::string database, ConnectOptions options) override;
     Result<void> transaction() override;
@@ -56,4 +56,4 @@ private:
 };
 }
 
-#endif //SQLITE_H
+#endif //SQLITE_CPP_H

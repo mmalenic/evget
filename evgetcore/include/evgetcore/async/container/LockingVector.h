@@ -28,7 +28,7 @@
 #include <mutex>
 #include <optional>
 
-namespace Async {
+namespace EvgetCore {
 
 /**
  * \brief A thread-safe lockable vector implementation.

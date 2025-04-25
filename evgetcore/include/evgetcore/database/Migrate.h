@@ -26,9 +26,8 @@
 #include <vector>
 
 #include "Connection.h"
-#include "Error.h"
 
-namespace Database {
+namespace EvgetCore {
 
 struct Migration {
     int version;

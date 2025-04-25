@@ -25,33 +25,33 @@
 
 #include <spdlog/spdlog.h>
 
-Async::Interval::Interval(std::chrono::seconds period) : _period{period} {
+EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {
 }
 
-Async::asio::awaitable<Util::Result<void, boost::system::error_code>> Async::Interval::tick() {
+EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() {
     if (!timer.has_value()) {
         timer = asio::steady_timer{co_await asio::this_coro::executor, this->period()};
     }
 
-    auto [error] = co_await timer->async_wait(as_tuple(asio::use_awaitable));
+    auto [error] = co_await timer->async_wait(asio::as_tuple(asio::use_awaitable));
     reset();
 
     if (error) {
         // Changing the timer value while mid async_wait causes the value to be operation_aborted.
         if (error.value() == asio::error::operation_aborted) {
-            co_return Util::Result<void, boost::system::error_code>{};
+            co_return Result<void>{};
         }
 
-        co_return Util::Err{Util::Error{.errorType = error, .message = error.message()}};
+        co_return Err{Error{.errorType = ErrorType::AsyncError, .message = error.message()}};
     }
 
-    co_return Util::Result<void, boost::system::error_code>{};
+    co_return Result<void>{};
 }
 
-void Async::Interval::reset() {
+void EvgetCore::Interval::reset() {
     timer->expires_after(this->period());
 }
 
-std::chrono::seconds Async::Interval::period() const {
+std::chrono::seconds EvgetCore::Interval::period() const {
     return _period;
 }

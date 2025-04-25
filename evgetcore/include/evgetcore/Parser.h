@@ -71,26 +71,26 @@ public:
      */
     [[nodiscard]] spdlog::level::level_enum getLogLevel() const;
 
-    /**
-     * Parse the command line and return a value indicating with the program should continue.
-     *
-     * @param argc from main
-     * @param argv from main
-     * @return whether to continue execution
-     */
-    CliOption::Result<bool> parseCommandLine(int argc, const char** argv);
+    // /**
+    //  * Parse the command line and return a value indicating with the program should continue.
+    //  *
+    //  * @param argc from main
+    //  * @param argv from main
+    //  * @return whether to continue execution
+    //  */
+    // CliOption::Result<bool> parseCommandLine(int argc, const char** argv);
 
 private:
-    CliOption::Parser parser;
-    std::string platformInformation;
-
-    CliOption::OptionFlag help;
-    CliOption::OptionFlag version;
-    CliOption::Option<fs::path> config;
-    CliOption::Option<fs::path> folder;
-    CliOption::OptionFlag print;
-    CliOption::OptionFlag systemEvents;
-    CliOption::OptionValidated<spdlog::level::level_enum> logLevel;
+    // CliOption::Parser parser;
+    // std::string platformInformation;
+    //
+    // CliOption::OptionFlag help;
+    // CliOption::OptionFlag version;
+    // CliOption::Option<fs::path> config;
+    // CliOption::Option<fs::path> folder;
+    // CliOption::OptionFlag print;
+    // CliOption::OptionFlag systemEvents;
+    // CliOption::OptionValidated<spdlog::level::level_enum> logLevel;
 
     /**
      * Get the valid log levels.
@@ -103,17 +103,17 @@ private:
      */
     static std::optional<spdlog::level::level_enum> validateLogLevel(std::string logLevel);
 
-    /**
-     * Format an option.
-     */
-    template <typename T>
-    static std::string formatConfigOption(const CliOption::AbstractOption<T>& option);
-
-    /**
-     * Format an option.
-     */
-    template <typename T>
-    static std::string formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value);
+    // /**
+    //  * Format an option.
+    //  */
+    // template <typename T>
+    // static std::string formatConfigOption(const CliOption::AbstractOption<T>& option);
+    //
+    // /**
+    //  * Format an option.
+    //  */
+    // template <typename T>
+    // static std::string formatConfigOption(const CliOption::AbstractOption<T>& option, const std::string& value);
 
     /**
      * Format the config file.

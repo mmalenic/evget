@@ -32,10 +32,10 @@
 #include "evgetcore/database/Query.h"
 #include "evgetcore/database/sqlite/Connection.h"
 
-namespace Database::SQLite {
-class Query : public Database::Query {
+namespace EvgetCore {
+class SQLiteQuery : public Query {
 public:
-    Query(Connection& connection, std::string query);
+    SQLiteQuery(SQLiteConnection& connection, std::string query);
 
     void bindInt(std::size_t position, int value) override;
     void bindDouble(std::size_t position, double value) override;
@@ -54,7 +54,7 @@ private:
     static Err asError(std::exception& e);
     static Err statementError();
 
-    std::reference_wrapper<Connection> _connection;
+    std::reference_wrapper<SQLiteConnection> _connection;
     std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
     std::optional<::SQLite::Statement> statement;
     std::string query;

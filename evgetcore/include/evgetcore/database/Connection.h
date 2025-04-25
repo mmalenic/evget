@@ -23,11 +23,12 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "Error.h"
 #include "Query.h"
 #include <memory>
 
-namespace Database {
+#include "evgetcore/Error.h"
+
+namespace EvgetCore {
 
 /**
  * \brief Connection options for connecting to a database.

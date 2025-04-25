@@ -22,6 +22,7 @@
 
 #include "evgetcore/database/Migrate.h"
 
+#include <algorithm>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
@@ -30,7 +31,7 @@
 #include "cryptopp/hex.h"
 #include "cryptopp/sha3.h"
 
-Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection} {
+EvgetCore::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection} {
     std::ranges::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
         return a.version < b.version;
     });
@@ -38,7 +39,7 @@ Database::Migrate::Migrate(Connection& connection, std::vector<Migration> migrat
     this->migrations = migrations;
 }
 
-Database::Result<void> Database::Migrate::createMigrationsTable() {
+EvgetCore::Result<void> EvgetCore::Migrate::createMigrationsTable() {
     auto query = this->connection.get().buildQuery(
         "create table if not exists _migrations ("
             "version integer primary key,"
@@ -51,7 +52,7 @@ Database::Result<void> Database::Migrate::createMigrationsTable() {
     return query->nextWhile().and_then([&query] { return query->reset(); });
 }
 
-Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::getAppliedMigrations() {
+EvgetCore::Result<std::vector<EvgetCore::AppliedMigration>> EvgetCore::Migrate::getAppliedMigrations() {
     auto query = this->connection.get().buildQuery(
         "select version, checksum from _migrations order by version;"
     );
@@ -63,7 +64,7 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
         auto checksum = query->asString(1);
 
         if (!version.has_value() || !checksum.has_value()) {
-            return Err{{.errorType = ErrorType::MigrateError, .message = "missing version or checksum"}};
+            return Err{Error{.errorType = ErrorType::DatabaseError, .message = "missing version or checksum"}};
         }
 
         migrations.emplace_back(
@@ -77,12 +78,12 @@ Database::Result<std::vector<Database::AppliedMigration>> Database::Migrate::get
     return next.and_then([&query, &migrations](bool _) {
         return query->reset()
             .and_then([&migrations] {
-                return Database::Result<std::vector<AppliedMigration>>{migrations};
+                return EvgetCore::Result<std::vector<AppliedMigration>>{migrations};
             });
     });
 }
 
-Database::Result<void> Database::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {
+EvgetCore::Result<void> EvgetCore::Migrate::applyMigration(const Migration& migration, const std::string& checksum) {
     return applyMigrationSql(migration).and_then([this, &migration, &checksum] {
         auto query = this->connection.get().buildQuery(
             "insert into _migrations (version, description, checksum)"
@@ -99,7 +100,7 @@ Database::Result<void> Database::Migrate::applyMigration(const Migration& migrat
     });
 }
 
-Database::Result<void> Database::Migrate::applyMigrationSql(const Migration& migration) {
+EvgetCore::Result<void> EvgetCore::Migrate::applyMigrationSql(const Migration& migration) {
     auto query = this->connection.get().buildQuery(migration.sql.c_str());
 
     if (migration.exec) {
@@ -110,7 +111,7 @@ Database::Result<void> Database::Migrate::applyMigrationSql(const Migration& mig
 }
 
 
-std::string Database::Migrate::checksum(const Migration& migration) {
+std::string EvgetCore::Migrate::checksum(const Migration& migration) {
     CryptoPP::SHA3_512 sha3{};
     CryptoPP::byte digest[CryptoPP::SHA3_512::DIGESTSIZE];
 
@@ -135,7 +136,7 @@ std::string Database::Migrate::checksum(const Migration& migration) {
     return output;
 }
 
-Database::Result<void> Database::Migrate::migrate() {
+EvgetCore::Result<void> EvgetCore::Migrate::migrate() {
     return this->connection.get().transaction().and_then([this] {
         return this->createMigrationsTable();
     }).and_then([this] {
@@ -148,7 +149,7 @@ Database::Result<void> Database::Migrate::migrate() {
             if (i < applied.size()) {
                 auto appliedMigration = applied[i];
                 if (appliedMigration.version != migration.version || appliedMigration.checksum != checksum) {
-                    return Database::Result<void>{Err{{.errorType = ErrorType::MigrateError, .message = "applied migrations do not match current migrations"}}};
+                    return EvgetCore::Result<void>{Err{{.errorType = ErrorType::DatabaseError, .message = "applied migrations do not match current migrations"}}};
                 }
 
                 continue;
@@ -162,12 +163,12 @@ Database::Result<void> Database::Migrate::migrate() {
             spdlog::info("applied migration with checksum: {}", migration.version, checksum);
         }
 
-        return Database::Result<void>{};
+        return EvgetCore::Result<void>{};
     }).and_then([this] {
         return this->connection.get().commit();
-    }).or_else([this](Util::Error<ErrorType> err) {
+    }).or_else([this](Error<ErrorType> err) {
         return this->connection.get().rollback().and_then([&err] {
-            return Database::Result<void>{Err{err}};
+            return EvgetCore::Result<void>{Err{err}};
         });
     });
 }

@@ -25,7 +25,7 @@
 #include <nlohmann/json.hpp>
 #include <evgetcore/Event/Schema.h>
 
-EvgetCore::Storage::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
+EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
         return Result<void>{};
     }

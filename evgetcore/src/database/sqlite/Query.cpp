@@ -26,26 +26,26 @@
 
 #include <utility>
 
-Database::SQLite::Query::Query(Connection& connection, std::string query) : _connection{connection}, query{std::move(query)} {
+EvgetCore::SQLiteQuery::SQLiteQuery(SQLiteConnection& connection, std::string query) : _connection{connection}, query{std::move(query)} {
 }
 
-void Database::SQLite::Query::bindInt(std::size_t position, int value) {
+void EvgetCore::SQLiteQuery::bindInt(std::size_t position, int value) {
     binds[position] = value;
 }
 
-void Database::SQLite::Query::bindBool(std::size_t position, bool value) {
+void EvgetCore::SQLiteQuery::bindBool(std::size_t position, bool value) {
     binds[position] = value;
 }
 
-void Database::SQLite::Query::bindChars(std::size_t position, const char* value) {
+void EvgetCore::SQLiteQuery::bindChars(std::size_t position, const char* value) {
     binds[position] = value;
 }
 
-void Database::SQLite::Query::bindDouble(std::size_t position, double value) {
+void EvgetCore::SQLiteQuery::bindDouble(std::size_t position, double value) {
     binds[position] = value;
 }
 
-Database::Result<void> Database::SQLite::Query::reset() {
+EvgetCore::Result<void> EvgetCore::SQLiteQuery::reset() {
     this->binds.clear();
 
     try {
@@ -56,13 +56,13 @@ Database::Result<void> Database::SQLite::Query::reset() {
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error resetting statements: {}", what);
-        return Err{{.errorType = ErrorType::QueryError, .message = what}};
+        return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
 
     return {};
 }
 
-Database::Result<bool> Database::SQLite::Query::next() {
+EvgetCore::Result<bool> EvgetCore::SQLiteQuery::next() {
     try {
         if (!statement.has_value()) {
             statement = {_connection.get().database()->get(), query};
@@ -79,11 +79,11 @@ Database::Result<bool> Database::SQLite::Query::next() {
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error building query: {}", what);
-        return Err{{.errorType = ErrorType::QueryError, .message = what}};
+        return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
 }
 
-Database::Result<void> Database::SQLite::Query::nextWhile() {
+EvgetCore::Result<void> EvgetCore::SQLiteQuery::nextWhile() {
     auto next = this->next();
     while (next.has_value() && *next) {
         next = this->next();
@@ -96,19 +96,19 @@ Database::Result<void> Database::SQLite::Query::nextWhile() {
     return {};
 }
 
-Database::Result<void> Database::SQLite::Query::exec() {
+EvgetCore::Result<void> EvgetCore::SQLiteQuery::exec() {
     try {
         _connection.get().database()->get().exec(query);
         return {};
     } catch (std::exception& e) {
         auto what = e.what();
         spdlog::error("error building query: {}", what);
-        return Err{{.errorType = ErrorType::QueryError, .message = what}};
+        return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
 }
 
 
-Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
+EvgetCore::Result<bool> EvgetCore::SQLiteQuery::asBool(std::size_t at) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -120,7 +120,7 @@ Database::Result<bool> Database::SQLite::Query::asBool(std::size_t at) {
     }
 }
 
-Database::Result<double> Database::SQLite::Query::asDouble(std::size_t at) {
+EvgetCore::Result<double> EvgetCore::SQLiteQuery::asDouble(std::size_t at) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -132,7 +132,7 @@ Database::Result<double> Database::SQLite::Query::asDouble(std::size_t at) {
     }
 }
 
-Database::Result<int> Database::SQLite::Query::asInt(std::size_t at) {
+EvgetCore::Result<int> EvgetCore::SQLiteQuery::asInt(std::size_t at) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -144,7 +144,7 @@ Database::Result<int> Database::SQLite::Query::asInt(std::size_t at) {
     }
 }
 
-Database::Result<std::string> Database::SQLite::Query::asString(std::size_t at) {
+EvgetCore::Result<std::string> EvgetCore::SQLiteQuery::asString(std::size_t at) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -156,15 +156,15 @@ Database::Result<std::string> Database::SQLite::Query::asString(std::size_t at) 
     }
 }
 
-Database::Err Database::SQLite::Query::statementError() {
+EvgetCore::Err EvgetCore::SQLiteQuery::statementError() {
     auto what = "statement has not been initialized";
     spdlog::error(what);
-    return Err{{.errorType = ErrorType::QueryError, .message = what}};
+    return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
 }
 
-Database::Err Database::SQLite::Query::asError(std::exception& e) {
+EvgetCore::Err EvgetCore::SQLiteQuery::asError(std::exception& e) {
     auto what = e.what();
     spdlog::error("error getting column value: {}", what);
-    return Err{{.errorType = ErrorType::QueryError, .message = what}};
+    return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
 }
 

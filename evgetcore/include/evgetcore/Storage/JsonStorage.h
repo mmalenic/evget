@@ -25,10 +25,11 @@
 
 #include <fstream>
 
-#include "../EventListener.h"
 #include "Store.h"
 
 #include <boost/asio.hpp>
+
+#include "evgetcore/Error.h"
 
 namespace EvgetCore::Storage {
 

@@ -43,16 +43,26 @@ struct Error {
 };
 
 /**
- * \brief Result type.
+ * \brief Error type enum.
  */
-template<typename T, typename E>
-using Result = std::expected<T, Error<E>>;
+enum class ErrorType {
+    SQLiteError,
+    DatabaseManager,
+    DatabaseError,
+    EventHandlerError,
+    AsyncError,
+};
 
 /**
- * \brief Error type.
+ * \brief Result type.
  */
-template<typename E>
-using Err = std::unexpected<Error<E>>;
+template<typename T>
+using Result = std::expected<T, Error<ErrorType>>;
+
+/**
+* \brief Error type.
+*/
+using Err = std::unexpected<Error<ErrorType>>;
 }
 
 #endif //UTIL_H
