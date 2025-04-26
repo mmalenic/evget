@@ -13,7 +13,7 @@ class EvgetRecipe(ConanFile):
     version = "0.1.0"
     # x-release-please-end
 
-    requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]', 'asio/[^1]'
+    requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]', 'cli11/[^2]'
     test_requires = "gtest/[^1]"
 
     settings = "os", "compiler", "build_type", "arch"

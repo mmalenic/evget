@@ -48,7 +48,8 @@ add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
 #target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
 
 add_subdirectory(evgetcore)
-#
+target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
+
 #target_link_libraries(${PROJECT_NAME} PUBLIC evgetcore)
 
 #toolbelt_check_includes(

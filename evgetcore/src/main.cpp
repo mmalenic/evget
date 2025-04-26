@@ -21,27 +21,29 @@
 // SOFTWARE.
 
 #include <X11/Xlib.h>
-#include <boost/asio.hpp>
-#include <boost/program_options.hpp>
-#include <fmt/core.h>
-#include <spdlog/spdlog.h>
 
 #include <cstring>
+#include "evgetcore/cli.h"
 #include <iostream>
 
-#include "evgetcore/async/scheduler/Interval.h"
-#include "evgetcore/async/scheduler/Scheduler.h"
-#include "evgetcore/database/Migrate.h"
-#include "evgetcore/database/sqlite/Connection.h"
-#include "evgetcore/database/sqlite/Query.h"
-#include "evgetcore/EventHandler.h"
-#include "evgetcore/Storage/DatabaseManager.h"
-#include "evgetcore/Storage/DatabaseStorage.h"
-#include "evgetcore/Storage/JsonStorage.h"
-#include "schema/initialize.h"
-
 int main(int argc, char* argv[]) {
+    auto cli = EvgetCore::Cli{};
+    auto output = cli.parse(argc, argv);
 
+    if (output.has_value()) {
+        std::cout << output.value() << std::endl;
+    } else {
+        std::cout << "err\n";
+    }
+
+    std::cout << cli.output_to_stdout() << "\n";
+    std::cout << cli.log_level() << "\n";
+    std::cout << cli.output() << "\n";
+    if (cli.storage_type() == EvgetCore::StorageType::Json) {
+        std::cout << "JSON\n";
+    } else {
+        std::cout << "SQLITE\n";
+    }
 //    #if defined(EVGETX11_HAS_TOUCH_SUPPORT)
 //        std::cout << "Touch support is enabled" << std::endl;
 //    #endif
@@ -86,9 +88,9 @@ int main(int argc, char* argv[]) {
 //    //
 //    //    spdlog::set_level(cmd.getLogLevel());
 //    //
-        spdlog::set_level(spdlog::level::trace);
-
-        EvgetCore::Scheduler scheduler{};
+        // spdlog::set_level(spdlog::level::trace);
+        //
+        // EvgetCore::Scheduler scheduler{};
 
         // scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
         //     while (!co_await scheduler.isStopped()) {
@@ -162,7 +164,7 @@ int main(int argc, char* argv[]) {
         // });
 
 
-        auto timeNow = std::chrono::steady_clock::now();
+        // auto timeNow = std::chrono::steady_clock::now();
 
         // Async::Interval timer{std::chrono::seconds{5}};
         //
@@ -201,7 +203,7 @@ int main(int argc, char* argv[]) {
         //     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
         // });
 
-        scheduler.join();
+        // scheduler.join();
 
         // while (true) {
         //     auto event = xInputHandler.getEvent();
