@@ -1,6 +1,5 @@
 set(LIBRARY_NAME libevget)
 set(EVGET_LIBRARY_NAME "${LIBRARY_NAME}" PARENT_SCOPE)
-set(EVGET_LIBRARY_DIR include PARENT_SCOPE)
 
 set(INCLUDE include/evgetcore)
 set(SRC src)
@@ -61,7 +60,7 @@ target_sources(
         ${SRC}/async/scheduler/Scheduler.cpp
 )
 
-set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME ${PROJECT_NAME})
+set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evget)
 
 set(SCHEMA database/schema)
 set(QUERIES database/queries)
@@ -114,22 +113,36 @@ target_compile_definitions(${LIBRARY_NAME} PUBLIC EVGET_COPYRIGHT="${LICENSE_COP
 target_compile_definitions(${LIBRARY_NAME} PUBLIC EVGET_VERSION="0.1.0")
 # x-release-please-end
 
-#if(BUILD_TESTING)
-#    set(TEST_EXECUTABLE_NAME evgetcoretest)
-#
-#    add_executable(
-#            ${TEST_EXECUTABLE_NAME}
-#            Event/MouseMoveTest.cpp
-#            Event/MouseClickTest.cpp
-#            Event/KeyTest.cpp
-#            Event/MouseScrollTest.cpp
-#            Event/DataTest.cpp
-#            Event/FieldTest.cpp
-#            Event/RelationTest.cpp
-#            utils/EventTestUtils.h
-#            utils/EventTestUtils.cpp
-#    )
-#    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
-#
-#    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME})
-#endif()
+if(BUILD_TESTING)
+    enable_testing()
+    set(TEST_EXECUTABLE_NAME evgettest)
+    set(TEST test)
+
+    add_executable(
+            ${TEST_EXECUTABLE_NAME}
+            ${TEST}/async/container/LockingVector.cpp
+            ${TEST}/async/scheduler/Interval.cpp
+            ${TEST}/async/scheduler/Scheduler.cpp
+            ${TEST}/database/sqlite/Connection.cpp
+            ${TEST}/database/sqlite/Migrate.cpp
+            ${TEST}/database/sqlite/Query.cpp
+            ${TEST}/Event/MouseMoveTest.cpp
+            ${TEST}/Event/MouseClickTest.cpp
+            ${TEST}/Event/KeyTest.cpp
+            ${TEST}/Event/MouseScrollTest.cpp
+            ${TEST}/Event/DataTest.cpp
+            ${TEST}/Event/FieldTest.cpp
+            ${TEST}/Event/RelationTest.cpp
+            ${TEST}/utils/EventTestUtils.h
+            ${TEST}/utils/EventTestUtils.cpp
+            ${TEST}/utils/DatabaseTest.h
+            ${TEST}/utils/DatabaseTest.cpp
+    )
+    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
+
+    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARY_NAME})
+endif()
+
+if(EVLIST_INSTALL_LIB)
+    install(TARGETS ${LIBRARY_NAME} FILE_SET headers)
+endif()

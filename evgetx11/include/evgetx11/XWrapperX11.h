@@ -31,9 +31,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <evgetcore/Error.h>
 
 #include "XWrapper.h"
-#include "util/Util.h"
 
 namespace EvgetX11 {
 class XWrapperX11 : public XWrapper {
@@ -60,7 +60,7 @@ public:
     Status queryVersion(int& major, int& minor) override;
     void selectEvents(XIEventMask& mask) override;
 
-    static void onMasks(const unsigned char* mask, int maskLen, Util::Invocable<void, int> auto&& function);
+    static void onMasks(const unsigned char* mask, int maskLen, EvgetCore::Invocable<void, int> auto&& function);
     static std::string keySymToString(KeySym keySym);
     static void setMask(unsigned char* mask, std::initializer_list<int> events);
 
@@ -88,7 +88,7 @@ private:
 void EvgetX11::XWrapperX11::onMasks(
     const unsigned char* mask,
     int maskLen,
-    Util::Invocable<void, int> auto&& function
+    EvgetCore::Invocable<void, int> auto&& function
 ) {
     for (int i = 0; i < maskLen * maskBits; i++) {
         if (XIMaskIsSet(mask, i)) {

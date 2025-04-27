@@ -26,7 +26,7 @@
 #include "XEventSwitch.h"
 #include "XInputEvent.h"
 #include "XWrapper.h"
-#include "util/Util.h"
+#include <evgetcore/Error.h>
 
 namespace EvgetX11 {
 
@@ -37,7 +37,7 @@ public:
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
@@ -45,12 +45,12 @@ private:
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
-        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void touchMotion(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
-        Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     std::reference_wrapper<XEventSwitch> xEventSwitchPointer;
@@ -59,7 +59,7 @@ private:
 bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
         case XI_TouchBegin:
@@ -82,7 +82,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
-    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
@@ -94,7 +94,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
 void EvgetX11::XEventSwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
     EvgetCore::Event::Data& data,
-    Util::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto deviceEvent = event.viewData<XIDeviceEvent>();
     if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {

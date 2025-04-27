@@ -1,83 +1,94 @@
-cmake_minimum_required(VERSION 3.24)
-set(CMAKE_CXX_STANDARD 23)
-# x-release-please-start-version
-project(
-    evgetx11
-    VERSION 0.1.0
-    DESCRIPTION "record input device events using X11"
-    HOMEPAGE_URL "https://github.com/mmalenic/evget"
-)
-# x-release-please-end
+set(LIBRARY_NAME libevgetx11)
+set(EVGETX11_LIBRARY_NAME "${LIBRARY_NAME}" PARENT_SCOPE)
 
-if(NOT DEFINED toolbelt_SOURCE_DIR)
-    include(FetchContent)
-    # Fetch content from this repo.
-    FetchContent_Declare(
-            toolbelt
-            GIT_REPOSITORY https://github.com/mmalenic/cmake-toolbelt
-            GIT_TAG v0.3.1
-    )
-    FetchContent_MakeAvailable(toolbelt)
-endif()
-
-list(APPEND CMAKE_MODULE_PATH "${toolbelt_SOURCE_DIR}/src")
-include(toolbelt)
+set(INCLUDE include/evgetx11)
+set(SRC src)
 
 add_library(
-    ${PROJECT_NAME}
-    include/evgetx11/EventLoopX11.h
-    include/evgetx11/XInputHandler.h
-    include/evgetx11/EventTransformerX11.h
-    include/evgetx11/XInputEvent.h
-    include/evgetx11/XEventSwitchPointerKey.h
-    include/evgetx11/XEventSwitch.h
-    include/evgetx11/XSetMask.h
-    include/evgetx11/XSetMaskRefresh.h
-    include/evgetx11/XSetMaskCore.h
-    include/evgetx11/XWrapperX11.h
-    include/evgetx11/XWrapper.h
-    include/evgetx11/DeleterWithDisplay.h
-    XInputEvent.cpp
-    XSetMaskRefresh.cpp
-    XSetMaskCore.cpp
-    XWrapperX11.cpp
-    EventLoopX11.cpp
-    XEventSwitch.cpp
-    XEventSwitchPointerKey.cpp
-    XInputHandler.cpp
+        ${LIBRARY_NAME}
+        ${INCLUDE}/DeleterWithDisplay.h
+        ${INCLUDE}/EventLoopX11.h
+        ${INCLUDE}/EventTransformerX11.h
+        ${INCLUDE}/XEventSwitch.h
+        ${INCLUDE}/XEventSwitchPointerKey.h
+        ${INCLUDE}/XInputEvent.h
+        ${INCLUDE}/XInputHandler.h
+        ${INCLUDE}/XSetMask.h
+        ${INCLUDE}/XSetMaskCore.h
+        ${INCLUDE}/XSetMaskRefresh.h
+        ${INCLUDE}/XWrapper.h
+        ${INCLUDE}/XWrapperX11.h
 )
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${LIBRARY_NAME} PUBLIC include)
+
+target_sources(
+        ${LIBRARY_NAME}
+        PRIVATE
+        ${SRC}/EventLoopX11.cpp
+        ${SRC}/XEventSwitch.cpp
+        ${SRC}/XEventSwitchPointerKey.cpp
+        ${SRC}/XInputEvent.cpp
+        ${SRC}/XInputHandler.cpp
+        ${SRC}/XSetMaskCore.cpp
+        ${SRC}/XSetMaskRefresh.cpp
+        ${SRC}/XWrapperX11.cpp
+)
 
 toolbelt_check_symbol(VAR EVGETX11_HAS_TOUCH_SUPPORT SYMBOL XI_TouchBegin FILES X11/extensions/XInput2.h)
 if(EVGETX11_HAS_TOUCH_SUPPORT)
-    target_sources(${PROJECT_NAME} PUBLIC include/evgetx11/XEventSwitchTouch.h include/evgetx11/XSetMaskTouch.h XEventSwitchTouch.cpp XSetMaskTouch.cpp)
+    target_sources(${LIBRARY_NAME}
+            PUBLIC
+            ${INCLUDE}/XEventSwitchTouch.h
+            ${INCLUDE}/XSetMaskTouch.h
+    )
+    target_sources(${LIBRARY_NAME}
+            PRIVATE
+            ${SRC}/XEventSwitchTouch.cpp
+            ${SRC}/XSetMaskTouch.cpp
+    )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC evgetcore)
+set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
-toolbelt_add_dep(${PROJECT_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS headers)
-toolbelt_add_dep(${PROJECT_NAME} fmt VISIBILITY PUBLIC)
-toolbelt_add_dep(${PROJECT_NAME} spdlog VISIBILITY PUBLIC)
+target_link_libraries(${LIBRARY_NAME} PUBLIC libevget)
+
+toolbelt_add_dep(${LIBRARY_NAME} spdlog VISIBILITY PUBLIC LINK_COMPONENTS spdlog::spdlog)
 toolbelt_add_dep(
-    ${PROJECT_NAME}
-    X11
-    VISIBILITY
-    PUBLIC
-    FIND_PACKAGE_ARGS COMPONENTS Xi Xkb
+        ${LIBRARY_NAME}
+        Boost
+        VISIBILITY
+        PUBLIC
+        LINK_COMPONENTS
+        Boost::headers
+)
+toolbelt_add_dep(
+        ${LIBRARY_NAME}
+        X11
+        VISIBILITY
+        PUBLIC
+        FIND_PACKAGE_ARGS COMPONENTS Xi Xkb
+        LINK_COMPONENTS X11::Xi X11::Xkb
 )
 
 if(BUILD_TESTING)
+    enable_testing()
     set(TEST_EXECUTABLE_NAME evgetx11test)
+    set(TEST test)
 
     add_executable(
-            ${TEST_EXECUTABLE_NAME} EventTransformerX11Test.cpp XEventSwitchTest.cpp
-            XEventSwitchPointerKeyTest.cpp utils/EvgetX11TestUtils.h utils/Evgetx11TestUtils.cpp
+            ${TEST_EXECUTABLE_NAME}
+            ${TEST}/EventTransformerX11Test.cpp
+            ${TEST}/XEventSwitchPointerKeyTest.cpp
+            ${TEST}/XEventSwitchTest.cpp
+            ${TEST}/XEventSwitchTouchTest.cpp
+            ${TEST}/utils/Evgetx11TestUtils.cpp
+            ${TEST}/utils/EvgetX11TestUtils.h
     )
-    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC utils)
+    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 
-    if(EVGETX11_HAS_TOUCH_SUPPORT)
-        target_sources(${TEST_EXECUTABLE_NAME} PRIVATE XEventSwitchTouchTest.cpp)
-    endif()
+    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARY_NAME})
+endif()
 
-    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME})
+if(EVGET_INSTALL_LIB)
+    install(TARGETS ${LIBRARY_NAME} FILE_SET headers)
 endif()

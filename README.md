@@ -50,3 +50,5 @@ cmake -B build -S . --preset debug
 ```sh
 ./build/evget --help
 ```
+
+xorg-dev xserver-xorg-dev

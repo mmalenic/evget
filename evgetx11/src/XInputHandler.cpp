@@ -30,7 +30,7 @@ EvgetX11::XInputHandler::XInputHandler(
     : xWrapper{xWrapper} {
 }
 
-EvgetCore::Storage::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
+EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
     int minor = versionMinor;
 
@@ -40,8 +40,8 @@ EvgetCore::Storage::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapp
         return {};
     }
 
-    return EvgetCore::Storage::Err{
-        {.errorType = EvgetCore::Storage::ErrorType::EventHandlerError,
+    return EvgetCore::Err{
+        {.errorType = EvgetCore::ErrorType::EventHandlerError,
          .message = fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor)}
     };
 }
@@ -61,7 +61,7 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::vector<std::refer
     xWrapper.selectEvents(mask);
 }
 
-EvgetCore::Storage::Result<EvgetX11::XInputHandler>
+EvgetCore::Result<EvgetX11::XInputHandler>
 EvgetX11::XInputHandler::build(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters) {
     return announceVersion(xWrapper).transform([&xWrapper, &maskSetters] {
         setMask(xWrapper, maskSetters);

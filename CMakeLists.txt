@@ -12,7 +12,6 @@ project(
 
 if(NOT DEFINED toolbelt_SOURCE_DIR)
     include(FetchContent)
-    # Fetch content from this repo.
     FetchContent_Declare(
             toolbelt
             GIT_REPOSITORY https://github.com/mmalenic/cmake-toolbelt
@@ -32,38 +31,31 @@ if(EVLIST_RUN_CLANG_TIDY)
     endif()
 endif()
 
-add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
-
-#add_subdirectory(util)
-#target_link_libraries(${PROJECT_NAME} PUBLIC util)
-#set_target_properties(util PROPERTIES LINKER_LANGUAGE CXX)
-
-#add_subdirectory(async)
-#target_link_libraries(${PROJECT_NAME} PUBLIC async)
-#
-#add_subdirectory(database)
-#target_link_libraries(${PROJECT_NAME} PUBLIC database)
-#
-#add_subdirectory(clioption)
-#target_link_libraries(${PROJECT_NAME} PUBLIC clioption)
-
 add_subdirectory(evgetcore)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
 
-#target_link_libraries(${PROJECT_NAME} PUBLIC evgetcore)
+toolbelt_check_includes(
+        VAR
+        EVGETX11_HAS_FEATURE
+        INCLUDES
+        X11/Xlib.h
+        X11/extensions/XInput.h
+        X11/extensions/XInput2.h
+        X11/Xutil.h
+        xorg/xserver-properties.h
+        LANGUAGE CXX
+)
+if(EVGETX11_HAS_FEATURE)
+    add_subdirectory(evgetx11)
+endif()
 
-#toolbelt_check_includes(
-#    VAR
-#    EVGETX11_HAS_FEATURE
-#    INCLUDES
-#    X11/Xlib.h
-#    X11/extensions/XInput.h
-#    X11/extensions/XInput2.h
-#    X11/Xutil.h
-#    xorg/xserver-properties.h
-#    LANGUAGE CXX
-#)
-#if(EVGETX11_HAS_FEATURE)
-#    add_subdirectory(evgetx11)
-#    target_link_libraries(${PROJECT_NAME} PUBLIC evgetx11)
-#endif()
+if(EVGET_BUILD_BIN)
+    add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
+    if(EVGETX11_HAS_FEATURE)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
+    endif()
+endif()
+
+if(EVGET_INSTALL_BIN AND EVGET_BUILD_BIN)
+    install(TARGETS ${PROJECT_NAME})
+endif()
