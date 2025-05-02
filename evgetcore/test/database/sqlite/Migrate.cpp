@@ -20,22 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "database/Migrate.h"
+#include "evgetcore/database/Migrate.h"
 
 #include <gtest/gtest.h>
 
 #include <format>
 
-#include "DatabaseTest.h"
-#include "database/sqlite/Connection.h"
+#include "utils/DatabaseTest.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;
 
 TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    EvgetCore::SQLiteConnection connection{};
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
-    auto migration = Database::Migration{
+    auto migration = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -43,7 +43,7 @@ TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrations{migration};
 
-    Database::Migrate migrate{connection, migrations};
+    EvgetCore::Migrate migrate{connection, migrations};
 
     auto migrateResult = migrate.migrate();
 
@@ -75,10 +75,10 @@ TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, MigrateRepeatMigration) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    EvgetCore::SQLiteConnection connection{};
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
-    auto migrationOne = Database::Migration{
+    auto migrationOne = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -86,13 +86,13 @@ TEST_F(DatabaseTest, MigrateRepeatMigration) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsOne{migrationOne};
 
-    Database::Migrate migrateOne{connection, migrationsOne};
+    EvgetCore::Migrate migrateOne{connection, migrationsOne};
 
     auto migrateOneResult = migrateOne.migrate();
 
     ASSERT_TRUE(migrateOneResult.has_value());
 
-    auto migrationTwo = Database::Migration{
+    auto migrationTwo = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -100,7 +100,7 @@ TEST_F(DatabaseTest, MigrateRepeatMigration) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsTwo{migrationTwo};
 
-    Database::Migrate migrateTwo{connection, migrationsTwo};
+    EvgetCore::Migrate migrateTwo{connection, migrationsTwo};
 
     auto migrateTwoResult = migrateTwo.migrate();
 
@@ -108,10 +108,10 @@ TEST_F(DatabaseTest, MigrateRepeatMigration) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    EvgetCore::SQLiteConnection connection{};
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
-    auto migrationOne = Database::Migration{
+    auto migrationOne = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -119,7 +119,7 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsOne{migrationOne};
 
-    Database::Migrate migrateOne{connection, migrationsOne};
+    EvgetCore::Migrate migrateOne{connection, migrationsOne};
 
     auto migrateOneResult = migrateOne.migrate();
     ASSERT_TRUE(migrateOneResult.has_value());
@@ -128,7 +128,7 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     auto selectOneResult = selectOneQuery->next();
     ASSERT_TRUE(selectOneResult.has_value());
 
-    auto migrationTwo = Database::Migration{
+    auto migrationTwo = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"value1\");", testTableName, testTableColumn),
@@ -136,7 +136,7 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsTwo{migrationTwo};
 
-    Database::Migrate migrateTwo{connection, migrationsTwo};
+    EvgetCore::Migrate migrateTwo{connection, migrationsTwo};
 
     auto migrateTwoResult = migrateTwo.migrate();
     ASSERT_FALSE(migrateTwoResult.has_value());
@@ -148,10 +148,10 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    EvgetCore::SQLiteConnection connection{};
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
-    auto migrationOne = Database::Migration{
+    auto migrationOne = EvgetCore::Migration{
         .version = 1,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -159,7 +159,7 @@ TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsOne{migrationOne};
 
-    Database::Migrate migrateOne{connection, migrationsOne};
+    EvgetCore::Migrate migrateOne{connection, migrationsOne};
 
     auto migrateOneResult = migrateOne.migrate();
     ASSERT_TRUE(migrateOneResult.has_value());
@@ -168,7 +168,7 @@ TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
     auto selectOneResult = selectOneQuery->next();
     ASSERT_TRUE(selectOneResult.has_value());
 
-    auto migrationTwo = Database::Migration{
+    auto migrationTwo = EvgetCore::Migration{
         .version = 2,
         .description = "description",
         .sql = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue),
@@ -176,7 +176,7 @@ TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)
     };
     std::vector migrationsTwo{migrationTwo};
 
-    Database::Migrate migrateTwo{connection, migrationsTwo};
+    EvgetCore::Migrate migrateTwo{connection, migrationsTwo};
 
     auto migrateTwoResult = migrateTwo.migrate();
     ASSERT_FALSE(migrateTwoResult.has_value());

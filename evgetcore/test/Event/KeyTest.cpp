@@ -22,49 +22,38 @@
 
 #include <gtest/gtest.h>
 
-// #include "EventTestUtils.h"
-// #include "evgetcore/Event/Key.h"
-// #include "evgetcore/Event/SchemaField.h"
-//
-// namespace EventTestUtils = TestUtils::EventTestUtils;
-//
-// TEST(KeyTest, Time) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::Key{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
-//         0,
-//         "1"
-//     );
-// }
-//
-// TEST(KeyTest, Device) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.device(EvgetCore::Event::Device::Mouse).build(), 1,
-//     "Mouse");
-// }
-//
-// TEST(KeyTest, PositionX) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.positionX(1).build(), 2, "1");
-// }
-//
-// TEST(KeyTest, PositionY) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.positionY(1).build(), 3, "1");
-// }
-//
-// TEST(KeyTest, ButtonAction) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::Key{}.action(EvgetCore::Event::ButtonAction::Press).build(),
-//         4,
-//         "Press"
-//     );
-// }
-//
-// TEST(KeyTest, Button) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.button(1).build(), 5, "1");
-// }
-//
-// TEST(KeyTest, Name) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.name("1").build(), 6, "1");
-// }
-//
-// TEST(KeyTest, Character) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::Key{}.character("a").build(), 7, "a");
-// }
+#include "evgetcore/Event/Key.h"
+
+TEST(KeyTest, Time) {  // NOLINT(cert-err58-cpp)
+    auto data = EvgetCore::Event::Data{};
+    auto key = EvgetCore::Event::Key{}
+        .interval(EvgetCore::Event::Interval{1})
+        .timestamp(EvgetCore::Event::Timestamp{})
+    .positionX(1)
+    .positionY(1)
+    .deviceName("name")
+    .focusWindowName("name")
+    .focusWindowPositionX(1)
+    .focusWindowPositionY(1)
+    .focusWindowWidth(1)
+    .focusWindowHeight(1)
+    .info("info")
+    .device(EvgetCore::Event::Device::Keyboard)
+    .button(1)
+    .name("name")
+    .action(EvgetCore::Event::ButtonAction::Press)
+    .character("a")
+    .modifier(EvgetCore::Event::ModifierValue::Alt)
+        .build(data);
+
+    auto entry = key.entries()[0];
+    entry.toNamedRepresentation();
+    auto named_entry = entry.getEntryWithFields();
+
+    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::keyFields.begin(), EvgetCore::Event::detail::keyFields.end()};
+
+    ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::Key);
+    ASSERT_EQ(named_entry.fields, expected_fields);
+    ASSERT_EQ(named_entry.data, std::vector<std::string>{"1"});
+    ASSERT_EQ(named_entry.modifiers, std::vector<std::string>{"1"});
+}

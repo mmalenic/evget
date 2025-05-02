@@ -25,47 +25,37 @@
 
 #include <gtest/gtest.h>
 
-#include "EventTestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
 
-// namespace EventTestUtils = TestUtils::EventTestUtils;
-//
-// TEST(MouseClickTest, Time) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseClick{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
-//         0,
-//         "1"
-//     );
-// }
-//
-// TEST(MouseClickTest, Device) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseClick{}.device(EvgetCore::Event::Device::Mouse).build(),
-//         1,
-//         "Mouse"
-//     );
-// }
-//
-// TEST(MouseClickTest, PositionX) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.positionX(1).build(), 2, "1");
-// }
-//
-// TEST(MouseClickTest, PositionY) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.positionY(1).build(), 3, "1");
-// }
-//
-// TEST(MouseClickTest, ButtonAction) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseClick{}.action(EvgetCore::Event::ButtonAction::Press).build(),
-//         4,
-//         "Press"
-//     );
-// }
-//
-// TEST(MouseClickTest, Button) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.button(1).build(), 5, "1");
-// }
-//
-// TEST(MouseClickTest, Name) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseClick{}.name("name").build(), 6, "name");
-// }
+TEST(MouseClickTest, Time) {  // NOLINT(cert-err58-cpp)
+    auto data = EvgetCore::Event::Data{};
+    auto mouse_click = EvgetCore::Event::MouseClick{}
+    .interval(EvgetCore::Event::Interval{1})
+    .timestamp(EvgetCore::Event::Timestamp{})
+.positionX(1)
+.positionY(1)
+.deviceName("name")
+.focusWindowName("name")
+.focusWindowPositionX(1)
+.focusWindowPositionY(1)
+.focusWindowWidth(1)
+.focusWindowHeight(1)
+.info("info")
+.device(EvgetCore::Event::Device::Keyboard)
+.button(1)
+.name("name")
+.action(EvgetCore::Event::ButtonAction::Press)
+    .modifier(EvgetCore::Event::ModifierValue::Alt)
+    .build(data);
+
+    auto entry = mouse_click.entries()[0];
+    entry.toNamedRepresentation();
+    auto named_entry = entry.getEntryWithFields();
+
+    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::mouseClickFields.begin(), EvgetCore::Event::detail::mouseClickFields.end()};
+
+    ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(named_entry.fields, expected_fields);
+    ASSERT_EQ(named_entry.data, std::vector<std::string>{"1"});
+    ASSERT_EQ(named_entry.modifiers, std::vector<std::string>{"1"});
+}

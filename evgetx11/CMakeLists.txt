@@ -71,12 +71,11 @@ toolbelt_add_dep(
 )
 
 if(BUILD_TESTING)
-    enable_testing()
-    set(TEST_EXECUTABLE_NAME evgetx11test)
     set(TEST test)
 
-    add_executable(
+    target_sources(
             ${TEST_EXECUTABLE_NAME}
+            PUBLIC
             ${TEST}/EventTransformerX11Test.cpp
             ${TEST}/XEventSwitchPointerKeyTest.cpp
             ${TEST}/XEventSwitchTest.cpp
@@ -85,8 +84,6 @@ if(BUILD_TESTING)
             ${TEST}/utils/EvgetX11TestUtils.h
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
-
-    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARY_NAME})
 endif()
 
 if(EVGET_INSTALL_LIB)

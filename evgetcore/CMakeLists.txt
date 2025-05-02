@@ -115,11 +115,11 @@ target_compile_definitions(${LIBRARY_NAME} PUBLIC EVGET_VERSION="0.1.0")
 
 if(BUILD_TESTING)
     enable_testing()
-    set(TEST_EXECUTABLE_NAME evgettest)
     set(TEST test)
 
-    add_executable(
+    target_sources(
             ${TEST_EXECUTABLE_NAME}
+            PUBLIC
             ${TEST}/async/container/LockingVector.cpp
             ${TEST}/async/scheduler/Interval.cpp
             ${TEST}/async/scheduler/Scheduler.cpp
@@ -131,16 +131,10 @@ if(BUILD_TESTING)
             ${TEST}/Event/KeyTest.cpp
             ${TEST}/Event/MouseScrollTest.cpp
             ${TEST}/Event/DataTest.cpp
-            ${TEST}/Event/FieldTest.cpp
-            ${TEST}/Event/RelationTest.cpp
-            ${TEST}/utils/EventTestUtils.h
-            ${TEST}/utils/EventTestUtils.cpp
             ${TEST}/utils/DatabaseTest.h
             ${TEST}/utils/DatabaseTest.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
-
-    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARY_NAME})
 endif()
 
 if(EVLIST_INSTALL_LIB)

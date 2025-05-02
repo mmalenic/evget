@@ -22,43 +22,27 @@
 
 #include <gtest/gtest.h>
 
-#include "EventTestUtils.h"
-#include "evgetcore/UnsupportedOperationException.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Entry.h"
 
-// namespace EventUtils = TestUtils::EventTestUtils;
-//
-// TEST(EventDataTest, CreateAndIterate) {  // NOLINT(cert-err58-cpp)
-//     auto data = EventUtils::createData();
-//
-//     auto n = 0;
-//     for (auto i{data.begin()}; i != data.end(); i++, n++) {
-//         ASSERT_EQ(*i, "field");
-//     }
-//     ASSERT_EQ(n, 1);
-// }
-//
-// TEST(EventDataTest, GetFieldAtPosition) {  // NOLINT(cert-err58-cpp)
-//     auto data = EventUtils::createData();
-//
-//     ASSERT_EQ(data.getFieldAt(0), "field");
-// }
-//
-// TEST(EventDataTest, GetName) {  // NOLINT(cert-err58-cpp)
-//     auto data = EventUtils::createData();
-//
-//     ASSERT_EQ("name", data.getName());
-// }
-//
-// TEST(EventDataTest, Contains) {  // NOLINT(cert-err58-cpp)
-//     auto data = EventUtils::createData();
+ TEST(EventDataTest, CreateAndIterate) {  // NOLINT(cert-err58-cpp)
+     EvgetCore::Event::Data data{};
+     data.addEntry({EvgetCore::Event::EntryType::Key, {"data"}, {"modifier"}});
 
-//    ASSERT_EQ(data.getData().at("contained").at(0).getFieldAt(0), "firstField");
-//    ASSERT_EQ(data.getData().at("contained").at(0).getFieldAt(1), "secondField");
-//}
+     EvgetCore::Event::Data merge{};
+     merge.addEntry({EvgetCore::Event::EntryType::MouseMove, {"merge"}, {"merge_modifier"}});
+     data.mergeWith(std::move(merge));
 
-// TEST(EventDataTest, ContainsUnique) { // NOLINT(cert-err58-cpp)
-//     auto data = EventUtils::createData();
-//
-//     ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(0), "firstField");
-//     ASSERT_EQ(data.getUniqueData().at("contained").at(0).getFieldAt(1), "secondField");
-// }
+     ASSERT_FALSE(data.empty());
+     ASSERT_EQ(data.entries().size(), 2);
+
+     auto first = data.entries()[0];
+     ASSERT_EQ(first.type(), EvgetCore::Event::EntryType::Key);
+     ASSERT_EQ(first.data(), std::vector<std::string>{"data"});
+     ASSERT_EQ(first.modifiers(), std::vector<std::string>{"modifier"});
+
+     auto second = data.entries()[1];
+     ASSERT_EQ(first.type(), EvgetCore::Event::EntryType::MouseMove);
+     ASSERT_EQ(first.data(), std::vector<std::string>{"merge"});
+     ASSERT_EQ(first.modifiers(), std::vector<std::string>{"merge_modifier"});
+ }

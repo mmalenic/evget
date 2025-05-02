@@ -24,15 +24,15 @@
 
 #include <format>
 
-#include "DatabaseTest.h"
-#include "database/sqlite/Connection.h"
+#include "utils/DatabaseTest.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;
 
 TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto insert = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue);
     auto insertQuery = connection.buildQuery(insert);
@@ -42,9 +42,9 @@ TEST_F(DatabaseTest, Exec) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, Next) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -58,9 +58,9 @@ TEST_F(DatabaseTest, Next) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, NextWhile) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(),EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -70,9 +70,9 @@ TEST_F(DatabaseTest, NextWhile) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, Reset) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -82,9 +82,9 @@ TEST_F(DatabaseTest, Reset) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, BindBool) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery("select $1;");
 
@@ -97,9 +97,9 @@ TEST_F(DatabaseTest, BindBool) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, BindInt) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery("select $1;");
 
@@ -112,9 +112,9 @@ TEST_F(DatabaseTest, BindInt) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, BindDouble) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery("select $1;");
 
@@ -127,9 +127,9 @@ TEST_F(DatabaseTest, BindDouble) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, BindChars) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery("select $1;");
 
@@ -142,9 +142,9 @@ TEST_F(DatabaseTest, BindChars) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, AsBool) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -156,9 +156,9 @@ TEST_F(DatabaseTest, AsBool) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, AsInt) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -170,9 +170,9 @@ TEST_F(DatabaseTest, AsInt) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, AsDouble) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
@@ -184,9 +184,9 @@ TEST_F(DatabaseTest, AsDouble) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST_F(DatabaseTest, AsString) {  // NOLINT(cert-err58-cpp)
-    Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 

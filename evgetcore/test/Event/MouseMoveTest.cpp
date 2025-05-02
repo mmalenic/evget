@@ -22,31 +22,36 @@
 
 #include <gtest/gtest.h>
 
-#include "EventTestUtils.h"
 #include "evgetcore/Event/MouseMove.h"
 
 // namespace EventTestUtils = TestUtils::EventTestUtils;
 //
-// TEST(MouseMoveTest, Time) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseMove{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
-//         0,
-//         "1"
-//     );
-// }
-//
-// TEST(MouseMoveTest, Device) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseMove{}.device(EvgetCore::Event::Device::Mouse).build(),
-//         1,
-//         "Mouse"
-//     );
-// }
-//
-// TEST(MouseMoveTest, PositionX) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.positionX(1).build(), 2, "1");
-// }
-//
-// TEST(MouseMoveTest, PositionY) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseMove{}.positionY(1).build(), 3, "1");
-// }
+TEST(MouseMoveTest, Time) {  // NOLINT(cert-err58-cpp)
+    auto data = EvgetCore::Event::Data{};
+    auto mouse_move = EvgetCore::Event::MouseMove{}
+    .interval(EvgetCore::Event::Interval{1})
+    .timestamp(EvgetCore::Event::Timestamp{})
+.positionX(1)
+.positionY(1)
+.deviceName("name")
+.focusWindowName("name")
+.focusWindowPositionX(1)
+.focusWindowPositionY(1)
+.focusWindowWidth(1)
+.focusWindowHeight(1)
+.info("info")
+.device(EvgetCore::Event::Device::Keyboard)
+    .modifier(EvgetCore::Event::ModifierValue::Alt)
+    .build(data);
+
+    auto entry = mouse_move.entries()[0];
+    entry.toNamedRepresentation();
+    auto named_entry = entry.getEntryWithFields();
+
+    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::mouseMoveFields.begin(), EvgetCore::Event::detail::mouseMoveFields.end()};
+
+    ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(named_entry.fields, expected_fields);
+    ASSERT_EQ(named_entry.data, std::vector<std::string>{"1"});
+    ASSERT_EQ(named_entry.modifiers, std::vector<std::string>{"1"});
+}

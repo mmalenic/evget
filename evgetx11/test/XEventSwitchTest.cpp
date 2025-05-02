@@ -24,7 +24,7 @@
 
 #include <array>
 
-#include "EvgetX11TestUtils.h"
+#include "utils/EvgetX11TestUtils.h"
 #include "evgetx11/XEventSwitch.h"
 
 TEST(XEventSwitchTest, RefreshDevices) {  // NOLINT(cert-err58-cpp)

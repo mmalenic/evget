@@ -21,16 +21,16 @@
 // SOFTWARE.
 //
 
-#include "async/scheduler/Interval.h"
+#include "evgetcore/async/scheduler/Interval.h"
 
 #include <gtest/gtest.h>
 
-#include "async/scheduler/Scheduler.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 TEST(IntervalTest, Tick) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
-    Async::Interval interval{std::chrono::seconds{0}};
-    std::optional<Util::Result<void, boost::system::error_code>> result{};
+    EvgetCore::Scheduler scheduler{};
+    EvgetCore::Interval interval{std::chrono::seconds{0}};
+    std::optional<EvgetCore::Result<void>> result{};
 
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         result = co_await interval.tick();

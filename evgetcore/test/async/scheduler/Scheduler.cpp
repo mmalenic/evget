@@ -23,10 +23,10 @@
 
 #include <gtest/gtest.h>
 
-#include "async/scheduler/Scheduler.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
+    EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
@@ -40,7 +40,7 @@ TEST(SchedulerTest, SpawnVoidTaskAndJoin) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(SchedulerTest, SpawnReturnTask) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
+    EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
     scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
@@ -54,7 +54,7 @@ TEST(SchedulerTest, SpawnReturnTask) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(SchedulerTest, SpawnVoidTaskException) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
+    EvgetCore::Scheduler scheduler{};
 
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         while (!co_await scheduler.isStopped()) {
@@ -68,7 +68,7 @@ TEST(SchedulerTest, SpawnVoidTaskException) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(SchedulerTest, SpawnReturnTaskException) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
+    EvgetCore::Scheduler scheduler{};
 
     scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
         while (!co_await scheduler.isStopped()) {
@@ -83,7 +83,7 @@ TEST(SchedulerTest, SpawnReturnTaskException) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(SchedulerTest, Stop) {  // NOLINT(cert-err58-cpp)
-    Async::Scheduler scheduler{};
+    EvgetCore::Scheduler scheduler{};
     bool stopped{};
 
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {

@@ -27,7 +27,7 @@
 
 #include <array>
 
-#include "EvgetX11TestUtils.h"
+#include "utils/EvgetX11TestUtils.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
 

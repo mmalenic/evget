@@ -21,14 +21,14 @@
 // SOFTWARE.
 //
 
-#include "async/container/LockingVector.h"
+#include "evgetcore/async/container/LockingVector.h"
 
 #include <gtest/gtest.h>
 
 #include <fmt/format.h>
 
 TEST(LockingVectorTest, PushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
-    auto vector = Async::LockingVector<int>{};
+    auto vector = EvgetCore::LockingVector<int>{};
     vector.push_back(1);
 
     auto inner = *vector.into_inner();
@@ -37,7 +37,7 @@ TEST(LockingVectorTest, PushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(LockingVectorTest, IntoInnerAt) {  // NOLINT(cert-err58-cpp)
-    auto vector = Async::LockingVector<int>{};
+    auto vector = EvgetCore::LockingVector<int>{};
     vector.push_back(1);
     vector.push_back(2);
     vector.push_back(3);
@@ -50,7 +50,7 @@ TEST(LockingVectorTest, IntoInnerAt) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
-    auto vector = Async::LockingVector<int>{};
+    auto vector = EvgetCore::LockingVector<int>{};
     vector.unsafe_push_back(1);
 
     auto inner = *vector.unsafe_into_inner();
@@ -59,7 +59,7 @@ TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
 }
 
 TEST(LockingVectorTest, UnsafeIntoInnerAt) {  // NOLINT(cert-err58-cpp)
-    auto vector = Async::LockingVector<int>{};
+    auto vector = EvgetCore::LockingVector<int>{};
     vector.unsafe_push_back(1);
     vector.unsafe_push_back(2);
     vector.unsafe_push_back(3);

@@ -23,13 +23,22 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${toolbelt_SOURCE_DIR}/src")
 include(toolbelt)
 
-if(EVLIST_RUN_CLANG_TIDY)
-    if(DEFINED EVLIST_CLANG_TIDY_EXECUTABLE)
-        set(CMAKE_CXX_CLANG_TIDY "${EVLIST_CLANG_TIDY_EXECUTABLE}")
+if(EVGET_RUN_CLANG_TIDY)
+    if(DEFINED EVGET_CLANG_TIDY_EXECUTABLE)
+        set(CMAKE_CXX_CLANG_TIDY "${EVGET_CLANG_TIDY_EXECUTABLE}")
     else()
         set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
     endif()
 endif()
+
+if(BUILD_TESTING)
+    enable_testing()
+    set(TEST_EXECUTABLE_NAME evgettest)
+
+    # Need an empty source to create the test target in the top-level CMakeLists.txt
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/null.cpp "")
+    add_executable(${TEST_EXECUTABLE_NAME} null.cpp)
+endif ()
 
 add_subdirectory(evgetcore)
 
@@ -46,6 +55,15 @@ toolbelt_check_includes(
 )
 if(EVGETX11_HAS_FEATURE)
     add_subdirectory(evgetx11)
+endif()
+
+if(BUILD_TESTING)
+    list(APPEND LIBRARIES ${EVGET_LIBRARY_NAME})
+    if(EVGETX11_HAS_FEATURE)
+        list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
+    endif()
+
+    toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
 endif()
 
 if(EVGET_BUILD_BIN)

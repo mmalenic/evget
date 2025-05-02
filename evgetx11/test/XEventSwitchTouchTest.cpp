@@ -27,7 +27,7 @@
 
 #include <array>
 
-#include "EvgetX11TestUtils.h"
+#include "utils/EvgetX11TestUtils.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"

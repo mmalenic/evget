@@ -22,47 +22,38 @@
 
 #include <gtest/gtest.h>
 
-#include "EventTestUtils.h"
 #include "evgetcore/Event/MouseScroll.h"
 
 // namespace EventTestUtils = TestUtils::EventTestUtils;
 //
-// TEST(MouseScrollTest, Time) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseScroll{}.interval(EvgetCore::Event::SchemaField::Interval{1}).build(),
-//         0,
-//         "1"
-//     );
-// }
-//
-// TEST(MouseScrollTest, Device) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(
-//         EvgetCore::Event::MouseScroll{}.device(EvgetCore::Event::Device::Mouse).build(),
-//         1,
-//         "Mouse"
-//     );
-// }
-//
-// TEST(MouseScrollTest, PositionX) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.positionX(1).build(), 2, "1");
-// }
-//
-// TEST(MouseScrollTest, PositionY) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.positionY(1).build(), 3, "1");
-// }
-//
-// TEST(MouseScrollTest, Up) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.up(1).build(), 4, "1");
-// }
-//
-// TEST(MouseScrollTest, Down) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.down(1).build(), 5, "1");
-// }
-//
-// TEST(MouseScrollTest, Left) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.left(1).build(), 6, "1");
-// }
-//
-// TEST(MouseScrollTest, Right) {  // NOLINT(cert-err58-cpp)
-//     EventTestUtils::event_entry_at(EvgetCore::Event::MouseScroll{}.right(1).build(), 7, "1");
-// }
+TEST(MouseScrollTest, Time) {  // NOLINT(cert-err58-cpp)
+    auto data = EvgetCore::Event::Data{};
+    auto mouse_scroll = EvgetCore::Event::MouseScroll{}
+    .interval(EvgetCore::Event::Interval{1})
+    .timestamp(EvgetCore::Event::Timestamp{})
+.positionX(1)
+.positionY(1)
+.deviceName("name")
+.focusWindowName("name")
+.focusWindowPositionX(1)
+.focusWindowPositionY(1)
+.focusWindowWidth(1)
+.focusWindowHeight(1)
+.info("info")
+.device(EvgetCore::Event::Device::Keyboard)
+    .vertical(1)
+    .horizontal(1)
+    .modifier(EvgetCore::Event::ModifierValue::Alt)
+    .build(data);
+
+    auto entry = mouse_scroll.entries()[0];
+    entry.toNamedRepresentation();
+    auto named_entry = entry.getEntryWithFields();
+
+    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::mouseScrollFields.begin(), EvgetCore::Event::detail::mouseScrollFields.end()};
+
+    ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::MouseScroll);
+    ASSERT_EQ(named_entry.fields, expected_fields);
+    ASSERT_EQ(named_entry.data, std::vector<std::string>{"1"});
+    ASSERT_EQ(named_entry.modifiers, std::vector<std::string>{"1"});
+}

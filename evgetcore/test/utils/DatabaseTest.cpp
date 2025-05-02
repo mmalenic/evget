@@ -28,14 +28,14 @@
 
 #include <format>
 
-#include "database/sqlite/Connection.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 namespace uuids = boost::uuids;
 
 Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / testDatabaseName()} {
-    ::Database::SQLite::Connection connection{};
+    EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(), ::Database::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto createTable = std::format(
             "create table if not exists {} ("
