@@ -35,9 +35,7 @@ if(BUILD_TESTING)
     enable_testing()
     set(TEST_EXECUTABLE_NAME evgettest)
 
-    # Need an empty source to create the test target in the top-level CMakeLists.txt
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/null.cpp "")
-    add_executable(${TEST_EXECUTABLE_NAME} null.cpp)
+    add_executable(${TEST_EXECUTABLE_NAME} evgetcore/test/main.cpp)
 endif ()
 
 add_subdirectory(evgetcore)

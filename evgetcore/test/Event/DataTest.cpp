@@ -25,7 +25,7 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
 
- TEST(EventDataTest, CreateAndIterate) {  // NOLINT(cert-err58-cpp)
+ TEST(DataTest, Create) {  // NOLINT(cert-err58-cpp)
      EvgetCore::Event::Data data{};
      data.addEntry({EvgetCore::Event::EntryType::Key, {"data"}, {"modifier"}});
 
@@ -42,7 +42,7 @@
      ASSERT_EQ(first.modifiers(), std::vector<std::string>{"modifier"});
 
      auto second = data.entries()[1];
-     ASSERT_EQ(first.type(), EvgetCore::Event::EntryType::MouseMove);
-     ASSERT_EQ(first.data(), std::vector<std::string>{"merge"});
-     ASSERT_EQ(first.modifiers(), std::vector<std::string>{"merge_modifier"});
+     ASSERT_EQ(second.type(), EvgetCore::Event::EntryType::MouseMove);
+     ASSERT_EQ(second.data(), std::vector<std::string>{"merge"});
+     ASSERT_EQ(second.modifiers(), std::vector<std::string>{"merge_modifier"});
  }
