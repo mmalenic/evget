@@ -22,7 +22,6 @@ add_library(
     ${INCLUDE}/Event/ButtonAction.h
     ${INCLUDE}/Event/Device.h
     ${INCLUDE}/EventListener.h
-    ${INCLUDE}/UnsupportedOperationException.h
         ${INCLUDE}/cli.h
     ${INCLUDE}/Event/ModifierValue.h
     ${INCLUDE}/Event/Schema.h
@@ -48,7 +47,6 @@ target_sources(
         ${SRC}/Event/MouseMove.cpp
         ${SRC}/Event/MouseScroll.cpp
         ${SRC}/Event/Data.cpp
-        ${SRC}/UnsupportedOperationException.cpp
         ${SRC}/Storage/JsonStorage.cpp
         ${SRC}/Storage/DatabaseStorage.cpp
         ${SRC}/Event/Entry.cpp

@@ -36,7 +36,6 @@
 #include "XWrapper.h"
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/EventTransformer.h"
-#include "evgetcore/UnsupportedOperationException.h"
 
 
 namespace EvgetX11 {
