@@ -51,6 +51,7 @@ constexpr std::string_view DEVICE_TYPE_MOUSE{"Mouse"};
 constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
 constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
 constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
+    constexpr std::string_view DEVICE_TYPE_UNKNOWN{"Unknown"};
 
 constexpr std::string_view MODIFIER_VALUE_SHIFT{"Shift"};
 constexpr std::string_view MODIFIER_VALUE_CAPSLOCK{"CapsLock"};
@@ -253,6 +254,8 @@ constexpr std::string fromDevice(std::optional<Device> value) {
                 return std::string{detail::DEVICE_TYPE_TOUCHPAD};
             case Device::Touchscreen:
                 return std::string{detail::DEVICE_TYPE_TOUCHSCREEN};
+            case Device::Unknown:
+                return std::string{detail::DEVICE_TYPE_UNKNOWN};
         }
     });
 }

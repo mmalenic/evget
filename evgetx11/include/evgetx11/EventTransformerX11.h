@@ -23,7 +23,9 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
+#include <X11/Xatom.h>
 #include <X11/extensions/XInput2.h>
+#include <X11/Xlib.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include <spdlog/spdlog.h>
 
@@ -107,13 +109,7 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
             } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
                 deviceType = EvgetCore::Event::Device::Touchpad;
             } else {
-                spdlog::info(
-                    "Unsupported class type '{}' from XDeviceInfo for device '{}' with id {}.",
-                    type.get(),
-                    device.name,
-                    device.id
-                );
-                continue;
+                deviceType = EvgetCore::Event::Device::Unknown;
             }
 
             devices.emplace(id, deviceType);
