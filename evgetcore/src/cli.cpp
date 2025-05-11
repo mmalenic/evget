@@ -28,6 +28,7 @@
 #include <iostream>
 #include <utility>
 #include <CLI/CLI.hpp>
+#include <spdlog/cfg/env.h>
 
 #include "evgetcore/cli.h"
 
@@ -57,10 +58,6 @@ EvgetCore::StorageType EvgetCore::Cli::storage_type() const {
     return this->storage_type_;
 }
 
-spdlog::level::level_enum EvgetCore::Cli::log_level() const {
-    return this->log_level_;
-}
-
 const std::string & EvgetCore::Cli::output() const {
     return this->output_;
 }
@@ -70,6 +67,8 @@ bool EvgetCore::Cli::output_to_stdout() const {
 }
 
 std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
+    spdlog::cfg::load_env_levels();
+
     CLI::App app{"Show and store events from input devices.", "evget"};
     argv = app.ensure_utf8(argv);
 
@@ -96,19 +95,11 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
     STORAGE_TYPE_INDENT_BY,
     storage_type_descriptions()
 ));
-    app.add_option("-l,--log-level", log_level_)
-        ->transform(CLI::Transformer{log_level_mappings(), CLI::ignore_case})
-        ->option_text(format_enum(
-            "LOG_LEVEL",
-            "Level of log messages to print to stdout",
-            LOG_LEVEL_INDENT_BY,
-            log_level_descriptions()
-        ));
 
     auto code = 0;
     app.add_option_function<std::string>("-o,--output", [this, &code](const std::string& value) {
         if (value == "-") {
-            log_level_ = spdlog::level::off;
+            spdlog::set_level(spdlog::level::off);
 
             if (storage_type_ != StorageType::Json) {
                 std::cout << "cannot output to stdout if not using json storage\n";
@@ -145,30 +136,6 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
     }
 
     return should_exit;
-}
-
-std::map<std::string, spdlog::level::level_enum> EvgetCore::Cli::log_level_mappings() {
-    return {
-    {"trace", spdlog::level::trace},
-    {"debug", spdlog::level::debug},
-    {"info", spdlog::level::info},
-    {"warn", spdlog::level::warn},
-    {"err", spdlog::level::err},
-    {"critical", spdlog::level::critical},
-    {"off", spdlog::level::off}
-        };
-}
-
-std::map<spdlog::level::level_enum, std::string> EvgetCore::Cli::log_level_descriptions() {
-    return {
-        {spdlog::level::trace, "- trace: enable trace logs"},
-        {spdlog::level::debug, "- debug: enable debug logs"},
-        {spdlog::level::info, "- info: enable info logs"},
-        {spdlog::level::warn, "- warn: enable warning logs"},
-        {spdlog::level::err, "- err: enable error logs"},
-        {spdlog::level::critical, "- critical: enable critical logs"},
-        {spdlog::level::off, "- off: disable logs"}
-    };
 }
 
 std::map<std::string, EvgetCore::StorageType> EvgetCore::Cli::storage_type_mappings() {

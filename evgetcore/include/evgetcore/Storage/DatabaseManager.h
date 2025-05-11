@@ -45,16 +45,18 @@ public:
      * \param nEvents the number of events to hold before inserting.
      * \param storeAfter store events after this time event if nEvents is not reached.
      */
-    DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents = 100, std::chrono::seconds storeAfter = std::chrono::seconds{60});
+    explicit DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::unique_ptr<Store>> storeIn = {}, size_t nEvents = 100, std::chrono::seconds storeAfter = std::chrono::seconds{60});
 
     Result<void> store(Event::Data event) override;
+
+    void add_store(std::unique_ptr<Store> store);
 
 private:
     void storeEventsTask(std::optional<std::vector<Event::Data>> events);
     void storeAfterTask();
 
     std::reference_wrapper<EvgetCore::Scheduler> scheduler;
-    std::vector<std::reference_wrapper<Store>> storeIn;
+    std::vector<std::unique_ptr<Store>> storeIn;
     size_t nEvents;
     EvgetCore::Interval storeAfterInterval;
     EvgetCore::LockingVector<Event::Data> data;

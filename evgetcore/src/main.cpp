@@ -26,223 +26,70 @@
 #include "evgetcore/cli.h"
 #include <iostream>
 
+#include "evgetcore/database/sqlite/Connection.h"
+#include "evgetcore/Storage/DatabaseStorage.h"
+#include "evgetcore/Storage/JsonStorage.h"
+#include "evgetx11/EventLoopX11.h"
+#include "evgetx11/EventTransformerX11.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/XSetMaskCore.h"
+#include "evgetx11/XSetMaskRefresh.h"
+#include "evgetx11/XWrapperX11.h"
+#include "evgetcore/EventHandler.h"
+#include "evgetcore/Storage/DatabaseManager.h"
+
 int main(int argc, char* argv[]) {
     auto cli = EvgetCore::Cli{};
-    auto output = cli.parse(argc, argv);
-
-    if (output.has_value()) {
-        std::cout << output.value() << std::endl;
-    } else {
-        std::cout << "err\n";
+    auto exit = cli.parse(argc, argv);
+    if (!exit.has_value()) {
+        return exit.error();
+    }
+    if (*exit) {
+        return 0;
     }
 
-    std::cout << cli.output_to_stdout() << "\n";
-    std::cout << cli.log_level() << "\n";
-    std::cout << cli.output() << "\n";
-    if (cli.storage_type() == EvgetCore::StorageType::Json) {
-        std::cout << "JSON\n";
-    } else {
-        std::cout << "SQLITE\n";
+    EvgetX11::XWrapperX11 wrapper{*XOpenDisplay(nullptr)};
+    Display* display = XOpenDisplay(nullptr);
+
+    EvgetX11::XWrapperX11 xWrapperX11{*display};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
+    EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
+    EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
+    EvgetX11::XSetMaskCore setCore{};
+    EvgetX11::XSetMaskRefresh setRefresh{};
+    EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
+    EvgetX11::EventLoopX11 eventLoop{xInputHandler};
+
+    auto scheduler = EvgetCore::Scheduler{};
+    auto store = EvgetCore::Storage::DatabaseManager{scheduler};
+
+    switch (cli.storage_type()) {
+        case EvgetCore::StorageType::SQLite: {
+            auto connect = EvgetCore::SQLiteConnection{};
+            store.add_store(std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output()));
+
+            break;
+        }
+        case EvgetCore::StorageType::Json: {
+            if (cli.output_to_stdout()) {
+                store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(std::cout));
+            } else {
+                auto out = std::ofstream{cli.output(), std::ios_base::app};
+                store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(out));
+            }
+
+            break;
+        }
     }
-//    #if defined(EVGETX11_HAS_TOUCH_SUPPORT)
-//        std::cout << "Touch support is enabled" << std::endl;
-//    #endif
-//
-//    #if !defined(EVGETX11_HAS_TOUCH_SUPPORT)
-//        std::cout << "Touch support not is enabled" << std::endl;
-//    #endif
-//
-//    #if defined(EVGETX11_HAS_FEATURE)
-//            std::cout << "FEATURE ENABLED" << std::endl;
-//    #endif
-//
-//    #if !defined(EVGETX11_HAS_FEATURE)
-//            std::cout << "FEATUER NOT ENABLED" << std::endl;
-//    #endif
+    EvgetCore::EventHandler handler{store, transformer, eventLoop};
 
-//    EvgetCore::Event::Graph<int> g{};
-//    //    EvgetCore::Event::Key key{};
-//    //    constexpr auto schema = EvgetCore::Event::Key::updateSchema();
-//    //
-//    //    cout << schema.getFields().size() << endl;
-//
-//    EvgetCore::PrintEvents printEvents{};
-//
-//    //    data1.contains(data2);
-//    //    data.contains(data1);
-//    //
-//    //    data.contains(data2);
-//
-//    //    Display* display = XOpenDisplay(nullptr);
-//    //    EvgetX11::XWrapperX11 wrapper{*display};
-//    //    EvgetX11::XDeviceRefresh xDeviceRefresh{};
-//    //    EvgetX11::XEventSwitch xEventSwitchPointer{wrapper, xDeviceRefresh};
-//    //    EvgetX11::XEventSwitchPointerKey core{wrapper, xEventSwitchPointer, xDeviceRefresh};
-//    //    EvgetX11::XInputEvent event = EvgetX11::XInputEvent::nextEvent(wrapper);
-//    //    EvgetX11::EventData data{};
-//    //
-//    //    EvgetX11::EventTransformerX11 transformer{wrapper, core};
-//
-//    //    CliOption::ParserLinux cmd{};
-//    //    cmd.parseCommandLine(argc, (const char**) argv);
-//    //
-//    //    spdlog::set_level(cmd.getLogLevel());
-//    //
-        // spdlog::set_level(spdlog::level::trace);
-        //
-        // EvgetCore::Scheduler scheduler{};
+    scheduler.spawn([&handler]() -> boost::asio::awaitable<void> {
+        co_await handler.start();
+        co_return;
+    });
 
-        // scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         std::cout << "value2" << "\n";
-        //     }
-        //     co_return 2;
-        // }, [&scheduler](int value) {
-        //     scheduler.stop();
-        //     std::cout << value << "\n";
-        // });
-        //
-        //
-        // scheduler.spawn([&scheduler]() -> boost::asio::awaitable<void> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         std::cout << "value1" << "\n";
-        //     }
-        //     co_return;
-        // }, [&scheduler]() {
-        //     scheduler.stop();
-        //     std::cout << "exception\n";
-        // });
-        //
-        // scheduler.spawn<int>([&scheduler]() -> boost::asio::awaitable<int> {
-        //     co_return 1;
-        // }, [&scheduler](int value) {
-        //     std::cout << value << "\n";
-        // });
+    scheduler.join();
 
-        // boost::asio::thread_pool pool{};
-        // auto context = pool.get_executor();
-        //
-        // Display* display = XOpenDisplay(nullptr);
-        // EvgetX11::XWrapperX11 xWrapperX11{*display};
-        //
-        // EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
-        // EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
-        //
-        // EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
-        //
-        // EvgetX11::XSetMaskCore setCore{};
-        // EvgetX11::XSetMaskRefresh setRefresh{};
-        //
-        // EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
-        //
-        // EvgetX11::EventLoopX11 eventLoop{xInputHandler};
-        //
-        // //EvgetCore::EventHandler handler{context, printEvents, transformer, eventLoop};
-        //
-        // EvgetCore::Storage::JsonStorage storage{std::cout};
-        //
-        // auto connect = EvgetCore::SQLite::Connection{};
-
-        // EvgetCore::Storage::DatabaseStorage sqlite{connect, "evget_database"};
-        //
-        // EvgetCore::Storage::DatabaseManager manager{scheduler, {storage}, 1};
-        // // sqlite.init();
-        //
-        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        //     while (!co_await scheduler.isStopped()) {
-        //         auto event = xInputHandler.getEvent();
-        //
-        //         auto transformed = transformer.transformEvent(std::move(event));
-        //
-        //         // storage.store(transformed);
-        //         manager.store(transformed);
-        //     }
-        //     co_return;
-        // }, [&scheduler]() {
-        //     scheduler.stop();
-        //     std::cout << "exception\n";
-        // });
-
-
-        // auto timeNow = std::chrono::steady_clock::now();
-
-        // Async::Interval timer{std::chrono::seconds{5}};
-        //
-        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        //     while (true) {
-        //         co_await timer.tick();
-        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        //     }
-        //     co_return;
-        // }, [&]() {
-        //     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        // });
-        //
-        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        //     while (true) {
-        //         co_await timer.tick();
-        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        //     }
-        //     co_return;
-        // }, [&]() {
-        //     std::cout
-        //     << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        // });
-        // scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        //     sleep(7);
-        //     timer.reset();
-        //     sleep(1);
-        //
-        //     while (true) {
-        //         co_await timer.tick();
-        //         std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        //     }
-        //
-        //     co_return;
-        // }, [&]() {
-        //     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timeNow).count() << "\n";
-        // });
-
-        // scheduler.join();
-
-        // while (true) {
-        //     auto event = xInputHandler.getEvent();
-        //
-        //     auto transformed = transformer.transformEvent(std::move(event));
-        //
-        //     storage.store(transformed);
-        //     manager.store(transformed);
-        // }
-
-        //boost::asio::co_spawn(context, [&]() { return handler.start(); }, boost::asio::detached);
-    //
-    //    if (cmd.isListEventDevices()) {
-    //        evget::EventDeviceLister lister{};
-    //        cout << lister;
-    //    }
-    //
-    //    pool.join();
-    //    po::options_description cmdlineDesc("Allowed options");
-    //    cmdlineDesc.add_options()
-    //            ("help", "produce help message")
-    //            ("compression", po::_value<int>(), "set compression level")
-    //        ;
-    //
-    //    po::variables_map vm;
-    //    po::store(po::parse_command_line(argc, argv, cmdlineDesc), vm);
-    //    po::notify(vm);
-    //
-    //    if (vm.count("help")) {
-    //        cout << cmdlineDesc << "\n";
-    //        return 1;
-    //    }
-    //
-    //    if (vm.count("compression")) {
-    //        cout << "Compression level was set to "
-    //             << vm["compression"].as<int>() << ".\n";
-    //    } else {
-    //        cout << "Compression level was not set.\n";
-    //    }
-
-    return 1;
+    return 0;
 }

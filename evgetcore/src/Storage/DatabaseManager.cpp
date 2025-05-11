@@ -23,7 +23,7 @@
 
 #include "evgetcore/Storage/DatabaseManager.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::reference_wrapper<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
+EvgetCore::Storage::DatabaseManager::DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::unique_ptr<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
 scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, storeAfterInterval{storeAfter}, data{} {
     storeAfterTask();
 }
@@ -37,9 +37,13 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::store(Event::Data e
     return outResult;
 }
 
+void EvgetCore::Storage::DatabaseManager::add_store(std::unique_ptr<Store> store) {
+    this->storeIn.emplace_back(std::move(store));
+}
+
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
-    for (auto store : storeIn) {
-        auto result = store.get().store(event);
+    for (const auto& store : storeIn) {
+        auto result = store->store(event);
 
         if (!result.has_value()) {
             return result;

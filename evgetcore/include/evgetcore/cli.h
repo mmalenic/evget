@@ -63,12 +63,6 @@ public:
     [[nodiscard]] StorageType storage_type() const;
 
     /**
-     * Get the log level.
-     * @return
-     */
-    [[nodiscard]] spdlog::level::level_enum log_level() const;
-
-    /**
      * Get the output location.
      * @return
      */
@@ -95,13 +89,9 @@ private:
     static constexpr uint8_t LOG_LEVEL_INDENT_BY{8};
     static constexpr uint8_t STORAGE_TYPE_INDENT_BY{2};
 
-    spdlog::level::level_enum log_level_{spdlog::level::info};
     StorageType storage_type_{StorageType::Json};
     std::string output_{};
     bool output_to_stdout_{false};
-
-    static std::map<std::string, spdlog::level::level_enum> log_level_mappings();
-    static std::map<spdlog::level::level_enum , std::string> log_level_descriptions();
 
     static std::map<std::string, StorageType> storage_type_mappings();
     static std::map<StorageType, std::string> storage_type_descriptions();
