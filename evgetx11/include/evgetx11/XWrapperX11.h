@@ -47,6 +47,7 @@ public:
     std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
 
     std::unique_ptr<char[], decltype(&XFree)> atomName(Atom atom) override;
+    QueryPointerResult query_pointer(int device_id) override;
 
     std::optional<Window> getActiveWindow() override;
     std::optional<Window> getFocusWindow() override;

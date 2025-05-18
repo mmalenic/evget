@@ -163,6 +163,40 @@ EvgetX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     return {nullptr, [](XGenericEventCookie*) {}};
 }
 
+EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id) {
+    Window _root_return;
+    Window _window_return;
+    double _win_x;
+    double _win_y;
+    double root_x;
+    double root_y;
+    XIButtonState* button_state = nullptr;
+    XIModifierState modifier_state;
+    XIGroupState group_state;
+
+    XIQueryPointer(
+        &display.get(),
+        device_id,
+        XDefaultRootWindow(&display.get()),
+        &_root_return,
+        &_window_return,
+        &root_x,
+        &root_y,
+        &_win_x,
+        &_win_y,
+        button_state,
+        &modifier_state,
+        &group_state);
+
+    return QueryPointerResult {
+        .root_x = root_x,
+        .root_y = root_y,
+        .button_mask = std::unique_ptr<unsigned char[], decltype(&XFree)>{button_state->mask, XFree},
+        .group_state = group_state,
+        .modifier_state = modifier_state,
+    };
+}
+
 Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
     return XIQueryVersion(&display.get(), &major, &minor);
 }

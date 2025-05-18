@@ -43,6 +43,14 @@ struct XWindowDimensions {
 
 using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
 
+struct QueryPointerResult {
+    double root_x;
+    double root_y;
+    std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask;
+    XIModifierState modifier_state;
+    XIGroupState group_state;
+};
+
 /**
  * An interface which wraps X11 library functions.
  */
@@ -61,6 +69,8 @@ public:
     virtual std::optional<std::string> getWindowName(Window window) = 0;
     virtual std::optional<XWindowDimensions> getWindowSize(Window window) = 0;
     virtual std::optional<XWindowDimensions> getWindowPosition(Window window) = 0;
+
+    virtual QueryPointerResult query_pointer(int device_id) = 0;
 
     virtual XEvent nextEvent() = 0;
     virtual XEventPointer eventData(XEvent& event) = 0;
