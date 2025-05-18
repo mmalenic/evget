@@ -1,0 +1,12 @@
+# Compilation using clang and default flags.
+
+include(./default_flags)
+
+{% set version = os.getenv("COMPILER_VERSION") %}
+
+[settings]
+compiler=clang
+compiler.version={{ version }}
+
+[conf]
+tools.build:compiler_executables={'c': 'clang-{{ version }}', 'cpp': 'clang++-{{ version }}'}

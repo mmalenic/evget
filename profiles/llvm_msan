@@ -1,0 +1,9 @@
+# Compilation with clang and the llvm MemorySanitizer.
+
+include(./llvm_libc)
+
+{% set flags = ['-fsanitize=memory', '-fno-omit-frame-pointer'] %}
+
+[conf]
+tools.build:cxxflags+={{ flags }}
+tools.build:cflags+={{ flags }}

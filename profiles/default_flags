@@ -1,0 +1,9 @@
+# Sets default cxx and c flags.
+
+include(default)
+
+{% set flags = ['-Wall', '-Wextra', '-Wpedantic'] %}
+
+[conf]
+tools.build:cxxflags={{ flags }}
+tools.build:cflags={{ flags }}

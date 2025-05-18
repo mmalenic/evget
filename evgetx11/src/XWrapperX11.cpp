@@ -28,6 +28,7 @@
 #include <spdlog/spdlog.h>
 
 #include <array>
+#include <iostream>
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {}
 
@@ -175,6 +176,11 @@ std::unique_ptr<unsigned char[], decltype(&XFree)>
 EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) {
     unsigned char* data;
     unsigned long _bytesAfter;
+
+    if (window == 0) {
+        return {nullptr, XFree};
+    }
+
     Status status = XGetWindowProperty(
         &display.get(),
         window,
@@ -223,6 +229,10 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
         name = getProperty(*wmNameAtom, window, nItems, type, size);
     }
 
+    if (name == nullptr) {
+        return std::string{};
+    }
+
     return std::string{reinterpret_cast<const char*>(name.get()), nItems};
 }
 
@@ -260,6 +270,10 @@ std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
 
 std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Window window) {
     XWindowAttributes attributes;
+
+    if (window == 0) {
+        return std::nullopt;
+    }
 
     // XGetWindowAttributes returns non-zero on success.
     if (!XGetWindowAttributes(&display.get(), window, &attributes)) {

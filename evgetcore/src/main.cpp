@@ -49,9 +49,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    EvgetX11::XWrapperX11 wrapper{*XOpenDisplay(nullptr)};
     Display* display = XOpenDisplay(nullptr);
-
     EvgetX11::XWrapperX11 xWrapperX11{*display};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
     EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};

@@ -1,0 +1,14 @@
+# Compilation with clang using custom llvm libcxx and libcxxabi locations.
+
+include(./clang)
+
+{% set dir = os.getenv("LLVM_DIR") %}
+{% set ignore_list = os.getenv("IGNORE_LIST") %}
+{% set flags = [
+    '-nostdinc++', '-stdlib=libc++', '-lc++abi', '-L{}/lib'.format(dir), '-I{}/include'.format(dir),
+    '-I{}/include/c++/v1'.format(dir), '-Wl,--rpath={}/lib'.format(dir), '-fsanitize-ignorelist={}'.format(ignore_list)
+] %}
+
+[conf]
+tools.build:cxxflags={{ flags }}
+tools.build:cflags={{ flags }}

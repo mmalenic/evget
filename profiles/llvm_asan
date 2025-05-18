@@ -1,0 +1,9 @@
+# Compilation with clang and the llvm AddressSanitizer.
+
+include(./llvm_libc)
+
+{% set flags = ['-fsanitize=address,undefined,leak,integer'] %}
+
+[conf]
+tools.build:cxxflags+={{ flags }}
+tools.build:cflags+={{ flags }}
