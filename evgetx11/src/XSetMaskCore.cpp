@@ -30,6 +30,6 @@
 void EvgetX11::XSetMaskCore::setMask(unsigned char* mask) {
     EvgetX11::XWrapperX11::setMask(
         mask,
-        {XI_ButtonPress, XI_ButtonRelease, XI_KeyPress, XI_KeyRelease, XI_Motion}
+        {XI_RawButtonPress, XI_RawButtonRelease, XI_RawKeyPress, XI_RawKeyRelease, XI_RawMotion}
     );
 }

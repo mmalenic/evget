@@ -32,8 +32,8 @@
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {}
 
-std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, KeySym& keySym) {
-    if (event.evtype == XI_KeyPress) {
+std::string EvgetX11::XWrapperX11::lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) {
+    if (event.evtype == XI_RawKeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems
         // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
         // relationship.
@@ -42,15 +42,15 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIDeviceEvent& event, K
             .serial = event.serial,
             .send_event = event.send_event,
             .display = event.display,
-            .window = event.event,
-            .root = event.root,
-            .subwindow = event.child,
+            .window = 0,
+            .root = 0,
+            .subwindow = 0,
             .time = event.time,
-            .x = static_cast<int>(event.event_x),
-            .y = static_cast<int>(event.event_y),
-            .x_root = static_cast<int>(event.root_x),
-            .y_root = static_cast<int>(event.root_y),
-            .state = static_cast<unsigned int>(event.mods.effective),
+            .x = static_cast<int>(query_pointer.root_x),
+            .y = static_cast<int>(query_pointer.root_y),
+            .x_root = static_cast<int>(query_pointer.root_x),
+            .y_root = static_cast<int>(query_pointer.root_y),
+            .state = static_cast<unsigned int>(query_pointer.modifier_state.effective),
             .keycode = static_cast<unsigned int>(event.detail),
             .same_screen = true};
 
@@ -191,9 +191,9 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
     return QueryPointerResult {
         .root_x = root_x,
         .root_y = root_y,
-        .button_mask = std::unique_ptr<unsigned char[], decltype(&XFree)>{button_state->mask, XFree},
-        .group_state = group_state,
+        .button_mask = {button_state->mask, XFree},
         .modifier_state = modifier_state,
+        .group_state = group_state,
     };
 }
 

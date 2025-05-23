@@ -22,6 +22,8 @@
 
 #include "evgetx11/EventLoopX11.h"
 
+#include <iostream>
+
 EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
     co_return stopped.load();
 }

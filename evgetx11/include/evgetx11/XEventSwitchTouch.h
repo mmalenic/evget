@@ -62,14 +62,14 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
-        case XI_TouchBegin:
+        case XI_RawTouchBegin:
             touchMotion(event, data, getTime);
             touchButton(event, data, EvgetCore::Event::ButtonAction::Press, getTime);
         return true;
-        case XI_TouchUpdate:
+        case XI_RawTouchUpdate:
             touchMotion(event, data, getTime);
         return true;
-        case XI_TouchEnd:
+        case XI_RawTouchEnd:
             touchMotion(event, data, getTime);
             touchButton(event, data, EvgetCore::Event::ButtonAction::Release, getTime);
         return true;
@@ -84,10 +84,10 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     EvgetCore::Event::ButtonAction action,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
+    auto raw_event = event.viewData<XIRawEvent>();
+    if (xEventSwitchPointer.get().hasDevice(raw_event.deviceid)) {
         xEventSwitchPointer.get()
-            .addButtonEvent(deviceEvent, event.getTimestamp(), data, action, deviceEvent.detail, getTime);
+            .addButtonEvent(event, event.getTimestamp(), data, action, raw_event.detail, getTime);
     }
 }
 
@@ -96,9 +96,9 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
     EvgetCore::Event::Data& data,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
-    auto deviceEvent = event.viewData<XIDeviceEvent>();
-    if (xEventSwitchPointer.get().hasDevice(deviceEvent.deviceid)) {
-        xEventSwitchPointer.get().addMotionEvent(deviceEvent, event.getTimestamp(), data, getTime);
+    auto raw_event = event.viewData<XIRawEvent>();
+    if (xEventSwitchPointer.get().hasDevice(raw_event.deviceid)) {
+        xEventSwitchPointer.get().addMotionEvent(raw_event, event.getTimestamp(), data, getTime);
     }
 }
 }  // namespace EvgetX11

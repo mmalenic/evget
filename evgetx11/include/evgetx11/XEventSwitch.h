@@ -70,7 +70,7 @@ public:
     void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
     void addButtonEvent(
-        const XIDeviceEvent& event,
+        const XIRawEvent& event,
         EvgetCore::Event::Timestamp dateTime,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
@@ -78,7 +78,7 @@ public:
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void addMotionEvent(
-        const XIDeviceEvent& event,
+    const XIRawEvent& event,
         EvgetCore::Event::Timestamp dateTime,
         EvgetCore::Event::Data& data,
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
@@ -112,7 +112,7 @@ public:
      * Set the device name fields for a builder.
      */
     template <BuilderHasDeviceNameFunctions T>
-    T& setDeviceNameFields(T& builder, const XIDeviceEvent& event);
+    T& setDeviceNameFields(T& builder, const XIRawEvent& event);
 
     /**
      * Set the button map for a device.
@@ -196,7 +196,7 @@ T& EvgetX11::XEventSwitch::setWindowFields(T& builder) {
 }
 
 template <BuilderHasDeviceNameFunctions T>
-T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIDeviceEvent& event) {
+T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event) {
     auto name = idToName.at(event.deviceid);
 
     builder.deviceName(name);
@@ -208,19 +208,21 @@ T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIDeviceEvent& 
 }
 
 void EvgetX11::XEventSwitch::addMotionEvent(
-    const XIDeviceEvent& event,
+    const XIRawEvent& event,
     EvgetCore::Event::Timestamp dateTime,
     EvgetCore::Event::Data& data,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
+    auto query_pointer = this->xWrapper.get().query_pointer(event.deviceid);
+
     EvgetCore::Event::MouseMove builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
         .device(getDevice(event.deviceid))
-        .positionX(event.root_x)
-        .positionY(event.root_y);
+        .positionX(query_pointer.root_x)
+        .positionY(query_pointer.root_y);
 
-    XEventSwitch::setModifierValue(event.mods.effective, builder);
+    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     setWindowFields(builder);
 
     setDeviceNameFields(builder, event);
@@ -229,23 +231,25 @@ void EvgetX11::XEventSwitch::addMotionEvent(
 }
 
 void EvgetX11::XEventSwitch::addButtonEvent(
-    const XIDeviceEvent& event,
+    const XIRawEvent& event,
     EvgetCore::Event::Timestamp dateTime,
     EvgetCore::Event::Data& data,
     EvgetCore::Event::ButtonAction action,
     int button,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
+    auto query_pointer = this->xWrapper.get().query_pointer(event.deviceid);
+
     EvgetCore::Event::MouseClick builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
         .device(getDevice(event.deviceid))
-        .positionX(event.root_x)
-        .positionY(event.root_y)
+        .positionX(query_pointer.root_x)
+        .positionY(query_pointer.root_y)
         .action(action)
         .button(button)
         .name(buttonMap[event.deviceid][button]);
-    XEventSwitch::setModifierValue(event.mods.effective, builder);
+    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     setWindowFields(builder);
 
     setDeviceNameFields(builder, event);

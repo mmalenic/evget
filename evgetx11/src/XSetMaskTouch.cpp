@@ -28,5 +28,5 @@
 #include "evgetx11/XWrapperX11.h"
 
 void EvgetX11::XSetMaskTouch::setMask(unsigned char* mask) {
-    EvgetX11::XWrapperX11::setMask(mask, {XI_TouchBegin, XI_TouchEnd, XI_TouchUpdate});
+    EvgetX11::XWrapperX11::setMask(mask, {XI_RawTouchBegin, XI_RawTouchEnd, XI_RawTouchUpdate});
 }

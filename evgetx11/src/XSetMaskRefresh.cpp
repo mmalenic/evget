@@ -28,5 +28,5 @@
 #include "evgetx11/XWrapperX11.h"
 
 void EvgetX11::XSetMaskRefresh::setMask(unsigned char* mask) {
-    EvgetX11::XWrapperX11::setMask(mask, {XI_HierarchyChanged, XI_DeviceChanged});
+    EvgetX11::XWrapperX11::setMask(mask, {XI_DeviceChanged});
 }
