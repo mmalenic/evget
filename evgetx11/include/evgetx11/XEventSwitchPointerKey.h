@@ -84,7 +84,6 @@ private:
     std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
     std::unordered_map<int, std::optional<int>> valuatorX{};
     std::unordered_map<int, std::optional<int>> valuatorY{};
-    std::unordered_map<int, std::unordered_map<int, double>> valuatorValues{};
 
     int pointer_id{};
 };
@@ -201,13 +200,10 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     }
 
     for (const auto& [valuator, info] : processedValuators) {
-        auto value = valuatorValues[raw_event.sourceid][valuator] - valuators[valuator];
-        valuatorValues[raw_event.sourceid][valuator] = valuators[valuator];
-
         if (info.scroll_type == XIScrollTypeHorizontal) {
-            builder.horizontal(value);
+            builder.horizontal(valuators[valuator]);
         } else {
-            builder.vertical(value);
+            builder.vertical(valuators[valuator]);
         }
     }
 

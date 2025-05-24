@@ -71,7 +71,6 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
                 valuatorY[id] = valuatorInfo->number;
             }
         }
-        valuatorValues[id][valuatorInfo->number] = valuatorInfo->value;
     }
 }
 
