@@ -58,8 +58,9 @@ concept BuilderHasWindowFunctions =
  * Check whether the template parameter is a builder with a device name function.
  */
 template <typename T>
-concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName) {
+concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName, int screen) {
                                            { builder.deviceName(deviceName) } -> std::convertible_to<T>;
+                                           { builder.screen(screen) } -> std::convertible_to<T>;
                                        };
 
 class XEventSwitch {
@@ -111,7 +112,7 @@ public:
      * Set the device name fields for a builder.
      */
     template <BuilderHasDeviceNameFunctions T>
-    T& setDeviceNameFields(T& builder, const XIRawEvent& event);
+    T& setDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
 
     /**
      * Set the button map for a device.
@@ -195,10 +196,10 @@ T& EvgetX11::XEventSwitch::setWindowFields(T& builder) {
 }
 
 template <BuilderHasDeviceNameFunctions T>
-T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event) {
+T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
     auto name = idToName.at(event.sourceid);
 
-    return builder.deviceName(name);
+    return builder.deviceName(name).screen(screen);
 }
 
 void EvgetX11::XEventSwitch::addMotionEvent(
@@ -219,7 +220,7 @@ void EvgetX11::XEventSwitch::addMotionEvent(
     XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     setWindowFields(builder);
 
-    setDeviceNameFields(builder, event);
+    setDeviceNameFields(builder, event, query_pointer.screen_number);
 
     builder.build(data);
 }
@@ -246,7 +247,7 @@ void EvgetX11::XEventSwitch::addButtonEvent(
     XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     setWindowFields(builder);
 
-    setDeviceNameFields(builder, event);
+    setDeviceNameFields(builder, event, query_pointer.screen_number);
 
     builder.build(data);
 }

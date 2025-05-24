@@ -67,6 +67,7 @@ constexpr std::array<std::string_view, mouseMoveNFields> mouseMoveFields{
     "focus_window_position_y",
     "focus_window_width",
     "focus_window_height",
+    "screen",
     "device_type",
 };
 

@@ -174,19 +174,28 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
     XIModifierState modifier_state;
     XIGroupState group_state;
 
-    XIQueryPointer(
-        &display.get(),
-        device_id,
-        XDefaultRootWindow(&display.get()),
-        &_root_return,
-        &_window_return,
-        &root_x,
-        &root_y,
-        &_win_x,
-        &_win_y,
-        &button_state,
-        &modifier_state,
-        &group_state);
+    auto screen_number = 0;
+    for (auto i = 0; i < XScreenCount(&display.get()); i++) {
+        Screen *screen = XScreenOfDisplay(&display.get(), i);
+        auto result = XIQueryPointer(
+            &display.get(),
+            device_id,
+            XRootWindowOfScreen(screen),
+            &_root_return,
+            &_window_return,
+            &root_x,
+            &root_y,
+            &_win_x,
+            &_win_y,
+            &button_state,
+            &modifier_state,
+            &group_state
+            );
+        if (result == True) {
+            screen_number = i;
+            break;
+        }
+    }
 
     return QueryPointerResult {
         .root_x = root_x,
@@ -194,6 +203,7 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
         .button_mask = {button_state.mask, XFree},
         .modifier_state = modifier_state,
         .group_state = group_state,
+        .screen_number = screen_number,
     };
 }
 

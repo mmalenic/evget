@@ -49,6 +49,7 @@ struct QueryPointerResult {
     std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask;
     XIModifierState modifier_state;
     XIGroupState group_state;
+    int screen_number;
 };
 
 /**

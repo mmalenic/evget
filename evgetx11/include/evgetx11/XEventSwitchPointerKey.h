@@ -170,7 +170,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     xEventSwitch.get().setWindowFields(builder);
 
-    xEventSwitch.get().setDeviceNameFields(builder, raw_event);
+    xEventSwitch.get().setDeviceNameFields(builder, raw_event, query_pointer.screen_number);
 
     builder.build(data);
 }
@@ -217,7 +217,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     xEventSwitch.get().setWindowFields(builder);
 
-    xEventSwitch.get().setDeviceNameFields(builder, raw_event);
+    xEventSwitch.get().setDeviceNameFields(builder, raw_event, query_pointer.screen_number);
 
     builder.build(data);
 }
