@@ -58,14 +58,13 @@ concept BuilderHasWindowFunctions =
  * Check whether the template parameter is a builder with a device name function.
  */
 template <typename T>
-concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName, std::string info) {
+concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName) {
                                            { builder.deviceName(deviceName) } -> std::convertible_to<T>;
-                                           { builder.info(info) } -> std::convertible_to<T>;
                                        };
 
 class XEventSwitch {
 public:
-    explicit XEventSwitch(XWrapper& xWrapper, std::unordered_map<std::string, std::string> nameToInfo);
+    explicit XEventSwitch(XWrapper& xWrapper);
 
     void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
@@ -126,7 +125,6 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
     std::unordered_map<int, EvgetCore::Event::Device> devices{};
     std::unordered_map<int, std::string> idToName{};
-    std::unordered_map<std::string, std::string> nameToInfo{};
     int pointer_id{};
 };
 
@@ -200,12 +198,7 @@ template <BuilderHasDeviceNameFunctions T>
 T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event) {
     auto name = idToName.at(event.sourceid);
 
-    builder.deviceName(name);
-    if (nameToInfo.contains(name)) {
-        return builder.info(nameToInfo.at(name));
-    } else {
-        return builder;
-    }
+    return builder.deviceName(name);
 }
 
 void EvgetX11::XEventSwitch::addMotionEvent(

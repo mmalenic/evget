@@ -80,7 +80,7 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
 
     if (nDevices != xi2NDevices) {
         spdlog::warn(
-            "Devices with ids greater than 127 found. Set the id of these devices manually if their use is required."
+            "Devices with ids greater than 127 are not supported."
         );
     }
 

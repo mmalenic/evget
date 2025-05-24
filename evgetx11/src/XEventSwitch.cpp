@@ -72,10 +72,9 @@ void EvgetX11::XEventSwitch::refreshDevices(
 }
 
 EvgetX11::XEventSwitch::XEventSwitch(
-    XWrapper& xWrapper,
-    std::unordered_map<std::string, std::string> nameToInfo
+    XWrapper& xWrapper
 )
-    : xWrapper{xWrapper}, nameToInfo{std::move(nameToInfo)} {}
+    : xWrapper{xWrapper} {}
 
 const std::string& EvgetX11::XEventSwitch::getButtonName(int id, int button) const {
     return buttonMap.at(id).at(button);

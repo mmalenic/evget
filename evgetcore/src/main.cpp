@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 
     Display* display = XOpenDisplay(nullptr);
     EvgetX11::XWrapperX11 xWrapperX11{*display};
-    EvgetX11::XEventSwitch xEventSwitch{xWrapperX11, {}};
+    EvgetX11::XEventSwitch xEventSwitch{xWrapperX11};
     EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapperX11, xEventSwitch};
     EvgetX11::EventTransformerX11 transformer{xWrapperX11, xEventSwitchPointer};
     EvgetX11::XSetMaskCore setCore{};

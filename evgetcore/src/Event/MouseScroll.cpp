@@ -92,11 +92,6 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowHeight(
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::info(std::string info) {
-    _info = std::move(info);
-    return *this;
-}
-
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore::Event::ModifierValue modifierValue) {
     _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
@@ -116,7 +111,6 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
-            fromString(_info),
             toUnderlyingOptional(_device),
             fromDouble(_vertical),
             fromDouble(_horizontal)
