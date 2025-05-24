@@ -82,6 +82,11 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::focusWindowHeight(doub
     return *this;
 }
 
+EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::screen(int screen) {
+    _screen = screen;
+    return *this;
+}
+
 EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Event::ModifierValue modifierValue) {
     _modifiers.push_back(toUnderlying(modifierValue));
     return *this;
@@ -101,6 +106,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
+            fromInt(_screen),
             toUnderlyingOptional(_device)
         },
         _modifiers

@@ -97,6 +97,11 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::modifier(EvgetCore
     return *this;
 }
 
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::screen(int screen) {
+    _screen = screen;
+    return *this;
+}
+
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
     Entry entry{
         EntryType::MouseScroll,
@@ -111,6 +116,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
+            fromInt(_screen),
             toUnderlyingOptional(_device),
             fromDouble(_vertical),
             fromDouble(_horizontal)

@@ -52,7 +52,7 @@ EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event
     nlohmann::json output{};
     output["entries"] = formattedEntries;
 
-    ostream.get() << output.dump(4);
+    ostream.get() << output.dump(4) << "\n";
 
     return Result<void>{};
 }

@@ -31,10 +31,10 @@
 namespace EvgetCore::Event {
 
 namespace detail {
-constexpr auto mouseMoveNFields = 11;
-constexpr auto mouseScrollNFields = 13;
-constexpr auto mouseClickNFields = 14;
-constexpr auto keyNFields = 15;
+constexpr auto mouseMoveNFields = 12;
+constexpr auto mouseScrollNFields = 14;
+constexpr auto mouseClickNFields = 15;
+constexpr auto keyNFields = 16;
 
 template <std::size_t From, std::size_t To, typename AddElements>
 concept AddToArray = std::ranges::range<AddElements> && To > From && requires(AddElements addElements) {

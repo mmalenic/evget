@@ -104,6 +104,11 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::modifier(EvgetCore::
     return *this;
 }
 
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::screen(int screen) {
+    _screen = screen;
+    return *this;
+}
+
 EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
     Entry entry{
         EntryType::MouseClick,
@@ -118,6 +123,7 @@ EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
             fromDouble(_focusWindowPositionY),
             fromDouble(_focusWindowWidth),
             fromDouble(_focusWindowHeight),
+            fromInt(_screen),
             toUnderlyingOptional(_device),
             fromInt(_button),
             fromString(_name),

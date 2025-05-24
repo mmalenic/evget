@@ -105,6 +105,12 @@ public:
     MouseScroll& focusWindowHeight(double height);
 
     /**
+     * Add the screen number.
+     */
+    MouseScroll& screen(int screen);
+
+
+    /**
      * Add modifier value.
      */
     MouseScroll& modifier(ModifierValue modifier);
@@ -128,6 +134,7 @@ private:
     std::optional<double> _focusWindowPositionY{};
     std::optional<double> _focusWindowWidth{};
     std::optional<double> _focusWindowHeight{};
+    std::optional<int> _screen{};
 
     std::vector<std::string> _modifiers{};
 };
