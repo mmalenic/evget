@@ -48,7 +48,7 @@ EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrap
 
 void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters) {
     XIEventMask mask{};
-    mask.deviceid = XIAllMasterDevices;
+    mask.deviceid = XIAllDevices;
 
     unsigned char eventMask[XI_LASTEVENT] = {0};
     for (const auto& maskSetter : maskSetters) {

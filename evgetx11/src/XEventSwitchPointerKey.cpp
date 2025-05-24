@@ -29,12 +29,16 @@ EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(
 }
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
-    int id,
+    int id,std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info
 ) {
-    xEventSwitch.get().refreshDevices(id, device, name, info);
+    xEventSwitch.get().refreshDevices(id, pointer_id, device, name, info);
+
+    if (pointer_id.has_value()) {
+        this->pointer_id = *pointer_id;
+    }
 
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};

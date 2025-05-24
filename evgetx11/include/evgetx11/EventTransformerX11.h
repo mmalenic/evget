@@ -59,6 +59,7 @@ private:
     std::unordered_map<int, std::string> idToName{};
 
     std::tuple<Switches&...> switches;
+    std::optional<int> pointer_id{};
 };
 
 template <typename... Switches>
@@ -92,11 +93,13 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
         const auto& device = info[i];
         int id = boost::numeric_cast<int>(device.id);
 
+        if (device.use == IsXPointer) {
+            this->pointer_id = id;
+        }
+
         const auto& xi2Device = xi2Devices.at(id).get();
 
-        if (xi2Device.enabled && device.type != None &&
-            (device.use == IsXExtensionPointer || device.use == IsXExtensionKeyboard || device.use == IsXExtensionDevice
-            )) {
+        if (xi2Device.enabled && device.type != None) {
             auto type = xWrapper.get().atomName(device.type);
             EvgetCore::Event::Device deviceType;
 
@@ -117,8 +120,8 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
 
             // Iterate through switches and refresh devices.
             std::apply(
-                [&id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
-                    ((eventSwitches.refreshDevices(id, deviceType, device.name, xi2Devices.at(id).get())), ...);
+                [this, &id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
+                    ((eventSwitches.refreshDevices(id, pointer_id, deviceType, device.name, xi2Devices.at(id).get())), ...);
                 },
                 switches
             );

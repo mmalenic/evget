@@ -45,11 +45,14 @@ void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, i
 }
 
 void EvgetX11::XEventSwitch::refreshDevices(
-    int id,
+    int id, std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info
 ) {
+    if (pointer_id.has_value()) {
+        this->pointer_id = *pointer_id;
+    }
     devices.emplace(id, device);
     idToName.emplace(id, name);
 

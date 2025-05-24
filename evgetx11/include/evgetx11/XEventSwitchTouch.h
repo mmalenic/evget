@@ -85,7 +85,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    if (xEventSwitchPointer.get().hasDevice(raw_event.deviceid)) {
+    if (xEventSwitchPointer.get().hasDevice(raw_event.sourceid)) {
         xEventSwitchPointer.get()
             .addButtonEvent(event, event.getTimestamp(), data, action, raw_event.detail, getTime);
     }
@@ -97,7 +97,7 @@ void EvgetX11::XEventSwitchTouch::touchMotion(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    if (xEventSwitchPointer.get().hasDevice(raw_event.deviceid)) {
+    if (xEventSwitchPointer.get().hasDevice(raw_event.sourceid)) {
         xEventSwitchPointer.get().addMotionEvent(raw_event, event.getTimestamp(), data, getTime);
     }
 }

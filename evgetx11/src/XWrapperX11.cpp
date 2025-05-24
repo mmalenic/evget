@@ -170,7 +170,7 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
     double _win_y;
     double root_x;
     double root_y;
-    XIButtonState* button_state = nullptr;
+    XIButtonState button_state;
     XIModifierState modifier_state;
     XIGroupState group_state;
 
@@ -184,14 +184,14 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
         &root_y,
         &_win_x,
         &_win_y,
-        button_state,
+        &button_state,
         &modifier_state,
         &group_state);
 
     return QueryPointerResult {
         .root_x = root_x,
         .root_y = root_y,
-        .button_mask = {button_state->mask, XFree},
+        .button_mask = {button_state.mask, XFree},
         .modifier_state = modifier_state,
         .group_state = group_state,
     };

@@ -46,7 +46,7 @@ public:
         XWrapper& xWrapper, XEventSwitch& xEventSwitch
     );
 
-    void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
+    void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
@@ -85,6 +85,8 @@ private:
     std::unordered_map<int, std::optional<int>> valuatorX{};
     std::unordered_map<int, std::optional<int>> valuatorY{};
     std::unordered_map<int, std::unordered_map<int, double>> valuatorValues{};
+
+    int pointer_id{};
 };
 
 bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
@@ -119,8 +121,8 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    auto button = xEventSwitch.get().getButtonName(raw_event.deviceid, raw_event.detail);
-    if (!xEventSwitch.get().hasDevice(raw_event.deviceid) || (raw_event.flags & XIPointerEmulated) ||
+    auto button = xEventSwitch.get().getButtonName(raw_event.sourceid, raw_event.detail);
+    if (!xEventSwitch.get().hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated) ||
         button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;
@@ -136,11 +138,11 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    if (!xEventSwitch.get().hasDevice(raw_event.deviceid)) {
+    if (!xEventSwitch.get().hasDevice(raw_event.sourceid)) {
         return;
     }
 
-    auto query_pointer = this->xWrapper.get().query_pointer(raw_event.deviceid);
+    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
     std::string character;
     KeySym keySym = NoSymbol;
@@ -159,7 +161,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     builder.interval(getTime(raw_event.time))
         .positionX(query_pointer.root_x)
         .positionY(query_pointer.root_y)
-        .device(xEventSwitch.get().getDevice(raw_event.deviceid))
+        .device(xEventSwitch.get().getDevice(raw_event.sourceid))
         .timestamp(event.getTimestamp())
         .action(action)
         .button(raw_event.detail)
@@ -180,7 +182,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    if (!xEventSwitch.get().hasDevice(raw_event.deviceid) || !scrollMap.contains(raw_event.deviceid) ||
+    if (!xEventSwitch.get().hasDevice(raw_event.sourceid) || !scrollMap.contains(raw_event.sourceid) ||
         raw_event.flags & XIPointerEmulated) {
         return;
     }
@@ -188,7 +190,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     EvgetCore::Event::MouseScroll builder{};
     auto valuators = getValuators(raw_event.valuators);
     std::unordered_map<int, XIScrollClassInfo> processedValuators{};
-    for (const auto& [valuator, info] : scrollMap[raw_event.deviceid]) {
+    for (const auto& [valuator, info] : scrollMap[raw_event.sourceid]) {
         if (valuators.contains(valuator)) {
             processedValuators.try_emplace(valuator, info);
         }
@@ -199,8 +201,8 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     }
 
     for (const auto& [valuator, info] : processedValuators) {
-        auto value = valuatorValues[raw_event.deviceid][valuator] - valuators[valuator];
-        valuatorValues[raw_event.deviceid][valuator] = valuators[valuator];
+        auto value = valuatorValues[raw_event.sourceid][valuator] - valuators[valuator];
+        valuatorValues[raw_event.sourceid][valuator] = valuators[valuator];
 
         if (info.scroll_type == XIScrollTypeHorizontal) {
             builder.horizontal(value);
@@ -209,10 +211,10 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
         }
     }
 
-    auto query_pointer = this->xWrapper.get().query_pointer(raw_event.deviceid);
+    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
     builder.interval(getTime(raw_event.time))
         .timestamp(event.getTimestamp())
-        .device(xEventSwitch.get().getDevice(raw_event.deviceid))
+        .device(xEventSwitch.get().getDevice(raw_event.sourceid))
         .positionX(query_pointer.root_x)
         .positionY(query_pointer.root_y);
 
@@ -230,13 +232,13 @@ void EvgetX11::XEventSwitchPointerKey::motionEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
-    if (!xEventSwitch.get().hasDevice(raw_event.deviceid) || (raw_event.flags & XIPointerEmulated)) {
+    if (!xEventSwitch.get().hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated)) {
         return;
     }
 
     auto valuators = getValuators(raw_event.valuators);
     for (const auto& [valuator, value] : valuators) {
-        if (valuator == valuatorX[raw_event.deviceid] || valuator == valuatorY[raw_event.deviceid]) {
+        if (valuator == valuatorX[raw_event.sourceid] || valuator == valuatorY[raw_event.sourceid]) {
             xEventSwitch.get().addMotionEvent(raw_event, event.getTimestamp(), data, getTime);
             break;
         }

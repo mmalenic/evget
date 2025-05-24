@@ -67,7 +67,7 @@ class XEventSwitch {
 public:
     explicit XEventSwitch(XWrapper& xWrapper, std::unordered_map<std::string, std::string> nameToInfo);
 
-    void refreshDevices(int id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
+    void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
 
     void addButtonEvent(
         const XIRawEvent& event,
@@ -127,6 +127,7 @@ private:
     std::unordered_map<int, EvgetCore::Event::Device> devices{};
     std::unordered_map<int, std::string> idToName{};
     std::unordered_map<std::string, std::string> nameToInfo{};
+    int pointer_id{};
 };
 
 template <BuilderHasModifier T>
@@ -197,7 +198,7 @@ T& EvgetX11::XEventSwitch::setWindowFields(T& builder) {
 
 template <BuilderHasDeviceNameFunctions T>
 T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event) {
-    auto name = idToName.at(event.deviceid);
+    auto name = idToName.at(event.sourceid);
 
     builder.deviceName(name);
     if (nameToInfo.contains(name)) {
@@ -213,12 +214,12 @@ void EvgetX11::XEventSwitch::addMotionEvent(
     EvgetCore::Event::Data& data,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
-    auto query_pointer = this->xWrapper.get().query_pointer(event.deviceid);
+    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
     EvgetCore::Event::MouseMove builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
-        .device(getDevice(event.deviceid))
+        .device(getDevice(event.sourceid))
         .positionX(query_pointer.root_x)
         .positionY(query_pointer.root_y);
 
@@ -238,17 +239,17 @@ void EvgetX11::XEventSwitch::addButtonEvent(
     int button,
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
-    auto query_pointer = this->xWrapper.get().query_pointer(event.deviceid);
+    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
     EvgetCore::Event::MouseClick builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
-        .device(getDevice(event.deviceid))
+        .device(getDevice(event.sourceid))
         .positionX(query_pointer.root_x)
         .positionY(query_pointer.root_y)
         .action(action)
         .button(button)
-        .name(buttonMap[event.deviceid][button]);
+        .name(buttonMap[event.sourceid][button]);
     XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
     setWindowFields(builder);
 
