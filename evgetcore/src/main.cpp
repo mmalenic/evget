@@ -62,9 +62,11 @@ int main(int argc, char* argv[]) {
     auto scheduler = EvgetCore::Scheduler{};
     auto store = EvgetCore::Storage::DatabaseManager{scheduler};
 
+    std::ofstream out = std::ofstream{cli.output(), std::ios_base::app};
+    auto connect = EvgetCore::SQLiteConnection{};
+
     switch (cli.storage_type()) {
         case EvgetCore::StorageType::SQLite: {
-            auto connect = EvgetCore::SQLiteConnection{};
             store.add_store(std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output()));
 
             break;
@@ -73,7 +75,6 @@ int main(int argc, char* argv[]) {
             if (cli.output_to_stdout()) {
                 store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(std::cout));
             } else {
-                auto out = std::ofstream{cli.output(), std::ios_base::app};
                 store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(out));
             }
 
