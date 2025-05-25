@@ -87,7 +87,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
     auto raw_event = event.viewData<XIRawEvent>();
     if (xEventSwitchPointer.get().hasDevice(raw_event.sourceid)) {
         xEventSwitchPointer.get()
-            .addButtonEvent(event, event.getTimestamp(), data, action, raw_event.detail, getTime);
+            .addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
     }
 }
 

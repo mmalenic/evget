@@ -83,9 +83,8 @@ XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
         .inputclassinfo = nullptr};
 }
 
-XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(
+XIRawEvent EvgetX11TestUtils::createXIRawEvent(
     int evtype,
-    std::array<unsigned char, 1>& buttonMask,
     std::array<unsigned char, 1>& valuatorMask,
     std::array<double, 1>& values
 ) {
@@ -100,26 +99,12 @@ XIDeviceEvent EvgetX11TestUtils::createXIDeviceEvent(
         .deviceid = 1,
         .sourceid = 1,
         .detail = 0,
-        .root = 0,
-        .event = 0,
-        .child = 0,
-        .root_x = 1,
-        .root_y = 1,
-        .event_x = 1,
-        .event_y = 1,
         .flags = 0,
-        .buttons =
-            {
-                .mask_len = static_cast<int>(buttonMask.size()),
-                .mask = buttonMask.data(),
-            },
         .valuators = createXIValuatorState(valuatorMask, values),
-        .mods = {0, 0, 0, 0},
-        .group = {0, 0, 0, 0},
     };
 }
 
-XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
+XEvent EvgetX11TestUtils::createXEvent(XIRawEvent& event) {
     return {
         .xcookie = {
             .type = GenericEvent,
@@ -136,4 +121,25 @@ XEvent EvgetX11TestUtils::createXEvent(XIDeviceEvent& event) {
 XIValuatorState
 EvgetX11TestUtils::createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values) {
     return {.mask_len = static_cast<int>(valuatorMask.size()), .mask = valuatorMask.data(), .values = values.data()};
+}
+
+EvgetX11::QueryPointerResult EvgetX11TestUtils::create_pointer_result() {
+    return EvgetX11::QueryPointerResult {
+        .root_x = 1,
+        .root_y = 1,
+        .button_mask = {nullptr, XFree},
+        .modifier_state = XIModifierState {
+            .base = 0,
+            .latched = 0,
+            .locked = 0,
+            .effective = 0,
+        },
+        .group_state = XIGroupState {
+            .base = 0,
+            .latched = 0,
+            .locked = 0,
+            .effective = 0,
+        },
+        .screen_number = 0
+    };
 }

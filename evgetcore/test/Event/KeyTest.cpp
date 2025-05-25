@@ -37,7 +37,7 @@ TEST(KeyTest, Event) {  // NOLINT(cert-err58-cpp)
     .focusWindowPositionY(1)
     .focusWindowWidth(1)
     .focusWindowHeight(1)
-    .info("info")
+    .screen(1)
     .device(EvgetCore::Event::Device::Keyboard)
     .button(1)
     .name("name")
@@ -51,7 +51,7 @@ TEST(KeyTest, Event) {  // NOLINT(cert-err58-cpp)
     auto named_entry = entry.getEntryWithFields();
 
     auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::keyFields.begin(), EvgetCore::Event::detail::keyFields.end()};
-    std::vector<std::string> expected_data{ "1", "1970-01-01T00:00:00.000000000+0000", "1.000000", "1.000000", "name", "name", "1.000000", "1.000000", "1.000000", "1.000000", "info", "Keyboard", "1", "name", "Press", "a" };
+    std::vector<std::string> expected_data{ "1", "1970-01-01T00:00:00.000000000+0000", "1.000000", "1.000000", "name", "name", "1.000000", "1.000000", "1.000000", "1.000000", "1", "Keyboard", "1", "name", "Press", "a" };
 
     ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::Key);
     ASSERT_EQ(named_entry.fields, expected_fields);
