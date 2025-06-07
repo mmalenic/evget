@@ -11,7 +11,7 @@ create table key (
     focus_window_position_y real,
     focus_window_width real,
     focus_window_height real,
-    info text,
+    screen real,
     device_type integer not null references device_type(id),
     button_id integer,
     button_name text,

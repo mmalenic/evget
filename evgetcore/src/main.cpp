@@ -67,7 +67,10 @@ int main(int argc, char* argv[]) {
 
     switch (cli.storage_type()) {
         case EvgetCore::StorageType::SQLite: {
-            store.add_store(std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output()));
+            auto database = std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output());
+            database->init();
+
+            store.add_store(std::move(database));
 
             break;
         }
