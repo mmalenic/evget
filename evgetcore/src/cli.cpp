@@ -32,11 +32,7 @@
 
 #include "evgetcore/cli.h"
 
-EvgetCore::StorageType EvgetCore::Cli::storage_type() const {
-    return this->storage_type_;
-}
-
-const std::string & EvgetCore::Cli::output() const {
+const std::vector<std::string>& EvgetCore::Cli::output() const {
     return this->output_;
 }
 
@@ -65,29 +61,13 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         "Print version"
     );
 
-    app.add_option("-s,--storage-type", storage_type_)
-->transform(CLI::Transformer{storage_type_mappings(), CLI::ignore_case})
-->option_text(format_enum(
-    "STORAGE_TYPE",
-    "How to store or display events",
-    STORAGE_TYPE_INDENT_BY,
-    storage_type_descriptions()
-));
-
-    auto code = 0;
-    app.add_option_function<std::string>("-o,--output", [this, &code](const std::string& value) {
+    app.add_option_function<std::string>("-o,--output", [this](const std::string& value) {
         if (value == "-") {
             spdlog::set_level(spdlog::level::off);
-
-            if (storage_type_ != StorageType::Json) {
-                std::cout << "cannot output to stdout if not using json storage\n";
-                code = 1;
-            }
-
             output_to_stdout_ = true;
         }
 
-        output_ = value;
+        output_.emplace_back(value);
     }, "The output location of the storage. "
     "'-' is supported to output to stdout when using json storage and this "
     "disables any logging.");
@@ -98,34 +78,19 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         return std::unexpected{app.exit(e)};
     }
 
-    if (code > 0) {
-        return std::unexpected{code};
-    }
-
     if (output_.empty()) {
-        switch (storage_type_) {
-            case StorageType::Json:
-                output_ = "evget_store.json";
-                break;
-            case StorageType::SQLite:
-                output_ = "evget_store.sqlite";
-                break;
-        }
+        output_.emplace_back("-");
+        spdlog::set_level(spdlog::level::off);
+        output_to_stdout_ = true;
     }
 
     return should_exit;
 }
 
-std::map<std::string, EvgetCore::StorageType> EvgetCore::Cli::storage_type_mappings() {
-    return {
-        {"sqlite", StorageType::SQLite},
-{"json", StorageType::Json},
-    };
-}
+EvgetCore::StorageType EvgetCore::Cli::get_storage_type(const std::string &output) {
+    if (output.ends_with(".json")) {
+        return StorageType::Json;
+    }
 
-std::map<EvgetCore::StorageType, std::string> EvgetCore::Cli::storage_type_descriptions() {
-    return {
-            { StorageType::SQLite, "- sqlite: store events in an sqlite database"},
-    {StorageType::Json, "- json: store events as JSON"},
-        };
+    return StorageType::SQLite;
 }

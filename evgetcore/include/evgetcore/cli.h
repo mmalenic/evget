@@ -58,15 +58,10 @@ public:
     explicit Cli() = default;
 
     /**
-     * Get the storage type.
-     */
-    [[nodiscard]] StorageType storage_type() const;
-
-    /**
      * Get the output location.
      * @return
      */
-    [[nodiscard]] const std::string& output() const;
+    [[nodiscard]] const std::vector<std::string>& output() const;
 
     /**
      * Whether to output to stdout.
@@ -84,17 +79,13 @@ public:
      */
     std::expected<bool, int> parse(int argc, char** argv);
 
+    static StorageType get_storage_type(const std::string& output);
+
 private:
     static constexpr uint8_t INDENT_BY{30};
-    static constexpr uint8_t LOG_LEVEL_INDENT_BY{8};
-    static constexpr uint8_t STORAGE_TYPE_INDENT_BY{2};
 
-    StorageType storage_type_{StorageType::Json};
-    std::string output_{};
+    std::vector<std::string> output_{};
     bool output_to_stdout_{false};
-
-    static std::map<std::string, StorageType> storage_type_mappings();
-    static std::map<StorageType, std::string> storage_type_descriptions();
 
     template <typename T>
 static std::string format_enum(

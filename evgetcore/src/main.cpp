@@ -62,36 +62,36 @@ int main(int argc, char* argv[]) {
     auto scheduler = EvgetCore::Scheduler{};
     auto store = EvgetCore::Storage::DatabaseManager{scheduler};
 
-    std::ofstream out = std::ofstream{cli.output(), std::ios_base::app};
-    auto connect = EvgetCore::SQLiteConnection{};
-
-    switch (cli.storage_type()) {
-        case EvgetCore::StorageType::SQLite: {
-            auto database = std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output());
-            database->init();
-
-            store.add_store(std::move(database));
-
-            break;
-        }
-        case EvgetCore::StorageType::Json: {
-            if (cli.output_to_stdout()) {
-                store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(std::cout));
-            } else {
-                store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(out));
-            }
-
-            break;
-        }
-    }
-    EvgetCore::EventHandler handler{store, transformer, eventLoop};
-
-    scheduler.spawn([&handler]() -> boost::asio::awaitable<void> {
-        co_await handler.start();
-        co_return;
-    });
-
-    scheduler.join();
+    // std::ofstream out = std::ofstream{cli.output(), std::ios_base::app};
+    // auto connect = EvgetCore::SQLiteConnection{};
+    //
+    // switch (cli.storage_type()) {
+    //     case EvgetCore::StorageType::SQLite: {
+    //         auto database = std::make_unique<EvgetCore::Storage::DatabaseStorage>(connect, cli.output());
+    //         database->init();
+    //
+    //         store.add_store(std::move(database));
+    //
+    //         break;
+    //     }
+    //     case EvgetCore::StorageType::Json: {
+    //         if (cli.output_to_stdout()) {
+    //             store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(std::cout));
+    //         } else {
+    //             store.add_store(std::make_unique<EvgetCore::Storage::JsonStorage>(out));
+    //         }
+    //
+    //         break;
+    //     }
+    // }
+    // EvgetCore::EventHandler handler{store, transformer, eventLoop};
+    //
+    // scheduler.spawn([&handler]() -> boost::asio::awaitable<void> {
+    //     co_await handler.start();
+    //     co_return;
+    // });
+    //
+    // scheduler.join();
 
     return 0;
 }
