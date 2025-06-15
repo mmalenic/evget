@@ -52,10 +52,17 @@ EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event
     nlohmann::json output{};
     output["entries"] = formattedEntries;
 
-    ostream.get() << output.dump(4) << "\n";
+    std::visit([output](auto&& ostream) {
+        *ostream << output.dump(4) << "\n";
+    }, ostream);
 
     return Result<void>{};
 }
 
-EvgetCore::Storage::JsonStorage::JsonStorage(std::ostream& ostream) : ostream{ostream} {
+EvgetCore::Storage::JsonStorage::JsonStorage(std::unique_ptr<std::ostream> ostream) : ostream{std::move(ostream)} {
+}
+
+
+EvgetCore::Storage::JsonStorage::
+JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> ostream) : ostream{std::move(ostream)} {
 }

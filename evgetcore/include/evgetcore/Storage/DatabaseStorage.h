@@ -41,7 +41,7 @@ namespace uuids = boost::uuids;
  */
 class DatabaseStorage : public Store {
 public:
-    DatabaseStorage(std::reference_wrapper<EvgetCore::Connection> connection, std::string database);
+    DatabaseStorage(std::unique_ptr<EvgetCore::Connection> connection, std::string database);
 
     Result<void> store(Event::Data events) override;
 
@@ -52,7 +52,7 @@ public:
     Result<void> init();
 
 private:
-    std::reference_wrapper<EvgetCore::Connection> connection;
+    std::unique_ptr<EvgetCore::Connection> connection;
     std::string database;
 
     Result<void> insertEvents(

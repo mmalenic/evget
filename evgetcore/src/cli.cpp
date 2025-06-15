@@ -32,12 +32,12 @@
 
 #include "evgetcore/cli.h"
 
+#include "evgetcore/database/sqlite/Connection.h"
+#include "evgetcore/Storage/DatabaseStorage.h"
+#include "evgetcore/Storage/JsonStorage.h"
+
 const std::vector<std::string>& EvgetCore::Cli::output() const {
     return this->output_;
-}
-
-bool EvgetCore::Cli::output_to_stdout() const {
-    return this->output_to_stdout_;
 }
 
 std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
@@ -61,12 +61,13 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         "Print version"
     );
 
-    app.add_option_function<std::string>("-o,--output", [this](const std::string& value) {
+    app.add_option_function<std::string>("-o,--output", [this](std::string value) {
         if (value == "-") {
             spdlog::set_level(spdlog::level::off);
-            output_to_stdout_ = true;
         }
 
+        std::ranges::transform(value, value.begin(),
+                       [](unsigned char c){ return std::tolower(c); });
         output_.emplace_back(value);
     }, "The output location of the storage. "
     "'-' is supported to output to stdout when using json storage and this "
@@ -81,16 +82,50 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
     if (output_.empty()) {
         output_.emplace_back("-");
         spdlog::set_level(spdlog::level::off);
-        output_to_stdout_ = true;
     }
 
     return should_exit;
 }
 
-EvgetCore::StorageType EvgetCore::Cli::get_storage_type(const std::string &output) {
-    if (output.ends_with(".json")) {
-        return StorageType::Json;
+EvgetCore::StorageType EvgetCore::Cli::get_storage_type(std::string& output) {
+    if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") || output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
+        return StorageType::SQLite;
     }
 
-    return StorageType::SQLite;
+    return StorageType::Json;
+}
+
+std::vector<std::unique_ptr<EvgetCore::Storage::Store>> EvgetCore::Cli::to_stores() {
+    auto stores = std::vector<std::unique_ptr<Storage::Store>>{};
+    stores.reserve(output_.size());
+
+    for (auto& output : this->output_) {
+        switch (this->get_storage_type(output)) {
+            case EvgetCore::StorageType::SQLite: {
+                auto connect = std::make_unique<EvgetCore::SQLiteConnection>();
+                auto database = std::make_unique<EvgetCore::Storage::DatabaseStorage>(std::move(connect), output);
+                database->init();
+
+                stores.emplace_back(std::move(database));
+
+                break;
+            }
+            case EvgetCore::StorageType::Json: {
+                if (output == "-") {
+                    // Do nothing to delete std::cout.
+                    auto deleter = [](std::ostream* _std_cout){ };
+                    std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> out = {&std::cout, deleter};
+
+                    stores.emplace_back(std::make_unique<EvgetCore::Storage::JsonStorage>(std::move(out)));
+                } else {
+                    auto out = std::make_unique<std::ofstream>(output, std::ios_base::app);
+                    stores.emplace_back(std::make_unique<EvgetCore::Storage::JsonStorage>(std::move(out)));
+                }
+
+                break;
+            }
+        }
+    }
+
+    return stores;
 }

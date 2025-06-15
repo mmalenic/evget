@@ -29,6 +29,8 @@
 #include <filesystem>
 #include <map>
 
+#include "Storage/DatabaseManager.h"
+
 namespace EvgetCore {
 
 namespace fs = std::filesystem;
@@ -64,12 +66,6 @@ public:
     [[nodiscard]] const std::vector<std::string>& output() const;
 
     /**
-     * Whether to output to stdout.
-     * @return
-     */
-    [[nodiscard]] bool output_to_stdout() const;
-
-    /**
      * Parse the CLI, exiting the program if there are any errors. This handles
      * printing messages from `--help` and exiting if there is a parse error.
      *
@@ -79,13 +75,14 @@ public:
      */
     std::expected<bool, int> parse(int argc, char** argv);
 
-    static StorageType get_storage_type(const std::string& output);
+    static StorageType get_storage_type(std::string& output);
+
+    std::vector<std::unique_ptr<Storage::Store>> to_stores();
 
 private:
     static constexpr uint8_t INDENT_BY{30};
 
     std::vector<std::string> output_{};
-    bool output_to_stdout_{false};
 
     template <typename T>
 static std::string format_enum(

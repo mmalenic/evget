@@ -40,13 +40,13 @@
 #include "schema/initialize.h"
 #include "evgetcore/database/Migrate.h"
 
-EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::reference_wrapper<::EvgetCore::Connection> connection, std::string database)
-    : connection{connection}, database{std::move(database)} {
+EvgetCore::Storage::DatabaseStorage::DatabaseStorage(std::unique_ptr<::EvgetCore::Connection> connection, std::string database)
+    : connection{std::move(connection)}, database{std::move(database)} {
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data event) {
-    return connection.get().connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE).and_then([this] {
-        return connection.get().transaction();
+    return connection.get()->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE).and_then([this] {
+        return connection.get()->transaction();
     }).transform_error([](Error<::EvgetCore::ErrorType> error) {
         return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
     }).and_then([this, &event] {
@@ -109,14 +109,14 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data e
             }
         }
 
-        return this->connection.get().commit().transform_error([](Error<::EvgetCore::ErrorType> error) {
+        return this->connection.get()->commit().transform_error([](Error<::EvgetCore::ErrorType> error) {
             return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
         });
     });
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
-    auto result = connection.get().connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE).transform_error([](Error<::EvgetCore::ErrorType> error) {
+    auto result = connection.get()->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE).transform_error([](Error<::EvgetCore::ErrorType> error) {
         return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
     }).and_then([this] {
         auto migrations = std::vector{
@@ -127,7 +127,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
                 .exec = true,
             }
         };
-        auto migrate = ::EvgetCore::Migrate{this->connection, migrations};
+        auto migrate = ::EvgetCore::Migrate{*this->connection, migrations};
 
         return migrate.migrate().transform_error([](Error<::EvgetCore::ErrorType> error) {
             return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
@@ -159,7 +159,7 @@ void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(
     std::string queryString
 ) {
     if (!query.has_value()) {
-        query = {connection.get().buildQuery(std::move(queryString))};
+        query = {connection.get()->buildQuery(std::move(queryString))};
     }
 }
 

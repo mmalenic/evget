@@ -40,12 +40,13 @@ namespace asio = boost::asio;
  */
 class JsonStorage : public Store {
 public:
-    explicit JsonStorage(std::ostream& ostream);
+    explicit JsonStorage(std::unique_ptr<std::ostream> ostream);
+    explicit JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> ostream);
 
     Result<void> store(Event::Data event) override;
 
 private:
-    std::reference_wrapper<std::ostream> ostream;
+    std::variant<std::unique_ptr<std::ostream>, std::unique_ptr<std::ostream, std::function<void(std::ostream *)>>> ostream;
 };
 }
 
