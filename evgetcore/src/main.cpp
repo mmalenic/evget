@@ -33,8 +33,6 @@
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
-#include "evgetx11/XSetMaskCore.h"
-#include "evgetx11/XSetMaskRefresh.h"
 #include "evgetx11/XWrapperX11.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
@@ -58,10 +56,7 @@ int main(int argc, char* argv[]) {
     auto transformer = EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey>::build(xWrapperX11);
 #endif
 
-    EvgetX11::XSetMaskCore setCore{};
-    EvgetX11::XSetMaskRefresh setRefresh{};
-    EvgetX11::XInputHandler xInputHandler = EvgetX11::XInputHandler::build(xWrapperX11, {setCore, setRefresh}).value();
-    EvgetX11::EventLoopX11 eventLoop{xInputHandler};
+    EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
 
     auto scheduler = EvgetCore::Scheduler{};
     auto manager = EvgetCore::Storage::DatabaseManager{scheduler};

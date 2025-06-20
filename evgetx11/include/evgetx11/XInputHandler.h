@@ -36,7 +36,7 @@ namespace EvgetX11 {
 
 class XInputHandler {
 public:
-    static EvgetCore::Result<XInputHandler> build(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
+    static EvgetCore::Result<XInputHandler> build(XWrapper& xWrapper);
 
     /**
      * Get the next event.
@@ -51,7 +51,7 @@ private:
 
     std::reference_wrapper<XWrapper> xWrapper;
 
-    static void setMask(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters);
+    static void setMask(XWrapper& xWrapper);
 
     static EvgetCore::Result<void> announceVersion(XWrapper& xWrapper);
 };

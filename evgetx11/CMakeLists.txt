@@ -13,9 +13,6 @@ add_library(
         ${INCLUDE}/XEventSwitchPointerKey.h
         ${INCLUDE}/XInputEvent.h
         ${INCLUDE}/XInputHandler.h
-        ${INCLUDE}/XSetMask.h
-        ${INCLUDE}/XSetMaskCore.h
-        ${INCLUDE}/XSetMaskRefresh.h
         ${INCLUDE}/XWrapper.h
         ${INCLUDE}/XWrapperX11.h
 )
@@ -29,8 +26,6 @@ target_sources(
         ${SRC}/XEventSwitchPointerKey.cpp
         ${SRC}/XInputEvent.cpp
         ${SRC}/XInputHandler.cpp
-        ${SRC}/XSetMaskCore.cpp
-        ${SRC}/XSetMaskRefresh.cpp
         ${SRC}/XWrapperX11.cpp
 )
 
@@ -39,12 +34,10 @@ if(EVGETX11_HAS_TOUCH_SUPPORT)
     target_sources(${LIBRARY_NAME}
             PUBLIC
             ${INCLUDE}/XEventSwitchTouch.h
-            ${INCLUDE}/XSetMaskTouch.h
     )
     target_sources(${LIBRARY_NAME}
             PRIVATE
             ${SRC}/XEventSwitchTouch.cpp
-            ${SRC}/XSetMaskTouch.cpp
     )
 endif()
 

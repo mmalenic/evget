@@ -24,6 +24,8 @@
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
+#include "evgetx11/XWrapperX11.h"
+
 EvgetX11::XInputHandler::XInputHandler(
     XWrapper& xWrapper
 )
@@ -46,14 +48,27 @@ EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrap
     };
 }
 
-void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters) {
+void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
     unsigned char eventMask[XI_LASTEVENT] = {0};
-    for (const auto& maskSetter : maskSetters) {
-        maskSetter.get().setMask(eventMask);
-    }
+    EvgetX11::XWrapperX11::setMask(
+        eventMask,
+        {
+            XI_RawButtonPress,
+            XI_RawButtonRelease,
+            XI_RawKeyPress,
+            XI_RawKeyRelease,
+            XI_RawMotion,
+            XI_DeviceChanged,
+#if defined(EVGETX11_HAS_TOUCH_SUPPORT)
+            XI_RawTouchBegin,
+            XI_RawTouchEnd,
+            XI_RawTouchUpdate,
+#endif
+        }
+    );
 
     mask.mask_len = sizeof(eventMask);
     mask.mask = eventMask;
@@ -62,9 +77,9 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper, std::vector<std::refer
 }
 
 EvgetCore::Result<EvgetX11::XInputHandler>
-EvgetX11::XInputHandler::build(XWrapper& xWrapper, std::vector<std::reference_wrapper<XSetMask>> maskSetters) {
-    return announceVersion(xWrapper).transform([&xWrapper, &maskSetters] {
-        setMask(xWrapper, maskSetters);
+EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
+    return announceVersion(xWrapper).transform([&xWrapper] {
+        setMask(xWrapper);
         return XInputHandler{xWrapper};
     });
 }
