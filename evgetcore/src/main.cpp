@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
 
     auto scheduler = EvgetCore::Scheduler{};
-    auto manager = EvgetCore::Storage::DatabaseManager{scheduler};
+    auto manager = EvgetCore::Storage::DatabaseManager{scheduler, {}, cli.store_n_events(), cli.store_after()};
     for (auto&& store : cli.to_stores()) {
         manager.add_store(std::move(store));
     }

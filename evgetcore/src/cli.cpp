@@ -61,6 +61,11 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         "Print version"
     );
 
+    app.add_option("-n,--store-n-events", store_n_events_, "Controls how many events to receive before outputting them to the store.")
+    ->default_val(100);
+    app.add_option("-s,--store-after-seconds", store_after_, "Store events at least every interval specified with this option, even if fewer events than `--store-n-events` has been receieved.")
+->default_val(60);
+
     app.add_option_function<std::string>("-o,--output", [this](std::string value) {
         if (value == "-") {
             spdlog::set_level(spdlog::level::off);
@@ -71,7 +76,7 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         output_.emplace_back(value);
     }, "The output location of the storage. "
     "'-' is supported to output to stdout when using json storage and this "
-    "disables any logging.");
+    "disables any logging.")->default_val("-");
 
     try {
         app.parse(argc, argv);
@@ -128,4 +133,12 @@ std::vector<std::unique_ptr<EvgetCore::Storage::Store>> EvgetCore::Cli::to_store
     }
 
     return stores;
+}
+
+size_t EvgetCore::Cli::store_n_events() const {
+    return store_n_events_;
+}
+
+std::chrono::seconds EvgetCore::Cli::store_after() const {
+    return store_after_;
 }

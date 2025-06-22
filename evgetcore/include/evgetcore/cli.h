@@ -78,11 +78,16 @@ public:
     static StorageType get_storage_type(std::string& output);
 
     std::vector<std::unique_ptr<Storage::Store>> to_stores();
+    [[nodiscard]] size_t store_n_events() const;
+    [[nodiscard]] std::chrono::seconds store_after() const;
+
 
 private:
     static constexpr uint8_t INDENT_BY{30};
 
     std::vector<std::string> output_{};
+    size_t store_n_events_{100};
+    std::chrono::seconds store_after_{60};
 
     template <typename T>
 static std::string format_enum(
