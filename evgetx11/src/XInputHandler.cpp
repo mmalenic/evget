@@ -62,11 +62,9 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
             XI_RawKeyRelease,
             XI_RawMotion,
             XI_DeviceChanged,
-#if defined(EVGETX11_HAS_TOUCH_SUPPORT)
             XI_RawTouchBegin,
             XI_RawTouchEnd,
             XI_RawTouchUpdate,
-#endif
         }
     );
 

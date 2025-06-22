@@ -23,18 +23,19 @@
 #include "evgetx11/XEventSwitchPointerKey.h"
 
 EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(
-    XWrapper& xWrapper, XEventSwitch& xEventSwitch
+    XWrapper& xWrapper
 )
-    : xWrapper{xWrapper}, xEventSwitch{xEventSwitch} {
+    : xWrapper{xWrapper} {
 }
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     int id,std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
-    const XIDeviceInfo& info
+    const XIDeviceInfo& info,
+    EvgetX11::XEventSwitch& xEventSwitch
 ) {
-    xEventSwitch.get().refreshDevices(id, pointer_id, device, name, info);
+    xEventSwitch.refreshDevices(id, pointer_id, device, name, info);
 
     if (pointer_id.has_value()) {
         this->pointer_id = *pointer_id;

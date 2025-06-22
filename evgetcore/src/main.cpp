@@ -49,12 +49,7 @@ int main(int argc, char* argv[]) {
 
     Display* display = XOpenDisplay(nullptr);
     EvgetX11::XWrapperX11 xWrapperX11{*display};
-
-#if defined(EVGETX11_HAS_TOUCH_SUPPORT)
     auto transformer = EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey, EvgetX11::XEventSwitchTouch>::build(xWrapperX11);
-#else
-    auto transformer = EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey>::build(xWrapperX11);
-#endif
 
     EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
 

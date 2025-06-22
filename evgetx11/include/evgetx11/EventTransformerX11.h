@@ -126,7 +126,7 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
             // Iterate through switches and refresh devices.
             std::apply(
                 [this, &id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
-                    ((eventSwitches.refreshDevices(id, pointer_id, deviceType, device.name, xi2Devices.at(id).get())), ...);
+                    ((eventSwitches.refreshDevices(id, pointer_id, deviceType, device.name, xi2Devices.at(id).get(), xEventSwitch)), ...);
                 },
                 switches
             );
@@ -161,7 +161,7 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEven
         // Iterate through switches until the first one returns true.
         std::apply(
             [&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, data, [this, &event](Time time) {
+                ((eventSwitches.switchOnEvent(event, data, xEventSwitch, [this, &event](Time time) {
                      auto interval = getInterval(time);
                      if (interval.has_value()) {
                          spdlog::trace(
@@ -185,25 +185,15 @@ EventTransformerX11<Switches...> EventTransformerX11<Switches...>::build(XWrappe
     EvgetX11::XEventSwitch xEventSwitch{xWrapper};
     return EventTransformerX11{xWrapper, xEventSwitch};
 }
-    template<>
-EventTransformerX11<XEventSwitchPointerKey> EventTransformerX11<XEventSwitchPointerKey>::build(XWrapper& xWrapper) {
-    EvgetX11::XEventSwitch xEventSwitch{xWrapper};
-    EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapper, xEventSwitch};
 
-    return EventTransformerX11{xWrapper, xEventSwitch, xEventSwitchPointer};
-}
-
-#if defined(EVGETX11_HAS_TOUCH_SUPPORT)
     template<>
 EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch> EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>::build(XWrapper& xWrapper) {
     EvgetX11::XEventSwitch xEventSwitch{xWrapper};
-    EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapper, xEventSwitch};
-    EvgetX11::XEventSwitchTouch xEventSwitchTouch{xEventSwitch};
+    EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapper};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};
 
     return EventTransformerX11{xWrapper, xEventSwitch, xEventSwitchPointer, xEventSwitchTouch};
 }
-#endif
-
 }  // namespace EvgetX11
 
 #endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H

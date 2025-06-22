@@ -28,7 +28,6 @@
 #include <memory>
 
 #include "XInputEvent.h"
-#include "XSetMask.h"
 #include "XWrapper.h"
 #include "evgetcore/Error.h"
 

@@ -15,6 +15,7 @@ add_library(
         ${INCLUDE}/XInputHandler.h
         ${INCLUDE}/XWrapper.h
         ${INCLUDE}/XWrapperX11.h
+        ${INCLUDE}/XEventSwitchTouch.h
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC include)
 
@@ -27,19 +28,8 @@ target_sources(
         ${SRC}/XInputEvent.cpp
         ${SRC}/XInputHandler.cpp
         ${SRC}/XWrapperX11.cpp
+        ${SRC}/XEventSwitchTouch.cpp
 )
-
-toolbelt_check_symbol(VAR EVGETX11_HAS_TOUCH_SUPPORT SYMBOL XI_TouchBegin FILES X11/extensions/XInput2.h)
-if(EVGETX11_HAS_TOUCH_SUPPORT)
-    target_sources(${LIBRARY_NAME}
-            PUBLIC
-            ${INCLUDE}/XEventSwitchTouch.h
-    )
-    target_sources(${LIBRARY_NAME}
-            PRIVATE
-            ${SRC}/XEventSwitchTouch.cpp
-    )
-endif()
 
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
