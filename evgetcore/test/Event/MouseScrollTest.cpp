@@ -27,29 +27,47 @@
 TEST(MouseScrollTest, Event) {  // NOLINT(cert-err58-cpp)
     auto data = EvgetCore::Event::Data{};
     auto mouse_scroll = EvgetCore::Event::MouseScroll{}
-    .interval(EvgetCore::Event::Interval{1})
-    .timestamp(EvgetCore::Event::Timestamp{})
-.positionX(1)
-.positionY(1)
-.deviceName("name")
-.focusWindowName("name")
-.focusWindowPositionX(1)
-.focusWindowPositionY(1)
-.focusWindowWidth(1)
-.focusWindowHeight(1)
-.screen(1)
-.device(EvgetCore::Event::Device::Keyboard)
-    .vertical(1)
-    .horizontal(1)
-    .modifier(EvgetCore::Event::ModifierValue::Alt)
-    .build(data);
+                            .interval(EvgetCore::Event::Interval{1})
+                            .timestamp(EvgetCore::Event::Timestamp{})
+                            .positionX(1)
+                            .positionY(1)
+                            .deviceName("name")
+                            .focusWindowName("name")
+                            .focusWindowPositionX(1)
+                            .focusWindowPositionY(1)
+                            .focusWindowWidth(1)
+                            .focusWindowHeight(1)
+                            .screen(1)
+                            .device(EvgetCore::Event::Device::Keyboard)
+                            .vertical(1)
+                            .horizontal(1)
+                            .modifier(EvgetCore::Event::ModifierValue::Alt)
+                            .build(data);
 
     auto entry = mouse_scroll.entries()[0];
     entry.toNamedRepresentation();
     auto named_entry = entry.getEntryWithFields();
 
-    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::mouseScrollFields.begin(), EvgetCore::Event::detail::mouseScrollFields.end()};
-    std::vector<std::string> expected_data{ "1", "1970-01-01T00:00:00.000000000+0000", "1.000000", "1.000000", "name", "name", "1.000000", "1.000000", "1.000000", "1.000000", "1", "Keyboard", "1.000000", "1.000000" };
+    auto expected_fields = std::vector<std::string>{
+        EvgetCore::Event::detail::mouseScrollFields.begin(),
+        EvgetCore::Event::detail::mouseScrollFields.end()
+    };
+    std::vector<std::string> expected_data{
+        "1",
+        "1970-01-01T00:00:00.000000000+0000",
+        "1.000000",
+        "1.000000",
+        "name",
+        "name",
+        "1.000000",
+        "1.000000",
+        "1.000000",
+        "1.000000",
+        "1",
+        "Keyboard",
+        "1.000000",
+        "1.000000"
+    };
 
     ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::MouseScroll);
     ASSERT_EQ(named_entry.fields, expected_fields);

@@ -23,8 +23,10 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 #define EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H
 
+#include <cstdint>
+
 namespace EvgetCore::Event {
-enum class Direction { Down, Left, Right, Up };
+enum class Direction : std::uint8_t { Down, Left, Right, Up };
 }
 
 #endif  // EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H

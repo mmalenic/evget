@@ -20,17 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <boost/algorithm/string.hpp>
+#include "evgetcore/cli.h"
+
+#include <CLI/CLI.hpp>
 #include <fmt/core.h>
+#include <spdlog/cfg/env.h>
+#include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
+#include <cstddef>
 #include <filesystem>
 #include <iostream>
 #include <utility>
-#include <CLI/CLI.hpp>
-#include <spdlog/cfg/env.h>
-
-#include "evgetcore/cli.h"
 
 #include "evgetcore/database/sqlite/Connection.h"
 #include "evgetcore/Storage/DatabaseStorage.h"
@@ -51,32 +52,40 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         "-v,--version",
         [&should_exit] {
             should_exit = true;
-            std::cout << std::format(
-                "evlist {}\n\n{}\n{}\n",
-                EVGET_VERSION,
-                EVGET_LICENSE,
-                EVGET_COPYRIGHT
-            );
+            std::cout << std::format("evlist {}\n\n{}\n{}\n", EVGET_VERSION, EVGET_LICENSE, EVGET_COPYRIGHT);
         },
         "Print version"
     );
 
-    app.add_option("-n,--store-n-events", store_n_events_, "Controls how many events to receive before outputting them to the store.")
-    ->default_val(100);
-    app.add_option("-s,--store-after-seconds", store_after_, "Store events at least every interval specified with this option, even if fewer events than `--store-n-events` has been receieved.")
-->default_val(60);
+    app.add_option(
+           "-n,--store-n-events",
+           store_n_events_,
+           "Controls how many events to receive before outputting them to the store."
+    )
+        ->default_val(100);
+    app.add_option(
+           "-s,--store-after-seconds",
+           store_after_,
+           "Store events at least every interval specified with this option, even if fewer events than "
+           "`--store-n-events` has been receieved."
+    )
+        ->default_val(60);
 
-    app.add_option_function<std::string>("-o,--output", [this](std::string value) {
-        if (value == "-") {
-            spdlog::set_level(spdlog::level::off);
-        }
+    app.add_option_function<std::string>(
+           "-o,--output",
+           [this](std::string value) {
+               if (value == "-") {
+                   spdlog::set_level(spdlog::level::off);
+               }
 
-        std::ranges::transform(value, value.begin(),
-                       [](unsigned char c){ return std::tolower(c); });
-        output_.emplace_back(value);
-    }, "The output location of the storage. "
-    "'-' is supported to output to stdout when using json storage and this "
-    "disables any logging.")->default_val("-");
+               std::ranges::transform(value, value.begin(), [](unsigned char c) { return std::tolower(c); });
+               output_.emplace_back(value);
+           },
+           "The output location of the storage. "
+           "'-' is supported to output to stdout when using json storage and this "
+           "disables any logging."
+    )
+        ->default_val("-");
 
     try {
         app.parse(argc, argv);
@@ -89,11 +98,12 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         spdlog::set_level(spdlog::level::off);
     }
 
-    return should_exit;
+    return static_cast<int>(should_exit);
 }
 
 EvgetCore::StorageType EvgetCore::Cli::get_storage_type(std::string& output) {
-    if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") || output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
+    if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") ||
+        output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
         return StorageType::SQLite;
     }
 
@@ -118,8 +128,8 @@ std::vector<std::unique_ptr<EvgetCore::Storage::Store>> EvgetCore::Cli::to_store
             case EvgetCore::StorageType::Json: {
                 if (output == "-") {
                     // Do nothing to delete std::cout.
-                    auto deleter = [](std::ostream* _std_cout){ };
-                    std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> out = {&std::cout, deleter};
+                    auto deleter = [](std::ostream* _std_cout) {};
+                    std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> out = {&std::cout, deleter};
 
                     stores.emplace_back(std::make_unique<EvgetCore::Storage::JsonStorage>(std::move(out)));
                 } else {

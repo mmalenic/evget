@@ -274,15 +274,16 @@ function(create_header_file HEADER_FILE_NAME VARIABLE_NAME NAMESPACE)
     endforeach()
     string(STRIP "${OUTPUT_STRING}" OUTPUT_STRING)
 
-    string(CONCAT HEADER
-            "// Auto-generated file.\n\n"
-            "#ifndef ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n"
-            "#define ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n\n"
-            "namespace ${NAMESPACE} {\n"
-            "    using namespace std::literals;\n\n"
-            "    inline constexpr auto ${VARIABLE_NAME} = ${OUTPUT_STRING};\n"
-            "} // ${NAMESPACE}\n\n"
-            "#endif // ${NAMESPACE_UPPER}_${HEADER_STEM}_H"
+    string(
+        CONCAT HEADER
+               "// Auto-generated file.\n\n"
+               "#ifndef ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n"
+               "#define ${NAMESPACE_UPPER}_${HEADER_STEM}_H\n\n"
+               "namespace ${NAMESPACE} {\n"
+               "    using namespace std::literals;\n\n"
+               "    inline constexpr auto ${VARIABLE_NAME} = ${OUTPUT_STRING};\n"
+               "} // ${NAMESPACE}\n\n"
+               "#endif // ${NAMESPACE_UPPER}_${HEADER_STEM}_H"
     )
 
     file(WRITE "${HEADER_FILE_NAME}" "${HEADER}")

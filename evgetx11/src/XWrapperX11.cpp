@@ -32,7 +32,11 @@
 
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {}
 
-std::string EvgetX11::XWrapperX11::lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) {
+std::string EvgetX11::XWrapperX11::lookupCharacter(
+    const XIRawEvent& event,
+    const QueryPointerResult& query_pointer,
+    KeySym& keySym
+) {
     if (event.evtype == XI_RawKeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems
         // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
@@ -52,7 +56,8 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIRawEvent& event, cons
             .y_root = static_cast<int>(query_pointer.root_y),
             .state = static_cast<unsigned int>(query_pointer.modifier_state.effective),
             .keycode = static_cast<unsigned int>(event.detail),
-            .same_screen = true};
+            .same_screen = true
+        };
 
         int bytes;
         std::array<char, utf8MaxBytes + 1> array{};
@@ -60,9 +65,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIRawEvent& event, cons
             Status status;
             bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
             if (status != Success || status == XBufferOverflow || bytes == 0) {
-                spdlog::info(
-                    "Xutf8LookupString did not return a value, falling back on XLookupString"
-                );
+                spdlog::info("Xutf8LookupString did not return a value, falling back on XLookupString");
                 bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
             }
         } else {
@@ -77,7 +80,7 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(const XIRawEvent& event, cons
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
     if (xim) {
-        XIMStyles *styles_ptr;
+        XIMStyles* styles_ptr;
         auto values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, nullptr);
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{styles_ptr, XFree};
 
@@ -102,7 +105,8 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Dis
                         window,
                         nullptr
                     ),
-                    XDestroyIC};
+                    XDestroyIC
+                };
             }
         }
 
@@ -176,7 +180,7 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
 
     auto screen_number = 0;
     for (auto i = 0; i < XScreenCount(&display.get()); i++) {
-        Screen *screen = XScreenOfDisplay(&display.get(), i);
+        Screen* screen = XScreenOfDisplay(&display.get(), i);
         auto result = XIQueryPointer(
             &display.get(),
             device_id,
@@ -190,14 +194,14 @@ EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id)
             &button_state,
             &modifier_state,
             &group_state
-            );
+        );
         if (result == True) {
             screen_number = i;
             break;
         }
     }
 
-    return QueryPointerResult {
+    return QueryPointerResult{
         .root_x = root_x,
         .root_y = root_y,
         .button_mask = {button_state.mask, XFree},
@@ -251,7 +255,7 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nIte
         return {nullptr, XFree};
     }
 
-     return prop;
+    return prop;
 }
 
 std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {

@@ -4,16 +4,24 @@ from conan import ConanFile
 
 
 class EvgetRecipe(ConanFile):
-    name = 'evget'
-    description = 'record input device events'
-    url = 'https://github.com/mmalenic/evget'
-    license = 'MIT'
+    name = "evget"
+    description = "record input device events"
+    url = "https://github.com/mmalenic/evget"
+    license = "MIT"
     author = "Marko Malenic (mmalenic1@gmail.com)"
     # x-release-please-start-version
     version = "0.1.0"
     # x-release-please-end
 
-    requires = 'boost/[^1]', 'spdlog/[^1]', 'date/[^3]', 'nlohmann_json/[^3]', 'cryptopp/[^8]', 'sqlitecpp/[^3]', 'cli11/[^2]'
+    requires = (
+        "boost/[^1]",
+        "spdlog/[^1]",
+        "date/[^3]",
+        "nlohmann_json/[^3]",
+        "cryptopp/[^8]",
+        "sqlitecpp/[^3]",
+        "cli11/[^2]",
+    )
     test_requires = "gtest/[^1]"
 
     settings = "os", "compiler", "build_type", "arch"
@@ -77,7 +85,12 @@ class EvgetRecipe(ConanFile):
         tc.generate()
 
     def package_info(self):
-        self.cpp_info.requires = ['boost::algorithm', 'boost::asio', 'boost::uuid', 'boost::numeric-conversion']
+        self.cpp_info.requires = [
+            "boost::algorithm",
+            "boost::asio",
+            "boost::uuid",
+            "boost::numeric-conversion",
+        ]
 
     def layout(self):
         cmake_layout(self)

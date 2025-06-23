@@ -23,10 +23,8 @@
 
 #include "evgetcore/async/scheduler/Interval.h"
 
-#include <spdlog/spdlog.h>
 
-EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {
-}
+EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {}
 
 EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() {
     if (!timer.has_value()) {

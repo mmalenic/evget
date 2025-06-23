@@ -23,10 +23,11 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
+#include <evgetcore/Error.h>
+
 #include "XEventSwitch.h"
 #include "XInputEvent.h"
 #include "XWrapper.h"
-#include <evgetcore/Error.h>
 
 namespace EvgetX11 {
 
@@ -40,7 +41,14 @@ public:
         EvgetX11::XEventSwitch& xEventSwitch,
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
-    void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info,  EvgetX11::XEventSwitch& xEventSwitch);
+    void refreshDevices(
+        int id,
+        std::optional<int> pointer_id,
+        EvgetCore::Event::Device device,
+        const std::string& name,
+        const XIDeviceInfo& info,
+        EvgetX11::XEventSwitch& xEventSwitch
+    );
 
 private:
     void touchButton(
@@ -68,14 +76,14 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
         case XI_RawTouchBegin:
             touchMotion(event, data, xEventSwitch, getTime);
             touchButton(event, data, EvgetCore::Event::ButtonAction::Press, xEventSwitch, getTime);
-        return true;
+            return true;
         case XI_RawTouchUpdate:
             touchMotion(event, data, xEventSwitch, getTime);
-        return true;
+            return true;
         case XI_RawTouchEnd:
             touchMotion(event, data, xEventSwitch, getTime);
             touchButton(event, data, EvgetCore::Event::ButtonAction::Release, xEventSwitch, getTime);
-        return true;
+            return true;
         default:
             return false;
     }
@@ -90,8 +98,7 @@ void EvgetX11::XEventSwitchTouch::touchButton(
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     if (xEventSwitch.hasDevice(raw_event.sourceid)) {
-        xEventSwitch
-            .addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
+        xEventSwitch.addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
     }
 }
 

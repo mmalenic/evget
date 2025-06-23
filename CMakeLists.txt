@@ -13,9 +13,9 @@ project(
 if(NOT DEFINED toolbelt_SOURCE_DIR)
     include(FetchContent)
     FetchContent_Declare(
-            toolbelt
-            GIT_REPOSITORY https://github.com/mmalenic/cmake-toolbelt
-            GIT_TAG v0.3.3
+        toolbelt
+        GIT_REPOSITORY https://github.com/mmalenic/cmake-toolbelt
+        GIT_TAG v0.3.3
     )
     FetchContent_MakeAvailable(toolbelt)
 endif()
@@ -36,20 +36,21 @@ if(BUILD_TESTING)
     set(TEST_EXECUTABLE_NAME evgettest)
 
     add_executable(${TEST_EXECUTABLE_NAME} evgetcore/test/main.cpp)
-endif ()
+endif()
 
 add_subdirectory(evgetcore)
 
 toolbelt_check_includes(
-        VAR
-        EVGETX11_HAS_FEATURE
-        INCLUDES
-        X11/Xlib.h
-        X11/extensions/XInput.h
-        X11/extensions/XInput2.h
-        X11/Xutil.h
-        xorg/xserver-properties.h
-        LANGUAGE CXX
+    VAR
+    EVGETX11_HAS_FEATURE
+    INCLUDES
+    X11/Xlib.h
+    X11/extensions/XInput.h
+    X11/extensions/XInput2.h
+    X11/Xutil.h
+    xorg/xserver-properties.h
+    LANGUAGE
+    CXX
 )
 if(EVGETX11_HAS_FEATURE)
     add_subdirectory(evgetx11)

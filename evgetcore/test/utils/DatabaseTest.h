@@ -23,8 +23,9 @@
 #ifndef CONNECTIONTEST_H
 #define CONNECTIONTEST_H
 
-#include <filesystem>
 #include <gtest/gtest.h>
+
+#include <filesystem>
 
 namespace Test::Database {
 
@@ -47,7 +48,6 @@ private:
     static std::string testDatabaseName();
 };
 
-}
+}  // namespace Test::Database
 
-
-#endif //CONNECTIONTEST_H
+#endif  // CONNECTIONTEST_H

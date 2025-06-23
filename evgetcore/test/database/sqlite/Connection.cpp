@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "evgetcore/database/sqlite/Connection.h"
+
 #include <gtest/gtest.h>
 
-#include "evgetcore/database/sqlite/Connection.h"
 #include "utils/DatabaseTest.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;

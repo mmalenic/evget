@@ -36,7 +36,7 @@ concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invok
 /**
  * \brief Error struct.
  */
-template<typename E>
+template <typename E>
 struct Error {
     E errorType;
     std::string message;
@@ -56,13 +56,13 @@ enum class ErrorType {
 /**
  * \brief Result type.
  */
-template<typename T>
+template <typename T>
 using Result = std::expected<T, Error<ErrorType>>;
 
 /**
-* \brief Error type.
-*/
+ * \brief Error type.
+ */
 using Err = std::unexpected<Error<ErrorType>>;
-}
+}  // namespace EvgetCore
 
-#endif //UTIL_H
+#endif  // UTIL_H

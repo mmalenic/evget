@@ -25,10 +25,7 @@
 #define EVGET_GRAPH_H
 
 #include <map>
-#include <optional>
 #include <string>
-#include <string_view>
-#include <unordered_map>
 #include <vector>
 
 namespace EvgetCore::Event {
@@ -48,6 +45,7 @@ public:
      * Add a node if it does not already exist. Adds node data even if node
      * already exists.
      *
+     * @param name name of the node.
      * @param nodeData optional node data to include.
      */
     constexpr void addNode(std::string name, N nodeData);
@@ -56,9 +54,11 @@ public:
      * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
      * do not already exist. Adds edge data even if edge already exists.
      *
+     * @param from_edge from edge.
+     * @param to_edge to edge.
      * @param edgeData optional edge data to include.
      */
-    constexpr void addEdge(std::string from, std::string to, E edgeData);
+    constexpr void addEdge(std::string from_edge, std::string to_edge, E edgeData);
 
     /**
      * Add a node if it does not already exist.
@@ -69,7 +69,7 @@ public:
      * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
      * do not already exist.
      */
-    constexpr void addEdge(std::string from, std::string to);
+    constexpr void addEdge(std::string from_edge, std::string to_edge);
 
     /**
      * Get an adjacency list representation of the graph.
@@ -96,7 +96,7 @@ private:
     constexpr void setGraphData(std::string name, auto& graph, auto data);
 
     template <typename T>
-    constexpr auto setEmptyGraphData(std::string name, auto& graph);
+    static constexpr auto setEmptyGraphData(std::string name, auto& graph);
 
     std::map<std::string, std::map<std::string, std::vector<E>>> edges;
     std::map<std::string, std::vector<N>> nodes;
@@ -122,12 +122,12 @@ constexpr void Graph<N, E>::addNode(std::string name, N nodeData) {
 }
 
 template <typename N, typename E>
-constexpr void Graph<N, E>::addEdge(std::string from, std::string to, E edgeData) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, edges).first->second;
-    setGraphData<std::vector<E>>(to, link, edgeData);
+constexpr void Graph<N, E>::addEdge(std::string from_edge, std::string to_edge, E edgeData) {
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges).first->second;
+    setGraphData<std::vector<E>>(to_edge, link, edgeData);
 
-    setEmptyGraphData<std::vector<N>>(from, nodes);
-    setEmptyGraphData<std::vector<N>>(to, nodes);
+    setEmptyGraphData<std::vector<N>>(from_edge, nodes);
+    setEmptyGraphData<std::vector<N>>(to_edge, nodes);
 }
 
 template <typename N, typename E>
@@ -137,12 +137,12 @@ constexpr void Graph<N, E>::addNode(std::string name) {
 }
 
 template <typename N, typename E>
-constexpr void Graph<N, E>::addEdge(std::string from, std::string to) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from, edges).first->second;
-    setEmptyGraphData<std::vector<E>>(to, link);
+constexpr void Graph<N, E>::addEdge(std::string from_edge, std::string to_edge) {
+    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges).first->second;
+    setEmptyGraphData<std::vector<E>>(to_edge, link);
 
-    setEmptyGraphData<std::vector<N>>(from, nodes);
-    setEmptyGraphData<std::vector<N>>(to, nodes);
+    setEmptyGraphData<std::vector<N>>(from_edge, nodes);
+    setEmptyGraphData<std::vector<N>>(to_edge, nodes);
 }
 
 template <typename N, typename E>

@@ -23,19 +23,17 @@
 #include <X11/Xlib.h>
 
 #include <cstring>
-#include "evgetcore/cli.h"
 #include <iostream>
 
-#include "evgetcore/database/sqlite/Connection.h"
-#include "evgetcore/Storage/DatabaseStorage.h"
-#include "evgetcore/Storage/JsonStorage.h"
-#include "evgetx11/EventLoopX11.h"
-#include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XEventSwitchPointerKey.h"
-#include "evgetx11/XWrapperX11.h"
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
+#include "evgetcore/Storage/JsonStorage.h"
+#include "evgetcore/cli.h"
+#include "evgetcore/database/sqlite/Connection.h"
+#include "evgetx11/EventLoopX11.h"
+#include "evgetx11/EventTransformerX11.h"
+#include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/XWrapperX11.h"
 
 int main(int argc, char* argv[]) {
     auto cli = EvgetCore::Cli{};
@@ -49,7 +47,10 @@ int main(int argc, char* argv[]) {
 
     Display* display = XOpenDisplay(nullptr);
     EvgetX11::XWrapperX11 xWrapperX11{*display};
-    auto transformer = EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey, EvgetX11::XEventSwitchTouch>::build(xWrapperX11);
+    auto transformer =
+        EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey, EvgetX11::XEventSwitchTouch>::build(
+            xWrapperX11
+        );
 
     EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
 

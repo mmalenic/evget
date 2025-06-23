@@ -38,8 +38,8 @@ namespace EvgetX11 {
  */
 template <typename T>
 concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
-                                 { builder.modifier(modifierValue) } -> std::convertible_to<T>;
-                             };
+    { builder.modifier(modifierValue) } -> std::convertible_to<T>;
+};
 
 /**
  * Check whether the template parameter is a builder with focus window functions.
@@ -59,15 +59,21 @@ concept BuilderHasWindowFunctions =
  */
 template <typename T>
 concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName, int screen) {
-                                           { builder.deviceName(deviceName) } -> std::convertible_to<T>;
-                                           { builder.screen(screen) } -> std::convertible_to<T>;
-                                       };
+    { builder.deviceName(deviceName) } -> std::convertible_to<T>;
+    { builder.screen(screen) } -> std::convertible_to<T>;
+};
 
 class XEventSwitch {
 public:
     explicit XEventSwitch(XWrapper& xWrapper);
 
-    void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info);
+    void refreshDevices(
+        int id,
+        std::optional<int> pointer_id,
+        EvgetCore::Event::Device device,
+        const std::string& name,
+        const XIDeviceInfo& info
+    );
 
     void addButtonEvent(
         const XIRawEvent& event,
@@ -78,7 +84,7 @@ public:
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void addMotionEvent(
-    const XIRawEvent& event,
+        const XIRawEvent& event,
         EvgetCore::Event::Timestamp dateTime,
         EvgetCore::Event::Data& data,
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime

@@ -23,17 +23,14 @@
 #ifndef EVGET_JSONSTORAGE_H
 #define EVGET_JSONSTORAGE_H
 
+#include <boost/asio.hpp>
+
 #include <fstream>
 
 #include "Store.h"
-
-#include <boost/asio.hpp>
-
 #include "evgetcore/Error.h"
 
 namespace EvgetCore::Storage {
-
-namespace asio = boost::asio;
 
 /**
  * A storage class which prints events to stdout.
@@ -41,13 +38,14 @@ namespace asio = boost::asio;
 class JsonStorage : public Store {
 public:
     explicit JsonStorage(std::unique_ptr<std::ostream> ostream);
-    explicit JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> ostream);
+    explicit JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> ostream);
 
     Result<void> store(Event::Data event) override;
 
 private:
-    std::variant<std::unique_ptr<std::ostream>, std::unique_ptr<std::ostream, std::function<void(std::ostream *)>>> ostream;
+    std::variant<std::unique_ptr<std::ostream>, std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>>
+        ostream;
 };
-}
+}  // namespace EvgetCore::Storage
 
 #endif  // EVGET_JSONSTORAGE_H

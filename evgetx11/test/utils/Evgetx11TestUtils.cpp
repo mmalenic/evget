@@ -34,7 +34,8 @@ XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
         .max = 0,
         .value = 1,
         .resolution = 1,
-        .mode = XIModeAbsolute};
+        .mode = XIModeAbsolute
+    };
 }
 
 XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
@@ -44,7 +45,8 @@ XIScrollClassInfo EvgetX11TestUtils::createXIScrollClassInfo() {
         .number = 0,
         .scroll_type = XIScrollTypeVertical,
         .increment = 1,
-        .flags = 0};
+        .flags = 0
+    };
 }
 
 XIButtonClassInfo
@@ -54,11 +56,10 @@ EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>& labels, std::arr
         .sourceid = 1,
         .num_buttons = static_cast<int>(labels.size()),
         .labels = labels.data(),
-        .state =
-            {
-                .mask_len = static_cast<int>(mask.size()),
-                .mask = mask.data(),
-            },
+        .state = {
+            .mask_len = static_cast<int>(mask.size()),
+            .mask = mask.data(),
+        },
     };
 }
 
@@ -70,7 +71,8 @@ XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo*, 3
         .attachment = 0,
         .enabled = true,
         .num_classes = static_cast<int>(info.size()),
-        .classes = info.data()};
+        .classes = info.data()
+    };
 }
 
 XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
@@ -80,7 +82,8 @@ XDeviceInfo EvgetX11TestUtils::createXDeviceInfo() {
         .name = nullptr,
         .num_classes = 0,
         .use = IsXExtensionPointer,
-        .inputclassinfo = nullptr};
+        .inputclassinfo = nullptr
+    };
 }
 
 XIRawEvent EvgetX11TestUtils::createXIRawEvent(
@@ -115,7 +118,8 @@ XEvent EvgetX11TestUtils::createXEvent(XIRawEvent& event) {
             .evtype = event.evtype,
             .cookie = 0,
             .data = &event,
-        }};
+        }
+    };
 }
 
 XIValuatorState
@@ -124,22 +128,24 @@ EvgetX11TestUtils::createXIValuatorState(std::array<unsigned char, 1>& valuatorM
 }
 
 EvgetX11::QueryPointerResult EvgetX11TestUtils::create_pointer_result() {
-    return EvgetX11::QueryPointerResult {
+    return EvgetX11::QueryPointerResult{
         .root_x = 1,
         .root_y = 1,
         .button_mask = {nullptr, XFree},
-        .modifier_state = XIModifierState {
-            .base = 0,
-            .latched = 0,
-            .locked = 0,
-            .effective = 0,
-        },
-        .group_state = XIGroupState {
-            .base = 0,
-            .latched = 0,
-            .locked = 0,
-            .effective = 0,
-        },
+        .modifier_state =
+            XIModifierState{
+                .base = 0,
+                .latched = 0,
+                .locked = 0,
+                .effective = 0,
+            },
+        .group_state =
+            XIGroupState{
+                .base = 0,
+                .latched = 0,
+                .locked = 0,
+                .effective = 0,
+            },
         .screen_number = 0
     };
 }

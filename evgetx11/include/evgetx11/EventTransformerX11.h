@@ -23,9 +23,8 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_EVENTTRANSFORMERLINUX_H
 
-#include <X11/Xatom.h>
-#include <X11/extensions/XInput2.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XInput2.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include <spdlog/spdlog.h>
 
@@ -33,6 +32,8 @@
 #include <map>
 #include <set>
 #include <unordered_map>
+#include <string>
+#include <tuple>
 
 #include "XEventSwitch.h"
 #include "XEventSwitchPointerKey.h"
@@ -42,7 +43,6 @@
 #include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/EventTransformer.h"
 
-
 namespace EvgetX11 {
 template <typename... Switches>
 class EventTransformerX11 : public EvgetCore::EventTransformer<XInputEvent> {
@@ -51,6 +51,7 @@ public:
     EvgetCore::Event::Data transformEvent(XInputEvent event) override;
 
     static EventTransformerX11 build(XWrapper& xWrapper);
+
 private:
     std::optional<std::chrono::microseconds> getInterval(Time time);
     void refreshDevices();
@@ -68,7 +69,11 @@ private:
 };
 
 template <typename... Switches>
-EvgetX11::EventTransformerX11<Switches...>::EventTransformerX11(XWrapper& xWrapper, XEventSwitch xEventSwitch, Switches... switches)
+EvgetX11::EventTransformerX11<Switches...>::EventTransformerX11(
+    XWrapper& xWrapper,
+    XEventSwitch xEventSwitch,
+    Switches... switches
+)
     : xWrapper{xWrapper}, xEventSwitch{xEventSwitch}, switches{switches...} {
     refreshDevices();
 }
@@ -84,9 +89,7 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
     auto xi2Info = xWrapper.get().queryDevice(xi2NDevices);
 
     if (nDevices != xi2NDevices) {
-        spdlog::warn(
-            "Devices with ids greater than 127 are not supported."
-        );
+        spdlog::warn("Devices with ids greater than 127 are not supported.");
     }
 
     std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2Devices{};
@@ -126,7 +129,15 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
             // Iterate through switches and refresh devices.
             std::apply(
                 [this, &id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
-                    ((eventSwitches.refreshDevices(id, pointer_id, deviceType, device.name, xi2Devices.at(id).get(), xEventSwitch)), ...);
+                    ((eventSwitches.refreshDevices(
+                         id,
+                         pointer_id,
+                         deviceType,
+                         device.name,
+                         xi2Devices.at(id).get(),
+                         xEventSwitch
+                     )),
+                     ...);
                 },
                 switches
             );
@@ -161,18 +172,24 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEven
         // Iterate through switches until the first one returns true.
         std::apply(
             [&event, &data, this](auto&&... eventSwitches) {
-                ((eventSwitches.switchOnEvent(event, data, xEventSwitch, [this, &event](Time time) {
-                     auto interval = getInterval(time);
-                     if (interval.has_value()) {
-                         spdlog::trace(
-                             "interval {} with event type {}",
-                             interval.value().count(),
-                             event.getEventType()
-                         );
-                     }
+                ((eventSwitches.switchOnEvent(
+                     event,
+                     data,
+                     xEventSwitch,
+                     [this, &event](Time time) {
+                         auto interval = getInterval(time);
+                         if (interval.has_value()) {
+                             spdlog::trace(
+                                 "interval {} with event type {}",
+                                 interval.value().count(),
+                                 event.getEventType()
+                             );
+                         }
 
-                     return interval;
-                 })) || ...);
+                         return interval;
+                     }
+                 )) ||
+                 ...);
             },
             switches
         );
@@ -180,14 +197,15 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEven
     return data;
 }
 
-template<typename ... Switches>
+template <typename... Switches>
 EventTransformerX11<Switches...> EventTransformerX11<Switches...>::build(XWrapper& xWrapper) {
     EvgetX11::XEventSwitch xEventSwitch{xWrapper};
     return EventTransformerX11{xWrapper, xEventSwitch};
 }
 
-    template<>
-EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch> EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>::build(XWrapper& xWrapper) {
+template <>
+EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>
+EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>::build(XWrapper& xWrapper) {
     EvgetX11::XEventSwitch xEventSwitch{xWrapper};
     EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapper};
     EvgetX11::XEventSwitchTouch xEventSwitchTouch{};

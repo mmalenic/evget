@@ -32,17 +32,20 @@
 
 namespace uuids = boost::uuids;
 
-Test::Database::DatabaseTest::DatabaseTest() : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / testDatabaseName()} {
+Test::Database::DatabaseTest::DatabaseTest()
+    : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / testDatabaseName()} {
     EvgetCore::SQLiteConnection connection{};
 
     auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto createTable = std::format(
-            "create table if not exists {} ("
-                "id integer primary key autoincrement,"
-                "{} text"
-            ");",
-            testTableName, testTableColumn);
+        "create table if not exists {} ("
+        "id integer primary key autoincrement,"
+        "{} text"
+        ");",
+        testTableName,
+        testTableColumn
+    );
     auto insert = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue);
 
     auto createTableQuery = connection.buildQuery(createTable.c_str())->exec();

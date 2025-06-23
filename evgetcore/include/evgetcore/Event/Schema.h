@@ -26,18 +26,15 @@
 
 #include <date/tz.h>
 
-#include <array>
 #include <chrono>
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "ButtonAction.h"
 #include "Device.h"
-#include "Graph.h"
-#include "ModifierValue.h"
 #include "Entry.h"
+#include "ModifierValue.h"
 #include "evgetcore/Error.h"
 
 namespace EvgetCore::Event {
@@ -51,7 +48,7 @@ constexpr std::string_view DEVICE_TYPE_MOUSE{"Mouse"};
 constexpr std::string_view DEVICE_TYPE_KEYBOARD{"Keyboard"};
 constexpr std::string_view DEVICE_TYPE_TOUCHPAD{"Touchpad"};
 constexpr std::string_view DEVICE_TYPE_TOUCHSCREEN{"Touchscreen"};
-    constexpr std::string_view DEVICE_TYPE_UNKNOWN{"Unknown"};
+constexpr std::string_view DEVICE_TYPE_UNKNOWN{"Unknown"};
 
 constexpr std::string_view MODIFIER_VALUE_SHIFT{"Shift"};
 constexpr std::string_view MODIFIER_VALUE_CAPSLOCK{"CapsLock"};
@@ -79,8 +76,7 @@ constexpr std::string_view ENTRY_TYPE_MOUSE_CLICK{"MouseClick"};
 constexpr std::string_view ENTRY_TYPE_MOUSE_SCROLL{"MouseScroll"};
 
 template <typename T>
-constexpr std::string
-optionalToString(std::optional<T> optional, Invocable<std::string, T> auto&& function) {
+constexpr std::string optionalToString(std::optional<T> optional, Invocable<std::string, T> auto&& function) {
     if (!optional.has_value()) {
         return "";
     }
@@ -92,15 +88,15 @@ optionalToString(std::optional<T> optional, Invocable<std::string, T> auto&& fun
 /**
  * Valid schema data types.
  */
-enum class DataType { String, Integer, Timestamp, Interval, Double };
+enum class DataType : std::uint8_t { String, Integer, Timestamp, Interval, Double };
 
 /**
  * A relation between edges in a graph.
  */
-enum class Relation { OneToOne, OneToMany, ManyToOne, ManyToMany };
+enum class Relation : std::uint8_t { OneToOne, OneToMany, ManyToOne, ManyToMany };
 
 using Interval = std::chrono::microseconds;
-using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+using Timestamp = std::chrono::time_point<std::chrono::system_clock>;
 
 using FieldDefinition = std::pair<std::string_view, DataType>;
 
@@ -183,17 +179,15 @@ constexpr std::string_view getRelation(Relation relation) {
 /**
  * Convert an enum to its underlying value as a string.
  */
-template<class Enum>
+template <class Enum>
 constexpr std::string toUnderlyingOptional(std::optional<Enum> value) {
-    return detail::optionalToString(value, [](auto value) {
-        return toUnderlying(value);
-    });
+    return detail::optionalToString(value, [](auto value) { return toUnderlying(value); });
 }
 
 /**
  * Convert an enum to its underlying value as a string.
  */
-template<class Enum>
+template <class Enum>
 constexpr std::string toUnderlying(Enum value) {
     return std::to_string(std::to_underlying(value));
 }
@@ -215,8 +209,8 @@ constexpr std::string fromInt(std::optional<int> value) {
 /**
  * Format a string from a `Timestamp` value.
  */
-constexpr std::string fromTimestamp(std::optional<Timestamp> value) {
-    return detail::optionalToString(value, [](auto value) {
+constexpr std::string fromTimestamp(const std::optional<Timestamp> optional) {
+    return detail::optionalToString(optional, [](auto value) {
         std::stringstream stream{};
         stream << date::format("%FT%T%z", value);
         return stream.str();
@@ -226,8 +220,8 @@ constexpr std::string fromTimestamp(std::optional<Timestamp> value) {
 /**
  * Format a string from a `ButtonAction` value.
  */
-constexpr std::string fromButtonAction(std::optional<ButtonAction> value) {
-    return detail::optionalToString(value, [](auto value) {
+constexpr std::string fromButtonAction(const std::optional<ButtonAction> optional) {
+    return detail::optionalToString(optional, [](auto value) {
         switch (value) {
             case ButtonAction::Press:
                 return std::string{detail::ACTION_PRESS};
@@ -235,6 +229,8 @@ constexpr std::string fromButtonAction(std::optional<ButtonAction> value) {
                 return std::string{detail::ACTION_RELEASE};
             case ButtonAction::Repeat:
                 return std::string{detail::ACTION_REPEAT};
+            default:
+                return std::string{};
         }
     });
 }
@@ -242,8 +238,8 @@ constexpr std::string fromButtonAction(std::optional<ButtonAction> value) {
 /**
  * Format a string from a `Device` value.
  */
-constexpr std::string fromDevice(std::optional<Device> value) {
-    return detail::optionalToString(value, [](auto value) {
+constexpr std::string fromDevice(const std::optional<Device> optional) {
+    return detail::optionalToString(optional, [](auto value) {
         switch (value) {
             case Device::Mouse:
                 return std::string{detail::DEVICE_TYPE_MOUSE};
@@ -255,6 +251,8 @@ constexpr std::string fromDevice(std::optional<Device> value) {
                 return std::string{detail::DEVICE_TYPE_TOUCHSCREEN};
             case Device::Unknown:
                 return std::string{detail::DEVICE_TYPE_UNKNOWN};
+            default:
+                return std::string{};
         }
     });
 }
@@ -262,8 +260,8 @@ constexpr std::string fromDevice(std::optional<Device> value) {
 /**
  * Format a string from a `ModifierValue`.
  */
-constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
-    return detail::optionalToString(value, [](auto value) {
+constexpr std::string fromModifierValue(const std::optional<ModifierValue> optional) {
+    return detail::optionalToString(optional, [](auto value) {
         switch (value) {
             case ModifierValue::Shift:
                 return std::string{detail::MODIFIER_VALUE_SHIFT};
@@ -281,6 +279,8 @@ constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
                 return std::string{detail::MODIFIER_VALUE_SUPER};
             case ModifierValue::Mod5:
                 return std::string{detail::MODIFIER_VALUE_MOD5};
+            default:
+                return std::string{};
         }
     });
 }
@@ -288,8 +288,8 @@ constexpr std::string fromModifierValue(std::optional<ModifierValue> value) {
 /**
  * Format a string from a `EntryType`.
  */
-constexpr std::string fromEntryType(std::optional<EntryType> value) {
-    return detail::optionalToString(value, [](auto value) {
+constexpr std::string fromEntryType(const std::optional<EntryType> optional) {
+    return detail::optionalToString(optional, [](auto value) {
         switch (value) {
             case EntryType::Key:
                 return std::string{detail::ENTRY_TYPE_KEY};
@@ -299,6 +299,8 @@ constexpr std::string fromEntryType(std::optional<EntryType> value) {
                 return std::string{detail::ENTRY_TYPE_MOUSE_CLICK};
             case EntryType::MouseScroll:
                 return std::string{detail::ENTRY_TYPE_MOUSE_SCROLL};
+            default:
+                return std::string{};
         }
     });
 }
@@ -306,7 +308,7 @@ constexpr std::string fromEntryType(std::optional<EntryType> value) {
 /**
  * Convert an integer string representation to an enum.
  */
-template<class Enum>
+template <class Enum>
 constexpr std::optional<Enum> fromUnderlying(const std::string& value) {
     if (value.empty()) {
         return {};
@@ -318,15 +320,15 @@ constexpr std::optional<Enum> fromUnderlying(const std::string& value) {
 /**
  * Format a string from an `Interval` value.
  */
-constexpr std::string fromInterval(std::optional<Interval> value) {
-    return detail::optionalToString(value, [](auto value) { return std::to_string(value.count()); });
+constexpr std::string fromInterval(const std::optional<Interval> optional) {
+    return detail::optionalToString(optional, [](auto value) { return std::to_string(value.count()); });
 }
 
 /**
  * Format a string from a double value.
  */
-constexpr std::string fromDouble(std::optional<double> value) {
-    return detail::optionalToString(value, [](auto value) { return std::to_string(value); });
+constexpr std::string fromDouble(const std::optional<double> optional) {
+    return detail::optionalToString(optional, [](auto value) { return std::to_string(value); });
 }
 }  // namespace EvgetCore::Event
 

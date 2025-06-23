@@ -25,24 +25,24 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
 
- TEST(DataTest, Create) {  // NOLINT(cert-err58-cpp)
-     EvgetCore::Event::Data data{};
-     data.addEntry({EvgetCore::Event::EntryType::Key, {"data"}, {"modifier"}});
+TEST(DataTest, Create) {  // NOLINT(cert-err58-cpp)
+    EvgetCore::Event::Data data{};
+    data.addEntry({EvgetCore::Event::EntryType::Key, {"data"}, {"modifier"}});
 
-     EvgetCore::Event::Data merge{};
-     merge.addEntry({EvgetCore::Event::EntryType::MouseMove, {"merge"}, {"merge_modifier"}});
-     data.mergeWith(std::move(merge));
+    EvgetCore::Event::Data merge{};
+    merge.addEntry({EvgetCore::Event::EntryType::MouseMove, {"merge"}, {"merge_modifier"}});
+    data.mergeWith(std::move(merge));
 
-     ASSERT_FALSE(data.empty());
-     ASSERT_EQ(data.entries().size(), 2);
+    ASSERT_FALSE(data.empty());
+    ASSERT_EQ(data.entries().size(), 2);
 
-     auto first = data.entries()[0];
-     ASSERT_EQ(first.type(), EvgetCore::Event::EntryType::Key);
-     ASSERT_EQ(first.data(), std::vector<std::string>{"data"});
-     ASSERT_EQ(first.modifiers(), std::vector<std::string>{"modifier"});
+    auto first = data.entries()[0];
+    ASSERT_EQ(first.type(), EvgetCore::Event::EntryType::Key);
+    ASSERT_EQ(first.data(), std::vector<std::string>{"data"});
+    ASSERT_EQ(first.modifiers(), std::vector<std::string>{"modifier"});
 
-     auto second = data.entries()[1];
-     ASSERT_EQ(second.type(), EvgetCore::Event::EntryType::MouseMove);
-     ASSERT_EQ(second.data(), std::vector<std::string>{"merge"});
-     ASSERT_EQ(second.modifiers(), std::vector<std::string>{"merge_modifier"});
- }
+    auto second = data.entries()[1];
+    ASSERT_EQ(second.type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(second.data(), std::vector<std::string>{"merge"});
+    ASSERT_EQ(second.modifiers(), std::vector<std::string>{"merge_modifier"});
+}

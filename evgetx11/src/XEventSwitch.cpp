@@ -45,7 +45,8 @@ void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, i
 }
 
 void EvgetX11::XEventSwitch::refreshDevices(
-    int id, std::optional<int> pointer_id,
+    int id,
+    std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info
@@ -71,10 +72,7 @@ void EvgetX11::XEventSwitch::refreshDevices(
     }
 }
 
-EvgetX11::XEventSwitch::XEventSwitch(
-    XWrapper& xWrapper
-)
-    : xWrapper{xWrapper} {}
+EvgetX11::XEventSwitch::XEventSwitch(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
 const std::string& EvgetX11::XEventSwitch::getButtonName(int id, int button) const {
     return buttonMap.at(id).at(button);

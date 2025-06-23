@@ -40,7 +40,12 @@ public:
     using XEventPointer = EvgetX11::XEventPointer;
     using QueryPointerResult = EvgetX11::QueryPointerResult;
 
-    MOCK_METHOD(std::string, lookupCharacter, (const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym), (override));
+    MOCK_METHOD(
+        std::string,
+        lookupCharacter,
+        (const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym),
+        (override)
+    );
     MOCK_METHOD(QueryPointerResult, query_pointer, (int device_id), (override));
     MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
     MOCK_METHOD(
@@ -73,11 +78,7 @@ XIScrollClassInfo createXIScrollClassInfo();
 XIButtonClassInfo createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask);
 XIDeviceInfo createXIDeviceInfo(std::array<XIAnyClassInfo*, 3>& info, char name[]);
 XDeviceInfo createXDeviceInfo();
-XIRawEvent createXIRawEvent(
-    int evtype,
-    std::array<unsigned char, 1>& valuatorMask,
-    std::array<double, 1>& values
-);
+XIRawEvent createXIRawEvent(int evtype, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 XEvent createXEvent(XIRawEvent& event);
 XIValuatorState createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 EvgetX11::QueryPointerResult create_pointer_result();

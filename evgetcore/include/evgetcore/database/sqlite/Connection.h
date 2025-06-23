@@ -54,6 +54,6 @@ private:
 
     static Err connectError(const char* message);
 };
-}
+}  // namespace EvgetCore
 
-#endif //SQLITE_CPP_H
+#endif  // SQLITE_CPP_H

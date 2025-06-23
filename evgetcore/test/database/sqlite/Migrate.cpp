@@ -26,8 +26,8 @@
 
 #include <format>
 
-#include "utils/DatabaseTest.h"
 #include "evgetcore/database/sqlite/Connection.h"
+#include "utils/DatabaseTest.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;
 
@@ -63,7 +63,7 @@ TEST_F(DatabaseTest, Migrate) {  // NOLINT(cert-err58-cpp)
     ASSERT_TRUE(installedOn.has_value());
     ASSERT_TRUE(checksum.has_value());
 
-    auto selectQuery = connection.buildQuery( std::format("select * from {};", testTableName));
+    auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
     selectQuery->next();
 
@@ -144,7 +144,6 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {  // NOLINT(cert-err58-cpp)
     auto selectTwoQuery = connection.buildQuery(std::format("select * from {};", testTableName));
     auto selectTwoResult = selectTwoQuery->next();
     ASSERT_TRUE(selectTwoResult.has_value());
-
 }
 
 TEST_F(DatabaseTest, MigrateConflictingVersion) {  // NOLINT(cert-err58-cpp)

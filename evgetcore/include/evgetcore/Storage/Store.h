@@ -24,14 +24,12 @@
 #ifndef EVGET_STORAGE_H
 #define EVGET_STORAGE_H
 
-#include "evgetcore/Error.h"
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Schema.h"
 #include <boost/asio.hpp>
 
-namespace EvgetCore::Storage {
+#include "evgetcore/Error.h"
+#include "evgetcore/Event/Data.h"
 
-namespace asio = boost::asio;
+namespace EvgetCore::Storage {
 
 /**
  * An interface which represents storing data.
@@ -43,11 +41,6 @@ public:
      */
     virtual Result<void> store(Event::Data event) = 0;
 
-    // /**
-    //  * Perform a database migration.
-    //  */
-    // virtual Result<void> migrate() = 0;
-
     Store() = default;
 
     virtual ~Store() = default;
@@ -57,6 +50,6 @@ public:
     Store& operator=(const Store&) = delete;
     Store& operator=(Store&&) noexcept = delete;
 };
-}  // namespace EvgetCore
+}  // namespace EvgetCore::Storage
 
 #endif  // EVGET_STORAGE_H

@@ -27,8 +27,6 @@
 #include <vector>
 
 #include "Entry.h"
-#include "ModifierValue.h"
-#include "Schema.h"
 
 namespace EvgetCore::Event {
 /**
@@ -65,11 +63,11 @@ public:
      * \brief Are there any entries in this data.
      * \return if there are any entries.
      */
-    bool empty();
+    bool empty() const;
 
 private:
     std::vector<Entry> _entries;
 };
-}
+}  // namespace EvgetCore::Event
 
-#endif // DATA_H
+#endif  // DATA_H

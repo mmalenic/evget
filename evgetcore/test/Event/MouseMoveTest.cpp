@@ -29,27 +29,43 @@
 TEST(MouseMoveTest, Event) {  // NOLINT(cert-err58-cpp)
     auto data = EvgetCore::Event::Data{};
     auto mouse_move = EvgetCore::Event::MouseMove{}
-    .interval(EvgetCore::Event::Interval{1})
-    .timestamp(EvgetCore::Event::Timestamp{})
-.positionX(1)
-.positionY(1)
-.deviceName("name")
-.focusWindowName("name")
-.focusWindowPositionX(1)
-.focusWindowPositionY(1)
-.focusWindowWidth(1)
-.focusWindowHeight(1)
-.screen(1)
-.device(EvgetCore::Event::Device::Keyboard)
-    .modifier(EvgetCore::Event::ModifierValue::Alt)
-    .build(data);
+                          .interval(EvgetCore::Event::Interval{1})
+                          .timestamp(EvgetCore::Event::Timestamp{})
+                          .positionX(1)
+                          .positionY(1)
+                          .deviceName("name")
+                          .focusWindowName("name")
+                          .focusWindowPositionX(1)
+                          .focusWindowPositionY(1)
+                          .focusWindowWidth(1)
+                          .focusWindowHeight(1)
+                          .screen(1)
+                          .device(EvgetCore::Event::Device::Keyboard)
+                          .modifier(EvgetCore::Event::ModifierValue::Alt)
+                          .build(data);
 
     auto entry = mouse_move.entries()[0];
     entry.toNamedRepresentation();
     auto named_entry = entry.getEntryWithFields();
 
-    auto expected_fields = std::vector<std::string>{EvgetCore::Event::detail::mouseMoveFields.begin(), EvgetCore::Event::detail::mouseMoveFields.end()};
-    std::vector<std::string> expected_data{ "1", "1970-01-01T00:00:00.000000000+0000", "1.000000", "1.000000", "name", "name", "1.000000", "1.000000", "1.000000", "1.000000", "1", "Keyboard" };
+    auto expected_fields = std::vector<std::string>{
+        EvgetCore::Event::detail::mouseMoveFields.begin(),
+        EvgetCore::Event::detail::mouseMoveFields.end()
+    };
+    std::vector<std::string> expected_data{
+        "1",
+        "1970-01-01T00:00:00.000000000+0000",
+        "1.000000",
+        "1.000000",
+        "name",
+        "name",
+        "1.000000",
+        "1.000000",
+        "1.000000",
+        "1.000000",
+        "1",
+        "Keyboard"
+    };
 
     ASSERT_EQ(named_entry.type, EvgetCore::Event::EntryType::MouseMove);
     ASSERT_EQ(named_entry.fields, expected_fields);

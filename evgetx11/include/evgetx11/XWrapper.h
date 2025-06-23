@@ -57,7 +57,8 @@ struct QueryPointerResult {
  */
 class XWrapper {
 public:
-    virtual std::string lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) = 0;
+    virtual std::string
+    lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) = 0;
     virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
 
     virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;

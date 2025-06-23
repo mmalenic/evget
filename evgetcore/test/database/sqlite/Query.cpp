@@ -24,8 +24,8 @@
 
 #include <format>
 
-#include "utils/DatabaseTest.h"
 #include "evgetcore/database/sqlite/Connection.h"
+#include "utils/DatabaseTest.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;
 
@@ -60,7 +60,7 @@ TEST_F(DatabaseTest, Next) {  // NOLINT(cert-err58-cpp)
 TEST_F(DatabaseTest, NextWhile) {  // NOLINT(cert-err58-cpp)
     EvgetCore::SQLiteConnection connection{};
 
-    auto connect = connection.connect(databaseFile.string(),EvgetCore::ConnectOptions::READ_WRITE_CREATE);
+    auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 

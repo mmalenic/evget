@@ -24,7 +24,6 @@
 #define EVGET_INCLUDE_EVENTTRANSFORMER_H
 
 #include "Event/Data.h"
-#include "Event/Schema.h"
 
 namespace EvgetCore {
 
@@ -38,7 +37,6 @@ public:
     /**
      * Transform the event.
      * @param event event to transform
-     * @return event event for storage
      */
     virtual Event::Data transformEvent(T event) = 0;
 

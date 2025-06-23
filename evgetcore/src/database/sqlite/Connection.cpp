@@ -22,7 +22,12 @@
 
 #include "evgetcore/database/sqlite/Connection.h"
 
+#include <SQLiteCpp/Database.h>
+#include <memory>
 #include <spdlog/spdlog.h>
+#include <string>
+
+#include "evgetcore/database/Connection.h"
 
 #include "evgetcore/database/sqlite/Query.h"
 
@@ -43,16 +48,14 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::connect(std::string databas
         spdlog::info("connected to SQLite database: {}", database);
         return {};
     } catch (std::exception& e) {
-        auto what = e.what();
+        const auto *what = e.what();
         spdlog::error("error connecting to SQLite database: {}", what);
         return connectError(what);
     }
 }
 
 std::optional<std::reference_wrapper<::SQLite::Database>> EvgetCore::SQLiteConnection::database() {
-    return database_.transform([](::SQLite::Database& database) {
-        return std::ref(database);
-    });
+    return database_.transform([](::SQLite::Database& database) { return std::ref(database); });
 }
 
 EvgetCore::Result<void> EvgetCore::SQLiteConnection::commit() {
@@ -63,7 +66,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::commit() {
     try {
         transaction_->commit();
     } catch (std::exception& e) {
-        auto what = e.what();
+        const auto *what = e.what();
         spdlog::error("error committing transaction: {}", what);
         return connectError(what);
     }
@@ -79,7 +82,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::transaction() {
     try {
         this->transaction_.emplace(*this->database_);
     } catch (std::exception& e) {
-        auto what = e.what();
+        const auto *what = e.what();
         spdlog::error("error creating transaction: {}", what);
         return connectError(what);
     }
@@ -103,13 +106,10 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::rollback() {
     try {
         transaction_->rollback();
     } catch (std::exception& e) {
-        auto what = e.what();
+        const auto *what = e.what();
         spdlog::error("error rolling back transaction: {}", what);
         return connectError(what);
     }
 
     return {};
 }
-
-
-

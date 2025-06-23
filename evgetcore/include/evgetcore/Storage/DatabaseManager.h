@@ -27,14 +27,14 @@
 #include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
 
+#include <vector>
+
 #include "Store.h"
 #include "evgetcore/async/container/LockingVector.h"
 #include "evgetcore/async/scheduler/Interval.h"
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 namespace EvgetCore::Storage {
-
-namespace asio = boost::asio;
 
 class DatabaseManager : public Store {
 public:
@@ -45,14 +45,19 @@ public:
      * \param nEvents the number of events to hold before inserting.
      * \param storeAfter store events after this time event if nEvents is not reached.
      */
-    explicit DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::unique_ptr<Store>> storeIn = {}, size_t nEvents = 1, std::chrono::seconds storeAfter = std::chrono::seconds{60});
+    explicit DatabaseManager(
+        EvgetCore::Scheduler& scheduler,
+        std::vector<std::unique_ptr<Store>> storeIn,
+        size_t nEvents,
+        std::chrono::seconds storeAfter
+    );
 
     Result<void> store(Event::Data event) override;
 
     void add_store(std::unique_ptr<Store> store);
 
 private:
-    void storeEventsTask(std::optional<std::vector<Event::Data>> events);
+    void storeEventsTask(const std::optional<std::vector<Event::Data>> &events) const;
     void storeAfterTask();
 
     std::reference_wrapper<EvgetCore::Scheduler> scheduler;
@@ -61,10 +66,10 @@ private:
     EvgetCore::Interval storeAfterInterval;
     EvgetCore::LockingVector<Event::Data> data;
 
-    Result<void> storeWith(Event::Data event);
-    void resultHandler(Result<void> result);
+    Result<void> storeWith(const Event::Data& event) const;
+    void resultHandler(Result<void> result) const;
 };
 
-}
+}  // namespace EvgetCore::Storage
 
-#endif //DATABASEMANAGER_H
+#endif  // DATABASEMANAGER_H

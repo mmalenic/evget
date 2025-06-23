@@ -29,12 +29,13 @@
 #include <spdlog/spdlog.h>
 #include <xorg/xserver-properties.h>
 
-#include <unordered_map>
 #include <cmath>
+#include <map>
+#include <unordered_map>
 
 #include "XEventSwitch.h"
-#include "XWrapper.h"
 #include "XInputEvent.h"
+#include "XWrapper.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseScroll.h"
 
@@ -42,11 +43,16 @@ namespace EvgetX11 {
 
 class XEventSwitchPointerKey {
 public:
-    explicit XEventSwitchPointerKey(
-        XWrapper& xWrapper
-    );
+    explicit XEventSwitchPointerKey(XWrapper& xWrapper);
 
-    void refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device, const std::string& name, const XIDeviceInfo& info,  EvgetX11::XEventSwitch& xEventSwitch);
+    void refreshDevices(
+        int id,
+        std::optional<int> pointer_id,
+        EvgetCore::Event::Device device,
+        const std::string& name,
+        const XIDeviceInfo& info,
+        EvgetX11::XEventSwitch& xEventSwitch
+    );
     bool switchOnEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
@@ -133,8 +139,7 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
         return;
     }
 
-    xEventSwitch
-        .addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
+    xEventSwitch.addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
 }
 
 void EvgetX11::XEventSwitchPointerKey::keyEvent(
@@ -158,7 +163,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
     EvgetCore::Event::ButtonAction action = EvgetCore::Event::ButtonAction::Release;
     if (raw_event.evtype != XI_KeyRelease) {
         action = (raw_event.flags & XIKeyRepeat) ? EvgetCore::Event::ButtonAction::Repeat
-                                                   : EvgetCore::Event::ButtonAction::Press;
+                                                 : EvgetCore::Event::ButtonAction::Press;
     }
 
     std::string name = XWrapperX11::keySymToString(keySym);

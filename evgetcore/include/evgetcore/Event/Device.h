@@ -24,7 +24,7 @@
 #define EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
 
 namespace EvgetCore::Event {
-enum class Device { Mouse, Keyboard, Touchpad, Touchscreen, Unknown };
-}
+enum class Device : std::uint8_t { Mouse, Keyboard, Touchpad, Touchscreen, Unknown };
+} // namespace EvgetCore::Event
 
-#endif  // EVGET_INCLUDE_EVGET_EVENT_COMMON_DEVICE_H
+#endif

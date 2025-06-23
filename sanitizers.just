@@ -1,7 +1,7 @@
 # Test evlist using address and memory sanitizers. This needs to compile libcxx and libcxxabi with sanitiziers enabled.
 
 # Fetch the llvm repo for building sanitized binaries.
-fetch_llvm $CLANG_VERSION='19':
+fetch_llvm $CLANG_VERSION='20':
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -13,7 +13,7 @@ fetch_llvm $CLANG_VERSION='19':
     fi
 
 # Build llvm with options.
-build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='19' *build_options='': (fetch_llvm COMPILER_VERSION)
+build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_options='': (fetch_llvm COMPILER_VERSION)
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -50,7 +50,7 @@ error_non_empty_log:
     fi
 
 # Test using an llvm sanitizer build directory.
-_test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPILER_VERSION='19' *build_options='':
+_test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPILER_VERSION='20' *build_options='':
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -72,12 +72,12 @@ test_valgrind filter='*' $COMPILER_VERSION='' *build_options='': \
         ./evgettest --gtest_filter={{ filter }}
 
 # Build llvm cxx and cxxabi with the memory sanitizer.
-build_msan $COMPILER_VERSION='19' *build_options='': \
+build_msan $COMPILER_VERSION='20' *build_options='': \
     (build_llvm "build-msan" "libcxx;libcxxabi;libunwind" "MemoryWithOrigins" "cxx cxxabi" \
     COMPILER_VERSION build_options)
 
 # Run tests with the memory sanitizer.
-test_msan filter='*' $COMPILER_VERSION='19' *build_options='': \
+test_msan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_msan COMPILER_VERSION build_options) \
     (_test_llvm "build-msan" "MSAN_SYMBOLIZER_PATH" "./profiles/llvm_msan" filter COMPILER_VERSION build_options)
 
@@ -86,12 +86,12 @@ clean_msan: clean_cache
     rm -rf llvm-project/build-msan
 
 # Build llvm cxx and cxxabi with the address sanitizer.
-build_asan $COMPILER_VERSION='19' *build_options='': \
+build_asan $COMPILER_VERSION='20' *build_options='': \
     (build_llvm "build-asan" "libcxx;libcxxabi;libunwind" "Address;Undefined" "cxx cxxabi" \
     COMPILER_VERSION build_options)
 
 # Run tests with the address sanitizer.
-test_asan filter='*' $COMPILER_VERSION='19' *build_options='': \
+test_asan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_asan COMPILER_VERSION build_options) \
     (_test_llvm "build-asan" "ASAN_SYMBOLIZER_PATH" "./profiles/llvm_asan" filter COMPILER_VERSION build_options)
 

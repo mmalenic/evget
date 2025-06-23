@@ -25,6 +25,8 @@
 
 #include <chrono>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "Data.h"
 #include "Schema.h"
@@ -58,12 +60,12 @@ public:
     /**
      * Add position x.
      */
-    MouseMove& positionX(double x);
+    MouseMove& positionX(double x_pos);
 
     /**
      * Add position y.
      */
-    MouseMove& positionY(double y);
+    MouseMove& positionY(double y_pos);
 
     /**
      * Add the device name.
@@ -78,12 +80,12 @@ public:
     /**
      * Add the focus window position x.
      */
-    MouseMove& focusWindowPositionX(double x);
+    MouseMove& focusWindowPositionX(double x_pos);
 
     /**
      * Add the focus window position y.
      */
-    MouseMove& focusWindowPositionY(double y);
+    MouseMove& focusWindowPositionY(double y_pos);
 
     /**
      * Add the focus window width.
@@ -111,20 +113,20 @@ public:
     Data& build(Data& data);
 
 private:
-    std::optional<Interval> _interval{};
-    std::optional<Timestamp> _timestamp{};
-    std::optional<Device> _device{};
-    std::optional<double> _positionX{};
-    std::optional<double> _positionY{};
-    std::optional<std::string> _deviceName{};
-    std::optional<std::string> _focusWindowName{};
-    std::optional<double> _focusWindowPositionX{};
-    std::optional<double> _focusWindowPositionY{};
-    std::optional<double> _focusWindowWidth{};
-    std::optional<double> _focusWindowHeight{};
-    std::optional<int> _screen{};
+    std::optional<Interval> _interval;
+    std::optional<Timestamp> _timestamp;
+    std::optional<Device> _device;
+    std::optional<double> _positionX;
+    std::optional<double> _positionY;
+    std::optional<std::string> _deviceName;
+    std::optional<std::string> _focusWindowName;
+    std::optional<double> _focusWindowPositionX;
+    std::optional<double> _focusWindowPositionY;
+    std::optional<double> _focusWindowWidth;
+    std::optional<double> _focusWindowHeight;
+    std::optional<int> _screen;
 
-    std::vector<std::string> _modifiers{};
+    std::vector<std::string> _modifiers;
 };
 }  // namespace EvgetCore::Event
 

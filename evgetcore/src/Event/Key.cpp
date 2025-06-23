@@ -21,9 +21,14 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/Key.h"
-#include "evgetcore/Event/Entry.h"
 
 #include <utility>
+
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/ModifierValue.h"
 
 EvgetCore::Event::Key& EvgetCore::Event::Key::interval(Interval interval) {
     _interval = interval;
@@ -45,13 +50,13 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::device(EvgetCore::Event::Device de
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::positionX(double x) {
-    _positionX = x;
+EvgetCore::Event::Key& EvgetCore::Event::Key::positionX(double x_pos) {
+    _positionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::positionY(double y) {
-    _positionY = y;
+EvgetCore::Event::Key& EvgetCore::Event::Key::positionY(double y_pos) {
+    _positionY = y_pos;
     return *this;
 }
 
@@ -85,13 +90,13 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowName(std::string name) 
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionX(double x) {
-    _focusWindowPositionX = x;
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionX(double x_pos) {
+    _focusWindowPositionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionY(double y) {
-    _focusWindowPositionY = y;
+EvgetCore::Event::Key& EvgetCore::Event::Key::focusWindowPositionY(double y_pos) {
+    _focusWindowPositionY = y_pos;
     return *this;
 }
 

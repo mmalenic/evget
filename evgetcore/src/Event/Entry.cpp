@@ -25,9 +25,9 @@
 
 #include "evgetcore/Event/Schema.h"
 
+
 EvgetCore::Event::Entry::Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers)
-    : _type{type}, _data{std::move(data)}, _modifiers{std::move(modifiers)} {
-}
+    : _type{type}, _data{std::move(data)}, _modifiers{std::move(modifiers)} {}
 
 const std::vector<std::string>& EvgetCore::Event::Entry::data() const {
     return _data;
@@ -42,15 +42,16 @@ void EvgetCore::Event::Entry::toNamedRepresentation() {
         _data[detail::mouseMoveNFields - 1] = fromDevice(fromUnderlying<Device>(_data[detail::mouseMoveNFields - 1]));
     }
     if (_data.size() >= detail::mouseClickNFields) {
-        _data[detail::mouseClickNFields - 1] = fromButtonAction(fromUnderlying<ButtonAction>(_data[detail::mouseClickNFields - 1]));
+        _data[detail::mouseClickNFields - 1] =
+            fromButtonAction(fromUnderlying<ButtonAction>(_data[detail::mouseClickNFields - 1]));
     }
 
-   std::ranges::for_each(_modifiers.begin(), _modifiers.end(), [](std::string &modifier) {
-       modifier = fromModifierValue(fromUnderlying<ModifierValue>(modifier));
-   });
+    std::ranges::for_each(_modifiers.begin(), _modifiers.end(), [](std::string& modifier) {
+        modifier = fromModifierValue(fromUnderlying<ModifierValue>(modifier));
+    });
 }
 
-EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() {
+EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() const {
     std::vector<std::string> fields;
     std::string type;
     switch (this->type()) {
@@ -68,12 +69,7 @@ EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() 
             break;
     }
 
-    return {
-        .type = this->type(),
-        .fields = fields,
-        .data = data(),
-        .modifiers = modifiers()
-    };
+    return {.type = this->type(), .fields = fields, .data = data(), .modifiers = modifiers()};
 }
 
 EvgetCore::Event::EntryType EvgetCore::Event::Entry::type() const {

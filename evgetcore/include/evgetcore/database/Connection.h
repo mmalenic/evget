@@ -23,9 +23,9 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "Query.h"
 #include <memory>
 
+#include "Query.h"
 #include "evgetcore/Error.h"
 
 namespace EvgetCore {
@@ -33,7 +33,7 @@ namespace EvgetCore {
 /**
  * \brief Connection options for connecting to a database.
  */
-enum class ConnectOptions {
+enum class ConnectOptions : std::uint8_t {
     /**
      * Read only connection.
      */
@@ -94,6 +94,6 @@ public:
     Connection& operator=(const Connection&) = delete;
     Connection& operator=(Connection&&) noexcept = delete;
 };
-}
+}  // namespace EvgetCore
 
-#endif //CONNECTION_H
+#endif  // CONNECTION_H

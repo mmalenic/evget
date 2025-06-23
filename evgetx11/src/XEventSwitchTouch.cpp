@@ -21,8 +21,15 @@
 // SOFTWARE.
 
 #include "evgetx11/XEventSwitchTouch.h"
+#include <string>
 
-void EvgetX11::XEventSwitchTouch::refreshDevices(int id, std::optional<int> pointer_id, EvgetCore::Event::Device device,
-                                                 const std::string &name, const XIDeviceInfo &info, EvgetX11::XEventSwitch &xEventSwitch) {
+void EvgetX11::XEventSwitchTouch::refreshDevices(
+    int id,
+    std::optional<int> pointer_id,
+    EvgetCore::Event::Device device,
+    const std::string& name,
+    const XIDeviceInfo& info,
+    EvgetX11::XEventSwitch& xEventSwitch
+) {
     // Nothing to do, just matching expected template interface.
 }

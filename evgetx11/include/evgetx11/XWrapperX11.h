@@ -26,12 +26,12 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+#include <evgetcore/Error.h>
 
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
-#include <evgetcore/Error.h>
 
 #include "XWrapper.h"
 
@@ -40,7 +40,8 @@ class XWrapperX11 : public XWrapper {
 public:
     explicit XWrapperX11(Display& display);
 
-    std::string lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) override;
+    std::string
+    lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) override;
     std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
 
     std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;

@@ -31,9 +31,10 @@
 #include "Storage/Store.h"
 
 namespace EvgetCore {
-    class Scheduler;
 
-    namespace asio = boost::asio;
+class Scheduler;
+
+namespace asio = boost::asio;
 
 /**
  * Class represents a listener for events.
@@ -46,7 +47,7 @@ public:
      * Create the event listener with storage.
      * @param storage storage
      * @param transformer transformer
-     * @param rawEvents systemEvents
+     * @param eventLoop event loop
      */
     EventHandler(Storage::Store& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop);
 
@@ -55,29 +56,25 @@ public:
 
 private:
     std::reference_wrapper<Storage::Store> storage;
-    EventTransformer<T>& transformer;
-    EventLoop<T>& eventLoop;
+    std::reference_wrapper<EventTransformer<T>> transformer;
+    std::reference_wrapper<EventLoop<T>> eventLoop;
 };
 
 template <typename T>
 asio::awaitable<void> EventHandler<T>::start() {
-    co_await eventLoop.start();
+    co_await eventLoop.get().start();
     co_return;
 }
 
 template <typename T>
-EventHandler<T>::EventHandler(
-    Storage::Store& storage,
-    EventTransformer<T>& transformer,
-    EventLoop<T>& eventLoop
-)
+EventHandler<T>::EventHandler(Storage::Store& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop)
     : storage{storage}, transformer{transformer}, eventLoop{eventLoop} {
     eventLoop.registerEventListener(*this);
 }
 
 template <typename T>
 void EventHandler<T>::notify(T event) {
-    storage.get().store(transformer.transformEvent(std::move(event)));
+    storage.get().store(transformer.get().transformEvent(std::move(event)));
 }
 }  // namespace EvgetCore
 

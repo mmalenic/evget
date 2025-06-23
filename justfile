@@ -13,11 +13,11 @@ build build_type='Debug' $COMPILER_VERSION='' *build_options='': profile clean_c
     conan build . --build=missing -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ build_options }}
 
 # Build with the clang profile.
-build_clang build_type='Debug' $COMPILER_VERSION='19' *build_options='': \
+build_clang build_type='Debug' $COMPILER_VERSION='20' *build_options='': \
     (build build_type COMPILER_VERSION '-pr ./profiles/clang ' + build_options)
 
 # Build with the gcc profile.
-build_gcc build_type='Debug' $COMPILER_VERSION='14' *build_options='': \
+build_gcc build_type='Debug' $COMPILER_VERSION='15' *build_options='': \
     (build build_type COMPILER_VERSION '-pr ./profiles/gcc ' + build_options)
 
 # Rebuild evget using the existing CMake directory.
@@ -51,11 +51,11 @@ test filter='*' $COMPILER_VERSION='' *build_options='': \
     (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options) (_run_tests filter)
 
 # Build and test evget using the clang profile.
-test_clang filter='*' $COMPILER_VERSION='19' *build_options='': \
+test_clang filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_clang 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options) (_run_tests filter)
 
 # Build and test evget using the gcc profile.
-test_gcc filter='*' $COMPILER_VERSION='14' *build_options='': \
+test_gcc filter='*' $COMPILER_VERSION='15' *build_options='': \
     (build_gcc 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options) (_run_tests filter)
 
 # Run pre-commit and other lints.
@@ -64,7 +64,7 @@ lint:
 
 # Run clang tidy on code.
 check $COMPILER_VERSION='' *build_options='': \
-    lint (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" ' + build_options)
+    (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" ' + build_options) lint
 
 # Remove the build directory.
 clean:

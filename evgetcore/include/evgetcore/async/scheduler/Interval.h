@@ -24,10 +24,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <chrono>
-
-#include <iostream>
 #include <boost/asio.hpp>
+
+#include <chrono>
 
 #include "evgetcore/Error.h"
 
@@ -65,9 +64,9 @@ public:
     [[nodiscard]] std::chrono::seconds period() const;
 
 private:
-    std::chrono::seconds _period;
-    std::optional<asio::steady_timer> timer{};
+    std::chrono::seconds _period{};
+    std::optional<asio::steady_timer> timer;
 };
-}
+}  // namespace EvgetCore
 
-#endif //TIMER_H
+#endif  // TIMER_H

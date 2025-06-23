@@ -24,9 +24,9 @@
 #ifndef LOCKINGVECTOR_H
 #define LOCKINGVECTOR_H
 
-#include <vector>
 #include <mutex>
 #include <optional>
+#include <vector>
 
 namespace EvgetCore {
 
@@ -34,7 +34,7 @@ namespace EvgetCore {
  * \brief A thread-safe lockable vector implementation.
  * \tparam T The inner vector type.
  */
-template<class T>
+template <class T>
 class LockingVector {
 public:
     LockingVector();
@@ -83,12 +83,12 @@ public:
 
 private:
     std::vector<T> inner{};
-    std::mutex lock{};
+    std::mutex lock;
 };
 
 template <class T>
 constexpr void LockingVector<T>::unsafe_push_back(T&& value) {
-    inner.push_back(value);
+    inner.push_back(std::move(value));
 }
 
 template <class T>
@@ -129,9 +129,8 @@ template <class T>
 LockingVector<T>::LockingVector() = default;
 
 template <class T>
-LockingVector<T>::LockingVector(std::vector<T> inner) : inner{inner} {
-}
+LockingVector<T>::LockingVector(std::vector<T> inner) : inner{inner} {}
 
-}
+}  // namespace EvgetCore
 
-#endif //LOCKINGVECTOR_H
+#endif  // LOCKINGVECTOR_H

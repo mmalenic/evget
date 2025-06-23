@@ -21,6 +21,10 @@
 // SOFTWARE.
 //
 
+#include "evgetcore/Event/Entry.h"
+#include <utility>
+#include <vector>
+
 #include "evgetcore/Event/Data.h"
 
 const std::vector<EvgetCore::Event::Entry>& EvgetCore::Event::Data::entries() const {
@@ -29,8 +33,8 @@ const std::vector<EvgetCore::Event::Entry>& EvgetCore::Event::Data::entries() co
 
 void EvgetCore::Event::Data::mergeWith(Data&& data) {
     auto entries = std::move(data).intoEntries();
-    this->_entries.insert(this->_entries.end(),std::make_move_iterator(entries.begin()),
-    std::make_move_iterator(entries.end()));
+    this->_entries
+        .insert(this->_entries.end(), std::make_move_iterator(entries.begin()), std::make_move_iterator(entries.end()));
 }
 
 std::vector<EvgetCore::Event::Entry> EvgetCore::Event::Data::intoEntries() && {
@@ -41,6 +45,6 @@ void EvgetCore::Event::Data::addEntry(Entry entry) {
     _entries.emplace_back(std::move(entry));
 }
 
-bool EvgetCore::Event::Data::empty() {
+bool EvgetCore::Event::Data::empty() const {
     return _entries.empty();
 }

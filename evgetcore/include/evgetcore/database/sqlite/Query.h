@@ -24,7 +24,6 @@
 #define SQLITE_QUERY_H
 
 #include <SQLiteCpp/Database.h>
-#include <SQLiteCpp/Transaction.h>
 #include <spdlog/spdlog.h>
 
 #include <variant>
@@ -45,13 +44,13 @@ public:
     Result<bool> next() override;
     Result<void> nextWhile() override;
     Result<void> exec() override;
-    Result<bool> asBool(std::size_t at) override;
-    Result<double> asDouble(std::size_t at) override;
-    Result<int> asInt(std::size_t at) override;
-    Result<std::string> asString(std::size_t at) override;
+    Result<bool> asBool(std::size_t pos) override;
+    Result<double> asDouble(std::size_t pos) override;
+    Result<int> asInt(std::size_t pos) override;
+    Result<std::string> asString(std::size_t pos) override;
 
 private:
-    static Err asError(std::exception& e);
+    static Err asError(const std::exception& error);
     static Err statementError();
 
     std::reference_wrapper<SQLiteConnection> _connection;
@@ -60,7 +59,6 @@ private:
     std::string query;
 };
 
-}
+}  // namespace EvgetCore
 
-
-#endif // SQLITE_QUERY_H
+#endif  // SQLITE_QUERY_H

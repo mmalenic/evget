@@ -23,17 +23,15 @@
 #ifndef INPUT_EVENT_RECORDER_COMMANDLINE_H
 #define INPUT_EVENT_RECORDER_COMMANDLINE_H
 
-#include <expected>
 #include <spdlog/spdlog.h>
 
+#include <expected>
 #include <filesystem>
 #include <map>
 
 #include "Storage/DatabaseManager.h"
 
 namespace EvgetCore {
-
-namespace fs = std::filesystem;
 
 /**
  * The type of storage to use
@@ -81,48 +79,46 @@ public:
     [[nodiscard]] size_t store_n_events() const;
     [[nodiscard]] std::chrono::seconds store_after() const;
 
-
 private:
+    static constexpr uint8_t DEFAULT_N_EVENTS{100};
+    static constexpr uint8_t DEFAULT_STORE_AFTER{60};
     static constexpr uint8_t INDENT_BY{30};
 
-    std::vector<std::string> output_{};
-    size_t store_n_events_{100};
-    std::chrono::seconds store_after_{60};
+    std::vector<std::string> output_;
+    size_t store_n_events_{DEFAULT_N_EVENTS};
+    std::chrono::seconds store_after_{DEFAULT_STORE_AFTER};
 
     template <typename T>
-static std::string format_enum(
-    const std::string& value_descriptor,
-    const std::string& enum_description,
-    uint8_t first_ident,
-    const std::map<T, std::string>& descriptions
-);
-
+    static std::string format_enum(
+        const std::string& value_descriptor,
+        const std::string& enum_description,
+        uint8_t first_ident,
+        const std::map<T, std::string>& descriptions
+    );
 };
 
-    template <typename T>
+template <typename T>
 std::string Cli::format_enum(
     const std::string& value_descriptor,
     const std::string& enum_description,
     uint8_t first_ident,
     const std::map<T, std::string>& descriptions
 ) {
-        auto out_description = std::format(
-            "<{}>{: <{}}{}\n\n{: <{}}Possible values:\n",
-            value_descriptor,
-            "",
-            first_ident,
-            enum_description,
-            "",
-            INDENT_BY
-        );
-        for (const auto& [_, description] : descriptions) {
-            out_description.append(
-                std::format("{: <{}}{}\n", "", INDENT_BY, description)
-            );
-        }
-
-        return out_description;
+    auto out_description = std::format(
+        "<{}>{: <{}}{}\n\n{: <{}}Possible values:\n",
+        value_descriptor,
+        "",
+        first_ident,
+        enum_description,
+        "",
+        INDENT_BY
+    );
+    for (const auto& [_, description] : descriptions) {
+        out_description.append(std::format("{: <{}}{}\n", "", INDENT_BY, description));
     }
+
+    return out_description;
+}
 
 }  // namespace EvgetCore
 #endif  // INPUT_EVENT_RECORDER_COMMANDLINE_H

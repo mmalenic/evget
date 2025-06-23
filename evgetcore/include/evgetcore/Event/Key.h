@@ -23,9 +23,8 @@
 #ifndef EVGET_SRC_KEY_H
 #define EVGET_SRC_KEY_H
 
-#include <string>
-#include <array>
 #include <chrono>
+#include <string>
 
 #include "ButtonAction.h"
 #include "Data.h"
@@ -60,12 +59,12 @@ public:
     /**
      * Add position x.
      */
-    Key& positionX(double x);
+    Key& positionX(double x_pos);
 
     /**
      * Add position y.
      */
-    Key& positionY(double y);
+    Key& positionY(double y_pos);
 
     /**
      * Add action.
@@ -100,12 +99,12 @@ public:
     /**
      * Add the focus window position x.
      */
-    Key& focusWindowPositionX(double x);
+    Key& focusWindowPositionX(double x_pos);
 
     /**
      * Add the focus window position y.
      */
-    Key& focusWindowPositionY(double y);
+    Key& focusWindowPositionY(double y_pos);
 
     /**
      * Add the focus window width.
@@ -133,24 +132,24 @@ public:
     Data& build(Data& data);
 
 private:
-    std::optional<Interval> _interval{};
-    std::optional<Timestamp> _timestamp{};
-    std::optional<Device> _device{};
-    std::optional<double> _positionX{};
-    std::optional<double> _positionY{};
-    std::optional<ButtonAction> _action{};
-    std::optional<int> _button{};
-    std::optional<std::string> _name{};
-    std::optional<std::string> _character{};
-    std::optional<std::string> _deviceName{};
-    std::optional<std::string> _focusWindowName{};
-    std::optional<double> _focusWindowPositionX{};
-    std::optional<double> _focusWindowPositionY{};
-    std::optional<double> _focusWindowWidth{};
-    std::optional<double> _focusWindowHeight{};
-    std::optional<int> _screen{};
+    std::optional<Interval> _interval;
+    std::optional<Timestamp> _timestamp;
+    std::optional<Device> _device;
+    std::optional<double> _positionX;
+    std::optional<double> _positionY;
+    std::optional<ButtonAction> _action;
+    std::optional<int> _button;
+    std::optional<std::string> _name;
+    std::optional<std::string> _character;
+    std::optional<std::string> _deviceName;
+    std::optional<std::string> _focusWindowName;
+    std::optional<double> _focusWindowPositionX;
+    std::optional<double> _focusWindowPositionY;
+    std::optional<double> _focusWindowWidth;
+    std::optional<double> _focusWindowHeight;
+    std::optional<int> _screen;
 
-    std::vector<std::string> _modifiers{};
+    std::vector<std::string> _modifiers;
 };
 }  // namespace EvgetCore::Event
 

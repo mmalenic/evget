@@ -24,10 +24,6 @@
 #define EVGET_INCLUDE_SYSTEMEVENTLOOP_H
 
 #include <boost/asio.hpp>
-#include <spdlog/spdlog.h>
-
-#include <chrono>
-#include <vector>
 
 #include "EventListener.h"
 
@@ -60,7 +56,7 @@ public:
 
     EventLoop() = default;
 
-    virtual ~EventLoop() = default;
+    ~EventLoop() override = default;
 
     EventLoop(EventLoop&&) noexcept = delete;
     EventLoop& operator=(EventLoop&&) noexcept = delete;

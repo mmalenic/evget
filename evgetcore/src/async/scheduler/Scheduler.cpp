@@ -23,8 +23,7 @@
 
 #include "evgetcore/async/scheduler/Scheduler.h"
 
-EvgetCore::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {
-}
+EvgetCore::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {}
 
 void EvgetCore::Scheduler::join() {
     pool.join();
@@ -35,7 +34,7 @@ void EvgetCore::Scheduler::stop() {
     pool.stop();
 }
 
-boost::asio::awaitable<bool> EvgetCore::Scheduler::isStopped() {
+boost::asio::awaitable<bool> EvgetCore::Scheduler::isStopped() const {
     co_return stopped.load();
 }
 
@@ -43,10 +42,10 @@ boost::asio::thread_pool::executor_type EvgetCore::Scheduler::getExecutor() {
     return pool.get_executor();
 }
 
-void EvgetCore::Scheduler::log_exception(std::exception_ptr e) {
+void EvgetCore::Scheduler::log_exception(const std::exception_ptr& error) {
     try {
-        if (e) {
-            std::rethrow_exception(e);
+        if (error) {
+            std::rethrow_exception(error);
         }
     } catch (const std::exception& e) {
         spdlog::error("Exception in coroutine: {}", e.what());

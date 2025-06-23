@@ -22,6 +22,12 @@
 
 #include "evgetcore/Event/MouseClick.h"
 
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/ModifierValue.h"
+#include <string>
 #include <utility>
 
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(Interval interval) {
@@ -44,13 +50,13 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::device(EvgetCore::Ev
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionX(double x) {
-    _positionX = x;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionX(double x_pos) {
+    _positionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionY(double y) {
-    _positionY = y;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::positionY(double y_pos) {
+    _positionY = y_pos;
     return *this;
 }
 
@@ -79,13 +85,13 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowName(std:
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowPositionX(double x) {
-    _focusWindowPositionX = x;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowPositionX(double x_pos) {
+    _focusWindowPositionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowPositionY(double y) {
-    _focusWindowPositionY = y;
+EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::focusWindowPositionY(double y_pos) {
+    _focusWindowPositionY = y_pos;
     return *this;
 }
 

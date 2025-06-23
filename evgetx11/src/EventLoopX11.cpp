@@ -23,6 +23,7 @@
 #include "evgetx11/EventLoopX11.h"
 
 #include <iostream>
+#include <utility>
 
 EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
     co_return stopped.load();
@@ -48,8 +49,7 @@ void EvgetX11::EventLoopX11::notify(XInputEvent event) {
     }
 }
 
-EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler)
-    : handler{xInputHandler} {}
+EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler) : handler{xInputHandler} {}
 
 boost::asio::awaitable<void> EvgetX11::EventLoopX11::eventLoop() {
     while (!co_await isStopped()) {

@@ -29,7 +29,7 @@ namespace EvgetCore::Event {
  * Specify the allowed keyboard modifiers.
  * Based on https://www.glfw.org/docs/3.3/group__mods.html
  */
-enum class ModifierValue {
+enum class ModifierValue : std::uint8_t {
     Shift,
     // X11 - Lock
     CapsLock,

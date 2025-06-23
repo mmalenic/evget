@@ -22,9 +22,16 @@
 //
 
 #include "evgetcore/Storage/DatabaseManager.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
-EvgetCore::Storage::DatabaseManager::DatabaseManager(EvgetCore::Scheduler& scheduler, std::vector<std::unique_ptr<Store>> storeIn, size_t nEvents, std::chrono::seconds storeAfter) :
-scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, storeAfterInterval{storeAfter}, data{} {
+EvgetCore::Storage::DatabaseManager::DatabaseManager(
+    EvgetCore::Scheduler& scheduler,
+    std::vector<std::unique_ptr<Store> /*unused*/> storeIn,
+    size_t nEvents,
+    std::chrono::seconds storeAfter
+)
+    : scheduler{scheduler}, storeIn{std::move(storeIn)}, nEvents{nEvents}, storeAfterInterval{storeAfter} {
     storeAfterTask();
 }
 
@@ -41,7 +48,7 @@ void EvgetCore::Storage::DatabaseManager::add_store(std::unique_ptr<Store> store
     this->storeIn.emplace_back(std::move(store));
 }
 
-EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Data event) {
+EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(const Event::Data& event) const {
     for (const auto& store : storeIn) {
         auto result = store->store(event);
 
@@ -53,48 +60,46 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(Event::Da
     return Result<void>{};
 }
 
-void EvgetCore::Storage::DatabaseManager::storeEventsTask(std::optional<std::vector<Event::Data>> events) {
+void EvgetCore::Storage::DatabaseManager::storeEventsTask(const std::optional<std::vector<Event::Data>> &events) const {
     if (events.has_value()) {
         spdlog::info(fmt::format("reached threshold, storing {} events", events->size()));
 
-        Event::Data out{};
+        const Event::Data out{};
         for (auto data : *events) {
-            out.mergeWith(std::move(data));
+            data.mergeWith(std::move(data));
         }
 
-        scheduler.get().spawn<Result<void>>([this, out]() -> asio::awaitable<Result<void>> {
-            co_return this->storeWith(out);
-        }, [this](Result<void> result) {
-            this->resultHandler(result);
-        });
+        scheduler.get().spawn<Result<void>>(
+            [this, out]() -> asio::awaitable<Result<void>> { co_return this->storeWith(out); },
+            [this](Result<void> result) { this->resultHandler(std::move(result)); }
+        );
     }
-
 }
 
 void EvgetCore::Storage::DatabaseManager::storeAfterTask() {
-    scheduler.get().spawn<Result<void>>([this]() -> asio::awaitable<Result<void>> {
-        while (!co_await scheduler.get().isStopped()) {
-            auto result = co_await storeAfterInterval.tick();
+    scheduler.get().spawn<Result<void>>(
+        [this]() -> asio::awaitable<Result<void>> {
+            while (!co_await scheduler.get().isStopped()) {
+                auto result = co_await storeAfterInterval.tick();
 
-            spdlog::debug(fmt::format("timer threshold of {} seconds reached", storeAfterInterval.period().count()));
+                spdlog::debug(
+                    fmt::format("timer threshold of {} seconds reached", storeAfterInterval.period().count())
+                );
 
-            if (!result.has_value()) {
-                co_return Err{Error {
-                    .errorType = ErrorType::DatabaseManager,
-                    .message = result.error().message
-                }};
+                if (!result.has_value()) {
+                    co_return Err{Error{.errorType = ErrorType::DatabaseManager, .message = result.error().message}};
+                }
+
+                storeEventsTask(data.into_inner());
             }
 
-            storeEventsTask(data.into_inner());
-        }
-
-        co_return Result<void>{};
-    }, [this](Result<void> result) {
-        this->resultHandler(result);
-    });
+            co_return Result<void>{};
+        },
+        [this](Result<void> result) { this->resultHandler(std::move(result)); }
+    );
 }
 
-void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result) {
+void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result) const {
     if (!result.has_value()) {
         spdlog::error("Error storing events: {}", result.error().message);
         scheduler.get().stop();

@@ -25,16 +25,13 @@
 
 #include <SQLiteCpp/Database.h>
 
-#include "evgetcore/database/Connection.h"
 #include "Store.h"
 #include "boost/uuid/uuid.hpp"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
+#include "evgetcore/database/Connection.h"
 
 namespace EvgetCore::Storage {
-
-namespace asio = boost::asio;
-namespace uuids = boost::uuids;
 
 /**
  * A storage class which stores events in a database.
@@ -61,11 +58,16 @@ private:
         std::optional<std::unique_ptr<::EvgetCore::Query>>& insertModifierStatement,
         std::string insertQuery,
         std::string insertModifierQuery
-        );
+    );
     void setOptionalStatement(std::optional<std::unique_ptr<::EvgetCore::Query>>& query, std::string queryString);
-    Result<void> bindValues(std::unique_ptr<::EvgetCore::Query>& query, std::vector<std::string> data, std::string entryUuid);
-    Result<void> bindValuesModifier(std::unique_ptr<::EvgetCore::Query>& query, std::vector<std::string> modifiers, std::string entryUuid);
+    Result<void>
+    bindValues(std::unique_ptr<::EvgetCore::Query>& query, std::vector<std::string> data, std::string entryUuid);
+    Result<void> bindValuesModifier(
+        std::unique_ptr<::EvgetCore::Query>& query,
+        std::vector<std::string> modifiers,
+        std::string entryUuid
+    );
 };
-}
+}  // namespace EvgetCore::Storage
 
-#endif //DATABASE_STORAGE_H
+#endif  // DATABASE_STORAGE_H

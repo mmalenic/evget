@@ -21,16 +21,13 @@
 // SOFTWARE.
 
 #include "evgetx11/XInputHandler.h"
+
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
 #include "evgetx11/XWrapperX11.h"
 
-EvgetX11::XInputHandler::XInputHandler(
-    XWrapper& xWrapper
-)
-    : xWrapper{xWrapper} {
-}
+EvgetX11::XInputHandler::XInputHandler(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
 EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
@@ -74,8 +71,7 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
     xWrapper.selectEvents(mask);
 }
 
-EvgetCore::Result<EvgetX11::XInputHandler>
-EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
+EvgetCore::Result<EvgetX11::XInputHandler> EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
     return announceVersion(xWrapper).transform([&xWrapper] {
         setMask(xWrapper);
         return XInputHandler{xWrapper};

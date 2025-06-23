@@ -22,14 +22,11 @@
 
 #include "evgetx11/XEventSwitchPointerKey.h"
 
-EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(
-    XWrapper& xWrapper
-)
-    : xWrapper{xWrapper} {
-}
+EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
-    int id,std::optional<int> pointer_id,
+    int id,
+    std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info,
@@ -68,7 +65,7 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
                 strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_X) == 0) {
                 valuatorX[id] = valuatorInfo->number;
             } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0 |
-                strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
+                       strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
                 valuatorY[id] = valuatorInfo->number;
             }
         }

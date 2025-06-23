@@ -19,11 +19,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 #include "evgetcore/Storage/JsonStorage.h"
 
-#include <fmt/format.h>
-#include <nlohmann/json.hpp>
 #include <evgetcore/Event/Schema.h>
+#include <nlohmann/json.hpp>
 
 EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
@@ -37,32 +37,24 @@ EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event
 
         auto formattedFields = std::vector<nlohmann::json>{};
         for (auto i = 0; i < entryWithFields.data.size(); i++) {
-            formattedFields.push_back({
-                {"name", entryWithFields.fields[i]},
-                {"data", entryWithFields.data[i]}
-            });
+            formattedFields.push_back({{"name", entryWithFields.fields[i]}, {"data", entryWithFields.data[i]}});
         }
-        formattedEntries.push_back({
-                {"type", fromEntryType(entryWithFields.type)},
-            {"fields", formattedFields},
-            {"modifiers", entryWithFields.modifiers}
-            });
+        formattedEntries.push_back(
+            {{"type", fromEntryType(entryWithFields.type)},
+             {"fields", formattedFields},
+             {"modifiers", entryWithFields.modifiers}}
+        );
     }
 
     nlohmann::json output{};
     output["entries"] = formattedEntries;
 
-    std::visit([output](auto&& ostream) {
-        *ostream << output.dump(4) << "\n";
-    }, ostream);
+    std::visit([output](auto&& ostream) { *ostream << output.dump(4) << "\n"; }, ostream);
 
     return Result<void>{};
 }
 
-EvgetCore::Storage::JsonStorage::JsonStorage(std::unique_ptr<std::ostream> ostream) : ostream{std::move(ostream)} {
-}
+EvgetCore::Storage::JsonStorage::JsonStorage(std::unique_ptr<std::ostream> ostream) : ostream{std::move(ostream)} {}
 
-
-EvgetCore::Storage::JsonStorage::
-JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream *)>> ostream) : ostream{std::move(ostream)} {
-}
+EvgetCore::Storage::JsonStorage::JsonStorage(std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> ostream)
+    : ostream{std::move(ostream)} {}

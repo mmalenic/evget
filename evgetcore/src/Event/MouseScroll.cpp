@@ -21,6 +21,10 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/MouseScroll.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/ModifierValue.h"
 
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(Interval interval) {
     _interval = interval;
@@ -42,13 +46,13 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::device(EvgetCore::
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionX(double x) {
-    _positionX = x;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionX(double x_pos) {
+    _positionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionY(double y) {
-    _positionY = y;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::positionY(double y_pos) {
+    _positionY = y_pos;
     return *this;
 }
 
@@ -72,13 +76,13 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowName(st
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowPositionX(double x) {
-    _focusWindowPositionX = x;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowPositionX(double x_pos) {
+    _focusWindowPositionX = x_pos;
     return *this;
 }
 
-EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowPositionY(double y) {
-    _focusWindowPositionY = y;
+EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::focusWindowPositionY(double y_pos) {
+    _focusWindowPositionY = y_pos;
     return *this;
 }
 
@@ -105,22 +109,20 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::screen(int screen)
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
     Entry entry{
         EntryType::MouseScroll,
-        {
-            fromInterval(_interval),
-            fromTimestamp(_timestamp),
-            fromDouble(_positionX),
-            fromDouble(_positionY),
-            fromString(_deviceName),
-            fromString(_focusWindowName),
-            fromDouble(_focusWindowPositionX),
-            fromDouble(_focusWindowPositionY),
-            fromDouble(_focusWindowWidth),
-            fromDouble(_focusWindowHeight),
-            fromInt(_screen),
-            toUnderlyingOptional(_device),
-            fromDouble(_vertical),
-            fromDouble(_horizontal)
-        },
+        {fromInterval(_interval),
+         fromTimestamp(_timestamp),
+         fromDouble(_positionX),
+         fromDouble(_positionY),
+         fromString(_deviceName),
+         fromString(_focusWindowName),
+         fromDouble(_focusWindowPositionX),
+         fromDouble(_focusWindowPositionY),
+         fromDouble(_focusWindowWidth),
+         fromDouble(_focusWindowHeight),
+         fromInt(_screen),
+         toUnderlyingOptional(_device),
+         fromDouble(_vertical),
+         fromDouble(_horizontal)},
         _modifiers
     };
 

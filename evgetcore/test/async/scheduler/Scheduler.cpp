@@ -21,19 +21,21 @@
 // SOFTWARE.
 //
 
-#include <gtest/gtest.h>
-
 #include "evgetcore/async/scheduler/Scheduler.h"
+
+#include <gtest/gtest.h>
 
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {  // NOLINT(cert-err58-cpp)
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        result = 1;
-        co_return;
-    }, [&] {
-    });
+    scheduler.spawn(
+        [&]() -> boost::asio::awaitable<void> {
+            result = 1;
+            co_return;
+        },
+        [&] {}
+    );
     scheduler.join();
 
     ASSERT_EQ(*result, 1);
@@ -43,11 +45,7 @@ TEST(SchedulerTest, SpawnReturnTask) {  // NOLINT(cert-err58-cpp)
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
-        co_return 1;
-    }, [&](auto value) {
-        result = value;
-    });
+    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { co_return 1; }, [&](auto value) { result = value; });
     scheduler.join();
 
     ASSERT_EQ(*result, 1);
@@ -60,9 +58,7 @@ TEST(SchedulerTest, SpawnVoidTaskException) {  // NOLINT(cert-err58-cpp)
         while (!co_await scheduler.isStopped()) {
         }
     });
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        throw std::exception{};
-    });
+    scheduler.spawn([&]() -> boost::asio::awaitable<void> { throw std::exception{}; });
 
     scheduler.join();
 }
@@ -75,9 +71,7 @@ TEST(SchedulerTest, SpawnReturnTaskException) {  // NOLINT(cert-err58-cpp)
         }
         co_return 1;
     });
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
-        throw std::exception{};
-    });
+    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { throw std::exception{}; });
 
     scheduler.join();
 }

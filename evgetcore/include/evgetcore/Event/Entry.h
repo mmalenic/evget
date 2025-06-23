@@ -24,9 +24,10 @@
 #ifndef ENTRY_H
 #define ENTRY_H
 
+#include <array>
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <array>
 
 namespace EvgetCore::Event {
 
@@ -37,15 +38,14 @@ constexpr auto mouseClickNFields = 15;
 constexpr auto keyNFields = 16;
 
 template <std::size_t From, std::size_t To, typename AddElements>
-concept AddToArray = std::ranges::range<AddElements> && To > From && requires(AddElements addElements) {
-    addElements.size() <= To - From;
-};
+concept AddToArray = std::ranges::range<AddElements> &&
+    To > From&& requires(AddElements addElements) { addElements.size() <= To - From; };
 
 /**
  * \brief Add additional elements to an array.
  */
 template <std::size_t From, std::size_t To, typename AddElements>
-requires AddToArray<From, To, AddElements>
+    requires AddToArray<From, To, AddElements>
 constexpr std::array<std::string_view, To>
 addToArray(std::array<std::string_view, From> from, AddElements addElements) {
     std::array<std::string_view, To> out{};
@@ -71,31 +71,37 @@ constexpr std::array<std::string_view, mouseMoveNFields> mouseMoveFields{
     "device_type",
 };
 
-constexpr std::array<std::string_view, mouseScrollNFields> mouseScrollFields = addToArray<mouseMoveNFields, mouseScrollNFields>(mouseMoveFields, std::vector{
-    "scroll_vertical",
-    "scroll_horizontal",
-});
+constexpr std::array<std::string_view, mouseScrollNFields> mouseScrollFields =
+    addToArray<mouseMoveNFields, mouseScrollNFields>(
+        mouseMoveFields,
+        std::vector{
+            "scroll_vertical",
+            "scroll_horizontal",
+        }
+    );
 
-constexpr std::array<std::string_view, mouseClickNFields> mouseClickFields = addToArray<mouseMoveNFields, mouseClickNFields>(mouseMoveFields, std::vector{
-    "button_id",
-    "button_name",
-    "button_action",
-});
+constexpr std::array<std::string_view, mouseClickNFields> mouseClickFields =
+    addToArray<mouseMoveNFields, mouseClickNFields>(
+        mouseMoveFields,
+        std::vector{
+            "button_id",
+            "button_name",
+            "button_action",
+        }
+    );
 
-constexpr std::array<std::string_view, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(mouseClickFields, std::vector{
-    "character",
-});
-}
+constexpr std::array<std::string_view, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(
+    mouseClickFields,
+    std::vector{
+        "character",
+    }
+);
+}  // namespace detail
 
 /**
  * \brief An entry type.
  */
-enum class EntryType {
-    Key,
-    MouseClick,
-    MouseMove,
-    MouseScroll
-};
+enum class EntryType : std::uint8_t { Key, MouseClick, MouseMove, MouseScroll };
 
 struct EntryWithFields {
     EntryType type;
@@ -123,7 +129,7 @@ public:
     /**
      * \brief Get the entry with fields.
      */
-    EntryWithFields getEntryWithFields();
+    EntryWithFields getEntryWithFields() const;
 
 private:
     EntryType _type;
@@ -131,6 +137,6 @@ private:
     std::vector<std::string> _modifiers;
 };
 
-} // EvgetCore
+}  // namespace EvgetCore::Event
 
-#endif //ENTRY_H
+#endif  // ENTRY_H

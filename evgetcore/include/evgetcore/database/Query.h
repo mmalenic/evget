@@ -79,25 +79,25 @@ public:
      * \brief Get the field as an integer.
      * \return a result with the returned integer.
      */
-    virtual Result<int> asInt(std::size_t at) = 0;
+    virtual Result<int> asInt(std::size_t pos) = 0;
 
     /**
      * \brief Get the field as a double.
      * \return a result with the returned double.
      */
-    virtual Result<double> asDouble(std::size_t at) = 0;
+    virtual Result<double> asDouble(std::size_t pos) = 0;
 
     /**
      * \brief Get the field as a string.
      * \return a result with the returned string.
      */
-    virtual Result<std::string> asString(std::size_t at) = 0;
+    virtual Result<std::string> asString(std::size_t pos) = 0;
 
     /**
      * \brief Get the field as a boolean.
      * \return a result with the returned boolean.
      */
-    virtual Result<bool> asBool(std::size_t at) = 0;
+    virtual Result<bool> asBool(std::size_t pos) = 0;
 
     Query() = default;
 
@@ -108,7 +108,6 @@ public:
     Query& operator=(const Query&) = delete;
     Query& operator=(Query&&) noexcept = delete;
 };
-}
+}  // namespace EvgetCore
 
-
-#endif // DATABASE_QUERY_H
+#endif  // DATABASE_QUERY_H

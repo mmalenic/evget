@@ -23,6 +23,7 @@
 #ifndef DATABASE_MIGRATE_H
 #define DATABASE_MIGRATE_H
 
+#include <string>
 #include <vector>
 
 #include "Connection.h"
@@ -52,15 +53,16 @@ public:
     Result<void> migrate();
 
 private:
-    Result<std::vector<AppliedMigration>> getAppliedMigrations();
-    Result<void> createMigrationsTable();
+    Result<std::vector<AppliedMigration>> getAppliedMigrations() const;
+    Result<void> createMigrationsTable() const;
     Result<void> applyMigration(const Migration& migration, const std::string& checksum);
-    Result<void> applyMigrationSql(const Migration& migration);
-    std::string checksum(const Migration& migration);
+    Result<void> applyMigrationSql(const Migration& migration) const;
+
+    static std::string checksum(const Migration& migration);
 
     std::reference_wrapper<Connection> connection;
     std::vector<Migration> migrations;
 };
-}
+}  // namespace EvgetCore
 
-#endif //DATABASE_MIGRATE_H
+#endif  // DATABASE_MIGRATE_H
