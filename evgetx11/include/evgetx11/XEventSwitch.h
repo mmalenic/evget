@@ -26,8 +26,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <utility>
-
 #include "XWrapperX11.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
@@ -46,10 +44,10 @@ concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue
  */
 template <typename T>
 concept BuilderHasWindowFunctions =
-    requires(T builder, std::string name, double x, double y, double width, double height) {
+    requires(T builder, std::string name, double x_pos, double y_pos, double width, double height) {
         { builder.focusWindowName(name) } -> std::convertible_to<T>;
-        { builder.focusWindowPositionX(x) } -> std::convertible_to<T>;
-        { builder.focusWindowPositionY(y) } -> std::convertible_to<T>;
+        { builder.focusWindowPositionX(x_pos) } -> std::convertible_to<T>;
+        { builder.focusWindowPositionY(y_pos) } -> std::convertible_to<T>;
         { builder.focusWindowWidth(width) } -> std::convertible_to<T>;
         { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
     };
@@ -68,7 +66,7 @@ public:
     explicit XEventSwitch(XWrapper& xWrapper);
 
     void refreshDevices(
-        int id,
+        int device_id,
         std::optional<int> pointer_id,
         EvgetCore::Event::Device device,
         const std::string& name,
@@ -90,23 +88,23 @@ public:
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
-    const std::string& getButtonName(int id, int button) const;
+    const std::string& getButtonName(int device_id, int button) const;
 
     /**
      * Get the device with the given id.
      */
-    EvgetCore::Event::Device getDevice(int id) const;
+    EvgetCore::Event::Device getDevice(int device_id) const;
 
     /**
      * Check whether the device with the given id is present.
      */
-    bool hasDevice(int id);
+    bool hasDevice(int device_id) const;
 
     /**
      * Set the modifier state for a builder.
      */
     template <BuilderHasModifier T>
-    static T& setModifierValue(int modifierState, T& builder);
+    static T& setModifierValue(unsigned int modifierState, T& builder);
 
     /**
      * Set the window fields for a builder.
@@ -123,20 +121,20 @@ public:
     /**
      * Set the button map for a device.
      * @param buttonInfo button info
-     * @param id device id
+     * @param device_id device id
      */
-    void setButtonMap(const XIButtonClassInfo& buttonInfo, int id);
+    void setButtonMap(const XIButtonClassInfo& buttonInfo, int device_id);
 
 private:
     std::reference_wrapper<XWrapper> xWrapper;
-    std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap{};
-    std::unordered_map<int, EvgetCore::Event::Device> devices{};
-    std::unordered_map<int, std::string> idToName{};
+    std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap;
+    std::unordered_map<int, EvgetCore::Event::Device> devices;
+    std::unordered_map<int, std::string> idToName;
     int pointer_id{};
 };
 
 template <BuilderHasModifier T>
-T& EvgetX11::XEventSwitch::setModifierValue(int modifierState, T& builder) {
+T& EvgetX11::XEventSwitch::setModifierValue(unsigned int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifierState & ShiftMask) {
         builder.modifier(EvgetCore::Event::ModifierValue::Shift);

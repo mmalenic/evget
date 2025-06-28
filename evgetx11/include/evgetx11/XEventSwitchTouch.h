@@ -42,7 +42,7 @@ public:
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void refreshDevices(
-        int id,
+        int device_id,
         std::optional<int> pointer_id,
         EvgetCore::Event::Device device,
         const std::string& name,
@@ -51,14 +51,15 @@ public:
     );
 
 private:
-    void touchButton(
+    static void touchButton(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
         EvgetX11::XEventSwitch& xEventSwitch,
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
-    void touchMotion(
+
+    static void touchMotion(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,

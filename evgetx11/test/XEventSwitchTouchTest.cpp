@@ -33,19 +33,21 @@
 #include "evgetx11/XEventSwitchTouch.h"
 #include "evgetx11/XInputHandler.h"
 #include "evgetx11/XWrapper.h"
-#include "fmt/format.h"
 #include "utils/EvgetX11TestUtils.h"
 
-TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
+TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(readability-function-cognitive-complexity)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
-    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};  // NOLINT(misc-const-correctness)
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
     auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&buttonClassInfo)};
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -67,9 +69,9 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
     EXPECT_CALL(xWrapperMock, atomName)
         .WillOnce(
             testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_TOUCHSCREEN, [](void* _) {
-                                                                                return 0;
-                                                                            }})
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
+                    {reinterpret_cast<char*>(XI_TOUCHSCREEN), [](void* _) { return 0; }}
+                )
             )
         );
     EXPECT_CALL(xWrapperMock, getActiveWindow).WillRepeatedly([]() { return std::nullopt; });
@@ -83,7 +85,7 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
     xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
 
     auto data = EvgetCore::Event::Data{};
-    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time _) {
+    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
@@ -107,15 +109,17 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(entries.at(1).data().at(14), "0");
 }
 
-TEST(XEventSwitchTouchTest, TestTouchUpdate) {  // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchTouchTest, TestTouchUpdate) {
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
-    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};  // NOLINT(misc-const-correctness)
 
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
     valuatorClassInfo.number = 0;
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo)};
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -143,7 +147,7 @@ TEST(XEventSwitchTouchTest, TestTouchUpdate) {  // NOLINT(cert-err58-cpp)
     xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
 
     auto data = EvgetCore::Event::Data{};
-    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time _) {
+    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
@@ -157,16 +161,18 @@ TEST(XEventSwitchTouchTest, TestTouchUpdate) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(entries.at(0).data().at(11), "0");
 }
 
-TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(cert-err58-cpp)
+TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(readability-function-cognitive-complexity)
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
-    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};
+    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};  // NOLINT(misc-const-correctness)
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
     auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&buttonClassInfo)};
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     char name[] = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -188,9 +194,9 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(cert-err58-cpp)
     EXPECT_CALL(xWrapperMock, atomName)
         .WillOnce(
             testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({(char*)XI_TOUCHSCREEN, [](void* _) {
-                                                                                return 0;
-                                                                            }})
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
+                    {reinterpret_cast<char*>(XI_TOUCHSCREEN), [](void* _) { return 0; }}
+                )
             )
         );
     EXPECT_CALL(xWrapperMock, getActiveWindow).WillRepeatedly([]() { return std::nullopt; });
@@ -204,7 +210,7 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(cert-err58-cpp)
     xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
 
     auto data = EvgetCore::Event::Data{};
-    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time _) {
+    xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
@@ -227,3 +233,5 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(entries.at(1).data().at(13), "TOUCHSCREEN");
     ASSERT_EQ(entries.at(1).data().at(14), "1");
 }
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

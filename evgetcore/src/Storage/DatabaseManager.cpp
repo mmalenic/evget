@@ -22,12 +22,13 @@
 //
 
 #include "evgetcore/Storage/DatabaseManager.h"
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 EvgetCore::Storage::DatabaseManager::DatabaseManager(
     EvgetCore::Scheduler& scheduler,
-    std::vector<std::unique_ptr<Store> /*unused*/> storeIn,
+    std::vector<std::unique_ptr<Store>> storeIn,
     size_t nEvents,
     std::chrono::seconds storeAfter
 )
@@ -60,7 +61,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseManager::storeWith(const Eve
     return Result<void>{};
 }
 
-void EvgetCore::Storage::DatabaseManager::storeEventsTask(const std::optional<std::vector<Event::Data>> &events) const {
+void EvgetCore::Storage::DatabaseManager::storeEventsTask(const std::optional<std::vector<Event::Data>>& events) const {
     if (events.has_value()) {
         spdlog::info(fmt::format("reached threshold, storing {} events", events->size()));
 

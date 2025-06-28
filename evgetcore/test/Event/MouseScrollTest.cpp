@@ -24,7 +24,7 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
-TEST(MouseScrollTest, Event) {  // NOLINT(cert-err58-cpp)
+TEST(MouseScrollTest, Event) {
     auto data = EvgetCore::Event::Data{};
     auto mouse_scroll = EvgetCore::Event::MouseScroll{}
                             .interval(EvgetCore::Event::Interval{1})

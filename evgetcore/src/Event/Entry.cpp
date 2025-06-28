@@ -25,7 +25,6 @@
 
 #include "evgetcore/Event/Schema.h"
 
-
 EvgetCore::Event::Entry::Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers)
     : _type{type}, _data{std::move(data)}, _modifiers{std::move(modifiers)} {}
 
@@ -53,7 +52,6 @@ void EvgetCore::Event::Entry::toNamedRepresentation() {
 
 EvgetCore::Event::EntryWithFields EvgetCore::Event::Entry::getEntryWithFields() const {
     std::vector<std::string> fields;
-    std::string type;
     switch (this->type()) {
         case EntryType::Key:
             fields = {detail::keyFields.begin(), detail::keyFields.end()};

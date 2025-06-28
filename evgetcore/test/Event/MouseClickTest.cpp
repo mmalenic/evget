@@ -27,7 +27,7 @@
 
 #include "evgetcore/Event/MouseClick.h"
 
-TEST(MouseClickTest, Event) {  // NOLINT(cert-err58-cpp)
+TEST(MouseClickTest, Event) {
     auto data = EvgetCore::Event::Data{};
     auto mouse_click = EvgetCore::Event::MouseClick{}
                            .interval(EvgetCore::Event::Interval{1})

@@ -25,6 +25,8 @@
 
 #include <boost/asio.hpp>
 
+#include "Error.h"
+
 namespace EvgetCore {
 
 namespace asio = boost::asio;
@@ -40,7 +42,7 @@ public:
      * Notify if an event.
      * @param event event
      */
-    virtual void notify(T event) = 0;
+    virtual Result<void> notify(T event) = 0;
 
     /**
      * Start the listener processing

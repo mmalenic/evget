@@ -22,7 +22,6 @@
 
 #include "evgetx11/EventLoopX11.h"
 
-#include <iostream>
 #include <utility>
 
 EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
@@ -43,10 +42,11 @@ void EvgetX11::EventLoopX11::registerEventListener(EvgetCore::EventListener<XInp
     _eventListener = eventListener;
 }
 
-void EvgetX11::EventLoopX11::notify(XInputEvent event) {
+EvgetCore::Result<void> EvgetX11::EventLoopX11::notify(XInputEvent event) {
     if (_eventListener.has_value()) {
-        _eventListener->get().notify(std::move(event));
+        return _eventListener->get().notify(std::move(event));
     }
+    return {};
 }
 
 EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler) : handler{xInputHandler} {}

@@ -24,7 +24,6 @@
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <fcntl.h>
 
 #include <format>
 
@@ -33,7 +32,7 @@
 namespace uuids = boost::uuids;
 
 Test::Database::DatabaseTest::DatabaseTest()
-    : directory{std::filesystem::temp_directory_path()}, databaseFile{directory / testDatabaseName()} {
+    : directory_{std::filesystem::temp_directory_path()}, databaseFile{directory_ / testDatabaseName()} {
     EvgetCore::SQLiteConnection connection{};
 
     auto connect = connection.connect(databaseFile.string(), EvgetCore::ConnectOptions::READ_WRITE_CREATE);
@@ -48,16 +47,20 @@ Test::Database::DatabaseTest::DatabaseTest()
     );
     auto insert = std::format("insert into {} ({}) values (\"{}\");", testTableName, testTableColumn, testTableValue);
 
-    auto createTableQuery = connection.buildQuery(createTable.c_str())->exec();
-    auto insertQuery = connection.buildQuery(insert.c_str())->exec();
+    auto createTableQuery = connection.buildQuery(createTable)->exec();
+    auto insertQuery = connection.buildQuery(insert)->exec();
 }
 
 Test::Database::DatabaseTest::~DatabaseTest() {
-    try {
-        remove_all(databaseFile);
-    } catch (std::exception& _) {
-        // Ok, no throw in destructor.
-    }
+    remove_all(databaseFile);
+}
+
+std::filesystem::path Test::Database::DatabaseTest::directory() const {
+    return directory_;
+}
+
+std::filesystem::path Test::Database::DatabaseTest::database_file() const {
+    return databaseFile;
 }
 
 std::string Test::Database::DatabaseTest::testDatabaseName() {

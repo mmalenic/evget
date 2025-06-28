@@ -23,12 +23,12 @@
 #include "evgetcore/database/sqlite/Connection.h"
 
 #include <SQLiteCpp/Database.h>
-#include <memory>
 #include <spdlog/spdlog.h>
+
+#include <memory>
 #include <string>
 
 #include "evgetcore/database/Connection.h"
-
 #include "evgetcore/database/sqlite/Query.h"
 
 EvgetCore::Result<void> EvgetCore::SQLiteConnection::connect(std::string database, ConnectOptions options) {
@@ -41,14 +41,16 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::connect(std::string databas
                 this->database_ = {database, ::SQLite::OPEN_READWRITE};
                 break;
             case ConnectOptions::READ_WRITE_CREATE:
+                // NOLINTBEGIN(hicpp-signed-bitwise)
                 this->database_ = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+                // NOLINTEND(hicpp-signed-bitwise)
                 break;
         }
 
         spdlog::info("connected to SQLite database: {}", database);
         return {};
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error connecting to SQLite database: {}", what);
         return connectError(what);
     }
@@ -66,7 +68,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::commit() {
     try {
         transaction_->commit();
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error committing transaction: {}", what);
         return connectError(what);
     }
@@ -82,7 +84,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::transaction() {
     try {
         this->transaction_.emplace(*this->database_);
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error creating transaction: {}", what);
         return connectError(what);
     }
@@ -106,7 +108,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteConnection::rollback() {
     try {
         transaction_->rollback();
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error rolling back transaction: {}", what);
         return connectError(what);
     }

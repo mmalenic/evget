@@ -25,9 +25,10 @@
 #define SCHEDULER_H
 
 #include <boost/asio.hpp>
-#include <cstddef>
 #include <evgetcore/Error.h>
 #include <spdlog/spdlog.h>
+
+#include <cstddef>
 
 namespace EvgetCore {
 
@@ -112,7 +113,7 @@ private:
     spawnImpl(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
 
     static constexpr std::size_t default_thread_pool_size();
-    void log_exception(const std::exception_ptr &error);
+    void log_exception(const std::exception_ptr& error);
 };
 
 constexpr std::size_t Scheduler::default_thread_pool_size() {
@@ -129,7 +130,7 @@ void Scheduler::spawnImpl(
     asio::co_spawn(
         pool,
         [this, task]() { return task(); },
-        [this, handler](const std::exception_ptr &err, T value) {
+        [this, handler](const std::exception_ptr& err, T value) {
             log_exception(err);
             handler(value);
         }
@@ -154,7 +155,7 @@ void Scheduler::spawnImpl(
     asio::co_spawn(
         pool,
         [task]() { return task(); },
-        [this, handler](const std::exception_ptr &err) {
+        [this, handler](const std::exception_ptr& err) {
             log_exception(err);
             handler();
         }

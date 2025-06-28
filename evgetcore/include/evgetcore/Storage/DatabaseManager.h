@@ -57,7 +57,7 @@ public:
     void add_store(std::unique_ptr<Store> store);
 
 private:
-    void storeEventsTask(const std::optional<std::vector<Event::Data>> &events) const;
+    void storeEventsTask(const std::optional<std::vector<Event::Data>>& events) const;
     void storeAfterTask();
 
     std::reference_wrapper<EvgetCore::Scheduler> scheduler;
@@ -66,7 +66,7 @@ private:
     EvgetCore::Interval storeAfterInterval;
     EvgetCore::LockingVector<Event::Data> data;
 
-    Result<void> storeWith(const Event::Data& event) const;
+    [[nodiscard]] Result<void> storeWith(const Event::Data& event) const;
     void resultHandler(Result<void> result) const;
 };
 

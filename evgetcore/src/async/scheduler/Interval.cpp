@@ -23,7 +23,6 @@
 
 #include "evgetcore/async/scheduler/Interval.h"
 
-
 EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {}
 
 EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() {

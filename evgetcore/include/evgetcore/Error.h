@@ -23,6 +23,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <cstdint>
 #include <expected>
 #include <string>
 
@@ -45,7 +46,7 @@ struct Error {
 /**
  * \brief Error type enum.
  */
-enum class ErrorType {
+enum class ErrorType : std::uint8_t {
     SQLiteError,
     DatabaseManager,
     DatabaseError,

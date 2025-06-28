@@ -36,12 +36,13 @@
 #include "evgetcore/Error.h"
 #include "evgetcore/database/Connection.h"
 
-EvgetCore::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations) : connection{connection} {
-    std::ranges::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
-        return a.version < b.version;
-    });
-
-    this->migrations = migrations;
+EvgetCore::Migrate::Migrate(Connection& connection, std::vector<Migration> migrations)
+    : connection{connection}, migrations{std::move(migrations)} {
+    std::ranges::sort(
+        this->migrations.begin(),
+        this->migrations.end(),
+        [](const Migration& a_migrate, const Migration& b_migrate) { return a_migrate.version < b_migrate.version; }
+    );
 }
 
 EvgetCore::Result<void> EvgetCore::Migrate::createMigrationsTable() const {
@@ -111,27 +112,24 @@ EvgetCore::Result<void> EvgetCore::Migrate::applyMigrationSql(const Migration& m
 
 std::string EvgetCore::Migrate::checksum(const Migration& migration) {
     CryptoPP::SHA3_512 sha3{};
-    CryptoPP::byte digest[CryptoPP::SHA3_512::DIGESTSIZE];
+    std::array<CryptoPP::byte, CryptoPP::SHA3_512::DIGESTSIZE> digest{};
 
-    sha3.CalculateDigest(
-        digest,
-        reinterpret_cast<const CryptoPP::byte*>(migration.sql.c_str()),
-        migration.sql.length()
-    );
+    std::vector<CryptoPP::byte> input{migration.sql.begin(), migration.sql.end()};
+    sha3.CalculateDigest(digest.data(), input.data(), input.size());
 
     CryptoPP::HexEncoder encoder;
-    std::string output;
 
-    encoder.Put(digest, sizeof(digest));
+    encoder.Put(digest.data(), sizeof(digest));
     encoder.MessageEnd();
 
     const CryptoPP::word64 size = encoder.MaxRetrievable();
+    std::vector<CryptoPP::byte> output;
     if (size != 0U) {
         output.resize(size);
-        encoder.Get(reinterpret_cast<CryptoPP::byte*>(output.data()), output.size());
+        encoder.Get(output.data(), output.size());
     }
 
-    return output;
+    return std::string{output.begin(), output.end()};
 }
 
 EvgetCore::Result<void> EvgetCore::Migrate::migrate() {

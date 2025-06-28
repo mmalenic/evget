@@ -49,9 +49,9 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
-    unsigned char eventMask[XI_LASTEVENT] = {0};
+    std::array<unsigned char, XI_LASTEVENT> eventMask{};
     EvgetX11::XWrapperX11::setMask(
-        eventMask,
+        eventMask.data(),
         {
             XI_RawButtonPress,
             XI_RawButtonRelease,
@@ -66,7 +66,7 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
     );
 
     mask.mask_len = sizeof(eventMask);
-    mask.mask = eventMask;
+    mask.mask = eventMask.data();
 
     xWrapper.selectEvents(mask);
 }
@@ -78,6 +78,6 @@ EvgetCore::Result<EvgetX11::XInputHandler> EvgetX11::XInputHandler::build(XWrapp
     });
 }
 
-EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() {
+EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() const {
     return XInputEvent::nextEvent(xWrapper.get());
 }

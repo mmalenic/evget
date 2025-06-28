@@ -28,19 +28,15 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <spdlog/spdlog.h>
 
-#include <concepts>
 #include <map>
-#include <set>
-#include <unordered_map>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 
 #include "XEventSwitch.h"
 #include "XEventSwitchPointerKey.h"
 #include "XEventSwitchTouch.h"
-#include "XInputHandler.h"
 #include "XWrapper.h"
-#include "evgetcore/Event/MouseScroll.h"
 #include "evgetcore/EventTransformer.h"
 
 namespace EvgetX11 {
@@ -61,11 +57,11 @@ private:
     std::optional<Time> previous{std::nullopt};
     std::optional<Time> previousFromEvent{std::nullopt};
 
-    std::unordered_map<int, EvgetCore::Event::Device> devices{};
-    std::unordered_map<int, std::string> idToName{};
+    std::unordered_map<int, EvgetCore::Event::Device> devices;
+    std::unordered_map<int, std::string> idToName;
 
     std::tuple<Switches...> switches;
-    std::optional<int> pointer_id{};
+    std::optional<int> pointer_id;
 };
 
 template <typename... Switches>
@@ -74,7 +70,7 @@ EvgetX11::EventTransformerX11<Switches...>::EventTransformerX11(
     XEventSwitch xEventSwitch,
     Switches... switches
 )
-    : xWrapper{xWrapper}, xEventSwitch{xEventSwitch}, switches{switches...} {
+    : xWrapper{xWrapper}, xEventSwitch{std::move(xEventSwitch)}, switches{std::move(switches)...} {
     refreshDevices();
 }
 
@@ -99,17 +95,17 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
 
     for (int i = 0; i < nDevices; i++) {
         const auto& device = info[i];
-        int id = boost::numeric_cast<int>(device.id);
+        int device_id = boost::numeric_cast<int>(device.id);
 
         if (device.use == IsXPointer) {
-            this->pointer_id = id;
+            this->pointer_id = device_id;
         }
 
-        const auto& xi2Device = xi2Devices.at(id).get();
+        const auto& xi2Device = xi2Devices.at(device_id).get();
 
-        if (xi2Device.enabled && device.type != None) {
+        if ((xi2Device.enabled != False) && device.type != None) {
             auto type = xWrapper.get().atomName(device.type);
-            EvgetCore::Event::Device deviceType;
+            EvgetCore::Event::Device deviceType{EvgetCore::Event::Device::Unknown};
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
                 deviceType = EvgetCore::Event::Device::Mouse;
@@ -119,22 +115,20 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
                 deviceType = EvgetCore::Event::Device::Touchscreen;
             } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
                 deviceType = EvgetCore::Event::Device::Touchpad;
-            } else {
-                deviceType = EvgetCore::Event::Device::Unknown;
             }
 
-            devices.emplace(id, deviceType);
-            idToName.emplace(id, device.name);
+            devices.emplace(device_id, deviceType);
+            idToName.emplace(device_id, device.name);
 
             // Iterate through switches and refresh devices.
             std::apply(
-                [this, &id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
+                [this, &device_id, &deviceType, &device, &xi2Devices](auto&&... eventSwitches) {
                     ((eventSwitches.refreshDevices(
-                         id,
+                         device_id,
                          pointer_id,
                          deviceType,
                          device.name,
-                         xi2Devices.at(id).get(),
+                         xi2Devices.at(device_id).get(),
                          xEventSwitch
                      )),
                      ...);
@@ -199,18 +193,18 @@ EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEven
 
 template <typename... Switches>
 EventTransformerX11<Switches...> EventTransformerX11<Switches...>::build(XWrapper& xWrapper) {
-    EvgetX11::XEventSwitch xEventSwitch{xWrapper};
-    return EventTransformerX11{xWrapper, xEventSwitch};
+    return EventTransformerX11{xWrapper, EvgetX11::XEventSwitch{xWrapper}};
 }
 
 template <>
-EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>
+inline EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>
 EventTransformerX11<XEventSwitchPointerKey, XEventSwitchTouch>::build(XWrapper& xWrapper) {
-    EvgetX11::XEventSwitch xEventSwitch{xWrapper};
-    EvgetX11::XEventSwitchPointerKey xEventSwitchPointer{xWrapper};
-    EvgetX11::XEventSwitchTouch xEventSwitchTouch{};
-
-    return EventTransformerX11{xWrapper, xEventSwitch, xEventSwitchPointer, xEventSwitchTouch};
+    return EventTransformerX11{
+        xWrapper,
+        EvgetX11::XEventSwitch{xWrapper},
+        EvgetX11::XEventSwitchPointerKey{xWrapper},
+        EvgetX11::XEventSwitchTouch{}
+    };
 }
 }  // namespace EvgetX11
 

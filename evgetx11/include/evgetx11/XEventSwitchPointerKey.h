@@ -24,13 +24,12 @@
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
 
 #include <X11/Xutil.h>
-#include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
-#include <spdlog/spdlog.h>
 #include <xorg/xserver-properties.h>
 
 #include <cmath>
 #include <map>
+#include <ranges>
 #include <unordered_map>
 
 #include "XEventSwitch.h"
@@ -46,7 +45,7 @@ public:
     explicit XEventSwitchPointerKey(XWrapper& xWrapper);
 
     void refreshDevices(
-        int id,
+        int device_id,
         std::optional<int> pointer_id,
         EvgetCore::Event::Device device,
         const std::string& name,
@@ -63,7 +62,7 @@ public:
 private:
     static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
 
-    void buttonEvent(
+    static void buttonEvent(
         const XInputEvent& event,
         EvgetCore::Event::Data& data,
         EvgetCore::Event::ButtonAction action,
@@ -91,9 +90,9 @@ private:
 
     std::reference_wrapper<XWrapper> xWrapper;
 
-    std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap{};
-    std::unordered_map<int, std::optional<int>> valuatorX{};
-    std::unordered_map<int, std::optional<int>> valuatorY{};
+    std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap;
+    std::unordered_map<int, std::optional<int>> valuatorX;
+    std::unordered_map<int, std::optional<int>> valuatorY;
 
     int pointer_id{};
 };
@@ -133,11 +132,13 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     auto button = xEventSwitch.getButtonName(raw_event.sourceid, raw_event.detail);
+    // NOLINTBEGIN(hicpp-signed-bitwise)
     if (!xEventSwitch.hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated) ||
         button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;
     }
+    // NOLINTEND(hicpp-signed-bitwise)
 
     xEventSwitch.addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
 }
@@ -155,15 +156,16 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 
     auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
-    std::string character;
     KeySym keySym = NoSymbol;
 
-    character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
+    std::string character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
 
     EvgetCore::Event::ButtonAction action = EvgetCore::Event::ButtonAction::Release;
     if (raw_event.evtype != XI_KeyRelease) {
+        // NOLINTBEGIN(hicpp-signed-bitwise)
         action = (raw_event.flags & XIKeyRepeat) ? EvgetCore::Event::ButtonAction::Repeat
                                                  : EvgetCore::Event::ButtonAction::Press;
+        // NOLINTEND(hicpp-signed-bitwise)
     }
 
     std::string name = XWrapperX11::keySymToString(keySym);
@@ -194,10 +196,12 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
+    // NOLINTBEGIN(hicpp-signed-bitwise)
     if (!xEventSwitch.hasDevice(raw_event.sourceid) || !scrollMap.contains(raw_event.sourceid) ||
         raw_event.flags & XIPointerEmulated) {
         return;
     }
+    // NOLINTEND(hicpp-signed-bitwise)
 
     EvgetCore::Event::MouseScroll builder{};
     auto valuators = getValuators(raw_event.valuators);
@@ -242,12 +246,14 @@ void EvgetX11::XEventSwitchPointerKey::motionEvent(
     EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
+    // NOLINTBEGIN(hicpp-signed-bitwise)
     if (!xEventSwitch.hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated)) {
         return;
     }
+    // NOLINTEND(hicpp-signed-bitwise)
 
     auto valuators = getValuators(raw_event.valuators);
-    for (const auto& [valuator, value] : valuators) {
+    for (const auto& valuator : valuators | std::views::keys) {
         if (valuator == valuatorX[raw_event.sourceid] || valuator == valuatorY[raw_event.sourceid]) {
             xEventSwitch.addMotionEvent(raw_event, event.getTimestamp(), data, getTime);
             break;

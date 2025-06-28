@@ -23,7 +23,6 @@
 #include "evgetcore/cli.h"
 
 #include <CLI/CLI.hpp>
-#include <fmt/core.h>
 #include <spdlog/cfg/env.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
@@ -33,9 +32,9 @@
 #include <iostream>
 #include <utility>
 
-#include "evgetcore/database/sqlite/Connection.h"
 #include "evgetcore/Storage/DatabaseStorage.h"
 #include "evgetcore/Storage/JsonStorage.h"
+#include "evgetcore/database/sqlite/Connection.h"
 
 const std::vector<std::string>& EvgetCore::Cli::output() const {
     return this->output_;
@@ -62,14 +61,14 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
            store_n_events_,
            "Controls how many events to receive before outputting them to the store."
     )
-        ->default_val(100);
+        ->default_val(DEFAULT_N_EVENTS);
     app.add_option(
            "-s,--store-after-seconds",
            store_after_,
            "Store events at least every interval specified with this option, even if fewer events than "
            "`--store-n-events` has been receieved."
     )
-        ->default_val(60);
+        ->default_val(DEFAULT_STORE_AFTER);
 
     app.add_option_function<std::string>(
            "-o,--output",
@@ -78,7 +77,9 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
                    spdlog::set_level(spdlog::level::off);
                }
 
-               std::ranges::transform(value, value.begin(), [](unsigned char c) { return std::tolower(c); });
+               std::ranges::transform(value, value.begin(), [](unsigned char character) {
+                   return std::tolower(character);
+               });
                output_.emplace_back(value);
            },
            "The output location of the storage. "
@@ -98,7 +99,7 @@ std::expected<bool, int> EvgetCore::Cli::parse(int argc, char** argv) {
         spdlog::set_level(spdlog::level::off);
     }
 
-    return static_cast<int>(should_exit);
+    return should_exit;
 }
 
 EvgetCore::StorageType EvgetCore::Cli::get_storage_type(std::string& output) {
@@ -110,16 +111,19 @@ EvgetCore::StorageType EvgetCore::Cli::get_storage_type(std::string& output) {
     return StorageType::Json;
 }
 
-std::vector<std::unique_ptr<EvgetCore::Storage::Store>> EvgetCore::Cli::to_stores() {
+EvgetCore::Result<std::vector<std::unique_ptr<EvgetCore::Storage::Store>>> EvgetCore::Cli::to_stores() {
     auto stores = std::vector<std::unique_ptr<Storage::Store>>{};
     stores.reserve(output_.size());
 
     for (auto& output : this->output_) {
-        switch (this->get_storage_type(output)) {
+        switch (EvgetCore::Cli::get_storage_type(output)) {
             case EvgetCore::StorageType::SQLite: {
                 auto connect = std::make_unique<EvgetCore::SQLiteConnection>();
                 auto database = std::make_unique<EvgetCore::Storage::DatabaseStorage>(std::move(connect), output);
-                database->init();
+                auto result = database->init();
+                if (!result.has_value()) {
+                    return Err{result.error()};
+                }
 
                 stores.emplace_back(std::move(database));
 

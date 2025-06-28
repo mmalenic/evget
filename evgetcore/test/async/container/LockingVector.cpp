@@ -27,16 +27,16 @@
 
 #include <fmt/format.h>
 
-TEST(LockingVectorTest, PushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
+TEST(LockingVectorTest, PushBackAndIntoInner) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.push_back(1);
 
     auto inner = *vector.into_inner();
-    std::vector expected{1};
+    const std::vector expected{1};
     ASSERT_EQ(inner, std::vector{1});
 }
 
-TEST(LockingVectorTest, IntoInnerAt) {  // NOLINT(cert-err58-cpp)
+TEST(LockingVectorTest, IntoInnerAt) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.push_back(1);
     vector.push_back(2);
@@ -45,20 +45,20 @@ TEST(LockingVectorTest, IntoInnerAt) {  // NOLINT(cert-err58-cpp)
     ASSERT_FALSE(vector.into_inner_at(4).has_value());
 
     auto inner = vector.into_inner_at(2);
-    std::vector expected{1, 2, 3};
+    const std::vector expected{1, 2, 3};
     ASSERT_EQ(inner, expected);
 }
 
-TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {  // NOLINT(cert-err58-cpp)
+TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.unsafe_push_back(1);
 
     auto inner = *vector.unsafe_into_inner();
-    std::vector expected{1};
+    const std::vector expected{1};
     ASSERT_EQ(inner, std::vector{1});
 }
 
-TEST(LockingVectorTest, UnsafeIntoInnerAt) {  // NOLINT(cert-err58-cpp)
+TEST(LockingVectorTest, UnsafeIntoInnerAt) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.unsafe_push_back(1);
     vector.unsafe_push_back(2);
@@ -67,6 +67,6 @@ TEST(LockingVectorTest, UnsafeIntoInnerAt) {  // NOLINT(cert-err58-cpp)
     ASSERT_FALSE(vector.unsafe_into_inner_at(4).has_value());
 
     auto inner = vector.unsafe_into_inner_at(2);
-    std::vector expected{1, 2, 3};
+    const std::vector expected{1, 2, 3};
     ASSERT_EQ(inner, expected);
 }

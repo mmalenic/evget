@@ -25,7 +25,7 @@
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
 
-TEST(DataTest, Create) {  // NOLINT(cert-err58-cpp)
+TEST(DataTest, Create) {
     EvgetCore::Event::Data data{};
     data.addEntry({EvgetCore::Event::EntryType::Key, {"data"}, {"modifier"}});
 

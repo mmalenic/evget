@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/MouseMove.h"
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
@@ -96,7 +97,7 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Ev
     return *this;
 }
 
-EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) {
+EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) const {
     Entry entry{
         EntryType::MouseMove,
         {fromInterval(_interval),

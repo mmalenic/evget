@@ -36,18 +36,18 @@ class SQLiteQuery : public Query {
 public:
     SQLiteQuery(SQLiteConnection& connection, std::string query);
 
-    void bindInt(std::size_t position, int value) override;
-    void bindDouble(std::size_t position, double value) override;
-    void bindChars(std::size_t position, const char* value) override;
-    void bindBool(std::size_t position, bool value) override;
+    void bindInt(int position, int value) override;
+    void bindDouble(int position, double value) override;
+    void bindChars(int position, const char* value) override;
+    void bindBool(int position, bool value) override;
     Result<void> reset() override;
     Result<bool> next() override;
     Result<void> nextWhile() override;
     Result<void> exec() override;
-    Result<bool> asBool(std::size_t pos) override;
-    Result<double> asDouble(std::size_t pos) override;
-    Result<int> asInt(std::size_t pos) override;
-    Result<std::string> asString(std::size_t pos) override;
+    Result<bool> asBool(int pos) override;
+    Result<double> asDouble(int pos) override;
+    Result<int> asInt(int pos) override;
+    Result<std::string> asString(int pos) override;
 
 private:
     static Err asError(const std::exception& error);

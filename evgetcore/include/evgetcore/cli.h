@@ -75,7 +75,7 @@ public:
 
     static StorageType get_storage_type(std::string& output);
 
-    std::vector<std::unique_ptr<Storage::Store>> to_stores();
+    Result<std::vector<std::unique_ptr<Storage::Store>>> to_stores();
     [[nodiscard]] size_t store_n_events() const;
     [[nodiscard]] std::chrono::seconds store_after() const;
 

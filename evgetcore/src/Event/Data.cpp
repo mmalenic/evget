@@ -21,11 +21,12 @@
 // SOFTWARE.
 //
 
-#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/Data.h"
+
 #include <utility>
 #include <vector>
 
-#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Entry.h"
 
 const std::vector<EvgetCore::Event::Entry>& EvgetCore::Event::Data::entries() const {
     return _entries;

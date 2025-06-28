@@ -25,6 +25,6 @@
 
 namespace EvgetCore::Event {
 enum class Device : std::uint8_t { Mouse, Keyboard, Touchpad, Touchscreen, Unknown };
-} // namespace EvgetCore::Event
+}  // namespace EvgetCore::Event
 
 #endif

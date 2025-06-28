@@ -26,7 +26,7 @@
 
 // namespace EventTestUtils = TestUtils::EventTestUtils;
 //
-TEST(MouseMoveTest, Event) {  // NOLINT(cert-err58-cpp)
+TEST(MouseMoveTest, Event) {
     auto data = EvgetCore::Event::Data{};
     auto mouse_move = EvgetCore::Event::MouseMove{}
                           .interval(EvgetCore::Event::Interval{1})

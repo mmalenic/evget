@@ -24,6 +24,7 @@
 
 #include <array>
 
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
     return {
         .type = XIValuatorClass,
@@ -63,13 +64,13 @@ EvgetX11TestUtils::createXIButtonClassInfo(std::array<Atom, 1>& labels, std::arr
     };
 }
 
-XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo*, 3>& info, char name[]) {
+XIDeviceInfo EvgetX11TestUtils::createXIDeviceInfo(std::array<XIAnyClassInfo*, 3>& info, std::span<char> name) {
     return {
         .deviceid = 1,
-        .name = name,
+        .name = name.data(),
         .use = XIMasterPointer,
         .attachment = 0,
-        .enabled = true,
+        .enabled = True,
         .num_classes = static_cast<int>(info.size()),
         .classes = info.data()
     };
@@ -94,7 +95,7 @@ XIRawEvent EvgetX11TestUtils::createXIRawEvent(
     return {
         .type = GenericEvent,
         .serial = 1,
-        .send_event = false,
+        .send_event = False,
         .display = nullptr,
         .extension = 0,
         .evtype = evtype,
@@ -112,7 +113,7 @@ XEvent EvgetX11TestUtils::createXEvent(XIRawEvent& event) {
         .xcookie = {
             .type = GenericEvent,
             .serial = 0,
-            .send_event = false,
+            .send_event = False,
             .display = nullptr,
             .extension = 0,
             .evtype = event.evtype,
@@ -149,3 +150,80 @@ EvgetX11::QueryPointerResult EvgetX11TestUtils::create_pointer_result() {
         .screen_number = 0
     };
 }
+
+void EvgetX11TestUtils::set_x_wrapper_event_mocks(
+    EvgetX11TestUtils::XWrapperMock& xWrapperMock,
+    XIRawEvent& device_event,
+    XEvent& xEvent
+) {
+    EXPECT_CALL(xWrapperMock, eventData)
+        .WillOnce(
+            testing::Return(testing::ByMove<EvgetX11::XEventPointer>({&xEvent.xcookie, [](XGenericEventCookie*) {}}))
+        );
+    EXPECT_CALL(xWrapperMock, nextEvent)
+        .WillOnce(testing::Return(testing::ByMove(EvgetX11TestUtils::createXEvent(device_event))));
+    EXPECT_CALL(xWrapperMock, getDeviceButtonMapping)
+        .WillOnce(
+            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
+        );
+    EXPECT_CALL(xWrapperMock, atomName)
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
+                    {reinterpret_cast<char*>(XI_MOUSE), [](void* _) { return 0; }}
+                )
+            )
+        );
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {
+        return EvgetX11TestUtils::create_pointer_result();
+    });
+}
+
+void EvgetX11TestUtils::set_x_wrapper_key_mocks(
+    EvgetX11TestUtils::XWrapperMock& xWrapperMock,
+    XIRawEvent& device_event,
+    XEvent& xEvent
+) {
+    EXPECT_CALL(xWrapperMock, eventData)
+        .WillOnce(
+            testing::Return(testing::ByMove<EvgetX11::XEventPointer>({&xEvent.xcookie, [](XGenericEventCookie*) {}}))
+        );
+    EXPECT_CALL(xWrapperMock, nextEvent)
+        .WillOnce(testing::Return(testing::ByMove(EvgetX11TestUtils::createXEvent(device_event))));
+    EXPECT_CALL(xWrapperMock, getActiveWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    EXPECT_CALL(xWrapperMock, getFocusWindow)
+        .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    EXPECT_CALL(xWrapperMock, lookupCharacter)
+        .WillOnce([](const XIRawEvent&, const EvgetX11::QueryPointerResult&, KeySym& keySym) {
+            keySym = XK_A;
+            return "a";
+        });
+    EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {
+        return EvgetX11TestUtils::create_pointer_result();
+    });
+}
+
+void EvgetX11TestUtils::set_x_wrapper_mocks(EvgetX11TestUtils::XWrapperMock& xWrapperMock) {
+    EXPECT_CALL(xWrapperMock, listInputDevices)
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({nullptr, [](XDeviceInfo*) {
+                                                                                             }})
+            )
+        );
+    EXPECT_CALL(xWrapperMock, queryDevice)
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>>(
+                    {nullptr, [](XIDeviceInfo*) {}}
+                )
+            )
+        );
+}
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

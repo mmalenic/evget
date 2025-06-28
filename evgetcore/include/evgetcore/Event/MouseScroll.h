@@ -119,7 +119,7 @@ public:
     /**
      * Build mouse wheel event.
      */
-    Data& build(Data& data);
+    Data& build(Data& data) const;
 
 private:
     std::optional<Interval> _interval;

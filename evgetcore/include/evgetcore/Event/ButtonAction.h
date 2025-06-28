@@ -25,6 +25,6 @@
 
 namespace EvgetCore::Event {
 enum class ButtonAction : std::uint8_t { Press, Release, Repeat };
-} // namespace EvgetCore::Event
+}  // namespace EvgetCore::Event
 
 #endif

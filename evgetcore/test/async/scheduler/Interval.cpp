@@ -27,7 +27,7 @@
 
 #include "evgetcore/async/scheduler/Scheduler.h"
 
-TEST(IntervalTest, Tick) {  // NOLINT(cert-err58-cpp)
+TEST(IntervalTest, Tick) {
     EvgetCore::Scheduler scheduler{};
     EvgetCore::Interval interval{std::chrono::seconds{0}};
     std::optional<EvgetCore::Result<void>> result{};

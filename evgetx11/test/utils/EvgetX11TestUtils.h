@@ -30,9 +30,9 @@
 #include <optional>
 
 #include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace EvgetX11TestUtils {
 class XWrapperMock : public EvgetX11::XWrapper {
 public:
@@ -47,7 +47,7 @@ public:
         (override)
     );
     MOCK_METHOD(QueryPointerResult, query_pointer, (int device_id), (override));
-    MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int id, int mapSize), (override));
+    MOCK_METHOD(std::unique_ptr<unsigned char[]>, getDeviceButtonMapping, (int device_id, int mapSize), (override));
     MOCK_METHOD(
         (std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>),
         listInputDevices,
@@ -76,12 +76,18 @@ public:
 XIValuatorClassInfo createXIValuatorClassInfo();
 XIScrollClassInfo createXIScrollClassInfo();
 XIButtonClassInfo createXIButtonClassInfo(std::array<Atom, 1>& labels, std::array<unsigned char, 1>& mask);
-XIDeviceInfo createXIDeviceInfo(std::array<XIAnyClassInfo*, 3>& info, char name[]);
+XIDeviceInfo createXIDeviceInfo(std::array<XIAnyClassInfo*, 3>& info, std::span<char> name);
 XDeviceInfo createXDeviceInfo();
 XIRawEvent createXIRawEvent(int evtype, std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 XEvent createXEvent(XIRawEvent& event);
 XIValuatorState createXIValuatorState(std::array<unsigned char, 1>& valuatorMask, std::array<double, 1>& values);
 EvgetX11::QueryPointerResult create_pointer_result();
+
+void set_x_wrapper_event_mocks(EvgetX11TestUtils::XWrapperMock& xWrapperMock, XIRawEvent& device_event, XEvent& xEvent);
+void set_x_wrapper_key_mocks(EvgetX11TestUtils::XWrapperMock& xWrapperMock, XIRawEvent& device_event, XEvent& xEvent);
+void set_x_wrapper_mocks(EvgetX11TestUtils::XWrapperMock& xWrapperMock);
 }  // namespace EvgetX11TestUtils
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 
 #endif  // EVGET_UTILS_H

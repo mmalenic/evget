@@ -25,7 +25,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(SchedulerTest, SpawnVoidTaskAndJoin) {  // NOLINT(cert-err58-cpp)
+TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
@@ -41,7 +41,7 @@ TEST(SchedulerTest, SpawnVoidTaskAndJoin) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(*result, 1);
 }
 
-TEST(SchedulerTest, SpawnReturnTask) {  // NOLINT(cert-err58-cpp)
+TEST(SchedulerTest, SpawnReturnTask) {
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
@@ -51,7 +51,7 @@ TEST(SchedulerTest, SpawnReturnTask) {  // NOLINT(cert-err58-cpp)
     ASSERT_EQ(*result, 1);
 }
 
-TEST(SchedulerTest, SpawnVoidTaskException) {  // NOLINT(cert-err58-cpp)
+TEST(SchedulerTest, SpawnVoidTaskException) {
     EvgetCore::Scheduler scheduler{};
 
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
@@ -63,7 +63,7 @@ TEST(SchedulerTest, SpawnVoidTaskException) {  // NOLINT(cert-err58-cpp)
     scheduler.join();
 }
 
-TEST(SchedulerTest, SpawnReturnTaskException) {  // NOLINT(cert-err58-cpp)
+TEST(SchedulerTest, SpawnReturnTaskException) {
     EvgetCore::Scheduler scheduler{};
 
     scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
@@ -76,7 +76,7 @@ TEST(SchedulerTest, SpawnReturnTaskException) {  // NOLINT(cert-err58-cpp)
     scheduler.join();
 }
 
-TEST(SchedulerTest, Stop) {  // NOLINT(cert-err58-cpp)
+TEST(SchedulerTest, Stop) {
     EvgetCore::Scheduler scheduler{};
     bool stopped{};
 

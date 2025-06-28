@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "evgetcore/Event/MouseScroll.h"
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
@@ -106,7 +107,7 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::screen(int screen)
     return *this;
 }
 
-EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) {
+EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) const {
     Entry entry{
         EntryType::MouseScroll,
         {fromInterval(_interval),

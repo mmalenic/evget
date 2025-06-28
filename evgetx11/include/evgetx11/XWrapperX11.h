@@ -35,6 +35,7 @@
 
 #include "XWrapper.h"
 
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace EvgetX11 {
 class XWrapperX11 : public XWrapper {
 public:
@@ -42,7 +43,7 @@ public:
 
     std::string
     lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) override;
-    std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) override;
+    std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int device_id, int mapSize) override;
 
     std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) override;
     std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) override;
@@ -69,16 +70,17 @@ public:
 private:
     static constexpr int maskBits = 8;
 
-    std::optional<XWindowAttributes> getWindowAttributes(Window window);
+    std::optional<XWindowAttributes> getWindowAttributes(Window window) const;
 
-    std::optional<Atom> getAtom(const char* atomName);
+    std::optional<Atom> getAtom(const char* atomName) const;
 
     std::unique_ptr<unsigned char[], decltype(&XFree)>
-    getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size);
+    getProperty(Atom atom, Window window, std::uint64_t& nItems, Atom& type, int& size) const;
 
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
     static constexpr int utf8MaxBytes = 4;
+    static constexpr int windowPropertySize = 32;
 
     std::reference_wrapper<Display> display;
 
@@ -99,5 +101,7 @@ void EvgetX11::XWrapperX11::onMasks(
     }
 }
 }  // namespace EvgetX11
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPERX11_H

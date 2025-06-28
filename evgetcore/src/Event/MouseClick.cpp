@@ -22,13 +22,14 @@
 
 #include "evgetcore/Event/MouseClick.h"
 
+#include <string>
+#include <utility>
+
 #include "evgetcore/Event/ButtonAction.h"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
 #include "evgetcore/Event/ModifierValue.h"
-#include <string>
-#include <utility>
 
 EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::interval(Interval interval) {
     _interval = interval;
@@ -115,7 +116,7 @@ EvgetCore::Event::MouseClick& EvgetCore::Event::MouseClick::screen(int screen) {
     return *this;
 }
 
-EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) {
+EvgetCore::Event::Data& EvgetCore::Event::MouseClick::build(Data& data) const {
     Entry entry{
         EntryType::MouseClick,
         {

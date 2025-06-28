@@ -27,6 +27,9 @@
 
 #include <utility>
 
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/database/Migrate.h"
 #include "queries/insert_key.h"
 #include "queries/insert_key_modifier.h"
 #include "queries/insert_mouse_click.h"
@@ -36,9 +39,6 @@
 #include "queries/insert_mouse_scroll.h"
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
-#include "evgetcore/database/Migrate.h"
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Entry.h"
 
 namespace uuids = boost::uuids;
 
@@ -49,11 +49,10 @@ EvgetCore::Storage::DatabaseStorage::DatabaseStorage(
     : connection{std::move(connection)}, database{std::move(database)} {}
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data event) {
-    return connection.get()
-        ->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
-        .and_then([this] { return connection.get()->transaction(); })
+    return connection->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
+        .and_then([this] { return connection->transaction(); })
         .transform_error([](Error<::EvgetCore::ErrorType> error) {
-            return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+            return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
         })
         .and_then([this, &event] {
             std::optional<std::unique_ptr<::EvgetCore::Query>> insertKey{};
@@ -65,7 +64,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data e
             std::optional<std::unique_ptr<::EvgetCore::Query>> insertMouseScroll{};
             std::optional<std::unique_ptr<::EvgetCore::Query>> insertMouseScrollModifier{};
 
-            for (auto entry : event.entries()) {
+            for (const auto& entry : event.entries()) {
                 if (entry.data().empty()) {
                     continue;
                 }
@@ -103,7 +102,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data e
                         result = insertEvents(
                             entry,
                             insertMouseScroll,
-                            insertMouseClickModifier,
+                            insertMouseScrollModifier,
                             Database::detail::insert_mouse_scroll,
                             Database::detail::insert_mouse_scroll_modifier
                         );
@@ -115,17 +114,16 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data e
                 }
             }
 
-            return this->connection.get()->commit().transform_error([](Error<::EvgetCore::ErrorType> error) {
-                return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+            return this->connection->commit().transform_error([](Error<::EvgetCore::ErrorType> error) {
+                return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
             });
         });
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
-    auto result = connection.get()
-                      ->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
+    auto result = connection->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
                       .transform_error([](Error<::EvgetCore::ErrorType> error) {
-                          return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+                          return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
                       })
                       .and_then([this] {
                           auto migrations = std::vector{::EvgetCore::Migration{
@@ -137,7 +135,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
                           auto migrate = ::EvgetCore::Migrate{*this->connection, migrations};
 
                           return migrate.migrate().transform_error([](Error<::EvgetCore::ErrorType> error) {
-                              return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+                              return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
                           });
                       });
 
@@ -165,16 +163,16 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::insertEvents(
 void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(
     std::optional<std::unique_ptr<::EvgetCore::Query>>& query,
     std::string queryString
-) {
+) const {
     if (!query.has_value()) {
-        query = {connection.get()->buildQuery(std::move(queryString))};
+        query = {connection->buildQuery(std::move(queryString))};
     }
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues(
     std::unique_ptr<::EvgetCore::Query>& query,
-    std::vector<std::string> data,
-    std::string entryUuid
+    const std::vector<std::string>& data,
+    const std::string& entryUuid
 ) {
     query->bindChars(0, entryUuid.c_str());
     for (auto i = 0; i < data.size(); i++) {
@@ -184,14 +182,14 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues(
     return query->nextWhile().and_then(
                                  [&query] { return query->reset(); }
     ).transform_error([](Error<::EvgetCore::ErrorType> error) {
-        return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
+        return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
     });
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValuesModifier(
     std::unique_ptr<::EvgetCore::Query>& query,
-    std::vector<std::string> modifiers,
-    std::string entryUuid
+    const std::vector<std::string>& modifiers,
+    const std::string& entryUuid
 ) {
     for (const auto& modifier : modifiers) {
         auto modifierUuid = to_string(uuids::random_generator()());

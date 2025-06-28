@@ -23,8 +23,6 @@
 #ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
 #define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
 
-#include <X11/extensions/XInput2.h>
-
 #include <memory>
 
 #include "XInputEvent.h"
@@ -40,7 +38,7 @@ public:
     /**
      * Get the next event.
      */
-    XInputEvent getEvent();
+    XInputEvent getEvent() const;
 
 private:
     explicit XInputHandler(XWrapper& xWrapper);

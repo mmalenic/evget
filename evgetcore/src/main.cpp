@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     auto scheduler = EvgetCore::Scheduler{};
     auto manager = EvgetCore::Storage::DatabaseManager{scheduler, {}, cli.store_n_events(), cli.store_after()};
-    for (auto&& store : cli.to_stores()) {
+    for (auto&& store : cli.to_stores().value()) {
         manager.add_store(std::move(store));
     }
     EvgetCore::EventHandler handler{manager, transformer, eventLoop};

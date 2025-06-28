@@ -23,9 +23,6 @@
 #ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
-#include <filesystem>
-#include <utility>
-
 #include "XInputEvent.h"
 #include "XInputHandler.h"
 #include "XWrapper.h"
@@ -45,7 +42,8 @@ public:
     explicit EventLoopX11(XInputHandler xInputHandler);
 
     boost::asio::awaitable<void> eventLoop() override;
-    void notify(XInputEvent event) override;
+
+    EvgetCore::Result<void> notify(XInputEvent event) override;
     void registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
     void stop() override;
     asio::awaitable<void> start() override;

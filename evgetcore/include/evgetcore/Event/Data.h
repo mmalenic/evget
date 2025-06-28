@@ -63,7 +63,7 @@ public:
      * \brief Are there any entries in this data.
      * \return if there are any entries.
      */
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
 private:
     std::vector<Entry> _entries;

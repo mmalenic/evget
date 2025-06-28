@@ -110,7 +110,7 @@ public:
     /**
      * Build mouse move event.
      */
-    Data& build(Data& data);
+    Data& build(Data& data) const;
 
 private:
     std::optional<Interval> _interval;

@@ -24,7 +24,7 @@
 
 #include "evgetcore/Event/Key.h"
 
-TEST(KeyTest, Event) {  // NOLINT(cert-err58-cpp)
+TEST(KeyTest, Event) {
     auto data = EvgetCore::Event::Data{};
     auto key = EvgetCore::Event::Key{}
                    .interval(EvgetCore::Event::Interval{1})

@@ -35,22 +35,22 @@ public:
     /**
      * \brief Bind an integer to the position.
      */
-    virtual void bindInt(std::size_t position, int value) = 0;
+    virtual void bindInt(int position, int value) = 0;
 
     /**
      * \brief Bind a double to the position.
      */
-    virtual void bindDouble(std::size_t position, double value) = 0;
+    virtual void bindDouble(int position, double value) = 0;
 
     /**
      * \brief Bind a character array to the position.
      */
-    virtual void bindChars(std::size_t position, const char* value) = 0;
+    virtual void bindChars(int position, const char* value) = 0;
 
     /**
      * \brief Bind a boolean to the position.
      */
-    virtual void bindBool(std::size_t position, bool value) = 0;
+    virtual void bindBool(int position, bool value) = 0;
 
     /**
      * \brief Reset this query. This should not reset a transaction.
@@ -79,25 +79,25 @@ public:
      * \brief Get the field as an integer.
      * \return a result with the returned integer.
      */
-    virtual Result<int> asInt(std::size_t pos) = 0;
+    virtual Result<int> asInt(int pos) = 0;
 
     /**
      * \brief Get the field as a double.
      * \return a result with the returned double.
      */
-    virtual Result<double> asDouble(std::size_t pos) = 0;
+    virtual Result<double> asDouble(int pos) = 0;
 
     /**
      * \brief Get the field as a string.
      * \return a result with the returned string.
      */
-    virtual Result<std::string> asString(std::size_t pos) = 0;
+    virtual Result<std::string> asString(int pos) = 0;
 
     /**
      * \brief Get the field as a boolean.
      * \return a result with the returned boolean.
      */
-    virtual Result<bool> asBool(std::size_t pos) = 0;
+    virtual Result<bool> asBool(int pos) = 0;
 
     Query() = default;
 

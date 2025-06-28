@@ -51,7 +51,7 @@ public:
      */
     EventHandler(Storage::Store& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop);
 
-    void notify(T event) override;
+    Result<void> notify(T event) override;
     asio::awaitable<void> start() override;
 
 private:
@@ -73,8 +73,8 @@ EventHandler<T>::EventHandler(Storage::Store& storage, EventTransformer<T>& tran
 }
 
 template <typename T>
-void EventHandler<T>::notify(T event) {
-    storage.get().store(transformer.get().transformEvent(std::move(event)));
+Result<void> EventHandler<T>::notify(T event) {
+    return storage.get().store(transformer.get().transformEvent(std::move(event)));
 }
 }  // namespace EvgetCore
 

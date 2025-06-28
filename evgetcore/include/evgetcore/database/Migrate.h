@@ -53,10 +53,10 @@ public:
     Result<void> migrate();
 
 private:
-    Result<std::vector<AppliedMigration>> getAppliedMigrations() const;
-    Result<void> createMigrationsTable() const;
-    Result<void> applyMigration(const Migration& migration, const std::string& checksum);
-    Result<void> applyMigrationSql(const Migration& migration) const;
+    [[nodiscard]] Result<std::vector<AppliedMigration>> getAppliedMigrations() const;
+    [[nodiscard]] Result<void> createMigrationsTable() const;
+    [[nodiscard]] Result<void> applyMigration(const Migration& migration, const std::string& checksum);
+    [[nodiscard]] Result<void> applyMigrationSql(const Migration& migration) const;
 
     static std::string checksum(const Migration& migration);
 

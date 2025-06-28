@@ -25,11 +25,16 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+#include <math.h>
 #include <spdlog/spdlog.h>
 
 #include <array>
 #include <iostream>
 
+#include "evgetx11/DeleterWithDisplay.h"
+
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+// cppcoreguidelines-pro-type-vararg, hicpp-vararg)
 EvgetX11::XWrapperX11::XWrapperX11(Display& display) : display{display} {}
 
 std::string EvgetX11::XWrapperX11::lookupCharacter(
@@ -56,13 +61,13 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(
             .y_root = static_cast<int>(query_pointer.root_y),
             .state = static_cast<unsigned int>(query_pointer.modifier_state.effective),
             .keycode = static_cast<unsigned int>(event.detail),
-            .same_screen = true
+            .same_screen = 1
         };
 
-        int bytes;
+        int bytes = 0;
         std::array<char, utf8MaxBytes + 1> array{};
         if (xic) {
-            Status status;
+            Status status = 0;
             bytes = Xutf8LookupString(xic.get(), &keyEvent, array.data(), utf8MaxBytes, &keySym, &status);
             if (status != Success || status == XBufferOverflow || bytes == 0) {
                 spdlog::info("Xutf8LookupString did not return a value, falling back on XLookupString");
@@ -72,28 +77,28 @@ std::string EvgetX11::XWrapperX11::lookupCharacter(
             bytes = XLookupString(&keyEvent, array.data(), utf8MaxBytes, &keySym, nullptr);
         }
 
-        array[bytes] = '\0';
+        array.at(bytes) = '\0';
         return std::string{array.data()};
     }
     return {};
 }
 
 std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Display& display, XIM xim) {
-    if (xim) {
-        XIMStyles* styles_ptr;
-        auto values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, nullptr);
+    if (xim != nullptr) {
+        XIMStyles* styles_ptr = nullptr;
+        auto* values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, nullptr);
         auto xim_styles = std::unique_ptr<XIMStyles, decltype(&XFree)>{styles_ptr, XFree};
 
-        if (values || !xim_styles) {
+        if (values != nullptr || !xim_styles) {
             spdlog::warn(
                 "The input method does not support any styles, falling back to encoding key events in ISO Latin-1."
             );
             return {nullptr, XDestroyIC};
         }
 
-        for (int i = 0; i < xim_styles->count_styles; i++) {
+        for (std::uint16_t i = 0; i < xim_styles->count_styles; i++) {
             if (xim_styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing)) {
-                Window window = XDefaultRootWindow(&display);
+                const Window window = XDefaultRootWindow(&display);
                 return {
                     XCreateIC(
                         xim,
@@ -118,9 +123,9 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> EvgetX11::XWrapperX11::createIC(Dis
     return {nullptr, XDestroyIC};
 }
 
-std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(int id, int mapSize) {
+std::unique_ptr<unsigned char[]> EvgetX11::XWrapperX11::getDeviceButtonMapping(int device_id, int mapSize) {
     auto device = std::unique_ptr<XDevice, DeleterWithDisplay<XCloseDevice>>(
-        XOpenDevice(&display.get(), id),
+        XOpenDevice(&display.get(), device_id),
         DeleterWithDisplay<XCloseDevice>{display.get()}
     );
     if (device) {
@@ -143,8 +148,8 @@ std::unique_ptr<char[], decltype(&XFree)> EvgetX11::XWrapperX11::atomName(Atom a
     return {XGetAtomName(&display.get(), atom), XFree};
 }
 
-std::optional<Atom> EvgetX11::XWrapperX11::getAtom(const char* atomName) {
-    Atom atom = XInternAtom(&display.get(), atomName, true);
+std::optional<Atom> EvgetX11::XWrapperX11::getAtom(const char* atomName) const {
+    Atom atom = XInternAtom(&display.get(), atomName, True);
     if (atom == None) {
         spdlog::warn("failed to get {} atom");
         return std::nullopt;
@@ -160,7 +165,7 @@ XEvent EvgetX11::XWrapperX11::nextEvent() {
 
 EvgetX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
     auto deleter = std::function<void(XGenericEventCookie*)>{DeleterWithDisplay<XFreeEventData>{display.get()}};
-    if (XGetEventData(&display.get(), &event.xcookie) && (&event.xcookie)->type == GenericEvent) {
+    if (XGetEventData(&display.get(), &event.xcookie) != 0 && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(fmt::format("Event type {} captured.", (&event.xcookie)->type));
         return {&event.xcookie, std::move(deleter)};
     }
@@ -168,12 +173,12 @@ EvgetX11::XEventPointer EvgetX11::XWrapperX11::eventData(XEvent& event) {
 }
 
 EvgetX11::QueryPointerResult EvgetX11::XWrapperX11::query_pointer(int device_id) {
-    Window _root_return;
-    Window _window_return;
-    double _win_x;
-    double _win_y;
-    double root_x;
-    double root_y;
+    Window _root_return = 0;
+    Window _window_return = 0;
+    double _win_x = 0;
+    double _win_y = 0;
+    double root_x = 0;
+    double root_y = 0;
     XIButtonState button_state;
     XIModifierState modifier_state;
     XIGroupState group_state;
@@ -217,13 +222,13 @@ Status EvgetX11::XWrapperX11::queryVersion(int& major, int& minor) {
 
 void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XISelectEvents(&display.get(), XDefaultRootWindow(&display.get()), &mask, 1);
-    XSync(&display.get(), false);
+    XSync(&display.get(), False);
 }
 
 std::unique_ptr<unsigned char[], decltype(&XFree)>
-EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, unsigned long& nItems, Atom& type, int& size) {
-    unsigned char* data;
-    unsigned long _bytesAfter;
+EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, std::uint64_t& nItems, Atom& type, int& size) const {
+    unsigned char* data = nullptr;
+    std::uint64_t _bytesAfter = 0;
 
     if (window == 0) {
         return {nullptr, XFree};
@@ -264,9 +269,9 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
         return std::nullopt;
     }
 
-    Atom type;
-    int size;
-    unsigned long nItems;
+    Atom type = 0;
+    int size = 0;
+    std::uint64_t nItems = 0;
 
     auto name = getProperty(*wmNameAtom, window, nItems, type, size);
     if (nItems == 0) {
@@ -281,7 +286,10 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
         return std::string{};
     }
 
-    return std::string{reinterpret_cast<const char*>(name.get()), nItems};
+    // Reinterpret cast should be safe converting unsigned char to char.
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+    return std::string{reinterpret_cast<char*>(name.get()), nItems};
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
 std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
@@ -290,13 +298,16 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
         return std::nullopt;
     }
 
-    Atom type;
-    int size;
-    unsigned long nItems;
+    Atom type = 0;
+    int size = 0;
+    std::uint64_t nItems = 0;
 
     auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()), nItems, type, size);
-    if (nItems > 0 && size == 32 && window != nullptr) {
-        return *(reinterpret_cast<Window*>(window.get()));
+    if (nItems > 0 && size == windowPropertySize && window != nullptr) {
+        // Reinterpret cast is required by X11.
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+        return *reinterpret_cast<Window*>(window.get());
+        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     }
 
     spdlog::warn("failed to get active window");
@@ -304,8 +315,8 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
 }
 
 std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
-    Window window;
-    int _revert;
+    Window window = 0;
+    int _revert = 0;
 
     Status status = XGetInputFocus(&display.get(), &window, &_revert);
     if (status != Success) {
@@ -316,7 +327,7 @@ std::optional<Window> EvgetX11::XWrapperX11::getFocusWindow() {
     return window;
 }
 
-std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Window window) {
+std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Window window) const {
     XWindowAttributes attributes;
 
     if (window == 0) {
@@ -324,7 +335,7 @@ std::optional<XWindowAttributes> EvgetX11::XWrapperX11::getWindowAttributes(Wind
     }
 
     // XGetWindowAttributes returns non-zero on success.
-    if (!XGetWindowAttributes(&display.get(), window, &attributes)) {
+    if (XGetWindowAttributes(&display.get(), window, &attributes) == 0) {
         spdlog::warn("failed to get window attributes");
         return std::nullopt;
     }
@@ -339,10 +350,10 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowSize(
         return std::nullopt;
     }
 
-    unsigned int width = attributes->width;
-    unsigned int height = attributes->width;
+    const unsigned int width = attributes->width;
+    const unsigned int height = attributes->width;
 
-    return {{width, height}};
+    return {{.width = width, .height = height}};
 }
 
 std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosition(Window window) {
@@ -352,28 +363,30 @@ std::optional<EvgetX11::XWindowDimensions> EvgetX11::XWrapperX11::getWindowPosit
         return std::nullopt;
     }
 
-    Window parent, root;
-    unsigned int nChildren;
-    Window* childrenReturn;
+    Window parent = 0;
+    Window root = 0;
+    unsigned int nChildren = 0;
+    Window* childrenReturn = nullptr;
 
     XQueryTree(&display.get(), window, &root, &parent, &childrenReturn, &nChildren);
     auto children = std::unique_ptr<Window[], decltype(&XFree)>{childrenReturn, XFree};
 
     // It shouldn't be necessary to check if the parent is the root, but it shouldn't hurt.
     // See https://github.com/jordansissel/xdotool/pull/9 for more information.
-    int x, y;
+    int x_pos = 0;
+    int y_pos = 0;
     if (parent == attributes->root) {
-        x = attributes->x;
-        y = attributes->y;
+        x_pos = attributes->x;
+        y_pos = attributes->y;
     } else {
-        Window _unused;
-        XTranslateCoordinates(&display.get(), window, attributes->root, 0, 0, &x, &y, &_unused);
+        Window _unused = 0;
+        XTranslateCoordinates(&display.get(), window, attributes->root, 0, 0, &x_pos, &y_pos, &_unused);
     }
 
-    unsigned int width = x;
-    unsigned int height = y;
+    const unsigned int width = x_pos;
+    const unsigned int height = y_pos;
 
-    return {{width, height}};
+    return {{.width = width, .height = height}};
 }
 
 void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<int> events) {
@@ -384,10 +397,13 @@ void EvgetX11::XWrapperX11::setMask(unsigned char* mask, std::initializer_list<i
 
 std::string EvgetX11::XWrapperX11::keySymToString(KeySym keySym) {
     if (keySym != NoSymbol) {
-        auto name = XKeysymToString(keySym);
+        auto* name = XKeysymToString(keySym);
         if (name != nullptr) {
             return {name};
         }
     }
     return "";
 }
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+// cppcoreguidelines-pro-type-vararg, hicpp-vararg)

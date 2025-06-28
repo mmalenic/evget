@@ -33,18 +33,26 @@ namespace Test::Database {
  * \brief Creates a temporary directory and database file for database tests.
  */
 class DatabaseTest : public testing::Test {
-protected:
-    const std::string_view testTableName = "test_table";
-    const std::string_view testTableColumn = "test_column";
-    const std::string_view testTableValue = "test_value";
+public:
+    constexpr static std::string_view testTableName = "test_table";
+    constexpr static std::string_view testTableColumn = "test_column";
+    constexpr static std::string_view testTableValue = "test_value";
 
     DatabaseTest();
     ~DatabaseTest() override;
 
-    std::filesystem::path directory;
-    std::filesystem::path databaseFile;
+    DatabaseTest(const DatabaseTest&) = delete;
+    DatabaseTest(DatabaseTest&&) noexcept = delete;
+    DatabaseTest& operator=(const DatabaseTest&) = delete;
+    DatabaseTest& operator=(DatabaseTest&&) noexcept = delete;
+
+    [[nodiscard]] std::filesystem::path directory() const;
+    [[nodiscard]] std::filesystem::path database_file() const;
 
 private:
+    std::filesystem::path directory_;
+    std::filesystem::path databaseFile;
+
     static std::string testDatabaseName();
 };
 

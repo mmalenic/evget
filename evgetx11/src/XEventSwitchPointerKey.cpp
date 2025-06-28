@@ -25,14 +25,14 @@
 EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
-    int id,
+    int device_id,
     std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info,
     EvgetX11::XEventSwitch& xEventSwitch
 ) {
-    xEventSwitch.refreshDevices(id, pointer_id, device, name, info);
+    xEventSwitch.refreshDevices(device_id, pointer_id, device, name, info);
 
     if (pointer_id.has_value()) {
         this->pointer_id = *pointer_id;
@@ -56,17 +56,17 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     }
 
     for (auto scrollInfo : scrollInfos) {
-        scrollMap[id][scrollInfo->number] = *scrollInfo;
+        scrollMap[device_id][scrollInfo->number] = *scrollInfo;
     }
     for (auto valuatorInfo : valuatorInfos) {
         auto valuatorName = xWrapper.get().atomName(valuatorInfo->label);
         if (valuatorName) {
             if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0 |
                 strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_X) == 0) {
-                valuatorX[id] = valuatorInfo->number;
+                valuatorX[device_id] = valuatorInfo->number;
             } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0 |
                        strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
-                valuatorY[id] = valuatorInfo->number;
+                valuatorY[device_id] = valuatorInfo->number;
             }
         }
     }

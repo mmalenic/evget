@@ -129,7 +129,7 @@ public:
     /**
      * \brief Get the entry with fields.
      */
-    EntryWithFields getEntryWithFields() const;
+    [[nodiscard]] EntryWithFields getEntryWithFields() const;
 
 private:
     EntryType _type;

@@ -22,22 +22,22 @@
 
 #include "evgetx11/XEventSwitch.h"
 
-EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int id) const {
-    return devices.at(id);
+EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int device_id) const {
+    return devices.at(device_id);
 }
 
-bool EvgetX11::XEventSwitch::hasDevice(int id) {
-    return devices.contains(id);
+bool EvgetX11::XEventSwitch::hasDevice(int device_id) const {
+    return devices.contains(device_id);
 }
 
-void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int id) {
-    auto map = xWrapper.get().getDeviceButtonMapping(id, buttonInfo.num_buttons);
+void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int device_id) {
+    auto map = xWrapper.get().getDeviceButtonMapping(device_id, buttonInfo.num_buttons);
     if (map) {
         for (int i = 0; i < buttonInfo.num_buttons; i++) {
-            if (buttonInfo.labels[i]) {
+            if (buttonInfo.labels[i] != 0U) {
                 auto name = xWrapper.get().atomName(buttonInfo.labels[i]);
                 if (name) {
-                    buttonMap[id][map[i]] = name.get();
+                    buttonMap[device_id][map[i]] = name.get();
                 }
             }
         }
@@ -45,7 +45,7 @@ void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, i
 }
 
 void EvgetX11::XEventSwitch::refreshDevices(
-    int id,
+    int device_id,
     std::optional<int> pointer_id,
     EvgetCore::Event::Device device,
     const std::string& name,
@@ -54,26 +54,29 @@ void EvgetX11::XEventSwitch::refreshDevices(
     if (pointer_id.has_value()) {
         this->pointer_id = *pointer_id;
     }
-    devices.emplace(id, device);
-    idToName.emplace(id, name);
+    devices.emplace(device_id, device);
+    idToName.emplace(device_id, name);
 
     const XIButtonClassInfo* buttonInfo = nullptr;
     for (int i = 0; i < info.num_classes; i++) {
         const auto* classInfo = info.classes[i];
 
         if (classInfo != nullptr && classInfo->type == XIButtonClass) {
+            // Reinterpret cast is required by X11.
+            // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
             buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
+            // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
             break;
         }
     }
 
-    if (buttonInfo && buttonInfo->num_buttons > 0) {
+    if (buttonInfo != nullptr && buttonInfo->num_buttons > 0) {
         setButtonMap(*buttonInfo, info.deviceid);
     }
 }
 
 EvgetX11::XEventSwitch::XEventSwitch(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
-const std::string& EvgetX11::XEventSwitch::getButtonName(int id, int button) const {
-    return buttonMap.at(id).at(button);
+const std::string& EvgetX11::XEventSwitch::getButtonName(int device_id, int button) const {
+    return buttonMap.at(device_id).at(button);
 }

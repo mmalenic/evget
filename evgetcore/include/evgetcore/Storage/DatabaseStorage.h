@@ -59,13 +59,16 @@ private:
         std::string insertQuery,
         std::string insertModifierQuery
     );
-    void setOptionalStatement(std::optional<std::unique_ptr<::EvgetCore::Query>>& query, std::string queryString);
-    Result<void>
-    bindValues(std::unique_ptr<::EvgetCore::Query>& query, std::vector<std::string> data, std::string entryUuid);
-    Result<void> bindValuesModifier(
+    void setOptionalStatement(std::optional<std::unique_ptr<::EvgetCore::Query>>& query, std::string queryString) const;
+    static Result<void> bindValues(
         std::unique_ptr<::EvgetCore::Query>& query,
-        std::vector<std::string> modifiers,
-        std::string entryUuid
+        const std::vector<std::string>& data,
+        const std::string& entryUuid
+    );
+    static Result<void> bindValuesModifier(
+        std::unique_ptr<::EvgetCore::Query>& query,
+        const std::vector<std::string>& modifiers,
+        const std::string& entryUuid
     );
 };
 }  // namespace EvgetCore::Storage

@@ -32,8 +32,7 @@
 #include <optional>
 #include <string>
 
-#include "DeleterWithDisplay.h"
-
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace EvgetX11 {
 
 struct XWindowDimensions {
@@ -59,7 +58,7 @@ class XWrapper {
 public:
     virtual std::string
     lookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& keySym) = 0;
-    virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int id, int mapSize) = 0;
+    virtual std::unique_ptr<unsigned char[]> getDeviceButtonMapping(int device_id, int mapSize) = 0;
 
     virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> listInputDevices(int& ndevices) = 0;
     virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> queryDevice(int& ndevices) = 0;
@@ -93,5 +92,7 @@ private:
     static constexpr int maskBits = 8;
 };
 }  // namespace EvgetX11
+
+// NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 
 #endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_XWRAPPER_H

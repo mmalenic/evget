@@ -120,7 +120,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::Modifie
     return *this;
 }
 
-EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) {
+EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) const {
     Entry entry{
         EntryType::Key,
         {

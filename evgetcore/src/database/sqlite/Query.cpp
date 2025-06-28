@@ -24,25 +24,26 @@
 
 #include <spdlog/spdlog.h>
 
-#include "evgetcore/database/sqlite/Connection.h"
 #include <utility>
+
+#include "evgetcore/database/sqlite/Connection.h"
 
 EvgetCore::SQLiteQuery::SQLiteQuery(SQLiteConnection& connection, std::string query)
     : _connection{connection}, query{std::move(query)} {}
 
-void EvgetCore::SQLiteQuery::bindInt(std::size_t position, int value) {
+void EvgetCore::SQLiteQuery::bindInt(int position, int value) {
     binds[position] = value;
 }
 
-void EvgetCore::SQLiteQuery::bindBool(std::size_t position, bool value) {
+void EvgetCore::SQLiteQuery::bindBool(int position, bool value) {
     binds[position] = value;
 }
 
-void EvgetCore::SQLiteQuery::bindChars(std::size_t position, const char* value) {
+void EvgetCore::SQLiteQuery::bindChars(int position, const char* value) {
     binds[position] = value;
 }
 
-void EvgetCore::SQLiteQuery::bindDouble(std::size_t position, double value) {
+void EvgetCore::SQLiteQuery::bindDouble(int position, double value) {
     binds[position] = value;
 }
 
@@ -55,7 +56,7 @@ EvgetCore::Result<void> EvgetCore::SQLiteQuery::reset() {
             statement->clearBindings();
         }
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error resetting statements: {}", what);
         return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
@@ -76,7 +77,7 @@ EvgetCore::Result<bool> EvgetCore::SQLiteQuery::next() {
 
         return this->statement->executeStep();
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error building query: {}", what);
         return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
@@ -100,13 +101,13 @@ EvgetCore::Result<void> EvgetCore::SQLiteQuery::exec() {
         _connection.get().database()->get().exec(query);
         return {};
     } catch (std::exception& e) {
-        const auto *what = e.what();
+        const auto* what = e.what();
         spdlog::error("error building query: {}", what);
         return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
     }
 }
 
-EvgetCore::Result<bool> EvgetCore::SQLiteQuery::asBool(std::size_t pos) {
+EvgetCore::Result<bool> EvgetCore::SQLiteQuery::asBool(int pos) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -118,7 +119,7 @@ EvgetCore::Result<bool> EvgetCore::SQLiteQuery::asBool(std::size_t pos) {
     }
 }
 
-EvgetCore::Result<double> EvgetCore::SQLiteQuery::asDouble(std::size_t pos) {
+EvgetCore::Result<double> EvgetCore::SQLiteQuery::asDouble(int pos) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -130,7 +131,7 @@ EvgetCore::Result<double> EvgetCore::SQLiteQuery::asDouble(std::size_t pos) {
     }
 }
 
-EvgetCore::Result<int> EvgetCore::SQLiteQuery::asInt(std::size_t pos) {
+EvgetCore::Result<int> EvgetCore::SQLiteQuery::asInt(int pos) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -142,7 +143,7 @@ EvgetCore::Result<int> EvgetCore::SQLiteQuery::asInt(std::size_t pos) {
     }
 }
 
-EvgetCore::Result<std::string> EvgetCore::SQLiteQuery::asString(std::size_t pos) {
+EvgetCore::Result<std::string> EvgetCore::SQLiteQuery::asString(int pos) {
     if (!this->statement.has_value()) {
         return statementError();
     }
@@ -155,13 +156,13 @@ EvgetCore::Result<std::string> EvgetCore::SQLiteQuery::asString(std::size_t pos)
 }
 
 EvgetCore::Err EvgetCore::SQLiteQuery::statementError() {
-    const auto *what = "statement has not been initialized";
+    const auto* what = "statement has not been initialized";
     spdlog::error(what);
     return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
 }
 
 EvgetCore::Err EvgetCore::SQLiteQuery::asError(const std::exception& error) {
-    const auto *what = error.what();
+    const auto* what = error.what();
     spdlog::error("error getting column value: {}", what);
     return Err{{.errorType = ErrorType::DatabaseError, .message = what}};
 }

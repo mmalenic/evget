@@ -24,8 +24,6 @@
 #ifndef EVGET_STORAGE_H
 #define EVGET_STORAGE_H
 
-#include <boost/asio.hpp>
-
 #include "evgetcore/Error.h"
 #include "evgetcore/Event/Data.h"
 
