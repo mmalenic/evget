@@ -21,11 +21,19 @@
 // SOFTWARE.
 
 #include "evgetcore/Storage/DatabaseStorage.h"
+#include "evgetcore/Error.h"
+#include "evgetcore/database/Connection.h"
+#include "evgetcore/database/Query.h"
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <expected>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
@@ -51,8 +59,8 @@ EvgetCore::Storage::DatabaseStorage::DatabaseStorage(
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data event) {
     return connection->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
         .and_then([this] { return connection->transaction(); })
-        .transform_error([](Error<::EvgetCore::ErrorType> error) {
-            return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
+        .transform_error([](const Error<::EvgetCore::ErrorType>& error) {
+            return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
         })
         .and_then([this, &event] {
             std::optional<std::unique_ptr<::EvgetCore::Query>> insertKey{};
@@ -114,16 +122,16 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::store(Event::Data e
                 }
             }
 
-            return this->connection->commit().transform_error([](Error<::EvgetCore::ErrorType> error) {
-                return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
+            return this->connection->commit().transform_error([](const Error<::EvgetCore::ErrorType>& error) {
+                return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
             });
         });
 }
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
     auto result = connection->connect(database, ::EvgetCore::ConnectOptions::READ_WRITE_CREATE)
-                      .transform_error([](Error<::EvgetCore::ErrorType> error) {
-                          return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
+                      .transform_error([](const Error<::EvgetCore::ErrorType>& error) {
+                          return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
                       })
                       .and_then([this] {
                           auto migrations = std::vector{::EvgetCore::Migration{
@@ -134,8 +142,8 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
                           }};
                           auto migrate = ::EvgetCore::Migrate{*this->connection, migrations};
 
-                          return migrate.migrate().transform_error([](Error<::EvgetCore::ErrorType> error) {
-                              return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
+                          return migrate.migrate().transform_error([](const Error<::EvgetCore::ErrorType>& error) {
+                              return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
                           });
                       });
 
@@ -144,7 +152,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::init() {
 
 EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::insertEvents(
     const Event::Entry& entry,
-    std::optional<std::unique_ptr<::EvgetCore::Query> /*unused*/>& insertStatement,
+    std::optional<std::unique_ptr<::EvgetCore::Query>>& insertStatement,
     std::optional<std::unique_ptr<::EvgetCore::Query>>& insertModifierStatement,
     std::string insertQuery,
     std::string insertModifierQuery
@@ -154,10 +162,13 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::insertEvents(
 
     auto entryUuid = to_string(uuids::random_generator()());
 
+    // Optional is set in previous lines.
+    // NOLINTBEGIN(bugprone-unchecked-optional-access)
     return bindValues(*insertStatement, entry.data(), entryUuid)
         .and_then([this, &insertModifierStatement, &entry, &entryUuid] {
             return bindValuesModifier(*insertModifierStatement, entry.modifiers(), entryUuid);
         });
+    // NOLINTEND(bugprone-unchecked-optional-access)
 }
 
 void EvgetCore::Storage::DatabaseStorage::setOptionalStatement(
@@ -181,8 +192,8 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues(
 
     return query->nextWhile().and_then(
                                  [&query] { return query->reset(); }
-    ).transform_error([](Error<::EvgetCore::ErrorType> error) {
-        return Error{.errorType = ErrorType::DatabaseError, .message = std::move(error.message)};
+    ).transform_error([](const Error<::EvgetCore::ErrorType>& error) {
+        return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
     });
 }
 

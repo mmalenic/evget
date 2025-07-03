@@ -26,9 +26,12 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
-#include <filesystem>
-#include <ranges>
+#include <array>
+#include <expected>
+#include <functional>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "cryptopp/hex.h"

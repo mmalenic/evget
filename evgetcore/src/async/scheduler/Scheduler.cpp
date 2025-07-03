@@ -21,6 +21,12 @@
 // SOFTWARE.
 //
 
+#include <cstddef>
+#include <exception>
+
+#include <boost/asio.hpp>
+#include <spdlog/spdlog.h>
+
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 EvgetCore::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {}
@@ -51,4 +57,8 @@ void EvgetCore::Scheduler::log_exception(const std::exception_ptr& error) {
         spdlog::error("Exception in coroutine: {}", e.what());
         stop();
     }
+}
+
+void EvgetCore::Scheduler::spawn(asio::awaitable<void> &&task) {
+    spawnImpl(std::move(task), [this] { this->stop(); }, pool);
 }

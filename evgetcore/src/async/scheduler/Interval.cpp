@@ -21,7 +21,12 @@
 // SOFTWARE.
 //
 
+#include <chrono>
+
+#include <boost/asio.hpp>
+
 #include "evgetcore/async/scheduler/Interval.h"
+#include "evgetcore/Error.h"
 
 EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {}
 
@@ -46,7 +51,7 @@ EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() 
 }
 
 void EvgetCore::Interval::reset() {
-    timer->expires_after(this->period());
+    timer.value().expires_after(this->period());
 }
 
 std::chrono::seconds EvgetCore::Interval::period() const {

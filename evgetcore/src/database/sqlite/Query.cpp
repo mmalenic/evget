@@ -25,6 +25,11 @@
 #include <spdlog/spdlog.h>
 
 #include <utility>
+#include <algorithm>
+#include <expected>
+#include <fstream>
+#include <functional>
+#include <string>
 
 #include "evgetcore/database/sqlite/Connection.h"
 

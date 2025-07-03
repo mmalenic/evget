@@ -54,7 +54,7 @@ public:
      * \brief Spawn a task. Stops the thread pool on an exception.
      * \param task task awaitable.
      */
-    void spawn(Invocable<asio::awaitable<void>> auto&& task);
+    void spawn(asio::awaitable<void>&& task);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception.
@@ -62,14 +62,14 @@ public:
      * \param task task awaitable.
      */
     template <typename T>
-    void spawn(Invocable<asio::awaitable<T>> auto&& task);
+    void spawn(asio::awaitable<T>&& task);
 
     /**
      * \brief Spawn a task.
      * \param task task awaitable.
      * \param handler handler on completion.
      */
-    void spawn(Invocable<asio::awaitable<void>> auto&& task, Invocable<void> auto&& handler);
+    void spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handler);
 
     /**
      * \brief Spawn a task.
@@ -78,7 +78,7 @@ public:
      * \param handler handler on completion.
      */
     template <typename T>
-    void spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, T> auto&& handler);
+    void spawn(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
 
     /**
      * \brief Join the scheduler, awaiting for all tasks to complete.
@@ -94,7 +94,7 @@ public:
      * \brief Whether the scheduler has been stopped.
      * \return stopped value.
      */
-    asio::awaitable<bool> isStopped() const;
+    [[nodiscard]] asio::awaitable<bool> isStopped() const;
 
     /**
      * \brief Get the executor for the thread pool.
@@ -107,10 +107,10 @@ private:
     std::atomic<bool> stopped{false};
 
     void
-    spawnImpl(Invocable<asio::awaitable<void>> auto&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
+    spawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
     template <typename T>
     void
-    spawnImpl(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
+    spawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
 
     static constexpr std::size_t default_thread_pool_size();
     void log_exception(const std::exception_ptr& error);
@@ -123,13 +123,13 @@ constexpr std::size_t Scheduler::default_thread_pool_size() {
 
 template <typename T>
 void Scheduler::spawnImpl(
-    Invocable<asio::awaitable<T>> auto&& task,
+    asio::awaitable<T>&& task,
     Invocable<void, T> auto&& handler,
     asio::thread_pool& pool
 ) {
     asio::co_spawn(
         pool,
-        [this, task]() { return task(); },
+        std::move(task),
         [this, handler](const std::exception_ptr& err, T value) {
             log_exception(err);
             handler(value);
@@ -138,23 +138,23 @@ void Scheduler::spawnImpl(
 }
 
 template <typename T>
-void Scheduler::spawn(Invocable<asio::awaitable<T>> auto&& task) {
-    spawnImpl<T>(std::forward<decltype(task)>(task), [this](auto) { this->stop(); }, pool);
+void Scheduler::spawn(asio::awaitable<T>&& task) {
+    spawnImpl<T>(std::move(task), [this](auto) { this->stop(); }, pool);
 }
 
 template <typename T>
-void Scheduler::spawn(Invocable<asio::awaitable<T>> auto&& task, Invocable<void, T> auto&& handler) {
-    spawnImpl<T>(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), pool);
+void Scheduler::spawn(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler) {
+    spawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), pool);
 }
 
 void Scheduler::spawnImpl(
-    Invocable<asio::awaitable<void>> auto&& task,
+    asio::awaitable<void>&& task,
     Invocable<void> auto&& handler,
     asio::thread_pool& pool
 ) {
     asio::co_spawn(
         pool,
-        [task]() { return task(); },
+        std::move(task),
         [this, handler](const std::exception_ptr& err) {
             log_exception(err);
             handler();
@@ -162,12 +162,8 @@ void Scheduler::spawnImpl(
     );
 }
 
-void Scheduler::spawn(Invocable<asio::awaitable<void>> auto&& task) {
-    spawnImpl(std::forward<decltype(task)>(task), [this] { this->stop(); }, pool);
-}
-
-void Scheduler::spawn(Invocable<asio::awaitable<void>> auto&& task, Invocable<void> auto&& handler) {
-    spawnImpl(std::forward<decltype(task)>(task), std::forward<decltype(handler)>(handler), pool);
+void Scheduler::spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handler) {
+    spawnImpl(std::move(task), std::forward<decltype(handler)>(handler), pool);
 }
 
 }  // namespace EvgetCore

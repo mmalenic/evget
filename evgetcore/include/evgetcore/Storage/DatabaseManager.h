@@ -27,6 +27,7 @@
 #include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
 
+#include <cstddef>
 #include <vector>
 
 #include "Store.h"
@@ -46,9 +47,9 @@ public:
      * \param storeAfter store events after this time event if nEvents is not reached.
      */
     explicit DatabaseManager(
-        EvgetCore::Scheduler& scheduler,
-        std::vector<std::unique_ptr<Store>> storeIn,
-        size_t nEvents,
+        std::shared_ptr<EvgetCore::Scheduler> scheduler,
+        std::vector<std::shared_ptr<Store>> storeIn,
+        std::size_t nEvents,
         std::chrono::seconds storeAfter
     );
 
@@ -57,17 +58,18 @@ public:
     void add_store(std::unique_ptr<Store> store);
 
 private:
-    void storeEventsTask(const std::optional<std::vector<Event::Data>>& events) const;
-    void storeAfterTask();
+    static void spawn_store_data(std::optional<std::vector<Event::Data>> inner, std::vector<std::shared_ptr<Store>> store_in, Scheduler& scheduler);
+    static asio::awaitable<Result<void>> store_coroutine(Event::Data data, std::vector<std::shared_ptr<Store>> store_in);
+    static asio::awaitable<Result<void>> store_after_coroutine(std::shared_ptr<Scheduler> scheduler, std::shared_ptr<LockingVector<Event::Data>> data, std::vector<std::shared_ptr<Store>> store_in, std::chrono::seconds storeAfter);
+    static void resultHandler(Result<void> result, Scheduler& scheduler);
 
-    std::reference_wrapper<EvgetCore::Scheduler> scheduler;
-    std::vector<std::unique_ptr<Store>> storeIn;
+    void spawn_store_after() const;
+
+    std::shared_ptr<EvgetCore::Scheduler> scheduler;
+    std::vector<std::shared_ptr<Store>> storeIn;
     size_t nEvents;
-    EvgetCore::Interval storeAfterInterval;
-    EvgetCore::LockingVector<Event::Data> data;
-
-    [[nodiscard]] Result<void> storeWith(const Event::Data& event) const;
-    void resultHandler(Result<void> result) const;
+    std::chrono::seconds storeAfter;
+    std::shared_ptr<EvgetCore::LockingVector<Event::Data>> data;
 };
 
 }  // namespace EvgetCore::Storage

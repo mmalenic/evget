@@ -54,19 +54,15 @@ int main(int argc, char* argv[]) {
 
     EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
 
-    auto scheduler = EvgetCore::Scheduler{};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
     auto manager = EvgetCore::Storage::DatabaseManager{scheduler, {}, cli.store_n_events(), cli.store_after()};
     for (auto&& store : cli.to_stores().value()) {
         manager.add_store(std::move(store));
     }
     EvgetCore::EventHandler handler{manager, transformer, eventLoop};
 
-    scheduler.spawn([&handler]() -> boost::asio::awaitable<void> {
-        co_await handler.start();
-        co_return;
-    });
-
-    scheduler.join();
+    scheduler->spawn(handler.start());
+    scheduler->join();
 
     return 0;
 }

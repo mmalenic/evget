@@ -25,6 +25,9 @@
 #include <SQLiteCpp/Database.h>
 #include <spdlog/spdlog.h>
 
+#include <chrono>
+#include <expected>
+#include <functional>
 #include <memory>
 #include <string>
 

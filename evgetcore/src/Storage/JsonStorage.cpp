@@ -21,9 +21,19 @@
 // SOFTWARE.
 
 #include "evgetcore/Storage/JsonStorage.h"
+#include "evgetcore/Error.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Schema.h"
 
-#include <evgetcore/Event/Schema.h>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <variant>
+#include <vector>
+
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
