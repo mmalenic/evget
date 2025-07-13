@@ -25,13 +25,15 @@
 #include <SQLiteCpp/Database.h>
 #include <spdlog/spdlog.h>
 
-#include <chrono>
-#include <expected>
+#include <exception>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "evgetcore/Error.h"
 #include "evgetcore/database/Connection.h"
+#include "evgetcore/database/Query.h"
 #include "evgetcore/database/sqlite/Query.h"
 
 EvgetCore::Result<void> EvgetCore::SQLiteConnection::connect(std::string database, ConnectOptions options) {

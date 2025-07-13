@@ -29,7 +29,8 @@
 #include "evgetx11/XEventSwitchPointerKey.h"
 #include "utils/EvgetX11TestUtils.h"
 
-// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
+// NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+// cppcoreguidelines-pro-type-reinterpret-cast)
 TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
@@ -68,11 +69,9 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
         },
     };
 
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     auto* anyValuatorInfo = reinterpret_cast<XIAnyClassInfo*>(&valuatorInfo);
     auto* anyScrollInfo = reinterpret_cast<XIAnyClassInfo*>(&scrollInfo);
     auto* anyButtonInfo = reinterpret_cast<XIAnyClassInfo*>(&buttonInfo);
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array classes = {anyValuatorInfo, anyScrollInfo, anyButtonInfo};
 
     std::string name = "name";
@@ -107,9 +106,7 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-funct
     std::array<unsigned char, 1> mask = {1};
     auto buttonClassInfo = EvgetX11TestUtils::createXIButtonClassInfo(labels, mask);
 
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&buttonClassInfo)};
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     std::string name = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -188,9 +185,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
     valuatorClassInfo.number = 0;
 
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo)};
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     std::string name = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 
@@ -248,12 +243,10 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(readability-function-co
     auto valuatorClassInfo = EvgetX11TestUtils::createXIValuatorClassInfo();
     auto scrollClassInfo = EvgetX11TestUtils::createXIScrollClassInfo();
 
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     std::array<XIAnyClassInfo*, 3> anyClassInfo = {
         reinterpret_cast<XIAnyClassInfo*>(&valuatorClassInfo),
         reinterpret_cast<XIAnyClassInfo*>(&scrollClassInfo)
     };
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     std::string name = "name";
     auto xiDeviceInfo = EvgetX11TestUtils::createXIDeviceInfo(anyClassInfo, name);
 

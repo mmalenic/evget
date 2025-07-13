@@ -24,13 +24,14 @@
 
 #include <spdlog/spdlog.h>
 
-#include <utility>
-#include <algorithm>
+#include <exception>
 #include <expected>
-#include <fstream>
 #include <functional>
 #include <string>
+#include <utility>
+#include <variant>
 
+#include "evgetcore/Error.h"
 #include "evgetcore/database/sqlite/Connection.h"
 
 EvgetCore::SQLiteQuery::SQLiteQuery(SQLiteConnection& connection, std::string query)
@@ -71,8 +72,12 @@ EvgetCore::Result<void> EvgetCore::SQLiteQuery::reset() {
 
 EvgetCore::Result<bool> EvgetCore::SQLiteQuery::next() {
     try {
+        auto database = _connection.get().database();
+        if (!database.has_value()) {
+            return Err{{.errorType = ErrorType::DatabaseError, .message = "database not set"}};
+        }
         if (!statement.has_value()) {
-            statement = {_connection.get().database()->get(), query};
+            statement = {database->get(), query};
         }
 
         for (auto [position, value] : this->binds) {
@@ -103,7 +108,12 @@ EvgetCore::Result<void> EvgetCore::SQLiteQuery::nextWhile() {
 
 EvgetCore::Result<void> EvgetCore::SQLiteQuery::exec() {
     try {
-        _connection.get().database()->get().exec(query);
+        auto database = _connection.get().database();
+        if (!database.has_value()) {
+            return Err{{.errorType = ErrorType::DatabaseError, .message = "database not set"}};
+        }
+
+        database->get().exec(query);
         return {};
     } catch (std::exception& e) {
         const auto* what = e.what();

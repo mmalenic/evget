@@ -28,6 +28,7 @@
 
 #include <chrono>
 
+#include "Scheduler.h"
 #include "evgetcore/Error.h"
 
 namespace EvgetCore {
@@ -50,7 +51,7 @@ public:
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
-    asio::awaitable<Result<void>> tick();
+    asio::awaitable<Result<void>> tick(std::shared_ptr<Scheduler> scheduler);
 
     /**
      * \brief Reset the interval to expire one period after the current time. Not thread-safe.

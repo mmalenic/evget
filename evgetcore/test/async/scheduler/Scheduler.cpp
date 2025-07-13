@@ -25,6 +25,8 @@
 
 #include <gtest/gtest.h>
 
+#include <utility>
+
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
@@ -33,7 +35,7 @@ TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
         [&]() -> boost::asio::awaitable<void> {
             result = 1;
             co_return;
-        },
+        }(),
         [&] {}
     );
     scheduler.join();
@@ -45,7 +47,7 @@ TEST(SchedulerTest, SpawnReturnTask) {
     EvgetCore::Scheduler scheduler{};
     std::optional<int> result{};
 
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { co_return 1; }, [&](auto value) { result = value; });
+    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { co_return 1; }(), [&](auto value) { result = value; });
     scheduler.join();
 
     ASSERT_EQ(*result, 1);
@@ -57,8 +59,8 @@ TEST(SchedulerTest, SpawnVoidTaskException) {
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         while (!co_await scheduler.isStopped()) {
         }
-    });
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> { throw std::exception{}; });
+    }());
+    scheduler.spawn([&]() -> boost::asio::awaitable<void> { throw std::exception{}; }());
 
     scheduler.join();
 }
@@ -70,8 +72,8 @@ TEST(SchedulerTest, SpawnReturnTaskException) {
         while (!co_await scheduler.isStopped()) {
         }
         co_return 1;
-    });
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { throw std::exception{}; });
+    }());
+    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { throw std::exception{}; }());
 
     scheduler.join();
 }
@@ -83,11 +85,11 @@ TEST(SchedulerTest, Stop) {
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         while (!co_await scheduler.isStopped()) {
         }
-    });
+    }());
     scheduler.spawn([&]() -> boost::asio::awaitable<void> {
         scheduler.stop();
         stopped = co_await scheduler.isStopped();
-    });
+    }());
 
     scheduler.join();
     ASSERT_TRUE(stopped);

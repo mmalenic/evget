@@ -21,13 +21,14 @@
 // SOFTWARE.
 //
 
-#include <cstddef>
-#include <exception>
+#include "evgetcore/async/scheduler/Scheduler.h"
 
-#include <boost/asio.hpp>
+#include <boost/asio/awaitable.hpp>
 #include <spdlog/spdlog.h>
 
-#include "evgetcore/async/scheduler/Scheduler.h"
+#include <cstddef>
+#include <exception>
+#include <utility>
 
 EvgetCore::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {}
 
@@ -59,6 +60,6 @@ void EvgetCore::Scheduler::log_exception(const std::exception_ptr& error) {
     }
 }
 
-void EvgetCore::Scheduler::spawn(asio::awaitable<void> &&task) {
+void EvgetCore::Scheduler::spawn(asio::awaitable<void>&& task) {
     spawnImpl(std::move(task), [this] { this->stop(); }, pool);
 }

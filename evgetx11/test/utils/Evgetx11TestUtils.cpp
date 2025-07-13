@@ -22,7 +22,14 @@
 
 #include "EvgetX11TestUtils.h"
 
+#include <gtest/gtest.h>
+
+#include <X11/X.h>
+#include <X11/extensions/XInput2.h>
+#include <X11/keysymdef.h>
+
 #include <array>
+#include <optional>
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {

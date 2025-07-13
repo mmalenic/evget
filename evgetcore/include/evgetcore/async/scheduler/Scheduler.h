@@ -106,11 +106,9 @@ private:
     asio::thread_pool pool{default_thread_pool_size()};
     std::atomic<bool> stopped{false};
 
-    void
-    spawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
+    void spawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
     template <typename T>
-    void
-    spawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
+    void spawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
 
     static constexpr std::size_t default_thread_pool_size();
     void log_exception(const std::exception_ptr& error);
@@ -122,19 +120,11 @@ constexpr std::size_t Scheduler::default_thread_pool_size() {
 }
 
 template <typename T>
-void Scheduler::spawnImpl(
-    asio::awaitable<T>&& task,
-    Invocable<void, T> auto&& handler,
-    asio::thread_pool& pool
-) {
-    asio::co_spawn(
-        pool,
-        std::move(task),
-        [this, handler](const std::exception_ptr& err, T value) {
-            log_exception(err);
-            handler(value);
-        }
-    );
+void Scheduler::spawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool) {
+    asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err, T value) {
+        log_exception(err);
+        handler(value);
+    });
 }
 
 template <typename T>
@@ -147,19 +137,11 @@ void Scheduler::spawn(asio::awaitable<T>&& task, Invocable<void, T> auto&& handl
     spawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), pool);
 }
 
-void Scheduler::spawnImpl(
-    asio::awaitable<void>&& task,
-    Invocable<void> auto&& handler,
-    asio::thread_pool& pool
-) {
-    asio::co_spawn(
-        pool,
-        std::move(task),
-        [this, handler](const std::exception_ptr& err) {
-            log_exception(err);
-            handler();
-        }
-    );
+void Scheduler::spawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool) {
+    asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err) {
+        log_exception(err);
+        handler();
+    });
 }
 
 void Scheduler::spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handler) {

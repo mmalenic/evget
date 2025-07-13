@@ -93,7 +93,7 @@ constexpr void LockingVector<T>::unsafe_push_back(T&& value) {
 
 template <class T>
 constexpr void LockingVector<T>::push_back(T&& value) {
-    std::lock_guard guard{lock};
+    const std::scoped_lock guard{lock};
     unsafe_push_back(std::move(value));
 }
 
@@ -106,7 +106,7 @@ constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner() {
 
 template <class T>
 constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner() {
-    std::lock_guard guard{lock};
+    const std::scoped_lock guard{lock};
     return unsafe_into_inner();
 }
 
@@ -121,7 +121,7 @@ constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner_at(s
 
 template <class T>
 constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner_at(std::size_t size) {
-    std::lock_guard guard{lock};
+    const std::scoped_lock guard{lock};
     return unsafe_into_inner_at(size);
 }
 

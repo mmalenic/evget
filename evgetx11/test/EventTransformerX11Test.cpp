@@ -25,6 +25,7 @@
 #include <X11/Xlib.h>
 
 #include <array>
+#include <utility>
 
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"

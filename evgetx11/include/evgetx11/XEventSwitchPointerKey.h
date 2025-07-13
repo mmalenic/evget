@@ -158,7 +158,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 
     KeySym keySym = NoSymbol;
 
-    std::string character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
+    const std::string character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
 
     EvgetCore::Event::ButtonAction action = EvgetCore::Event::ButtonAction::Release;
     if (raw_event.evtype != XI_KeyRelease) {
@@ -168,7 +168,7 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
         // NOLINTEND(hicpp-signed-bitwise)
     }
 
-    std::string name = XWrapperX11::keySymToString(keySym);
+    const std::string name = XWrapperX11::keySymToString(keySym);
 
     EvgetCore::Event::Key builder{};
     builder.interval(getTime(raw_event.time))

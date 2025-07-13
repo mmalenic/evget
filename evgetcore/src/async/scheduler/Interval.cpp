@@ -21,18 +21,24 @@
 // SOFTWARE.
 //
 
-#include <chrono>
-
-#include <boost/asio.hpp>
-
 #include "evgetcore/async/scheduler/Interval.h"
+
+#include <boost/asio/as_tuple.hpp>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/error.hpp>
+#include <boost/asio/use_awaitable.hpp>
+
+#include <chrono>
+#include <memory>
+
 #include "evgetcore/Error.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 EvgetCore::Interval::Interval(std::chrono::seconds period) : _period{period} {}
 
-EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() {
+EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick(std::shared_ptr<Scheduler> scheduler) {
     if (!timer.has_value()) {
-        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period()};
+        timer = asio::steady_timer{scheduler->getExecutor(), this->period()};
     }
 
     auto [error] = co_await timer->async_wait(asio::as_tuple(asio::use_awaitable));
@@ -51,7 +57,9 @@ EvgetCore::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Interval::tick() 
 }
 
 void EvgetCore::Interval::reset() {
-    timer.value().expires_after(this->period());
+    if (timer.has_value()) {
+        timer->expires_after(this->period());
+    }
 }
 
 std::chrono::seconds EvgetCore::Interval::period() const {

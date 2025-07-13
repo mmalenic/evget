@@ -22,17 +22,16 @@
 
 #include <X11/Xlib.h>
 
-#include <cstring>
-#include <iostream>
+#include <memory>
+#include <utility>
 
 #include "evgetcore/EventHandler.h"
 #include "evgetcore/Storage/DatabaseManager.h"
-#include "evgetcore/Storage/JsonStorage.h"
 #include "evgetcore/cli.h"
-#include "evgetcore/database/sqlite/Connection.h"
 #include "evgetx11/EventLoopX11.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/XEventSwitchTouch.h"
 #include "evgetx11/XWrapperX11.h"
 
 int main(int argc, char* argv[]) {

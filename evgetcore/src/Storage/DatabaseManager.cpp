@@ -22,7 +22,9 @@
 //
 
 #include "evgetcore/Storage/DatabaseManager.h"
-#include "evgetcore/Storage/Store.h"
+
+#include <boost/asio/awaitable.hpp>
+#include <spdlog/spdlog.h>
 
 #include <chrono>
 #include <cstddef>
@@ -33,11 +35,10 @@
 #include <utility>
 #include <vector>
 
-#include <boost/asio.hpp>
-#include <spdlog/spdlog.h>
-
 #include "evgetcore/Error.h"
 #include "evgetcore/Event/Data.h"
+#include "evgetcore/Storage/Store.h"
+#include "evgetcore/async/container/LockingVector.h"
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 EvgetCore::Storage::DatabaseManager::DatabaseManager(
@@ -50,21 +51,22 @@ EvgetCore::Storage::DatabaseManager::DatabaseManager(
     spawn_store_after();
 }
 
-void EvgetCore::Storage::DatabaseManager::spawn_store_data(std::optional<std::vector<Event::Data>> inner, std::vector<std::shared_ptr<Store>> store_in, Scheduler& scheduler) {
+void EvgetCore::Storage::DatabaseManager::spawn_store_data(
+    std::optional<std::vector<Event::Data>> inner,
+    std::vector<std::shared_ptr<Store>> store_in,
+    Scheduler& scheduler
+) {
     if (inner.has_value()) {
-        spdlog::info(fmt::format("reached threshold, storing {} events", inner->size()));
+        spdlog::info(std::format("reached threshold, storing {} events", inner->size()));
 
         Event::Data out{};
         for (auto data : *std::move(inner)) {
             out.mergeWith(std::move(data));
         }
 
-        scheduler.spawn<Result<void>>(
-            store_coroutine(out, std::move(store_in)),
-            [&scheduler](Result<void> result) {
-                resultHandler(std::move(result), scheduler);
-            }
-        );
+        scheduler.spawn<Result<void>>(store_coroutine(out, std::move(store_in)), [&scheduler](Result<void> result) {
+            resultHandler(std::move(result), scheduler);
+        });
     }
 }
 
@@ -82,7 +84,8 @@ void EvgetCore::Storage::DatabaseManager::add_store(std::unique_ptr<Store> store
     this->storeIn.emplace_back(std::move(store));
 }
 
-boost::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Storage::DatabaseManager::store_coroutine(Event::Data data, std::vector<std::shared_ptr<Store>> store_in) {
+boost::asio::awaitable<EvgetCore::Result<void>>
+EvgetCore::Storage::DatabaseManager::store_coroutine(Event::Data data, std::vector<std::shared_ptr<Store>> store_in) {
     for (const auto& store : store_in) {
         auto result = store->store(data);
 
@@ -94,14 +97,18 @@ boost::asio::awaitable<EvgetCore::Result<void>> EvgetCore::Storage::DatabaseMana
     co_return Result<void>{};
 }
 
-boost::asio::awaitable<std::expected<void, EvgetCore::Error<EvgetCore::ErrorType>>> EvgetCore::Storage::DatabaseManager::store_after_coroutine(std::shared_ptr<Scheduler> scheduler, std::shared_ptr<LockingVector<Event::Data>> data, std::vector<std::shared_ptr<Store>> store_in, std::chrono::seconds storeAfter) {
+boost::asio::awaitable<std::expected<void, EvgetCore::Error<EvgetCore::ErrorType>>>
+EvgetCore::Storage::DatabaseManager::store_after_coroutine(
+    std::shared_ptr<Scheduler> scheduler,
+    std::shared_ptr<LockingVector<Event::Data>> data,
+    std::vector<std::shared_ptr<Store>> store_in,
+    std::chrono::seconds storeAfter
+) {
     auto interval = Interval{storeAfter};
     while (!co_await scheduler->isStopped()) {
-        auto result = co_await interval.tick();
+        auto result = co_await interval.tick(scheduler);
 
-        spdlog::debug(
-            std::format("timer threshold of {} seconds reached", interval.period().count())
-        );
+        spdlog::debug(std::format("timer threshold of {} seconds reached", interval.period().count()));
 
         if (!result.has_value()) {
             co_return Err{Error{.errorType = ErrorType::DatabaseManager, .message = result.error().message}};
@@ -117,13 +124,11 @@ boost::asio::awaitable<std::expected<void, EvgetCore::Error<EvgetCore::ErrorType
 void EvgetCore::Storage::DatabaseManager::spawn_store_after() const {
     scheduler->spawn<Result<void>>(
         store_after_coroutine(scheduler, data, storeIn, storeAfter),
-        [this](Result<void> result) {
-            resultHandler(std::move(result), *this->scheduler);
-        }
+        [this](Result<void> result) { resultHandler(std::move(result), *this->scheduler); }
     );
 }
 
-void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result, Scheduler &scheduler) {
+void EvgetCore::Storage::DatabaseManager::resultHandler(Result<void> result, Scheduler& scheduler) {
     if (!result.has_value()) {
         spdlog::error("Error storing events: {}", result.error().message);
         scheduler.stop();

@@ -28,15 +28,15 @@
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 TEST(IntervalTest, Tick) {
-    EvgetCore::Scheduler scheduler{};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
     EvgetCore::Interval interval{std::chrono::seconds{0}};
     std::optional<EvgetCore::Result<void>> result{};
 
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        result = co_await interval.tick();
+    scheduler->spawn([&]() -> boost::asio::awaitable<void> {
+        result = co_await interval.tick(scheduler);
         co_return;
-    });
-    scheduler.join();
+    }());
+    scheduler->join();
 
     ASSERT_TRUE(result->has_value());
 }

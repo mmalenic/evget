@@ -70,7 +70,7 @@ public:
 private:
     static constexpr int maskBits = 8;
 
-    std::optional<XWindowAttributes> getWindowAttributes(Window window) const;
+    [[nodiscard]] std::optional<XWindowAttributes> getWindowAttributes(Window window) const;
 
     std::optional<Atom> getAtom(const char* atomName) const;
 

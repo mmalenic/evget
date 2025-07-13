@@ -58,9 +58,19 @@ public:
     void add_store(std::unique_ptr<Store> store);
 
 private:
-    static void spawn_store_data(std::optional<std::vector<Event::Data>> inner, std::vector<std::shared_ptr<Store>> store_in, Scheduler& scheduler);
-    static asio::awaitable<Result<void>> store_coroutine(Event::Data data, std::vector<std::shared_ptr<Store>> store_in);
-    static asio::awaitable<Result<void>> store_after_coroutine(std::shared_ptr<Scheduler> scheduler, std::shared_ptr<LockingVector<Event::Data>> data, std::vector<std::shared_ptr<Store>> store_in, std::chrono::seconds storeAfter);
+    static void spawn_store_data(
+        std::optional<std::vector<Event::Data>> inner,
+        std::vector<std::shared_ptr<Store>> store_in,
+        Scheduler& scheduler
+    );
+    static asio::awaitable<Result<void>>
+    store_coroutine(Event::Data data, std::vector<std::shared_ptr<Store>> store_in);
+    static asio::awaitable<Result<void>> store_after_coroutine(
+        std::shared_ptr<Scheduler> scheduler,
+        std::shared_ptr<LockingVector<Event::Data>> data,
+        std::vector<std::shared_ptr<Store>> store_in,
+        std::chrono::seconds storeAfter
+    );
     static void resultHandler(Result<void> result, Scheduler& scheduler);
 
     void spawn_store_after() const;

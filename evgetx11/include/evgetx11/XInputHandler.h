@@ -38,7 +38,7 @@ public:
     /**
      * Get the next event.
      */
-    XInputEvent getEvent() const;
+    [[nodiscard]] XInputEvent getEvent() const;
 
 private:
     explicit XInputHandler(XWrapper& xWrapper);

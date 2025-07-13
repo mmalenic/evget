@@ -54,7 +54,7 @@ private:
     static Err statementError();
 
     std::reference_wrapper<SQLiteConnection> _connection;
-    std::map<std::size_t, std::variant<int, double, const char*, bool>> binds;
+    std::map<int, std::variant<int, double, const char*, bool>> binds;
     std::optional<::SQLite::Statement> statement;
     std::string query;
 };

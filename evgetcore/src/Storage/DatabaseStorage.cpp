@@ -21,9 +21,6 @@
 // SOFTWARE.
 
 #include "evgetcore/Storage/DatabaseStorage.h"
-#include "evgetcore/Error.h"
-#include "evgetcore/database/Connection.h"
-#include "evgetcore/database/Query.h"
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -35,9 +32,12 @@
 #include <utility>
 #include <vector>
 
+#include "evgetcore/Error.h"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
+#include "evgetcore/database/Connection.h"
 #include "evgetcore/database/Migrate.h"
+#include "evgetcore/database/Query.h"
 #include "queries/insert_key.h"
 #include "queries/insert_key_modifier.h"
 #include "queries/insert_mouse_click.h"
@@ -191,7 +191,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValues(
     }
 
     return query->nextWhile().and_then(
-                                 [&query] { return query->reset(); }
+                                 [&query] { return (*query).reset(); }
     ).transform_error([](const Error<::EvgetCore::ErrorType>& error) {
         return Error{.errorType = ErrorType::DatabaseError, .message = error.message};
     });
@@ -208,7 +208,7 @@ EvgetCore::Result<void> EvgetCore::Storage::DatabaseStorage::bindValuesModifier(
         query->bindChars(1, entryUuid.c_str());
         query->bindChars(2, modifier.c_str());
 
-        auto result = query->nextWhile().and_then([&query] { return query->reset(); });
+        auto result = query->nextWhile().and_then([&query] { return (*query).reset(); });
         if (!result.has_value()) {
             return Err{{.errorType = ErrorType::DatabaseError, .message = result.error().message}};
         }

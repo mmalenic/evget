@@ -21,9 +21,9 @@
 // SOFTWARE.
 
 #include "evgetcore/Storage/JsonStorage.h"
-#include "evgetcore/Error.h"
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Schema.h"
+
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 #include <functional>
 #include <iostream>
@@ -32,8 +32,9 @@
 #include <variant>
 #include <vector>
 
-#include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
+#include "evgetcore/Error.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Schema.h"
 
 EvgetCore::Result<void> EvgetCore::Storage::JsonStorage::store(Event::Data event) {
     if (event.empty()) {
