@@ -22,10 +22,15 @@
 
 #include "evgetcore/Event/MouseScroll.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
 #include "evgetcore/Event/ModifierValue.h"
+#include "evgetcore/Event/Schema.h"
 
 EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::interval(Interval interval) {
     _interval = interval;
@@ -108,7 +113,7 @@ EvgetCore::Event::MouseScroll& EvgetCore::Event::MouseScroll::screen(int screen)
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseScroll::build(Data& data) const {
-    Entry entry{
+    const Entry entry{
         EntryType::MouseScroll,
         {fromInterval(_interval),
          fromTimestamp(_timestamp),

@@ -22,10 +22,15 @@
 
 #include "evgetcore/Event/MouseMove.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
 #include "evgetcore/Event/ModifierValue.h"
+#include "evgetcore/Event/Schema.h"
 
 EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::interval(Interval interval) {
     _interval = interval;
@@ -98,7 +103,7 @@ EvgetCore::Event::MouseMove& EvgetCore::Event::MouseMove::modifier(EvgetCore::Ev
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::MouseMove::build(Data& data) const {
-    Entry entry{
+    const Entry entry{
         EntryType::MouseMove,
         {fromInterval(_interval),
          fromTimestamp(_timestamp),

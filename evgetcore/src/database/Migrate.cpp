@@ -58,7 +58,7 @@ EvgetCore::Result<void> EvgetCore::Migrate::createMigrationsTable() const {
         ");"
     );
 
-    return query->nextWhile().and_then([&query] { return query->reset(); });
+    return query->nextWhile().and_then([&query] { return (*query).reset(); });
 }
 
 EvgetCore::Result<std::vector<EvgetCore::AppliedMigration>> EvgetCore::Migrate::getAppliedMigrations() const {
@@ -80,7 +80,7 @@ EvgetCore::Result<std::vector<EvgetCore::AppliedMigration>> EvgetCore::Migrate::
     }
 
     return next.and_then([&query, &migrations](bool) {
-        return query->reset().and_then([&migrations] {
+        return (*query).reset().and_then([&migrations] {
             return EvgetCore::Result<std::vector<AppliedMigration>>{migrations};
         });
     });
@@ -99,7 +99,7 @@ EvgetCore::Result<void> EvgetCore::Migrate::applyMigration(const Migration& migr
 
         auto next = query->nextWhile();
 
-        return next.and_then([&query] { return query->reset(); });
+        return next.and_then([&query] { return (*query).reset(); });
     });
 }
 
@@ -110,7 +110,7 @@ EvgetCore::Result<void> EvgetCore::Migrate::applyMigrationSql(const Migration& m
         return query->exec();
     }
 
-    return query->nextWhile().and_then([&query] { return query->reset(); });
+    return query->nextWhile().and_then([&query] { return (*query).reset(); });
 }
 
 std::string EvgetCore::Migrate::checksum(const Migration& migration) {

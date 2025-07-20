@@ -23,6 +23,7 @@
 
 #include "evgetcore/Event/Data.h"
 
+#include <iterator>
 #include <utility>
 #include <vector>
 

@@ -49,7 +49,7 @@ public:
     /**
      * Add date timestamp.
      */
-    Key& timestamp(Timestamp dateTime);
+    Key& timestamp(Timestamp timestamp);
 
     /**
      * Key device.

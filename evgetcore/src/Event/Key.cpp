@@ -22,6 +22,8 @@
 
 #include "evgetcore/Event/Key.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "evgetcore/Event/ButtonAction.h"
@@ -29,6 +31,7 @@
 #include "evgetcore/Event/Device.h"
 #include "evgetcore/Event/Entry.h"
 #include "evgetcore/Event/ModifierValue.h"
+#include "evgetcore/Event/Schema.h"
 
 EvgetCore::Event::Key& EvgetCore::Event::Key::interval(Interval interval) {
     _interval = interval;
@@ -121,7 +124,7 @@ EvgetCore::Event::Key& EvgetCore::Event::Key::modifier(EvgetCore::Event::Modifie
 }
 
 EvgetCore::Event::Data& EvgetCore::Event::Key::build(Data& data) const {
-    Entry entry{
+    const Entry entry{
         EntryType::Key,
         {
             fromInterval(_interval),

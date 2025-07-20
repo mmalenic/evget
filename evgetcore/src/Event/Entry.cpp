@@ -23,6 +23,14 @@
 
 #include "evgetcore/Event/Entry.h"
 
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/ModifierValue.h"
 #include "evgetcore/Event/Schema.h"
 
 EvgetCore::Event::Entry::Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers)

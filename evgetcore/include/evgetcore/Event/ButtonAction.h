@@ -23,6 +23,8 @@
 #ifndef EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 #define EVGET_INCLUDE_EVGET_EVENT_BUTTON_BUTTONACTION_H
 
+#include <cstdint>
+
 namespace EvgetCore::Event {
 enum class ButtonAction : std::uint8_t { Press, Release, Repeat };
 }  // namespace EvgetCore::Event
