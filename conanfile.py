@@ -21,6 +21,7 @@ class EvgetRecipe(ConanFile):
         "cryptopp/[^8]",
         "sqlitecpp/[^3]",
         "cli11/[^2]",
+        "openssl/[^3]",
     )
     test_requires = "gtest/[^1]"
 
