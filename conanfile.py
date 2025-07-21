@@ -18,7 +18,6 @@ class EvgetRecipe(ConanFile):
         "spdlog/[^1]",
         "date/[^3]",
         "nlohmann_json/[^3]",
-        "cryptopp/[^8]",
         "sqlitecpp/[^3]",
         "cli11/[^2]",
         "openssl/[^3]",

@@ -22,11 +22,10 @@
 
 #include "evgetcore/database/Migrate.h"
 
-#include <cryptopp/config_int.h>
+#include <openssl/sha.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
-#include <array>
 #include <expected>
 #include <functional>
 #include <memory>
@@ -34,8 +33,6 @@
 #include <utility>
 #include <vector>
 
-#include "cryptopp/hex.h"
-#include "cryptopp/sha3.h"
 #include "evgetcore/Error.h"
 #include "evgetcore/database/Connection.h"
 
@@ -114,25 +111,12 @@ EvgetCore::Result<void> EvgetCore::Migrate::applyMigrationSql(const Migration& m
 }
 
 std::string EvgetCore::Migrate::checksum(const Migration& migration) {
-    CryptoPP::SHA3_512 sha3{};
-    std::array<CryptoPP::byte, CryptoPP::SHA3_512::DIGESTSIZE> digest{};
-
-    std::vector<CryptoPP::byte> input{migration.sql.begin(), migration.sql.end()};
-    sha3.CalculateDigest(digest.data(), input.data(), input.size());
-
-    CryptoPP::HexEncoder encoder;
-
-    encoder.Put(digest.data(), sizeof(digest));
-    encoder.MessageEnd();
-
-    const CryptoPP::word64 size = encoder.MaxRetrievable();
-    std::vector<CryptoPP::byte> output;
-    if (size != 0U) {
-        output.resize(size);
-        encoder.Get(output.data(), output.size());
-    }
-
-    return std::string{output.begin(), output.end()};
+    // Reinterpret cast is unavoidable here to continue using the signed std::string variety.
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+    auto* checksum =
+        SHA512(reinterpret_cast<const unsigned char*>(migration.sql.c_str()), migration.sql.length(), nullptr);
+    return std::string{reinterpret_cast<const char*>(checksum)};
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
 EvgetCore::Result<void> EvgetCore::Migrate::migrate() {

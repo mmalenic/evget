@@ -170,7 +170,7 @@ toolbelt_add_dep(${LIBRARY_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS Boost::
 toolbelt_add_dep(${LIBRARY_NAME} date VISIBILITY PUBLIC LINK_COMPONENTS date::date)
 toolbelt_add_dep(${LIBRARY_NAME} nlohmann_json VISIBILITY PUBLIC LINK_COMPONENTS nlohmann_json::nlohmann_json)
 toolbelt_add_dep(${LIBRARY_NAME} SQLiteCpp VISIBILITY PUBLIC LINK_COMPONENTS SQLiteCpp)
-toolbelt_add_dep(${LIBRARY_NAME} cryptopp VISIBILITY PUBLIC LINK_COMPONENTS cryptopp::cryptopp)
+toolbelt_add_dep(${LIBRARY_NAME} openssl VISIBILITY PUBLIC LINK_COMPONENTS openssl::openssl)
 toolbelt_add_dep(${LIBRARY_NAME} CLI11 VISIBILITY PUBLIC LINK_COMPONENTS CLI11::CLI11)
 
 file(STRINGS "../LICENSE" LICENSE)
