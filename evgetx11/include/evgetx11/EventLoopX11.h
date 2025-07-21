@@ -41,12 +41,12 @@ public:
      */
     explicit EventLoopX11(XInputHandler xInputHandler);
 
-    boost::asio::awaitable<void> eventLoop() override;
+    asio::awaitable<EvgetCore::Result<void>> eventLoop() override;
 
     EvgetCore::Result<void> notify(XInputEvent event) override;
     void registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
     void stop() override;
-    asio::awaitable<void> start() override;
+    asio::awaitable<EvgetCore::Result<void>> start() override;
     asio::awaitable<bool> isStopped();
 
 private:

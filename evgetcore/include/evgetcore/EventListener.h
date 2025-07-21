@@ -47,7 +47,7 @@ public:
     /**
      * Start the listener processing
      */
-    virtual asio::awaitable<void> start() = 0;
+    virtual asio::awaitable<Result<void>> start() = 0;
 
     EventListener() = default;
 

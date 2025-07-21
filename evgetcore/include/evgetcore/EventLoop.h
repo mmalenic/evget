@@ -25,6 +25,7 @@
 
 #include <boost/asio.hpp>
 
+#include "Error.h"
 #include "EventListener.h"
 
 namespace EvgetCore {
@@ -41,7 +42,7 @@ public:
     /**
      * Set up and run the event loop.
      */
-    virtual asio::awaitable<void> eventLoop() = 0;
+    virtual asio::awaitable<Result<void>> eventLoop() = 0;
 
     /**
      * Register listeners to notify.

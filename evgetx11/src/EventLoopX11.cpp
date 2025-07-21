@@ -28,10 +28,8 @@ EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
     co_return stopped.load();
 }
 
-EvgetX11::asio::awaitable<void> EvgetX11::EventLoopX11::start() {
-    co_await this->eventLoop();
-
-    co_return;
+EvgetX11::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::start() {
+    co_return co_await this->eventLoop();
 }
 
 void EvgetX11::EventLoopX11::stop() {
@@ -51,9 +49,12 @@ EvgetCore::Result<void> EvgetX11::EventLoopX11::notify(XInputEvent event) {
 
 EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler) : handler{xInputHandler} {}
 
-boost::asio::awaitable<void> EvgetX11::EventLoopX11::eventLoop() {
+boost::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::eventLoop() {
     while (!co_await isStopped()) {
-        this->notify(handler.getEvent());
+        auto result = this->notify(handler.getEvent());
+        if (!result.has_value()) {
+            co_return result.error();
+        }
     }
-    co_return;
+    co_return EvgetCore::Result<void>{};
 }
