@@ -22,14 +22,21 @@
 
 #include "evgetx11/EventLoopX11.h"
 
+#include <boost/asio/awaitable.hpp>
+
 #include <utility>
+
+#include "evgetcore/Error.h"
+#include "evgetcore/EventListener.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XInputHandler.h"
 
 EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
     co_return stopped.load();
 }
 
 EvgetX11::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::start() {
-    co_return co_await this->eventLoop();
+    return this->eventLoop();
 }
 
 void EvgetX11::EventLoopX11::stop() {
@@ -53,7 +60,7 @@ boost::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::eventLoo
     while (!co_await isStopped()) {
         auto result = this->notify(handler.getEvent());
         if (!result.has_value()) {
-            co_return result.error();
+            co_return EvgetCore::Err{result.error()};
         }
     }
     co_return EvgetCore::Result<void>{};

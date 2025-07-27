@@ -25,11 +25,9 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
-#include <math.h>
 #include <spdlog/spdlog.h>
 
 #include <array>
-#include <iostream>
 
 #include "evgetx11/DeleterWithDisplay.h"
 
@@ -288,7 +286,7 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
 
     // Reinterpret cast should be safe converting unsigned char to char.
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    return std::string{reinterpret_cast<char*>(name.get()), nItems};
+    return std::string{reinterpret_cast<const char*>(name.get()), nItems};
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
@@ -306,7 +304,7 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
     if (nItems > 0 && size == windowPropertySize && window != nullptr) {
         // Reinterpret cast is required by X11.
         // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        return *reinterpret_cast<Window*>(window.get());
+        return *reinterpret_cast<const Window*>(window.get());
         // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     }
 

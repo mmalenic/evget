@@ -22,6 +22,11 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/ModifierValue.h"
 #include "evgetcore/Event/MouseMove.h"
 
 // namespace EventTestUtils = TestUtils::EventTestUtils;
@@ -52,7 +57,7 @@ TEST(MouseMoveTest, Event) {
         EvgetCore::Event::detail::mouseMoveFields.begin(),
         EvgetCore::Event::detail::mouseMoveFields.end()
     };
-    std::vector<std::string> expected_data{
+    const std::vector<std::string> expected_data{
         "1",
         "1970-01-01T00:00:00.000000000+0000",
         "1.000000",

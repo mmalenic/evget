@@ -60,8 +60,14 @@ int main(int argc, char* argv[]) {
     }
     EvgetCore::EventHandler handler{manager, transformer, eventLoop};
 
-    scheduler->spawn(handler.start());
+    auto exit_code = 0;
+    scheduler->spawn(handler.start(), [&exit_code](auto err) {
+        if (!err.has_value()) {
+            exit_code = 1;
+            spdlog::error(err.error().message);
+        }
+    });
     scheduler->join();
 
-    return 0;
+    return exit_code;
 }

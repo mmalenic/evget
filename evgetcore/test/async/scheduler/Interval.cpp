@@ -25,6 +25,12 @@
 
 #include <gtest/gtest.h>
 
+#include <boost/asio/awaitable.hpp>
+
+#include <memory>
+#include <optional>
+
+#include "evgetcore/Error.h"
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 TEST(IntervalTest, Tick) {
@@ -38,5 +44,6 @@ TEST(IntervalTest, Tick) {
     }());
     scheduler->join();
 
+    ASSERT_TRUE(result.has_value());
     ASSERT_TRUE(result->has_value());
 }

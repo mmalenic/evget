@@ -22,7 +22,13 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
 #include "evgetcore/Event/Key.h"
+#include "evgetcore/Event/ModifierValue.h"
 
 TEST(KeyTest, Event) {
     auto data = EvgetCore::Event::Data{};
@@ -54,7 +60,7 @@ TEST(KeyTest, Event) {
         EvgetCore::Event::detail::keyFields.begin(),
         EvgetCore::Event::detail::keyFields.end()
     };
-    std::vector<std::string> expected_data{
+    const std::vector<std::string> expected_data{
         "1",
         "1970-01-01T00:00:00.000000000+0000",
         "1.000000",

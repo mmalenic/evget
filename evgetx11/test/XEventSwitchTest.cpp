@@ -20,10 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <array>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/XI2.h>
 
+#include <array>
+#include <chrono>
+#include <memory>
+#include <optional>
+#include <stdexcept>
+
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/Schema.h"
 #include "evgetx11/XEventSwitch.h"
 #include "utils/EvgetX11TestUtils.h"
 
@@ -61,13 +75,9 @@ TEST(XEventSwitchTest, GetButtonName) {
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(
-            testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
-                    {reinterpret_cast<char*>(XI_MOUSE), [](void* _) { return 0; }}
-                )
-            )
-        );
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+                                                                                                  return 0;
+                                                                                              }})));
 
     xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
     xEventSwitch.setButtonMap(buttonClassInfo, 1);
@@ -92,13 +102,9 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-funct
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(
-            testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
-                    {reinterpret_cast<char*>(XI_MOUSE), [](void* _) { return 0; }}
-                )
-            )
-        );
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+                                                                                                  return 0;
+                                                                                              }})));
     EXPECT_CALL(xWrapperMock, getActiveWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(xWrapperMock, getFocusWindow)

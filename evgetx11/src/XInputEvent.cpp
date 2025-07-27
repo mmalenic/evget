@@ -22,6 +22,11 @@
 
 #include "evgetx11/XInputEvent.h"
 
+#include <chrono>
+
+#include "evgetcore/Event/Schema.h"
+#include "evgetx11/XWrapper.h"
+
 EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper)
     : event{xWrapper.nextEvent()}, timestamp{std::chrono::system_clock::now()}, cookie{xWrapper.eventData(event)} {}
 

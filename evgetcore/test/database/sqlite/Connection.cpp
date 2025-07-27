@@ -24,6 +24,7 @@
 
 #include <gtest/gtest.h>
 
+#include "evgetcore/database/Connection.h"
 #include "utils/DatabaseTest.h"
 
 using DatabaseTest = Test::Database::DatabaseTest;

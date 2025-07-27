@@ -52,7 +52,7 @@ public:
     EventHandler(Storage::Store& storage, EventTransformer<T>& transformer, EventLoop<T>& eventLoop);
 
     Result<void> notify(T event) override;
-    asio::awaitable<void> start() override;
+    asio::awaitable<Result<void>> start() override;
 
 private:
     std::reference_wrapper<Storage::Store> storage;
@@ -61,9 +61,8 @@ private:
 };
 
 template <typename T>
-asio::awaitable<void> EventHandler<T>::start() {
-    co_await eventLoop.get().start();
-    co_return;
+asio::awaitable<Result<void>> EventHandler<T>::start() {
+    co_return co_await eventLoop.get().start();
 }
 
 template <typename T>

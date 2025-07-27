@@ -22,9 +22,18 @@
 
 #include "evgetx11/XInputHandler.h"
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
+#include <array>
+
+#include "evgetcore/Error.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XWrapper.h"
 #include "evgetx11/XWrapperX11.h"
 
 EvgetX11::XInputHandler::XInputHandler(XWrapper& xWrapper) : xWrapper{xWrapper} {}

@@ -22,6 +22,10 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Entry.h"
 

@@ -25,7 +25,9 @@
 #include <gtest/gtest.h>
 
 #include <format>
+#include <vector>
 
+#include "evgetcore/database/Connection.h"
 #include "evgetcore/database/sqlite/Connection.h"
 #include "utils/DatabaseTest.h"
 

@@ -25,13 +25,13 @@
 
 #include <gtest/gtest.h>
 
-#include <fmt/format.h>
+#include <vector>
 
 TEST(LockingVectorTest, PushBackAndIntoInner) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.push_back(1);
 
-    auto inner = *vector.into_inner();
+    auto inner = vector.into_inner();
     const std::vector expected{1};
     ASSERT_EQ(inner, std::vector{1});
 }
@@ -53,7 +53,7 @@ TEST(LockingVectorTest, UnsafePushBackAndIntoInner) {
     auto vector = EvgetCore::LockingVector<int>{};
     vector.unsafe_push_back(1);
 
-    auto inner = *vector.unsafe_into_inner();
+    auto inner = vector.unsafe_into_inner();
     const std::vector expected{1};
     ASSERT_EQ(inner, std::vector{1});
 }

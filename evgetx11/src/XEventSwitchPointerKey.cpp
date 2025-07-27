@@ -22,6 +22,23 @@
 
 #include "evgetx11/XEventSwitchPointerKey.h"
 
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
+#include <spdlog/spdlog.h>
+#include <xorg/xserver-properties.h>
+
+#include <cstring>
+#include <map>
+#include <optional>
+#include <span>
+#include <string>
+#include <vector>
+
+#include "evgetcore/Event/Device.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XWrapper.h"
+#include "evgetx11/XWrapperX11.h"
+
 EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
@@ -40,31 +57,33 @@ void EvgetX11::XEventSwitchPointerKey::refreshDevices(
 
     std::vector<const XIScrollClassInfo*> scrollInfos{};
     std::vector<const XIValuatorClassInfo*> valuatorInfos{};
-    for (int i = 0; i < info.num_classes; i++) {
-        const auto* classInfo = info.classes[i];
-
+    auto classes = std::span(info.classes, info.num_classes);
+    for (auto* classInfo : classes) {
         if (classInfo == nullptr) {
             spdlog::error("unexpected null pointer XIAnyClassInfo");
             continue;
         }
 
+        // Reinterpret cast is required by X11.
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
         if (classInfo->type == XIScrollClass) {
             scrollInfos.emplace_back(reinterpret_cast<const XIScrollClassInfo*>(classInfo));
         } else if (classInfo->type == XIValuatorClass) {
             valuatorInfos.emplace_back(reinterpret_cast<const XIValuatorClassInfo*>(classInfo));
         }
+        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     }
 
-    for (auto scrollInfo : scrollInfos) {
+    for (const auto* scrollInfo : scrollInfos) {
         scrollMap[device_id][scrollInfo->number] = *scrollInfo;
     }
-    for (auto valuatorInfo : valuatorInfos) {
+    for (const auto* valuatorInfo : valuatorInfos) {
         auto valuatorName = xWrapper.get().atomName(valuatorInfo->label);
         if (valuatorName) {
-            if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0 |
+            if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_X) == 0 ||
                 strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_X) == 0) {
                 valuatorX[device_id] = valuatorInfo->number;
-            } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0 |
+            } else if (strcmp(valuatorName.get(), AXIS_LABEL_PROP_ABS_Y) == 0 ||
                        strcmp(valuatorName.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
                 valuatorY[device_id] = valuatorInfo->number;
             }
@@ -76,7 +95,7 @@ std::map<int, int> EvgetX11::XEventSwitchPointerKey::getValuators(const XIValuat
     std::map<int, int> valuators{};
     auto* values = valuatorState.values;
     EvgetX11::XWrapperX11::onMasks(valuatorState.mask, valuatorState.mask_len, [&valuators, &values](int mask) {
-        valuators.emplace(mask, *values++);
+        valuators.emplace(mask, (*values)++);
     });
     return valuators;
 }

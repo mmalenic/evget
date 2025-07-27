@@ -22,6 +22,14 @@
 
 #include "evgetx11/XEventSwitch.h"
 
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
+
+#include <optional>
+#include <string>
+
+#include "evgetcore/Event/Device.h"
+
 EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int device_id) const {
     return devices.at(device_id);
 }

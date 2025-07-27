@@ -22,16 +22,20 @@
 
 #include <gtest/gtest.h>
 
-#include <X11/Xlib.h>
+#include <X11/X.h>
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
 
 #include <array>
 #include <utility>
 
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/Schema.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
-#include "evgetx11/XInputHandler.h"
-#include "evgetx11/XWrapper.h"
+#include "evgetx11/XInputEvent.h"
 #include "utils/EvgetX11TestUtils.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

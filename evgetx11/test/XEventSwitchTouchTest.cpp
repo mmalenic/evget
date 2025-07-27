@@ -21,17 +21,26 @@
 // SOFTWARE.
 //
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
 
 #include <array>
+#include <chrono>
+#include <memory>
+#include <optional>
 
-#include "evgetx11/EventTransformerX11.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/Schema.h"
 #include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XEventSwitchPointerKey.h"
 #include "evgetx11/XEventSwitchTouch.h"
-#include "evgetx11/XInputHandler.h"
+#include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 #include "utils/EvgetX11TestUtils.h"
 
@@ -67,13 +76,9 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(readability-function-co
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(
-            testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
-                    {reinterpret_cast<char*>(XI_TOUCHSCREEN), [](void* _) { return 0; }}
-                )
-            )
-        );
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+                                                                                                  return 0;
+                                                                                              }})));
     EXPECT_CALL(xWrapperMock, getActiveWindow).WillRepeatedly([]() { return std::nullopt; });
     EXPECT_CALL(xWrapperMock, getFocusWindow).WillRepeatedly([]() { return std::nullopt; });
     EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {
@@ -192,13 +197,9 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(readability-function-cogn
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(
-            testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
-                    {reinterpret_cast<char*>(XI_TOUCHSCREEN), [](void* _) { return 0; }}
-                )
-            )
-        );
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+                                                                                                  return 0;
+                                                                                              }})));
     EXPECT_CALL(xWrapperMock, getActiveWindow).WillRepeatedly([]() { return std::nullopt; });
     EXPECT_CALL(xWrapperMock, getFocusWindow).WillRepeatedly([]() { return std::nullopt; });
     EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {

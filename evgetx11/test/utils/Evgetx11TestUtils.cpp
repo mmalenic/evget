@@ -22,14 +22,22 @@
 
 #include "EvgetX11TestUtils.h"
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/XI.h>
+#include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/keysymdef.h>
 
 #include <array>
+#include <memory>
 #include <optional>
+#include <span>
+
+#include "evgetx11/XWrapper.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 XIValuatorClassInfo EvgetX11TestUtils::createXIValuatorClassInfo() {
@@ -173,14 +181,9 @@ void EvgetX11TestUtils::set_x_wrapper_event_mocks(
         .WillOnce(
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
+
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(
-            testing::Return(
-                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
-                    {reinterpret_cast<char*>(XI_MOUSE), [](void* _) { return 0; }}
-                )
-            )
-        );
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, &XFree})));
     EXPECT_CALL(xWrapperMock, getActiveWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(xWrapperMock, getFocusWindow)

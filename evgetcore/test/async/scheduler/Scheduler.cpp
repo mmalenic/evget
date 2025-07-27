@@ -25,72 +25,82 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
+#include <boost/asio/awaitable.hpp>
+
+#include <atomic>
+#include <memory>
+#include <optional>
 
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
-    EvgetCore::Scheduler scheduler{};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
     std::optional<int> result{};
 
-    scheduler.spawn(
-        [&]() -> boost::asio::awaitable<void> {
+    scheduler->spawn(
+        [](auto& result) -> boost::asio::awaitable<void> {
             result = 1;
             co_return;
-        }(),
-        [&] {}
+        }(result),
+        [] {}
     );
-    scheduler.join();
+    scheduler->join();
 
+    ASSERT_TRUE(result.has_value());
     ASSERT_EQ(*result, 1);
 }
 
 TEST(SchedulerTest, SpawnReturnTask) {
-    EvgetCore::Scheduler scheduler{};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
     std::optional<int> result{};
 
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { co_return 1; }(), [&](auto value) { result = value; });
-    scheduler.join();
+    scheduler->spawn<int>([]() -> boost::asio::awaitable<int> { co_return 1; }(), [&](auto value) { result = value; });
+    scheduler->join();
 
+    ASSERT_TRUE(result.has_value());
     ASSERT_EQ(*result, 1);
 }
 
 TEST(SchedulerTest, SpawnVoidTaskException) {
-    EvgetCore::Scheduler scheduler{};
+    auto stopped = std::atomic{false};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
 
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        while (!co_await scheduler.isStopped()) {
+    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
+        while (!stopped) {
         }
-    }());
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> { throw std::exception{}; }());
+        co_return;
+    }(stopped));
+    scheduler->spawn([]() -> boost::asio::awaitable<void> { throw std::exception{}; }());
 
-    scheduler.join();
+    scheduler->join();
 }
 
 TEST(SchedulerTest, SpawnReturnTaskException) {
-    EvgetCore::Scheduler scheduler{};
+    auto stopped = std::atomic{false};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
 
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> {
-        while (!co_await scheduler.isStopped()) {
+    scheduler->spawn<int>([](auto& stopped) -> boost::asio::awaitable<int> {
+        while (!stopped) {
         }
         co_return 1;
-    }());
-    scheduler.spawn<int>([&]() -> boost::asio::awaitable<int> { throw std::exception{}; }());
+    }(stopped));
+    scheduler->spawn<int>([]() -> boost::asio::awaitable<int> { throw std::exception{}; }());
 
-    scheduler.join();
+    scheduler->join();
 }
 
 TEST(SchedulerTest, Stop) {
-    EvgetCore::Scheduler scheduler{};
-    bool stopped{};
+    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
+    std::atomic stopped{false};
 
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        while (!co_await scheduler.isStopped()) {
+    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
+        while (!stopped) {
         }
-    }());
-    scheduler.spawn([&]() -> boost::asio::awaitable<void> {
-        scheduler.stop();
-        stopped = co_await scheduler.isStopped();
-    }());
+        co_return;
+    }(stopped));
+    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
+        stopped = true;
+        co_return;
+    }(stopped));
 
-    scheduler.join();
+    scheduler->join();
     ASSERT_TRUE(stopped);
 }

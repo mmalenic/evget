@@ -25,8 +25,11 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <filesystem>
 #include <format>
+#include <string>
 
+#include "evgetcore/database/Connection.h"
 #include "evgetcore/database/sqlite/Connection.h"
 
 namespace uuids = boost::uuids;
@@ -52,7 +55,7 @@ Test::Database::DatabaseTest::DatabaseTest()
 }
 
 Test::Database::DatabaseTest::~DatabaseTest() {
-    remove_all(databaseFile);
+    std::filesystem::remove_all(databaseFile);
 }
 
 std::filesystem::path Test::Database::DatabaseTest::directory() const {

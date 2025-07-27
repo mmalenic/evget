@@ -24,6 +24,7 @@
 
 #include <format>
 
+#include "evgetcore/database/Connection.h"
 #include "evgetcore/database/sqlite/Connection.h"
 #include "utils/DatabaseTest.h"
 
@@ -76,7 +77,7 @@ TEST_F(DatabaseTest, Reset) {
 
     auto selectQuery = connection.buildQuery(std::format("select * from {};", testTableName));
 
-    auto reset = selectQuery->reset();
+    auto reset = (*selectQuery).reset();
 
     ASSERT_TRUE(reset.has_value());
 }

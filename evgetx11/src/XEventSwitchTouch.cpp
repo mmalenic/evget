@@ -22,7 +22,13 @@
 
 #include "evgetx11/XEventSwitchTouch.h"
 
+#include <X11/extensions/XInput2.h>
+
+#include <optional>
 #include <string>
+
+#include "evgetcore/Event/Device.h"
+#include "evgetx11/XEventSwitch.h"
 
 void EvgetX11::XEventSwitchTouch::refreshDevices(
     int device_id,
