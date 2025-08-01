@@ -49,5 +49,6 @@ repos:
             -legal/copyright,
             -build/header_guard,
             -build/c++17,
+            -readability/nolint
             ",
           ]

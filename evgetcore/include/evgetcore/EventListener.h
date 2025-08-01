@@ -25,7 +25,7 @@
 
 #include <boost/asio.hpp>
 
-#include "Error.h"
+#include "evgetcore/Error.h"
 
 namespace EvgetCore {
 

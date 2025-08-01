@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "Connection.h"
+#include "evgetcore/database/Connection.h"
 
 namespace EvgetCore {
 

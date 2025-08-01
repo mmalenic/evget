@@ -23,11 +23,10 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
-#include <evgetcore/Error.h>
-
-#include "XEventSwitch.h"
-#include "XInputEvent.h"
-#include "XWrapper.h"
+#include "evgetcore/Error.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 

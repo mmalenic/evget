@@ -26,9 +26,9 @@
 
 #include <spdlog/spdlog.h>
 
-#include "XWrapperX11.h"
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
+#include "evgetx11/XWrapperX11.h"
 
 namespace EvgetX11 {
 /**

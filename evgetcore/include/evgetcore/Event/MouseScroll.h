@@ -27,8 +27,8 @@
 #include <string>
 #include <vector>
 
-#include "Data.h"
-#include "Schema.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore::Event {
 /**

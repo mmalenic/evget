@@ -25,10 +25,11 @@
 #define SCHEDULER_H
 
 #include <boost/asio.hpp>
-#include <evgetcore/Error.h>
 #include <spdlog/spdlog.h>
 
 #include <cstddef>
+
+#include "evgetcore/Error.h"
 
 namespace EvgetCore {
 

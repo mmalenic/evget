@@ -25,10 +25,10 @@
 
 #include <vector>
 
-#include "EventListener.h"
-#include "EventLoop.h"
-#include "EventTransformer.h"
-#include "Storage/Store.h"
+#include "evgetcore/EventListener.h"
+#include "evgetcore/EventLoop.h"
+#include "evgetcore/EventTransformer.h"
+#include "evgetcore/Storage/Store.h"
 
 namespace EvgetCore {
 

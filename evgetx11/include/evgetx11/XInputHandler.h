@@ -25,9 +25,9 @@
 
 #include <memory>
 
-#include "XInputEvent.h"
-#include "XWrapper.h"
 #include "evgetcore/Error.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 

@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include "Entry.h"
+#include "evgetcore/Event/Entry.h"
 
 namespace EvgetCore::Event {
 /**

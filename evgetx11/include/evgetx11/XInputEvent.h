@@ -28,8 +28,8 @@
 #include <chrono>
 #include <memory>
 
-#include "XWrapper.h"
 #include "evgetcore/Event/Schema.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 class XInputEvent {

@@ -33,7 +33,7 @@
 #include <optional>
 #include <string>
 
-#include "XWrapper.h"
+#include "evgetx11/XWrapper.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace EvgetX11 {

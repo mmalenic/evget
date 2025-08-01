@@ -32,11 +32,11 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "XEventSwitch.h"
-#include "XInputEvent.h"
-#include "XWrapper.h"
 #include "evgetcore/Event/Key.h"
 #include "evgetcore/Event/MouseScroll.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 

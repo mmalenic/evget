@@ -28,8 +28,8 @@
 
 #include <chrono>
 
-#include "Scheduler.h"
 #include "evgetcore/Error.h"
+#include "evgetcore/async/scheduler/Scheduler.h"
 
 namespace EvgetCore {
 

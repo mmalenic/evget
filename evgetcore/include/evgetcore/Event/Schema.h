@@ -31,11 +31,11 @@
 #include <string>
 #include <utility>
 
-#include "ButtonAction.h"
-#include "Device.h"
-#include "Entry.h"
-#include "ModifierValue.h"
 #include "evgetcore/Error.h"
+#include "evgetcore/Event/ButtonAction.h"
+#include "evgetcore/Event/Device.h"
+#include "evgetcore/Event/Entry.h"
+#include "evgetcore/Event/ModifierValue.h"
 
 namespace EvgetCore::Event {
 

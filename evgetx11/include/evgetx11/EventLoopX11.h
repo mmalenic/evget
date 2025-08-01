@@ -23,10 +23,10 @@
 #ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
-#include "XInputEvent.h"
-#include "XInputHandler.h"
-#include "XWrapper.h"
 #include "evgetcore/EventLoop.h"
+#include "evgetx11/XInputEvent.h"
+#include "evgetx11/XInputHandler.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 namespace asio = boost::asio;

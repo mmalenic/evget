@@ -25,8 +25,8 @@
 
 #include <boost/asio.hpp>
 
-#include "Error.h"
-#include "EventListener.h"
+#include "evgetcore/Error.h"
+#include "evgetcore/EventListener.h"
 
 namespace EvgetCore {
 

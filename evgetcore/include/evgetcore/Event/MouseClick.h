@@ -23,8 +23,8 @@
 #ifndef EVGET_SRC_EVENT_MOUSECLICK_H
 #define EVGET_SRC_EVENT_MOUSECLICK_H
 
-#include "Data.h"
-#include "Schema.h"
+#include "evgetcore/Event/Data.h"
+#include "evgetcore/Event/Schema.h"
 
 namespace EvgetCore::Event {
 /**

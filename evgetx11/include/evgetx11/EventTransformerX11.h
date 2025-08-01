@@ -32,12 +32,13 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 
-#include "XEventSwitch.h"
-#include "XEventSwitchPointerKey.h"
-#include "XEventSwitchTouch.h"
-#include "XWrapper.h"
 #include "evgetcore/EventTransformer.h"
+#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/XEventSwitchTouch.h"
+#include "evgetx11/XWrapper.h"
 
 namespace EvgetX11 {
 template <typename... Switches>

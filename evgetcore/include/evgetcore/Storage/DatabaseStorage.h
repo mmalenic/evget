@@ -24,11 +24,11 @@
 #define DATABASE_STORAGE_H
 
 #include <SQLiteCpp/Database.h>
+#include <boost/uuid/uuid.hpp>
 
-#include "Store.h"
-#include "boost/uuid/uuid.hpp"
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
+#include "evgetcore/Storage/Store.h"
 #include "evgetcore/database/Connection.h"
 
 namespace EvgetCore::Storage {
