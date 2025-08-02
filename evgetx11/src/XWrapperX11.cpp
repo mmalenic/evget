@@ -223,15 +223,18 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XSync(&display.get(), False);
 }
 
-std::unique_ptr<unsigned char[], decltype(&XFree)>
-EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, std::uint64_t& nItems, Atom& type, int& size) const {
+EvgetX11::XWrapperX11::GetPropertyResult
+EvgetX11::XWrapperX11::getProperty(Atom atom, Window window) const {
     unsigned char* data = nullptr;
-    std::uint64_t _bytesAfter = 0;
+    unsigned long _bytesAfter = 0;
 
     if (window == 0) {
-        return {nullptr, XFree};
+        return {.property = {nullptr, XFree}};
     }
 
+    unsigned long nItems = 0;
+    Atom type = 0;
+    int size = 0;
     Status status = XGetWindowProperty(
         &display.get(),
         window,
@@ -251,14 +254,19 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window, std::uint64_t& nIte
 
     if (status == BadWindow) {
         spdlog::warn("window does not exist");
-        return {nullptr, XFree};
+        return {.property = {nullptr, XFree}};
     }
     if (status != Success) {
         spdlog::warn("failed to get window property");
-        return {nullptr, XFree};
+        return {.property = {nullptr, XFree}};
     }
 
-    return prop;
+    return {
+        .nItems = nItems,
+        .size = size,
+        .type = type,
+        .property = std::move(prop)
+    };
 }
 
 std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
@@ -267,26 +275,22 @@ std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {
         return std::nullopt;
     }
 
-    Atom type = 0;
-    int size = 0;
-    std::uint64_t nItems = 0;
-
-    auto name = getProperty(*wmNameAtom, window, nItems, type, size);
-    if (nItems == 0) {
+    auto name = getProperty(*wmNameAtom, window);
+    if (name.nItems == 0) {
         wmNameAtom = getAtom("WM_NAME");
         if (!wmNameAtom) {
             return std::nullopt;
         }
-        name = getProperty(*wmNameAtom, window, nItems, type, size);
+        name = getProperty(*wmNameAtom, window);
     }
 
-    if (name == nullptr) {
+    if (name.property == nullptr) {
         return std::string{};
     }
 
     // Reinterpret cast should be safe converting unsigned char to char.
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    return std::string{reinterpret_cast<const char*>(name.get()), nItems};
+    return std::string{reinterpret_cast<const char*>(name.property.get()), name.nItems};
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
@@ -296,15 +300,11 @@ std::optional<Window> EvgetX11::XWrapperX11::getActiveWindow() {
         return std::nullopt;
     }
 
-    Atom type = 0;
-    int size = 0;
-    std::uint64_t nItems = 0;
-
-    auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()), nItems, type, size);
-    if (nItems > 0 && size == windowPropertySize && window != nullptr) {
+    auto window = getProperty(*activeWindow, XDefaultRootWindow(&display.get()));
+    if (window.nItems > 0 && window.size == windowPropertySize && window.property != nullptr) {
         // Reinterpret cast is required by X11.
         // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        return *reinterpret_cast<const Window*>(window.get());
+        return *reinterpret_cast<const Window*>(window.property.get());
         // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     }
 

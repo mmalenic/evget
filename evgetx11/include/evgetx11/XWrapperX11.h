@@ -68,14 +68,21 @@ public:
     static void setMask(unsigned char* mask, std::initializer_list<int> events);
 
 private:
+    struct GetPropertyResult {
+        std::uint64_t nItems;
+        Atom type;
+        int size;
+        std::unique_ptr<unsigned char[], decltype(&XFree)> property;
+    };
+
     static constexpr int maskBits = 8;
 
     [[nodiscard]] std::optional<XWindowAttributes> getWindowAttributes(Window window) const;
 
     std::optional<Atom> getAtom(const char* atomName) const;
 
-    std::unique_ptr<unsigned char[], decltype(&XFree)>
-    getProperty(Atom atom, Window window, std::uint64_t& nItems, Atom& type, int& size) const;
+    GetPropertyResult
+    getProperty(Atom atom, Window window) const;
 
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 
