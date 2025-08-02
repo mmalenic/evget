@@ -27,9 +27,9 @@
 #include <X11/extensions/XInput2.h>
 #include <xorg/xserver-properties.h>
 
-#include <cmath>
 #include <map>
 #include <ranges>
+#include <string>
 #include <unordered_map>
 
 #include "evgetcore/Event/Key.h"

@@ -223,8 +223,7 @@ void EvgetX11::XWrapperX11::selectEvents(XIEventMask& mask) {
     XSync(&display.get(), False);
 }
 
-EvgetX11::XWrapperX11::GetPropertyResult
-EvgetX11::XWrapperX11::getProperty(Atom atom, Window window) const {
+EvgetX11::XWrapperX11::GetPropertyResult EvgetX11::XWrapperX11::getProperty(Atom atom, Window window) const {
     unsigned char* data = nullptr;
     unsigned long _bytesAfter = 0;
 
@@ -261,12 +260,7 @@ EvgetX11::XWrapperX11::getProperty(Atom atom, Window window) const {
         return {.property = {nullptr, XFree}};
     }
 
-    return {
-        .nItems = nItems,
-        .size = size,
-        .type = type,
-        .property = std::move(prop)
-    };
+    return {.nItems = nItems, .size = size, .type = type, .property = std::move(prop)};
 }
 
 std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {

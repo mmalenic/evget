@@ -23,6 +23,8 @@
 #ifndef DATABASE_QUERY_H
 #define DATABASE_QUERY_H
 
+#include <string>
+
 #include "evgetcore/Error.h"
 
 namespace EvgetCore {

@@ -26,6 +26,8 @@
 #include <SQLiteCpp/Database.h>
 #include <spdlog/spdlog.h>
 
+#include <map>
+#include <string>
 #include <variant>
 
 #include "evgetcore/database/Query.h"

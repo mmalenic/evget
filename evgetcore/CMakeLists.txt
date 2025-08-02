@@ -183,24 +183,21 @@ target_compile_definitions(${LIBRARY_NAME} PUBLIC EVGET_VERSION="0.1.0")
 # x-release-please-end
 
 if(BUILD_TESTING)
-    enable_testing()
-    set(TEST test)
-
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC ${TEST}/async/container/LockingVector.cpp
-               ${TEST}/async/scheduler/Interval.cpp
-               ${TEST}/async/scheduler/Scheduler.cpp
-               ${TEST}/database/sqlite/Connection.cpp
-               ${TEST}/database/sqlite/Migrate.cpp
-               ${TEST}/database/sqlite/Query.cpp
-               ${TEST}/Event/MouseMoveTest.cpp
-               ${TEST}/Event/MouseClickTest.cpp
-               ${TEST}/Event/KeyTest.cpp
-               ${TEST}/Event/MouseScrollTest.cpp
-               ${TEST}/Event/DataTest.cpp
-               ${TEST}/utils/DatabaseTest.h
-               ${TEST}/utils/DatabaseTest.cpp
+        PUBLIC test/async/container/LockingVector.cpp
+               test/async/scheduler/Interval.cpp
+               test/async/scheduler/Scheduler.cpp
+               test/database/sqlite/Connection.cpp
+               test/database/sqlite/Migrate.cpp
+               test/database/sqlite/Query.cpp
+               test/Event/MouseMoveTest.cpp
+               test/Event/MouseClickTest.cpp
+               test/Event/KeyTest.cpp
+               test/Event/MouseScrollTest.cpp
+               test/Event/DataTest.cpp
+               test/utils/DatabaseTest.h
+               test/utils/DatabaseTest.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

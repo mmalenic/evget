@@ -102,7 +102,7 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
     };
 
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
 
@@ -221,7 +221,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     EXPECT_CALL(xWrapperMock, getFocusWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
     EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {
@@ -280,7 +280,7 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(readability-function-co
     EXPECT_CALL(xWrapperMock, getFocusWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
     EXPECT_CALL(xWrapperMock, query_pointer).WillRepeatedly([]() {

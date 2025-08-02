@@ -23,6 +23,8 @@
 #ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 #define EVGET_EVGETX11_INCLUDE_EVGETX11_TOUCHXEVENTSWITCH_H
 
+#include <string>
+
 #include "evgetcore/Error.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XInputEvent.h"

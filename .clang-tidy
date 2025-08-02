@@ -16,5 +16,5 @@ Checks: >
   -abseil-string-find-str-contains,
   -llvm-header-guard
 WarningsAsErrors: "*"
-HeaderFilterRegex: "."
+HeaderFilterRegex: ""
 ExtraArgs: ["-std=c++23"]

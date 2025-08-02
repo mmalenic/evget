@@ -23,6 +23,9 @@
 #ifndef EVGET_SRC_EVENT_MOUSECLICK_H
 #define EVGET_SRC_EVENT_MOUSECLICK_H
 
+#include <string>
+#include <vector>
+
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"
 

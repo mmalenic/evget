@@ -28,6 +28,7 @@
 #include <X11/Xlib.h>
 
 #include <optional>
+#include <string>
 
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XWrapper.h"

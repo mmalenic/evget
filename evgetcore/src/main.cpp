@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 #include <X11/Xlib.h>
+#include <spdlog/spdlog.h>
 
+#include <exception>
 #include <memory>
 #include <utility>
 
@@ -35,39 +37,44 @@
 #include "evgetx11/XWrapperX11.h"
 
 int main(int argc, char* argv[]) {
-    auto cli = EvgetCore::Cli{};
-    auto exit = cli.parse(argc, argv);
-    if (!exit.has_value()) {
-        return exit.error();
-    }
-    if (*exit) {
-        return 0;
-    }
-
-    Display* display = XOpenDisplay(nullptr);
-    EvgetX11::XWrapperX11 xWrapperX11{*display};
-    auto transformer =
-        EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey, EvgetX11::XEventSwitchTouch>::build(
-            xWrapperX11
-        );
-
-    EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
-
-    auto scheduler = std::make_shared<EvgetCore::Scheduler>();
-    auto manager = EvgetCore::Storage::DatabaseManager{scheduler, {}, cli.store_n_events(), cli.store_after()};
-    for (auto&& store : cli.to_stores().value()) {
-        manager.add_store(std::move(store));
-    }
-    EvgetCore::EventHandler handler{manager, transformer, eventLoop};
-
-    auto exit_code = 0;
-    scheduler->spawn(handler.start(), [&exit_code](auto err) {
-        if (!err.has_value()) {
-            exit_code = 1;
-            spdlog::error(err.error().message);
+    try {
+        auto cli = EvgetCore::Cli{};
+        auto exit = cli.parse(argc, argv);
+        if (!exit.has_value()) {
+            return exit.error();
         }
-    });
-    scheduler->join();
+        if (*exit) {
+            return 0;
+        }
 
-    return exit_code;
+        Display* display = XOpenDisplay(nullptr);
+        EvgetX11::XWrapperX11 xWrapperX11{*display};
+        auto transformer =
+            EvgetX11::EventTransformerX11<EvgetX11::XEventSwitchPointerKey, EvgetX11::XEventSwitchTouch>::build(
+                xWrapperX11
+            );
+
+        EvgetX11::EventLoopX11 eventLoop{EvgetX11::XInputHandler::build(xWrapperX11).value()};
+
+        auto scheduler = std::make_shared<EvgetCore::Scheduler>();
+        auto manager = EvgetCore::Storage::DatabaseManager{scheduler, {}, cli.store_n_events(), cli.store_after()};
+        for (auto&& store : cli.to_stores().value()) {
+            manager.add_store(std::move(store));
+        }
+        EvgetCore::EventHandler handler{manager, transformer, eventLoop};
+
+        auto exit_code = 0;
+        scheduler->spawn(handler.start(), [&exit_code](auto err) {
+            if (!err.has_value()) {
+                exit_code = 1;
+                spdlog::error(err.error().message);
+            }
+        });
+        scheduler->join();
+
+        return exit_code;
+    } catch (const std::exception& e) {
+        spdlog::error("{}", e.what());
+        return 1;
+    }
 }

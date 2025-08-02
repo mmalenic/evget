@@ -22,6 +22,7 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
 #include <vector>
 
 #include "evgetcore/Event/Device.h"
@@ -29,8 +30,6 @@
 #include "evgetcore/Event/ModifierValue.h"
 #include "evgetcore/Event/MouseMove.h"
 
-// namespace EventTestUtils = TestUtils::EventTestUtils;
-//
 TEST(MouseMoveTest, Event) {
     auto data = EvgetCore::Event::Data{};
     auto mouse_move = EvgetCore::Event::MouseMove{}

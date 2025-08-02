@@ -24,6 +24,7 @@
 #ifndef ENTRY_H
 #define ENTRY_H
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <string>

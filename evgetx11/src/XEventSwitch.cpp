@@ -26,9 +26,11 @@
 #include <X11/extensions/XInput2.h>
 
 #include <optional>
+#include <span>
 #include <string>
 
 #include "evgetcore/Event/Device.h"
+#include "evgetx11/XWrapper.h"
 
 EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int device_id) const {
     return devices.at(device_id);
@@ -41,9 +43,10 @@ bool EvgetX11::XEventSwitch::hasDevice(int device_id) const {
 void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, int device_id) {
     auto map = xWrapper.get().getDeviceButtonMapping(device_id, buttonInfo.num_buttons);
     if (map) {
-        for (int i = 0; i < buttonInfo.num_buttons; i++) {
-            if (buttonInfo.labels[i] != 0U) {
-                auto name = xWrapper.get().atomName(buttonInfo.labels[i]);
+        auto labels = std::span(buttonInfo.labels, buttonInfo.num_buttons);
+        for (auto i = 0; i < labels.size(); i++) {
+            if (labels[i] != 0U) {
+                auto name = xWrapper.get().atomName(labels[i]);
                 if (name) {
                     buttonMap[device_id][map[i]] = name.get();
                 }
@@ -66,13 +69,12 @@ void EvgetX11::XEventSwitch::refreshDevices(
     idToName.emplace(device_id, name);
 
     const XIButtonClassInfo* buttonInfo = nullptr;
-    for (int i = 0; i < info.num_classes; i++) {
-        const auto* classInfo = info.classes[i];
-
-        if (classInfo != nullptr && classInfo->type == XIButtonClass) {
+    auto classes = std::span(info.classes, info.num_classes);
+    for (auto* info_class : classes) {
+        if (info_class != nullptr && info_class->type == XIButtonClass) {
             // Reinterpret cast is required by X11.
             // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-            buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(classInfo);
+            buttonInfo = reinterpret_cast<const XIButtonClassInfo*>(info_class);
             // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
             break;
         }

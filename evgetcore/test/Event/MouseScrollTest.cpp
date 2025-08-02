@@ -22,6 +22,7 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
 #include <vector>
 
 #include "evgetcore/Event/Device.h"

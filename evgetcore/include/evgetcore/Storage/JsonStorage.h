@@ -26,6 +26,7 @@
 #include <boost/asio.hpp>
 
 #include <fstream>
+#include <memory>
 
 #include "evgetcore/Error.h"
 #include "evgetcore/Storage/Store.h"

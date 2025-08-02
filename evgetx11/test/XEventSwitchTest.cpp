@@ -75,7 +75,7 @@ TEST(XEventSwitchTest, GetButtonName) {
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
 
@@ -102,7 +102,7 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-funct
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
         );
     EXPECT_CALL(xWrapperMock, atomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void* _) {
+        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
     EXPECT_CALL(xWrapperMock, getActiveWindow)

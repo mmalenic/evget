@@ -54,12 +54,10 @@ toolbelt_add_dep(
 )
 
 if(BUILD_TESTING)
-    set(TEST test)
-
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC ${TEST}/EventTransformerX11Test.cpp ${TEST}/XEventSwitchPointerKeyTest.cpp ${TEST}/XEventSwitchTest.cpp
-               ${TEST}/XEventSwitchTouchTest.cpp ${TEST}/utils/Evgetx11TestUtils.cpp ${TEST}/utils/EvgetX11TestUtils.h
+        PUBLIC test/EventTransformerX11Test.cpp test/XEventSwitchPointerKeyTest.cpp test/XEventSwitchTest.cpp
+               test/XEventSwitchTouchTest.cpp test/utils/Evgetx11TestUtils.cpp test/utils/EvgetX11TestUtils.h
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

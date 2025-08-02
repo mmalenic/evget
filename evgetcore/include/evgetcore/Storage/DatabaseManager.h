@@ -25,9 +25,8 @@
 #define DATABASEMANAGER_H
 
 #include <boost/asio.hpp>
-#include <spdlog/spdlog.h>
 
-#include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "evgetcore/Storage/Store.h"

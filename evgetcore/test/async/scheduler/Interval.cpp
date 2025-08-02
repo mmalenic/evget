@@ -28,22 +28,24 @@
 #include <boost/asio/awaitable.hpp>
 
 #include <memory>
-#include <optional>
 
 #include "evgetcore/Error.h"
 #include "evgetcore/async/scheduler/Scheduler.h"
 
 TEST(IntervalTest, Tick) {
     auto scheduler = std::make_shared<EvgetCore::Scheduler>();
-    EvgetCore::Interval interval{std::chrono::seconds{0}};
-    std::optional<EvgetCore::Result<void>> result{};
+    const std::shared_ptr<EvgetCore::Interval> interval =
+        std::make_shared<EvgetCore::Interval>(std::chrono::seconds{0});
+    const std::shared_ptr<EvgetCore::Result<void>> result{};
 
-    scheduler->spawn([&]() -> boost::asio::awaitable<void> {
-        result = co_await interval.tick(scheduler);
-        co_return;
-    }());
+    scheduler->spawn(
+        [](std::shared_ptr<EvgetCore::Interval> interval,
+           std::shared_ptr<EvgetCore::Result<void>> result) -> boost::asio::awaitable<void> {
+            *result = co_await interval->tick();
+            co_return;
+        }(interval, result)
+    );
     scheduler->join();
 
-    ASSERT_TRUE(result.has_value());
     ASSERT_TRUE(result->has_value());
 }

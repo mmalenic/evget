@@ -24,7 +24,10 @@
 #define DATABASE_STORAGE_H
 
 #include <SQLiteCpp/Database.h>
-#include <boost/uuid/uuid.hpp>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "evgetcore/Event/Data.h"
 #include "evgetcore/Event/Schema.h"

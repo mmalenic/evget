@@ -106,7 +106,7 @@ EvgetCore::Storage::DatabaseManager::store_after_coroutine(
 ) {
     auto interval = Interval{storeAfter};
     while (!co_await scheduler->isStopped()) {
-        auto result = co_await interval.tick(scheduler);
+        auto result = co_await interval.tick();
 
         spdlog::debug(std::format("timer threshold of {} seconds reached", interval.period().count()));
 

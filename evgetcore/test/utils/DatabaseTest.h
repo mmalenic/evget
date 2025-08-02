@@ -26,6 +26,7 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
+#include <string>
 
 namespace Test::Database {
 

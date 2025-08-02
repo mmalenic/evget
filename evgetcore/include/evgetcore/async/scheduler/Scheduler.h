@@ -27,7 +27,7 @@
 #include <boost/asio.hpp>
 #include <spdlog/spdlog.h>
 
-#include <cstddef>
+#include <utility>
 
 #include "evgetcore/Error.h"
 
@@ -97,12 +97,6 @@ public:
      */
     [[nodiscard]] asio::awaitable<bool> isStopped() const;
 
-    /**
-     * \brief Get the executor for the thread pool.
-     * \return executor.
-     */
-    asio::thread_pool::executor_type getExecutor();
-
 private:
     asio::thread_pool pool{default_thread_pool_size()};
     std::atomic<bool> stopped{false};
@@ -111,11 +105,11 @@ private:
     template <typename T>
     void spawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
 
-    static constexpr std::size_t default_thread_pool_size();
+    static std::size_t default_thread_pool_size();
     void log_exception(const std::exception_ptr& error);
 };
 
-constexpr std::size_t Scheduler::default_thread_pool_size() {
+inline std::size_t Scheduler::default_thread_pool_size() {
     const auto num_threads = std::thread::hardware_concurrency() * 2;
     return num_threads == 0 ? 2 : num_threads;
 }

@@ -45,10 +45,6 @@ boost::asio::awaitable<bool> EvgetCore::Scheduler::isStopped() const {
     co_return stopped.load();
 }
 
-boost::asio::thread_pool::executor_type EvgetCore::Scheduler::getExecutor() {
-    return pool.get_executor();
-}
-
 void EvgetCore::Scheduler::log_exception(const std::exception_ptr& error) {
     try {
         if (error) {

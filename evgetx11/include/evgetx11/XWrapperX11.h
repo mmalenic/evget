@@ -81,8 +81,7 @@ private:
 
     std::optional<Atom> getAtom(const char* atomName) const;
 
-    GetPropertyResult
-    getProperty(Atom atom, Window window) const;
+    GetPropertyResult getProperty(Atom atom, Window window) const;
 
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> createIC(Display& display, XIM xim);
 

@@ -33,19 +33,18 @@
 
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
     auto scheduler = std::make_shared<EvgetCore::Scheduler>();
-    std::optional<int> result{};
+    const std::shared_ptr<int> result{};
 
     scheduler->spawn(
-        [](auto& result) -> boost::asio::awaitable<void> {
-            result = 1;
+        [](std::shared_ptr<int> result) -> boost::asio::awaitable<void> {
+            *result = 1;
             co_return;
         }(result),
         [] {}
     );
     scheduler->join();
 
-    ASSERT_TRUE(result.has_value());
-    ASSERT_EQ(*result, 1);
+    ASSERT_TRUE(result != nullptr && *result == 1);
 }
 
 TEST(SchedulerTest, SpawnReturnTask) {
@@ -55,16 +54,15 @@ TEST(SchedulerTest, SpawnReturnTask) {
     scheduler->spawn<int>([]() -> boost::asio::awaitable<int> { co_return 1; }(), [&](auto value) { result = value; });
     scheduler->join();
 
-    ASSERT_TRUE(result.has_value());
-    ASSERT_EQ(*result, 1);
+    ASSERT_TRUE(result.has_value() && *result == 1);
 }
 
 TEST(SchedulerTest, SpawnVoidTaskException) {
-    auto stopped = std::atomic{false};
+    auto stopped = std::make_shared<std::atomic<bool>>(false);
     auto scheduler = std::make_shared<EvgetCore::Scheduler>();
 
-    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
-        while (!stopped) {
+    scheduler->spawn([](std::shared_ptr<std::atomic<bool>> stopped) -> boost::asio::awaitable<void> {
+        while (!*stopped) {
         }
         co_return;
     }(stopped));
@@ -74,11 +72,11 @@ TEST(SchedulerTest, SpawnVoidTaskException) {
 }
 
 TEST(SchedulerTest, SpawnReturnTaskException) {
-    auto stopped = std::atomic{false};
+    auto stopped = std::make_shared<std::atomic<bool>>(false);
     auto scheduler = std::make_shared<EvgetCore::Scheduler>();
 
-    scheduler->spawn<int>([](auto& stopped) -> boost::asio::awaitable<int> {
-        while (!stopped) {
+    scheduler->spawn<int>([](std::shared_ptr<std::atomic<bool>> stopped) -> boost::asio::awaitable<int> {
+        while (!*stopped) {
         }
         co_return 1;
     }(stopped));
@@ -89,15 +87,15 @@ TEST(SchedulerTest, SpawnReturnTaskException) {
 
 TEST(SchedulerTest, Stop) {
     auto scheduler = std::make_shared<EvgetCore::Scheduler>();
-    std::atomic stopped{false};
+    auto stopped = std::make_shared<std::atomic<bool>>(false);
 
-    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
-        while (!stopped) {
+    scheduler->spawn([](std::shared_ptr<std::atomic<bool>> stopped) -> boost::asio::awaitable<void> {
+        while (!*stopped) {
         }
         co_return;
     }(stopped));
-    scheduler->spawn([](auto& stopped) -> boost::asio::awaitable<void> {
-        stopped = true;
+    scheduler->spawn([](std::shared_ptr<std::atomic<bool>> stopped) -> boost::asio::awaitable<void> {
+        *stopped = true;
         co_return;
     }(stopped));
 

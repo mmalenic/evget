@@ -26,6 +26,9 @@
 
 #include <spdlog/spdlog.h>
 
+#include <string>
+#include <unordered_map>
+
 #include "evgetcore/Event/MouseClick.h"
 #include "evgetcore/Event/MouseMove.h"
 #include "evgetx11/XWrapperX11.h"

@@ -26,7 +26,9 @@
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
 
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "evgetcore/database/Connection.h"
 #include "evgetcore/database/Query.h"

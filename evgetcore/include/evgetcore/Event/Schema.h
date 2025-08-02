@@ -30,6 +30,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "evgetcore/Error.h"
 #include "evgetcore/Event/ButtonAction.h"

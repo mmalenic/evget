@@ -24,6 +24,7 @@
 #define CONNECTION_H
 
 #include <memory>
+#include <string>
 
 #include "Query.h"
 #include "evgetcore/Error.h"

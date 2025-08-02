@@ -25,6 +25,7 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 
 #include "evgetcore/Event/ButtonAction.h"
 #include "evgetcore/Event/Data.h"
