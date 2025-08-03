@@ -54,7 +54,7 @@ TEST(XEventSwitchTest, RefreshDevices) {
 TEST(XEventSwitchTest, GetDevice) {
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
-    ASSERT_THROW(xEventSwitch.getDevice(1), std::out_of_range);
+    ASSERT_THROW(static_cast<void>(xEventSwitch.getDevice(1)), std::out_of_range);
 
     xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
     ASSERT_EQ(xEventSwitch.getDevice(1), EvgetCore::Event::Device::Mouse);
@@ -68,7 +68,7 @@ TEST(XEventSwitchTest, GetButtonName) {
     EvgetX11TestUtils::XWrapperMock xWrapperMock{};
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
 
-    ASSERT_THROW(xEventSwitch.getButtonName(1, 0), std::out_of_range);
+    ASSERT_THROW(static_cast<void>(xEventSwitch.getButtonName(1, 0)), std::out_of_range);
 
     EXPECT_CALL(xWrapperMock, getDeviceButtonMapping)
         .WillOnce(

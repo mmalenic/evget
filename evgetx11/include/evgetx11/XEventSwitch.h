@@ -91,17 +91,17 @@ public:
         EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
-    const std::string& getButtonName(int device_id, int button) const;
+    [[nodiscard]] const std::string& getButtonName(int device_id, int button) const;
 
     /**
      * Get the device with the given id.
      */
-    EvgetCore::Event::Device getDevice(int device_id) const;
+    [[nodiscard]] EvgetCore::Event::Device getDevice(int device_id) const;
 
     /**
      * Check whether the device with the given id is present.
      */
-    bool hasDevice(int device_id) const;
+    [[nodiscard]] bool hasDevice(int device_id) const;
 
     /**
      * Set the modifier state for a builder.

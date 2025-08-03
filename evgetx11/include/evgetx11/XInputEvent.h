@@ -54,7 +54,7 @@ public:
      * with hasData.
      */
     template <typename T>
-    const T& viewData() const;
+    [[nodiscard]] const T& viewData() const;
 
     /**
      * Create a XInputEvent by getting the next event from the display. Events received depend on

@@ -1,20 +1,18 @@
 Checks: >
   *,
-  -llvmlibc-callee-namespace,
-  -modernize-use-trailing-return-type,
-  -llvmlibc-implementation-in-namespace,
-  -fuchsia-default-arguments-calls,
-  -fuchsia-statically-constructed-objects,
-  -altera-unroll-loops,
-  -altera-struct-pack-align,
   -altera-id-dependent-backward-branch,
+  -altera-struct-pack-align,
+  -altera-unroll-loops,
+  -fuchsia-default-arguments-calls,
   -fuchsia-overloaded-operator,
-  -llvmlibc-restrict-system-libc-headers,
+  -fuchsia-statically-constructed-objects,
+  -llvm-header-guard,
+  -llvmlibc-callee-namespace,
   -llvmlibc-inline-function-decl,
-  -bugprone-easily-swappable-parameters,
-  -boost-use-ranges,
-  -abseil-string-find-str-contains,
-  -llvm-header-guard
+  -llvmlibc-implementation-in-namespace,
+  -llvmlibc-restrict-system-libc-headers,
+  -modernize-use-trailing-return-type,
+  -portability-template-virtual-member-function
 WarningsAsErrors: "*"
-HeaderFilterRegex: ""
+HeaderFilterRegex: ".*"
 ExtraArgs: ["-std=c++23"]
