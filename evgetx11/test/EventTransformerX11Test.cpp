@@ -29,9 +29,9 @@
 #include <array>
 #include <utility>
 
-#include "evgetcore/Event/Device.h"
-#include "evgetcore/Event/Entry.h"
-#include "evgetcore/Event/Schema.h"
+#include "evget/Event/Device.h"
+#include "evget/Event/Entry.h"
+#include "evget/Event/Schema.h"
 #include "evgetx11/EventTransformerX11.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
@@ -64,16 +64,16 @@ TEST(EventTransformerX11Test, TestTransformEvent) {
     auto xEvent = EvgetX11TestUtils::createXEvent(deviceEvent);
     set_x_wrapper_event_mocks(xWrapperMock, deviceEvent, xEvent);
 
-    xEventSwitchPointerKey.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo, xEventSwitch);
+    xEventSwitchPointerKey.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", xiDeviceInfo, xEventSwitch);
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
     auto data = transformer.transformEvent(std::move(inputEvent));
     const auto& entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseClick);
     ASSERT_EQ(entries.at(0).data().at(0), "");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
     ASSERT_EQ(entries.at(0).data().at(12), "0");

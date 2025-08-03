@@ -32,8 +32,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "evgetcore/Event/Key.h"
-#include "evgetcore/Event/MouseScroll.h"
+#include "evget/Event/Key.h"
+#include "evget/Event/MouseScroll.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
@@ -47,16 +47,16 @@ public:
     void refreshDevices(
         int device_id,
         std::optional<int> pointer_id,
-        EvgetCore::Event::Device device,
+        evget::Event::Device device,
         const std::string& name,
         const XIDeviceInfo& info,
         EvgetX11::XEventSwitch& xEventSwitch
     );
     bool switchOnEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
 private:
@@ -64,28 +64,28 @@ private:
 
     static void buttonEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
-        EvgetCore::Event::ButtonAction action,
+        evget::Event::Data& data,
+        evget::Event::ButtonAction action,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void keyEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void motionEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void scrollEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     std::reference_wrapper<XWrapper> xWrapper;
@@ -99,9 +99,9 @@ private:
 
 bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
         case XI_RawMotion:
@@ -109,10 +109,10 @@ bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
             scrollEvent(event, data, xEventSwitch, getTime);
             return true;
         case XI_RawButtonPress:
-            buttonEvent(event, data, EvgetCore::Event::ButtonAction::Press, xEventSwitch, getTime);
+            buttonEvent(event, data, evget::Event::ButtonAction::Press, xEventSwitch, getTime);
             return true;
         case XI_RawButtonRelease:
-            buttonEvent(event, data, EvgetCore::Event::ButtonAction::Release, xEventSwitch, getTime);
+            buttonEvent(event, data, evget::Event::ButtonAction::Release, xEventSwitch, getTime);
             return true;
         case XI_RawKeyPress:
         case XI_RawKeyRelease:
@@ -125,10 +125,10 @@ bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
 
 void EvgetX11::XEventSwitchPointerKey::buttonEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Event::ButtonAction action,
+    evget::Event::Data& data,
+    evget::Event::ButtonAction action,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     auto button = xEventSwitch.getButtonName(raw_event.sourceid, raw_event.detail);
@@ -145,9 +145,9 @@ void EvgetX11::XEventSwitchPointerKey::buttonEvent(
 
 void EvgetX11::XEventSwitchPointerKey::keyEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     if (!xEventSwitch.hasDevice(raw_event.sourceid)) {
@@ -160,17 +160,17 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 
     const std::string character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
 
-    EvgetCore::Event::ButtonAction action = EvgetCore::Event::ButtonAction::Release;
+    evget::Event::ButtonAction action = evget::Event::ButtonAction::Release;
     if (raw_event.evtype != XI_KeyRelease) {
         // NOLINTBEGIN(hicpp-signed-bitwise)
-        action = (raw_event.flags & XIKeyRepeat) ? EvgetCore::Event::ButtonAction::Repeat
-                                                 : EvgetCore::Event::ButtonAction::Press;
+        action =
+            (raw_event.flags & XIKeyRepeat) ? evget::Event::ButtonAction::Repeat : evget::Event::ButtonAction::Press;
         // NOLINTEND(hicpp-signed-bitwise)
     }
 
     const std::string name = XWrapperX11::keySymToString(keySym);
 
-    EvgetCore::Event::Key builder{};
+    evget::Event::Key builder{};
     builder.interval(getTime(raw_event.time))
         .positionX(query_pointer.root_x)
         .positionY(query_pointer.root_y)
@@ -191,9 +191,9 @@ void EvgetX11::XEventSwitchPointerKey::keyEvent(
 
 void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     // NOLINTBEGIN(hicpp-signed-bitwise)
@@ -203,7 +203,7 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
     }
     // NOLINTEND(hicpp-signed-bitwise)
 
-    EvgetCore::Event::MouseScroll builder{};
+    evget::Event::MouseScroll builder{};
     auto valuators = getValuators(raw_event.valuators);
     std::unordered_map<int, XIScrollClassInfo> processedValuators{};
     for (const auto& [valuator, info] : scrollMap[raw_event.sourceid]) {
@@ -241,9 +241,9 @@ void EvgetX11::XEventSwitchPointerKey::scrollEvent(
 
 void EvgetX11::XEventSwitchPointerKey::motionEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     // NOLINTBEGIN(hicpp-signed-bitwise)

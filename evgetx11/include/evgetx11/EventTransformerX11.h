@@ -34,7 +34,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "evgetcore/EventTransformer.h"
+#include "evget/EventTransformer.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchPointerKey.h"
 #include "evgetx11/XEventSwitchTouch.h"
@@ -42,10 +42,10 @@
 
 namespace EvgetX11 {
 template <typename... Switches>
-class EventTransformerX11 : public EvgetCore::EventTransformer<XInputEvent> {
+class EventTransformerX11 : public evget::EventTransformer<XInputEvent> {
 public:
     explicit EventTransformerX11(XWrapper& xWrapper, XEventSwitch xEventSwitch, Switches... switches);
-    EvgetCore::Event::Data transformEvent(XInputEvent event) override;
+    evget::Event::Data transformEvent(XInputEvent event) override;
 
     static EventTransformerX11 build(XWrapper& xWrapper);
 
@@ -58,7 +58,7 @@ private:
     std::optional<Time> previous{std::nullopt};
     std::optional<Time> previousFromEvent{std::nullopt};
 
-    std::unordered_map<int, EvgetCore::Event::Device> devices;
+    std::unordered_map<int, evget::Event::Device> devices;
     std::unordered_map<int, std::string> idToName;
 
     std::tuple<Switches...> switches;
@@ -106,16 +106,16 @@ void EvgetX11::EventTransformerX11<Switches...>::refreshDevices() {
 
         if ((xi2Device.enabled != False) && device.type != None) {
             auto type = xWrapper.get().atomName(device.type);
-            EvgetCore::Event::Device deviceType{EvgetCore::Event::Device::Unknown};
+            evget::Event::Device deviceType{evget::Event::Device::Unknown};
 
             if (strcmp(type.get(), XI_MOUSE) == 0) {
-                deviceType = EvgetCore::Event::Device::Mouse;
+                deviceType = evget::Event::Device::Mouse;
             } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                deviceType = EvgetCore::Event::Device::Keyboard;
+                deviceType = evget::Event::Device::Keyboard;
             } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                deviceType = EvgetCore::Event::Device::Touchscreen;
+                deviceType = evget::Event::Device::Touchscreen;
             } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                deviceType = EvgetCore::Event::Device::Touchpad;
+                deviceType = evget::Event::Device::Touchpad;
             }
 
             devices.emplace(device_id, deviceType);
@@ -154,8 +154,8 @@ std::optional<std::chrono::microseconds> EvgetX11::EventTransformerX11<Switches.
 }
 
 template <typename... Switches>
-EvgetCore::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEvent(XInputEvent event) {
-    EvgetCore::Event::Data data{};
+evget::Event::Data EvgetX11::EventTransformerX11<Switches...>::transformEvent(XInputEvent event) {
+    evget::Event::Data data{};
     if (event.hasData()) {
         auto type = event.getEventType();
 

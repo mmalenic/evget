@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 23)
 
+include_directories(/usr/X11/include)
+
 # x-release-please-start-version
 project(
     evget
@@ -35,42 +37,30 @@ if(BUILD_TESTING)
     enable_testing()
     set(TEST_EXECUTABLE_NAME evgettest)
 
-    add_executable(${TEST_EXECUTABLE_NAME} evgetcore/test/main.cpp)
+    add_executable(${TEST_EXECUTABLE_NAME} evget/test/main.cpp)
 endif()
 
-add_subdirectory(evgetcore)
+add_subdirectory(evget)
 
-toolbelt_check_includes(
-    VAR
-    EVGETX11_HAS_FEATURE
-    INCLUDES
-    X11/Xlib.h
-    X11/extensions/XInput.h
-    X11/extensions/XInput2.h
-    X11/Xutil.h
-    xorg/xserver-properties.h
-    LANGUAGE
-    CXX
-)
-if(EVGETX11_HAS_FEATURE)
-    add_subdirectory(evgetx11)
-endif()
+# toolbelt_check_includes( VAR EVGETX11_HAS_FEATURE INCLUDES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h
+# X11/Xutil.h xorg/xserver-properties.h LANGUAGE CXX ) if(EVGETX11_HAS_FEATURE) add_subdirectory(evgetx11) endif()
+add_subdirectory(evgetx11)
 
 if(BUILD_TESTING)
     list(APPEND LIBRARIES ${EVGET_LIBRARY_NAME})
-    if(EVGETX11_HAS_FEATURE)
-        list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
-    endif()
+    # if(EVGETX11_HAS_FEATURE)
+    list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
+    # endif()
 
     toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
 endif()
 
 if(EVGET_BUILD_BIN)
-    add_executable(${PROJECT_NAME} evgetcore/src/main.cpp)
+    add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/evget/src/main.cpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
-    if(EVGETX11_HAS_FEATURE)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
-    endif()
+    # if(EVGETX11_HAS_FEATURE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
+    # endif()
 endif()
 
 if(EVGET_INSTALL_BIN AND EVGET_BUILD_BIN)

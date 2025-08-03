@@ -34,10 +34,10 @@
 #include <memory>
 #include <optional>
 
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Device.h"
-#include "evgetcore/Event/Entry.h"
-#include "evgetcore/Event/Schema.h"
+#include "evget/Event/Data.h"
+#include "evget/Event/Device.h"
+#include "evget/Event/Entry.h"
+#include "evget/Event/Schema.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XEventSwitchTouch.h"
 #include "evgetx11/XInputEvent.h"
@@ -87,26 +87,26 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(readability-function-co
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", xiDeviceInfo);
 
-    auto data = EvgetCore::Event::Data{};
+    auto data = evget::Event::Data{};
     xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseMove);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
 
-    ASSERT_EQ(entries.at(1).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(1).type(), evget::Event::EntryType::MouseClick);
     ASSERT_EQ(entries.at(1).data().at(0), "1");
-    ASSERT_EQ(entries.at(1).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(1).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(1).data().at(4), "name");
     ASSERT_EQ(entries.at(1).data().at(11), "0");
     ASSERT_EQ(entries.at(1).data().at(12), "0");
@@ -149,19 +149,19 @@ TEST(XEventSwitchTouchTest, TestTouchUpdate) {
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", xiDeviceInfo);
 
-    auto data = EvgetCore::Event::Data{};
+    auto data = evget::Event::Data{};
     xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseMove);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
 }
@@ -208,26 +208,26 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(readability-function-cogn
 
     auto inputEvent = EvgetX11::XInputEvent::nextEvent(xWrapperMock);
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", xiDeviceInfo);
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", xiDeviceInfo);
 
-    auto data = EvgetCore::Event::Data{};
+    auto data = evget::Event::Data{};
     xEventSwitchTouch.switchOnEvent(inputEvent, data, xEventSwitch, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseMove);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
 
-    ASSERT_EQ(entries.at(1).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(1).type(), evget::Event::EntryType::MouseClick);
     ASSERT_EQ(entries.at(1).data().at(0), "1");
-    ASSERT_EQ(entries.at(1).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(1).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(1).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(1).data().at(4), "name");
     ASSERT_EQ(entries.at(1).data().at(11), "0");
     ASSERT_EQ(entries.at(1).data().at(12), "0");

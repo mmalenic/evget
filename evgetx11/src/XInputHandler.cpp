@@ -31,14 +31,14 @@
 
 #include <array>
 
-#include "evgetcore/Error.h"
+#include "evget/Error.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 #include "evgetx11/XWrapperX11.h"
 
 EvgetX11::XInputHandler::XInputHandler(XWrapper& xWrapper) : xWrapper{xWrapper} {}
 
-EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
+evget::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
     int major = versionMajor;
     int minor = versionMinor;
 
@@ -48,8 +48,8 @@ EvgetCore::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrap
         return {};
     }
 
-    return EvgetCore::Err{
-        {.errorType = EvgetCore::ErrorType::EventHandlerError,
+    return evget::Err{
+        {.errorType = evget::ErrorType::EventHandlerError,
          .message = fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor)}
     };
 }
@@ -80,7 +80,7 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
     xWrapper.selectEvents(mask);
 }
 
-EvgetCore::Result<EvgetX11::XInputHandler> EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
+evget::Result<EvgetX11::XInputHandler> EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
     return announceVersion(xWrapper).transform([&xWrapper] {
         setMask(xWrapper);
         return XInputHandler{xWrapper};

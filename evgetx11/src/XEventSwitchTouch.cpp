@@ -27,13 +27,13 @@
 #include <optional>
 #include <string>
 
-#include "evgetcore/Event/Device.h"
+#include "evget/Event/Device.h"
 #include "evgetx11/XEventSwitch.h"
 
 void EvgetX11::XEventSwitchTouch::refreshDevices(
     int device_id,
     std::optional<int> pointer_id,
-    EvgetCore::Event::Device device,
+    evget::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info,
     EvgetX11::XEventSwitch& xEventSwitch

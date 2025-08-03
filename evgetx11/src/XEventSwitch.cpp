@@ -29,10 +29,10 @@
 #include <span>
 #include <string>
 
-#include "evgetcore/Event/Device.h"
+#include "evget/Event/Device.h"
 #include "evgetx11/XWrapper.h"
 
-EvgetCore::Event::Device EvgetX11::XEventSwitch::getDevice(int device_id) const {
+evget::Event::Device EvgetX11::XEventSwitch::getDevice(int device_id) const {
     return devices.at(device_id);
 }
 
@@ -58,7 +58,7 @@ void EvgetX11::XEventSwitch::setButtonMap(const XIButtonClassInfo& buttonInfo, i
 void EvgetX11::XEventSwitch::refreshDevices(
     int device_id,
     std::optional<int> pointer_id,
-    EvgetCore::Event::Device device,
+    evget::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info
 ) {

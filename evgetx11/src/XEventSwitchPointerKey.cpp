@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-#include "evgetcore/Event/Device.h"
+#include "evget/Event/Device.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XWrapper.h"
 #include "evgetx11/XWrapperX11.h"
@@ -44,7 +44,7 @@ EvgetX11::XEventSwitchPointerKey::XEventSwitchPointerKey(XWrapper& xWrapper) : x
 void EvgetX11::XEventSwitchPointerKey::refreshDevices(
     int device_id,
     std::optional<int> pointer_id,
-    EvgetCore::Event::Device device,
+    evget::Event::Device device,
     const std::string& name,
     const XIDeviceInfo& info,
     EvgetX11::XEventSwitch& xEventSwitch

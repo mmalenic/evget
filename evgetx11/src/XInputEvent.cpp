@@ -24,7 +24,7 @@
 
 #include <chrono>
 
-#include "evgetcore/Event/Schema.h"
+#include "evget/Event/Schema.h"
 #include "evgetx11/XWrapper.h"
 
 EvgetX11::XInputEvent::XInputEvent(XWrapper& xWrapper)
@@ -38,7 +38,7 @@ int EvgetX11::XInputEvent::getEventType() const {
     return cookie->evtype;
 }
 
-const EvgetCore::Event::Timestamp& EvgetX11::XInputEvent::getTimestamp() const {
+const evget::Event::Timestamp& EvgetX11::XInputEvent::getTimestamp() const {
     return timestamp;
 }
 

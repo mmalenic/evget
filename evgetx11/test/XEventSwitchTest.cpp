@@ -33,11 +33,11 @@
 #include <optional>
 #include <stdexcept>
 
-#include "evgetcore/Event/ButtonAction.h"
-#include "evgetcore/Event/Data.h"
-#include "evgetcore/Event/Device.h"
-#include "evgetcore/Event/Entry.h"
-#include "evgetcore/Event/Schema.h"
+#include "evget/Event/ButtonAction.h"
+#include "evget/Event/Data.h"
+#include "evget/Event/Device.h"
+#include "evget/Event/Entry.h"
+#include "evget/Event/Schema.h"
 #include "evgetx11/XEventSwitch.h"
 #include "utils/EvgetX11TestUtils.h"
 
@@ -47,7 +47,7 @@ TEST(XEventSwitchTest, RefreshDevices) {
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
     ASSERT_FALSE(xEventSwitch.hasDevice(1));
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", {});
     ASSERT_TRUE(xEventSwitch.hasDevice(1));
 }
 
@@ -56,8 +56,8 @@ TEST(XEventSwitchTest, GetDevice) {
     EvgetX11::XEventSwitch xEventSwitch{xWrapperMock};
     ASSERT_THROW(static_cast<void>(xEventSwitch.getDevice(1)), std::out_of_range);
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
-    ASSERT_EQ(xEventSwitch.getDevice(1), EvgetCore::Event::Device::Mouse);
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", {});
+    ASSERT_EQ(xEventSwitch.getDevice(1), evget::Event::Device::Mouse);
 }
 
 TEST(XEventSwitchTest, GetButtonName) {
@@ -79,7 +79,7 @@ TEST(XEventSwitchTest, GetButtonName) {
                                                                                                   return 0;
                                                                                               }})));
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", {});
     xEventSwitch.setButtonMap(buttonClassInfo, 1);
     ASSERT_EQ(xEventSwitch.getButtonName(1, 0), "MOUSE");
 }
@@ -114,24 +114,20 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-funct
     });
 
     xEventSwitch.setButtonMap(buttonClassInfo, 1);
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", {});
 
-    EvgetCore::Event::Data data{};  // NOLINT(misc-const-correctness)
-    xEventSwitch.addButtonEvent(
-        deviceEvent,
-        EvgetCore::Event::Timestamp{},
-        data,
-        EvgetCore::Event::ButtonAction::Press,
-        0,
-        [](Time) { return std::optional{std::chrono::microseconds{1}}; }
-    );
+    evget::Event::Data data{};  // NOLINT(misc-const-correctness)
+    xEventSwitch
+        .addButtonEvent(deviceEvent, evget::Event::Timestamp{}, data, evget::Event::ButtonAction::Press, 0, [](Time) {
+            return std::optional{std::chrono::microseconds{1}};
+        });
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseClick);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseClick);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
     ASSERT_EQ(entries.at(0).data().at(12), "0");
@@ -158,19 +154,19 @@ TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
         return EvgetX11TestUtils::create_pointer_result();
     });
 
-    xEventSwitch.refreshDevices(1, 1, EvgetCore::Event::Device::Mouse, "name", {});
+    xEventSwitch.refreshDevices(1, 1, evget::Event::Device::Mouse, "name", {});
 
-    EvgetCore::Event::Data data{};  // NOLINT(misc-const-correctness)
-    xEventSwitch.addMotionEvent(deviceEvent, EvgetCore::Event::Timestamp{}, data, [](Time) {
+    evget::Event::Data data{};  // NOLINT(misc-const-correctness)
+    xEventSwitch.addMotionEvent(deviceEvent, evget::Event::Timestamp{}, data, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
 
     auto entries = data.entries();
 
-    ASSERT_EQ(entries.at(0).type(), EvgetCore::Event::EntryType::MouseMove);
+    ASSERT_EQ(entries.at(0).type(), evget::Event::EntryType::MouseMove);
     ASSERT_EQ(entries.at(0).data().at(0), "1");
-    ASSERT_EQ(entries.at(0).data().at(2), EvgetCore::Event::fromDouble(1.0));
-    ASSERT_EQ(entries.at(0).data().at(3), EvgetCore::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(2), evget::Event::fromDouble(1.0));
+    ASSERT_EQ(entries.at(0).data().at(3), evget::Event::fromDouble(1.0));
     ASSERT_EQ(entries.at(0).data().at(4), "name");
     ASSERT_EQ(entries.at(0).data().at(11), "0");
 }

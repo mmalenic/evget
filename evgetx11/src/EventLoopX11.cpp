@@ -26,8 +26,8 @@
 
 #include <utility>
 
-#include "evgetcore/Error.h"
-#include "evgetcore/EventListener.h"
+#include "evget/Error.h"
+#include "evget/EventListener.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XInputHandler.h"
 
@@ -35,19 +35,25 @@ EvgetX11::asio::awaitable<bool> EvgetX11::EventLoopX11::isStopped() {
     co_return stopped.load();
 }
 
-EvgetX11::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::start() {
-    return this->eventLoop();
+EvgetX11::asio::awaitable<evget::Result<void>> EvgetX11::EventLoopX11::start() {
+    while (!co_await isStopped()) {
+        auto result = this->notify(handler.getEvent());
+        if (!result.has_value()) {
+            co_return evget::Err{result.error()};
+        }
+    }
+    co_return evget::Result<void>{};
 }
 
 void EvgetX11::EventLoopX11::stop() {
     stopped.store(true);
 }
 
-void EvgetX11::EventLoopX11::registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) {
+void EvgetX11::EventLoopX11::registerEventListener(evget::EventListener<XInputEvent>& eventListener) {
     _eventListener = eventListener;
 }
 
-EvgetCore::Result<void> EvgetX11::EventLoopX11::notify(XInputEvent event) {
+evget::Result<void> EvgetX11::EventLoopX11::notify(XInputEvent event) {
     if (_eventListener.has_value()) {
         return _eventListener->get().notify(std::move(event));
     }
@@ -55,13 +61,3 @@ EvgetCore::Result<void> EvgetX11::EventLoopX11::notify(XInputEvent event) {
 }
 
 EvgetX11::EventLoopX11::EventLoopX11(XInputHandler xInputHandler) : handler{xInputHandler} {}
-
-boost::asio::awaitable<EvgetCore::Result<void>> EvgetX11::EventLoopX11::eventLoop() {
-    while (!co_await isStopped()) {
-        auto result = this->notify(handler.getEvent());
-        if (!result.has_value()) {
-            co_return EvgetCore::Err{result.error()};
-        }
-    }
-    co_return EvgetCore::Result<void>{};
-}

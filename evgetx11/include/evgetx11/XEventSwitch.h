@@ -29,8 +29,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "evgetcore/Event/MouseClick.h"
-#include "evgetcore/Event/MouseMove.h"
+#include "evget/Event/MouseClick.h"
+#include "evget/Event/MouseMove.h"
 #include "evgetx11/XWrapperX11.h"
 
 namespace EvgetX11 {
@@ -38,7 +38,7 @@ namespace EvgetX11 {
  * Check whether the template parameter is a builder with a modifier function.
  */
 template <typename T>
-concept BuilderHasModifier = requires(T builder, EvgetCore::Event::ModifierValue modifierValue) {
+concept BuilderHasModifier = requires(T builder, evget::Event::ModifierValue modifierValue) {
     { builder.modifier(modifierValue) } -> std::convertible_to<T>;
 };
 
@@ -71,24 +71,24 @@ public:
     void refreshDevices(
         int device_id,
         std::optional<int> pointer_id,
-        EvgetCore::Event::Device device,
+        evget::Event::Device device,
         const std::string& name,
         const XIDeviceInfo& info
     );
 
     void addButtonEvent(
         const XIRawEvent& event,
-        EvgetCore::Event::Timestamp dateTime,
-        EvgetCore::Event::Data& data,
-        EvgetCore::Event::ButtonAction action,
+        evget::Event::Timestamp dateTime,
+        evget::Event::Data& data,
+        evget::Event::ButtonAction action,
         int button,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void addMotionEvent(
         const XIRawEvent& event,
-        EvgetCore::Event::Timestamp dateTime,
-        EvgetCore::Event::Data& data,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Event::Timestamp dateTime,
+        evget::Event::Data& data,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     [[nodiscard]] const std::string& getButtonName(int device_id, int button) const;
@@ -96,7 +96,7 @@ public:
     /**
      * Get the device with the given id.
      */
-    [[nodiscard]] EvgetCore::Event::Device getDevice(int device_id) const;
+    [[nodiscard]] evget::Event::Device getDevice(int device_id) const;
 
     /**
      * Check whether the device with the given id is present.
@@ -131,7 +131,7 @@ public:
 private:
     std::reference_wrapper<XWrapper> xWrapper;
     std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap;
-    std::unordered_map<int, EvgetCore::Event::Device> devices;
+    std::unordered_map<int, evget::Event::Device> devices;
     std::unordered_map<int, std::string> idToName;
     int pointer_id{};
 };
@@ -140,28 +140,28 @@ template <BuilderHasModifier T>
 T& EvgetX11::XEventSwitch::setModifierValue(unsigned int modifierState, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifierState & ShiftMask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Shift);
+        builder.modifier(evget::Event::ModifierValue::Shift);
     }
     if (modifierState & LockMask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::CapsLock);
+        builder.modifier(evget::Event::ModifierValue::CapsLock);
     }
     if (modifierState & ControlMask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Control);
+        builder.modifier(evget::Event::ModifierValue::Control);
     }
     if (modifierState & Mod1Mask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Alt);
+        builder.modifier(evget::Event::ModifierValue::Alt);
     }
     if (modifierState & Mod2Mask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::NumLock);
+        builder.modifier(evget::Event::ModifierValue::NumLock);
     }
     if (modifierState & Mod3Mask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Mod3);
+        builder.modifier(evget::Event::ModifierValue::Mod3);
     }
     if (modifierState & Mod4Mask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Super);
+        builder.modifier(evget::Event::ModifierValue::Super);
     }
     if (modifierState & Mod5Mask) {
-        builder.modifier(EvgetCore::Event::ModifierValue::Mod5);
+        builder.modifier(evget::Event::ModifierValue::Mod5);
     }
 
     return builder;
@@ -211,13 +211,13 @@ T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& eve
 
 void EvgetX11::XEventSwitch::addMotionEvent(
     const XIRawEvent& event,
-    EvgetCore::Event::Timestamp dateTime,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Event::Timestamp dateTime,
+    evget::Event::Data& data,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
-    EvgetCore::Event::MouseMove builder{};
+    evget::Event::MouseMove builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
         .device(getDevice(event.sourceid))
@@ -234,15 +234,15 @@ void EvgetX11::XEventSwitch::addMotionEvent(
 
 void EvgetX11::XEventSwitch::addButtonEvent(
     const XIRawEvent& event,
-    EvgetCore::Event::Timestamp dateTime,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Event::ButtonAction action,
+    evget::Event::Timestamp dateTime,
+    evget::Event::Data& data,
+    evget::Event::ButtonAction action,
     int button,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
 
-    EvgetCore::Event::MouseClick builder{};
+    evget::Event::MouseClick builder{};
     builder.interval(getTime(event.time))
         .timestamp(dateTime)
         .device(getDevice(event.sourceid))

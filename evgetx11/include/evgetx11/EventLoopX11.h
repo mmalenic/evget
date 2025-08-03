@@ -23,7 +23,7 @@
 #ifndef EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 #define EVGET_INCLUDE_LINUX_SYSTEMEVENTLOOPLINUX_H
 
-#include "evgetcore/EventLoop.h"
+#include "evget/EventLoop.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XInputHandler.h"
 #include "evgetx11/XWrapper.h"
@@ -34,23 +34,21 @@ namespace asio = boost::asio;
 /**
  * Class represents processing evgetx11 system events.
  */
-class EventLoopX11 : public EvgetCore::EventLoop<XInputEvent> {
+class EventLoopX11 : public evget::EventLoop<XInputEvent> {
 public:
     /**
      * Create the system events.
      */
     explicit EventLoopX11(XInputHandler xInputHandler);
 
-    asio::awaitable<EvgetCore::Result<void>> eventLoop() override;
-
-    EvgetCore::Result<void> notify(XInputEvent event) override;
-    void registerEventListener(EvgetCore::EventListener<XInputEvent>& eventListener) override;
+    evget::Result<void> notify(XInputEvent event) override;
+    void registerEventListener(evget::EventListener<XInputEvent>& eventListener) override;
     void stop() override;
-    asio::awaitable<EvgetCore::Result<void>> start() override;
+    asio::awaitable<evget::Result<void>> start() override;
     asio::awaitable<bool> isStopped();
 
 private:
-    std::optional<std::reference_wrapper<EvgetCore::EventListener<XInputEvent>>> _eventListener;
+    std::optional<std::reference_wrapper<evget::EventListener<XInputEvent>>> _eventListener;
     XInputHandler handler;
 
     std::atomic<bool> stopped{false};

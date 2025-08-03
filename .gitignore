@@ -6,6 +6,6 @@
 /out/
 /venv/
 /vcpkg_installed/
-/evgetcore/database/generated/
+/evget/database/generated/
 /build/
 /CMakeUserPresets.json

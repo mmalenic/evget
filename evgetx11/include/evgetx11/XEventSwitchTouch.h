@@ -25,7 +25,7 @@
 
 #include <string>
 
-#include "evgetcore/Error.h"
+#include "evget/Error.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
@@ -38,14 +38,14 @@ public:
 
     bool switchOnEvent(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
     void refreshDevices(
         int device_id,
         std::optional<int> pointer_id,
-        EvgetCore::Event::Device device,
+        evget::Event::Device device,
         const std::string& name,
         const XIDeviceInfo& info,
         EvgetX11::XEventSwitch& xEventSwitch
@@ -54,37 +54,37 @@ public:
 private:
     static void touchButton(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
-        EvgetCore::Event::ButtonAction action,
+        evget::Event::Data& data,
+        evget::Event::ButtonAction action,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 
     static void touchMotion(
         const XInputEvent& event,
-        EvgetCore::Event::Data& data,
+        evget::Event::Data& data,
         EvgetX11::XEventSwitch& xEventSwitch,
-        EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
     );
 };
 
 bool EvgetX11::XEventSwitchTouch::switchOnEvent(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     switch (event.getEventType()) {
         case XI_RawTouchBegin:
             touchMotion(event, data, xEventSwitch, getTime);
-            touchButton(event, data, EvgetCore::Event::ButtonAction::Press, xEventSwitch, getTime);
+            touchButton(event, data, evget::Event::ButtonAction::Press, xEventSwitch, getTime);
             return true;
         case XI_RawTouchUpdate:
             touchMotion(event, data, xEventSwitch, getTime);
             return true;
         case XI_RawTouchEnd:
             touchMotion(event, data, xEventSwitch, getTime);
-            touchButton(event, data, EvgetCore::Event::ButtonAction::Release, xEventSwitch, getTime);
+            touchButton(event, data, evget::Event::ButtonAction::Release, xEventSwitch, getTime);
             return true;
         default:
             return false;
@@ -93,10 +93,10 @@ bool EvgetX11::XEventSwitchTouch::switchOnEvent(
 
 void EvgetX11::XEventSwitchTouch::touchButton(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
-    EvgetCore::Event::ButtonAction action,
+    evget::Event::Data& data,
+    evget::Event::ButtonAction action,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     if (xEventSwitch.hasDevice(raw_event.sourceid)) {
@@ -106,9 +106,9 @@ void EvgetX11::XEventSwitchTouch::touchButton(
 
 void EvgetX11::XEventSwitchTouch::touchMotion(
     const EvgetX11::XInputEvent& event,
-    EvgetCore::Event::Data& data,
+    evget::Event::Data& data,
     EvgetX11::XEventSwitch& xEventSwitch,
-    EvgetCore::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
 ) {
     auto raw_event = event.viewData<XIRawEvent>();
     if (xEventSwitch.hasDevice(raw_event.sourceid)) {

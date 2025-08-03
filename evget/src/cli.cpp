@@ -1,0 +1,169 @@
+// MIT License
+//
+// Copyright (c) 2021 Marko Malenic
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include "evget/cli.h"
+
+#include <CLI/CLI.hpp>
+#include <spdlog/cfg/env.h>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
+
+#include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <cstddef>
+#include <expected>
+#include <format>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "evget/Error.h"
+#include "evget/Storage/DatabaseStorage.h"
+#include "evget/Storage/JsonStorage.h"
+#include "evget/Storage/Store.h"
+#include "evget/database/sqlite/Connection.h"
+
+const std::vector<std::string>& evget::Cli::output() const {
+    return this->output_;
+}
+
+std::expected<bool, int> evget::Cli::parse(int argc, char** argv) {
+    spdlog::cfg::load_env_levels();
+
+    CLI::App app{"Show and store events from input devices.", "evget"};
+    argv = app.ensure_utf8(argv);
+
+    auto should_exit = false;
+    app.add_flag_callback(
+        "-v,--version",
+        [&should_exit] {
+            should_exit = true;
+            std::cout << std::format("evlist {}\n\n{}\n{}\n", EVGET_VERSION, EVGET_LICENSE, EVGET_COPYRIGHT);
+        },
+        "Print version"
+    );
+
+    app.add_option(
+           "-n,--store-n-events",
+           store_n_events_,
+           "Controls how many events to receive before outputting them to the store."
+    )
+        ->default_val(DEFAULT_N_EVENTS);
+    app.add_option(
+           "-s,--store-after-seconds",
+           store_after_,
+           "Store events at least every interval specified with this option, even if fewer events than "
+           "`--store-n-events` has been receieved."
+    )
+        ->default_val(DEFAULT_STORE_AFTER);
+
+    app.add_option_function<std::string>(
+           "-o,--output",
+           [this](std::string value) {
+               if (value == "-") {
+                   spdlog::set_level(spdlog::level::off);
+               }
+
+               std::ranges::transform(value, value.begin(), [](unsigned char character) {
+                   return std::tolower(character);
+               });
+               output_.emplace_back(value);
+           },
+           "The output location of the storage. "
+           "'-' is supported to output to stdout when using json storage and this "
+           "disables any logging."
+    )
+        ->default_val("-");
+
+    try {
+        app.parse(argc, argv);
+    } catch (const CLI::ParseError& e) {
+        return std::unexpected{app.exit(e)};
+    }
+
+    if (output_.empty()) {
+        output_.emplace_back("-");
+        spdlog::set_level(spdlog::level::off);
+    }
+
+    return should_exit;
+}
+
+evget::StorageType evget::Cli::get_storage_type(std::string& output) {
+    if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") ||
+        output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
+        return StorageType::SQLite;
+    }
+
+    return StorageType::Json;
+}
+
+evget::Result<std::vector<std::unique_ptr<evget::Storage::Store>>> evget::Cli::to_stores() {
+    auto stores = std::vector<std::unique_ptr<Storage::Store>>{};
+    stores.reserve(output_.size());
+
+    for (auto& output : this->output_) {
+        switch (evget::Cli::get_storage_type(output)) {
+            case evget::StorageType::SQLite: {
+                auto connect = std::make_unique<evget::SQLiteConnection>();
+                auto database = std::make_unique<evget::Storage::DatabaseStorage>(std::move(connect), output);
+                auto result = database->init();
+                if (!result.has_value()) {
+                    return Err{result.error()};
+                }
+
+                stores.emplace_back(std::move(database));
+
+                break;
+            }
+            case evget::StorageType::Json: {
+                if (output == "-") {
+                    // Do nothing to delete std::cout.
+                    auto deleter = [](std::ostream* _std_cout) {};
+                    std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> out = {&std::cout, deleter};
+
+                    stores.emplace_back(std::make_unique<evget::Storage::JsonStorage>(std::move(out)));
+                } else {
+                    auto out = std::make_unique<std::ofstream>(output, std::ios_base::app);
+                    stores.emplace_back(std::make_unique<evget::Storage::JsonStorage>(std::move(out)));
+                }
+
+                break;
+            }
+        }
+    }
+
+    return stores;
+}
+
+size_t evget::Cli::store_n_events() const {
+    return store_n_events_;
+}
+
+std::chrono::seconds evget::Cli::store_after() const {
+    return store_after_;
+}

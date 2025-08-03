@@ -25,7 +25,7 @@
 
 #include <memory>
 
-#include "evgetcore/Error.h"
+#include "evget/Error.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 
@@ -33,7 +33,7 @@ namespace EvgetX11 {
 
 class XInputHandler {
 public:
-    static EvgetCore::Result<XInputHandler> build(XWrapper& xWrapper);
+    static evget::Result<XInputHandler> build(XWrapper& xWrapper);
 
     /**
      * Get the next event.
@@ -50,7 +50,7 @@ private:
 
     static void setMask(XWrapper& xWrapper);
 
-    static EvgetCore::Result<void> announceVersion(XWrapper& xWrapper);
+    static evget::Result<void> announceVersion(XWrapper& xWrapper);
 };
 }  // namespace EvgetX11
 
