@@ -26,6 +26,7 @@
 #include <boost/asio/as_tuple.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/error.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include <boost/asio/this_coro.hpp>
 #include <boost/asio/use_awaitable.hpp>
 
@@ -33,15 +34,15 @@
 
 #include "evget/Error.h"
 
-evget::Interval::Interval(std::chrono::seconds period) : _period{period} {}
+evget::Interval::Interval(std::chrono::seconds period) : period_{period} {}
 
-evget::asio::awaitable<evget::Result<void>> evget::Interval::tick() {
-    if (!timer.has_value()) {
-        timer = asio::steady_timer{co_await asio::this_coro::executor, this->period()};
+evget::asio::awaitable<evget::Result<void>> evget::Interval::Tick() {
+    if (!timer_.has_value()) {
+        timer_ = asio::steady_timer{co_await asio::this_coro::executor, this->Period()};
     }
 
-    auto [error] = co_await timer->async_wait(asio::as_tuple(asio::use_awaitable));
-    reset();
+    auto [error] = co_await timer_->async_wait(asio::as_tuple(asio::use_awaitable));
+    Reset();
 
     if (error) {
         // Changing the timer value while mid async_wait causes the value to be operation_aborted.
@@ -55,12 +56,12 @@ evget::asio::awaitable<evget::Result<void>> evget::Interval::tick() {
     co_return Result<void>{};
 }
 
-void evget::Interval::reset() {
-    if (timer.has_value()) {
-        timer->expires_after(this->period());
+void evget::Interval::Reset() {
+    if (timer_.has_value()) {
+        timer_->expires_after(this->Period());
     }
 }
 
-std::chrono::seconds evget::Interval::period() const {
-    return _period;
+std::chrono::seconds evget::Interval::Period() const {
+    return period_;
 }

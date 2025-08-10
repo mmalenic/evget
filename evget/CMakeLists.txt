@@ -202,6 +202,6 @@ if(BUILD_TESTING)
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()
 
-if(EVLIST_INSTALL_LIB)
+if(EVGET_INSTALL_LIB)
     install(TARGETS ${LIBRARY_NAME} FILE_SET headers)
 endif()

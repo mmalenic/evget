@@ -42,25 +42,39 @@ endif()
 
 add_subdirectory(evget)
 
-# toolbelt_check_includes( VAR EVGETX11_HAS_FEATURE INCLUDES X11/Xlib.h X11/extensions/XInput.h X11/extensions/XInput2.h
-# X11/Xutil.h xorg/xserver-properties.h LANGUAGE CXX ) if(EVGETX11_HAS_FEATURE) add_subdirectory(evgetx11) endif()
-add_subdirectory(evgetx11)
+toolbelt_check_includes(
+    VAR
+    EVGETX11_HAS_FEATURE
+    INCLUDES
+    X11/Xlib.h
+    X11/extensions/XInput.h
+    X11/extensions/XInput2.h
+    X11/Xutil.h
+    xorg/xserver-properties.h
+    LANGUAGE
+    CXX
+)
+if(EVGETX11_HAS_FEATURE)
+    add_subdirectory(evgetx11)
+endif()
 
 if(BUILD_TESTING)
     list(APPEND LIBRARIES ${EVGET_LIBRARY_NAME})
-    # if(EVGETX11_HAS_FEATURE)
-    list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
-    # endif()
+    if(EVGETX11_HAS_FEATURE)
+        list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
+    endif()
 
     toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
 endif()
 
 if(EVGET_BUILD_BIN)
     add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/evget/src/main.cpp)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
     target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
-    # if(EVGETX11_HAS_FEATURE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
-    # endif()
+    if(EVGETX11_HAS_FEATURE)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
+    endif()
 endif()
 
 if(EVGET_INSTALL_BIN AND EVGET_BUILD_BIN)

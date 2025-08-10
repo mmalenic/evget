@@ -260,7 +260,7 @@ EvgetX11::XWrapperX11::GetPropertyResult EvgetX11::XWrapperX11::getProperty(Atom
         return {.property = {nullptr, XFree}};
     }
 
-    return {.nItems = nItems, .size = size, .type = type, .property = std::move(prop)};
+    return {.nItems = nItems, .type = type, .size = size, .property = std::move(prop)};
 }
 
 std::optional<std::string> EvgetX11::XWrapperX11::getWindowName(Window window) {

@@ -24,6 +24,7 @@
 #ifndef LOCKINGVECTOR_H
 #define LOCKINGVECTOR_H
 
+#include <cstddef>
 #include <mutex>
 #include <optional>
 #include <utility>
@@ -45,26 +46,26 @@ public:
      * \brief Move data into the inner vector without locking. Not thread-safe.
      * \param value value to move.
      */
-    constexpr void unsafe_push_back(T&& value);
+    constexpr void UnsafePushBack(T&& value);
 
     /**
      * \brief Move data into the inner vector by locking. Thread-safe.
      * \param value value to move.
      */
-    constexpr void push_back(T&& value);
+    constexpr void PushBack(T&& value);
 
     /**
      * \brief Consume the inner without locking. Not thread-safe.
      * \return the consumed vector if there are elements in it.
      */
-    constexpr std::optional<std::vector<T>> unsafe_into_inner();
+    constexpr std::optional<std::vector<T>> UnsafeIntoInner();
 
     /**
      * \brief Consume the inner vector when its size is greater than or equal to
      * the size parameter without locking. Thread-safe.
      * \return the consumed vector if there are elements in it.
      */
-    constexpr std::optional<std::vector<T>> into_inner();
+    constexpr std::optional<std::vector<T>> IntoInner();
 
     /**
      * \brief Consume the inner vector when its size is greater than or equal to
@@ -72,7 +73,7 @@ public:
      * \param size size to consume at.
      * \return the optionally consumed vector.
      */
-    constexpr std::optional<std::vector<T>> unsafe_into_inner_at(std::size_t size);
+    constexpr std::optional<std::vector<T>> UnsafeIntoInnerAt(std::size_t size);
 
     /**
      * \brief Consume the inner vector when its size is greater than or equal to
@@ -80,57 +81,57 @@ public:
      * \param size size to consume at.
      * \return the optionally consumed vector.
      */
-    constexpr std::optional<std::vector<T>> into_inner_at(std::size_t size);
+    constexpr std::optional<std::vector<T>> IntoInnerAt(std::size_t size);
 
 private:
-    std::vector<T> inner{};
-    std::mutex lock;
+    std::vector<T> inner_{};
+    std::mutex lock_;
 };
 
 template <class T>
-constexpr void LockingVector<T>::unsafe_push_back(T&& value) {
-    inner.push_back(std::move(value));
+constexpr void LockingVector<T>::UnsafePushBack(T&& value) {
+    inner_.push_back(std::move(value));
 }
 
 template <class T>
-constexpr void LockingVector<T>::push_back(T&& value) {
-    const std::scoped_lock guard{lock};
-    unsafe_push_back(std::move(value));
+constexpr void LockingVector<T>::PushBack(T&& value) {
+    const std::scoped_lock guard{lock_};
+    UnsafePushBack(std::move(value));
 }
 
 template <class T>
-constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner() {
-    auto out{std::move(inner)};
-    inner.clear();
+constexpr std::optional<std::vector<T>> LockingVector<T>::UnsafeIntoInner() {
+    auto out{std::move(inner_)};
+    inner_.clear();
     return out;
 }
 
 template <class T>
-constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner() {
-    const std::scoped_lock guard{lock};
-    return unsafe_into_inner();
+constexpr std::optional<std::vector<T>> LockingVector<T>::IntoInner() {
+    const std::scoped_lock guard{lock_};
+    return UnsafeIntoInner();
 }
 
 template <class T>
-constexpr std::optional<std::vector<T>> LockingVector<T>::unsafe_into_inner_at(std::size_t size) {
-    if (inner.size() >= size) {
-        return unsafe_into_inner();
+constexpr std::optional<std::vector<T>> LockingVector<T>::UnsafeIntoInnerAt(std::size_t size) {
+    if (inner_.size() >= size) {
+        return UnsafeIntoInner();
     }
 
     return {};
 }
 
 template <class T>
-constexpr std::optional<std::vector<T>> LockingVector<T>::into_inner_at(std::size_t size) {
-    const std::scoped_lock guard{lock};
-    return unsafe_into_inner_at(size);
+constexpr std::optional<std::vector<T>> LockingVector<T>::IntoInnerAt(std::size_t size) {
+    const std::scoped_lock guard{lock_};
+    return UnsafeIntoInnerAt(size);
 }
 
 template <class T>
 LockingVector<T>::LockingVector() = default;
 
 template <class T>
-LockingVector<T>::LockingVector(std::vector<T> inner) : inner{inner} {}
+LockingVector<T>::LockingVector(std::vector<T> inner) : inner_{inner} {}
 
 }  // namespace evget
 

@@ -30,32 +30,32 @@
 #include <exception>
 #include <utility>
 
-evget::Scheduler::Scheduler(std::size_t nThreads) : pool{nThreads} {}
+evget::Scheduler::Scheduler(std::size_t n_threads) : pool_{n_threads} {}
 
-void evget::Scheduler::join() {
-    pool.join();
+void evget::Scheduler::Join() {
+    pool_.join();
 }
 
-void evget::Scheduler::stop() {
-    stopped.store(true);
-    pool.stop();
+void evget::Scheduler::Stop() {
+    stopped_.store(true);
+    pool_.stop();
 }
 
-boost::asio::awaitable<bool> evget::Scheduler::isStopped() const {
-    co_return stopped.load();
+boost::asio::awaitable<bool> evget::Scheduler::IsStopped() const {
+    co_return stopped_.load();
 }
 
-void evget::Scheduler::log_exception(const std::exception_ptr& error) {
+void evget::Scheduler::LogException(const std::exception_ptr& error) {
     try {
         if (error) {
             std::rethrow_exception(error);
         }
     } catch (const std::exception& e) {
         spdlog::error("Exception in coroutine: {}", e.what());
-        stop();
+        Stop();
     }
 }
 
-void evget::Scheduler::spawn(asio::awaitable<void>&& task) {
-    spawnImpl(std::move(task), [this] { this->stop(); }, pool);
+void evget::Scheduler::Spawn(asio::awaitable<void>&& task) {
+    SpawnImpl(std::move(task), [this] { this->Stop(); }, pool_);
 }

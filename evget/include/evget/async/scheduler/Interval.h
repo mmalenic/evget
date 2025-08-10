@@ -24,9 +24,11 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <boost/asio.hpp>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/steady_timer.hpp>
 
 #include <chrono>
+#include <optional>
 
 #include "evget/Error.h"
 
@@ -50,22 +52,22 @@ public:
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
-    asio::awaitable<Result<void>> tick();
+    asio::awaitable<Result<void>> Tick();
 
     /**
      * \brief Reset the interval to expire one period after the current time. Not thread-safe.
      */
-    void reset();
+    void Reset();
 
     /**
      * \brief Get the timer's period.
      * \return period.
      */
-    [[nodiscard]] std::chrono::seconds period() const;
+    [[nodiscard]] std::chrono::seconds Period() const;
 
 private:
-    std::chrono::seconds _period{};
-    std::optional<asio::steady_timer> timer;
+    std::chrono::seconds period_{};
+    std::optional<asio::steady_timer> timer_;
 };
 }  // namespace evget
 
