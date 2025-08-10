@@ -28,7 +28,7 @@
 
 #include "evget/Event/Entry.h"
 
-namespace evget::Event {
+namespace evget::event {
 /**
  * \brief Data represents the actual entries that are generated from device events. The order
  * of the entries defines the final insertion order in the storage component.
@@ -39,35 +39,35 @@ public:
      * \brief Get a reference to the entries.
      * \return Entries reference.
      */
-    [[nodiscard]] const std::vector<Entry>& entries() const;
+    [[nodiscard]] const std::vector<event::Entry>& Entries() const;
 
     /**
      * \brief Merge with another data object by extending the entries of this object.
      * \param data the data object to merge with.
      */
-    void mergeWith(Data&& data);
+    void MergeWith(Data&& data);
 
     /**
      * \brief Take the entries out of this object
      * \return Entries moved out of object.
      */
-    std::vector<Entry> intoEntries() &&;
+    std::vector<event::Entry> IntoEntries() &&;
 
     /**
      * \brief Add an entry.
      * \param entry entry to insert.
      */
-    void addEntry(Entry entry);
+    void AddEntry(event::Entry entry);
 
     /**
      * \brief Are there any entries in this data.
      * \return if there are any entries.
      */
-    [[nodiscard]] bool empty() const;
+    [[nodiscard]] bool Empty() const;
 
 private:
-    std::vector<Entry> _entries;
+    std::vector<event::Entry> entries_;
 };
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // DATA_H

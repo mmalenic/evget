@@ -23,13 +23,16 @@
 #ifndef SQLITE_QUERY_H
 #define SQLITE_QUERY_H
 
-#include <SQLiteCpp/Database.h>
-#include <spdlog/spdlog.h>
+#include <SQLiteCpp/Statement.h>
 
+#include <exception>
+#include <functional>
 #include <map>
+#include <optional>
 #include <string>
 #include <variant>
 
+#include "evget/Error.h"
 #include "evget/database/Query.h"
 #include "evget/database/sqlite/Connection.h"
 
@@ -38,27 +41,27 @@ class SQLiteQuery : public Query {
 public:
     SQLiteQuery(SQLiteConnection& connection, std::string query);
 
-    void bindInt(int position, int value) override;
-    void bindDouble(int position, double value) override;
-    void bindChars(int position, const char* value) override;
-    void bindBool(int position, bool value) override;
-    Result<void> reset() override;
-    Result<bool> next() override;
-    Result<void> nextWhile() override;
-    Result<void> exec() override;
-    Result<bool> asBool(int pos) override;
-    Result<double> asDouble(int pos) override;
-    Result<int> asInt(int pos) override;
-    Result<std::string> asString(int pos) override;
+    void BindInt(int position, int value) override;
+    void BindDouble(int position, double value) override;
+    void BindChars(int position, const char* value) override;
+    void BindBool(int position, bool value) override;
+    Result<void> Reset() override;
+    Result<bool> Next() override;
+    Result<void> NextWhile() override;
+    Result<void> Exec() override;
+    Result<bool> AsBool(int pos) override;
+    Result<double> AsDouble(int pos) override;
+    Result<int> AsInt(int pos) override;
+    Result<std::string> AsString(int pos) override;
 
 private:
-    static Err asError(const std::exception& error);
-    static Err statementError();
+    static Err AsError(const std::exception& error);
+    static Err StatementError();
 
-    std::reference_wrapper<SQLiteConnection> _connection;
-    std::map<int, std::variant<int, double, const char*, bool>> binds;
-    std::optional<::SQLite::Statement> statement;
-    std::string query;
+    std::reference_wrapper<SQLiteConnection> connection_;
+    std::map<int, std::variant<int, double, const char*, bool>> binds_;
+    std::optional<::SQLite::Statement> statement_;
+    std::string query_;
 };
 
 }  // namespace evget

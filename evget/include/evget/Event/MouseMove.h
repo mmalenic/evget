@@ -23,7 +23,8 @@
 #ifndef EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 #define EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H
 
-#include <chrono>
+#include <evget/Event/DeviceType.h>
+#include <evget/Event/ModifierValue.h>
 #include <optional>
 #include <string>
 #include <vector>
@@ -31,7 +32,7 @@
 #include "evget/Event/Data.h"
 #include "evget/Event/Schema.h"
 
-namespace evget::Event {
+namespace evget::event {
 /**
  * Represents a mouse move event.
  */
@@ -40,94 +41,94 @@ public:
     /**
      * Add interval in microseconds.
      */
-    MouseMove& interval(Interval interval);
+    MouseMove& Interval(IntervalType interval);
 
     /**
      * Add interval in microseconds.
      */
-    MouseMove& interval(std::optional<Interval> interval);
+    MouseMove& Interval(std::optional<IntervalType> interval);
 
     /**
      * Add date timestamp.
      */
-    MouseMove& timestamp(Timestamp timestamp);
+    MouseMove& Timestamp(TimestampType timestamp);
 
     /**
      * Mouse device.
      */
-    MouseMove& device(Device device);
+    MouseMove& Device(DeviceType device);
 
     /**
      * Add position x.
      */
-    MouseMove& positionX(double x_pos);
+    MouseMove& PositionX(double x_pos);
 
     /**
      * Add position y.
      */
-    MouseMove& positionY(double y_pos);
+    MouseMove& PositionY(double y_pos);
 
     /**
      * Add the device name.
      */
-    MouseMove& deviceName(std::string deviceName);
+    MouseMove& DeviceName(std::string device_name);
 
     /**
      * Add the focus window name.
      */
-    MouseMove& focusWindowName(std::string name);
+    MouseMove& FocusWindowName(std::string name);
 
     /**
      * Add the focus window position x.
      */
-    MouseMove& focusWindowPositionX(double x_pos);
+    MouseMove& FocusWindowPositionX(double x_pos);
 
     /**
      * Add the focus window position y.
      */
-    MouseMove& focusWindowPositionY(double y_pos);
+    MouseMove& FocusWindowPositionY(double y_pos);
 
     /**
      * Add the focus window width.
      */
-    MouseMove& focusWindowWidth(double width);
+    MouseMove& FocusWindowWidth(double width);
 
     /**
      * Add the focus window height.
      */
-    MouseMove& focusWindowHeight(double height);
+    MouseMove& FocusWindowHeight(double height);
 
     /**
      * Add the screen number.
      */
-    MouseMove& screen(int screen);
+    MouseMove& Screen(int screen);
 
     /**
      * Add modifier value.
      */
-    MouseMove& modifier(ModifierValue modifier);
+    MouseMove& Modifier(ModifierValue modifier);
 
     /**
      * Build mouse move event.
      */
-    Data& build(Data& data) const;
+    Data& Build(Data& data) const;
 
 private:
-    std::optional<Interval> _interval;
-    std::optional<Timestamp> _timestamp;
-    std::optional<Device> _device;
-    std::optional<double> _positionX;
-    std::optional<double> _positionY;
-    std::optional<std::string> _deviceName;
-    std::optional<std::string> _focusWindowName;
-    std::optional<double> _focusWindowPositionX;
-    std::optional<double> _focusWindowPositionY;
-    std::optional<double> _focusWindowWidth;
-    std::optional<double> _focusWindowHeight;
-    std::optional<int> _screen;
+    std::optional<IntervalType> interval_;
+    std::optional<TimestampType> timestamp_;
+    std::optional<DeviceType> device_;
+    std::optional<double> position_x_;
+    std::optional<double> position_y_;
+    std::optional<std::string> device_name_;
+    std::optional<std::string> focus_window_name_;
+    std::optional<double> focus_window_position_x_;
+    std::optional<double> focus_window_position_y_;
+    std::optional<double> focus_window_width_;
+    std::optional<double> focus_window_height_;
+    std::optional<int> screen_;
 
-    std::vector<std::string> _modifiers;
+    std::vector<std::string> modifiers_;
 };
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // EVGET_INCLUDE_EVENT_DATA_MOUSEMOVE_H

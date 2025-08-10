@@ -24,25 +24,27 @@
 #ifndef EVGET_MODIFIERVALUE_H
 #define EVGET_MODIFIERVALUE_H
 
-namespace evget::Event {
+#include <cstdint>
+
+namespace evget::event {
 /**
  * Specify the allowed keyboard modifiers.
  * Based on https://www.glfw.org/docs/3.3/group__mods.html
  */
 enum class ModifierValue : std::uint8_t {
-    Shift,
+    kShift,
     // X11 - Lock
-    CapsLock,
-    Control,
+    kCapsLock,
+    kControl,
     // X11 - Mod1, Mac - Option
-    Alt,
+    kAlt,
     // X11 - Mod2
-    NumLock,
-    Mod3,
+    kNumLock,
+    kMod3,
     // X11 - Mod4, Mac - Command, Windows - Windows key
-    Super,
-    Mod5
+    kSuper,
+    kMod5
 };
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // EVGET_MODIFIERVALUE_H

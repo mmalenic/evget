@@ -16,7 +16,6 @@ class EvgetRecipe(ConanFile):
     requires = (
         "boost/[^1]",
         "spdlog/[^1]",
-        "date/[^3]",
         "nlohmann_json/[^3]",
         "sqlitecpp/[^3]",
         "cli11/[^2]",

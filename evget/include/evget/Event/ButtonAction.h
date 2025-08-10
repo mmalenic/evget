@@ -25,8 +25,8 @@
 
 #include <cstdint>
 
-namespace evget::Event {
-enum class ButtonAction : std::uint8_t { Press, Release, Repeat };
-}  // namespace evget::Event
+namespace evget::event {
+enum class ButtonAction : std::uint8_t { kPress, kRelease, kRepeat };
+} // namespace evget::event
 
 #endif

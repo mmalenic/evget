@@ -3,6 +3,7 @@ Checks: >
   -altera-id-dependent-backward-branch,
   -altera-struct-pack-align,
   -altera-unroll-loops,
+  -bugprone-easily-swappable-parameters,
   -fuchsia-default-arguments-calls,
   -fuchsia-overloaded-operator,
   -fuchsia-statically-constructed-objects,

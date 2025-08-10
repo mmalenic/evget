@@ -23,38 +23,39 @@
 #ifndef SQLITE_CPP_H
 #define SQLITE_CPP_H
 
+#include "evget/database/Connection.h"
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
+#include <evget/Error.h>
+#include <evget/database/Query.h>
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
-
-#include "evget/database/Connection.h"
-#include "evget/database/Query.h"
 
 namespace evget {
 class SQLiteConnection : public Connection {
 public:
     SQLiteConnection() = default;
 
-    Result<void> connect(std::string database, ConnectOptions options) override;
-    Result<void> transaction() override;
-    Result<void> commit() override;
-    Result<void> rollback() override;
-    std::unique_ptr<Query> buildQuery(std::string query) override;
+    Result<void> Connect(std::string database, ConnectOptions options) override;
+    Result<void> Transaction() override;
+    Result<void> Commit() override;
+    Result<void> Rollback() override;
+    std::unique_ptr<Query> BuildQuery(std::string query) override;
 
     /**
      * \brief Get the underyling database.
      * \return the database.
      */
-    [[nodiscard]] std::optional<std::reference_wrapper<::SQLite::Database>> database();
+    [[nodiscard]] std::optional<std::reference_wrapper<::SQLite::Database>> Database();
 
 private:
     std::optional<::SQLite::Database> database_;
     std::optional<::SQLite::Transaction> transaction_;
 
-    static Err connectError(const char* message);
+    static Err ConnectError(const char* message);
 };
 }  // namespace evget
 

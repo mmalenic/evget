@@ -25,8 +25,8 @@
 
 #include <cstdint>
 
-namespace evget::Event {
-enum class Direction : std::uint8_t { Down, Left, Right, Up };
-}
+namespace evget::event {
+enum class Direction : std::uint8_t { kDown, kLeft, kRight, kUp };
+} // namespace evget::event
 
 #endif  // EVGET_INCLUDE_EVGET_EVENT_POINTER_DIRECTION_H

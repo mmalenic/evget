@@ -26,38 +26,42 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <ranges>
 #include <string>
+#include <string_view>
 #include <vector>
 
-namespace evget::Event {
+namespace evget::event {
 
 namespace detail {
-constexpr auto mouseMoveNFields = 12;
-constexpr auto mouseScrollNFields = 14;
-constexpr auto mouseClickNFields = 15;
-constexpr auto keyNFields = 16;
+constexpr auto kMouseMoveNFields = 12;
+constexpr auto kMouseScrollNFields = 14;
+constexpr auto kMouseClickNFields = 15;
+constexpr auto kEyNFields = 16;
 
 template <std::size_t From, std::size_t To, typename AddElements>
-concept AddToArray = std::ranges::range<AddElements> &&
-    To > From&& requires(AddElements addElements) { addElements.size() <= To - From; };
+concept AddArray = std::ranges::range<AddElements> &&
+    To > From &&
+    requires(AddElements add_elements) { add_elements.size() <= To - From; };
 
 /**
  * \brief Add additional elements to an array.
  */
 template <std::size_t From, std::size_t To, typename AddElements>
-    requires AddToArray<From, To, AddElements>
+    requires AddArray<From, To, AddElements>
 constexpr std::array<std::string_view, To>
-addToArray(std::array<std::string_view, From> from, AddElements addElements) {
+AddToArray(std::array<std::string_view, From> from, AddElements add_elements) {
     std::array<std::string_view, To> out{};
 
     auto next = std::copy(from.begin(), from.end(), out.begin());
-    std::copy(addElements.begin(), addElements.end(), next);
+    std::copy(add_elements.begin(), add_elements.end(), next);
 
     return out;
 }
 
-constexpr std::array<std::string_view, mouseMoveNFields> mouseMoveFields{
+constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields{
     "interval",
     "timestamp",
     "position_x",
@@ -72,18 +76,18 @@ constexpr std::array<std::string_view, mouseMoveNFields> mouseMoveFields{
     "device_type",
 };
 
-constexpr std::array<std::string_view, mouseScrollNFields> mouseScrollFields =
-    addToArray<mouseMoveNFields, mouseScrollNFields>(
-        mouseMoveFields,
+constexpr std::array<std::string_view, kMouseScrollNFields> kMouseScrollFields =
+    AddToArray<kMouseMoveNFields, kMouseScrollNFields>(
+        kMouseMoveFields,
         std::vector{
             "scroll_vertical",
             "scroll_horizontal",
         }
     );
 
-constexpr std::array<std::string_view, mouseClickNFields> mouseClickFields =
-    addToArray<mouseMoveNFields, mouseClickNFields>(
-        mouseMoveFields,
+constexpr std::array<std::string_view, kMouseClickNFields> kMouseClickFields =
+    AddToArray<kMouseMoveNFields, kMouseClickNFields>(
+        kMouseMoveFields,
         std::vector{
             "button_id",
             "button_name",
@@ -91,8 +95,8 @@ constexpr std::array<std::string_view, mouseClickNFields> mouseClickFields =
         }
     );
 
-constexpr std::array<std::string_view, keyNFields> keyFields = addToArray<mouseClickNFields, keyNFields>(
-    mouseClickFields,
+constexpr std::array<std::string_view, kEyNFields> kEyFields = AddToArray<kMouseClickNFields, kEyNFields>(
+    kMouseClickFields,
     std::vector{
         "character",
     }
@@ -102,7 +106,7 @@ constexpr std::array<std::string_view, keyNFields> keyFields = addToArray<mouseC
 /**
  * \brief An entry type.
  */
-enum class EntryType : std::uint8_t { Key, MouseClick, MouseMove, MouseScroll };
+enum class EntryType : std::uint8_t { kKey, kMouseClick, kMouseMove, kMouseScroll };
 
 struct EntryWithFields {
     EntryType type;
@@ -118,26 +122,26 @@ class Entry {
 public:
     Entry(EntryType type, std::vector<std::string> data, std::vector<std::string> modifiers);
 
-    [[nodiscard]] EntryType type() const;
-    [[nodiscard]] const std::vector<std::string>& data() const;
-    [[nodiscard]] const std::vector<std::string>& modifiers() const;
+    [[nodiscard]] EntryType Type() const;
+    [[nodiscard]] const std::vector<std::string>& Data() const;
+    [[nodiscard]] const std::vector<std::string>& Modifiers() const;
 
     /**
      * \brief Rearrange the entry fields from an integer to named representation.
      */
-    void toNamedRepresentation();
+    void ToNamedRepresentation();
 
     /**
      * \brief Get the entry with fields.
      */
-    [[nodiscard]] EntryWithFields getEntryWithFields() const;
+    [[nodiscard]] EntryWithFields GetEntryWithFields() const;
 
 private:
-    EntryType _type;
-    std::vector<std::string> _data;
-    std::vector<std::string> _modifiers;
+    EntryType type_;
+    std::vector<std::string> data_;
+    std::vector<std::string> modifiers_;
 };
 
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // ENTRY_H

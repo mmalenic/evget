@@ -23,7 +23,9 @@
 #ifndef EVGET_SRC_KEY_H
 #define EVGET_SRC_KEY_H
 
-#include <chrono>
+#include "evget/Event/DeviceType.h"
+#include "evget/Event/ModifierValue.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +33,7 @@
 #include "evget/Event/Data.h"
 #include "evget/Event/Schema.h"
 
-namespace evget::Event {
+namespace evget::event {
 /**
  * Represents a key event.
  */
@@ -40,118 +42,118 @@ public:
     /**
      * Add interval in microseconds.
      */
-    Key& interval(Interval interval);
+    Key& Interval(IntervalType interval);
 
     /**
      * Add interval in microseconds.
      */
-    Key& interval(std::optional<Interval> interval);
+    Key& Interval(std::optional<IntervalType> interval);
 
     /**
      * Add date timestamp.
      */
-    Key& timestamp(Timestamp timestamp);
+    Key& Timestamp(TimestampType timestamp);
 
     /**
      * Key device.
      */
-    Key& device(Device device);
+    Key& Device(DeviceType device);
 
     /**
      * Add position x.
      */
-    Key& positionX(double x_pos);
+    Key& PositionX(double x_pos);
 
     /**
      * Add position y.
      */
-    Key& positionY(double y_pos);
+    Key& PositionY(double y_pos);
 
     /**
      * Add action.
      */
-    Key& action(ButtonAction action);
+    Key& Action(ButtonAction action);
 
     /**
      * Add id.
      */
-    Key& button(int button);
+    Key& Button(int button);
 
     /**
      * Add id.
      */
-    Key& name(std::string name);
+    Key& Name(std::string name);
 
     /**
      * Add character.
      */
-    Key& character(std::string character);
+    Key& Character(std::string character);
 
     /**
      * Add the device name.
      */
-    Key& deviceName(std::string deviceName);
+    Key& DeviceName(std::string device_name);
 
     /**
      * Add the focus window name.
      */
-    Key& focusWindowName(std::string name);
+    Key& FocusWindowName(std::string name);
 
     /**
      * Add the focus window position x.
      */
-    Key& focusWindowPositionX(double x_pos);
+    Key& FocusWindowPositionX(double x_pos);
 
     /**
      * Add the focus window position y.
      */
-    Key& focusWindowPositionY(double y_pos);
+    Key& FocusWindowPositionY(double y_pos);
 
     /**
      * Add the focus window width.
      */
-    Key& focusWindowWidth(double width);
+    Key& FocusWindowWidth(double width);
 
     /**
      * Add the focus window height.
      */
-    Key& focusWindowHeight(double height);
+    Key& FocusWindowHeight(double height);
 
     /**
      * Add the screen number.
      */
-    Key& screen(int screen);
+    Key& Screen(int screen);
 
     /**
      * Add modifier value.
      */
-    Key& modifier(ModifierValue modifier);
+    Key& Modifier(ModifierValue modifier);
 
     /**
      * Build key event.
      */
-    Data& build(Data& data) const;
+    Data& Build(Data& data) const;
 
 private:
-    std::optional<Interval> _interval;
-    std::optional<Timestamp> _timestamp;
-    std::optional<Device> _device;
-    std::optional<double> _positionX;
-    std::optional<double> _positionY;
-    std::optional<ButtonAction> _action;
-    std::optional<int> _button;
-    std::optional<std::string> _name;
-    std::optional<std::string> _character;
-    std::optional<std::string> _deviceName;
-    std::optional<std::string> _focusWindowName;
-    std::optional<double> _focusWindowPositionX;
-    std::optional<double> _focusWindowPositionY;
-    std::optional<double> _focusWindowWidth;
-    std::optional<double> _focusWindowHeight;
-    std::optional<int> _screen;
+    std::optional<IntervalType> interval_;
+    std::optional<TimestampType> timestamp_;
+    std::optional<DeviceType> device_;
+    std::optional<double> position_x_;
+    std::optional<double> position_y_;
+    std::optional<ButtonAction> action_;
+    std::optional<int> button_;
+    std::optional<std::string> name_;
+    std::optional<std::string> character_;
+    std::optional<std::string> device_name_;
+    std::optional<std::string> focus_window_name_;
+    std::optional<double> focus_window_position_x_;
+    std::optional<double> focus_window_position_y_;
+    std::optional<double> focus_window_width_;
+    std::optional<double> focus_window_height_;
+    std::optional<int> screen_;
 
-    std::vector<std::string> _modifiers;
+    std::vector<std::string> modifiers_;
 };
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // EVGET_SRC_KEY_H

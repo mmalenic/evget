@@ -25,8 +25,8 @@
 
 #include <cstdint>
 
-namespace evget::Event {
-enum class Device : std::uint8_t { Mouse, Keyboard, Touchpad, Touchscreen, Unknown };
-}  // namespace evget::Event
+namespace evget::event {
+enum class DeviceType : std::uint8_t { kMouse, kKeyboard, kTouchpad, kTouchscreen, kUnknown };
+} // namespace evget::event
 
 #endif

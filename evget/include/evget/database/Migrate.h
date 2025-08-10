@@ -23,6 +23,8 @@
 #ifndef DATABASE_MIGRATE_H
 #define DATABASE_MIGRATE_H
 
+#include "evget/Error.h"
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -50,18 +52,18 @@ public:
      * \brief Apply the migrations.
      * \return a result indicating whether the migration was successful.
      */
-    Result<void> migrate();
+    Result<void> ApplyMigrations();
 
 private:
-    [[nodiscard]] Result<std::vector<AppliedMigration>> getAppliedMigrations() const;
-    [[nodiscard]] Result<void> createMigrationsTable() const;
-    [[nodiscard]] Result<void> applyMigration(const Migration& migration, const std::string& checksum);
-    [[nodiscard]] Result<void> applyMigrationSql(const Migration& migration) const;
+    [[nodiscard]] Result<std::vector<AppliedMigration>> GetAppliedMigrations() const;
+    [[nodiscard]] Result<void> CreateMigrationsTable() const;
+    [[nodiscard]] Result<void> ApplyMigration(const Migration& migration, const std::string& checksum);
+    [[nodiscard]] Result<void> ApplyMigrationSql(const Migration& migration) const;
 
-    static std::string checksum(const Migration& migration);
+    static std::string Checksum(const Migration& migration);
 
-    std::reference_wrapper<Connection> connection;
-    std::vector<Migration> migrations;
+    std::reference_wrapper<Connection> connection_;
+    std::vector<Migration> migrations_;
 };
 }  // namespace evget
 

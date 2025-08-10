@@ -23,13 +23,17 @@
 #ifndef EVGET_SRC_EVENT_MOUSECLICK_H
 #define EVGET_SRC_EVENT_MOUSECLICK_H
 
+#include <evget/Event/ButtonAction.h>
+#include <evget/Event/DeviceType.h>
+#include <evget/Event/ModifierValue.h>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "evget/Event/Data.h"
 #include "evget/Event/Schema.h"
 
-namespace evget::Event {
+namespace evget::event {
 /**
  * Represents a mouse click event.
  */
@@ -38,112 +42,112 @@ public:
     /**
      * Add interval in microseconds.
      */
-    MouseClick& interval(Interval interval);
+    MouseClick& Interval(IntervalType interval);
 
     /**
      * Add interval in microseconds.
      */
-    MouseClick& interval(std::optional<Interval> interval);
+    MouseClick& Interval(std::optional<IntervalType> interval);
 
     /**
      * Add date timestamp.
      */
-    MouseClick& timestamp(Timestamp timestamp);
+    MouseClick& Timestamp(TimestampType timestamp);
 
     /**
      * Mouse device.
      */
-    MouseClick& device(Device device);
+    MouseClick& Device(DeviceType device);
 
     /**
      * Add position x.
      */
-    MouseClick& positionX(double x_pos);
+    MouseClick& PositionX(double x_pos);
 
     /**
      * Add position y.
      */
-    MouseClick& positionY(double y_pos);
+    MouseClick& PositionY(double y_pos);
 
     /**
      * Add action.
      */
-    MouseClick& action(ButtonAction action);
+    MouseClick& Action(ButtonAction action);
 
     /**
      * Add id.
      */
-    MouseClick& button(int button);
+    MouseClick& Button(int button);
 
     /**
      * Add name.
      */
-    MouseClick& name(std::string name);
+    MouseClick& Name(std::string name);
 
     /**
      * Add the device name.
      */
-    MouseClick& deviceName(std::string deviceName);
+    MouseClick& DeviceName(std::string device_name);
 
     /**
      * Add the focus window name.
      */
-    MouseClick& focusWindowName(std::string name);
+    MouseClick& FocusWindowName(std::string name);
 
     /**
      * Add the focus window position x.
      */
-    MouseClick& focusWindowPositionX(double x_pos);
+    MouseClick& FocusWindowPositionX(double x_pos);
 
     /**
      * Add the focus window position y.
      */
-    MouseClick& focusWindowPositionY(double y_pos);
+    MouseClick& FocusWindowPositionY(double y_pos);
 
     /**
      * Add the focus window width.
      */
-    MouseClick& focusWindowWidth(double width);
+    MouseClick& FocusWindowWidth(double width);
 
     /**
      * Add the focus window height.
      */
-    MouseClick& focusWindowHeight(double height);
+    MouseClick& FocusWindowHeight(double height);
 
     /**
      * Add the screen number.
      */
-    MouseClick& screen(int screen);
+    MouseClick& Screen(int screen);
 
     /**
      * Add modifier value.
      */
-    MouseClick& modifier(ModifierValue modifier);
+    MouseClick& Modifier(ModifierValue modifier);
 
     /**
      * Build mouse click event.
      */
-    Data& build(Data& data) const;
+    Data& Build(Data& data) const;
 
 private:
-    std::optional<Interval> _interval;
-    std::optional<Timestamp> _timestamp;
-    std::optional<Device> _device;
-    std::optional<double> _positionX;
-    std::optional<double> _positionY;
-    std::optional<ButtonAction> _action;
-    std::optional<int> _button;
-    std::optional<std::string> _name;
-    std::optional<std::string> _deviceName;
-    std::optional<std::string> _focusWindowName;
-    std::optional<double> _focusWindowPositionX;
-    std::optional<double> _focusWindowPositionY;
-    std::optional<double> _focusWindowWidth;
-    std::optional<double> _focusWindowHeight;
-    std::optional<int> _screen;
+    std::optional<IntervalType> interval_;
+    std::optional<TimestampType> timestamp_;
+    std::optional<DeviceType> device_;
+    std::optional<double> position_x_;
+    std::optional<double> position_y_;
+    std::optional<ButtonAction> action_;
+    std::optional<int> button_;
+    std::optional<std::string> name_;
+    std::optional<std::string> device_name_;
+    std::optional<std::string> focus_window_name_;
+    std::optional<double> focus_window_position_x_;
+    std::optional<double> focus_window_position_y_;
+    std::optional<double> focus_window_width_;
+    std::optional<double> focus_window_height_;
+    std::optional<int> screen_;
 
-    std::vector<std::string> _modifiers;
+    std::vector<std::string> modifiers_;
 };
-}  // namespace evget::Event
+}  // namespace evget::event
 
 #endif  // EVGET_SRC_EVENT_MOUSECLICK_H

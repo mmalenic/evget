@@ -23,6 +23,7 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -38,15 +39,15 @@ enum class ConnectOptions : std::uint8_t {
     /**
      * Read only connection.
      */
-    READ_ONLY,
+    kReadOnly,
     /**
      * Write connection, does not create database.
      */
-    READ_WRITE,
+    kReadWrite,
     /**
      * Write connection, creates the database if it does not exist.
      */
-    READ_WRITE_CREATE,
+    kReadWriteCreate,
 };
 
 /**
@@ -58,33 +59,33 @@ public:
      * \brief Connect to the database.
      * \return a result indicating whether the connection was successful.
      */
-    virtual Result<void> connect(std::string database, ConnectOptions options) = 0;
+    virtual Result<void> Connect(std::string database, ConnectOptions options) = 0;
 
     /**
      * \brief Start a transaction. Only one transaction is allowed per connection, however this can be called again
      * after the transaction is committed.
      * \return a result indicating whether creating the transaction was successful.
      */
-    virtual Result<void> transaction() = 0;
+    virtual Result<void> Transaction() = 0;
 
     /**
      * \brief Commit the transaction.
      * \return a result indicating whether committing the transaction was successful.
      */
-    virtual Result<void> commit() = 0;
+    virtual Result<void> Commit() = 0;
 
     /**
      * \brief Rollback the transaction.
      * \return a result indicating whether rollback was successful.
      */
-    virtual Result<void> rollback() = 0;
+    virtual Result<void> Rollback() = 0;
 
     /**
      * \brief Create a query using this connection.
      * \param query the query string.
      * \return a pointer to a query object.
      */
-    virtual std::unique_ptr<Query> buildQuery(std::string query) = 0;
+    virtual std::unique_ptr<Query> BuildQuery(std::string query) = 0;
 
     Connection() = default;
 
