@@ -165,6 +165,9 @@ toolbelt_embed(
 )
 target_include_directories(${LIBRARY_NAME} PRIVATE ${cmake_toolbelt_ret})
 
+# Ensure that clang-tidy doesn't run on the generated files.
+file(WRITE "${cmake_toolbelt_ret}/.clang-tidy" "Checks: '-*'")
+
 toolbelt_add_dep(${LIBRARY_NAME} spdlog VISIBILITY PUBLIC LINK_COMPONENTS spdlog::spdlog)
 toolbelt_add_dep(${LIBRARY_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS Boost::headers)
 toolbelt_add_dep(${LIBRARY_NAME} nlohmann_json VISIBILITY PUBLIC LINK_COMPONENTS nlohmann_json::nlohmann_json)
