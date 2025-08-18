@@ -13,6 +13,7 @@ Checks: >
   -llvmlibc-implementation-in-namespace,
   -llvmlibc-restrict-system-libc-headers,
   -modernize-use-trailing-return-type,
+  -modernize-type-traits,
   -portability-template-virtual-member-function
 CheckOptions:
   - key: readability-identifier-naming.ClassCase

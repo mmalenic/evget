@@ -222,8 +222,9 @@ void EvgetX11TestUtils::set_x_wrapper_mocks(EvgetX11TestUtils::XWrapperMock& xWr
     EXPECT_CALL(xWrapperMock, listInputDevices)
         .WillOnce(
             testing::Return(
-                testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>({nullptr, [](XDeviceInfo*) {
-                                                                                             }})
+                testing::ByMove<std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>>(
+                    {nullptr, [](XDeviceInfo*) {}}
+                )
             )
         );
     EXPECT_CALL(xWrapperMock, queryDevice)

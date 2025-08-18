@@ -36,6 +36,7 @@ IncludeCategories:
     CaseSensitive: false
 IndentWidth: 4
 InsertBraces: true
+PenaltyIndentedWhitespace: 1
 QualifierAlignment: Left
 SeparateDefinitionBlocks: Always
 TabWidth: 4

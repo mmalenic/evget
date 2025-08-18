@@ -1,25 +1,3 @@
-// MIT License
-//
-// Copyright (c) 2021 Marko Malenic
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include "evget/cli.h"
 
 #include <CLI/CLI.hpp>
@@ -41,17 +19,17 @@
 #include <utility>
 #include <vector>
 
-#include "evget/Error.h"
-#include "evget/Storage/DatabaseStorage.h"
-#include "evget/Storage/JsonStorage.h"
-#include "evget/Storage/Store.h"
-#include "evget/database/sqlite/Connection.h"
+#include "evget/database/sqlite/connection.h"
+#include "evget/error.h"
+#include "evget/storage/database_storage.h"
+#include "evget/storage/json_storage.h"
+#include "evget/storage/store.h"
 
-const std::vector<std::string>& evget::Cli::output() const {
+const std::vector<std::string>& evget::Cli::Output() const {
     return this->output_;
 }
 
-std::expected<bool, int> evget::Cli::parse(int argc, char** argv) {
+std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
     spdlog::cfg::load_env_levels();
 
     CLI::App app{"Show and store events from input devices.", "evget"};
@@ -72,14 +50,14 @@ std::expected<bool, int> evget::Cli::parse(int argc, char** argv) {
            store_n_events_,
            "Controls how many events to receive before outputting them to the store."
     )
-        ->default_val(DEFAULT_N_EVENTS);
+        ->default_val(kDefaultNEvents);
     app.add_option(
            "-s,--store-after-seconds",
            store_after_,
            "Store events at least every interval specified with this option, even if fewer events than "
            "`--store-n-events` has been receieved."
     )
-        ->default_val(DEFAULT_STORE_AFTER);
+        ->default_val(kDefaultStoreAfter);
 
     app.add_option_function<std::string>(
            "-o,--output",
@@ -113,25 +91,25 @@ std::expected<bool, int> evget::Cli::parse(int argc, char** argv) {
     return should_exit;
 }
 
-evget::StorageType evget::Cli::get_storage_type(std::string& output) {
+evget::StorageType evget::Cli::GetStorageType(std::string& output) {
     if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") ||
         output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
-        return StorageType::SQLite;
+        return StorageType::kSqLite;
     }
 
-    return StorageType::Json;
+    return StorageType::kJson;
 }
 
-evget::Result<std::vector<std::unique_ptr<evget::Storage::Store>>> evget::Cli::to_stores() {
-    auto stores = std::vector<std::unique_ptr<Storage::Store>>{};
+evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores() {
+    auto stores = std::vector<std::unique_ptr<Store>>{};
     stores.reserve(output_.size());
 
     for (auto& output : this->output_) {
-        switch (evget::Cli::get_storage_type(output)) {
-            case evget::StorageType::SQLite: {
+        switch (evget::Cli::GetStorageType(output)) {
+            case evget::StorageType::kSqLite: {
                 auto connect = std::make_unique<evget::SQLiteConnection>();
-                auto database = std::make_unique<evget::Storage::DatabaseStorage>(std::move(connect), output);
-                auto result = database->init();
+                auto database = std::make_unique<evget::DatabaseStorage>(std::move(connect), output);
+                auto result = database->Init();
                 if (!result.has_value()) {
                     return Err{result.error()};
                 }
@@ -140,16 +118,16 @@ evget::Result<std::vector<std::unique_ptr<evget::Storage::Store>>> evget::Cli::t
 
                 break;
             }
-            case evget::StorageType::Json: {
+            case evget::StorageType::kJson: {
                 if (output == "-") {
                     // Do nothing to delete std::cout.
-                    auto deleter = [](std::ostream* _std_cout) {};
+                    auto deleter = [](std::ostream*) {};
                     std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> out = {&std::cout, deleter};
 
-                    stores.emplace_back(std::make_unique<evget::Storage::JsonStorage>(std::move(out)));
+                    stores.emplace_back(std::make_unique<evget::JsonStorage>(std::move(out)));
                 } else {
                     auto out = std::make_unique<std::ofstream>(output, std::ios_base::app);
-                    stores.emplace_back(std::make_unique<evget::Storage::JsonStorage>(std::move(out)));
+                    stores.emplace_back(std::make_unique<evget::JsonStorage>(std::move(out)));
                 }
 
                 break;
@@ -160,10 +138,10 @@ evget::Result<std::vector<std::unique_ptr<evget::Storage::Store>>> evget::Cli::t
     return stores;
 }
 
-size_t evget::Cli::store_n_events() const {
+size_t evget::Cli::StoreNEvents() const {
     return store_n_events_;
 }
 
-std::chrono::seconds evget::Cli::store_after() const {
+std::chrono::seconds evget::Cli::StoreAfter() const {
     return store_after_;
 }

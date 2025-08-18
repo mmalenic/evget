@@ -58,6 +58,9 @@ class EvgetRecipe(ConanFile):
         "export_compilation_database": True,
     }
 
+    def configure(self):
+        self.options["spdlog"].use_std_fmt = True
+
     def validate(self):
         if self.settings.compiler.cppstd:
             check_min_cppstd(self, 23)
