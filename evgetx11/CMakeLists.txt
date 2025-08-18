@@ -7,21 +7,7 @@ set(EVGETX11_LIBRARY_NAME
 set(INCLUDE include/evgetx11)
 set(SRC src)
 
-add_library(
-    ${LIBRARY_NAME}
-    ${INCLUDE}/DeleterWithDisplay.h
-    ${INCLUDE}/EventLoopX11.h
-    ${INCLUDE}/EventTransformerX11.h
-    ${INCLUDE}/XEventSwitch.h
-    ${INCLUDE}/XEventSwitchPointerKey.h
-    ${INCLUDE}/XInputEvent.h
-    ${INCLUDE}/XInputHandler.h
-    ${INCLUDE}/XWrapper.h
-    ${INCLUDE}/XWrapperX11.h
-    ${INCLUDE}/XEventSwitchTouch.h
-)
-target_include_directories(${LIBRARY_NAME} PUBLIC include)
-
+add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/EventLoopX11.cpp
@@ -31,8 +17,22 @@ target_sources(
             ${SRC}/XInputHandler.cpp
             ${SRC}/XWrapperX11.cpp
             ${SRC}/XEventSwitchTouch.cpp
+    PUBLIC FILE_SET
+           HEADERS
+           BASE_DIRS
+           include
+           FILES
+           ${INCLUDE}/DeleterWithDisplay.h
+           ${INCLUDE}/EventLoopX11.h
+           ${INCLUDE}/EventTransformerX11.h
+           ${INCLUDE}/XEventSwitch.h
+           ${INCLUDE}/XEventSwitchPointerKey.h
+           ${INCLUDE}/XInputEvent.h
+           ${INCLUDE}/XInputHandler.h
+           ${INCLUDE}/XWrapper.h
+           ${INCLUDE}/XWrapperX11.h
+           ${INCLUDE}/XEventSwitchTouch.h
 )
-
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
 target_link_libraries(${LIBRARY_NAME} PUBLIC libevget)

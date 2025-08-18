@@ -64,7 +64,8 @@ lint:
 
 # Run clang tidy on code.
 check $COMPILER_VERSION='' *build_options='': \
-    (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" ' + build_options) lint
+    (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" -o "&:verify_headers=True" ' \
+    + build_options) lint
 
 # Remove the build directory.
 clean:

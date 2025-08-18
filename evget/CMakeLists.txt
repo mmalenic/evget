@@ -7,40 +7,7 @@ set(EVGET_LIBRARY_NAME
 set(INCLUDE include/evget)
 set(SRC src)
 
-add_library(
-    ${LIBRARY_NAME}
-    ${INCLUDE}/database/sqlite/connection.h
-    ${INCLUDE}/database/sqlite/query.h
-    ${INCLUDE}/database/connection.h
-    ${INCLUDE}/database/migrate.h
-    ${INCLUDE}/database/query.h
-    ${INCLUDE}/event_transformer.h
-    ${INCLUDE}/event_handler.h
-    ${INCLUDE}/storage/store.h
-    ${INCLUDE}/event_loop.h
-    ${INCLUDE}/event/mouse_move.h
-    ${INCLUDE}/event/mouse_click.h
-    ${INCLUDE}/event/mouse_scroll.h
-    ${INCLUDE}/event/direction.h
-    ${INCLUDE}/event/button_action.h
-    ${INCLUDE}/event/device_type.h
-    ${INCLUDE}/event/modifier_value.h
-    ${INCLUDE}/event/schema.h
-    ${INCLUDE}/event/graph.h
-    ${INCLUDE}/event_listener.h
-    ${INCLUDE}/cli.h
-    ${INCLUDE}/storage/json_storage.h
-    ${INCLUDE}/storage/database_storage.h
-    ${INCLUDE}/event/data.h
-    ${INCLUDE}/event/entry.h
-    ${INCLUDE}/storage/database_manager.h
-    ${INCLUDE}/error.h
-    ${INCLUDE}/async/container/locking_vector.h
-    ${INCLUDE}/async/scheduler/interval.h
-    ${INCLUDE}/async/scheduler/scheduler.h
-)
-target_include_directories(${LIBRARY_NAME} PUBLIC include)
-
+add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/cli.cpp
@@ -58,8 +25,41 @@ target_sources(
             ${SRC}/database/sqlite/query.cpp
             ${SRC}/async/scheduler/interval.cpp
             ${SRC}/async/scheduler/scheduler.cpp
+    PUBLIC FILE_SET
+           HEADERS
+           BASE_DIRS
+           include
+           FILES
+           ${INCLUDE}/database/sqlite/connection.h
+           ${INCLUDE}/database/sqlite/query.h
+           ${INCLUDE}/database/connection.h
+           ${INCLUDE}/database/migrate.h
+           ${INCLUDE}/database/query.h
+           ${INCLUDE}/event_transformer.h
+           ${INCLUDE}/event_handler.h
+           ${INCLUDE}/storage/store.h
+           ${INCLUDE}/event_loop.h
+           ${INCLUDE}/event/mouse_move.h
+           ${INCLUDE}/event/mouse_click.h
+           ${INCLUDE}/event/mouse_scroll.h
+           ${INCLUDE}/event/direction.h
+           ${INCLUDE}/event/button_action.h
+           ${INCLUDE}/event/device_type.h
+           ${INCLUDE}/event/modifier_value.h
+           ${INCLUDE}/event/schema.h
+           ${INCLUDE}/event/graph.h
+           ${INCLUDE}/event_listener.h
+           ${INCLUDE}/cli.h
+           ${INCLUDE}/storage/json_storage.h
+           ${INCLUDE}/storage/database_storage.h
+           ${INCLUDE}/event/data.h
+           ${INCLUDE}/event/entry.h
+           ${INCLUDE}/storage/database_manager.h
+           ${INCLUDE}/error.h
+           ${INCLUDE}/async/container/locking_vector.h
+           ${INCLUDE}/async/scheduler/interval.h
+           ${INCLUDE}/async/scheduler/scheduler.h
 )
-
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evget)
 
 set(SCHEMA database/schema)

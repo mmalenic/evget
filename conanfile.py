@@ -46,6 +46,9 @@ class EvgetRecipe(ConanFile):
         # Export a compilation database using CMAKE_EXPORT_COMPILE_COMMANDS:
         # https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
         "export_compilation_database": [True, False],
+        # Verify headers by setting CMAKE_VERIFY_INTERFACE_HEADER_SETS:
+        # https://cmake.org/cmake/help/latest/variable/CMAKE_VERIFY_INTERFACE_HEADER_SETS.html#variable:CMAKE_VERIFY_INTERFACE_HEADER_SETS
+        "verify_headers": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -56,6 +59,7 @@ class EvgetRecipe(ConanFile):
         "install_bin": True,
         "install_lib": True,
         "export_compilation_database": True,
+        "verify_headers": False,
     }
 
     def configure(self):
@@ -83,6 +87,8 @@ class EvgetRecipe(ConanFile):
             tc.variables["CMAKE_CXX_COMPILER_LAUNCHER"] = self.options.compiler_launcher
         if self.options.export_compilation_database:
             tc.variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
+        if self.options.verify_headers:
+            tc.variables["CMAKE_VERIFY_INTERFACE_HEADER_SETS"] = True
 
         tc.generate()
 
