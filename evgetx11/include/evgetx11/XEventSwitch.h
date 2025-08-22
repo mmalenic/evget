@@ -1,45 +1,34 @@
-// MIT License
-//
-// Copyright (c) 2021 Marko Malenic
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
+#ifndef EVGETX11_XEVENTSWITCH_H
+#define EVGETX11_XEVENTSWITCH_H
 
-#ifndef EVGET_XEVENTSWITCH_H
-#define EVGET_XEVENTSWITCH_H
-
+#include <X11/X.h>
+#include <X11/extensions/XInput2.h>
+#include <evget/error.h>
+#include <evget/event/button_action.h>
+#include <evget/event/data.h>
+#include <evget/event/device_type.h>
+#include <evget/event/modifier_value.h>
+#include <evget/event/schema.h>
+#include <evgetx11/XWrapper.h>
 #include <spdlog/spdlog.h>
 
+#include <chrono>
+#include <concepts>
+#include <functional>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
-#include "evget/Event/MouseClick.h"
-#include "evget/Event/MouseMove.h"
-#include "evgetx11/XWrapperX11.h"
+#include "evget/event/mouse_click.h"
+#include "evget/event/mouse_move.h"
 
-namespace EvgetX11 {
+namespace evgetx11 {
 /**
  * Check whether the template parameter is a builder with a modifier function.
  */
 template <typename T>
-concept BuilderHasModifier = requires(T builder, evget::Event::ModifierValue modifierValue) {
-    { builder.modifier(modifierValue) } -> std::convertible_to<T>;
+concept BuilderHasModifier = requires(T builder, evget::ModifierValue modifier_value) {
+    { builder.Modifier(modifier_value) } -> std::convertible_to<T>;
 };
 
 /**
@@ -48,132 +37,132 @@ concept BuilderHasModifier = requires(T builder, evget::Event::ModifierValue mod
 template <typename T>
 concept BuilderHasWindowFunctions =
     requires(T builder, std::string name, double x_pos, double y_pos, double width, double height) {
-        { builder.focusWindowName(name) } -> std::convertible_to<T>;
-        { builder.focusWindowPositionX(x_pos) } -> std::convertible_to<T>;
-        { builder.focusWindowPositionY(y_pos) } -> std::convertible_to<T>;
-        { builder.focusWindowWidth(width) } -> std::convertible_to<T>;
-        { builder.focusWindowHeight(height) } -> std::convertible_to<T>;
+        { builder.FocusWindowName(name) } -> std::convertible_to<T>;
+        { builder.FocusWindowPositionX(x_pos) } -> std::convertible_to<T>;
+        { builder.FocusWindowPositionY(y_pos) } -> std::convertible_to<T>;
+        { builder.FocusWindowWidth(width) } -> std::convertible_to<T>;
+        { builder.FocusWindowHeight(height) } -> std::convertible_to<T>;
     };
 
 /**
  * Check whether the template parameter is a builder with a device name function.
  */
 template <typename T>
-concept BuilderHasDeviceNameFunctions = requires(T builder, std::string deviceName, int screen) {
-    { builder.deviceName(deviceName) } -> std::convertible_to<T>;
-    { builder.screen(screen) } -> std::convertible_to<T>;
+concept BuilderHasDeviceNameFunctions = requires(T builder, std::string device_name, int screen) {
+    { builder.DeviceName(device_name) } -> std::convertible_to<T>;
+    { builder.Screen(screen) } -> std::convertible_to<T>;
 };
 
 class XEventSwitch {
 public:
-    explicit XEventSwitch(XWrapper& xWrapper);
+    explicit XEventSwitch(XWrapper& x_wrapper);
 
-    void refreshDevices(
+    void RefreshDevices(
         int device_id,
         std::optional<int> pointer_id,
-        evget::Event::Device device,
+        evget::DeviceType device,
         const std::string& name,
         const XIDeviceInfo& info
     );
 
-    void addButtonEvent(
+    void AddButtonEvent(
         const XIRawEvent& event,
-        evget::Event::Timestamp dateTime,
-        evget::Event::Data& data,
-        evget::Event::ButtonAction action,
+        evget::TimestampType date_time,
+        evget::Data& data,
+        evget::ButtonAction action,
         int button,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    void addMotionEvent(
+    void AddMotionEvent(
         const XIRawEvent& event,
-        evget::Event::Timestamp dateTime,
-        evget::Event::Data& data,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::TimestampType date_time,
+        evget::Data& data,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
-    [[nodiscard]] const std::string& getButtonName(int device_id, int button) const;
+    [[nodiscard]] const std::string& GetButtonName(int device_id, int button) const;
 
     /**
      * Get the device with the given id.
      */
-    [[nodiscard]] evget::Event::Device getDevice(int device_id) const;
+    [[nodiscard]] evget::DeviceType GetDevice(int device_id) const;
 
     /**
      * Check whether the device with the given id is present.
      */
-    [[nodiscard]] bool hasDevice(int device_id) const;
+    [[nodiscard]] bool HasDevice(int device_id) const;
 
     /**
      * Set the modifier state for a builder.
      */
     template <BuilderHasModifier T>
-    static T& setModifierValue(unsigned int modifierState, T& builder);
+    static T& SetModifierValue(unsigned int modifier_state, T& builder);
 
     /**
      * Set the window fields for a builder.
      */
     template <BuilderHasWindowFunctions T>
-    T& setWindowFields(T& builder);
+    T& SetWindowFields(T& builder);
 
     /**
      * Set the device name fields for a builder.
      */
     template <BuilderHasDeviceNameFunctions T>
-    T& setDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
+    T& SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
 
     /**
      * Set the button map for a device.
      * @param buttonInfo button info
      * @param device_id device id
      */
-    void setButtonMap(const XIButtonClassInfo& buttonInfo, int device_id);
+    void SetButtonMap(const XIButtonClassInfo& button_info, int device_id);
 
 private:
-    std::reference_wrapper<XWrapper> xWrapper;
-    std::unordered_map<int, std::unordered_map<int, std::string>> buttonMap;
-    std::unordered_map<int, evget::Event::Device> devices;
-    std::unordered_map<int, std::string> idToName;
-    int pointer_id{};
+    std::reference_wrapper<XWrapper> x_wrapper_;
+    std::unordered_map<int, std::unordered_map<int, std::string>> button_map_;
+    std::unordered_map<int, evget::DeviceType> devices_;
+    std::unordered_map<int, std::string> id_to_name_;
+    int pointer_id_{};
 };
 
 template <BuilderHasModifier T>
-T& EvgetX11::XEventSwitch::setModifierValue(unsigned int modifierState, T& builder) {
+T& evgetx11::XEventSwitch::SetModifierValue(unsigned int modifier_state, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
-    if (modifierState & ShiftMask) {
-        builder.modifier(evget::Event::ModifierValue::Shift);
+    if (modifier_state & ShiftMask) {
+        builder.Modifier(evget::ModifierValue::kShift);
     }
-    if (modifierState & LockMask) {
-        builder.modifier(evget::Event::ModifierValue::CapsLock);
+    if (modifier_state & LockMask) {
+        builder.Modifier(evget::ModifierValue::kCapsLock);
     }
-    if (modifierState & ControlMask) {
-        builder.modifier(evget::Event::ModifierValue::Control);
+    if (modifier_state & ControlMask) {
+        builder.Modifier(evget::ModifierValue::kControl);
     }
-    if (modifierState & Mod1Mask) {
-        builder.modifier(evget::Event::ModifierValue::Alt);
+    if (modifier_state & Mod1Mask) {
+        builder.Modifier(evget::ModifierValue::kAlt);
     }
-    if (modifierState & Mod2Mask) {
-        builder.modifier(evget::Event::ModifierValue::NumLock);
+    if (modifier_state & Mod2Mask) {
+        builder.Modifier(evget::ModifierValue::kNumLock);
     }
-    if (modifierState & Mod3Mask) {
-        builder.modifier(evget::Event::ModifierValue::Mod3);
+    if (modifier_state & Mod3Mask) {
+        builder.Modifier(evget::ModifierValue::kMod3);
     }
-    if (modifierState & Mod4Mask) {
-        builder.modifier(evget::Event::ModifierValue::Super);
+    if (modifier_state & Mod4Mask) {
+        builder.Modifier(evget::ModifierValue::kSuper);
     }
-    if (modifierState & Mod5Mask) {
-        builder.modifier(evget::Event::ModifierValue::Mod5);
+    if (modifier_state & Mod5Mask) {
+        builder.Modifier(evget::ModifierValue::kMod5);
     }
 
     return builder;
 }
 
 template <BuilderHasWindowFunctions T>
-T& EvgetX11::XEventSwitch::setWindowFields(T& builder) {
-    auto window = xWrapper.get().getActiveWindow();
+T& evgetx11::XEventSwitch::SetWindowFields(T& builder) {
+    auto window = x_wrapper_.get().GetActiveWindow();
 
     if (!window.has_value()) {
         spdlog::warn("failed to get active window, falling back on focus window");
-        window = xWrapper.get().getFocusWindow();
+        window = x_wrapper_.get().GetFocusWindow();
     }
 
     if (!window.has_value()) {
@@ -181,83 +170,83 @@ T& EvgetX11::XEventSwitch::setWindowFields(T& builder) {
         return builder;
     }
 
-    auto windowName = xWrapper.get().getWindowName(*window);
-    auto windowPosition = xWrapper.get().getWindowPosition(*window);
-    auto windowSize = xWrapper.get().getWindowSize(*window);
+    auto window_name = x_wrapper_.get().GetWindowName(*window);
+    auto window_position = x_wrapper_.get().GetWindowPosition(*window);
+    auto window_size = x_wrapper_.get().GetWindowSize(*window);
 
-    if (windowName.has_value()) {
-        builder.focusWindowName(*windowName);
+    if (window_name.has_value()) {
+        builder.FocusWindowName(*window_name);
     }
 
-    if (windowPosition.has_value()) {
-        builder.focusWindowPositionX(windowPosition->width);
-        builder.focusWindowPositionY(windowPosition->height);
+    if (window_position.has_value()) {
+        builder.FocusWindowPositionX(window_position->width);
+        builder.FocusWindowPositionY(window_position->height);
     }
 
-    if (windowSize.has_value()) {
-        builder.focusWindowWidth(windowSize->width);
-        builder.focusWindowHeight(windowSize->height);
+    if (window_size.has_value()) {
+        builder.FocusWindowWidth(window_size->width);
+        builder.FocusWindowHeight(window_size->height);
     }
 
     return builder;
 }
 
 template <BuilderHasDeviceNameFunctions T>
-T& EvgetX11::XEventSwitch::setDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
-    auto name = idToName.at(event.sourceid);
+T& evgetx11::XEventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
+    auto name = id_to_name_.at(event.sourceid);
 
-    return builder.deviceName(name).screen(screen);
+    return builder.DeviceName(name).Screen(screen);
 }
 
-void EvgetX11::XEventSwitch::addMotionEvent(
+void evgetx11::XEventSwitch::AddMotionEvent(
     const XIRawEvent& event,
-    evget::Event::Timestamp dateTime,
-    evget::Event::Data& data,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::TimestampType date_time,
+    evget::Data& data,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
+    auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
 
-    evget::Event::MouseMove builder{};
-    builder.interval(getTime(event.time))
-        .timestamp(dateTime)
-        .device(getDevice(event.sourceid))
-        .positionX(query_pointer.root_x)
-        .positionY(query_pointer.root_y);
+    evget::MouseMove builder{};
+    builder.Interval(get_time(event.time))
+        .Timestamp(date_time)
+        .Device(GetDevice(event.sourceid))
+        .PositionX(query_pointer.root_x)
+        .PositionY(query_pointer.root_y);
 
-    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
-    setWindowFields(builder);
+    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    SetWindowFields(builder);
 
-    setDeviceNameFields(builder, event, query_pointer.screen_number);
+    SetDeviceNameFields(builder, event, query_pointer.screen_number);
 
-    builder.build(data);
+    builder.Build(data);
 }
 
-void EvgetX11::XEventSwitch::addButtonEvent(
+void evgetx11::XEventSwitch::AddButtonEvent(
     const XIRawEvent& event,
-    evget::Event::Timestamp dateTime,
-    evget::Event::Data& data,
-    evget::Event::ButtonAction action,
+    evget::TimestampType date_time,
+    evget::Data& data,
+    evget::ButtonAction action,
     int button,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
+    auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
 
-    evget::Event::MouseClick builder{};
-    builder.interval(getTime(event.time))
-        .timestamp(dateTime)
-        .device(getDevice(event.sourceid))
-        .positionX(query_pointer.root_x)
-        .positionY(query_pointer.root_y)
-        .action(action)
-        .button(button)
-        .name(buttonMap[event.sourceid][button]);
-    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
-    setWindowFields(builder);
+    evget::MouseClick builder{};
+    builder.Interval(get_time(event.time))
+        .Timestamp(date_time)
+        .Device(GetDevice(event.sourceid))
+        .PositionX(query_pointer.root_x)
+        .PositionY(query_pointer.root_y)
+        .Action(action)
+        .Button(button)
+        .Name(button_map_[event.sourceid][button]);
+    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    SetWindowFields(builder);
 
-    setDeviceNameFields(builder, event, query_pointer.screen_number);
+    SetDeviceNameFields(builder, event, query_pointer.screen_number);
 
-    builder.build(data);
+    builder.Build(data);
 }
-}  // namespace EvgetX11
+}  // namespace evgetx11
 
-#endif  // EVGET_XEVENTSWITCH_H
+#endif

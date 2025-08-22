@@ -1,265 +1,251 @@
-// MIT License
-//
-// Copyright (c) 2021 Marko Malenic
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+#ifndef EVGETX11_XEVENTSWITCHPOINTERKEY_H
+#define EVGETX11_XEVENTSWITCHPOINTERKEY_H
 
-#ifndef EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
-#define EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
-
-#include <X11/Xutil.h>
+#include <X11/X.h>
+#include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
+#include <evget/error.h>
+#include <evget/event/button_action.h>
+#include <evget/event/data.h>
+#include <evget/event/device_type.h>
 #include <xorg/xserver-properties.h>
 
+#include <chrono>
+#include <functional>
 #include <map>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <unordered_map>
 
-#include "evget/Event/Key.h"
-#include "evget/Event/MouseScroll.h"
+#include "evget/event/key.h"
+#include "evget/event/mouse_scroll.h"
 #include "evgetx11/XEventSwitch.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
+#include "evgetx11/XWrapperX11.h"
 
-namespace EvgetX11 {
+namespace evgetx11 {
 
 class XEventSwitchPointerKey {
 public:
-    explicit XEventSwitchPointerKey(XWrapper& xWrapper);
+    explicit XEventSwitchPointerKey(XWrapper& x_wrapper);
 
-    void refreshDevices(
+    void RefreshDevices(
         int device_id,
         std::optional<int> pointer_id,
-        evget::Event::Device device,
+        evget::DeviceType device,
         const std::string& name,
         const XIDeviceInfo& info,
-        EvgetX11::XEventSwitch& xEventSwitch
+        evgetx11::XEventSwitch& x_event_switch
     );
-    bool switchOnEvent(
+    bool SwitchOnEvent(
         const XInputEvent& event,
-        evget::Event::Data& data,
-        EvgetX11::XEventSwitch& xEventSwitch,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Data& data,
+        evgetx11::XEventSwitch& x_event_switch,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
 private:
-    static std::map<int, int> getValuators(const XIValuatorState& valuatorState);
+    static std::map<int, int> GetValuators(const XIValuatorState& valuator_state);
 
-    static void buttonEvent(
+    static void ButtonEvent(
         const XInputEvent& event,
-        evget::Event::Data& data,
-        evget::Event::ButtonAction action,
-        EvgetX11::XEventSwitch& xEventSwitch,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Data& data,
+        evget::ButtonAction action,
+        evgetx11::XEventSwitch& x_event_switch,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    void keyEvent(
+    void KeyEvent(
         const XInputEvent& event,
-        evget::Event::Data& data,
-        EvgetX11::XEventSwitch& xEventSwitch,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Data& data,
+        evgetx11::XEventSwitch& x_event_switch,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    void motionEvent(
+    void MotionEvent(
         const XInputEvent& event,
-        evget::Event::Data& data,
-        EvgetX11::XEventSwitch& xEventSwitch,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Data& data,
+        evgetx11::XEventSwitch& x_event_switch,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    void scrollEvent(
+    void ScrollEvent(
         const XInputEvent& event,
-        evget::Event::Data& data,
-        EvgetX11::XEventSwitch& xEventSwitch,
-        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+        evget::Data& data,
+        evgetx11::XEventSwitch& x_event_switch,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
-    std::reference_wrapper<XWrapper> xWrapper;
+    std::reference_wrapper<XWrapper> x_wrapper_;
 
-    std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scrollMap;
-    std::unordered_map<int, std::optional<int>> valuatorX;
-    std::unordered_map<int, std::optional<int>> valuatorY;
+    std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scroll_map_;
+    std::unordered_map<int, std::optional<int>> valuator_x_;
+    std::unordered_map<int, std::optional<int>> valuator_y_;
 
-    int pointer_id{};
+    int pointer_id_{};
 };
 
-bool EvgetX11::XEventSwitchPointerKey::switchOnEvent(
-    const EvgetX11::XInputEvent& event,
-    evget::Event::Data& data,
-    EvgetX11::XEventSwitch& xEventSwitch,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+bool evgetx11::XEventSwitchPointerKey::SwitchOnEvent(
+    const evgetx11::XInputEvent& event,
+    evget::Data& data,
+    evgetx11::XEventSwitch& x_event_switch,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    switch (event.getEventType()) {
+    switch (event.GetEventType()) {
         case XI_RawMotion:
-            motionEvent(event, data, xEventSwitch, getTime);
-            scrollEvent(event, data, xEventSwitch, getTime);
+            MotionEvent(event, data, x_event_switch, get_time);
+            ScrollEvent(event, data, x_event_switch, get_time);
             return true;
         case XI_RawButtonPress:
-            buttonEvent(event, data, evget::Event::ButtonAction::Press, xEventSwitch, getTime);
+            ButtonEvent(event, data, evget::ButtonAction::kPress, x_event_switch, get_time);
             return true;
         case XI_RawButtonRelease:
-            buttonEvent(event, data, evget::Event::ButtonAction::Release, xEventSwitch, getTime);
+            ButtonEvent(event, data, evget::ButtonAction::kRelease, x_event_switch, get_time);
             return true;
         case XI_RawKeyPress:
         case XI_RawKeyRelease:
-            keyEvent(event, data, xEventSwitch, getTime);
+            KeyEvent(event, data, x_event_switch, get_time);
             return true;
         default:
             return false;
     }
 }
 
-void EvgetX11::XEventSwitchPointerKey::buttonEvent(
-    const EvgetX11::XInputEvent& event,
-    evget::Event::Data& data,
-    evget::Event::ButtonAction action,
-    EvgetX11::XEventSwitch& xEventSwitch,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+void evgetx11::XEventSwitchPointerKey::ButtonEvent(
+    const evgetx11::XInputEvent& event,
+    evget::Data& data,
+    evget::ButtonAction action,
+    evgetx11::XEventSwitch& x_event_switch,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto raw_event = event.viewData<XIRawEvent>();
-    auto button = xEventSwitch.getButtonName(raw_event.sourceid, raw_event.detail);
+    auto raw_event = event.ViewData<XIRawEvent>();
+    auto button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
     // NOLINTBEGIN(hicpp-signed-bitwise)
-    if (!xEventSwitch.hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated) ||
+    if (!x_event_switch.HasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated) ||
         button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;
     }
     // NOLINTEND(hicpp-signed-bitwise)
 
-    xEventSwitch.addButtonEvent(raw_event, event.getTimestamp(), data, action, raw_event.detail, getTime);
+    x_event_switch.AddButtonEvent(raw_event, event.GetTimestamp(), data, action, raw_event.detail, get_time);
 }
 
-void EvgetX11::XEventSwitchPointerKey::keyEvent(
-    const EvgetX11::XInputEvent& event,
-    evget::Event::Data& data,
-    EvgetX11::XEventSwitch& xEventSwitch,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+void evgetx11::XEventSwitchPointerKey::KeyEvent(
+    const evgetx11::XInputEvent& event,
+    evget::Data& data,
+    evgetx11::XEventSwitch& x_event_switch,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto raw_event = event.viewData<XIRawEvent>();
-    if (!xEventSwitch.hasDevice(raw_event.sourceid)) {
+    auto raw_event = event.ViewData<XIRawEvent>();
+    if (!x_event_switch.HasDevice(raw_event.sourceid)) {
         return;
     }
 
-    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
+    auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
 
-    KeySym keySym = NoSymbol;
+    KeySym key_sym = NoSymbol;
 
-    const std::string character = xWrapper.get().lookupCharacter(raw_event, query_pointer, keySym);
+    const std::string character = x_wrapper_.get().LookupCharacter(raw_event, query_pointer, key_sym);
 
-    evget::Event::ButtonAction action = evget::Event::ButtonAction::Release;
+    evget::ButtonAction action = evget::ButtonAction::kRelease;
     if (raw_event.evtype != XI_KeyRelease) {
         // NOLINTBEGIN(hicpp-signed-bitwise)
-        action =
-            (raw_event.flags & XIKeyRepeat) ? evget::Event::ButtonAction::Repeat : evget::Event::ButtonAction::Press;
+        action = (raw_event.flags & XIKeyRepeat) ? evget::ButtonAction::kRepeat : evget::ButtonAction::kPress;
         // NOLINTEND(hicpp-signed-bitwise)
     }
 
-    const std::string name = XWrapperX11::keySymToString(keySym);
+    const std::string name = XWrapperX11::KeySymToString(key_sym);
 
-    evget::Event::Key builder{};
-    builder.interval(getTime(raw_event.time))
-        .positionX(query_pointer.root_x)
-        .positionY(query_pointer.root_y)
-        .device(xEventSwitch.getDevice(raw_event.sourceid))
-        .timestamp(event.getTimestamp())
-        .action(action)
-        .button(raw_event.detail)
-        .character(character)
-        .name(name);
+    evget::Key builder{};
+    builder.Interval(get_time(raw_event.time))
+        .PositionX(query_pointer.root_x)
+        .PositionY(query_pointer.root_y)
+        .Device(x_event_switch.GetDevice(raw_event.sourceid))
+        .Timestamp(event.GetTimestamp())
+        .Action(action)
+        .Button(raw_event.detail)
+        .Character(character)
+        .Name(name);
 
-    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
-    xEventSwitch.setWindowFields(builder);
+    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    x_event_switch.SetWindowFields(builder);
 
-    xEventSwitch.setDeviceNameFields(builder, raw_event, query_pointer.screen_number);
+    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
 
-    builder.build(data);
+    builder.Build(data);
 }
 
-void EvgetX11::XEventSwitchPointerKey::scrollEvent(
-    const EvgetX11::XInputEvent& event,
-    evget::Event::Data& data,
-    EvgetX11::XEventSwitch& xEventSwitch,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+void evgetx11::XEventSwitchPointerKey::ScrollEvent(
+    const evgetx11::XInputEvent& event,
+    evget::Data& data,
+    evgetx11::XEventSwitch& x_event_switch,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto raw_event = event.viewData<XIRawEvent>();
+    auto raw_event = event.ViewData<XIRawEvent>();
     // NOLINTBEGIN(hicpp-signed-bitwise)
-    if (!xEventSwitch.hasDevice(raw_event.sourceid) || !scrollMap.contains(raw_event.sourceid) ||
+    if (!x_event_switch.HasDevice(raw_event.sourceid) || !scroll_map_.contains(raw_event.sourceid) ||
         raw_event.flags & XIPointerEmulated) {
         return;
     }
     // NOLINTEND(hicpp-signed-bitwise)
 
-    evget::Event::MouseScroll builder{};
-    auto valuators = getValuators(raw_event.valuators);
-    std::unordered_map<int, XIScrollClassInfo> processedValuators{};
-    for (const auto& [valuator, info] : scrollMap[raw_event.sourceid]) {
+    evget::MouseScroll builder{};
+    auto valuators = GetValuators(raw_event.valuators);
+    std::unordered_map<int, XIScrollClassInfo> processed_valuators{};
+    for (const auto& [valuator, info] : scroll_map_[raw_event.sourceid]) {
         if (valuators.contains(valuator)) {
-            processedValuators.try_emplace(valuator, info);
+            processed_valuators.try_emplace(valuator, info);
         }
     }
 
-    if (processedValuators.empty()) {
+    if (processed_valuators.empty()) {
         return;
     }
 
-    for (const auto& [valuator, info] : processedValuators) {
+    for (const auto& [valuator, info] : processed_valuators) {
         if (info.scroll_type == XIScrollTypeHorizontal) {
-            builder.horizontal(valuators[valuator]);
+            builder.Horizontal(valuators[valuator]);
         } else {
-            builder.vertical(valuators[valuator]);
+            builder.Vertical(valuators[valuator]);
         }
     }
 
-    auto query_pointer = this->xWrapper.get().query_pointer(pointer_id);
-    builder.interval(getTime(raw_event.time))
-        .timestamp(event.getTimestamp())
-        .device(xEventSwitch.getDevice(raw_event.sourceid))
-        .positionX(query_pointer.root_x)
-        .positionY(query_pointer.root_y);
+    auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
+    builder.Interval(get_time(raw_event.time))
+        .Timestamp(event.GetTimestamp())
+        .Device(x_event_switch.GetDevice(raw_event.sourceid))
+        .PositionX(query_pointer.root_x)
+        .PositionY(query_pointer.root_y);
 
-    XEventSwitch::setModifierValue(query_pointer.modifier_state.effective, builder);
-    xEventSwitch.setWindowFields(builder);
+    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    x_event_switch.SetWindowFields(builder);
 
-    xEventSwitch.setDeviceNameFields(builder, raw_event, query_pointer.screen_number);
+    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
 
-    builder.build(data);
+    builder.Build(data);
 }
 
-void EvgetX11::XEventSwitchPointerKey::motionEvent(
-    const EvgetX11::XInputEvent& event,
-    evget::Event::Data& data,
-    EvgetX11::XEventSwitch& xEventSwitch,
-    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& getTime
+void evgetx11::XEventSwitchPointerKey::MotionEvent(
+    const evgetx11::XInputEvent& event,
+    evget::Data& data,
+    evgetx11::XEventSwitch& x_event_switch,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
-    auto raw_event = event.viewData<XIRawEvent>();
+    auto raw_event = event.ViewData<XIRawEvent>();
     // NOLINTBEGIN(hicpp-signed-bitwise)
-    if (!xEventSwitch.hasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated)) {
+    if (!x_event_switch.HasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated)) {
         return;
     }
     // NOLINTEND(hicpp-signed-bitwise)
 
-    auto valuators = getValuators(raw_event.valuators);
+    auto valuators = GetValuators(raw_event.valuators);
     for (const auto& valuator : valuators | std::views::keys) {
-        if (valuator == valuatorX[raw_event.sourceid] || valuator == valuatorY[raw_event.sourceid]) {
-            xEventSwitch.addMotionEvent(raw_event, event.getTimestamp(), data, getTime);
+        if (valuator == valuator_x_[raw_event.sourceid] || valuator == valuator_y_[raw_event.sourceid]) {
+            x_event_switch.AddMotionEvent(raw_event, event.GetTimestamp(), data, get_time);
             break;
         }
     }
 }
-}  // namespace EvgetX11
+}  // namespace evgetx11
 
-#endif  // EVGET_EVGETX11_INCLUDE_EVGETX11_COREXEVENTSWITCH_H
+#endif

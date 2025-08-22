@@ -1,66 +1,44 @@
-// MIT License
-//
-// Copyright (c) 2021 Marko Malenic
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include "evgetx11/XInputHandler.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
-#include <fmt/format.h>
+#include <evget/error.h>
 #include <spdlog/spdlog.h>
 
 #include <array>
+#include <format>
 
-#include "evget/Error.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 #include "evgetx11/XWrapperX11.h"
 
-EvgetX11::XInputHandler::XInputHandler(XWrapper& xWrapper) : xWrapper{xWrapper} {}
+evgetx11::XInputHandler::XInputHandler(XWrapper& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-evget::Result<void> EvgetX11::XInputHandler::announceVersion(XWrapper& xWrapper) {
-    int major = versionMajor;
-    int minor = versionMinor;
+evget::Result<void> evgetx11::XInputHandler::AnnounceVersion(XWrapper& x_wrapper) {
+    int major = kVersionMajor;
+    int minor = kVersionMinor;
 
-    Status status = xWrapper.queryVersion(major, minor);
+    Status status = x_wrapper.QueryVersion(major, minor);
     if (status == Success) {
         spdlog::info("XI2 is supported with version {}.{}", major, minor);
         return {};
     }
 
     return evget::Err{
-        {.errorType = evget::ErrorType::EventHandlerError,
-         .message = fmt::format("XI2 is not supported, only version {}.{} is available.", major, minor)}
+        {.error_type = evget::ErrorType::kEventHandlerError,
+         .message = std::format("XI2 is not supported, only version {}.{} is available.", major, minor)}
     };
 }
 
-void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
+void evgetx11::XInputHandler::SetMask(XWrapper& x_wrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
-    std::array<unsigned char, XI_LASTEVENT> eventMask{};
-    EvgetX11::XWrapperX11::setMask(
-        eventMask.data(),
+    std::array<unsigned char, XI_LASTEVENT> event_mask{};
+    XWrapperX11::SetMask(
+        event_mask.data(),
         {
             XI_RawButtonPress,
             XI_RawButtonRelease,
@@ -74,19 +52,19 @@ void EvgetX11::XInputHandler::setMask(XWrapper& xWrapper) {
         }
     );
 
-    mask.mask_len = sizeof(eventMask);
-    mask.mask = eventMask.data();
+    mask.mask_len = sizeof(event_mask);
+    mask.mask = event_mask.data();
 
-    xWrapper.selectEvents(mask);
+    x_wrapper.SelectEvents(mask);
 }
 
-evget::Result<EvgetX11::XInputHandler> EvgetX11::XInputHandler::build(XWrapper& xWrapper) {
-    return announceVersion(xWrapper).transform([&xWrapper] {
-        setMask(xWrapper);
-        return XInputHandler{xWrapper};
+evget::Result<evgetx11::XInputHandler> evgetx11::XInputHandler::Build(XWrapper& x_wrapper) {
+    return AnnounceVersion(x_wrapper).transform([&x_wrapper] {
+        SetMask(x_wrapper);
+        return XInputHandler{x_wrapper};
     });
 }
 
-EvgetX11::XInputEvent EvgetX11::XInputHandler::getEvent() const {
-    return XInputEvent::nextEvent(xWrapper.get());
+evgetx11::XInputEvent evgetx11::XInputHandler::GetEvent() const {
+    return XInputEvent::NextEvent(x_wrapper_.get());
 }

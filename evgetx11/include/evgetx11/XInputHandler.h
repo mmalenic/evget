@@ -1,57 +1,35 @@
-// MIT License
-//
-// Copyright (c) 2021 Marko Malenic
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+#ifndef EVGETX11_XINPUTHANDLER_H
+#define EVGETX11_XINPUTHANDLER_H
 
-#ifndef EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
-#define EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#include <functional>
 
-#include <memory>
-
-#include "evget/Error.h"
+#include "evget/error.h"
 #include "evgetx11/XInputEvent.h"
 #include "evgetx11/XWrapper.h"
 
-namespace EvgetX11 {
+namespace evgetx11 {
 
 class XInputHandler {
 public:
-    static evget::Result<XInputHandler> build(XWrapper& xWrapper);
+    static evget::Result<XInputHandler> Build(XWrapper& x_wrapper);
 
     /**
      * Get the next event.
      */
-    [[nodiscard]] XInputEvent getEvent() const;
+    [[nodiscard]] XInputEvent GetEvent() const;
 
 private:
-    explicit XInputHandler(XWrapper& xWrapper);
+    explicit XInputHandler(XWrapper& x_wrapper);
 
-    static constexpr int versionMajor = 2;
-    static constexpr int versionMinor = 2;
+    static constexpr int kVersionMajor = 2;
+    static constexpr int kVersionMinor = 2;
 
-    std::reference_wrapper<XWrapper> xWrapper;
+    std::reference_wrapper<XWrapper> x_wrapper_;
 
-    static void setMask(XWrapper& xWrapper);
+    static void SetMask(XWrapper& x_wrapper);
 
-    static evget::Result<void> announceVersion(XWrapper& xWrapper);
+    static evget::Result<void> AnnounceVersion(XWrapper& x_wrapper);
 };
-}  // namespace EvgetX11
+}  // namespace evgetx11
 
-#endif  // EVGET_PLATFORM_LINUX_INCLUDE_EVGET_XINPUTHANDLER_H
+#endif
