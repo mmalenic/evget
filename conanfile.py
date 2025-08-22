@@ -35,6 +35,8 @@ class EvgetRecipe(ConanFile):
         "run_clang_tidy": [True, False],
         # An optional clang tidy executable.
         "clang_tidy_executable": [None, "ANY"],
+        # Fix clang tidy errors by passing "--fix-errors" to clang-tidy.
+        "clang_tidy_fix_errors": [True, False],
         # Specifies a compiler launcher, such as sccache, which sets CMAKE_<LANG>_COMPILER_LAUNCHER.
         "compiler_launcher": [None, "ANY"],
         # Add a cmake install command after for the binary target if `build_binary` is also true:
@@ -55,6 +57,7 @@ class EvgetRecipe(ConanFile):
         "build_testing": False,
         "run_clang_tidy": False,
         "clang_tidy_executable": None,
+        "clang_tidy_fix_errors": False,
         "compiler_launcher": None,
         "install_bin": True,
         "install_lib": True,
@@ -75,6 +78,7 @@ class EvgetRecipe(ConanFile):
         tc.variables["EVGET_BUILD_BIN"] = self.options.build_bin
         tc.variables["BUILD_TESTING"] = self.options.build_testing
         tc.variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
+        tc.variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
         tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
 

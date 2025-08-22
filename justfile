@@ -67,6 +67,10 @@ check $COMPILER_VERSION='' *build_options='': \
     (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" -o "&:verify_headers=True" ' \
     + build_options) lint
 
+# Run clang tidy on code and fix errors.
+check-fix $COMPILER_VERSION='' *build_options='': \
+    (check 'Debug' COMPILER_VERSION '-o "&:clang_tidy_fix_errors=True" ' + build_options)
+
 # Remove the build directory.
 clean:
     rm -rf build
