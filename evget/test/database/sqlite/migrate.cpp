@@ -1,5 +1,3 @@
-#include "evget/database/migrate.h"
-
 #include <gtest/gtest.h>
 
 #include <format>
@@ -7,6 +5,9 @@
 
 #include "common/database.h"
 #include "evget/database/connection.h"
+// clang-format off
+#include "evget/database/migrate.h"
+// clang-format on
 #include "evget/database/sqlite/connection.h"
 
 using DatabaseTest = test::DatabaseTest;

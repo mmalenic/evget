@@ -1,4 +1,4 @@
-#include "utils/EvgetX11TestUtils.h"
+#include "common/x11_api_mock.h"
 
 #include <gmock/gmock.h>
 
@@ -8,7 +8,7 @@
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
-#include <evgetx11/XWrapper.h>
+#include <evgetx11/x11_api.h>
 
 #include <array>
 #include <cstdint>
@@ -139,7 +139,7 @@ evgetx11::QueryPointerResult test::CreatePointerResult() {
     };
 }
 
-void test::SetXWrapperEventMocks(test::XWrapperMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
+void test::SetXWrapperEventMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
     EXPECT_CALL(x_wrapper_mock, EventData)
         .WillOnce(
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
@@ -159,7 +159,7 @@ void test::SetXWrapperEventMocks(test::XWrapperMock& x_wrapper_mock, XIRawEvent&
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
 }
 
-void test::SetXWrapperKeyMocks(test::XWrapperMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
+void test::SetXWrapperKeyMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
     EXPECT_CALL(x_wrapper_mock, EventData)
         .WillOnce(
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
@@ -178,7 +178,7 @@ void test::SetXWrapperKeyMocks(test::XWrapperMock& x_wrapper_mock, XIRawEvent& d
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
 }
 
-void test::SetXWrapperMocks(test::XWrapperMock& x_wrapper_mock) {
+void test::SetXWrapperMocks(test::X11ApiMock& x_wrapper_mock) {
     EXPECT_CALL(x_wrapper_mock, ListInputDevices)
         .WillOnce(
             testing::Return(

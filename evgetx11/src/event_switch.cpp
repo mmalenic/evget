@@ -1,4 +1,4 @@
-#include "evgetx11/XEventSwitch.h"
+#include "evgetx11/event_switch.h"
 
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
@@ -8,17 +8,17 @@
 #include <span>
 #include <string>
 
-#include "evgetx11/XWrapper.h"
+#include "evgetx11/x11_api.h"
 
-evget::DeviceType evgetx11::XEventSwitch::GetDevice(int device_id) const {
+evget::DeviceType evgetx11::EventSwitch::GetDevice(int device_id) const {
     return devices_.at(device_id);
 }
 
-bool evgetx11::XEventSwitch::HasDevice(int device_id) const {
+bool evgetx11::EventSwitch::HasDevice(int device_id) const {
     return devices_.contains(device_id);
 }
 
-void evgetx11::XEventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, int device_id) {
+void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, int device_id) {
     auto map = x_wrapper_.get().GetDeviceButtonMapping(device_id, button_info.num_buttons);
     if (map) {
         auto labels = std::span(button_info.labels, button_info.num_buttons);
@@ -33,7 +33,7 @@ void evgetx11::XEventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, 
     }
 }
 
-void evgetx11::XEventSwitch::RefreshDevices(
+void evgetx11::EventSwitch::RefreshDevices(
     int device_id,
     std::optional<int> pointer_id,
     evget::DeviceType device,
@@ -63,8 +63,8 @@ void evgetx11::XEventSwitch::RefreshDevices(
     }
 }
 
-evgetx11::XEventSwitch::XEventSwitch(XWrapper& x_wrapper) : x_wrapper_{x_wrapper} {}
+evgetx11::EventSwitch::EventSwitch(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-const std::string& evgetx11::XEventSwitch::GetButtonName(int device_id, int button) const {
+const std::string& evgetx11::EventSwitch::GetButtonName(int device_id, int button) const {
     return button_map_.at(device_id).at(button);
 }

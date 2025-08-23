@@ -10,30 +10,30 @@
 #include "evget/error.h"
 #include "evget/event_listener.h"
 #include "evget/event_loop.h"
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XInputHandler.h"
+#include "evgetx11/input_event.h"
+#include "evgetx11/input_handler.h"
 
 namespace evgetx11 {
 
 /**
  * Class represents processing evgetx11 system events.
  */
-class EventLoopX11 : public evget::EventLoop<XInputEvent> {
+class EventLoop : public evget::EventLoop<InputEvent> {
 public:
     /**
      * Create the system events.
      */
-    explicit EventLoopX11(XInputHandler x_input_handler);
+    explicit EventLoop(InputHandler x_input_handler);
 
-    evget::Result<void> Notify(XInputEvent event) override;
-    void RegisterEventListener(evget::EventListener<XInputEvent>& event_listener) override;
+    evget::Result<void> Notify(InputEvent event) override;
+    void RegisterEventListener(evget::EventListener<InputEvent>& event_listener) override;
     void Stop() override;
     boost::asio::awaitable<evget::Result<void>> Start() override;
     boost::asio::awaitable<bool> IsStopped();
 
 private:
-    std::optional<std::reference_wrapper<evget::EventListener<XInputEvent>>> event_listener_;
-    XInputHandler handler_;
+    std::optional<std::reference_wrapper<evget::EventListener<InputEvent>>> event_listener_;
+    InputHandler handler_;
 
     std::atomic<bool> stopped_{false};
 };

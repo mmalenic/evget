@@ -1,8 +1,10 @@
-#include "evget/async/container/locking_vector.h"
-
 #include <gtest/gtest.h>
 
 #include <vector>
+
+// clang-format off
+#include "evget/async/container/locking_vector.h"
+// clang-format on
 
 TEST(LockingVectorTest, PushBackAndIntoInner) {
     auto vector = evget::LockingVector<int>{};

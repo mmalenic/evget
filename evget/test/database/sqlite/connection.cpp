@@ -1,9 +1,11 @@
-#include "evget/database/sqlite/connection.h"
+#include "evget/database/connection.h"
 
 #include <gtest/gtest.h>
 
 #include "common/database.h"
-#include "evget/database/connection.h"
+// clang-format off
+#include "evget/database/sqlite/connection.h"
+// clang-format on
 
 using DatabaseTest = test::DatabaseTest;
 

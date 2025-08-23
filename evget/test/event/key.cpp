@@ -1,5 +1,3 @@
-#include "evget/event/key.h"
-
 #include <gtest/gtest.h>
 
 #include <string>
@@ -8,6 +6,9 @@
 #include "evget/event/button_action.h"
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
+// clang-format off
+#include "evget/event/key.h"
+// clang-format on
 #include "evget/event/modifier_value.h"
 
 TEST(KeyTest, Event) {

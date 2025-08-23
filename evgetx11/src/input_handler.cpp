@@ -1,4 +1,4 @@
-#include "evgetx11/XInputHandler.h"
+#include "evgetx11/input_handler.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -10,13 +10,12 @@
 #include <array>
 #include <format>
 
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XWrapper.h"
-#include "evgetx11/XWrapperX11.h"
+#include "evgetx11/input_event.h"
+#include "evgetx11/x11_api.h"
 
-evgetx11::XInputHandler::XInputHandler(XWrapper& x_wrapper) : x_wrapper_{x_wrapper} {}
+evgetx11::InputHandler::InputHandler(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-evget::Result<void> evgetx11::XInputHandler::AnnounceVersion(XWrapper& x_wrapper) {
+evget::Result<void> evgetx11::InputHandler::AnnounceVersion(X11Api& x_wrapper) {
     int major = kVersionMajor;
     int minor = kVersionMinor;
 
@@ -32,12 +31,12 @@ evget::Result<void> evgetx11::XInputHandler::AnnounceVersion(XWrapper& x_wrapper
     };
 }
 
-void evgetx11::XInputHandler::SetMask(XWrapper& x_wrapper) {
+void evgetx11::InputHandler::SetMask(X11Api& x_wrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
     std::array<unsigned char, XI_LASTEVENT> event_mask{};
-    XWrapperX11::SetMask(
+    X11ApiImpl::SetMask(
         event_mask.data(),
         {
             XI_RawButtonPress,
@@ -58,13 +57,13 @@ void evgetx11::XInputHandler::SetMask(XWrapper& x_wrapper) {
     x_wrapper.SelectEvents(mask);
 }
 
-evget::Result<evgetx11::XInputHandler> evgetx11::XInputHandler::Build(XWrapper& x_wrapper) {
+evget::Result<evgetx11::InputHandler> evgetx11::InputHandler::Build(X11Api& x_wrapper) {
     return AnnounceVersion(x_wrapper).transform([&x_wrapper] {
         SetMask(x_wrapper);
-        return XInputHandler{x_wrapper};
+        return InputHandler{x_wrapper};
     });
 }
 
-evgetx11::XInputEvent evgetx11::XInputHandler::GetEvent() const {
-    return XInputEvent::NextEvent(x_wrapper_.get());
+evgetx11::InputEvent evgetx11::InputHandler::GetEvent() const {
+    return InputEvent::NextEvent(x_wrapper_.get());
 }

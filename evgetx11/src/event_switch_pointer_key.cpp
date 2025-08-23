@@ -1,4 +1,4 @@
-#include "evgetx11/XEventSwitchPointerKey.h"
+#include "evgetx11/event_switch_pointer_key.h"
 
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
@@ -13,19 +13,18 @@
 #include <string>
 #include <vector>
 
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XWrapper.h"
-#include "evgetx11/XWrapperX11.h"
+#include "evgetx11/event_switch.h"
+#include "evgetx11/x11_api.h"
 
-evgetx11::XEventSwitchPointerKey::XEventSwitchPointerKey(XWrapper& x_wrapper) : x_wrapper_{x_wrapper} {}
+evgetx11::EventSwitchPointerKey::EventSwitchPointerKey(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-void evgetx11::XEventSwitchPointerKey::RefreshDevices(
+void evgetx11::EventSwitchPointerKey::RefreshDevices(
     int device_id,
     std::optional<int> pointer_id,
     evget::DeviceType device,
     const std::string& name,
     const XIDeviceInfo& info,
-    evgetx11::XEventSwitch& x_event_switch
+    evgetx11::EventSwitch& x_event_switch
 ) {
     x_event_switch.RefreshDevices(device_id, pointer_id, device, name, info);
 
@@ -69,10 +68,10 @@ void evgetx11::XEventSwitchPointerKey::RefreshDevices(
     }
 }
 
-std::map<int, int> evgetx11::XEventSwitchPointerKey::GetValuators(const XIValuatorState& valuator_state) {
+std::map<int, int> evgetx11::EventSwitchPointerKey::GetValuators(const XIValuatorState& valuator_state) {
     std::map<int, int> valuators{};
     auto* values = valuator_state.values;
-    evgetx11::XWrapperX11::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
+    evgetx11::X11ApiImpl::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
         valuators.emplace(mask, (*values)++);
     });
     return valuators;

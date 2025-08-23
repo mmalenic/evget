@@ -1,5 +1,3 @@
-#include "evget/async/scheduler/scheduler.h"
-
 #include <gtest/gtest.h>
 
 #include <boost/asio/awaitable.hpp>
@@ -7,6 +5,10 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+
+// clang-format off
+#include "evget/async/scheduler/scheduler.h"
+// clang-format on
 
 TEST(SchedulerTest, SpawnVoidTaskAndJoin) {
     auto scheduler = std::make_shared<evget::Scheduler>();

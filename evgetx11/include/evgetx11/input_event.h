@@ -4,10 +4,10 @@
 #include <X11/Xlib.h>
 
 #include "evget/event/schema.h"
-#include "evgetx11/XWrapper.h"
+#include "evgetx11/x11_api.h"
 
 namespace evgetx11 {
-class XInputEvent {
+class InputEvent {
 public:
     /**
      * Get the date time of the event.
@@ -36,10 +36,10 @@ public:
      * the event mask set on the display. This function will block if there are no events on the event
      * queue.
      */
-    static XInputEvent NextEvent(XWrapper& x_wrapper);
+    static InputEvent NextEvent(X11Api& x_wrapper);
 
 private:
-    explicit XInputEvent(XWrapper& x_wrapper);
+    explicit InputEvent(X11Api& x_wrapper);
 
     XEvent event_;
     evget::TimestampType timestamp_;
@@ -47,7 +47,7 @@ private:
 };
 
 template <typename T>
-const T& evgetx11::XInputEvent::ViewData() const {
+const T& evgetx11::InputEvent::ViewData() const {
     return *static_cast<T*>(cookie_->data);
 }
 }  // namespace evgetx11

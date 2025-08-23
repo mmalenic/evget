@@ -20,16 +20,15 @@
 
 #include "evget/event/key.h"
 #include "evget/event/mouse_scroll.h"
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XWrapper.h"
-#include "evgetx11/XWrapperX11.h"
+#include "evgetx11/event_switch.h"
+#include "evgetx11/input_event.h"
+#include "evgetx11/x11_api.h"
 
 namespace evgetx11 {
 
-class XEventSwitchPointerKey {
+class EventSwitchPointerKey {
 public:
-    explicit XEventSwitchPointerKey(XWrapper& x_wrapper);
+    explicit EventSwitchPointerKey(X11Api& x_wrapper);
 
     void RefreshDevices(
         int device_id,
@@ -37,12 +36,12 @@ public:
         evget::DeviceType device,
         const std::string& name,
         const XIDeviceInfo& info,
-        evgetx11::XEventSwitch& x_event_switch
+        evgetx11::EventSwitch& x_event_switch
     );
     bool SwitchOnEvent(
-        const XInputEvent& event,
+        const InputEvent& event,
         evget::Data& data,
-        evgetx11::XEventSwitch& x_event_switch,
+        evgetx11::EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -50,32 +49,32 @@ private:
     static std::map<int, int> GetValuators(const XIValuatorState& valuator_state);
 
     static void ButtonEvent(
-        const XInputEvent& event,
+        const InputEvent& event,
         evget::Data& data,
         evget::ButtonAction action,
-        evgetx11::XEventSwitch& x_event_switch,
+        evgetx11::EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void KeyEvent(
-        const XInputEvent& event,
+        const InputEvent& event,
         evget::Data& data,
-        evgetx11::XEventSwitch& x_event_switch,
+        evgetx11::EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void MotionEvent(
-        const XInputEvent& event,
+        const InputEvent& event,
         evget::Data& data,
-        evgetx11::XEventSwitch& x_event_switch,
+        evgetx11::EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void ScrollEvent(
-        const XInputEvent& event,
+        const InputEvent& event,
         evget::Data& data,
-        evgetx11::XEventSwitch& x_event_switch,
+        evgetx11::EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
-    std::reference_wrapper<XWrapper> x_wrapper_;
+    std::reference_wrapper<X11Api> x_wrapper_;
 
     std::unordered_map<int, std::unordered_map<int, XIScrollClassInfo>> scroll_map_;
     std::unordered_map<int, std::optional<int>> valuator_x_;
@@ -84,10 +83,10 @@ private:
     int pointer_id_{};
 };
 
-bool evgetx11::XEventSwitchPointerKey::SwitchOnEvent(
-    const evgetx11::XInputEvent& event,
+bool evgetx11::EventSwitchPointerKey::SwitchOnEvent(
+    const evgetx11::InputEvent& event,
     evget::Data& data,
-    evgetx11::XEventSwitch& x_event_switch,
+    evgetx11::EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     switch (event.GetEventType()) {
@@ -110,11 +109,11 @@ bool evgetx11::XEventSwitchPointerKey::SwitchOnEvent(
     }
 }
 
-void evgetx11::XEventSwitchPointerKey::ButtonEvent(
-    const evgetx11::XInputEvent& event,
+void evgetx11::EventSwitchPointerKey::ButtonEvent(
+    const evgetx11::InputEvent& event,
     evget::Data& data,
     evget::ButtonAction action,
-    evgetx11::XEventSwitch& x_event_switch,
+    evgetx11::EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -130,10 +129,10 @@ void evgetx11::XEventSwitchPointerKey::ButtonEvent(
     x_event_switch.AddButtonEvent(raw_event, event.GetTimestamp(), data, action, raw_event.detail, get_time);
 }
 
-void evgetx11::XEventSwitchPointerKey::KeyEvent(
-    const evgetx11::XInputEvent& event,
+void evgetx11::EventSwitchPointerKey::KeyEvent(
+    const evgetx11::InputEvent& event,
     evget::Data& data,
-    evgetx11::XEventSwitch& x_event_switch,
+    evgetx11::EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -154,7 +153,7 @@ void evgetx11::XEventSwitchPointerKey::KeyEvent(
         // NOLINTEND(hicpp-signed-bitwise)
     }
 
-    const std::string name = XWrapperX11::KeySymToString(key_sym);
+    const std::string name = X11ApiImpl::KeySymToString(key_sym);
 
     evget::Key builder{};
     builder.Interval(get_time(raw_event.time))
@@ -167,7 +166,7 @@ void evgetx11::XEventSwitchPointerKey::KeyEvent(
         .Character(character)
         .Name(name);
 
-    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
 
     x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
@@ -175,10 +174,10 @@ void evgetx11::XEventSwitchPointerKey::KeyEvent(
     builder.Build(data);
 }
 
-void evgetx11::XEventSwitchPointerKey::ScrollEvent(
-    const evgetx11::XInputEvent& event,
+void evgetx11::EventSwitchPointerKey::ScrollEvent(
+    const evgetx11::InputEvent& event,
     evget::Data& data,
-    evgetx11::XEventSwitch& x_event_switch,
+    evgetx11::EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -217,7 +216,7 @@ void evgetx11::XEventSwitchPointerKey::ScrollEvent(
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 
-    XEventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
 
     x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
@@ -225,10 +224,10 @@ void evgetx11::XEventSwitchPointerKey::ScrollEvent(
     builder.Build(data);
 }
 
-void evgetx11::XEventSwitchPointerKey::MotionEvent(
-    const evgetx11::XInputEvent& event,
+void evgetx11::EventSwitchPointerKey::MotionEvent(
+    const evgetx11::InputEvent& event,
     evget::Data& data,
-    evgetx11::XEventSwitch& x_event_switch,
+    evgetx11::EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();

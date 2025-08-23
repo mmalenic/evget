@@ -10,28 +10,27 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/EventLoopX11.cpp
-            ${SRC}/XEventSwitch.cpp
-            ${SRC}/XEventSwitchPointerKey.cpp
-            ${SRC}/XInputEvent.cpp
-            ${SRC}/XInputHandler.cpp
-            ${SRC}/XWrapperX11.cpp
-            ${SRC}/XEventSwitchTouch.cpp
+    PRIVATE ${SRC}/event_loop.cpp
+            ${SRC}/event_switch.cpp
+            ${SRC}/event_switch_pointer_key.cpp
+            ${SRC}/event_switch_touch.cpp
+            ${SRC}/input_event.cpp
+            ${SRC}/input_handler.cpp
+            ${SRC}/x11_api.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
            include
            FILES
-           ${INCLUDE}/DeleterWithDisplay.h
-           ${INCLUDE}/EventLoopX11.h
-           ${INCLUDE}/EventTransformerX11.h
-           ${INCLUDE}/XEventSwitch.h
-           ${INCLUDE}/XEventSwitchPointerKey.h
-           ${INCLUDE}/XInputEvent.h
-           ${INCLUDE}/XInputHandler.h
-           ${INCLUDE}/XWrapper.h
-           ${INCLUDE}/XWrapperX11.h
-           ${INCLUDE}/XEventSwitchTouch.h
+           ${INCLUDE}/display_deleter.h
+           ${INCLUDE}/event_loop.h
+           ${INCLUDE}/event_switch.h
+           ${INCLUDE}/event_switch_pointer_key.h
+           ${INCLUDE}/event_switch_touch.h
+           ${INCLUDE}/event_transformer.h
+           ${INCLUDE}/input_event.h
+           ${INCLUDE}/input_handler.h
+           ${INCLUDE}/x11_api.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
@@ -55,9 +54,7 @@ toolbelt_add_dep(
 
 if(BUILD_TESTING)
     target_sources(
-        ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/EventTransformerX11Test.cpp test/XEventSwitchPointerKeyTest.cpp test/XEventSwitchTest.cpp
-               test/XEventSwitchTouchTest.cpp test/utils/Evgetx11TestUtils.cpp test/utils/EvgetX11TestUtils.h
+        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/x11_api_mock.cpp test/common/x11_api_mock.h test/event_switch.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

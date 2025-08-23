@@ -1,5 +1,3 @@
-#include "evget/event/data.h"
-
 #include <gtest/gtest.h>
 
 #include <string>
@@ -7,6 +5,9 @@
 #include <vector>
 
 #include "evget/event/entry.h"
+// clang-format off
+#include "evget/event/data.h"
+// clang-format on
 
 TEST(DataTest, Create) {
     evget::Data data{};

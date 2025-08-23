@@ -1,5 +1,3 @@
-#include "evget/event/mouse_move.h"
-
 #include <gtest/gtest.h>
 
 #include <vector>
@@ -7,6 +5,9 @@
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/modifier_value.h"
+// clang-format off
+#include "evget/event/mouse_move.h"
+// clang-format on
 
 TEST(MouseMoveTest, Event) {
     auto data = evget::Data{};

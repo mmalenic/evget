@@ -1,5 +1,3 @@
-#include "evget/async/scheduler/interval.h"
-
 #include <gtest/gtest.h>
 
 #include <boost/asio/awaitable.hpp>
@@ -7,6 +5,9 @@
 #include <memory>
 
 #include "evget/async/scheduler/scheduler.h"
+// clang-format off
+#include "evget/async/scheduler/interval.h"
+// clang-format on
 #include "evget/error.h"
 
 TEST(IntervalTest, Tick) {

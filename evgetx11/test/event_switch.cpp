@@ -11,18 +11,20 @@
 #include <optional>
 #include <stdexcept>
 
+#include "common/x11_api_mock.h"
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
-#include "evgetx11/XEventSwitch.h"
-#include "utils/EvgetX11TestUtils.h"
+// clang-format off
+#include "evgetx11/event_switch.h"
+// clang-format on
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 TEST(XEventSwitchTest, RefreshDevices) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     ASSERT_FALSE(x_event_switch.HasDevice(1));
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
@@ -30,8 +32,8 @@ TEST(XEventSwitchTest, RefreshDevices) {
 }
 
 TEST(XEventSwitchTest, GetDevice) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     ASSERT_THROW(static_cast<void>(x_event_switch.GetDevice(1)), std::out_of_range);
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
@@ -43,8 +45,8 @@ TEST(XEventSwitchTest, GetButtonName) {
     std::array<unsigned char, 1> mask = {1};
     auto button_class_info = test::CreateXiButtonClassInfo(labels, mask);
 
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
     ASSERT_THROW(static_cast<void>(x_event_switch.GetButtonName(1, 0)), std::out_of_range);
 
@@ -63,8 +65,8 @@ TEST(XEventSwitchTest, GetButtonName) {
 }
 
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-function-cognitive-complexity)
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
     std::array<unsigned char, 1> valuator_mask = {1};
     std::array<double, 1> values = {1};
@@ -111,8 +113,8 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-funct
 }
 
 TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
     auto valuator_class_info = test::CreateXiValuatorClassInfo();
     valuator_class_info.number = 0;

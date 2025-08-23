@@ -12,21 +12,23 @@
 #include <optional>
 #include <string>
 
+#include "common/x11_api_mock.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XEventSwitchPointerKey.h"
-#include "evgetx11/XInputEvent.h"
-#include "evgetx11/XWrapper.h"
-#include "utils/EvgetX11TestUtils.h"
+#include "evgetx11/event_switch.h"
+// clang-format off
+#include "evgetx11/event_switch_pointer_key.h"
+// clang-format on
+#include "evgetx11/input_event.h"
+#include "evgetx11/x11_api.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     XIValuatorClassInfo valuator_info{
         .type = XIValuatorClass,
@@ -88,9 +90,9 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
 }
 
 TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-function-cognitive-complexity)
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
@@ -109,7 +111,7 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-funct
     auto x_event = test::CreateXEvent(device_event);
     test::SetXWrapperEventMocks(x_wrapper_mock, device_event, x_event);
 
-    auto input_event = evgetx11::XInputEvent::NextEvent(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
@@ -132,9 +134,9 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-funct
 }
 
 TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(readability-function-cognitive-complexity)
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     std::array<XIAnyClassInfo*, 3> any_class_info = {};
     std::string name = "name";
@@ -146,7 +148,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(readability-function-cogni
 
     auto x_event = test::CreateXEvent(device_event);
     test::SetXWrapperKeyMocks(x_wrapper_mock, device_event, x_event);
-    auto input_event = evgetx11::XInputEvent::NextEvent(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
     x_event_switch_pointer_key
         .RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info, x_event_switch);
@@ -171,9 +173,9 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(readability-function-cogni
 }
 
 TEST(XEventSwitchCoreTest, TestMotionEvent) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     auto valuator_class_info = test::CreateXiValuatorClassInfo();
     valuator_class_info.number = 0;
@@ -204,7 +206,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
                                                                                               }})));
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
 
-    auto input_event = evgetx11::XInputEvent::NextEvent(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
@@ -224,9 +226,9 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
 }
 
 TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(readability-function-cognitive-complexity)
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     auto valuator_class_info = test::CreateXiValuatorClassInfo();
     auto scroll_class_info = test::CreateXiScrollClassInfo();
@@ -260,7 +262,7 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(readability-function-co
                                                                                               }})));
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
 
-    auto input_event = evgetx11::XInputEvent::NextEvent(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 

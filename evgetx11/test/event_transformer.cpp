@@ -6,24 +6,26 @@
 #include <evget/event/device_type.h>
 #include <evget/event/entry.h>
 #include <evget/event/schema.h>
-#include <evgetx11/XInputEvent.h>
+#include <evgetx11/input_event.h>
 
 #include <array>
 #include <utility>
 
-#include "evgetx11/EventTransformerX11.h"
-#include "evgetx11/XEventSwitch.h"
-#include "evgetx11/XEventSwitchPointerKey.h"
-#include "utils/EvgetX11TestUtils.h"
+#include "common/x11_api_mock.h"
+#include "evgetx11/event_switch.h"
+#include "evgetx11/event_switch_pointer_key.h"
+// clang-format off
+#include "evgetx11/event_transformer.h"
+// clang-format on
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
-TEST(EventTransformerX11Test, TestTransformEvent) {
-    test::XWrapperMock x_wrapper_mock{};
-    evgetx11::XEventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::XEventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+TEST(EventTransformer, TransformEvent) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     test::SetXWrapperMocks(x_wrapper_mock);
-    auto transformer = evgetx11::EventTransformerX11{x_wrapper_mock, x_event_switch, x_event_switch_pointer_key};
+    auto transformer = evgetx11::EventTransformer{x_wrapper_mock, x_event_switch, x_event_switch_pointer_key};
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
@@ -43,7 +45,7 @@ TEST(EventTransformerX11Test, TestTransformEvent) {
     SetXWrapperEventMocks(x_wrapper_mock, device_event, x_event);
 
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
-    auto input_event = evgetx11::XInputEvent::NextEvent(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
     auto data = transformer.TransformEvent(std::move(input_event));
     const auto& entries = data.Entries();

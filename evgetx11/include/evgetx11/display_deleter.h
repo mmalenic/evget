@@ -7,9 +7,9 @@
 
 namespace evgetx11 {
 template <auto F>
-class DeleterWithDisplay {
+class DisplayDeleter {
 public:
-    explicit DeleterWithDisplay(Display& display);
+    explicit DisplayDeleter(Display& display);
 
     template <typename T>
     void operator()(T* pointer) const;
@@ -20,12 +20,12 @@ private:
 
 template <auto F>
 template <typename T>
-void evgetx11::DeleterWithDisplay<F>::operator()(T* pointer) const {
+void evgetx11::DisplayDeleter<F>::operator()(T* pointer) const {
     F(&display_.get(), pointer);
 }
 
 template <auto F>
-DeleterWithDisplay<F>::DeleterWithDisplay(Display& display) : display_{display} {}
+DisplayDeleter<F>::DisplayDeleter(Display& display) : display_{display} {}
 }  // namespace evgetx11
 
 #endif

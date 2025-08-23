@@ -14,11 +14,11 @@
 #include <span>
 #include <string>
 
-#include "evgetx11/XWrapper.h"
+#include "evgetx11/x11_api.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace test {
-class XWrapperMock : public evgetx11::XWrapper {
+class X11ApiMock : public evgetx11::X11Api {
 public:
     using XWindowDimensions = evgetx11::XWindowDimensions;
     using XEventPointer = evgetx11::XEventPointer;
@@ -67,9 +67,9 @@ XEvent CreateXEvent(XIRawEvent& event);
 XIValuatorState CreateXiValuatorState(std::array<unsigned char, 1>& valuator_mask, std::array<double, 1>& values);
 evgetx11::QueryPointerResult CreatePointerResult();
 
-void SetXWrapperEventMocks(XWrapperMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
-void SetXWrapperKeyMocks(XWrapperMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
-void SetXWrapperMocks(XWrapperMock& x_wrapper_mock);
+void SetXWrapperEventMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
+void SetXWrapperKeyMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
+void SetXWrapperMocks(X11ApiMock& x_wrapper_mock);
 }  // namespace test
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
