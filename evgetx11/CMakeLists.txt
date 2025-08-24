@@ -36,21 +36,45 @@ set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
 target_link_libraries(${LIBRARY_NAME} PUBLIC libevget)
 
-toolbelt_add_dep(${LIBRARY_NAME} spdlog VISIBILITY PUBLIC LINK_COMPONENTS spdlog::spdlog)
-toolbelt_add_dep(${LIBRARY_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS Boost::headers)
 toolbelt_add_dep(
     ${LIBRARY_NAME}
-    X11
+    spdlog
     VISIBILITY
     PUBLIC
-    FIND_PACKAGE_ARGS
-    COMPONENTS
-    Xi
-    Xkb
     LINK_COMPONENTS
-    X11::Xi
-    X11::Xkb
+    spdlog::spdlog
+    FIND_PACKAGE_ARGS
+    REQUIRED
 )
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    Boost
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    Boost::headers
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+
+# Try conan-specific install first, otherwise fallback to system install.
+toolbelt_add_dep(${LIBRARY_NAME} xorg VISIBILITY PUBLIC LINK_COMPONENTS xorg::xorg)
+if(NOT TARGET xorg::xorg)
+    toolbelt_add_dep(
+        ${LIBRARY_NAME}
+        X11
+        VISIBILITY
+        PUBLIC
+        LINK_COMPONENTS
+        X11::Xi
+        X11::Xkb
+        FIND_PACKAGE_ARGS
+        REQUIRED
+        COMPONENTS
+        Xi
+        Xkb
+    )
+endif()
 
 if(BUILD_TESTING)
     target_sources(

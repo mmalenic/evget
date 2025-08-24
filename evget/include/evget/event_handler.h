@@ -44,18 +44,18 @@ private:
 
 template <typename T>
 asio::awaitable<Result<void>> EventHandler<T>::Start() {
-    co_return co_await event_loop_.get().start();
+    co_return co_await event_loop_.get().Start();
 }
 
 template <typename T>
 EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop)
     : storage_{storage}, transformer_{transformer}, event_loop_{event_loop} {
-    event_loop.registerEventListener(*this);
+    event_loop.RegisterEventListener(*this);
 }
 
 template <typename T>
 Result<void> EventHandler<T>::Notify(T event) {
-    return storage_.get().StoreEvent(transformer_.get().transformEvent(std::move(event)));
+    return storage_.get().StoreEvent(transformer_.get().TransformEvent(std::move(event)));
 }
 }  // namespace evget
 

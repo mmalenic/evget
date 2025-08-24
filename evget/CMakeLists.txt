@@ -168,12 +168,66 @@ target_include_directories(${LIBRARY_NAME} PRIVATE ${cmake_toolbelt_ret})
 # Ensure that clang-tidy doesn't run on the generated files.
 file(WRITE "${cmake_toolbelt_ret}/.clang-tidy" "Checks: '-*'")
 
-toolbelt_add_dep(${LIBRARY_NAME} spdlog VISIBILITY PUBLIC LINK_COMPONENTS spdlog::spdlog)
-toolbelt_add_dep(${LIBRARY_NAME} Boost VISIBILITY PUBLIC LINK_COMPONENTS Boost::headers)
-toolbelt_add_dep(${LIBRARY_NAME} nlohmann_json VISIBILITY PUBLIC LINK_COMPONENTS nlohmann_json::nlohmann_json)
-toolbelt_add_dep(${LIBRARY_NAME} SQLiteCpp VISIBILITY PUBLIC LINK_COMPONENTS SQLiteCpp)
-toolbelt_add_dep(${LIBRARY_NAME} OpenSSL VISIBILITY PUBLIC LINK_COMPONENTS openssl::openssl)
-toolbelt_add_dep(${LIBRARY_NAME} CLI11 VISIBILITY PUBLIC LINK_COMPONENTS CLI11::CLI11)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    spdlog
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    spdlog::spdlog
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    Boost
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    Boost::headers
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    nlohmann_json
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    nlohmann_json::nlohmann_json
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    SQLiteCpp
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    SQLiteCpp
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    OpenSSL
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    openssl::openssl
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    CLI11
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    CLI11::CLI11
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
 
 file(STRINGS "../LICENSE" LICENSE)
 list(GET LICENSE 0 LICENSE_NAME)

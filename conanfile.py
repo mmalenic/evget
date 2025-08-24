@@ -51,6 +51,8 @@ class EvgetRecipe(ConanFile):
         # Verify headers by setting CMAKE_VERIFY_INTERFACE_HEADER_SETS:
         # https://cmake.org/cmake/help/latest/variable/CMAKE_VERIFY_INTERFACE_HEADER_SETS.html#variable:CMAKE_VERIFY_INTERFACE_HEADER_SETS
         "verify_headers": [True, False],
+        "build_evgetx11": [True, False],
+        "install_system_packages": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -63,7 +65,13 @@ class EvgetRecipe(ConanFile):
         "install_lib": True,
         "export_compilation_database": True,
         "verify_headers": False,
+        "build_evgetx11": True,
+        "install_system_packages": True,
     }
+
+    def requirements(self):
+        if self.options.build_evgetx11:
+            self.requires("xorg/system")
 
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
