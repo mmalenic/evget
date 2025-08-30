@@ -44,20 +44,22 @@ endif()
 
 add_subdirectory(evget)
 
-toolbelt_check_includes(
-    VAR
-    EVGETX11_HAS_FEATURE
-    INCLUDES
-    X11/Xlib.h
-    X11/extensions/XInput.h
-    X11/extensions/XInput2.h
-    X11/Xutil.h
-    xorg/xserver-properties.h
-    LANGUAGE
-    CXX
-)
-if(EVGETX11_HAS_FEATURE)
-    add_subdirectory(evgetx11)
+if(EVGET_BUILD_EVGETX11)
+    toolbelt_check_includes(
+        VAR
+        FEATURE_EVGETX11
+        INCLUDES
+        X11/Xlib.h
+        X11/extensions/XInput.h
+        X11/extensions/XInput2.h
+        X11/Xutil.h
+        xorg/xserver-properties.h
+        LANGUAGE
+        CXX
+    )
+    if(FEATURE_EVGETX11)
+        add_subdirectory(evgetx11)
+    endif()
 endif()
 
 if(BUILD_TESTING)
@@ -70,11 +72,16 @@ if(BUILD_TESTING)
 endif()
 
 if(EVGET_BUILD_BIN)
+    # Check if at least one feature has been built
+    if(NOT FEATURE_EVGETX11)
+        message(FATAL_ERROR "evget: at least one feature should be built - evgetx11")
+    endif()
+
     add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/evget/src/main.cpp)
     set_property(TARGET ${PROJECT_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
     target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
-    if(EVGETX11_HAS_FEATURE)
+    if(FEATURE_EVGETX11)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
     endif()
 endif()

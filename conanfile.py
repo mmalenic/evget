@@ -52,7 +52,7 @@ class EvgetRecipe(ConanFile):
         # https://cmake.org/cmake/help/latest/variable/CMAKE_VERIFY_INTERFACE_HEADER_SETS.html#variable:CMAKE_VERIFY_INTERFACE_HEADER_SETS
         "verify_headers": [True, False],
         "build_evgetx11": [True, False],
-        "install_system_packages": [True, False],
+        "require_system_packages": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -65,16 +65,24 @@ class EvgetRecipe(ConanFile):
         "install_lib": True,
         "export_compilation_database": True,
         "verify_headers": False,
-        "build_evgetx11": True,
-        "install_system_packages": True,
+        "require_system_packages": True,
     }
 
-    def requirements(self):
-        if self.options.build_evgetx11:
-            self.requires("xorg/system")
+    def config_options(self):
+        # Must compare with ==
+        # https://github.com/conan-io/conan/issues/3524
+        if self.options.build_evgetx11 == None:  # noqa: E711
+            self.options.build_evgetx11 = (
+                self.settings.os == "Linux" or self.settings.os.subsystem == "wsl"
+            )
 
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
+
+    def requirements(self):
+        if self.options.require_system_packages:
+            if self.options.build_evgetx11:
+                self.requires("xorg/system")
 
     def validate(self):
         if self.settings.compiler.cppstd:
@@ -89,6 +97,7 @@ class EvgetRecipe(ConanFile):
         tc.variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
         tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
+        tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
 
         if self.options.clang_tidy_executable:
             tc.variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
