@@ -50,12 +50,11 @@ void evget::DatabaseManager::SpawnStoreData(
 
 evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
     data_->PushBack(std::move(events));
-    const Result<void> out_result = {};
 
     auto inner = data_->IntoInnerAt(n_events_);
     SpawnStoreData(inner, store_in_, *scheduler_);
 
-    return out_result;
+    return {};
 }
 
 void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) {

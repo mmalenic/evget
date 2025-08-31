@@ -3,7 +3,6 @@
 
 #include <boost/asio/awaitable.hpp>
 
-#include <atomic>
 #include <functional>
 #include <optional>
 
@@ -25,7 +24,7 @@ public:
      */
     explicit EventLoop(InputHandler x_input_handler);
 
-    evget::Result<void> Notify(InputEvent event) override;
+    boost::asio::awaitable<evget::Result<void>> Notify(InputEvent event) override;
     void RegisterEventListener(evget::EventListener<InputEvent>& event_listener) override;
     void Stop() override;
     boost::asio::awaitable<evget::Result<void>> Start() override;
@@ -35,7 +34,12 @@ private:
     std::optional<std::reference_wrapper<evget::EventListener<InputEvent>>> event_listener_;
     InputHandler handler_;
 
-    std::atomic<bool> stopped_{false};
+    bool stopped_{false};
+};
+
+class EventLoopBuilder {
+public:
+    static std::unique_ptr<EventLoop> Build(InputHandler input_handler);
 };
 }  // namespace evgetx11
 

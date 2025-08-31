@@ -6,7 +6,6 @@
 #include <X11/extensions/XI2.h>
 
 #include <array>
-#include <chrono>
 #include <memory>
 #include <optional>
 #include <stdexcept>

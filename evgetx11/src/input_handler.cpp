@@ -15,7 +15,7 @@
 
 evgetx11::InputHandler::InputHandler(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-evget::Result<void> evgetx11::InputHandler::AnnounceVersion(X11Api& x_wrapper) {
+evget::Result<void> evgetx11::InputHandlerBuilder::AnnounceVersion(X11Api& x_wrapper) {
     int major = kVersionMajor;
     int minor = kVersionMinor;
 
@@ -31,7 +31,7 @@ evget::Result<void> evgetx11::InputHandler::AnnounceVersion(X11Api& x_wrapper) {
     };
 }
 
-void evgetx11::InputHandler::SetMask(X11Api& x_wrapper) {
+void evgetx11::InputHandlerBuilder::SetMask(X11Api& x_wrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
@@ -57,13 +57,13 @@ void evgetx11::InputHandler::SetMask(X11Api& x_wrapper) {
     x_wrapper.SelectEvents(mask);
 }
 
-evget::Result<evgetx11::InputHandler> evgetx11::InputHandler::Build(X11Api& x_wrapper) {
+evgetx11::InputEvent evgetx11::InputHandler::GetEvent() const {
+    return InputEvent::NextEvent(x_wrapper_.get());
+}
+
+evget::Result<evgetx11::InputHandler> evgetx11::InputHandlerBuilder::Build(X11Api& x_wrapper) {
     return AnnounceVersion(x_wrapper).transform([&x_wrapper] {
         SetMask(x_wrapper);
         return InputHandler{x_wrapper};
     });
-}
-
-evgetx11::InputEvent evgetx11::InputHandler::GetEvent() const {
-    return InputEvent::NextEvent(x_wrapper_.get());
 }

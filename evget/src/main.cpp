@@ -9,10 +9,7 @@
 #include "evget/cli.h"
 #include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
-#include "evgetx11/event_loop.h"
-#include "evgetx11/event_switch_pointer_key.h"
-#include "evgetx11/event_switch_touch.h"
-#include "evgetx11/event_transformer.h"
+#include "evgetx11/event_handler.h"
 #include "evgetx11/x11_api.h"
 
 int main(int argc, char* argv[]) {
@@ -26,24 +23,19 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        Display* display = XOpenDisplay(nullptr);
-        evgetx11::X11ApiImpl x_wrapper_x11{*display};
-        auto transformer =
-            evgetx11::EventTransformer<evgetx11::EventSwitchPointerKey, evgetx11::EventSwitchTouch>::Build(
-                x_wrapper_x11
-            );
-
-        evgetx11::EventLoop event_loop{evgetx11::InputHandler::Build(x_wrapper_x11).value()};
-
         auto scheduler = std::make_shared<evget::Scheduler>();
         auto manager = evget::DatabaseManager{scheduler, {}, cli.StoreNEvents(), cli.StoreAfter()};
         for (auto&& store : cli.ToStores().value()) {
             manager.AddStore(std::move(store));
         }
-        evget::EventHandler handler{manager, transformer, event_loop};
+
+        Display* display = XOpenDisplay(nullptr);
+        evgetx11::X11ApiImpl x11_api{*display};
+        auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
 
         auto exit_code = 0;
-        scheduler->Spawn(handler.Start(), [&exit_code](auto err) {
+        scheduler->Spawn(handler.value().Start(), [&exit_code, &handler](auto err) {
+            handler->Stop();
             if (!err.has_value()) {
                 exit_code = 1;
                 spdlog::error(err.error().message);

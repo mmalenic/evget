@@ -20,7 +20,7 @@ public:
      * Notify if an event.
      * @param event event
      */
-    virtual Result<void> Notify(T event) = 0;
+    virtual asio::awaitable<Result<void>> Notify(T event) = 0;
 
     /**
      * Start the listener processing

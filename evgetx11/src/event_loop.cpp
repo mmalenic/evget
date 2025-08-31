@@ -2,6 +2,7 @@
 
 #include <boost/asio/awaitable.hpp>
 
+#include <memory>
 #include <utility>
 
 #include "evget/error.h"
@@ -10,12 +11,12 @@
 #include "evgetx11/input_handler.h"
 
 boost::asio::awaitable<bool> evgetx11::EventLoop::IsStopped() {
-    co_return stopped_.load();
+    co_return stopped_;
 }
 
 boost::asio::awaitable<evget::Result<void>> evgetx11::EventLoop::Start() {
     while (!co_await IsStopped()) {
-        auto result = this->Notify(handler_.GetEvent());
+        auto result = co_await this->Notify(handler_.GetEvent());
         if (!result.has_value()) {
             co_return evget::Err{result.error()};
         }
@@ -24,18 +25,22 @@ boost::asio::awaitable<evget::Result<void>> evgetx11::EventLoop::Start() {
 }
 
 void evgetx11::EventLoop::Stop() {
-    stopped_.store(true);
+    stopped_ = true;
 }
 
 void evgetx11::EventLoop::RegisterEventListener(evget::EventListener<InputEvent>& event_listener) {
     event_listener_ = event_listener;
 }
 
-evget::Result<void> evgetx11::EventLoop::Notify(InputEvent event) {
+boost::asio::awaitable<evget::Result<void>> evgetx11::EventLoop::Notify(InputEvent event) {
     if (event_listener_.has_value()) {
-        return event_listener_->get().Notify(std::move(event));
+        co_return co_await event_listener_->get().Notify(std::move(event));
     }
-    return {};
+    co_return evget::Result<void>{};
 }
 
 evgetx11::EventLoop::EventLoop(InputHandler x_input_handler) : handler_{x_input_handler} {}
+
+std::unique_ptr<evgetx11::EventLoop> evgetx11::EventLoopBuilder::Build(InputHandler input_handler) {
+    return std::make_unique<EventLoop>(input_handler);
+}

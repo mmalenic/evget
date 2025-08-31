@@ -12,8 +12,8 @@
 
 TEST(IntervalTest, Tick) {
     auto scheduler = std::make_shared<evget::Scheduler>();
-    const std::shared_ptr<evget::Interval> interval = std::make_shared<evget::Interval>(std::chrono::seconds{0});
-    const std::shared_ptr<evget::Result<void>> result{};
+    const auto interval = std::make_shared<evget::Interval>(std::chrono::seconds{0});
+    const auto result = std::make_shared<evget::Result<void>>();
 
     scheduler->Spawn(
         [](std::shared_ptr<evget::Interval> interval,

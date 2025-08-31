@@ -33,8 +33,9 @@ public:
      */
     EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop);
 
-    Result<void> Notify(T event) override;
+    asio::awaitable<Result<void>> Notify(T event) override;
     asio::awaitable<Result<void>> Start() override;
+    void Stop();
 
 private:
     std::reference_wrapper<Store> storage_;
@@ -44,7 +45,14 @@ private:
 
 template <typename T>
 asio::awaitable<Result<void>> EventHandler<T>::Start() {
+    // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
     co_return co_await event_loop_.get().Start();
+    // NOLINTEND(clang-analyzer-core.CallAndMessage)
+}
+
+template <typename T>
+void EventHandler<T>::Stop() {
+    event_loop_.get().Stop();
 }
 
 template <typename T>
@@ -54,8 +62,8 @@ EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, 
 }
 
 template <typename T>
-Result<void> EventHandler<T>::Notify(T event) {
-    return storage_.get().StoreEvent(transformer_.get().TransformEvent(std::move(event)));
+asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
+    co_return storage_.get().StoreEvent(transformer_.get().TransformEvent(std::move(event)));
 }
 }  // namespace evget
 
