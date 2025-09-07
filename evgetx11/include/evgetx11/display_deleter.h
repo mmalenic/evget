@@ -26,6 +26,6 @@ void evgetx11::DisplayDeleter<F>::operator()(T* pointer) const {
 
 template <auto F>
 DisplayDeleter<F>::DisplayDeleter(Display& display) : display_{display} {}
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

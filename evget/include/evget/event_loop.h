@@ -34,6 +34,6 @@ public:
     EventLoop& operator=(const EventLoop&) = delete;
 };
 
-}  // namespace evget
+} // namespace evget
 
 #endif

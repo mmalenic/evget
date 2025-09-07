@@ -45,6 +45,6 @@ public:
 private:
     std::vector<Entry> entries_;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

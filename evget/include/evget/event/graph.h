@@ -152,6 +152,6 @@ template <typename N, typename E>
 constexpr bool Graph<N, E>::Empty() {
     return nodes_.empty() && edges_.empty();
 }
-}  // namespace evget
+} // namespace evget
 
 #endif

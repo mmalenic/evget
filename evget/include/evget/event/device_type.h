@@ -5,6 +5,6 @@
 
 namespace evget {
 enum class DeviceType : std::uint8_t { kMouse, kKeyboard, kTouchpad, kTouchscreen, kUnknown };
-}  // namespace evget
+} // namespace evget
 
 #endif

@@ -13,40 +13,55 @@
 #include "evgetx11/x11_api.h"
 
 int main(int argc, char* argv[]) {
+    auto cli = evget::Cli{};
+    auto exit = cli.Parse(argc, argv);
+    if (!exit.has_value()) {
+        return exit.error();
+    }
+    if (*exit) {
+        return 0;
+    }
+
+    std::shared_ptr<evget::Scheduler> scheduler;
     try {
-        auto cli = evget::Cli{};
-        auto exit = cli.Parse(argc, argv);
-        if (!exit.has_value()) {
-            return exit.error();
-        }
-        if (*exit) {
-            return 0;
-        }
+        scheduler = std::make_shared<evget::Scheduler>();
+    } catch (const std::exception& e) {
+        spdlog::error(e.what());
+        return 1;
+    }
+    auto manager = evget::DatabaseManager{scheduler, {}, cli.StoreNEvents(), cli.StoreAfter()};
 
-        auto scheduler = std::make_shared<evget::Scheduler>();
-        auto manager = evget::DatabaseManager{scheduler, {}, cli.StoreNEvents(), cli.StoreAfter()};
-        for (auto&& store : cli.ToStores().value()) {
-            manager.AddStore(std::move(store));
-        }
+    auto stores = cli.ToStores();
+    if (!stores.has_value()) {
+        spdlog::error("{}", stores.error());
+        return 1;
+    }
+    for (auto&& store : *stores) {
+        manager.AddStore(std::move(store));
+    }
 
-        Display* display = XOpenDisplay(nullptr);
-        evgetx11::X11ApiImpl x11_api{*display};
-        auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
+    Display* display = XOpenDisplay(nullptr);
+    evgetx11::X11ApiImpl x11_api{*display};
+    auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
+    if (!handler.has_value()) {
+        spdlog::error("{}", handler.error());
+        return 1;
+    }
 
-        auto exit_code = 0;
-        scheduler->Spawn(handler.value().Start(), [&exit_code, &handler](auto err) {
+    auto exit_code = 0;
+    try {
+        scheduler->Spawn(handler->Start(), [&exit_code, &handler](auto err) {
             handler->Stop();
             if (!err.has_value()) {
                 exit_code = 1;
-                spdlog::error(err.error().message);
+                spdlog::error("{}", err.error());
             }
         });
         scheduler->Join();
-
-        return exit_code;
-        return 0;
     } catch (const std::exception& e) {
         spdlog::error("{}", e.what());
-        return 1;
+        exit_code = 1;
     }
+
+    return exit_code;
 }

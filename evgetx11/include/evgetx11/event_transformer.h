@@ -192,6 +192,6 @@ evget::Data evgetx11::EventTransformer<Switches...>::TransformEvent(InputEvent e
     }
     return data;
 }
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

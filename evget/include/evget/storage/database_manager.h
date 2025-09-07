@@ -61,6 +61,6 @@ private:
     std::shared_ptr<evget::LockingVector<Data>> data_;
 };
 
-}  // namespace evget
+} // namespace evget
 
 #endif

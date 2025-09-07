@@ -5,6 +5,6 @@
 
 namespace evget {
 enum class Direction : std::uint8_t { kDown, kLeft, kRight, kUp };
-}  // namespace evget
+} // namespace evget
 
 #endif

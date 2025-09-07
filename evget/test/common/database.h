@@ -36,6 +36,6 @@ private:
     static std::string TestDatabaseName();
 };
 
-}  // namespace test
+} // namespace test
 
 #endif

@@ -77,7 +77,7 @@ constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kMou
         "character",
     }
 );
-}  // namespace detail
+} // namespace detail
 
 /**
  * \brief An entry type.
@@ -118,6 +118,6 @@ private:
     std::vector<std::string> modifiers_;
 };
 
-}  // namespace evget
+} // namespace evget
 
 #endif

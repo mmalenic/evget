@@ -39,4 +39,5 @@ InsertBraces: true
 PenaltyIndentedWhitespace: 1
 QualifierAlignment: Left
 SeparateDefinitionBlocks: Always
+SpacesBeforeTrailingComments: 1
 TabWidth: 4

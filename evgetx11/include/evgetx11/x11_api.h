@@ -143,7 +143,7 @@ void evgetx11::X11ApiImpl::OnMasks(
     }
 }
 
-}  // namespace evgetx11
+} // namespace evgetx11
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 

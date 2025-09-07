@@ -43,6 +43,6 @@ private:
 
     static std::string Checksum(const Migration& migration);
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

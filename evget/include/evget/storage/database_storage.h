@@ -53,6 +53,6 @@ private:
         const std::string& entry_uuid
     );
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

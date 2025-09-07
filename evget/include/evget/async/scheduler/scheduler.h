@@ -125,6 +125,6 @@ void Scheduler::Spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handl
     SpawnImpl(std::move(task), std::forward<decltype(handler)>(handler), pool_);
 }
 
-}  // namespace evget
+} // namespace evget
 
 #endif

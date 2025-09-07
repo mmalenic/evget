@@ -89,7 +89,7 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi2_device_info, x_event_switch);
 }
 
-TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
@@ -133,7 +133,7 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) {  // NOLINT(readability-funct
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
-TEST(XEventSwitchCoreTest, TestKeyEvent) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
@@ -225,7 +225,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
 }
 
-TEST(XEventSwitchCoreTest, TestScrollEvent) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};

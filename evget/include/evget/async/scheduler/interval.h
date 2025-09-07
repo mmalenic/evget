@@ -46,6 +46,6 @@ private:
     std::chrono::seconds period_{};
     std::optional<asio::steady_timer> timer_;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

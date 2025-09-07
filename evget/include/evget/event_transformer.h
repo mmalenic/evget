@@ -28,6 +28,6 @@ public:
     EventTransformer(const EventTransformer&) = delete;
     EventTransformer& operator=(const EventTransformer&) = delete;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

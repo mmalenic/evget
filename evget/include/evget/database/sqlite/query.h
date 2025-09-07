@@ -42,6 +42,6 @@ private:
     std::string query_;
 };
 
-}  // namespace evget
+} // namespace evget
 
 #endif

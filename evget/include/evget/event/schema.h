@@ -63,7 +63,7 @@ constexpr std::string OptionalToString(std::optional<T> optional, Invocable<std:
     return function(*optional);
 }
 
-}  // namespace detail
+} // namespace detail
 
 /**
  * Valid schema data types.
@@ -310,6 +310,6 @@ constexpr std::string FromInterval(const std::optional<IntervalType> optional) {
 constexpr std::string FromDouble(const std::optional<double> optional) {
     return detail::OptionalToString(optional, [](auto value) { return std::to_string(value); });
 }
-}  // namespace evget
+} // namespace evget
 
 #endif

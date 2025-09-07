@@ -101,6 +101,6 @@ void evgetx11::EventSwitchTouch::TouchMotion(
         x_event_switch.AddMotionEvent(raw_event, event.GetTimestamp(), data, get_time);
     }
 }
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

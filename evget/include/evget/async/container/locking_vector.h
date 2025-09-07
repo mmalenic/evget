@@ -110,6 +110,6 @@ LockingVector<T>::LockingVector() = default;
 template <class T>
 LockingVector<T>::LockingVector(std::vector<T> inner) : inner_{inner} {}
 
-}  // namespace evget
+} // namespace evget
 
 #endif

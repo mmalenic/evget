@@ -74,6 +74,6 @@ public:
     Connection& operator=(const Connection&) = delete;
     Connection& operator=(Connection&&) noexcept = delete;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

@@ -247,6 +247,6 @@ void evgetx11::EventSwitch::AddButtonEvent(
 
     builder.Build(data);
 }
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

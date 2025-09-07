@@ -50,6 +50,6 @@ template <typename T>
 const T& evgetx11::InputEvent::ViewData() const {
     return *static_cast<T*>(cookie_->data);
 }
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

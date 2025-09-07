@@ -88,6 +88,6 @@ public:
     Query& operator=(const Query&) = delete;
     Query& operator=(Query&&) noexcept = delete;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

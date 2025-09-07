@@ -87,7 +87,7 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
         spdlog::debug(std::format("timer threshold of {} seconds reached", store_interval.Period().count()));
 
         if (!result.has_value()) {
-            co_return Err{Error{.error_type = ErrorType::kDatabaseManager, .message = result.error().message}};
+            co_return Err{Error{.error_type = ErrorType::kDatabaseManagerError, .message = result.error().message}};
         }
 
         auto data_inner = data->IntoInner();

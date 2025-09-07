@@ -63,7 +63,7 @@ TEST(XEventSwitchTest, GetButtonName) {
     ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "MOUSE");
 }
 
-TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
@@ -93,7 +93,7 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) {  // NOLINT(readability-funct
     x_event_switch.SetButtonMap(button_class_info, 1);
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
 
-    evget::Data data{};  // NOLINT(misc-const-correctness)
+    evget::Data data{}; // NOLINT(misc-const-correctness)
     x_event_switch.AddButtonEvent(device_event, evget::TimestampType{}, data, evget::ButtonAction::kPress, 0, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });
@@ -130,7 +130,7 @@ TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
 
-    evget::Data data{};  // NOLINT(misc-const-correctness)
+    evget::Data data{}; // NOLINT(misc-const-correctness)
     x_event_switch.AddMotionEvent(device_event, evget::TimestampType{}, data, [](Time) {
         return std::optional{std::chrono::microseconds{1}};
     });

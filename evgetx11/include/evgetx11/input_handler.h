@@ -33,6 +33,6 @@ private:
     static void SetMask(X11Api& x_wrapper);
     static evget::Result<void> AnnounceVersion(X11Api& x_wrapper);
 };
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

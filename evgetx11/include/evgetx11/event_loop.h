@@ -41,6 +41,6 @@ class EventLoopBuilder {
 public:
     static std::unique_ptr<EventLoop> Build(InputHandler input_handler);
 };
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

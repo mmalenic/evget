@@ -24,10 +24,10 @@
 #include "evgetx11/x11_api.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
-TEST(XEventSwitchTouchTest, TestTouchBegin) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
-    evgetx11::EventSwitchTouch x_event_switch_touch{};  // NOLINT(misc-const-correctness)
+    evgetx11::EventSwitchTouch x_event_switch_touch{}; // NOLINT(misc-const-correctness)
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
@@ -139,7 +139,7 @@ TEST(XEventSwitchTouchTest, TestTouchUpdate) {
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
 }
 
-TEST(XEventSwitchTouchTest, TestTouchEnd) {  // NOLINT(readability-function-cognitive-complexity)
+TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
     evgetx11::EventSwitchTouch x_event_switch_touch{};

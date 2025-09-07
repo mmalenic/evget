@@ -25,5 +25,5 @@ public:
     Store& operator=(const Store&) = delete;
     Store& operator=(Store&&) noexcept = delete;
 };
-}  // namespace evget
+} // namespace evget
 #endif

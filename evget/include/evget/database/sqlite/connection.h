@@ -36,6 +36,6 @@ private:
 
     static Err ConnectError(const char* message);
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

@@ -119,6 +119,6 @@ private:
 
     std::vector<std::string> modifiers_;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

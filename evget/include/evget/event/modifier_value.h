@@ -22,6 +22,6 @@ enum class ModifierValue : std::uint8_t {
     kSuper,
     kMod5
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

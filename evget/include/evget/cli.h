@@ -103,6 +103,6 @@ std::string Cli::FormatEnum(
     return out_description;
 }
 
-}  // namespace evget
+} // namespace evget
 
 #endif

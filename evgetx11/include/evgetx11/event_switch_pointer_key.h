@@ -245,6 +245,6 @@ void evgetx11::EventSwitchPointerKey::MotionEvent(
         }
     }
 }
-}  // namespace evgetx11
+} // namespace evgetx11
 
 #endif

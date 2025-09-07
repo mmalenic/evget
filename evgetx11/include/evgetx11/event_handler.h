@@ -33,6 +33,6 @@ public:
 private:
     EventTransformerBuilder builder_;
 };
-}  // namespace evgetx11
+} // namespace evgetx11
 
-#endif  // DEBUG_EVENT_HANDLER_H
+#endif // DEBUG_EVENT_HANDLER_H

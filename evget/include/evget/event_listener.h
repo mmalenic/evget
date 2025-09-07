@@ -36,6 +36,6 @@ public:
     EventListener& operator=(const EventListener&) = delete;
     EventListener& operator=(EventListener&&) noexcept = delete;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

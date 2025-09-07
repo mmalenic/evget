@@ -28,7 +28,7 @@ void evget::Scheduler::LogException(const std::exception_ptr& error) {
             std::rethrow_exception(error);
         }
     } catch (const std::exception& e) {
-        spdlog::error("Exception in coroutine: {}", e.what());
+        spdlog::error("exception in coroutine: {}", e.what());
         Stop();
     }
 }

@@ -65,6 +65,6 @@ template <typename T>
 asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
     co_return storage_.get().StoreEvent(transformer_.get().TransformEvent(std::move(event)));
 }
-}  // namespace evget
+} // namespace evget
 
 #endif

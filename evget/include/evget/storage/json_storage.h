@@ -26,6 +26,6 @@ private:
     std::variant<std::unique_ptr<std::ostream>, std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>>
         ostream_;
 };
-}  // namespace evget
+} // namespace evget
 
 #endif

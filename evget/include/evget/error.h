@@ -1,9 +1,12 @@
 #ifndef EVGET_ERROR_H
 #define EVGET_ERROR_H
 
+#include <spdlog/spdlog.h>
+
 #include <concepts>
 #include <cstdint>
 #include <expected>
+#include <format>
 #include <string>
 #include <type_traits>
 
@@ -28,7 +31,7 @@ struct Error {
  */
 enum class ErrorType : std::uint8_t {
     kSqLiteError,
-    kDatabaseManager,
+    kDatabaseManagerError,
     kDatabaseError,
     kEventHandlerError,
     kAsyncError,
@@ -44,6 +47,59 @@ using Result = std::expected<T, Error<ErrorType>>;
  * \brief Error type.
  */
 using Err = std::unexpected<Error<ErrorType>>;
-}  // namespace evget
+
+} // namespace evget
+
+/**
+ * Defines the
+ * [`std:formatter`](https://en.cppreference.com/w/cpp/utility/format/formatter)
+ * for formatting `evget::Error<ErrorType>`.
+ */
+template <>
+struct std::formatter<evget::Error<evget::ErrorType>> {
+    /**
+     * Parse the input devices by beginning a new iterator from the context.
+     *
+     * @param ctx formatting context
+     * @return output iterator
+     */
+    // NOLINTNEXTLINE(readability-identifier-naming)
+    static constexpr auto parse(const std::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    /**
+     * Format the errror based on the output `Format`.
+     *
+     * @tparam Context context type
+     * @param error error result
+     * @param ctx context parameter
+     * @return iterator after formatting
+     */
+    template <typename Context>
+    // NOLINTNEXTLINE(readability-identifier-naming)
+    constexpr auto format(const evget::Error<evget::ErrorType>& error, Context& ctx) const {
+        std::string error_type;
+        switch (error.error_type) {
+            case evget::ErrorType::kSqLiteError:
+                error_type = "SqLiteError";
+                break;
+            case evget::ErrorType::kDatabaseManagerError:
+                error_type = "DatabaseManagerError";
+                break;
+            case evget::ErrorType::kDatabaseError:
+                error_type = "DatabaseError";
+                break;
+            case evget::ErrorType::kEventHandlerError:
+                error_type = "EventHandlerError";
+                break;
+            case evget::ErrorType::kAsyncError:
+                error_type = "AsyncError";
+                break;
+        }
+
+        return std::format_to(ctx.out(), "{}: {}", error_type, error.message);
+    }
+};
 
 #endif

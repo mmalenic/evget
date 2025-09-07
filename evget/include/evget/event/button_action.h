@@ -5,6 +5,6 @@
 
 namespace evget {
 enum class ButtonAction : std::uint8_t { kPress, kRelease, kRepeat };
-}  // namespace evget
+} // namespace evget
 
 #endif
