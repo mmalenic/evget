@@ -60,7 +60,7 @@ TEST(XEventSwitchTest, GetButtonName) {
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
     x_event_switch.SetButtonMap(button_class_info, 1);
-    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "MOUSE");
+    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "");
 }
 
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-function-cognitive-complexity)
@@ -107,7 +107,7 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
     ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "MOUSE");
+    ASSERT_EQ(entries.at(0).Data().at(13), "");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 

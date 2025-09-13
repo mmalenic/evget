@@ -27,6 +27,8 @@ void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, i
                 auto name = x_wrapper_.get().AtomName(labels[i]);
                 if (name) {
                     button_map_[device_id][map[i]] = name.get();
+                } else {
+                    button_map_[device_id][map[i]] = "";
                 }
             }
         }

@@ -86,7 +86,7 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(1).Data().at(4), "name");
     ASSERT_EQ(entries.at(1).Data().at(11), "0");
     ASSERT_EQ(entries.at(1).Data().at(12), "0");
-    ASSERT_EQ(entries.at(1).Data().at(13), "TOUCHSCREEN");
+    ASSERT_EQ(entries.at(1).Data().at(13), "");
     ASSERT_EQ(entries.at(1).Data().at(14), "0");
 }
 
@@ -201,7 +201,7 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cogni
     ASSERT_EQ(entries.at(1).Data().at(4), "name");
     ASSERT_EQ(entries.at(1).Data().at(11), "0");
     ASSERT_EQ(entries.at(1).Data().at(12), "0");
-    ASSERT_EQ(entries.at(1).Data().at(13), "TOUCHSCREEN");
+    ASSERT_EQ(entries.at(1).Data().at(13), "");
     ASSERT_EQ(entries.at(1).Data().at(14), "1");
 }
 

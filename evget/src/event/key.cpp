@@ -97,7 +97,7 @@ evget::Key& evget::Key::Screen(int screen) {
 }
 
 evget::Key& evget::Key::Modifier(evget::ModifierValue modifier_value) {
-    modifiers_.push_back(FromModifierValue(modifier_value));
+    modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
 }
 

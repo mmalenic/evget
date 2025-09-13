@@ -22,7 +22,7 @@ namespace asio = boost::asio;
  */
 template <typename T>
 concept HandlerWithStop = requires(T task) {
-    { task.Stop() };
+    { task.Stop() } -> std::convertible_to<void>;
 };
 
 /**

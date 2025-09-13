@@ -25,7 +25,6 @@ TEST(EventTransformer, TransformEvent) {
     evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
 
     test::SetXWrapperMocks(x_wrapper_mock);
-    auto transformer = evgetx11::EventTransformer{x_wrapper_mock, x_event_switch, x_event_switch_pointer_key};
 
     std::array<Atom, 1> labels = {1};
     std::array<unsigned char, 1> mask = {1};
@@ -47,6 +46,7 @@ TEST(EventTransformer, TransformEvent) {
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    auto transformer = evgetx11::EventTransformer{x_wrapper_mock, x_event_switch, x_event_switch_pointer_key};
     auto data = transformer.TransformEvent(std::move(input_event));
     const auto& entries = data.Entries();
 
@@ -57,7 +57,7 @@ TEST(EventTransformer, TransformEvent) {
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
     ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "MOUSE");
+    ASSERT_EQ(entries.at(0).Data().at(13), "");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 

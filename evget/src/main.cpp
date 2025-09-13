@@ -9,7 +9,7 @@
 #include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
 
-#if defined(FEATURE_EVGETX11)
+#ifdef FEATURE_EVGETX11
 #include <X11/Xlib.h>
 
 #include "evgetx11/event_handler.h"
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     auto exit_code = 0;
     try {
-#if defined(FEATURE_EVGETX11)
+#ifdef FEATURE_EVGETX11
         Display* display = XOpenDisplay(nullptr);
         evgetx11::X11ApiImpl x11_api{*display};
         auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);

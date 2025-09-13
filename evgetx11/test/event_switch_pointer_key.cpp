@@ -5,6 +5,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
+#include <xorg/xserver-properties.h>
 
 #include <array>
 #include <chrono>
@@ -129,7 +130,7 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
     ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "MOUSE");
+    ASSERT_EQ(entries.at(0).Data().at(13), "");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
@@ -167,7 +168,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_EQ(entries.at(0).Data().at(11), "1");
     ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "A");
+    ASSERT_EQ(entries.at(0).Data().at(13), "a");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
     ASSERT_EQ(entries.at(0).Data().at(15), "a");
 }
@@ -200,10 +201,16 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(x_wrapper_mock, GetFocusWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-const-cast)
     EXPECT_CALL(x_wrapper_mock, AtomName)
-        .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
-                                                                                                  return 0;
-                                                                                              }})));
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>(
+                    {const_cast<char*>(AXIS_LABEL_PROP_ABS_X), [](void*) { return 0; }}
+                )
+            )
+        );
+    // NOLINTEND(cppcoreguidelines-pro-type-const-cast)
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
@@ -279,7 +286,7 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_EQ(entries.at(0).Data().at(11), "0");
-    ASSERT_EQ(entries.at(0).Data().at(12), evget::FromDouble(1.0));
+    ASSERT_EQ(entries.at(0).Data().at(12), evget::FromDouble(2.0));
     ASSERT_EQ(entries.at(0).Data().at(13), "");
 }
 

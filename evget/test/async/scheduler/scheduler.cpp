@@ -42,8 +42,8 @@ TEST(SchedulerTest, SpawnReturnTask) {
 TEST(SchedulerTest, SpawnVoidTaskException) {
     auto stopped = std::make_shared<std::atomic<bool>>(false);
     auto scheduler = std::make_shared<evget::Scheduler>();
-    const auto interval = std::make_shared<evget::Interval>(std::chrono::seconds{1});
 
+    const auto interval_one = std::make_shared<evget::Interval>(std::chrono::seconds{1});
     scheduler->Spawn(
         [](std::shared_ptr<std::atomic<bool>> stopped,
            std::shared_ptr<evget::Interval> interval) -> boost::asio::awaitable<void> {
@@ -51,9 +51,16 @@ TEST(SchedulerTest, SpawnVoidTaskException) {
                 co_await interval->Tick();
             }
             co_return;
-        }(stopped, interval)
+        }(stopped, interval_one)
     );
-    scheduler->Spawn([]() -> boost::asio::awaitable<void> { throw std::exception{}; }());
+
+    const auto interval_two = std::make_shared<evget::Interval>(std::chrono::seconds{1});
+    scheduler->Spawn([](std::shared_ptr<evget::Interval> interval) -> boost::asio::awaitable<void> {
+        // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
+        co_await interval->Tick();
+        // NOLINTEND(clang-analyzer-core.CallAndMessage)
+        throw std::exception{};
+    }(interval_two));
 
     scheduler->Join();
 }
@@ -61,8 +68,8 @@ TEST(SchedulerTest, SpawnVoidTaskException) {
 TEST(SchedulerTest, SpawnReturnTaskException) {
     auto stopped = std::make_shared<std::atomic<bool>>(false);
     auto scheduler = std::make_shared<evget::Scheduler>();
-    const auto interval = std::make_shared<evget::Interval>(std::chrono::seconds{1});
 
+    const auto interval_one = std::make_shared<evget::Interval>(std::chrono::seconds{1});
     scheduler->Spawn<int>(
         [](std::shared_ptr<std::atomic<bool>> stopped,
            std::shared_ptr<evget::Interval> interval) -> boost::asio::awaitable<int> {
@@ -70,9 +77,16 @@ TEST(SchedulerTest, SpawnReturnTaskException) {
                 co_await interval->Tick();
             }
             co_return 1;
-        }(stopped, interval)
+        }(stopped, interval_one)
     );
-    scheduler->Spawn<int>([]() -> boost::asio::awaitable<int> { throw std::exception{}; }());
+
+    const auto interval_two = std::make_shared<evget::Interval>(std::chrono::seconds{1});
+    scheduler->Spawn<int>([](std::shared_ptr<evget::Interval> interval) -> boost::asio::awaitable<int> {
+        // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
+        co_await interval->Tick();
+        // NOLINTEND(clang-analyzer-core.CallAndMessage)
+        throw std::exception{};
+    }(interval_two));
 
     scheduler->Join();
 }
