@@ -1,5 +1,5 @@
-#ifndef EVGETX11_EVENTLOOPX11_H
-#define EVGETX11_EVENTLOOPX11_H
+#ifndef EVGETX11_EVENT_LOOP_H
+#define EVGETX11_EVENT_LOOP_H
 
 #include <boost/asio/awaitable.hpp>
 

@@ -1,5 +1,5 @@
-#ifndef EVGETX11_XWRAPPER_H
-#define EVGETX11_XWRAPPER_H
+#ifndef EVGETX11_X11_API_H
+#define EVGETX11_X11_API_H
 
 #include <X11/X.h>
 #include <X11/Xlib.h>

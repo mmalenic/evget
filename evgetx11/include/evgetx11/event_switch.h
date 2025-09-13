@@ -1,5 +1,5 @@
-#ifndef EVGETX11_XEVENTSWITCH_H
-#define EVGETX11_XEVENTSWITCH_H
+#ifndef EVGETX11_EVENT_SWITCH_H
+#define EVGETX11_EVENT_SWITCH_H
 
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>

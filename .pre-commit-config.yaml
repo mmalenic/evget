@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=1000"]
@@ -10,12 +10,12 @@ repos:
       - id: pretty-format-json
         args: ["--autofix"]
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.5.3
+    rev: v3.6.2
     hooks:
       - id: prettier
         exclude: CHANGELOG.md
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.0
+    rev: v0.12.12
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -28,7 +28,7 @@ repos:
       - id: cmake-lint
         additional_dependencies: [pyyaml>=5.1]
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v20.1.6
+    rev: v21.1.0
     hooks:
       - id: clang-format
         types_or: [c++, c]

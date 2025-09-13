@@ -1,5 +1,5 @@
-#ifndef DEBUG_EVENT_HANDLER_H
-#define DEBUG_EVENT_HANDLER_H
+#ifndef EVGETX11_EVENT_HANDLER_H
+#define EVGETX11_EVENT_HANDLER_H
 
 #include "event_transformer.h"
 #include "evget/event_handler.h"
@@ -35,4 +35,4 @@ private:
 };
 } // namespace evgetx11
 
-#endif // DEBUG_EVENT_HANDLER_H
+#endif
