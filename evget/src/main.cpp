@@ -1,4 +1,3 @@
-#include <X11/Xlib.h>
 #include <spdlog/spdlog.h>
 
 #include <exception>
@@ -9,8 +8,13 @@
 #include "evget/cli.h"
 #include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
+
+#if defined(FEATURE_EVGETX11)
+#include <X11/Xlib.h>
+
 #include "evgetx11/event_handler.h"
 #include "evgetx11/x11_api.h"
+#endif
 
 int main(int argc, char* argv[]) {
     auto cli = evget::Cli{};
@@ -40,23 +44,19 @@ int main(int argc, char* argv[]) {
         manager.AddStore(std::move(store));
     }
 
-    Display* display = XOpenDisplay(nullptr);
-    evgetx11::X11ApiImpl x11_api{*display};
-    auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
-    if (!handler.has_value()) {
-        spdlog::error("{}", handler.error());
-        return 1;
-    }
-
     auto exit_code = 0;
     try {
-        scheduler->Spawn(handler->Start(), [&exit_code, &handler](auto err) {
-            handler->Stop();
-            if (!err.has_value()) {
-                exit_code = 1;
-                spdlog::error("{}", err.error());
-            }
-        });
+#if defined(FEATURE_EVGETX11)
+        Display* display = XOpenDisplay(nullptr);
+        evgetx11::X11ApiImpl x11_api{*display};
+        auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
+        if (!handler.has_value()) {
+            spdlog::error("{}", handler.error());
+            return 1;
+        }
+        scheduler->SpawnResult(handler->Start(), *handler, exit_code);
+#endif
+
         scheduler->Join();
     } catch (const std::exception& e) {
         spdlog::error("{}", e.what());

@@ -18,6 +18,14 @@ namespace evget {
 namespace asio = boost::asio;
 
 /**
+ * Check whether the template parameter is a handler with a stop function.
+ */
+template <typename T>
+concept HandlerWithStop = requires(T task) {
+    { task.Stop() };
+};
+
+/**
  * \brief A wrapper around `asio::thread_pool` that provides a `spawn` method for spawning tasks.
  */
 class Scheduler {
@@ -29,7 +37,7 @@ public:
 
     /**
      * \brief Create a scheduler with `nThreads` threads.
-     * \param nThreads number of threads.
+     * \param n_threads number of threads.
      */
     explicit Scheduler(std::size_t n_threads);
 
@@ -46,6 +54,27 @@ public:
      */
     template <typename T>
     void Spawn(asio::awaitable<T>&& task);
+
+    /**
+     * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler.
+     *        on a result error.
+     * \param task task awaitable
+     * \param stop stop handler
+     * \param ret_code return code
+     */
+    template <HandlerWithStop S>
+    void SpawnResult(asio::awaitable<Result<void>>&& task, S& stop, int& ret_code);
+
+    /**
+     * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler
+     *        on a result error.
+     * \tparam T return type for task.
+     * \param task task awaitable
+     * \param stop stop handler
+     * \param ret_code return code
+     */
+    template <typename T, HandlerWithStop S>
+    void SpawnResult(asio::awaitable<Result<T>>&& task, S& stop, int& ret_code);
 
     /**
      * \brief Spawn a task.
@@ -106,7 +135,29 @@ void Scheduler::SpawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& h
 
 template <typename T>
 void Scheduler::Spawn(asio::awaitable<T>&& task) {
-    SpawnImpl<T>(std::move(task), [this](auto) { this->Stop(); }, pool_);
+    SpawnImpl<T>(std::move(task), [this](auto) {}, pool_);
+}
+
+template <HandlerWithStop S>
+void Scheduler::SpawnResult(asio::awaitable<Result<void>>&& task, S& stop, int& ret_code) {
+    Scheduler::Spawn(std::move(task), [&ret_code, &stop](Result<void> err) {
+        stop.Stop();
+        if (!err.has_value()) {
+            ret_code = 1;
+            spdlog::error("{}", err.error());
+        }
+    });
+}
+
+template <typename T, HandlerWithStop S>
+void Scheduler::SpawnResult(asio::awaitable<Result<T>>&& task, S& stop, int& ret_code) {
+    Scheduler::Spawn(std::move(task), [&ret_code, &stop](Result<T> err) {
+        stop.Stop();
+        if (!err.has_value()) {
+            ret_code = 1;
+            spdlog::error("{}", err.error());
+        }
+    });
 }
 
 template <typename T>

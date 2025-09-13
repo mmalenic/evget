@@ -34,5 +34,5 @@ void evget::Scheduler::LogException(const std::exception_ptr& error) {
 }
 
 void evget::Scheduler::Spawn(asio::awaitable<void>&& task) {
-    SpawnImpl(std::move(task), [this] { this->Stop(); }, pool_);
+    SpawnImpl(std::move(task), [] {}, pool_);
 }
