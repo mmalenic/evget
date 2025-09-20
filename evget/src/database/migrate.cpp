@@ -57,7 +57,7 @@ evget::Result<std::vector<evget::AppliedMigration>> evget::Migrate::GetAppliedMi
     });
 }
 
-evget::Result<void> evget::Migrate::ApplyMigration(const Migration& migration, const std::string& checksum) {
+evget::Result<void> evget::Migrate::ApplyMigration(const Migration& migration, const std::string& checksum) const {
     return ApplyMigrationSql(migration).and_then([this, &migration, &checksum] {
         auto query = this->connection_.get().BuildQuery(
             "insert into _migrations (version, description, checksum)"
@@ -98,7 +98,7 @@ evget::Result<void> evget::Migrate::ApplyMigrations() {
         .Transaction()
         .and_then([this] { return this->CreateMigrationsTable(); })
         .and_then([this] { return this->GetAppliedMigrations(); })
-        .and_then([this](const std::vector<evget::AppliedMigration>& applied) {
+        .and_then([this](const std::vector<AppliedMigration>& applied) {
             for (auto i = 0; i < migrations_.size(); i++) {
                 auto migration = migrations_[i];
                 auto checksum = Checksum(migration);

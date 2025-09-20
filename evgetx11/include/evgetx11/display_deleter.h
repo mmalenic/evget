@@ -20,7 +20,7 @@ private:
 
 template <auto F>
 template <typename T>
-void evgetx11::DisplayDeleter<F>::operator()(T* pointer) const {
+void DisplayDeleter<F>::operator()(T* pointer) const {
     F(&display_.get(), pointer);
 }
 

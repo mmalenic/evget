@@ -36,12 +36,12 @@ public:
         evget::DeviceType device,
         const std::string& name,
         const XIDeviceInfo& info,
-        evgetx11::EventSwitch& x_event_switch
+        EventSwitch& x_event_switch
     );
     bool SwitchOnEvent(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -52,25 +52,25 @@ private:
         const InputEvent& event,
         evget::Data& data,
         evget::ButtonAction action,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void KeyEvent(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void MotionEvent(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void ScrollEvent(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -83,10 +83,10 @@ private:
     int pointer_id_{};
 };
 
-bool evgetx11::EventSwitchPointerKey::SwitchOnEvent(
-    const evgetx11::InputEvent& event,
+bool EventSwitchPointerKey::SwitchOnEvent(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     switch (event.GetEventType()) {
@@ -109,11 +109,11 @@ bool evgetx11::EventSwitchPointerKey::SwitchOnEvent(
     }
 }
 
-void evgetx11::EventSwitchPointerKey::ButtonEvent(
-    const evgetx11::InputEvent& event,
+void EventSwitchPointerKey::ButtonEvent(
+    const InputEvent& event,
     evget::Data& data,
     evget::ButtonAction action,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -129,10 +129,10 @@ void evgetx11::EventSwitchPointerKey::ButtonEvent(
     x_event_switch.AddButtonEvent(raw_event, event.GetTimestamp(), data, action, raw_event.detail, get_time);
 }
 
-void evgetx11::EventSwitchPointerKey::KeyEvent(
-    const evgetx11::InputEvent& event,
+void EventSwitchPointerKey::KeyEvent(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -174,10 +174,10 @@ void evgetx11::EventSwitchPointerKey::KeyEvent(
     builder.Build(data);
 }
 
-void evgetx11::EventSwitchPointerKey::ScrollEvent(
-    const evgetx11::InputEvent& event,
+void EventSwitchPointerKey::ScrollEvent(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -224,10 +224,10 @@ void evgetx11::EventSwitchPointerKey::ScrollEvent(
     builder.Build(data);
 }
 
-void evgetx11::EventSwitchPointerKey::MotionEvent(
-    const evgetx11::InputEvent& event,
+void EventSwitchPointerKey::MotionEvent(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();

@@ -139,12 +139,12 @@ evgetx11::QueryPointerResult test::CreatePointerResult() {
     };
 }
 
-void test::SetXWrapperEventMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
+void test::SetXWrapperEventMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
     EXPECT_CALL(x_wrapper_mock, EventData)
         .WillOnce(
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
         );
-    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(test::CreateXEvent(device_event))));
+    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(CreateXEvent(device_event))));
     EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
         .WillOnce(
             testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
@@ -156,15 +156,15 @@ void test::SetXWrapperEventMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& d
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(x_wrapper_mock, GetFocusWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
-    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return CreatePointerResult(); });
 }
 
-void test::SetXWrapperKeyMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
+void test::SetXWrapperKeyMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event) {
     EXPECT_CALL(x_wrapper_mock, EventData)
         .WillOnce(
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
         );
-    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(test::CreateXEvent(device_event))));
+    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(CreateXEvent(device_event))));
     EXPECT_CALL(x_wrapper_mock, GetActiveWindow)
         .WillOnce(testing::Return(testing::ByMove<std::optional<Window>>({std::nullopt})));
     EXPECT_CALL(x_wrapper_mock, GetFocusWindow)
@@ -175,10 +175,10 @@ void test::SetXWrapperKeyMocks(test::X11ApiMock& x_wrapper_mock, XIRawEvent& dev
             key_sym = kXkA;
             return "a";
         });
-    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return test::CreatePointerResult(); });
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([]() { return CreatePointerResult(); });
 }
 
-void test::SetXWrapperMocks(test::X11ApiMock& x_wrapper_mock) {
+void test::SetXWrapperMocks(X11ApiMock& x_wrapper_mock) {
     EXPECT_CALL(x_wrapper_mock, ListInputDevices)
         .WillOnce(
             testing::Return(

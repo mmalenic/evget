@@ -11,8 +11,6 @@
 
 namespace evget {
 
-namespace asio = boost::asio;
-
 /**
  * \brief A repeating timer indefinitely repeats until it is stopped. This class does not have thread-safe
  * functionality.
@@ -29,7 +27,7 @@ public:
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
-    asio::awaitable<Result<void>> Tick();
+    boost::asio::awaitable<Result<void>> Tick();
 
     /**
      * \brief Reset the interval to expire one period after the current time. Not thread-safe.
@@ -44,7 +42,7 @@ public:
 
 private:
     std::chrono::seconds period_{};
-    std::optional<asio::steady_timer> timer_;
+    std::optional<boost::asio::steady_timer> timer_;
 };
 } // namespace evget
 

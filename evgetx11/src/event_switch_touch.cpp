@@ -14,7 +14,7 @@ void evgetx11::EventSwitchTouch::RefreshDevices(
     evget::DeviceType /* device */,
     const std::string& /* name */,
     const XIDeviceInfo& /* info */,
-    evgetx11::EventSwitch& /* x_event_switch */
+    EventSwitch& /* x_event_switch */
 ) {
     // Nothing to do, just matching expected template interface.
 }

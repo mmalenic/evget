@@ -34,7 +34,7 @@ public:
      * \brief Add an entry.
      * \param entry entry to insert.
      */
-    void AddEntry(evget::Entry entry);
+    void AddEntry(Entry entry);
 
     /**
      * \brief Are there any entries in this data.

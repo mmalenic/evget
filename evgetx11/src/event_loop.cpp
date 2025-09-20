@@ -28,7 +28,7 @@ void evgetx11::EventLoop::Stop() {
     stopped_ = true;
 }
 
-void evgetx11::EventLoop::RegisterEventListener(evget::EventListener<InputEvent>& event_listener) {
+void evgetx11::EventLoop::RegisterEventListener(EventListener& event_listener) {
     event_listener_ = event_listener;
 }
 

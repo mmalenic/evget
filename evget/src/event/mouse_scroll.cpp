@@ -25,7 +25,7 @@ evget::MouseScroll& evget::MouseScroll::Timestamp(TimestampType timestamp) {
     return *this;
 }
 
-evget::MouseScroll& evget::MouseScroll::Device(evget::DeviceType device) {
+evget::MouseScroll& evget::MouseScroll::Device(DeviceType device) {
     device_ = device;
     return *this;
 }
@@ -80,7 +80,7 @@ evget::MouseScroll& evget::MouseScroll::FocusWindowHeight(double height) {
     return *this;
 }
 
-evget::MouseScroll& evget::MouseScroll::Modifier(evget::ModifierValue modifier_value) {
+evget::MouseScroll& evget::MouseScroll::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
 }
@@ -90,7 +90,7 @@ evget::MouseScroll& evget::MouseScroll::Screen(int screen) {
     return *this;
 }
 
-evget::Data& evget::MouseScroll::Build(Data& data) {
+evget::Data& evget::MouseScroll::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseScroll,
         {FromInterval(interval_),

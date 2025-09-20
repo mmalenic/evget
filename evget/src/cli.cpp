@@ -105,10 +105,10 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
     stores.reserve(output_.size());
 
     for (auto& output : this->output_) {
-        switch (evget::Cli::GetStorageType(output)) {
-            case evget::StorageType::kSqLite: {
-                auto connect = std::make_unique<evget::SQLiteConnection>();
-                auto database = std::make_unique<evget::DatabaseStorage>(std::move(connect), output);
+        switch (GetStorageType(output)) {
+            case StorageType::kSqLite: {
+                auto connect = std::make_unique<SQLiteConnection>();
+                auto database = std::make_unique<DatabaseStorage>(std::move(connect), output);
                 auto result = database->Init();
                 if (!result.has_value()) {
                     return Err{result.error()};
@@ -118,16 +118,16 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
 
                 break;
             }
-            case evget::StorageType::kJson: {
+            case StorageType::kJson: {
                 if (output == "-") {
                     // Do nothing to delete std::cout.
                     auto deleter = [](std::ostream*) {};
                     std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> out = {&std::cout, deleter};
 
-                    stores.emplace_back(std::make_unique<evget::JsonStorage>(std::move(out)));
+                    stores.emplace_back(std::make_unique<JsonStorage>(std::move(out)));
                 } else {
                     auto out = std::make_unique<std::ofstream>(output, std::ios_base::app);
-                    stores.emplace_back(std::make_unique<evget::JsonStorage>(std::move(out)));
+                    stores.emplace_back(std::make_unique<JsonStorage>(std::move(out)));
                 }
 
                 break;

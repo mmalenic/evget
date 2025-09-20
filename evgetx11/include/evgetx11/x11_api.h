@@ -131,11 +131,7 @@ private:
     std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic_ = CreateIc(display_, xim_.get());
 };
 
-void evgetx11::X11ApiImpl::OnMasks(
-    const unsigned char* mask,
-    int mask_len,
-    evget::Invocable<void, int> auto&& function
-) {
+void X11ApiImpl::OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function) {
     for (int i = 0; i < mask_len * kMaskBits; i++) {
         if (XIMaskIsSet(mask, i)) {
             function(i);

@@ -28,11 +28,11 @@ public:
      * \brief Get the underyling database.
      * \return the database.
      */
-    [[nodiscard]] std::optional<std::reference_wrapper<::SQLite::Database>> Database();
+    [[nodiscard]] std::optional<std::reference_wrapper<SQLite::Database>> Database();
 
 private:
-    std::optional<::SQLite::Database> database_;
-    std::optional<::SQLite::Transaction> transaction_;
+    std::optional<SQLite::Database> database_;
+    std::optional<SQLite::Transaction> transaction_;
 
     static Err ConnectError(const char* message);
 };

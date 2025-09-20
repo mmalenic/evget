@@ -20,7 +20,7 @@ namespace evget {
  */
 class DatabaseStorage : public Store {
 public:
-    DatabaseStorage(std::unique_ptr<evget::Connection> connection, std::string database);
+    DatabaseStorage(std::unique_ptr<Connection> connection, std::string database);
 
     Result<void> StoreEvent(Data events) override;
 
@@ -28,27 +28,24 @@ public:
      * \brief Iniitalize the database with tables.
      * \return A result indicating void if successful or an error otherwise.
      */
-    Result<void> Init();
+    [[nodiscard]] Result<void> Init() const;
 
 private:
-    std::unique_ptr<evget::Connection> connection_;
+    std::unique_ptr<Connection> connection_;
     std::string database_;
 
     Result<void> InsertEvents(
         const Entry& entry,
-        std::optional<std::unique_ptr<::evget::Query>>& insert_statement,
-        std::optional<std::unique_ptr<::evget::Query>>& insert_modifier_statement,
+        std::optional<std::unique_ptr<Query>>& insert_statement,
+        std::optional<std::unique_ptr<Query>>& insert_modifier_statement,
         std::string insert_query,
         std::string insert_modifier_query
-    );
-    void SetOptionalStatement(std::optional<std::unique_ptr<::evget::Query>>& query, std::string query_string);
-    static Result<void> BindValues(
-        std::unique_ptr<::evget::Query>& query,
-        const std::vector<std::string>& data,
-        const std::string& entry_uuid
-    );
+    ) const;
+    void SetOptionalStatement(std::optional<std::unique_ptr<Query>>& query, std::string query_string) const;
+    static Result<void>
+    BindValues(std::unique_ptr<Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid);
     static Result<void> BindValuesModifier(
-        std::unique_ptr<::evget::Query>& query,
+        std::unique_ptr<Query>& query,
         const std::vector<std::string>& modifiers,
         const std::string& entry_uuid
     );

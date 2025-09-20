@@ -20,12 +20,12 @@ namespace evgetx11 {
 
 class EventSwitchTouch {
 public:
-    explicit EventSwitchTouch() = default;
+    EventSwitchTouch() = default;
 
     bool SwitchOnEvent(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void RefreshDevices(
@@ -34,7 +34,7 @@ public:
         evget::DeviceType device,
         const std::string& name,
         const XIDeviceInfo& info,
-        evgetx11::EventSwitch& x_event_switch
+        EventSwitch& x_event_switch
     );
 
 private:
@@ -42,22 +42,22 @@ private:
         const InputEvent& event,
         evget::Data& data,
         evget::ButtonAction action,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
     static void TouchMotion(
         const InputEvent& event,
         evget::Data& data,
-        evgetx11::EventSwitch& x_event_switch,
+        EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 };
 
-bool evgetx11::EventSwitchTouch::SwitchOnEvent(
-    const evgetx11::InputEvent& event,
+bool EventSwitchTouch::SwitchOnEvent(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     switch (event.GetEventType()) {
@@ -77,11 +77,11 @@ bool evgetx11::EventSwitchTouch::SwitchOnEvent(
     }
 }
 
-void evgetx11::EventSwitchTouch::TouchButton(
-    const evgetx11::InputEvent& event,
+void EventSwitchTouch::TouchButton(
+    const InputEvent& event,
     evget::Data& data,
     evget::ButtonAction action,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -90,10 +90,10 @@ void evgetx11::EventSwitchTouch::TouchButton(
     }
 }
 
-void evgetx11::EventSwitchTouch::TouchMotion(
-    const evgetx11::InputEvent& event,
+void EventSwitchTouch::TouchMotion(
+    const InputEvent& event,
     evget::Data& data,
-    evgetx11::EventSwitch& x_event_switch,
+    EventSwitch& x_event_switch,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();

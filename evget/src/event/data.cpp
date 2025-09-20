@@ -20,7 +20,7 @@ std::vector<evget::Entry> evget::Data::IntoEntries() && {
     return std::move(entries_);
 }
 
-void evget::Data::AddEntry(evget::Entry entry) {
+void evget::Data::AddEntry(Entry entry) {
     entries_.push_back(std::move(entry));
 }
 

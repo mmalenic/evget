@@ -95,32 +95,32 @@ constexpr auto Graph<N, E>::SetEmptyGraphData(std::string name, auto& graph) {
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddNode(std::string name, N node_data) {
-    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
-    setGraphData<std::vector<N>>(name, nodes_, node_data);
+    SetEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
+    SetGraphData<std::vector<N>>(name, nodes_, node_data);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddEdge(std::string from_edge, std::string to_edge, E edge_data) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
-    setGraphData<std::vector<E>>(to_edge, link, edge_data);
+    auto& link = SetEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
+    SetGraphData<std::vector<E>>(to_edge, link, edge_data);
 
-    setEmptyGraphData<std::vector<N>>(from_edge, nodes_);
-    setEmptyGraphData<std::vector<N>>(to_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(from_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(to_edge, nodes_);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddNode(std::string name) {
-    setEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
-    setEmptyGraphData<std::vector<N>>(name, nodes_);
+    SetEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
+    SetEmptyGraphData<std::vector<N>>(name, nodes_);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddEdge(std::string from_edge, std::string to_edge) {
-    auto& link = setEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
-    setEmptyGraphData<std::vector<E>>(to_edge, link);
+    auto& link = SetEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
+    SetEmptyGraphData<std::vector<E>>(to_edge, link);
 
-    setEmptyGraphData<std::vector<N>>(from_edge, nodes_);
-    setEmptyGraphData<std::vector<N>>(to_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(from_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(to_edge, nodes_);
 }
 
 template <typename N, typename E>

@@ -38,7 +38,7 @@ private:
 
     [[nodiscard]] Result<std::vector<AppliedMigration>> GetAppliedMigrations() const;
     [[nodiscard]] Result<void> CreateMigrationsTable() const;
-    [[nodiscard]] Result<void> ApplyMigration(const Migration& migration, const std::string& checksum);
+    [[nodiscard]] Result<void> ApplyMigration(const Migration& migration, const std::string& checksum) const;
     [[nodiscard]] Result<void> ApplyMigrationSql(const Migration& migration) const;
 
     static std::string Checksum(const Migration& migration);

@@ -24,7 +24,7 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
     evget::DeviceType device,
     const std::string& name,
     const XIDeviceInfo& info,
-    evgetx11::EventSwitch& x_event_switch
+    EventSwitch& x_event_switch
 ) {
     x_event_switch.RefreshDevices(device_id, pointer_id, device, name, info);
 
@@ -71,7 +71,7 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
 std::map<int, int> evgetx11::EventSwitchPointerKey::GetValuators(const XIValuatorState& valuator_state) {
     std::map<int, int> valuators{};
     auto* values = valuator_state.values;
-    evgetx11::X11ApiImpl::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
+    X11ApiImpl::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
         valuators.emplace(mask, (*values)++);
     });
     return valuators;

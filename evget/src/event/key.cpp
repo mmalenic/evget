@@ -26,7 +26,7 @@ evget::Key& evget::Key::Timestamp(TimestampType timestamp) {
     return *this;
 }
 
-evget::Key& evget::Key::Device(evget::DeviceType device) {
+evget::Key& evget::Key::Device(DeviceType device) {
     device_ = device;
     return *this;
 }
@@ -41,7 +41,7 @@ evget::Key& evget::Key::PositionY(double y_pos) {
     return *this;
 }
 
-evget::Key& evget::Key::Action(evget::ButtonAction action) {
+evget::Key& evget::Key::Action(ButtonAction action) {
     action_ = action;
     return *this;
 }
@@ -96,12 +96,12 @@ evget::Key& evget::Key::Screen(int screen) {
     return *this;
 }
 
-evget::Key& evget::Key::Modifier(evget::ModifierValue modifier_value) {
+evget::Key& evget::Key::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
 }
 
-evget::Data& evget::Key::Build(Data& data) {
+evget::Data& evget::Key::Build(Data& data) const {
     const Entry entry{
         EntryType::kKey,
         {

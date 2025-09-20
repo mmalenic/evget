@@ -25,24 +25,24 @@
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
 
-evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<::evget::Connection> connection, std::string database)
+evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::string database)
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
 evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
-    return connection_->Connect(database_, ::evget::ConnectOptions::kReadWriteCreate)
+    return connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
         .and_then([this] { return connection_->Transaction(); })
-        .transform_error([](const Error<::evget::ErrorType>& error) {
+        .transform_error([](const Error<ErrorType>& error) {
             return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
         })
         .and_then([this, &events] {
-            std::optional<std::unique_ptr<::evget::Query>> insert_key{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_key_modifier{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_move{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_move_modifier{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_click{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_click_modifier{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_scroll{};
-            std::optional<std::unique_ptr<::evget::Query>> insert_mouse_scroll_modifier{};
+            std::optional<std::unique_ptr<Query>> insert_key{};
+            std::optional<std::unique_ptr<Query>> insert_key_modifier{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_move{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_move_modifier{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_click{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_click_modifier{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_scroll{};
+            std::optional<std::unique_ptr<Query>> insert_mouse_scroll_modifier{};
 
             for (const auto& entry : events.Entries()) {
                 if (entry.Data().empty()) {
@@ -56,8 +56,8 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
                             entry,
                             insert_key,
                             insert_key_modifier,
-                            evget::detail::insert_key,
-                            evget::detail::insert_key_modifier
+                            detail::insert_key,
+                            detail::insert_key_modifier
                         );
                         break;
                     case EntryType::kMouseClick:
@@ -65,8 +65,8 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
                             entry,
                             insert_mouse_click,
                             insert_mouse_click_modifier,
-                            evget::detail::insert_mouse_click,
-                            evget::detail::insert_mouse_click_modifier
+                            detail::insert_mouse_click,
+                            detail::insert_mouse_click_modifier
                         );
                         break;
                     case EntryType::kMouseMove:
@@ -74,8 +74,8 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
                             entry,
                             insert_mouse_move,
                             insert_mouse_move_modifier,
-                            evget::detail::insert_mouse_move,
-                            evget::detail::insert_mouse_move_modifier
+                            detail::insert_mouse_move,
+                            detail::insert_mouse_move_modifier
                         );
                         break;
                     case EntryType::kMouseScroll:
@@ -83,8 +83,8 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
                             entry,
                             insert_mouse_scroll,
                             insert_mouse_scroll_modifier,
-                            evget::detail::insert_mouse_scroll,
-                            evget::detail::insert_mouse_scroll_modifier
+                            detail::insert_mouse_scroll,
+                            detail::insert_mouse_scroll_modifier
                         );
                         break;
                 }
@@ -94,42 +94,41 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
                 }
             }
 
-            return this->connection_->Commit().transform_error([](const Error<::evget::ErrorType>& error) {
+            return this->connection_->Commit().transform_error([](const Error<ErrorType>& error) {
                 return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
             });
         });
 }
 
-evget::Result<void> evget::DatabaseStorage::Init() {
-    auto result =
-        connection_->Connect(database_, ::evget::ConnectOptions::kReadWriteCreate)
-            .transform_error([](const Error<::evget::ErrorType>& error) {
-                return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
-            })
-            .and_then([this] {
-                auto migrations = std::vector{::evget::Migration{
-                    .version = 1,
-                    .description = "initialize database tables",
-                    .sql = evget::detail::initialize,
-                    .exec = true,
-                }};
-                auto apply_migrations = Migrate{*this->connection_, migrations};
+evget::Result<void> evget::DatabaseStorage::Init() const {
+    auto result = connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
+                      .transform_error([](const Error<ErrorType>& error) {
+                          return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
+                      })
+                      .and_then([this] {
+                          auto migrations = std::vector{Migration{
+                              .version = 1,
+                              .description = "initialize database tables",
+                              .sql = detail::initialize,
+                              .exec = true,
+                          }};
+                          auto apply_migrations = Migrate{*this->connection_, migrations};
 
-                return apply_migrations.ApplyMigrations().transform_error([](const Error<::evget::ErrorType>& error) {
-                    return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
-                });
-            });
+                          return apply_migrations.ApplyMigrations().transform_error([](const Error<ErrorType>& error) {
+                              return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
+                          });
+                      });
 
     return result;
 }
 
 evget::Result<void> evget::DatabaseStorage::InsertEvents(
     const Entry& entry,
-    std::optional<std::unique_ptr<::evget::Query>>& insert_statement,
-    std::optional<std::unique_ptr<::evget::Query>>& insert_modifier_statement,
+    std::optional<std::unique_ptr<Query>>& insert_statement,
+    std::optional<std::unique_ptr<Query>>& insert_modifier_statement,
     std::string insert_query,
     std::string insert_modifier_query
-) {
+) const {
     SetOptionalStatement(insert_statement, std::move(insert_query));
     SetOptionalStatement(insert_modifier_statement, std::move(insert_modifier_query));
 
@@ -138,23 +137,23 @@ evget::Result<void> evget::DatabaseStorage::InsertEvents(
     // Optional is set in previous lines.
     // NOLINTBEGIN(bugprone-unchecked-optional-access)
     return BindValues(*insert_statement, entry.Data(), entry_uuid)
-        .and_then([this, &insert_modifier_statement, &entry, &entry_uuid] {
+        .and_then([&insert_modifier_statement, &entry, &entry_uuid] {
             return BindValuesModifier(*insert_modifier_statement, entry.Modifiers(), entry_uuid);
         });
     // NOLINTEND(bugprone-unchecked-optional-access)
 }
 
 void evget::DatabaseStorage::SetOptionalStatement(
-    std::optional<std::unique_ptr<::evget::Query>>& query,
+    std::optional<std::unique_ptr<Query>>& query,
     std::string query_string
-) {
+) const {
     if (!query.has_value()) {
         query = {connection_->BuildQuery(std::move(query_string))};
     }
 }
 
 evget::Result<void> evget::DatabaseStorage::BindValues(
-    std::unique_ptr<::evget::Query>& query,
+    std::unique_ptr<Query>& query,
     const std::vector<std::string>& data,
     const std::string& entry_uuid
 ) {
@@ -165,13 +164,13 @@ evget::Result<void> evget::DatabaseStorage::BindValues(
 
     return query->NextWhile().and_then(
                                  [&query] { return (*query).Reset(); }
-    ).transform_error([](const Error<::evget::ErrorType>& error) {
+    ).transform_error([](const Error<ErrorType>& error) {
         return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
     });
 }
 
 evget::Result<void> evget::DatabaseStorage::BindValuesModifier(
-    std::unique_ptr<::evget::Query>& query,
+    std::unique_ptr<Query>& query,
     const std::vector<std::string>& modifiers,
     const std::string& entry_uuid
 ) {

@@ -64,11 +64,7 @@ private:
 };
 
 template <typename... Switches>
-evgetx11::EventTransformer<Switches...>::EventTransformer(
-    X11Api& x_wrapper,
-    EventSwitch x_event_switch,
-    Switches... switches
-)
+EventTransformer<Switches...>::EventTransformer(X11Api& x_wrapper, EventSwitch x_event_switch, Switches... switches)
     : evget::EventTransformer<InputEvent>{},
       x_wrapper_{x_wrapper},
       x_event_switch_{std::move(x_event_switch)},
@@ -77,7 +73,7 @@ evgetx11::EventTransformer<Switches...>::EventTransformer(
 }
 
 template <typename... Switches>
-void evgetx11::EventTransformer<Switches...>::RefreshDevices() {
+void EventTransformer<Switches...>::RefreshDevices() {
     int n_devices = 0;
     int xi2_n_devices = 0;
     // See caveats about mixing XI1 calls with XI2 code:
@@ -142,7 +138,7 @@ void evgetx11::EventTransformer<Switches...>::RefreshDevices() {
 }
 
 template <typename... Switches>
-std::optional<std::chrono::microseconds> evgetx11::EventTransformer<Switches...>::GetInterval(Time time) {
+std::optional<std::chrono::microseconds> EventTransformer<Switches...>::GetInterval(Time time) {
     if (!previous_.has_value() || time < *previous_) {
         previous_ = time;
         return std::nullopt;
@@ -155,7 +151,7 @@ std::optional<std::chrono::microseconds> evgetx11::EventTransformer<Switches...>
 }
 
 template <typename... Switches>
-evget::Data evgetx11::EventTransformer<Switches...>::TransformEvent(InputEvent event) {
+evget::Data EventTransformer<Switches...>::TransformEvent(InputEvent event) {
     evget::Data data{};
     if (event.HasData()) {
         auto type = event.GetEventType();

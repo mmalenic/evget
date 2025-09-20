@@ -25,13 +25,13 @@ public:
     explicit EventLoop(InputHandler x_input_handler);
 
     boost::asio::awaitable<evget::Result<void>> Notify(InputEvent event) override;
-    void RegisterEventListener(evget::EventListener<InputEvent>& event_listener) override;
+    void RegisterEventListener(EventListener& event_listener) override;
     void Stop() override;
     boost::asio::awaitable<evget::Result<void>> Start() override;
     boost::asio::awaitable<bool> IsStopped();
 
 private:
-    std::optional<std::reference_wrapper<evget::EventListener<InputEvent>>> event_listener_;
+    std::optional<std::reference_wrapper<EventListener<InputEvent>>> event_listener_;
     InputHandler handler_;
 
     bool stopped_{false};

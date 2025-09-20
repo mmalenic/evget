@@ -38,7 +38,7 @@ public:
     /**
      * Create a CoreParser object.
      */
-    explicit Cli() = default;
+    Cli() = default;
 
     /**
      * Get the output location.

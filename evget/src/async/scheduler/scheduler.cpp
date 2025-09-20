@@ -33,6 +33,6 @@ void evget::Scheduler::LogException(const std::exception_ptr& error) {
     }
 }
 
-void evget::Scheduler::Spawn(asio::awaitable<void>&& task) {
+void evget::Scheduler::Spawn(boost::asio::awaitable<void>&& task) {
     SpawnImpl(std::move(task), [] {}, pool_);
 }

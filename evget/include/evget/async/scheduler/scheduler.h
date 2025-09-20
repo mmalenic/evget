@@ -4,6 +4,7 @@
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/thread_pool.hpp>
+#include <spdlog/spdlog.h>
 
 #include <atomic>
 #include <cstddef>
@@ -15,14 +16,12 @@
 
 namespace evget {
 
-namespace asio = boost::asio;
-
 /**
  * Check whether the template parameter is a handler with a stop function.
  */
 template <typename T>
 concept HandlerWithStop = requires(T task) {
-    { task.Stop() } -> std::convertible_to<void>;
+    { task.Stop() }; // NOLINT(readability/braces)
 };
 
 /**
@@ -45,7 +44,7 @@ public:
      * \brief Spawn a task. Stops the thread pool on an exception.
      * \param task task awaitable.
      */
-    void Spawn(asio::awaitable<void>&& task);
+    void Spawn(boost::asio::awaitable<void>&& task);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception.
@@ -53,7 +52,7 @@ public:
      * \param task task awaitable.
      */
     template <typename T>
-    void Spawn(asio::awaitable<T>&& task);
+    void Spawn(boost::asio::awaitable<T>&& task);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler.
@@ -63,7 +62,7 @@ public:
      * \param ret_code return code
      */
     template <HandlerWithStop S>
-    void SpawnResult(asio::awaitable<Result<void>>&& task, S& stop, int& ret_code);
+    void SpawnResult(boost::asio::awaitable<Result<void>>&& task, S& stop, int& ret_code);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler
@@ -74,14 +73,14 @@ public:
      * \param ret_code return code
      */
     template <typename T, HandlerWithStop S>
-    void SpawnResult(asio::awaitable<Result<T>>&& task, S& stop, int& ret_code);
+    void SpawnResult(boost::asio::awaitable<Result<T>>&& task, S& stop, int& ret_code);
 
     /**
      * \brief Spawn a task.
      * \param task task awaitable.
      * \param handler handler on completion.
      */
-    void Spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handler);
+    void Spawn(boost::asio::awaitable<void>&& task, Invocable<void> auto&& handler);
 
     /**
      * \brief Spawn a task.
@@ -90,7 +89,7 @@ public:
      * \param handler handler on completion.
      */
     template <typename T>
-    void Spawn(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
+    void Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
 
     /**
      * \brief Join the scheduler, awaiting for all tasks to complete.
@@ -106,15 +105,15 @@ public:
      * \brief Whether the scheduler has been stopped.
      * \return stopped value.
      */
-    [[nodiscard]] asio::awaitable<bool> IsStopped() const;
+    [[nodiscard]] boost::asio::awaitable<bool> IsStopped() const;
 
 private:
-    asio::thread_pool pool_{DefaultThreadPoolSize()};
+    boost::asio::thread_pool pool_{DefaultThreadPoolSize()};
     std::atomic<bool> stopped_{false};
 
-    void SpawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool);
+    void SpawnImpl(boost::asio::awaitable<void>&& task, Invocable<void> auto&& handler, boost::asio::thread_pool& pool);
     template <typename T>
-    void SpawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool);
+    void SpawnImpl(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, boost::asio::thread_pool& pool);
 
     static std::size_t DefaultThreadPoolSize();
     void LogException(const std::exception_ptr& error);
@@ -126,20 +125,24 @@ inline std::size_t Scheduler::DefaultThreadPoolSize() {
 }
 
 template <typename T>
-void Scheduler::SpawnImpl(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, asio::thread_pool& pool) {
-    asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err, T value) {
+void Scheduler::SpawnImpl(
+    boost::asio::awaitable<T>&& task,
+    Invocable<void, T> auto&& handler,
+    boost::asio::thread_pool& pool
+) {
+    boost::asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err, T value) {
         LogException(err);
         handler(value);
     });
 }
 
 template <typename T>
-void Scheduler::Spawn(asio::awaitable<T>&& task) {
+void Scheduler::Spawn(boost::asio::awaitable<T>&& task) {
     SpawnImpl<T>(std::move(task), [this](auto) {}, pool_);
 }
 
 template <HandlerWithStop S>
-void Scheduler::SpawnResult(asio::awaitable<Result<void>>&& task, S& stop, int& ret_code) {
+void Scheduler::SpawnResult(boost::asio::awaitable<Result<void>>&& task, S& stop, int& ret_code) {
     Scheduler::Spawn(std::move(task), [&ret_code, &stop](Result<void> err) {
         stop.Stop();
         if (!err.has_value()) {
@@ -150,7 +153,7 @@ void Scheduler::SpawnResult(asio::awaitable<Result<void>>&& task, S& stop, int& 
 }
 
 template <typename T, HandlerWithStop S>
-void Scheduler::SpawnResult(asio::awaitable<Result<T>>&& task, S& stop, int& ret_code) {
+void Scheduler::SpawnResult(boost::asio::awaitable<Result<T>>&& task, S& stop, int& ret_code) {
     Scheduler::Spawn(std::move(task), [&ret_code, &stop](Result<T> err) {
         stop.Stop();
         if (!err.has_value()) {
@@ -161,18 +164,22 @@ void Scheduler::SpawnResult(asio::awaitable<Result<T>>&& task, S& stop, int& ret
 }
 
 template <typename T>
-void Scheduler::Spawn(asio::awaitable<T>&& task, Invocable<void, T> auto&& handler) {
+void Scheduler::Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler) {
     SpawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), pool_);
 }
 
-void Scheduler::SpawnImpl(asio::awaitable<void>&& task, Invocable<void> auto&& handler, asio::thread_pool& pool) {
-    asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err) {
+void Scheduler::SpawnImpl(
+    boost::asio::awaitable<void>&& task,
+    Invocable<void> auto&& handler,
+    boost::asio::thread_pool& pool
+) {
+    boost::asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err) {
         LogException(err);
         handler();
     });
 }
 
-void Scheduler::Spawn(asio::awaitable<void>&& task, Invocable<void> auto&& handler) {
+void Scheduler::Spawn(boost::asio::awaitable<void>&& task, Invocable<void> auto&& handler) {
     SpawnImpl(std::move(task), std::forward<decltype(handler)>(handler), pool_);
 }
 

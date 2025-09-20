@@ -15,18 +15,18 @@
 #include "evget/database/sqlite/query.h"
 #include "evget/error.h"
 
-evget::Result<void> evget::SQLiteConnection::Connect(std::string database, evget::ConnectOptions options) {
+evget::Result<void> evget::SQLiteConnection::Connect(std::string database, ConnectOptions options) {
     try {
         switch (options) {
-            case evget::ConnectOptions::kReadOnly:
-                this->database_ = {database, ::SQLite::OPEN_READONLY};
+            case ConnectOptions::kReadOnly:
+                this->database_ = {database, SQLite::OPEN_READONLY};
                 break;
-            case evget::ConnectOptions::kReadWrite:
-                this->database_ = {database, ::SQLite::OPEN_READWRITE};
+            case ConnectOptions::kReadWrite:
+                this->database_ = {database, SQLite::OPEN_READWRITE};
                 break;
-            case evget::ConnectOptions::kReadWriteCreate:
+            case ConnectOptions::kReadWriteCreate:
                 // NOLINTBEGIN(hicpp-signed-bitwise)
-                this->database_ = {database, ::SQLite::OPEN_READWRITE | ::SQLite::OPEN_CREATE};
+                this->database_ = {database, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
                 // NOLINTEND(hicpp-signed-bitwise)
                 break;
         }
@@ -40,8 +40,8 @@ evget::Result<void> evget::SQLiteConnection::Connect(std::string database, evget
     }
 }
 
-std::optional<std::reference_wrapper<::SQLite::Database>> evget::SQLiteConnection::Database() {
-    return database_.transform([](::SQLite::Database& database) { return std::ref(database); });
+std::optional<std::reference_wrapper<SQLite::Database>> evget::SQLiteConnection::Database() {
+    return database_.transform([](SQLite::Database& database) { return std::ref(database); });
 }
 
 evget::Result<void> evget::SQLiteConnection::Commit() {
@@ -77,7 +77,7 @@ evget::Result<void> evget::SQLiteConnection::Transaction() {
 }
 
 std::unique_ptr<evget::Query> evget::SQLiteConnection::BuildQuery(std::string query) {
-    return std::make_unique<evget::SQLiteQuery>(*this, std::move(query));
+    return std::make_unique<SQLiteQuery>(*this, std::move(query));
 }
 
 evget::Err evget::SQLiteConnection::ConnectError(const char* message) {

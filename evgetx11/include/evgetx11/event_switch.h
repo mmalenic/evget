@@ -112,7 +112,7 @@ public:
 
     /**
      * Set the button map for a device.
-     * @param buttonInfo button info
+     * @param button_info button info
      * @param device_id device id
      */
     void SetButtonMap(const XIButtonClassInfo& button_info, int device_id);
@@ -126,7 +126,7 @@ private:
 };
 
 template <BuilderHasModifier T>
-T& evgetx11::EventSwitch::SetModifierValue(unsigned int modifier_state, T& builder) {
+T& EventSwitch::SetModifierValue(unsigned int modifier_state, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifier_state & ShiftMask) {
         builder.Modifier(evget::ModifierValue::kShift);
@@ -157,7 +157,7 @@ T& evgetx11::EventSwitch::SetModifierValue(unsigned int modifier_state, T& build
 }
 
 template <BuilderHasWindowFunctions T>
-T& evgetx11::EventSwitch::SetWindowFields(T& builder) {
+T& EventSwitch::SetWindowFields(T& builder) {
     auto window = x_wrapper_.get().GetActiveWindow();
 
     if (!window.has_value()) {
@@ -192,13 +192,13 @@ T& evgetx11::EventSwitch::SetWindowFields(T& builder) {
 }
 
 template <BuilderHasDeviceNameFunctions T>
-T& evgetx11::EventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
+T& EventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
     auto name = id_to_name_.at(event.sourceid);
 
     return builder.DeviceName(name).Screen(screen);
 }
 
-void evgetx11::EventSwitch::AddMotionEvent(
+void EventSwitch::AddMotionEvent(
     const XIRawEvent& event,
     evget::TimestampType date_time,
     evget::Data& data,
@@ -213,7 +213,7 @@ void evgetx11::EventSwitch::AddMotionEvent(
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 
-    EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
     SetDeviceNameFields(builder, event, query_pointer.screen_number);
@@ -221,7 +221,7 @@ void evgetx11::EventSwitch::AddMotionEvent(
     builder.Build(data);
 }
 
-void evgetx11::EventSwitch::AddButtonEvent(
+void EventSwitch::AddButtonEvent(
     const XIRawEvent& event,
     evget::TimestampType date_time,
     evget::Data& data,
@@ -240,7 +240,7 @@ void evgetx11::EventSwitch::AddButtonEvent(
         .Action(action)
         .Button(button)
         .Name(button_map_[event.sourceid][button]);
-    EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
     SetDeviceNameFields(builder, event, query_pointer.screen_number);

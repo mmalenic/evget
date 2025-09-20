@@ -7,8 +7,6 @@
 
 namespace evget {
 
-namespace asio = boost::asio;
-
 /**
  * Represents event listeners.
  * @tparam T event type
@@ -20,12 +18,12 @@ public:
      * Notify if an event.
      * @param event event
      */
-    virtual asio::awaitable<Result<void>> Notify(T event) = 0;
+    virtual boost::asio::awaitable<Result<void>> Notify(T event) = 0;
 
     /**
      * Start the listener processing
      */
-    virtual asio::awaitable<Result<void>> Start() = 0;
+    virtual boost::asio::awaitable<Result<void>> Start() = 0;
 
     EventListener() = default;
 

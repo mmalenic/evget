@@ -10,7 +10,7 @@
 #include "evget/event/modifier_value.h"
 #include "evget/event/schema.h"
 
-evget::Entry::Entry(evget::EntryType type, const std::vector<std::string>& data, std::vector<std::string> modifiers)
+evget::Entry::Entry(EntryType type, const std::vector<std::string>& data, std::vector<std::string> modifiers)
     : type_{type}, data_{data}, modifiers_{std::move(modifiers)} {}
 
 const std::vector<std::string>& evget::Entry::Data() const {

@@ -6,7 +6,6 @@
 
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
-#include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
 
 #ifdef FEATURE_EVGETX11

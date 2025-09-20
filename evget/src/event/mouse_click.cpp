@@ -26,7 +26,7 @@ evget::MouseClick& evget::MouseClick::Timestamp(TimestampType timestamp) {
     return *this;
 }
 
-evget::MouseClick& evget::MouseClick::Device(evget::DeviceType device) {
+evget::MouseClick& evget::MouseClick::Device(DeviceType device) {
     device_ = device;
     return *this;
 }
@@ -41,7 +41,7 @@ evget::MouseClick& evget::MouseClick::PositionY(double y_pos) {
     return *this;
 }
 
-evget::MouseClick& evget::MouseClick::Action(evget::ButtonAction action) {
+evget::MouseClick& evget::MouseClick::Action(ButtonAction action) {
     action_ = action;
     return *this;
 }
@@ -86,7 +86,7 @@ evget::MouseClick& evget::MouseClick::FocusWindowHeight(double height) {
     return *this;
 }
 
-evget::MouseClick& evget::MouseClick::Modifier(evget::ModifierValue modifier_value) {
+evget::MouseClick& evget::MouseClick::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
 }
@@ -96,7 +96,7 @@ evget::MouseClick& evget::MouseClick::Screen(int screen) {
     return *this;
 }
 
-evget::Data& evget::MouseClick::Build(Data& data) {
+evget::Data& evget::MouseClick::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseClick,
         {

@@ -13,19 +13,19 @@
 
 evget::Interval::Interval(std::chrono::seconds period) : period_{period} {}
 
-evget::asio::awaitable<evget::Result<void>> evget::Interval::Tick() {
+boost::asio::awaitable<evget::Result<void>> evget::Interval::Tick() {
     // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
     if (!timer_.has_value()) {
-        timer_ = asio::steady_timer{co_await asio::this_coro::executor, this->Period()};
+        timer_ = boost::asio::steady_timer{co_await boost::asio::this_coro::executor, this->Period()};
     }
     // NOLINTEND(clang-analyzer-core.CallAndMessage)
 
-    auto [err] = co_await timer_->async_wait(asio::as_tuple(asio::use_awaitable));
+    auto [err] = co_await timer_->async_wait(boost::asio::as_tuple(boost::asio::use_awaitable));
     Reset();
 
     if (err) {
         // Changing the timer value while mid async_wait causes the value to be operation_aborted.
-        if (err.value() == asio::error::operation_aborted) {
+        if (err.value() == boost::asio::error::operation_aborted) {
             co_return Result<void>{};
         }
 

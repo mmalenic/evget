@@ -14,10 +14,6 @@
 
 namespace evget {
 
-class Scheduler;
-
-namespace asio = boost::asio;
-
 /**
  * Class represents a listener for events.
  * @tparam T type of data
@@ -33,8 +29,8 @@ public:
      */
     EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop);
 
-    asio::awaitable<Result<void>> Notify(T event) override;
-    asio::awaitable<Result<void>> Start() override;
+    boost::asio::awaitable<Result<void>> Notify(T event) override;
+    boost::asio::awaitable<Result<void>> Start() override;
     void Stop();
 
 private:
@@ -44,7 +40,7 @@ private:
 };
 
 template <typename T>
-asio::awaitable<Result<void>> EventHandler<T>::Start() {
+boost::asio::awaitable<Result<void>> EventHandler<T>::Start() {
     // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
     co_return co_await event_loop_.get().Start();
     // NOLINTEND(clang-analyzer-core.CallAndMessage)
@@ -62,7 +58,7 @@ EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, 
 }
 
 template <typename T>
-asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
+boost::asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
     co_return storage_.get().StoreEvent(transformer_.get().TransformEvent(std::move(event)));
 }
 } // namespace evget

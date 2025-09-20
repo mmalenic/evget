@@ -25,7 +25,7 @@ evget::MouseMove& evget::MouseMove::Timestamp(TimestampType timestamp) {
     return *this;
 }
 
-evget::MouseMove& evget::MouseMove::Device(evget::DeviceType device) {
+evget::MouseMove& evget::MouseMove::Device(DeviceType device) {
     device_ = device;
     return *this;
 }
@@ -75,12 +75,12 @@ evget::MouseMove& evget::MouseMove::Screen(int screen) {
     return *this;
 }
 
-evget::MouseMove& evget::MouseMove::Modifier(evget::ModifierValue modifier_value) {
+evget::MouseMove& evget::MouseMove::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
 }
 
-evget::Data& evget::MouseMove::Build(Data& data) {
+evget::Data& evget::MouseMove::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseMove,
         {FromInterval(interval_),

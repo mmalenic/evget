@@ -105,7 +105,7 @@ public:
     /**
      * Build mouse click event.
      */
-    Data& Build(Data& data);
+    Data& Build(Data& data) const;
 
 private:
     std::optional<IntervalType> interval_;

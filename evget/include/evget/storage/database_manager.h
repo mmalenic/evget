@@ -17,7 +17,7 @@
 
 namespace evget {
 
-class DatabaseManager : public Store::Store {
+class DatabaseManager : public Store {
 public:
     /**
      * \brief Construct a database manager
@@ -26,7 +26,7 @@ public:
      * \param nEvents the number of events to hold before inserting.
      * \param storeAfter store events after this time event if nEvents is not reached.
      */
-    explicit DatabaseManager(
+    DatabaseManager(
         std::shared_ptr<evget::Scheduler> scheduler,
         std::vector<std::shared_ptr<Store>> store_in,
         std::size_t n_events,
@@ -43,8 +43,8 @@ private:
         std::vector<std::shared_ptr<Store>> store_in,
         Scheduler& scheduler
     );
-    static asio::awaitable<Result<void>> StoreCoroutine(Data data, std::vector<std::shared_ptr<Store>> store_in);
-    static asio::awaitable<Result<void>> StoreAfterCoroutine(
+    static boost::asio::awaitable<Result<void>> StoreCoroutine(Data data, std::vector<std::shared_ptr<Store>> store_in);
+    static boost::asio::awaitable<Result<void>> StoreAfterCoroutine(
         std::shared_ptr<Scheduler> scheduler,
         std::shared_ptr<LockingVector<Data>> data,
         std::vector<std::shared_ptr<Store>> store_in,
@@ -54,11 +54,11 @@ private:
 
     void SpawnStoreAfter() const;
 
-    std::shared_ptr<evget::Scheduler> scheduler_;
+    std::shared_ptr<Scheduler> scheduler_;
     std::vector<std::shared_ptr<Store>> store_in_;
     size_t n_events_{};
     std::chrono::seconds store_after_{};
-    std::shared_ptr<evget::LockingVector<Data>> data_;
+    std::shared_ptr<LockingVector<Data>> data_;
 };
 
 } // namespace evget
