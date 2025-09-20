@@ -1,0 +1,26 @@
+PROJECT_NAME = "evget"
+PROJECT_BRIEF = "store input device events"
+
+# x-release-please-start-version
+PROJECT_NUMBER = 0.1.0
+# x-release-please-end
+
+OUTPUT_DIRECTORY = build/docs
+INPUT = evget/include evget/src evgetx11/include evgetx11/src docs/API_REFERENCE.md
+RECURSIVE = YES
+EXTRACT_STATIC = YES
+SOURCE_BROWSER = YES
+CLANG_ASSISTED_PARSING = YES
+CLANG_DATABASE_PATH = $(CLANG_DATABASE_PATH)
+GENERATE_TREEVIEW = YES
+DISABLE_INDEX = NO
+FULL_SIDEBAR = NO
+HTML_EXTRA_STYLESHEET = build/doxygen-awesome-css/doxygen-awesome.css
+HTML_EXTRA_FILES = build/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                   build/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
+                   build/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                   build/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
+HTML_COLORSTYLE = LIGHT
+HTML_HEADER = docs/header.html
+USE_MDFILE_AS_MAINPAGE = docs/API_REFERENCE.md
+HTML_COPY_CLIPBOARD = NO

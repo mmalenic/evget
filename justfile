@@ -85,6 +85,7 @@ clean_cache:
     rm -f build/Debug/CMakeCache.txt && rm -f build/Release/CMakeCache.txt
 
 # Generate documentation.
-doc:
-    git clone --depth 1 --branch v2.3.4 https://github.com/jothepro/doxygen-awesome-css.git build/doxygen-awesome-css || true
-    doxygen
+doc $COMPILER_VERSION='' *build_options='': (build 'Debug' COMPILER_VERSION build_options)
+    git clone --depth 1 --branch v2.3.4 https://github.com/jothepro/doxygen-awesome-css.git build/doxygen-awesome-css \
+        || true
+    CLANG_DATABASE_PATH=build/Debug doxygen

@@ -24,7 +24,7 @@ public:
      * already exists.
      *
      * @param name name of the node.
-     * @param nodeData optional node data to include.
+     * @param node_data optional node data to include.
      */
     constexpr void AddNode(std::string name, N node_data);
 
@@ -34,7 +34,7 @@ public:
      *
      * @param from_edge from edge.
      * @param to_edge to edge.
-     * @param edgeData optional edge data to include.
+     * @param edge_data optional edge data to include.
      */
     constexpr void AddEdge(std::string from_edge, std::string to_edge, E edge_data);
 
@@ -83,20 +83,20 @@ private:
 template <typename N, typename E>
 template <typename T>
 constexpr void Graph<N, E>::SetGraphData(std::string name, auto& graph, auto data) {
-    auto& link = setEmptyGraphData<T>(name, graph).first->second;
+    auto& link = SetEmptyGraphData<T>(std::move(name), graph).first->second;
     link.emplace_back(std::move(data));
 }
 
 template <typename N, typename E>
 template <typename T>
 constexpr auto Graph<N, E>::SetEmptyGraphData(std::string name, auto& graph) {
-    return graph.try_emplace(name, T{});
+    return graph.try_emplace(std::move(name), T{});
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddNode(std::string name, N node_data) {
     SetEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
-    SetGraphData<std::vector<N>>(name, nodes_, node_data);
+    SetGraphData<std::vector<N>>(std::move(name), nodes_, std::move(node_data));
 }
 
 template <typename N, typename E>
@@ -104,14 +104,14 @@ constexpr void Graph<N, E>::AddEdge(std::string from_edge, std::string to_edge, 
     auto& link = SetEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
     SetGraphData<std::vector<E>>(to_edge, link, edge_data);
 
-    SetEmptyGraphData<std::vector<N>>(from_edge, nodes_);
-    SetEmptyGraphData<std::vector<N>>(to_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(std::move(from_edge), nodes_);
+    SetEmptyGraphData<std::vector<N>>(std::move(to_edge), nodes_);
 }
 
 template <typename N, typename E>
 constexpr void Graph<N, E>::AddNode(std::string name) {
     SetEmptyGraphData<std::map<std::string, std::vector<E>>>(name, edges_);
-    SetEmptyGraphData<std::vector<N>>(name, nodes_);
+    SetEmptyGraphData<std::vector<N>>(std::move(name), nodes_);
 }
 
 template <typename N, typename E>
@@ -119,8 +119,8 @@ constexpr void Graph<N, E>::AddEdge(std::string from_edge, std::string to_edge) 
     auto& link = SetEmptyGraphData<std::map<std::string, std::vector<E>>>(from_edge, edges_).first->second;
     SetEmptyGraphData<std::vector<E>>(to_edge, link);
 
-    SetEmptyGraphData<std::vector<N>>(from_edge, nodes_);
-    SetEmptyGraphData<std::vector<N>>(to_edge, nodes_);
+    SetEmptyGraphData<std::vector<N>>(std::move(from_edge), nodes_);
+    SetEmptyGraphData<std::vector<N>>(std::move(to_edge), nodes_);
 }
 
 template <typename N, typename E>
