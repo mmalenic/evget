@@ -88,10 +88,12 @@ void EventTransformer<Switches...>::RefreshDevices() {
 
     std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2_devices{};
     for (int i = 0; i < xi2_n_devices; i++) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
         xi2_devices.emplace(xi2_info[i].deviceid, xi2_info[i]);
     }
 
     for (int i = 0; i < n_devices; i++) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
         const auto& device = info[i];
         int device_id = boost::numeric_cast<int>(device.id);
 

@@ -14,6 +14,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -58,6 +59,9 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
            "`--store-n-events` has been receieved."
     )
         ->default_val(kDefaultStoreAfter);
+    app.add_option("-e,--event-source", event_source_)
+        ->transform(CLI::Transformer{EventSourceMappings(), CLI::ignore_case})
+        ->option_text(FormatEnum("EVENT_SOURCE", "The source of events.", event_source_descriptions_));
 
     app.add_option_function<std::string>(
            "-o,--output",
@@ -138,7 +142,47 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
     return stores;
 }
 
-size_t evget::Cli::StoreNEvents() const {
+std::string evget::Cli::FormatEnum(
+    const std::string& value_descriptor,
+    const std::string& enum_description,
+    std::vector<std::string>& descriptions
+) {
+    auto out_description = std::format(
+        "{}\n{: <{}}{}\n{: <{}}Possible values:\n",
+        value_descriptor,
+        "",
+        kIndentBy,
+        enum_description,
+        "",
+        kIndentBy
+    );
+    for (auto i = 0; i < descriptions.size(); ++i) {
+        out_description.append(std::format("{: <{}}{}", "", kIndentBy, descriptions.at(i)));
+        if (i > 1) {
+            out_description.append("\n");
+        }
+    }
+
+    return out_description;
+}
+
+std::vector<std::string> evget::Cli::EventSourceDescriptions() {
+    return {
+        "- x11: source events from the X11 windowing system",
+    };
+}
+
+std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
+    return {
+        {"x11", EventSource::kX11},
+    };
+}
+
+evget::EventSource evget::Cli::EventSource() const {
+    return event_source_;
+}
+
+std::size_t evget::Cli::StoreNEvents() const {
     return store_n_events_;
 }
 

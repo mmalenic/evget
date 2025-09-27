@@ -6,7 +6,7 @@
 #include "evget/event_listener.h"
 
 namespace evgetx11 {
-class EventHandler : evget::EventListener<InputEvent> {
+class EventHandler : public evget::EventListener<InputEvent> {
 public:
     EventHandler(
         evget::Store& storage,

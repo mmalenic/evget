@@ -100,11 +100,11 @@ evget::Result<void> evget::Migrate::ApplyMigrations() {
         .and_then([this] { return this->GetAppliedMigrations(); })
         .and_then([this](const std::vector<AppliedMigration>& applied) {
             for (auto i = 0; i < migrations_.size(); i++) {
-                auto migration = migrations_[i];
+                auto migration = migrations_.at(i);
                 auto checksum = Checksum(migration);
 
                 if (i < applied.size()) {
-                    const auto& applied_migration = applied[i];
+                    const auto& applied_migration = applied.at(i);
                     if (applied_migration.version != migration.version || applied_migration.checksum != checksum) {
                         return evget::Result<void>{Err{
                             {.error_type = ErrorType::kDatabaseError,

@@ -33,7 +33,7 @@ TEST(MouseClickTest, Event) {
             .Modifier(evget::ModifierValue::kAlt)
             .Build(data);
 
-    auto entry = mouse_click.Entries()[0];
+    auto entry = mouse_click.Entries().at(0);
     entry.ToNamedRepresentation();
     auto named_entry = entry.GetEntryWithFields();
 

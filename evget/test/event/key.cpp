@@ -34,7 +34,7 @@ TEST(KeyTest, Event) {
             .Modifier(evget::ModifierValue::kAlt)
             .Build(data);
 
-    auto entry = key.Entries()[0];
+    auto entry = key.Entries().at(0);
     entry.ToNamedRepresentation();
     auto named_entry = entry.GetEntryWithFields();
 

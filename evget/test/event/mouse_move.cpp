@@ -28,7 +28,7 @@ TEST(MouseMoveTest, Event) {
             .Modifier(evget::ModifierValue::kAlt)
             .Build(data);
 
-    auto entry = mouse_move.Entries()[0];
+    auto entry = mouse_move.Entries().at(0);
     entry.ToNamedRepresentation();
     auto named_entry = entry.GetEntryWithFields();
 

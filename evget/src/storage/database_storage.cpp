@@ -159,7 +159,7 @@ evget::Result<void> evget::DatabaseStorage::BindValues(
 ) {
     query->BindChars(0, entry_uuid.c_str());
     for (auto i = 0; i < data.size(); i++) {
-        query->BindChars(i + 1, data[i].c_str());
+        query->BindChars(i + 1, data.at(i).c_str());
     }
 
     return query->NextWhile().and_then(

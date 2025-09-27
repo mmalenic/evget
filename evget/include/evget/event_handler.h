@@ -19,7 +19,7 @@ namespace evget {
  * @tparam T type of data
  */
 template <typename T>
-class EventHandler : EventListener<T> {
+class EventHandler : public EventListener<T> {
 public:
     /**
      * Create the event listener with storage.
