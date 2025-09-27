@@ -76,8 +76,9 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
                output_.emplace_back(value);
            },
            "The output location of the storage. "
-           "'-' is supported to output to stdout when using json storage and this "
-           "disables any logging."
+           "The file extension determines the storage format. "
+           "Either JSON files or sqlite databases are supported using .json or .sqlite endings. "
+           "'-' is supported to output to stdout when using json storage, which disables any logging."
     )
         ->default_val("-");
 
