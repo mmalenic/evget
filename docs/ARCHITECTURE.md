@@ -20,3 +20,26 @@ The following table describes the data associated with a mouse move event:
 | `focus_window_height`     | Float                                                               | The height of the window in focus.                                                                                                  |
 | `screen`                  | Integer                                                             | The display the event occurred on, numbered from 0. This will always be 0 if there is only one display.                             |
 | `device_type`             | Enum of `Mouse`, `Keyboard`, `Touchpad`, `Touchscreen` or `Unknown` | The type of the device that generated the event.                                                                                    |
+
+In addition to fields on move events, a mouse scroll event also has the following fields:
+
+| Field               | Type  | Description                                                 |
+|---------------------|-------|-------------------------------------------------------------|
+| `scroll_vertical`   | Float | The platform-defined amount that was vertically scrolled.   |
+| `scroll_horizontal` | Float | The platform-defined amount that was horizontally scrolled. |
+
+A mouse click event has all the fields of a mouse move event, and the following:
+
+| Field           | Type                                   | Description                                                                                                                                                                                    |
+|-----------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `button_id`     | Integer                                | The platform-defined id of the button that the event corresponds to.                                                                                                                           |
+| `button_name`   | String                                 | The name of the button that the event corresponds to.                                                                                                                                          |
+| `button_action` | Enum of `Press`, `Release` or `Repeat` | Whether the event was caused by a button press, release, or repeat. A repeat occurs when the OS re-triggers an event while a button is being held, such as when holding a key on the keyboard. |
+
+A key event has the same fields as a mouse click event, including fields present on mouse moves, as well as the following field:
+
+| Field       | Type                 | Description                                                     |
+|-------------|----------------------|-----------------------------------------------------------------|
+| `character` | UTF-8 character code | The UTF-8 character code that is associated with the key event. |
+
+
