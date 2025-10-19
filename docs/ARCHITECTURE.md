@@ -1,4 +1,4 @@
-# Architecture 
+# Architecture
 
 The architecture of evget is split across common functionality and platform-specific functionality. The format of the
 data recorded is the same across all platforms, and is split into structures and fields. The structures format mouse
@@ -7,7 +7,7 @@ click, move and scroll events, as well as key press events.
 The following table describes the data associated with a mouse move event:
 
 | Field                     | Type                                                                | Description                                                                                                                         |
-|---------------------------|---------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `interval`                | Microseconds                                                        | The interval between this event and the previous event in microseconds. This may be empty if this is the first event in the series. |
 | `timestamp`               | Timestamp                                                           | The ISO8601 UTC timestamp of the event.                                                                                             |
 | `position_x`              | Float                                                               | The x position of the mouse pointer at the time of the event. This may be absolute or relative depending on the platform.           |
@@ -24,28 +24,28 @@ The following table describes the data associated with a mouse move event:
 In addition to fields on move events, a mouse scroll event also has the following fields:
 
 | Field               | Type  | Description                                                                                                                               |
-|---------------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `scroll_vertical`   | Float | The platform-defined amount that was vertically scrolled. A positive value indicates a scroll up and a negative value a scroll down.      |
 | `scroll_horizontal` | Float | The platform-defined amount that was horizontally scrolled. A positive value indicates a scroll left and a negative value a scroll right. |
 
 A mouse click event has all the fields of a mouse move event, and the following:
 
 | Field           | Type                                   | Description                                                                                                                                                                                    |
-|-----------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `button_id`     | Integer                                | The platform-defined id of the button that the event corresponds to.                                                                                                                           |
 | `button_name`   | String                                 | The name of the button that the event corresponds to.                                                                                                                                          |
 | `button_action` | Enum of `Press`, `Release` or `Repeat` | Whether the event was caused by a button press, release, or repeat. A repeat occurs when the OS re-triggers an event while a button is being held, such as when holding a key on the keyboard. |
 
 A key event has the same fields as a mouse click event, including fields present on mouse moves, as well as the following field:
 
-| Field       | Type             | Description                                                |
-|-------------|------------------|------------------------------------------------------------|
-| `character` | UTF-8 character  | The UTF-8 character that is associated with the key event. |
+| Field       | Type            | Description                                                |
+| ----------- | --------------- | ---------------------------------------------------------- |
+| `character` | UTF-8 character | The UTF-8 character that is associated with the key event. |
 
 ## X11 behaviour
 
-The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension 
+The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension
 from `XIRawEvent` and functions like `XIQueryPointer`. The x and y position of the pointer is absolute, and button
-names, ids, screens, and scroll amounts are sourced from the raw event. 
+names, ids, screens, and scroll amounts are sourced from the raw event.
 
 [x11-api]: https://www.x.org/releases/X11R7.6/doc/
