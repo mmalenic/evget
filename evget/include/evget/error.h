@@ -60,8 +60,8 @@ struct std::formatter<evget::Error<evget::ErrorType>> {
     /**
      * Parse the input devices by beginning a new iterator from the context.
      *
-     * @param ctx formatting context
-     * @return output iterator
+     * \param ctx formatting context
+     * \return output iterator
      */
     // NOLINTNEXTLINE(readability-identifier-naming)
     static constexpr auto parse(const std::format_parse_context& ctx) {
@@ -71,10 +71,10 @@ struct std::formatter<evget::Error<evget::ErrorType>> {
     /**
      * Format the errror based on the output `Format`.
      *
-     * @tparam Context context type
-     * @param error error result
-     * @param ctx context parameter
-     * @return iterator after formatting
+     * \tparam Context context type
+     * \param error error result
+     * \param ctx context parameter
+     * \return iterator after formatting
      */
     template <typename Context>
     // NOLINTNEXTLINE(readability-identifier-naming)

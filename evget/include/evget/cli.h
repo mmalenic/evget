@@ -17,42 +17,33 @@
 namespace evget {
 
 /**
- * The type of storage to use
+ * The type of storage to use.
  */
 enum class StorageType : uint8_t {
-    /**
-     * Use an SQLite database to store events.
-     */
-    kSqLite,
-    /**
-     * Use JSON for outputting events.
-     */
-    kJson
+    kSqLite,  ///< use an SQLite database to store events
+    kJson     ///< use JSON for event formatting
 };
 
 /**
  * Where to source events from.
  */
 enum class EventSource : uint8_t {
-    /**
-     * Source events from the X11 windowing system.
-     */
-    kX11,
+    kX11,  ///< source events from the X11 windowing system
 };
 
 /**
- * The CoreParser class controls command line options.
+ * The `Cli` class controls command line options.
  */
 class Cli {
 public:
     /**
-     * Create a CoreParser object.
+     * Create a cli object.
      */
     Cli() = default;
 
     /**
      * Get the output location.
-     * @return
+     * \return output location
      */
     [[nodiscard]] const std::vector<std::string>& Output() const;
 
@@ -60,17 +51,41 @@ public:
      * Parse the CLI, exiting the program if there are any errors. This handles
      * printing messages from `--help` and exiting if there is a parse error.
      *
-     * @param argc argc input argc
-     * @param argv argv input argv
-     * @return whether to exit or an error exit code
+     * \param argc argc input argc
+     * \param argv argv input argv
+     * \return whether to exit or an error exit code
      */
     std::expected<bool, int> Parse(int argc, char** argv);
 
+    /**
+     * \brief Get the storage type from an output string.
+     * \param output reference to the output string
+     * \return storage type enumeration value
+     */
     static StorageType GetStorageType(std::string& output);
 
+    /**
+     * \brief Convert CLI configuration to `Store` objects.
+     * \return result containing vector of `Store` unique pointers or error
+     */
     Result<std::vector<std::unique_ptr<Store>>> ToStores();
+    
+    /**
+     * \brief Get the configured event source.
+     * \return event source enumeration value
+     */
     [[nodiscard]] evget::EventSource EventSource() const;
+    
+    /**
+     * \brief Get the number of events to store before issuing a write operation.
+     * \return number of events
+     */
     [[nodiscard]] std::size_t StoreNEvents() const;
+    
+    /**
+     * \brief Get the time interval after which to store events.
+     * \return time interval in seconds
+     */
     [[nodiscard]] std::chrono::seconds StoreAfter() const;
 
 private:

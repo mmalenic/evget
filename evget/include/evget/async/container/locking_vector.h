@@ -16,7 +16,15 @@ namespace evget {
 template <class T>
 class LockingVector {
 public:
+    /**
+     * \brief Default constructor for an empty LockingVector.
+     */
     LockingVector();
+    
+    /**
+     * \brief Construct a LockingVector with an initial vector.
+     * \param inner initial vector to wrap
+     */
     explicit LockingVector(std::vector<T> inner);
 
     /**

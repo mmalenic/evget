@@ -16,21 +16,25 @@ namespace evget {
 
 /**
  * Class represents a listener for events.
- * @tparam T type of data
+ * \tparam T type of data
  */
 template <typename T>
 class EventHandler : public EventListener<T> {
 public:
     /**
      * Create the event listener with storage.
-     * @param storage storage
-     * @param transformer transformer
-     * @param eventLoop event loop
+     * \param storage storage
+     * \param transformer transformer
+     * \param event_loop event loop
      */
     EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop);
 
     boost::asio::awaitable<Result<void>> Notify(T event) override;
     boost::asio::awaitable<Result<void>> Start() override;
+    
+    /**
+     * \brief Stop the event handler processing.
+     */
     void Stop();
 
 private:

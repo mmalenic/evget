@@ -30,14 +30,39 @@
 #include "evgetx11/x11_api.h"
 
 namespace evgetx11 {
+/**
+ * \brief Transforms X11 InputEvent objects into the evget `Data` format.
+ * \tparam Switches Variadic template parameter for event processing types
+ */
 template <typename... Switches>
 class EventTransformer : public evget::EventTransformer<InputEvent> {
 public:
+    /**
+     * \brief Construct an `EventTransformer` with X11 API wrapper and event processors.
+     * \param x_wrapper reference to the X11 API wrapper
+     * \param x_event_switch main event processor for handling events
+     * \param switches additional event processors for specific event types
+     */
     EventTransformer(X11Api& x_wrapper, EventSwitch x_event_switch, Switches... switches);
+    
+    /**
+     * \brief Transform an `InputEvent` into the evget Data format.
+     * \param event the input event to transform
+     * \return transformed event data
+     */
     evget::Data TransformEvent(InputEvent event) override;
 
 private:
+    /**
+     * \brief Calculate the time interval since the last event.
+     * \param time current event time
+     * \return optional interval in microseconds, `nullopt` if no previous time
+     */
     std::optional<std::chrono::microseconds> GetInterval(Time time);
+    
+    /**
+     * \brief Refresh the device information from the X11 system.
+     */
     void RefreshDevices();
 
     std::reference_wrapper<X11Api> x_wrapper_;
@@ -52,10 +77,29 @@ private:
     std::optional<int> pointer_id_;
 };
 
+/**
+ * \brief Builder class for constructing EventTransformer instances.
+ */
 class EventTransformerBuilder {
 public:
+    /**
+     * \brief Configure the builder to handle pointer and key events.
+     * \param x_wrapper Reference to the X11 API wrapper
+     * \return Reference to this builder for method chaining
+     */
     EventTransformerBuilder& PointerKey(X11Api& x_wrapper);
+    
+    /**
+     * \brief Configure the builder to handle touch events.
+     * \return Reference to this builder for method chaining
+     */
     EventTransformerBuilder& Touch();
+    
+    /**
+     * \brief Build the EventTransformer with the configured settings.
+     * \param x_wrapper Reference to the X11 API wrapper
+     * \return Unique pointer to the constructed EventTransformer
+     */
     std::unique_ptr<evget::EventTransformer<InputEvent>> Build(X11Api& x_wrapper) &&;
 
 private:

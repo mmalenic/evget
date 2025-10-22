@@ -16,48 +16,184 @@
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace evgetx11 {
 
+/**
+ * \brief Represents the dimensions of an X11 window.
+ */
 struct XWindowDimensions {
-    unsigned int width;
-    unsigned int height;
+    unsigned int width;   ///< window width in pixels
+    unsigned int height;  ///< window height in pixels
 };
 
 using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
 
+/**
+ * \brief Result structure for X11 pointer queries containing position and state information.
+ */
 struct QueryPointerResult {
-    double root_x{};
-    double root_y{};
-    std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask;
-    XIModifierState modifier_state{};
-    XIGroupState group_state{};
-    int screen_number{};
+    double root_x{};                                                 ///< Root window X coordinate
+    double root_y{};                                                 ///< Root window Y coordinate
+    std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask;  ///< Button press mask
+    XIModifierState modifier_state{};                                ///< Modifier key states
+    XIGroupState group_state{};                                      ///< Keyboard group state
+    int screen_number{};                                             ///< Screen number
 };
 
 /**
- * An interface which wraps X11 library functions.
+ * \brief An interface which wraps X11 library functions.
+ * 
+ * This interface provides an abstraction over X11 library functions.
  */
 class X11Api {
 public:
+    /**
+     * \brief Look up the character representation of a key event.
+     *
+     * This function calls `Xutf8LookupString` and uses `XLookupString` as a fallback option.
+     *
+     * \param event the raw X11 key event
+     * \param query_pointer pointer query result required for context
+     * \param key_sym output parameter for the key symbol
+     * \return string representation of the character
+     */
     virtual std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) = 0;
+    
+    /**
+     * \brief Get the button mapping for a specific device.
+     *
+     * This function calls `XGetDeviceButtonMapping`.
+     *
+     * \param device_id the ID of the input device
+     * \param map_size size of the button mapping
+     * \return unique pointer to the button mapping array
+     */
     virtual std::unique_ptr<unsigned char[]> GetDeviceButtonMapping(int device_id, int map_size) = 0;
 
+    /**
+     * \brief List all available input devices.
+     *
+     * This function calls `XListInputDevices`.
+     *
+     * \param n_devices output parameter for the number of devices
+     * \return unique pointer to the device info array
+     */
     virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> ListInputDevices(int& n_devices) = 0;
+    
+    /**
+     * \brief Query device information for XI2 devices.
+     *
+     * This function calls `XIQueryDevice`.
+     *
+     * \param n_devices output parameter for the number of devices
+     * \return unique pointer to the XI device info array
+     */
     virtual std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> QueryDevice(int& n_devices) = 0;
 
+    /**
+     * \brief Get the name of an X11 atom.
+     *
+     * This function calls `XGetAtomName`.
+     *
+     * \param atom the atom to get the name for
+     * \return unique pointer to the atom name string
+     */
     virtual std::unique_ptr<char[], decltype(&XFree)> AtomName(Atom atom) = 0;
 
+    /**
+     * \brief Get the currently active window.
+     *
+     * This function uses the `_NET_ACTIVE_WINDOW` property.
+     *
+     * \return optional window ID, `nullopt` if no active window
+     */
     virtual std::optional<Window> GetActiveWindow() = 0;
+    
+    /**
+     * \brief Get the window that currently has input focus.
+     *
+     * This function calls `XGetInputFocus`.
+     *
+     * \return optional window ID, `nullopt` if no focus window
+     */
     virtual std::optional<Window> GetFocusWindow() = 0;
+    
+    /**
+     * \brief Get the name or title of a window.
+     *
+     * This function uses the `_NET_WM_NAME` property, or the `WM_NAME` property as a fallback.
+     *
+     * \param window the window to get the name for
+     * \return optional window name, `nullopt` if unavailable
+     */
     virtual std::optional<std::string> GetWindowName(Window window) = 0;
+    
+    /**
+     * \brief Get the size dimensions of a window.
+     *
+     * This function calls `GetWindowAttributes`.
+     *
+     * \param window the window to get the size for
+     * \return optional window dimensions, `nullopt` if unavailable
+     */
     virtual std::optional<XWindowDimensions> GetWindowSize(Window window) = 0;
+    
+    /**
+     * \brief Get the position of a window.
+     *
+     * This function calls `GetWindowAttributes`.
+     *
+     * \param window the window to get the position for
+     * \return optional window dimensions, `nullopt` if unavailable
+     */
     virtual std::optional<XWindowDimensions> GetWindowPosition(Window window) = 0;
 
+    /**
+     * \brief Query the current pointer state for a device.
+     *
+     * This function calls `XIQueryPointer`.
+     *
+     * \param device_id the ID of the input device
+     * \return query result containing pointer state information
+     */
     virtual QueryPointerResult QueryPointer(int device_id) = 0;
 
+    /**
+     * \brief Get the next event from the X11 event queue.
+     *
+     * This function calls `XNextEvent`.
+     *
+     * \return the next X11 event
+     */
     virtual XEvent NextEvent() = 0;
+    
+    /**
+     * \brief Get event data from an X11 event.
+     *
+     * This function calls `XGetEventData`.
+     *
+     * \param event reference to the X11 event
+     * \return unique pointer to the event data
+     */
     virtual XEventPointer EventData(XEvent& event) = 0;
 
+    /**
+     * \brief Query the XI2 version supported by the server.
+     *
+     * This function calls `XIQueryVersion`.
+     *
+     * \param major output parameter for a major version
+     * \param minor output parameter for a minor version
+     * \return status indicating success or failure
+     */
     virtual Status QueryVersion(int& major, int& minor) = 0;
+    
+    /**
+     * \brief select which XI2 events to receive.
+     *
+     * This function calls `XISelectEvents` and `XSync`.
+     *
+     * \param mask event mask specifying which events to receive
+     */
     virtual void SelectEvents(XIEventMask& mask) = 0;
 
     X11Api() = default;
@@ -73,8 +209,18 @@ private:
     static constexpr int kMaskBits = 8;
 };
 
+/**
+ * \brief Concrete implementation of the `X11Api` interface.
+ * 
+ * This class provides the actual implementation of X11 library function calls,
+ * wrapping the low-level X11 API.
+ */
 class X11ApiImpl : public X11Api {
 public:
+    /**
+     * \brief Construct an `X11ApiImpl` with a display connection.
+     * \param display reference to the X11 Display connection
+     */
     explicit X11ApiImpl(Display& display);
 
     std::string

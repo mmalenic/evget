@@ -82,13 +82,21 @@ constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kMou
 /**
  * \brief An entry type.
  */
-enum class EntryType : std::uint8_t { kKey, kMouseClick, kMouseMove, kMouseScroll };
+enum class EntryType : std::uint8_t {
+    kKey,         ///< A key entry
+    kMouseClick,  ///< A mouse click entry
+    kMouseMove,   ///< A mouse move entry
+    kMouseScroll  ///< A mouse scroll entry
+};
 
+/**
+ * \brief An entry with its associated field names for easier processing.
+ */
 struct EntryWithFields {
-    EntryType type;
-    std::vector<std::string> fields;
-    std::vector<std::string> data;
-    std::vector<std::string> modifiers;
+    EntryType type;                      ///< Type of the entry
+    std::vector<std::string> fields;     ///< Field names for the data
+    std::vector<std::string> data;       ///< Actual data values
+    std::vector<std::string> modifiers;  ///< Modifier values
 };
 
 /**
@@ -96,10 +104,30 @@ struct EntryWithFields {
  */
 class Entry {
 public:
+    /**
+     * \brief Construct an entry with type, data, and modifiers.
+     * \param type Type of the entry
+     * \param data Data values for the entry
+     * \param modifiers Modifier values for the entry
+     */
     Entry(EntryType type, const std::vector<std::string>& data, std::vector<std::string> modifiers);
 
+    /**
+     * \brief Get the type of this entry.
+     * \return Entry type
+     */
     [[nodiscard]] EntryType Type() const;
+    
+    /**
+     * \brief Get the data values of this entry.
+     * \return Reference to data vector
+     */
     [[nodiscard]] const std::vector<std::string>& Data() const;
+    
+    /**
+     * \brief Get the modifier values of this entry.
+     * \return Reference to modifiers vector
+     */
     [[nodiscard]] const std::vector<std::string>& Modifiers() const;
 
     /**

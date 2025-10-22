@@ -17,17 +17,17 @@ namespace evget {
 class MouseMove {
 public:
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseMove& Interval(IntervalType interval);
 
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseMove& Interval(std::optional<IntervalType> interval);
 
     /**
-     * Add date timestamp.
+     * Add a date timestamp.
      */
     MouseMove& Timestamp(TimestampType timestamp);
 

@@ -20,13 +20,18 @@ namespace evget {
  */
 class DatabaseStorage : public Store {
 public:
+    /**
+     * \brief Construct a DatabaseStorage with a connection and database path.
+     * \param connection unique pointer to the database connection
+     * \param database path to the database file
+     */
     DatabaseStorage(std::unique_ptr<Connection> connection, std::string database);
 
     Result<void> StoreEvent(Data events) override;
 
     /**
-     * \brief Iniitalize the database with tables.
-     * \return A result indicating void if successful or an error otherwise.
+     * \brief Initialize the database with tables.
+     * \return a result indicating success of failure
      */
     [[nodiscard]] Result<void> Init() const;
 

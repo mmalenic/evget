@@ -18,17 +18,17 @@ namespace evget {
 class Key {
 public:
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     Key& Interval(IntervalType interval);
 
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     Key& Interval(std::optional<IntervalType> interval);
 
     /**
-     * Add date timestamp.
+     * Add a date timestamp.
      */
     Key& Timestamp(TimestampType timestamp);
 

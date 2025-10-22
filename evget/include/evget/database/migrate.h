@@ -10,25 +10,39 @@
 
 namespace evget {
 
+/**
+ * \brief Represents a database migration with version, description, SQL, and execution flag.
+ */
 struct Migration {
-    int version;
-    std::string description;
-    std::string sql;
-    bool exec;
+    int version;                ///< Migration version number
+    std::string description;    ///< Human-readable description of the migration
+    std::string sql;           ///< SQL statements to execute for this migration
+    bool exec;                 ///< Whether this migration should be executed
 };
 
+/**
+ * \brief Represents a migration that has been applied to the database.
+ */
 struct AppliedMigration {
-    int version;
-    std::string checksum;
+    int version;               ///< Version number of the applied migration
+    std::string checksum;      ///< Checksum of the migration
 };
 
+/**
+ * \brief Manages database migrations, applying them in order and tracking applied migrations.
+ */
 class Migrate {
 public:
+    /**
+     * \brief Construct a migration manager.
+     * \param connection Database connection to use for migrations
+     * \param migrations Vector of migrations to manage
+     */
     Migrate(Connection& connection, const std::vector<Migration>& migrations);
 
     /**
      * \brief Apply the migrations.
-     * \return a result indicating whether the migration was successful.
+     * \return a result indicating whether the migration was successful
      */
     Result<void> ApplyMigrations();
 

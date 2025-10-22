@@ -17,7 +17,7 @@
 namespace evget {
 
 /**
- * Check whether the template parameter is a handler with a stop function.
+ * \brief Check whether the template parameter is a handler with a stop function.
  */
 template <typename T>
 concept HandlerWithStop = requires(T task) {
@@ -25,7 +25,7 @@ concept HandlerWithStop = requires(T task) {
 };
 
 /**
- * \brief A wrapper around `asio::thread_pool` that provides a `spawn` method for spawning tasks.
+ * \brief A wrapper around `asio::thread_pool` that provides methods for spawning tasks.
  */
 class Scheduler {
 public:
@@ -35,27 +35,27 @@ public:
     Scheduler() = default;
 
     /**
-     * \brief Create a scheduler with `nThreads` threads.
-     * \param n_threads number of threads.
+     * \brief Create a scheduler with `n_threads` threads.
+     * \param n_threads number of threads
      */
     explicit Scheduler(std::size_t n_threads);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception.
-     * \param task task awaitable.
+     * \param task task awaitable
      */
     void Spawn(boost::asio::awaitable<void>&& task);
 
     /**
      * \brief Spawn a task. Stops the thread pool on an exception.
-     * \tparam T return type for task.
-     * \param task task awaitable.
+     * \tparam T return type for the task
+     * \param task task awaitable
      */
     template <typename T>
     void Spawn(boost::asio::awaitable<T>&& task);
 
     /**
-     * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler.
+     * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler
      *        on a result error.
      * \param task task awaitable
      * \param stop stop handler
@@ -67,7 +67,7 @@ public:
     /**
      * \brief Spawn a task. Stops the thread pool on an exception and stops the inner running task handler
      *        on a result error.
-     * \tparam T return type for task.
+     * \tparam T return type for task
      * \param task task awaitable
      * \param stop stop handler
      * \param ret_code return code
@@ -77,22 +77,22 @@ public:
 
     /**
      * \brief Spawn a task.
-     * \param task task awaitable.
-     * \param handler handler on completion.
+     * \param task task awaitable
+     * \param handler handler on completion
      */
     void Spawn(boost::asio::awaitable<void>&& task, Invocable<void> auto&& handler);
 
     /**
      * \brief Spawn a task.
-     * \tparam T return type for task.
-     * \param task task awaitable.
-     * \param handler handler on completion.
+     * \tparam T return type for the task
+     * \param task task awaitable
+     * \param handler handler on completion
      */
     template <typename T>
     void Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
 
     /**
-     * \brief Join the scheduler, awaiting for all tasks to complete.
+     * \brief Join the scheduler, awaiting all tasks to complete.
      */
     void Join();
 
@@ -103,7 +103,7 @@ public:
 
     /**
      * \brief Whether the scheduler has been stopped.
-     * \return stopped value.
+     * \return stopped value
      */
     [[nodiscard]] boost::asio::awaitable<bool> IsStopped() const;
 

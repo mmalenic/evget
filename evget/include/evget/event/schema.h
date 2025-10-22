@@ -1,3 +1,12 @@
+/**
+ * \file schema.h
+ * \brief Event schema definitions and utility functions for data type conversion.
+ * 
+ * This file contains the core schema definitions for event data types,
+ * field definitions, and utility functions for converting between different
+ * data representations used in the event system.
+ */
+
 #ifndef EVGET_EVENT_SCHEMA_H
 #define EVGET_EVENT_SCHEMA_H
 
@@ -68,12 +77,13 @@ constexpr std::string OptionalToString(std::optional<T> optional, Invocable<std:
 /**
  * Valid schema data types.
  */
-enum class DataType : std::uint8_t { kString, kInteger, kTimestamp, kInterval, kDouble };
-
-/**
- * A relation between edges in a graph.
- */
-enum class Relation : std::uint8_t { kOneToOne, kOneToMany, kManyToOne, kManyToMany };
+enum class DataType : std::uint8_t {
+    kString,     ///< A string type
+    kInteger,    ///< An integer type
+    kTimestamp,  ///< A timestamp type
+    kInterval,   ///< An interval type
+    kDouble      ///< A double type
+};
 
 using IntervalType = std::chrono::microseconds;
 using TimestampType = std::chrono::time_point<std::chrono::system_clock>;
@@ -81,11 +91,11 @@ using TimestampType = std::chrono::time_point<std::chrono::system_clock>;
 using FieldDefinition = std::pair<std::string_view, DataType>;
 
 /**
- * A field represents the name, data type and data of a field.
+ * \brief A field represents the name, data type, and data of a field.
  */
 struct Field {
-    FieldDefinition field_definition;
-    std::string data;
+    FieldDefinition field_definition;  ///< Field definition
+    std::string data;                  ///< Actual data value as string
 };
 
 using Fields = std::vector<Field>;
@@ -112,14 +122,18 @@ constexpr FieldDefinition kFocusWindowWidthField{"FocusWindowWidth", DataType::k
 constexpr FieldDefinition kFocusWindowHeightField{"FocusWindowHeight", DataType::kDouble};
 
 /**
- * Get the name of the FieldDefinition.
+ * \brief Get the name of the `FieldDefinition`.
+ * \param field field definition to get name from
+ * \return string view of the field name
  */
 constexpr std::string_view GetName(FieldDefinition field) {
     return field.first;
 }
 
 /**
- * Get the type of the FieldDefinition.
+ * \brief Get the type of the `FieldDefinition` as a string.
+ * \param field field definition to get type from
+ * \return string view of the field type
  */
 constexpr std::string_view GetType(FieldDefinition field) {
     switch (field.second) {
@@ -139,25 +153,10 @@ constexpr std::string_view GetType(FieldDefinition field) {
 }
 
 /**
- * Get the type of the FieldDefinition.
- */
-constexpr std::string_view GetRelation(Relation relation) {
-    switch (relation) {
-        case Relation::kOneToOne:
-            return detail::kRelationOneToOne;
-        case Relation::kOneToMany:
-            return detail::kRelationOneToMany;
-        case Relation::kManyToOne:
-            return detail::kRelationManyToOne;
-        case Relation::kManyToMany:
-            return detail::kRelationManyToMany;
-    }
-
-    return "";
-}
-
-/**
- * Convert an enum to its underlying value as a string.
+ * \brief Convert an optional enum to its underlying value as a string.
+ * \tparam Enum enum type
+ * \param value optional enum value
+ * \return string representation of the underlying value, or empty string if `nullopt`
  */
 template <class Enum>
 constexpr std::string ToUnderlyingOptional(std::optional<Enum> value) {
@@ -165,7 +164,10 @@ constexpr std::string ToUnderlyingOptional(std::optional<Enum> value) {
 }
 
 /**
- * Convert an enum to its underlying value as a string.
+ * \brief Convert an enum to its underlying value as a string.
+ * \tparam Enum enum type
+ * \param value enum value
+ * \return string representation of the underlying value
  */
 template <class Enum>
 constexpr std::string ToUnderlying(Enum value) {
@@ -173,21 +175,27 @@ constexpr std::string ToUnderlying(Enum value) {
 }
 
 /**
- * Create a string from a string value.
+ * \brief Create a string from an optional string value.
+ * \param value optional string value
+ * \return string value or empty string if `nullopt`
  */
 constexpr std::string FromString(std::optional<std::string> value) {
     return detail::OptionalToString(std::move(value), [](auto value) { return value; });
 }
 
 /**
- * Format a string from an int value.
+ * \brief Format a string from an optional int value.
+ * \param value optional integer value
+ * \return string representation of the integer, or empty string if `nullopt`
  */
 constexpr std::string FromInt(std::optional<int> value) {
     return detail::OptionalToString(value, [](auto value) { return std::to_string(value); });
 }
 
 /**
- * Format a string from a `Timestamp` value.
+ * \brief Format a string from an optional `Timestamp` value.
+ * \param optional optional timestamp value
+ * \return ISO 8601 formatted timestamp string, or empty string if `nullopt`
  */
 constexpr std::string FromTimestamp(const std::optional<TimestampType> optional) {
     return detail::OptionalToString(optional, [](auto value) {
@@ -198,7 +206,9 @@ constexpr std::string FromTimestamp(const std::optional<TimestampType> optional)
 }
 
 /**
- * Format a string from a `ButtonAction` value.
+ * \brief Format a string from an optional `ButtonAction` value.
+ * \param optional optional button action value
+ * \return string representation of the button action, or empty string if `nullopt`
  */
 constexpr std::string FromButtonAction(const std::optional<ButtonAction> optional) {
     return detail::OptionalToString(optional, [](auto value) {
@@ -216,7 +226,9 @@ constexpr std::string FromButtonAction(const std::optional<ButtonAction> optiona
 }
 
 /**
- * Format a string from a `Device` value.
+ * \brief Format a string from an optional `DeviceType` value.
+ * \param optional optional device type value
+ * \return string representation of the device type, or empty string if `nullopt`
  */
 constexpr std::string FromDevice(const std::optional<DeviceType> optional) {
     return detail::OptionalToString(optional, [](auto value) {
@@ -238,7 +250,9 @@ constexpr std::string FromDevice(const std::optional<DeviceType> optional) {
 }
 
 /**
- * Format a string from a `ModifierValue`.
+ * \brief Format a string from an optional `ModifierValue`.
+ * \param optional optional modifier value
+ * \return string representation of the modifier, or empty string if `nullopt`
  */
 constexpr std::string FromModifierValue(const std::optional<ModifierValue> optional) {
     return detail::OptionalToString(optional, [](auto value) {
@@ -266,7 +280,9 @@ constexpr std::string FromModifierValue(const std::optional<ModifierValue> optio
 }
 
 /**
- * Format a string from a `EntryType`.
+ * \brief Format a string from an optional `EntryType`.
+ * \param optional optional entry type value
+ * \return string representation of the entry type, or empty string if `nullopt`
  */
 constexpr std::string FromEntryType(const std::optional<EntryType> optional) {
     return detail::OptionalToString(optional, [](auto value) {
@@ -286,7 +302,10 @@ constexpr std::string FromEntryType(const std::optional<EntryType> optional) {
 }
 
 /**
- * Convert an integer string representation to an enum.
+ * \brief Convert an integer string representation to an enum.
+ * \tparam Enum enum type to convert to
+ * \param value string representation of the underlying integer value
+ * \return optional enum value, `nullopt` if string is empty or invalid
  */
 template <class Enum>
 constexpr std::optional<Enum> FromUnderlying(const std::string& value) {
@@ -298,14 +317,18 @@ constexpr std::optional<Enum> FromUnderlying(const std::string& value) {
 }
 
 /**
- * Format a string from an `Interval` value.
+ * \brief Format a string from an optional `Interval` value.
+ * \param optional optional interval value
+ * \return string representation of the interval in microseconds, or empty string if `nullopt`
  */
 constexpr std::string FromInterval(const std::optional<IntervalType> optional) {
     return detail::OptionalToString(optional, [](auto value) { return std::to_string(value.count()); });
 }
 
 /**
- * Format a string from a double value.
+ * \brief Format a string from an optional double value.
+ * \param optional optional double value
+ * \return string representation of the double, or empty string if `nullopt`
  */
 constexpr std::string FromDouble(const std::optional<double> optional) {
     return detail::OptionalToString(optional, [](auto value) { return std::to_string(value); });

@@ -1,3 +1,11 @@
+/**
+ * \file graph.h
+ * \brief Generic adjacency list graph data structure implementation.
+ * 
+ * This file provides a template-based graph implementation that can store
+ * arbitrary data at nodes and edges.
+ */
+
 #ifndef EVGET_EVENT_GRAPH_H
 #define EVGET_EVENT_GRAPH_H
 
@@ -8,64 +16,74 @@
 
 namespace evget {
 
+/**
+ * \brief Empty struct used as default template parameter when no data is needed.
+ */
 struct [[maybe_unused]] Nothing {};
 
 /**
- * An adjacency list graph data structure.
+ * \brief An adjacency list graph data structure.
  *
- * @tparam N Data stored at a node.
- * @tparam E Data stored at an edge.
+ * \tparam N Data stored at a node.
+ * \tparam E Data stored at an edge.
  */
 template <typename N = Nothing, typename E = Nothing>
 class Graph {
 public:
     /**
-     * Add a node if it does not already exist. Adds node data even if node
-     * already exists.
+     * \brief Add a node if it does not already exist. Adds node data even if the node
+     *        already exists.
      *
-     * @param name name of the node.
-     * @param node_data optional node data to include.
+     * \param name name of the node
+     * \param node_data optional node data to include
      */
     constexpr void AddNode(std::string name, N node_data);
 
     /**
-     * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
-     * do not already exist. Adds edge data even if edge already exists.
+     * \brief Add an edge if it does not already exist. This will create nodes `from` and `to` if they
+     *        do not already exist. Adds edge data even if edge already exists.
      *
-     * @param from_edge from edge.
-     * @param to_edge to edge.
-     * @param edge_data optional edge data to include.
+     * \param from_edge from edge
+     * \param to_edge to edge
+     * \param edge_data optional edge data to include
      */
     constexpr void AddEdge(std::string from_edge, std::string to_edge, E edge_data);
 
     /**
-     * Add a node if it does not already exist.
+     * \brief Add a node if it does not already exist.
+     * \param name Name of the node to add
      */
     constexpr void AddNode(std::string name);
 
     /**
-     * Add an edge if it does not already exist. This will create nodes `from` and `to` if they
-     * do not already exist.
+     * \brief Add an edge if it does not already exist. This will create nodes `from` and `to` if they
+     *        do not already exist.
+     * \param from_edge Source node name
+     * \param to_edge Target node name
      */
     constexpr void AddEdge(std::string from_edge, std::string to_edge);
 
     /**
-     * Get an adjacency list representation of the graph.
+     * \brief Get an adjacency list representation of the graph.
+     * \return Map from node names to lists of connected node names.
      */
     constexpr std::map<std::string, std::vector<std::string>> GetAdjacencyList();
 
     /**
-     * Get the nodes of the graph.
+     * \brief Get the nodes of the graph.
+     * \return Reference to the node map
      */
     constexpr std::map<std::string, std::vector<N>>& GetNodes();
 
     /**
-     * Get the edges of the graph.
+     * \brief Get the edges of the graph.
+     * \return Reference to the edge map
      */
     constexpr std::map<std::string, std::map<std::string, std::vector<E>>>& GetEdges();
 
     /**
-     * Check if both the edges and the nodes are empty.
+     * \brief Check if both the edges and the nodes are empty.
+     * \return True if the graph is empty, false otherwise
      */
     constexpr bool Empty();
 

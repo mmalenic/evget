@@ -4,7 +4,15 @@
 #include <cstdint>
 
 namespace evget {
-enum class Direction : std::uint8_t { kDown, kLeft, kRight, kUp };
+/**
+ * \brief Represents scrolling directional movement or orientation.
+ */
+enum class Direction : std::uint8_t { 
+    kDown,   ///< Downward scroll direction
+    kLeft,   ///< Leftward scroll direction
+    kRight,  ///< Rightward scroll direction
+    kUp      ///< Upward scroll direction
+};
 } // namespace evget
 
 #endif

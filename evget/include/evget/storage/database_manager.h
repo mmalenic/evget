@@ -20,14 +20,14 @@ namespace evget {
 class DatabaseManager : public Store {
 public:
     /**
-     * \brief Construct a database manager
-     * \param scheduler scheduler to use.
-     * \param storeIn stores to store events in.
-     * \param nEvents the number of events to hold before inserting.
-     * \param storeAfter store events after this time event if nEvents is not reached.
+     * \brief Construct a database manager.
+     * \param scheduler scheduler to use
+     * \param store_in stores to store events in
+     * \param n_events the number of events to hold before inserting
+     * \param store_after store events after this time event if `n_events` is not reached
      */
     DatabaseManager(
-        std::shared_ptr<evget::Scheduler> scheduler,
+        std::shared_ptr<Scheduler> scheduler,
         std::vector<std::shared_ptr<Store>> store_in,
         std::size_t n_events,
         std::chrono::seconds store_after
@@ -35,6 +35,10 @@ public:
 
     Result<void> StoreEvent(Data event) override;
 
+    /**
+     * \brief Add a store to the database manager.
+     * \param store unique pointer to the store to add
+     */
     void AddStore(std::unique_ptr<Store> store);
 
 private:

@@ -26,10 +26,26 @@
 
 namespace evgetx11 {
 
+/**
+ * \brief Event processing for handling pointer and key events from X11.
+ */
 class EventSwitchPointerKey {
 public:
+    /**
+     * \brief Construct an `EventSwitchPointerKey` with an X11 API wrapper.
+     * \param x_wrapper reference to the X11 API wrapper
+     */
     explicit EventSwitchPointerKey(X11Api& x_wrapper);
 
+    /**
+     * \brief Refresh device information for pointer and key devices.
+     * \param device_id the ID of the device
+     * \param pointer_id optional pointer ID
+     * \param device device type
+     * \param name device name
+     * \param info the XI device information structure
+     * \param x_event_switch reference to the main event switch
+     */
     void RefreshDevices(
         int device_id,
         std::optional<int> pointer_id,
@@ -38,6 +54,15 @@ public:
         const XIDeviceInfo& info,
         EventSwitch& x_event_switch
     );
+    
+    /**
+     * \brief Process an input event and convert it to evget data if applicable.
+     * \param event the input event to process
+     * \param data data structure to add converted events to
+     * \param x_event_switch reference to the main event switch
+     * \param get_time function to get time intervals
+     * \return true if the event was processed, false otherwise
+     */
     bool SwitchOnEvent(
         const InputEvent& event,
         evget::Data& data,

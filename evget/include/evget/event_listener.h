@@ -9,19 +9,19 @@ namespace evget {
 
 /**
  * Represents event listeners.
- * @tparam T event type
+ * \tparam T event type
  */
 template <typename T>
 class EventListener {
 public:
     /**
      * Notify if an event.
-     * @param event event
+     * \param event event
      */
     virtual boost::asio::awaitable<Result<void>> Notify(T event) = 0;
 
     /**
-     * Start the listener processing
+     * Start the listener processing.
      */
     virtual boost::asio::awaitable<Result<void>> Start() = 0;
 

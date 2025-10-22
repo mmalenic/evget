@@ -7,14 +7,14 @@ namespace evget {
 
 /**
  * Class represents processing events.
- * @tparam T type of events to process
+ * \tparam T type of events to process
  */
 template <typename T>
 class EventLoop : public EventListener<T> {
 public:
     /**
      * Register listeners to notify.
-     * @param eventListener lister
+     * \param event_listener listener
      */
     virtual void RegisterEventListener(EventListener<T>& event_listener) = 0;
 

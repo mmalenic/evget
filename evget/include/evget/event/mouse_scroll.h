@@ -17,12 +17,12 @@ namespace evget {
 class MouseScroll {
 public:
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseScroll& Interval(IntervalType interval);
 
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseScroll& Interval(std::optional<IntervalType> interval);
 

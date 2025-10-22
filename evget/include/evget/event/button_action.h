@@ -4,7 +4,14 @@
 #include <cstdint>
 
 namespace evget {
-enum class ButtonAction : std::uint8_t { kPress, kRelease, kRepeat };
+/**
+ * \brief Represents the action performed on a button.
+ */
+enum class ButtonAction : std::uint8_t { 
+    kPress,    ///< Button was pressed down
+    kRelease,  ///< Button was released
+    kRepeat    ///< Button is being held down
+};
 } // namespace evget
 
 #endif

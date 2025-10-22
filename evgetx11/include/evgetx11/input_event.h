@@ -7,38 +7,53 @@
 #include "evgetx11/x11_api.h"
 
 namespace evgetx11 {
+/**
+ * \brief Represents an X11 input event with timestamp and event data.
+ */
 class InputEvent {
 public:
     /**
-     * Get the date time of the event.
+     * \brief Get the timestamp of when the event occurred.
+     * \return reference to the event timestamp
      */
     [[nodiscard]] const evget::TimestampType& GetTimestamp() const;
 
     /**
-     * Check if viewData and getEventType is safe to call.
+     * \brief Check if `ViewData` and `GetEventType` are safe to call.
+     * \return true if event data is available, false otherwise
      */
     [[nodiscard]] bool HasData() const;
 
     /**
-     * Must check if data is available first with hasData.
+     * \brief Get the X11 event type. Must check if data is available first with HasData.
+     * \return the X11 event type identifier
      */
     [[nodiscard]] int GetEventType() const;
 
     /**
-     * A non owning reference to the data in the event cookie. Must check if data is available first
-     * with hasData.
+     * \brief Get a non-owning reference to the event data. Must check if data is available first with HasData.
+     * \tparam T The expected type of the event data
+     * \return reference to the event data cast to the specified type
      */
     template <typename T>
     [[nodiscard]] const T& ViewData() const;
 
     /**
-     * Create a XInputEvent by getting the next event from the display. Events received depend on
-     * the event mask set on the display. This function will block if there are no events on the event
-     * queue.
+     * \brief Create an InputEvent by getting the next event from the display.
+     *
+     * Events received depend on the event mask set on the display.
+     * This function will block if there are no events in the event queue.
+     * 
+     * \param x_wrapper reference to the X11 API wrapper
+     * \return the next input event from the display
      */
     static InputEvent NextEvent(X11Api& x_wrapper);
 
 private:
+    /**
+     * \brief Private constructor for creating InputEvent instances.
+     * \param x_wrapper reference to the X11 API wrapper
+     */
     explicit InputEvent(X11Api& x_wrapper);
 
     XEvent event_;

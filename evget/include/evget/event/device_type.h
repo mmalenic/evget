@@ -4,7 +4,16 @@
 #include <cstdint>
 
 namespace evget {
-enum class DeviceType : std::uint8_t { kMouse, kKeyboard, kTouchpad, kTouchscreen, kUnknown };
+/**
+ * \brief Represents the type of input device that generated an event.
+ */
+enum class DeviceType : std::uint8_t { 
+    kMouse,        ///< Mouse device
+    kKeyboard,     ///< Keyboard device
+    kTouchpad,     ///< Touchpad device
+    kTouchscreen,  ///< Touchscreen device
+    kUnknown       ///< Unknown or unrecognized device type
+};
 } // namespace evget
 
 #endif

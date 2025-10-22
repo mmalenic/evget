@@ -13,22 +13,22 @@
 
 namespace evget {
 /**
- * Represents a mouse click event.
+ * Represents a mouse-click event.
  */
 class MouseClick {
 public:
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseClick& Interval(IntervalType interval);
 
     /**
-     * Add interval in microseconds.
+     * Add an interval in microseconds.
      */
     MouseClick& Interval(std::optional<IntervalType> interval);
 
     /**
-     * Add date timestamp.
+     * Add a date timestamp.
      */
     MouseClick& Timestamp(TimestampType timestamp);
 

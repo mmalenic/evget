@@ -6,15 +6,15 @@
 namespace evget {
 
 /**
- * Transform the data so its usable by storage.
- * @tparam T type of data
+ * Transform the data so it's usable by the storage.
+ * \tparam T type of data
  */
 template <typename T>
 class EventTransformer {
 public:
     /**
      * Transform the event.
-     * @param event event to transform
+     * \param event event to transform
      */
     virtual Data TransformEvent(T event) = 0;
 

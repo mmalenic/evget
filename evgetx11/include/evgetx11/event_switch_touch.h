@@ -18,16 +18,40 @@
 
 namespace evgetx11 {
 
+/**
+ * \brief Event processing for touch events from X11.
+ */
 class EventSwitchTouch {
 public:
+    /**
+     * \brief Default constructor for `EventSwitchTouch`.
+     */
     EventSwitchTouch() = default;
 
+    /**
+     * \brief Process a touch input event and convert it to evget data if applicable.
+     * \param event the input event to process
+     * \param data data structure to add converted events to
+     * \param x_event_switch reference to the main event switch
+     * \param get_time function to get time intervals
+     * \return true if the event was processed, false otherwise
+     */
     bool SwitchOnEvent(
         const InputEvent& event,
         evget::Data& data,
         EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
+    
+    /**
+     * \brief Refresh device information for touch devices.
+     * \param device_id the ID of the device
+     * \param pointer_id optional pointer ID
+     * \param device device type
+     * \param name device name
+     * \param info the XI device information structure
+     * \param x_event_switch reference to the main event switch
+     */
     void RefreshDevices(
         int device_id,
         std::optional<int> pointer_id,

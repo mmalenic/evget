@@ -24,7 +24,7 @@
 
 namespace evgetx11 {
 /**
- * Check whether the template parameter is a builder with a modifier function.
+ * \brief Check whether the template parameter is a builder with a modifier function.
  */
 template <typename T>
 concept BuilderHasModifier = requires(T builder, evget::ModifierValue modifier_value) {
@@ -32,7 +32,7 @@ concept BuilderHasModifier = requires(T builder, evget::ModifierValue modifier_v
 };
 
 /**
- * Check whether the template parameter is a builder with focus window functions.
+ * \brief Check whether the template parameter is a builder with focus window functions.
  */
 template <typename T>
 concept BuilderHasWindowFunctions =
@@ -45,7 +45,7 @@ concept BuilderHasWindowFunctions =
     };
 
 /**
- * Check whether the template parameter is a builder with a device name function.
+ * \brief Check whether the template parameter is a builder with a device name function.
  */
 template <typename T>
 concept BuilderHasDeviceNameFunctions = requires(T builder, std::string device_name, int screen) {
@@ -53,10 +53,26 @@ concept BuilderHasDeviceNameFunctions = requires(T builder, std::string device_n
     { builder.Screen(screen) } -> std::convertible_to<T>;
 };
 
+/**
+ * \brief Handles processing different types of X11 input events and converting them to the
+ *        evget data format.
+ */
 class EventSwitch {
 public:
+    /**
+     * \brief Construct an EventSwitch with an X11 API wrapper.
+     * \param x_wrapper reference to the X11 API wrapper
+     */
     explicit EventSwitch(X11Api& x_wrapper);
 
+    /**
+     * \brief Refresh device information for a specific device.
+     * \param device_id the ID of the device
+     * \param pointer_id optional pointer device ID
+     * \param device device type
+     * \param name device name
+     * \param info the device information structure
+     */
     void RefreshDevices(
         int device_id,
         std::optional<int> pointer_id,
@@ -65,6 +81,15 @@ public:
         const XIDeviceInfo& info
     );
 
+    /**
+     * \brief Add a button event to the data structure.
+     * \param event the raw XI event
+     * \param date_time timestamp of the event
+     * \param data data structure to add the event to
+     * \param action button action
+     * \param button button identifier
+     * \param get_time function to get time intervals
+     */
     void AddButtonEvent(
         const XIRawEvent& event,
         evget::TimestampType date_time,
@@ -73,6 +98,14 @@ public:
         int button,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
+    
+    /**
+     * \brief Add a motion event to the data structure.
+     * \param event the raw XI event
+     * \param date_time timestamp of the event
+     * \param data data structure to add the event to
+     * \param get_time function to get time intervals
+     */
     void AddMotionEvent(
         const XIRawEvent& event,
         evget::TimestampType date_time,
@@ -80,40 +113,63 @@ public:
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
+    /**
+     * \brief Get the name of a button for a specific device.
+     * \param device_id the ID of the device
+     * \param button button identifier
+     * \return reference to the button name string
+     */
     [[nodiscard]] const std::string& GetButtonName(int device_id, int button) const;
 
     /**
-     * Get the device with the given id.
+     * \brief Get the device type for the given device ID.
+     * \param device_id the ID of the device
+     * \return device type enumeration value
      */
     [[nodiscard]] evget::DeviceType GetDevice(int device_id) const;
 
     /**
-     * Check whether the device with the given id is present.
+     * \brief Check whether the device with the given ID has already been
+     *        encountered in processing.
+     * \param device_id the ID of the device to check
+     * \return true if device exists, false otherwise
      */
     [[nodiscard]] bool HasDevice(int device_id) const;
 
     /**
-     * Set the modifier state for a builder.
+     * \brief Set the modifier state for a builder.
+     * \tparam T builder type that supports modifier functions
+     * \param modifier_state the X11 modifier state bitmask
+     * \param builder reference to the builder to modify
+     * \return reference to the modified builder
      */
     template <BuilderHasModifier T>
     static T& SetModifierValue(unsigned int modifier_state, T& builder);
 
     /**
-     * Set the window fields for a builder.
+     * \brief Set the window fields for a builder.
+     * \tparam T builder type that supports window functions
+     * \param builder reference to the builder to modify
+     * \return reference to the modified builder
      */
     template <BuilderHasWindowFunctions T>
     T& SetWindowFields(T& builder);
 
     /**
-     * Set the device name fields for a builder.
+     * \brief Set the device name fields for a builder.
+     * \tparam T builder type that supports device name functions
+     * \param builder reference to the builder to modify
+     * \param event the raw XI event
+     * \param screen screen number
+     * \return reference to the modified builder
      */
     template <BuilderHasDeviceNameFunctions T>
     T& SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
 
     /**
-     * Set the button map for a device.
-     * @param button_info button info
-     * @param device_id device id
+     * \brief Set the button map for a device.
+     * \param button_info the XI button class information
+     * \param device_id the ID of the device
      */
     void SetButtonMap(const XIButtonClassInfo& button_info, int device_id);
 

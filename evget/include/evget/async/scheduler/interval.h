@@ -13,19 +13,19 @@ namespace evget {
 
 /**
  * \brief A repeating timer indefinitely repeats until it is stopped. This class does not have thread-safe
- * functionality.
+ *        functionality.
  */
 class Interval {
 public:
     /**
-     * \brief construct a repeating timer.
+     * \brief Construct a repeating timer.
      * \param period period for the interval
      */
     explicit Interval(std::chrono::seconds period);
 
     /**
      * \brief Completes when the next period in the interval has been reached. If a tick has been
-     * missed, then the timer keeps firing until the time has caught up. Not thread-safe.
+     *        missed, then the timer keeps firing until the time has caught up. Not thread-safe.
      */
     boost::asio::awaitable<Result<void>> Tick();
 
@@ -36,7 +36,7 @@ public:
 
     /**
      * \brief Get the timer's period.
-     * \return period.
+     * \return the period
      */
     [[nodiscard]] std::chrono::seconds Period() const;
 
