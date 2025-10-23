@@ -22,19 +22,19 @@ concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invok
  */
 template <typename E>
 struct Error {
-    E error_type;
-    std::string message;
+    E error_type;        ///< The specific error type
+    std::string message; ///< Error message
 };
 
 /**
  * \brief Error type enum.
  */
 enum class ErrorType : std::uint8_t {
-    kSqLiteError,
-    kDatabaseManagerError,
-    kDatabaseError,
-    kEventHandlerError,
-    kAsyncError,
+    kSqLiteError,           ///< SQLite database error
+    kDatabaseManagerError,  ///< Database manager error
+    kDatabaseError,         ///< General database error
+    kEventHandlerError,     ///< Event handler error
+    kAsyncError,            ///< Asynchronous operation error
 };
 
 /**
