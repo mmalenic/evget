@@ -1,3 +1,8 @@
+/**
+ * \file connection.h
+ * \brief SQLite database connection implementation.
+ */
+
 #ifndef EVGET_DATABASE_SQLITE_CONNECTION_H
 #define EVGET_DATABASE_SQLITE_CONNECTION_H
 

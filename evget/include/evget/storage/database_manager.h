@@ -1,3 +1,8 @@
+/**
+ * \file database_manager.h
+ * \brief Database storage manager for batching and scheduling event storage.
+ */
+
 #ifndef EVGET_STORAGE_DATABASE_MANAGER_H
 #define EVGET_STORAGE_DATABASE_MANAGER_H
 

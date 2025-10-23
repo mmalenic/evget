@@ -1,3 +1,8 @@
+/**
+ * \file x11_api.h
+ * \brief X11 API abstraction layer for window system interaction and input handling.
+ */
+
 #ifndef EVGETX11_X11_API_H
 #define EVGETX11_X11_API_H
 

@@ -1,3 +1,8 @@
+/**
+ * \file mouse_click.h
+ * \brief Mouse click event builder for creating mouse button events.
+ */
+
 #ifndef EVGET_EVENT_MOUSE_CLICK_H
 #define EVGET_EVENT_MOUSE_CLICK_H
 

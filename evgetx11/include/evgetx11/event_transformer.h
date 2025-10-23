@@ -1,3 +1,8 @@
+/**
+ * \file event_transformer.h
+ * \brief X11-specific event transformer for converting input events to evget format.
+ */
+
 #ifndef EVGETX11_EVENT_TRANSFORMER_H
 #define EVGETX11_EVENT_TRANSFORMER_H
 

@@ -1,3 +1,8 @@
+/**
+ * \file mouse_move.h
+ * \brief Mouse movement event builder for mouse motion events.
+ */
+
 #ifndef EVGET_EVENT_MOUSE_MOVE_H
 #define EVGET_EVENT_MOUSE_MOVE_H
 

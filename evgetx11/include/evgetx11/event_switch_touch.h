@@ -1,3 +1,8 @@
+/**
+ * \file event_switch_touch.h
+ * \brief Event processor for X11 touch input events.
+ */
+
 #ifndef EVGETX11_EVENT_SWITCH_TOUCH_H
 #define EVGETX11_EVENT_SWITCH_TOUCH_H
 

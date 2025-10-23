@@ -1,3 +1,8 @@
+/**
+ * \file connection.h
+ * \brief Abstract database connection interface for database operations.
+ */
+
 #ifndef EVGET_DATABASE_CONNECTION_H
 #define EVGET_DATABASE_CONNECTION_H
 

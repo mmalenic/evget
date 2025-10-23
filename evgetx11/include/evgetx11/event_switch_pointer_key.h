@@ -1,3 +1,8 @@
+/**
+ * \file event_switch_pointer_key.h
+ * \brief Event processor for X11 pointer and keyboard input events.
+ */
+
 #ifndef EVGETX11_EVENT_SWITCH_POINTER_KEY_H
 #define EVGETX11_EVENT_SWITCH_POINTER_KEY_H
 

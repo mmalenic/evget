@@ -1,3 +1,8 @@
+/**
+ * \file key.h
+ * \brief Keyboard event builder for creating key events.
+ */
+
 #ifndef EVGET_EVENT_KEY_H
 #define EVGET_EVENT_KEY_H
 

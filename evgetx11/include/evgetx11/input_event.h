@@ -1,3 +1,8 @@
+/**
+ * \file input_event.h
+ * \brief X11 input event wrapper with timestamp and data access.
+ */
+
 #ifndef EVGETX11_INPUT_EVENT_H
 #define EVGETX11_INPUT_EVENT_H
 

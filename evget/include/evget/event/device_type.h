@@ -1,3 +1,8 @@
+/**
+ * \file device_type.h
+ * \brief Input device type enumeration for different hardware devices.
+ */
+
 #ifndef EVGET_EVENT_DEVICE_TYPE_H
 #define EVGET_EVENT_DEVICE_TYPE_H
 

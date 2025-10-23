@@ -1,3 +1,8 @@
+/**
+ * \file display_deleter.h
+ * \brief Custom deleter for X11 resources requiring `Display` pointer cleanup.
+ */
+
 #ifndef EVGETX11_DISPLAY_DELETER_H
 #define EVGETX11_DISPLAY_DELETER_H
 

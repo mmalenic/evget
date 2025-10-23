@@ -1,3 +1,8 @@
+/**
+ * \file event_switch.h
+ * \brief Main event processor for routing X11 input events to appropriate handlers.
+ */
+
 #ifndef EVGETX11_EVENT_SWITCH_H
 #define EVGETX11_EVENT_SWITCH_H
 

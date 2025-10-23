@@ -1,3 +1,8 @@
+/**
+ * \file modifier_value.h
+ * \brief Modifier enumeration for shift, control, alt, and other keys.
+ */
+
 #ifndef EVGET_EVENT_MODIFIER_VALUE_H
 #define EVGET_EVENT_MODIFIER_VALUE_H
 

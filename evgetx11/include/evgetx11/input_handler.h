@@ -1,3 +1,8 @@
+/**
+ * \file input_handler.h
+ * \brief X11 input handler for managing event masks and retrieving input events.
+ */
+
 #ifndef EVGETX11_INPUT_HANDLER_H
 #define EVGETX11_INPUT_HANDLER_H
 

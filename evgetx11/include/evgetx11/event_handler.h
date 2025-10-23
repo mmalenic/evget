@@ -1,3 +1,8 @@
+/**
+ * \file event_handler.h
+ * \brief X11-specific event handler implementation for processing input events.
+ */
+
 #ifndef EVGETX11_EVENT_HANDLER_H
 #define EVGETX11_EVENT_HANDLER_H
 

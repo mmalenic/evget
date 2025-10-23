@@ -1,3 +1,8 @@
+/**
+ * \file interval.h
+ * \brief Repeating timer implementation for periodic task execution.
+ */
+
 #ifndef EVGET_ASYNC_SCHEDULER_INTERVAL_H
 #define EVGET_ASYNC_SCHEDULER_INTERVAL_H
 

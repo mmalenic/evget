@@ -1,3 +1,8 @@
+/**
+ * \file event_transformer.h
+ * \brief Abstract interface for transforming events into the storage format.
+ */
+
 #ifndef EVGET_EVENT_TRANSFORMER_H
 #define EVGET_EVENT_TRANSFORMER_H
 

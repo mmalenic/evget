@@ -1,3 +1,8 @@
+/**
+ * \file entry.h
+ * \brief Event entry types and field definitions for structured event data.
+ */
+
 #ifndef EVGET_EVENT_ENTRY_H
 #define EVGET_EVENT_ENTRY_H
 

@@ -1,3 +1,8 @@
+/**
+ * \file error.h
+ * \brief Error handling types and utilities for the evget library.
+ */
+
 #ifndef EVGET_ERROR_H
 #define EVGET_ERROR_H
 

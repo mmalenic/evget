@@ -1,3 +1,8 @@
+/**
+ * \file event_handler.h
+ * \brief Event handler for processing and storing input events.
+ */
+
 #ifndef EVGET_EVENT_HANDLER_H
 #define EVGET_EVENT_HANDLER_H
 

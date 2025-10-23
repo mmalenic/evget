@@ -1,3 +1,8 @@
+/**
+ * \file event_loop.h
+ * \brief X11-specific event loop implementation for processing system events.
+ */
+
 #ifndef EVGETX11_EVENT_LOOP_H
 #define EVGETX11_EVENT_LOOP_H
 

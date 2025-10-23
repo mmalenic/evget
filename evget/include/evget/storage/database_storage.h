@@ -1,3 +1,8 @@
+/**
+ * \file database_storage.h
+ * \brief Database storage implementation for persisting events to database.
+ */
+
 #ifndef EVGET_STORAGE_DATABASE_STORAGE_H
 #define EVGET_STORAGE_DATABASE_STORAGE_H
 

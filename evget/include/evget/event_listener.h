@@ -1,3 +1,8 @@
+/**
+ * \file event_listener.h
+ * \brief Abstract interface for event notification and processing.
+ */
+
 #ifndef EVGET_EVENT_LISTENER_H
 #define EVGET_EVENT_LISTENER_H
 

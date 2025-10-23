@@ -1,3 +1,8 @@
+/**
+ * \file data.h
+ * \brief Event data container for managing collections of event entries.
+ */
+
 #ifndef EVGET_EVENT_DATA_H
 #define EVGET_EVENT_DATA_H
 

@@ -1,3 +1,8 @@
+/**
+ * \file query.h
+ * \brief Abstract database query interface.
+ */
+
 #ifndef EVGET_DATABASE_QUERY_H
 #define EVGET_DATABASE_QUERY_H
 

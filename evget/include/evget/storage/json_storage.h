@@ -1,3 +1,8 @@
+/**
+ * \file json_storage.h
+ * \brief JSON storage implementation for outputting events in JSON format.
+ */
+
 #ifndef EVGET_STORAGE_JSON_STORAGE_H
 #define EVGET_STORAGE_JSON_STORAGE_H
 

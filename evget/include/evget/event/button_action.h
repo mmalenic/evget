@@ -1,3 +1,8 @@
+/**
+ * \file button_action.h
+ * \brief Button action enumeration for press, release, and repeat events.
+ */
+
 #ifndef EVGET_EVENT_BUTTON_ACTION_H
 #define EVGET_EVENT_BUTTON_ACTION_H
 

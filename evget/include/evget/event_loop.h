@@ -1,3 +1,8 @@
+/**
+ * \file event_loop.h
+ * \brief Abstract event loop interface for processing input events.
+ */
+
 #ifndef EVGET_EVENT_LOOP_H
 #define EVGET_EVENT_LOOP_H
 

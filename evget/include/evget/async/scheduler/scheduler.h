@@ -1,3 +1,8 @@
+/**
+ * \file scheduler.h
+ * \brief Asynchronous task scheduler using thread pool for concurrent execution.
+ */
+
 #ifndef EVGET_ASYNC_SCHEDULER_SCHEDULER_H
 #define EVGET_ASYNC_SCHEDULER_SCHEDULER_H
 

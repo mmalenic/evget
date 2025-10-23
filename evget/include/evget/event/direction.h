@@ -1,3 +1,8 @@
+/**
+ * \file direction.h
+ * \brief Directional enumeration for scrolling.
+ */
+
 #ifndef EVGET_EVENT_DIRECTION_H
 #define EVGET_EVENT_DIRECTION_H
 

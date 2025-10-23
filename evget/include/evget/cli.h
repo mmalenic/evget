@@ -1,3 +1,8 @@
+/**
+ * \file cli.h
+ * \brief Command line interface parser and configuration management.
+ */
+
 #ifndef EVGET_CLI_H
 #define EVGET_CLI_H
 

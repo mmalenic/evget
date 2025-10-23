@@ -1,3 +1,8 @@
+/**
+ * \file query.h
+ * \brief SQLite database query implementation.
+ */
+
 #ifndef EVGET_DATABASE_SQLITE_QUERY_H
 #define EVGET_DATABASE_SQLITE_QUERY_H
 

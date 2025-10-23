@@ -1,3 +1,8 @@
+/**
+ * \file store.h
+ * \brief Abstract storage interface for event persistence.
+ */
+
 #ifndef EVGET_STORAGE_STORE_H
 #define EVGET_STORAGE_STORE_H
 

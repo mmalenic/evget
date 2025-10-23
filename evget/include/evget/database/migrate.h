@@ -1,3 +1,8 @@
+/**
+ * \file migrate.h
+ * \brief Database migration management for schema versioning and updates.
+ */
+
 #ifndef EVGET_DATABASE_MIGRATE_H
 #define EVGET_DATABASE_MIGRATE_H
 

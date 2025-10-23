@@ -1,3 +1,8 @@
+/**
+ * \file locking_vector.h
+ * \brief Thread-safe vector container with locking mechanisms.
+ */
+
 #ifndef EVGET_ASYNC_CONTAINER_LOCKING_VECTOR_H
 #define EVGET_ASYNC_CONTAINER_LOCKING_VECTOR_H
 

@@ -1,3 +1,8 @@
+/**
+ * \file mouse_scroll.h
+ * \brief Mouse scroll event builder for mouse wheel events.
+ */
+
 #ifndef EVGET_EVENT_MOUSE_SCROLL_H
 #define EVGET_EVENT_MOUSE_SCROLL_H
 
