@@ -14,7 +14,7 @@ class EventLoop : public EventListener<T> {
 public:
     /**
      * \brief Register listeners to notify.
-     * \param event_listener listener
+     * \param event_listener event listener to register for notifications
      */
     virtual void RegisterEventListener(EventListener<T>& event_listener) = 0;
 

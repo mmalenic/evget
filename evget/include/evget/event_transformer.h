@@ -15,6 +15,7 @@ public:
     /**
      * \brief Transform the event.
      * \param event event to transform
+     * \return transformed event data
      */
     virtual Data TransformEvent(T event) = 0;
 

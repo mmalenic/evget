@@ -31,6 +31,12 @@ concept AddArray = std::ranges::range<AddElements> &&
 
 /**
  * \brief Add additional elements to an array.
+ * \tparam From Size of the source array
+ * \tparam To Size of the target array
+ * \tparam AddElements Type of elements to add
+ * \param from Source array to copy from
+ * \param add_elements Elements to add to the array
+ * \return New array with combined elements
  */
 template <std::size_t From, std::size_t To, typename AddElements>
     requires AddArray<From, To, AddElements>

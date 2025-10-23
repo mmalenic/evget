@@ -24,6 +24,7 @@ struct XWindowDimensions {
     unsigned int height;  ///< window height in pixels
 };
 
+/// \brief Type alias for X11 event data with custom deleter.
 using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XGenericEventCookie*)>>;
 
 /**
@@ -245,8 +246,26 @@ public:
     Status QueryVersion(int& major, int& minor) override;
     void SelectEvents(XIEventMask& mask) override;
 
+    /**
+     * \brief Iterate over set bits in a mask and call the function for each.
+     * \param mask pointer to the mask array
+     * \param mask_len length of the mask in bytes
+     * \param function function to call for each set bit index
+     */
     static void OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function);
+    
+    /**
+     * \brief Convert a `KeySym` to its string representation.
+     * \param key_sym the KeySym to convert
+     * \return string representation of the KeySym
+     */
     static std::string KeySymToString(KeySym key_sym);
+    
+    /**
+     * \brief Set specific event bits in a mask.
+     * \param mask pointer to the mask array to modify
+     * \param events list of event indices to set
+     */
     static void SetMask(unsigned char* mask, std::initializer_list<int> events);
 
 private:

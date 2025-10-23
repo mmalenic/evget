@@ -26,6 +26,7 @@ public:
     /**
      * \brief Completes when the next period in the interval has been reached. If a tick has been
      *        missed, then the timer keeps firing until the time has caught up. Not thread-safe.
+     * \return awaitable result indicating success or failure
      */
     boost::asio::awaitable<Result<void>> Tick();
 

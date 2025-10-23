@@ -15,7 +15,7 @@
 namespace evgetx11 {
 
 /**
- * Class represents processing X11 events.
+ * \brief Class represents processing X11 events.
  */
 class EventLoop : public evget::EventLoop<InputEvent> {
 public:
