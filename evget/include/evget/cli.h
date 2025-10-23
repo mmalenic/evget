@@ -25,15 +25,15 @@ namespace evget {
  * \brief The type of storage to use.
  */
 enum class StorageType : uint8_t {
-    kSqLite,  ///< use an SQLite database to store events
-    kJson     ///< use JSON for event formatting
+    kSqLite, ///< use an SQLite database to store events
+    kJson ///< use JSON for event formatting
 };
 
 /**
  * \brief Where to source events from.
  */
 enum class EventSource : uint8_t {
-    kX11,  ///< source events from the X11 windowing system
+    kX11, ///< source events from the X11 windowing system
 };
 
 /**
@@ -74,19 +74,19 @@ public:
      * \return result containing vector of `Store` unique pointers or error
      */
     Result<std::vector<std::unique_ptr<Store>>> ToStores();
-    
+
     /**
      * \brief Get the configured event source.
      * \return event source enumeration value
      */
     [[nodiscard]] evget::EventSource EventSource() const;
-    
+
     /**
      * \brief Get the number of events to store before issuing a write operation.
      * \return number of events
      */
     [[nodiscard]] std::size_t StoreNEvents() const;
-    
+
     /**
      * \brief Get the time interval after which to store events.
      * \return time interval in seconds

@@ -19,9 +19,9 @@ namespace evget {
  * \brief Connection options for connecting to a database.
  */
 enum class ConnectOptions : std::uint8_t {
-    kReadOnly,         ///< read-only connection
-    kReadWrite,        ///< write connection without creating a database
-    kReadWriteCreate,  ///< write connection while creating a database if it does not exist
+    kReadOnly, ///< read-only connection
+    kReadWrite, ///< write connection without creating a database
+    kReadWriteCreate, ///< write connection while creating a database if it does not exist
 };
 
 /**

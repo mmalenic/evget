@@ -34,13 +34,13 @@ public:
      * \return awaitable result indicating success or failure
      */
     boost::asio::awaitable<evget::Result<void>> Notify(InputEvent event) override;
-    
+
     /**
      * \brief Start the event handler processing.
      * \return awaitable result indicating success or failure
      */
     boost::asio::awaitable<evget::Result<void>> Start() override;
-    
+
     /**
      * \brief Stop the event handler processing.
      */
@@ -63,13 +63,13 @@ public:
      * \return reference to this builder
      */
     EventHandlerBuilder& PointerKey(X11Api& x_wrapper);
-    
+
     /**
      * \brief Configure the builder to handle touch events.
      * \return reference to this builder
      */
     EventHandlerBuilder& Touch();
-    
+
     /**
      * \brief Build the `EventHandler` with the configured settings.
      * \param storage reference to the storage system

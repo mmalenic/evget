@@ -37,25 +37,25 @@ public:
      * \return result indicating success or failure
      */
     Result<void> Connect(std::string database, ConnectOptions options) override;
-    
+
     /**
      * \brief Start a new transaction.
      * \return result indicating success or failure
      */
     Result<void> Transaction() override;
-    
+
     /**
      * \brief Commit the current transaction.
      * \return result indicating success or failure
      */
     Result<void> Commit() override;
-    
+
     /**
      * \brief Rollback the current transaction.
      * \return result indicating success or failure
      */
     Result<void> Rollback() override;
-    
+
     /**
      * \brief Build a query using this connection.
      * \param query SQL query string

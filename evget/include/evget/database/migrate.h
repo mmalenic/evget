@@ -19,18 +19,18 @@ namespace evget {
  * \brief Represents a database migration with version, description, SQL, and execution flag.
  */
 struct Migration {
-    int version;                ///< Migration version number
-    std::string description;    ///< Human-readable description of the migration
-    std::string sql;           ///< SQL statements to execute for this migration
-    bool exec;                 ///< Whether this migration should be executed
+    int version; ///< Migration version number
+    std::string description; ///< Human-readable description of the migration
+    std::string sql; ///< SQL statements to execute for this migration
+    bool exec; ///< Whether this migration should be executed
 };
 
 /**
  * \brief Represents a migration that has been applied to the database.
  */
 struct AppliedMigration {
-    int version;               ///< Version number of the applied migration
-    std::string checksum;      ///< Checksum of the migration
+    int version; ///< Version number of the applied migration
+    std::string checksum; ///< Checksum of the migration
 };
 
 /**

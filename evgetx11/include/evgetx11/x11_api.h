@@ -25,8 +25,8 @@ namespace evgetx11 {
  * \brief Represents the dimensions of an X11 window.
  */
 struct XWindowDimensions {
-    unsigned int width;   ///< window width in pixels
-    unsigned int height;  ///< window height in pixels
+    unsigned int width; ///< window width in pixels
+    unsigned int height; ///< window height in pixels
 };
 
 /// \brief Type alias for X11 event data with custom deleter.
@@ -36,17 +36,17 @@ using XEventPointer = std::unique_ptr<XGenericEventCookie, std::function<void(XG
  * \brief Result structure for X11 pointer queries containing position and state information.
  */
 struct QueryPointerResult {
-    double root_x{};                                                 ///< Root window X coordinate
-    double root_y{};                                                 ///< Root window Y coordinate
-    std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask;  ///< Button press mask
-    XIModifierState modifier_state{};                                ///< Modifier key states
-    XIGroupState group_state{};                                      ///< Keyboard group state
-    int screen_number{};                                             ///< Screen number
+    double root_x{}; ///< Root window X coordinate
+    double root_y{}; ///< Root window Y coordinate
+    std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask; ///< Button press mask
+    XIModifierState modifier_state{}; ///< Modifier key states
+    XIGroupState group_state{}; ///< Keyboard group state
+    int screen_number{}; ///< Screen number
 };
 
 /**
  * \brief An interface which wraps X11 library functions.
- * 
+ *
  * This interface provides an abstraction over X11 library functions.
  */
 class X11Api {
@@ -63,7 +63,7 @@ public:
      */
     virtual std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) = 0;
-    
+
     /**
      * \brief Get the button mapping for a specific device.
      *
@@ -84,7 +84,7 @@ public:
      * \return unique pointer to the device info array
      */
     virtual std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> ListInputDevices(int& n_devices) = 0;
-    
+
     /**
      * \brief Query device information for XI2 devices.
      *
@@ -113,7 +113,7 @@ public:
      * \return optional window ID, `nullopt` if no active window
      */
     virtual std::optional<Window> GetActiveWindow() = 0;
-    
+
     /**
      * \brief Get the window that currently has input focus.
      *
@@ -122,7 +122,7 @@ public:
      * \return optional window ID, `nullopt` if no focus window
      */
     virtual std::optional<Window> GetFocusWindow() = 0;
-    
+
     /**
      * \brief Get the name or title of a window.
      *
@@ -132,7 +132,7 @@ public:
      * \return optional window name, `nullopt` if unavailable
      */
     virtual std::optional<std::string> GetWindowName(Window window) = 0;
-    
+
     /**
      * \brief Get the size dimensions of a window.
      *
@@ -142,7 +142,7 @@ public:
      * \return optional window dimensions, `nullopt` if unavailable
      */
     virtual std::optional<XWindowDimensions> GetWindowSize(Window window) = 0;
-    
+
     /**
      * \brief Get the position of a window.
      *
@@ -171,7 +171,7 @@ public:
      * \return the next X11 event
      */
     virtual XEvent NextEvent() = 0;
-    
+
     /**
      * \brief Get event data from an X11 event.
      *
@@ -192,7 +192,7 @@ public:
      * \return status indicating success or failure
      */
     virtual Status QueryVersion(int& major, int& minor) = 0;
-    
+
     /**
      * \brief select which XI2 events to receive.
      *
@@ -217,7 +217,7 @@ private:
 
 /**
  * \brief Concrete implementation of the `X11Api` interface.
- * 
+ *
  * This class provides the actual implementation of X11 library function calls,
  * wrapping the low-level X11 API.
  */
@@ -258,14 +258,14 @@ public:
      * \param function function to call for each set bit index
      */
     static void OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function);
-    
+
     /**
      * \brief Convert a `KeySym` to its string representation.
      * \param key_sym the KeySym to convert
      * \return string representation of the KeySym
      */
     static std::string KeySymToString(KeySym key_sym);
-    
+
     /**
      * \brief Set specific event bits in a mask.
      * \param mask pointer to the mask array to modify

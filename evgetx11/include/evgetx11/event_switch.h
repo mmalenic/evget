@@ -103,7 +103,7 @@ public:
         int button,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    
+
     /**
      * \brief Add a motion event to the data structure.
      * \param event the raw XI event

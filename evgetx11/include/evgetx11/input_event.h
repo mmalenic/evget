@@ -48,7 +48,7 @@ public:
      *
      * Events received depend on the event mask set on the display.
      * This function will block if there are no events in the event queue.
-     * 
+     *
      * \param x_wrapper reference to the X11 API wrapper
      * \return the next input event from the display
      */

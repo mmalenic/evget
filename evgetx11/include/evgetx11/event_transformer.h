@@ -49,7 +49,7 @@ public:
      * \param switches additional event processors for specific event types
      */
     EventTransformer(X11Api& x_wrapper, EventSwitch x_event_switch, Switches... switches);
-    
+
     /**
      * \brief Transform an `InputEvent` into the evget Data format.
      * \param event the input event to transform
@@ -64,7 +64,7 @@ private:
      * \return optional interval in microseconds, `nullopt` if no previous time
      */
     std::optional<std::chrono::microseconds> GetInterval(Time time);
-    
+
     /**
      * \brief Refresh the device information from the X11 system.
      */
@@ -93,13 +93,13 @@ public:
      * \return Reference to this builder for method chaining
      */
     EventTransformerBuilder& PointerKey(X11Api& x_wrapper);
-    
+
     /**
      * \brief Configure the builder to handle touch events.
      * \return Reference to this builder for method chaining
      */
     EventTransformerBuilder& Touch();
-    
+
     /**
      * \brief Build the EventTransformer with the configured settings.
      * \param x_wrapper Reference to the X11 API wrapper

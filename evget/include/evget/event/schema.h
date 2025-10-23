@@ -1,7 +1,7 @@
 /**
  * \file schema.h
  * \brief Event schema definitions and utility functions for data type conversion.
- * 
+ *
  * This file contains the core schema definitions for event data types,
  * field definitions, and utility functions for converting between different
  * data representations used in the event system.
@@ -118,11 +118,11 @@ constexpr std::string OptionalToString(std::optional<T> optional, Invocable<std:
  * \brief Valid schema data types.
  */
 enum class DataType : std::uint8_t {
-    kString,     ///< A string type
-    kInteger,    ///< An integer type
-    kTimestamp,  ///< A timestamp type
-    kInterval,   ///< An interval type
-    kDouble      ///< A double type
+    kString, ///< A string type
+    kInteger, ///< An integer type
+    kTimestamp, ///< A timestamp type
+    kInterval, ///< An interval type
+    kDouble ///< A double type
 };
 
 /// \brief Type alias for time intervals in microseconds.
@@ -138,8 +138,8 @@ using FieldDefinition = std::pair<std::string_view, DataType>;
  * \brief A field represents the name, data type, and data of a field.
  */
 struct Field {
-    FieldDefinition field_definition;  ///< Field definition
-    std::string data;                  ///< Actual data value as string
+    FieldDefinition field_definition; ///< Field definition
+    std::string data; ///< Actual data value as string
 };
 
 /// \brief Type alias for a vector of Field objects.

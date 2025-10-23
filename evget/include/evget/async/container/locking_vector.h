@@ -25,7 +25,7 @@ public:
      * \brief Default constructor for an empty LockingVector.
      */
     LockingVector();
-    
+
     /**
      * \brief Construct a LockingVector with an initial vector.
      * \param inner initial vector to wrap

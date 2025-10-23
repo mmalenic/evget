@@ -105,20 +105,20 @@ constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kMou
  * \brief An entry type.
  */
 enum class EntryType : std::uint8_t {
-    kKey,         ///< A key entry
-    kMouseClick,  ///< A mouse click entry
-    kMouseMove,   ///< A mouse move entry
-    kMouseScroll  ///< A mouse scroll entry
+    kKey, ///< A key entry
+    kMouseClick, ///< A mouse click entry
+    kMouseMove, ///< A mouse move entry
+    kMouseScroll ///< A mouse scroll entry
 };
 
 /**
  * \brief An entry with its associated field names for easier processing.
  */
 struct EntryWithFields {
-    EntryType type;                      ///< Type of the entry
-    std::vector<std::string> fields;     ///< Field names for the data
-    std::vector<std::string> data;       ///< Actual data values
-    std::vector<std::string> modifiers;  ///< Modifier values
+    EntryType type; ///< Type of the entry
+    std::vector<std::string> fields; ///< Field names for the data
+    std::vector<std::string> data; ///< Actual data values
+    std::vector<std::string> modifiers; ///< Modifier values
 };
 
 /**
@@ -139,13 +139,13 @@ public:
      * \return Entry type
      */
     [[nodiscard]] EntryType Type() const;
-    
+
     /**
      * \brief Get the data values of this entry.
      * \return Reference to data vector
      */
     [[nodiscard]] const std::vector<std::string>& Data() const;
-    
+
     /**
      * \brief Get the modifier values of this entry.
      * \return Reference to modifiers vector

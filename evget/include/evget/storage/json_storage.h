@@ -27,7 +27,7 @@ public:
      * \param ostream unique pointer to the output stream
      */
     explicit JsonStorage(std::unique_ptr<std::ostream> ostream);
-    
+
     /**
      * \brief Construct a `JsonStorage` with a custom deleter output stream.
      * \param ostream unique pointer to the output stream with custom deleter

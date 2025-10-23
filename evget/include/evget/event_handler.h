@@ -36,7 +36,7 @@ public:
 
     boost::asio::awaitable<Result<void>> Notify(T event) override;
     boost::asio::awaitable<Result<void>> Start() override;
-    
+
     /**
      * \brief Stop the event handler processing.
      */

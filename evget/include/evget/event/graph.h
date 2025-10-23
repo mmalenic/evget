@@ -1,7 +1,7 @@
 /**
  * \file graph.h
  * \brief Generic adjacency list graph data structure implementation.
- * 
+ *
  * This file provides a template-based graph implementation that can store
  * arbitrary data at nodes and edges.
  */

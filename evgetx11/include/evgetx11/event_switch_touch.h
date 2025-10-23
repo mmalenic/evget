@@ -47,7 +47,7 @@ public:
         EventSwitch& x_event_switch,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
-    
+
     /**
      * \brief Refresh device information for touch devices.
      * \param device_id the ID of the device

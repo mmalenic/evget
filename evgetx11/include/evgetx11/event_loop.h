@@ -36,24 +36,24 @@ public:
      * \return awaitable result indicating success or failure
      */
     boost::asio::awaitable<evget::Result<void>> Notify(InputEvent event) override;
-    
+
     /**
      * \brief Register an event listener to receive notifications.
      * \param event_listener reference to the event listener to register
      */
     void RegisterEventListener(EventListener& event_listener) override;
-    
+
     /**
      * \brief Stop the event loop processing.
      */
     void Stop() override;
-    
+
     /**
      * \brief Start the event loop processing.
      * \return awaitable result indicating success or failure
      */
     boost::asio::awaitable<evget::Result<void>> Start() override;
-    
+
     /**
      * \brief Check if the event loop has been stopped.
      * \return awaitable boolean indicating if the loop is stopped

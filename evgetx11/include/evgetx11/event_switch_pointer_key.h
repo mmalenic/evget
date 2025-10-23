@@ -59,7 +59,7 @@ public:
         const XIDeviceInfo& info,
         EventSwitch& x_event_switch
     );
-    
+
     /**
      * \brief Process an input event and convert it to evget data if applicable.
      * \param event the input event to process
