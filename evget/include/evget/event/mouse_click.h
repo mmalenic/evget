@@ -13,97 +13,97 @@
 
 namespace evget {
 /**
- * Represents a mouse-click event.
+ * \brief Represents a mouse-click event.
  */
 class MouseClick {
 public:
     /**
-     * Add an interval in microseconds.
+     * \brief Add an interval in microseconds.
      */
     MouseClick& Interval(IntervalType interval);
 
     /**
-     * Add an interval in microseconds.
+     * \brief Add an interval in microseconds.
      */
     MouseClick& Interval(std::optional<IntervalType> interval);
 
     /**
-     * Add a date timestamp.
+     * \brief Add a date timestamp.
      */
     MouseClick& Timestamp(TimestampType timestamp);
 
     /**
-     * Mouse device.
+     * \brief Mouse device.
      */
     MouseClick& Device(DeviceType device);
 
     /**
-     * Add position x.
+     * \brief Add position x.
      */
     MouseClick& PositionX(double x_pos);
 
     /**
-     * Add position y.
+     * \brief Add position y.
      */
     MouseClick& PositionY(double y_pos);
 
     /**
-     * Add action.
+     * \brief Add action.
      */
     MouseClick& Action(ButtonAction action);
 
     /**
-     * Add id.
+     * \brief Add id.
      */
     MouseClick& Button(int button);
 
     /**
-     * Add name.
+     * \brief Add name.
      */
     MouseClick& Name(std::string name);
 
     /**
-     * Add the device name.
+     * \brief Add the device name.
      */
     MouseClick& DeviceName(std::string device_name);
 
     /**
-     * Add the focus window name.
+     * \brief Add the focus window name.
      */
     MouseClick& FocusWindowName(std::string name);
 
     /**
-     * Add the focus window position x.
+     * \brief Add the focus window position x.
      */
     MouseClick& FocusWindowPositionX(double x_pos);
 
     /**
-     * Add the focus window position y.
+     * \brief Add the focus window position y.
      */
     MouseClick& FocusWindowPositionY(double y_pos);
 
     /**
-     * Add the focus window width.
+     * \brief Add the focus window width.
      */
     MouseClick& FocusWindowWidth(double width);
 
     /**
-     * Add the focus window height.
+     * \brief Add the focus window height.
      */
     MouseClick& FocusWindowHeight(double height);
 
     /**
-     * Add the screen number.
+     * \brief Add the screen number.
      */
     MouseClick& Screen(int screen);
 
     /**
-     * Add modifier value.
+     * \brief Add modifier value.
      */
     MouseClick& Modifier(ModifierValue modifier);
 
     /**
-     * Build mouse click event.
+     * \brief Build mouse click event.
      */
     Data& Build(Data& data) const;
 

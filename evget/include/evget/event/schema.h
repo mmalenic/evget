@@ -29,39 +29,79 @@
 namespace evget {
 
 namespace detail {
+/// \brief String representation for button press action.
 constexpr std::string_view kActionPress{"Press"};
+
+/// \brief String representation for button release action.
 constexpr std::string_view kActionRelease{"Release"};
+
+/// \brief String representation for button repeat action.
 constexpr std::string_view kActionRepeat{"Repeat"};
 
+/// \brief String representation for mouse device type.
 constexpr std::string_view kDeviceTypeMouse{"Mouse"};
+
+/// \brief String representation for keyboard device type.
 constexpr std::string_view kDeviceTypeKeyboard{"Keyboard"};
+
+/// \brief String representation for touchpad device type.
 constexpr std::string_view kDeviceTypeTouchpad{"Touchpad"};
+
+/// \brief String representation for touchscreen device type.
 constexpr std::string_view kDeviceTypeTouchscreen{"Touchscreen"};
+
+/// \brief String representation for unknown device type.
 constexpr std::string_view kDeviceTypeUnknown{"Unknown"};
 
+/// \brief String representation for Shift modifier.
 constexpr std::string_view kModifierValueShift{"Shift"};
+
+/// \brief String representation for Caps Lock modifier.
 constexpr std::string_view kModifierValueCapslock{"CapsLock"};
+
+/// \brief String representation for Control modifier.
 constexpr std::string_view kModifierValueControl{"Control"};
+
+/// \brief String representation for Alt modifier.
 constexpr std::string_view kModifierValueAlt{"Alt"};
+
+/// \brief String representation for Num Lock modifier.
 constexpr std::string_view kModifierValueNumlock{"NumLock"};
+
+/// \brief String representation for Mod3 modifier.
 constexpr std::string_view kModifierValueMoD3{"Mod3"};
+
+/// \brief String representation for Super modifier.
 constexpr std::string_view kModifierValueSuper{"Super"};
+
+/// \brief String representation for Mod5 modifier.
 constexpr std::string_view kModifierValueMoD5{"Mod5"};
 
+/// \brief String representation for string data type.
 constexpr std::string_view kDataTypeString{"String"};
+
+/// \brief String representation for integer data type.
 constexpr std::string_view kDataTypeInteger{"Integer"};
+
+/// \brief String representation for timestamp data type.
 constexpr std::string_view kDataTypeTimestamp{"Timestamp"};
+
+/// \brief String representation for interval data type.
 constexpr std::string_view kDataTypeInterval{"Interval"};
+
+/// \brief String representation for double data type.
 constexpr std::string_view kDataTypeDouble{"Double"};
 
-constexpr std::string_view kRelationOneToOne{"OneToOne"};
-constexpr std::string_view kRelationOneToMany{"OneToMany"};
-constexpr std::string_view kRelationManyToOne{"ManyToOne"};
-constexpr std::string_view kRelationManyToMany{"ManyToMany"};
-
+/// \brief String representation for key entry type.
 constexpr std::string_view kEntryTypeKey{"Key"};
+
+/// \brief String representation for mouse move entry type.
 constexpr std::string_view kEntryTypeMouseMove{"MouseMove"};
+
+/// \brief String representation for mouse click entry type.
 constexpr std::string_view kEntryTypeMouseClick{"MouseClick"};
+
+/// \brief String representation for mouse scroll entry type.
 constexpr std::string_view kEntryTypeMouseScroll{"MouseScroll"};
 
 template <typename T>
@@ -75,7 +115,7 @@ constexpr std::string OptionalToString(std::optional<T> optional, Invocable<std:
 } // namespace detail
 
 /**
- * Valid schema data types.
+ * \brief Valid schema data types.
  */
 enum class DataType : std::uint8_t {
     kString,     ///< A string type
@@ -85,9 +125,13 @@ enum class DataType : std::uint8_t {
     kDouble      ///< A double type
 };
 
+/// \brief Type alias for time intervals in microseconds.
 using IntervalType = std::chrono::microseconds;
+
+/// \brief Type alias for system clock time points.
 using TimestampType = std::chrono::time_point<std::chrono::system_clock>;
 
+/// \brief Type alias for field definition pairs.
 using FieldDefinition = std::pair<std::string_view, DataType>;
 
 /**
@@ -98,27 +142,67 @@ struct Field {
     std::string data;                  ///< Actual data value as string
 };
 
+/// \brief Type alias for a vector of Field objects.
 using Fields = std::vector<Field>;
 
+/// \brief Field definition for button and key actions.
 constexpr FieldDefinition kActionField{"Action", DataType::kString};
+
+/// \brief Field definition for character representation.
 constexpr FieldDefinition kCharacterField{"Character", DataType::kString};
+
+/// \brief Field definition for numeric identifier.
 constexpr FieldDefinition kIdentifierField{"Identifier", DataType::kInteger};
+
+/// \brief Field definition for name/label.
 constexpr FieldDefinition kNameField{"Name", DataType::kString};
+
+/// \brief Field definition for timestamp.
 constexpr FieldDefinition kTimestampField{"Timestamp", DataType::kTimestamp};
+
+/// \brief Field definition for device type.
 constexpr FieldDefinition kDeviceTypeField{"DeviceType", DataType::kString};
+
+/// \brief Field definition for time interval.
 constexpr FieldDefinition kIntervalField{"Interval", DataType::kInterval};
+
+/// \brief Field definition for X position coordinate.
 constexpr FieldDefinition kPositionxField{"PositionX", DataType::kDouble};
+
+/// \brief Field definition for Y position coordinate.
 constexpr FieldDefinition kPositionyField{"PositionY", DataType::kDouble};
+
+/// \brief Field definition for vertical scroll amount.
 constexpr FieldDefinition kScrollVerticalField{"ScrollVertical", DataType::kDouble};
+
+/// \brief Field definition for horizontal scroll amount.
 constexpr FieldDefinition kScrollHorizontalField{"ScrollHorizontal", DataType::kDouble};
+
+/// \brief Field definition for right scroll direction.
 constexpr FieldDefinition kScrollrightField{"ScrollRight", DataType::kDouble};
+
+/// \brief Field definition for upward scroll direction.
 constexpr FieldDefinition kScrollupField{"ScrollUp", DataType::kDouble};
+
+/// \brief Field definition for modifier key state.
 constexpr FieldDefinition kModifierField{"Modifier", DataType::kString};
+
+/// \brief Field definition for device name.
 constexpr FieldDefinition kDeviceNameField{"DeviceName", DataType::kString};
+
+/// \brief Field definition for focused window name.
 constexpr FieldDefinition kFocusWindowNameField{"FocusWindowName", DataType::kString};
+
+/// \brief Field definition for focused window X position.
 constexpr FieldDefinition kFocusWindowPositionXField{"FocusWindowPositionX", DataType::kDouble};
+
+/// \brief Field definition for focused window Y position.
 constexpr FieldDefinition kFocusWindowPositionYField{"FocusWindowPositionY", DataType::kDouble};
+
+/// \brief Field definition for focused window width.
 constexpr FieldDefinition kFocusWindowWidthField{"FocusWindowWidth", DataType::kDouble};
+
+/// \brief Field definition for focused window height.
 constexpr FieldDefinition kFocusWindowHeightField{"FocusWindowHeight", DataType::kDouble};
 
 /**

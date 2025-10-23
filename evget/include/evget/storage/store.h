@@ -7,12 +7,12 @@
 namespace evget {
 
 /**
- * An interface which represents storing data.
+ * \brief An interface which represents storing data.
  */
 class Store {
 public:
     /**
-     * Store the event data.
+     * \brief Store the event data.
      */
     virtual Result<void> StoreEvent(Data event) = 0;
 

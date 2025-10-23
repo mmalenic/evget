@@ -17,7 +17,7 @@
 namespace evget {
 
 /**
- * The type of storage to use.
+ * \brief The type of storage to use.
  */
 enum class StorageType : uint8_t {
     kSqLite,  ///< use an SQLite database to store events
@@ -25,30 +25,30 @@ enum class StorageType : uint8_t {
 };
 
 /**
- * Where to source events from.
+ * \brief Where to source events from.
  */
 enum class EventSource : uint8_t {
     kX11,  ///< source events from the X11 windowing system
 };
 
 /**
- * The `Cli` class controls command line options.
+ * \brief The `Cli` class controls command line options.
  */
 class Cli {
 public:
     /**
-     * Create a cli object.
+     * \brief Create a cli object.
      */
     Cli() = default;
 
     /**
-     * Get the output location.
+     * \brief Get the output location.
      * \return output location
      */
     [[nodiscard]] const std::vector<std::string>& Output() const;
 
     /**
-     * Parse the CLI, exiting the program if there are any errors. This handles
+     * \brief Parse the CLI, exiting the program if there are any errors. This handles
      * printing messages from `--help` and exiting if there is a parse error.
      *
      * \param argc argc input argc

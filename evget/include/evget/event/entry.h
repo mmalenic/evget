@@ -13,9 +13,16 @@
 namespace evget {
 
 namespace detail {
+/// \brief Number of fields in a mouse move event entry.
 constexpr auto kMouseMoveNFields = 12;
+
+/// \brief Number of fields in a mouse scroll event entry.
 constexpr auto kMouseScrollNFields = 14;
+
+/// \brief Number of fields in a mouse click event entry.
 constexpr auto kMouseClickNFields = 15;
+
+/// \brief Number of fields in a key event entry.
 constexpr auto kKeyNFields = 16;
 
 template <std::size_t From, std::size_t To, typename AddElements>
@@ -37,6 +44,7 @@ AddToArray(std::array<std::string_view, From> from, AddElements add_elements) {
     return out;
 }
 
+/// \brief Field names for mouse move events.
 constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields{
     "interval",
     "timestamp",
@@ -52,6 +60,7 @@ constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields{
     "device_type",
 };
 
+/// \brief Field names for mouse scroll events (extends mouse move fields).
 constexpr std::array<std::string_view, kMouseScrollNFields> kMouseScrollFields =
     AddToArray<kMouseMoveNFields, kMouseScrollNFields>(
         kMouseMoveFields,
@@ -61,6 +70,7 @@ constexpr std::array<std::string_view, kMouseScrollNFields> kMouseScrollFields =
         }
     );
 
+/// \brief Field names for mouse click events (extends mouse move fields).
 constexpr std::array<std::string_view, kMouseClickNFields> kMouseClickFields =
     AddToArray<kMouseMoveNFields, kMouseClickNFields>(
         kMouseMoveFields,
@@ -71,6 +81,7 @@ constexpr std::array<std::string_view, kMouseClickNFields> kMouseClickFields =
         }
     );
 
+/// \brief Field names for key events (extends mouse click fields).
 constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kMouseClickNFields, kKeyNFields>(
     kMouseClickFields,
     std::vector{

@@ -12,92 +12,92 @@
 
 namespace evget {
 /**
- * Represents a mouse wheel event.
+ * \brief Represents a mouse wheel event.
  */
 class MouseScroll {
 public:
     /**
-     * Add an interval in microseconds.
+     * \brief Add an interval in microseconds.
      */
     MouseScroll& Interval(IntervalType interval);
 
     /**
-     * Add an interval in microseconds.
+     * \brief Add an interval in microseconds.
      */
     MouseScroll& Interval(std::optional<IntervalType> interval);
 
     /**
-     * Add date timestamp
+     * \brief Add date timestamp.
      */
     MouseScroll& Timestamp(TimestampType timestamp);
 
     /**
-     * Mouse device.
+     * \brief Mouse device.
      */
     MouseScroll& Device(DeviceType device);
 
     /**
-     * Add position x.
+     * \brief Add position x.
      */
     MouseScroll& PositionX(double x_pos);
 
     /**
-     * Add position y.
+     * \brief Add position y.
      */
     MouseScroll& PositionY(double y_pos);
 
     /**
-     * Add vertical scroll.
+     * \brief Add vertical scroll.
      */
     MouseScroll& Vertical(double amount);
 
     /**
-     * Add horizontal scroll.
+     * \brief Add horizontal scroll.
      */
     MouseScroll& Horizontal(double amount);
 
     /**
-     * Add the device name.
+     * \brief Add the device name.
      */
     MouseScroll& DeviceName(std::string device_name);
 
     /**
-     * Add the focus window name.
+     * \brief Add the focus window name.
      */
     MouseScroll& FocusWindowName(std::string name);
 
     /**
-     * Add the focus window position x.
+     * \brief Add the focus window position x.
      */
     MouseScroll& FocusWindowPositionX(double x_pos);
 
     /**
-     * Add the focus window position y.
+     * \brief Add the focus window position y.
      */
     MouseScroll& FocusWindowPositionY(double y_pos);
 
     /**
-     * Add the focus window width.
+     * \brief Add the focus window width.
      */
     MouseScroll& FocusWindowWidth(double width);
 
     /**
-     * Add the focus window height.
+     * \brief Add the focus window height.
      */
     MouseScroll& FocusWindowHeight(double height);
 
     /**
-     * Add the screen number.
+     * \brief Add the screen number.
      */
     MouseScroll& Screen(int screen);
 
     /**
-     * Add modifier value.
+     * \brief Add modifier value.
      */
     MouseScroll& Modifier(ModifierValue modifier);
 
     /**
-     * Build mouse wheel event.
+     * \brief Build mouse wheel event.
      */
     Data& Build(Data& data) const;
 

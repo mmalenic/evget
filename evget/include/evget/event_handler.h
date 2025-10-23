@@ -15,14 +15,14 @@
 namespace evget {
 
 /**
- * Class represents a listener for events.
+ * \brief Class represents a listener for events.
  * \tparam T type of data
  */
 template <typename T>
 class EventHandler : public EventListener<T> {
 public:
     /**
-     * Create the event listener with storage.
+     * \brief Create the event listener with storage.
      * \param storage storage
      * \param transformer transformer
      * \param event_loop event loop

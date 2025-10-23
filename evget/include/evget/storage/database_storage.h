@@ -16,7 +16,7 @@
 namespace evget {
 
 /**
- * A storage class which stores events in a database.
+ * \brief A storage class which stores events in a database.
  */
 class DatabaseStorage : public Store {
 public:

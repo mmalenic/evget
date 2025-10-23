@@ -13,7 +13,7 @@
 namespace evget {
 
 /**
- * A storage class which prints events to stdout.
+ * \brief A storage class which prints events to stdout.
  */
 class JsonStorage : public Store {
 public:

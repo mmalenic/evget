@@ -12,7 +12,7 @@
 
 namespace evget {
 /**
- * Invocable concept with a checked return type.
+ * \brief Invocable concept with a checked return type.
  */
 template <class F, class R, class... Args>
 concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
@@ -51,14 +51,14 @@ using Err = std::unexpected<Error<ErrorType>>;
 } // namespace evget
 
 /**
- * Defines the
+ * \brief Defines the
  * [`std:formatter`](https://en.cppreference.com/w/cpp/utility/format/formatter)
  * for formatting `evget::Error<ErrorType>`.
  */
 template <>
 struct std::formatter<evget::Error<evget::ErrorType>> {
     /**
-     * Parse the input devices by beginning a new iterator from the context.
+     * \brief Parse the input devices by beginning a new iterator from the context.
      *
      * \param ctx formatting context
      * \return output iterator
@@ -69,7 +69,7 @@ struct std::formatter<evget::Error<evget::ErrorType>> {
     }
 
     /**
-     * Format the errror based on the output `Format`.
+     * \brief Format the errror based on the output `Format`.
      *
      * \tparam Context context type
      * \param error error result
