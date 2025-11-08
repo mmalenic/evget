@@ -9,11 +9,11 @@ update:
     conan lock create . --lockfile-clean
 
 # Build evget.
-build build_type='Debug' $COMPILER_VERSION='' *build_options='': profile clean_cache
+build build_type='Debug' $COMPILER_VERSION='' *build_options='': profile update clean_cache
     conan build . --build=missing -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ build_options }}
 
 # Build evget and install system dependencies.
-build_system build_type='Debug' $COMPILER_VERSION='' *build_options='': \
+build_system build_type='Debug' $COMPILER_VERSION='' *build_options='': profile update clean_cache \
     (build build_type COMPILER_VERSION \
     '-c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True ' + build_options)
 

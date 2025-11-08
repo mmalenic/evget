@@ -1,3 +1,5 @@
+import os
+
 from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import cmake_layout, CMakeToolchain, CMake
 from conan import ConanFile
@@ -51,8 +53,12 @@ class EvgetRecipe(ConanFile):
         # Verify headers by setting CMAKE_VERIFY_INTERFACE_HEADER_SETS:
         # https://cmake.org/cmake/help/latest/variable/CMAKE_VERIFY_INTERFACE_HEADER_SETS.html#variable:CMAKE_VERIFY_INTERFACE_HEADER_SETS
         "verify_headers": [True, False],
-        "build_evgetx11": [True, False],
+        # Whether system packages like X11 or libinput are installed as well as regular dependencies.
         "require_system_packages": [True, False],
+        # Whether to build the evgetx11 library.
+        "build_evgetx11": [True, False],
+        # Whether to build the evgetlibinput library.
+        "build_evgetlibinput": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -69,12 +75,14 @@ class EvgetRecipe(ConanFile):
     }
 
     def config_options(self):
+        is_wayland = os.getenv("WAYLAND_DISPLAY") is not None
+        is_linux = self.settings.os == "Linux" or self.settings.os.subsystem == "wsl"
         # Must compare with ==
         # https://github.com/conan-io/conan/issues/3524
         if self.options.build_evgetx11 == None:  # noqa: E711
-            self.options.build_evgetx11 = (
-                self.settings.os == "Linux" or self.settings.os.subsystem == "wsl"
-            )
+            self.options.build_evgetx11 = not is_wayland and is_linux
+        if self.options.build_evgetlibinput == None:  # noqa: E711
+            self.options.build_evgetlibinput = is_wayland and is_linux
 
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
@@ -83,6 +91,8 @@ class EvgetRecipe(ConanFile):
         if self.options.require_system_packages:
             if self.options.build_evgetx11:
                 self.requires("xorg/system")
+            if self.options.build_evgetlibinput:
+                self.requires("libinput/[^1]")
 
     def validate(self):
         if self.settings.compiler.cppstd:
@@ -98,6 +108,7 @@ class EvgetRecipe(ConanFile):
         tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
         tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
+        tc.variables["EVGET_BUILD_EVGETLIBINPUT"] = self.options.build_evgetlibinput
 
         if self.options.clang_tidy_executable:
             tc.variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
