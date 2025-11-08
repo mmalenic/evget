@@ -62,6 +62,10 @@ if(EVGET_BUILD_EVGETX11)
     endif()
 endif()
 
+if(EVGET_BUILD_EVGETLIBINPUT)
+    set(FEATURE_EVGETLIBINPUT ON)
+endif()
+
 if(BUILD_TESTING)
     list(APPEND LIBRARIES ${EVGET_LIBRARY_NAME})
     if(FEATURE_EVGETX11)
@@ -73,8 +77,8 @@ endif()
 
 if(EVGET_BUILD_BIN)
     # Check if at least one feature has been built
-    if(NOT FEATURE_EVGETX11)
-        message(FATAL_ERROR "evget: at least one feature should be built - evgetx11")
+    if(NOT FEATURE_EVGETX11 AND NOT FEATURE_EVGETLIBINPUT)
+        message(FATAL_ERROR "evget: at least one feature should be built - evgetx11, evgetlibinput")
     endif()
 
     add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/evget/src/main.cpp)
