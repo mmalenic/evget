@@ -45,31 +45,19 @@ endif()
 add_subdirectory(evget)
 
 if(EVGET_BUILD_EVGETX11)
-    toolbelt_check_includes(
-        VAR
-        FEATURE_EVGETX11
-        INCLUDES
-        X11/Xlib.h
-        X11/extensions/XInput.h
-        X11/extensions/XInput2.h
-        X11/Xutil.h
-        xorg/xserver-properties.h
-        LANGUAGE
-        CXX
-    )
-    if(FEATURE_EVGETX11)
-        add_subdirectory(evgetx11)
-    endif()
+    add_subdirectory(evgetx11)
 endif()
-
 if(EVGET_BUILD_EVGETLIBINPUT)
-    set(FEATURE_EVGETLIBINPUT ON)
+    add_subdirectory(evgetlibinput)
 endif()
 
 if(BUILD_TESTING)
     list(APPEND LIBRARIES ${EVGET_LIBRARY_NAME})
-    if(FEATURE_EVGETX11)
+    if(EVGET_BUILD_EVGETX11)
         list(APPEND LIBRARIES ${EVGETX11_LIBRARY_NAME})
+    endif()
+    if(EVGET_BUILD_EVGETLIBINPUT)
+        list(APPEND LIBRARIES ${EVGETLIBINPUT_LIBRARY_NAME})
     endif()
 
     toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
@@ -77,7 +65,7 @@ endif()
 
 if(EVGET_BUILD_BIN)
     # Check if at least one feature has been built
-    if(NOT FEATURE_EVGETX11 AND NOT FEATURE_EVGETLIBINPUT)
+    if(NOT EVGET_BUILD_EVGETX11 AND NOT EVGET_BUILD_EVGETLIBINPUT)
         message(FATAL_ERROR "evget: at least one feature should be built - evgetx11, evgetlibinput")
     endif()
 
@@ -85,8 +73,14 @@ if(EVGET_BUILD_BIN)
     set_property(TARGET ${PROJECT_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
     target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGET_LIBRARY_NAME})
-    if(FEATURE_EVGETX11)
+
+    if(EVGET_BUILD_EVGETX11)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE FEATURE_EVGETX11=1)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETX11_LIBRARY_NAME})
+    endif()
+    if(EVGET_BUILD_EVGETLIBINPUT)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE FEATURE_EVGETLIBINPUT=1)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETLIBINPUT_LIBRARY_NAME})
     endif()
 endif()
 
