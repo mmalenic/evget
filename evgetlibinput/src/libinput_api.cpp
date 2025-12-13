@@ -1,11 +1,14 @@
 #include "evgetlibinput/libinput_api.h"
 
+#include <evget/error.h>
 #include <fcntl.h>
 #include <libinput.h>
 #include <libudev.h>
 #include <unistd.h>
 
 #include <cerrno>
+#include <memory>
+#include <utility>
 
 namespace {
 constexpr int OpenRestricted(const char* path, int flags, void* /* unused */) {
@@ -25,12 +28,33 @@ constexpr libinput_interface kLibInputInterface = {
     .close_restricted = CloseRestricted,
 };
 
-evgetlibinput::LibInputApiImpl::LibInputApiImpl()
-    : udev_context_{udev_new(), udev_unref},
-      libinput_context_{
-          libinput_udev_create_context(&kLibInputInterface, nullptr, udev_context_.get()),
-          libinput_unref
-      } {}
+evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInputApiImpl::New() {
+    auto lib_input = std::make_unique<LibInputApiImpl>();
+
+    lib_input->udev_context_ = {udev_new(), udev_unref};
+    if (lib_input->udev_context_ == nullptr) {
+        return evget::Err{{.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to initialize udev"}};
+    }
+
+    lib_input->libinput_context_ = {
+        libinput_udev_create_context(&kLibInputInterface, nullptr, lib_input->udev_context_.get()),
+        libinput_unref
+    };
+    if (lib_input->libinput_context_ == nullptr) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to initialize libinput"}
+        };
+    }
+
+    auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "evget");
+    if (seat == -1) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to assign udev seat"}
+        };
+    }
+
+    return std::move(lib_input);
+}
 
 // namespace evgetlibinput {
 //

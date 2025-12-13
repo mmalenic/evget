@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "evget/error.h"
+
 namespace evgetlibinput {
 
 /**
@@ -61,18 +63,16 @@ public:
  */
 class LibInputApiImpl : public LibInputApi {
 public:
-    LibInputApiImpl();
+    LibInputApiImpl() = default;
+
+    /**
+     * Create a new LibInputApi context.
+     */
+    static evget::Result<std::unique_ptr<LibInputApi>> New();
 
 private:
-    std::unique_ptr<udev, decltype(&udev_unref)> udev_context_;
-    std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_;
-
-    // static int OpenRestricted(const char* path, int flags, void* user_data);
-    // static void CloseRestricted(int fd, void* user_data);
-    //
-    // static const struct libinput_interface interface_;
-    //
-    // struct libinput* libinput_;
+    std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
+    std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
 };
 
 } // namespace evgetlibinput
