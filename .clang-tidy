@@ -12,10 +12,13 @@ Checks: >
   -llvmlibc-inline-function-decl,
   -llvmlibc-implementation-in-namespace,
   -llvmlibc-restrict-system-libc-headers,
+  -llvm-prefer-static-over-anonymous-namespace,
   -modernize-use-trailing-return-type,
   -modernize-type-traits,
   -portability-template-virtual-member-function
 CheckOptions:
+  - key: bugprone-exception-escape.CheckMain
+    value: false
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.ClassMemberCase

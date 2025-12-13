@@ -7,6 +7,7 @@
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
 #include "evget/storage/database_manager.h"
+#include "evgetlibinput/libinput_api.h"
 
 #ifdef FEATURE_EVGETX11
 #include <X11/Xlib.h>
@@ -55,6 +56,9 @@ int main(int argc, char* argv[]) {
         }
         scheduler->SpawnResult(handler->Start(), *handler, exit_code);
 #endif
+
+        // NOLINTNEXTLINE
+        auto li = evgetlibinput::LibInputApiImpl{};
 
         scheduler->Join();
     } catch (const std::exception& e) {
