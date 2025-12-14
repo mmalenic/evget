@@ -47,13 +47,28 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
     }
 
     auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "evget");
-    if (seat == -1) {
+    if (seat != 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to assign udev seat"}
         };
     }
 
     return std::move(lib_input);
+}
+
+evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>>
+evgetlibinput::LibInputApiImpl::GetEvent() {
+    auto dispatch = libinput_dispatch(libinput_context_.get());
+    if (dispatch != 0) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to dispatch next event"}
+        };
+    }
+
+    auto* event = libinput_get_event(libinput_context_.get());
+    return evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>>{
+        {event, libinput_event_destroy}
+    };
 }
 
 // namespace evgetlibinput {

@@ -24,6 +24,11 @@ public:
     LibInputApi(const LibInputApi&) = delete;
     LibInputApi& operator=(const LibInputApi&) = delete;
 
+    /**
+     * Get the next event from libinput.
+     */
+    virtual evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() = 0;
+
     // /**
     //  * Initialize libinput context
     //  */
@@ -69,6 +74,8 @@ public:
      * Create a new LibInputApi context.
      */
     static evget::Result<std::unique_ptr<LibInputApi>> New();
+
+    evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
 private:
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
