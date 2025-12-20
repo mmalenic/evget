@@ -6,7 +6,7 @@ profile:
 
 # Update the lock file.
 update:
-    conan lock create . --lockfile-clean
+    conan lock create . --lockfile-clean -o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True"
 
 # Build evget.
 build build_type='Debug' $COMPILER_VERSION='' *build_options='': profile update clean_cache
@@ -24,6 +24,10 @@ build_clang build_type='Debug' $COMPILER_VERSION='20' *build_options='': \
 # Build with the gcc profile.
 build_gcc build_type='Debug' $COMPILER_VERSION='15' *build_options='': \
     (build build_type COMPILER_VERSION '-pr ./profiles/gcc ' + build_options)
+
+# Build both Wayland and X11 evget components.
+build_linux build_type='Debug' $COMPILER_VERSION='15' *build_options='': \
+    (build build_type COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
 
 # Rebuild evget using the existing CMake directory.
 rebuild build_type='Debug':

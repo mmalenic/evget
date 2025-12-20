@@ -2,6 +2,7 @@
     "version": "0.5",
     "requires": [
         "zlib/1.3.1#b8bc2603263cf7eccbd6e17e66b0ed76%1733936244.862",
+        "xorg/system#98f82cb669e4ebc6b4d9d8a4f3f1faf4%1725460968.361",
         "sqlitecpp/3.3.2#f3582cb66220f3cf29a472719a850207%1723892668.431",
         "sqlite3/3.45.0#3a7911478ffd14e7acc694ac113449b6%1707810434.986",
         "spdlog/1.15.1#92e99f07f134481bce4b70c1a41060e7%1738512735.307",
