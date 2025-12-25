@@ -6,14 +6,21 @@
 
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
+#include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
-#include "evgetlibinput/libinput_api.h"
 
 #ifdef FEATURE_EVGETX11
 #include <X11/Xlib.h>
 
-#include "evgetx11/event_handler.h"
+#include "evgetx11/event_transformer.h"
+#include "evgetx11/input_handler.h"
 #include "evgetx11/x11_api.h"
+#endif
+
+#ifdef FEATURE_EVGETLIBINPUT
+#include "evgetlibinput/event_transformer.h"
+#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/next_event.h"
 #endif
 
 int main(int argc, char* argv[]) {
@@ -49,16 +56,25 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETX11
         Display* display = XOpenDisplay(nullptr);
         evgetx11::X11ApiImpl x11_api{*display};
-        auto handler = evgetx11::EventHandlerBuilder{}.Build(manager, x11_api);
-        if (!handler.has_value()) {
-            spdlog::error("{}", handler.error());
+        auto builder = evgetx11::EventTransformerBuilder{}.PointerKey(x11_api).Touch();
+        auto x11_transformer = std::move(builder).Build(x11_api);
+        auto x11_next_event = evgetx11::InputHandlerBuilder::Build(x11_api);
+        if (!x11_next_event.has_value()) {
+            spdlog::error("{}", stores.error());
             return 1;
         }
-        scheduler->SpawnResult(handler->Start(), *handler, exit_code);
+
+        auto x11_handler = evget::EventHandler{manager, *x11_transformer, *x11_next_event};
+        scheduler->SpawnResult(x11_handler.Start(), x11_handler, exit_code);
 #endif
 
-        // NOLINTNEXTLINE
-        auto li = evgetlibinput::LibInputApiImpl{};
+#ifdef FEATURE_EVGETLIBINPUT
+        auto lib_input = evgetlibinput::LibInputApiImpl{};
+        auto li_transformer = evgetlibinput::EventTransformer{};
+        auto li_next_event = evgetlibinput::NextEvent{lib_input};
+        auto li_handler = evget::EventHandler{manager, li_transformer, li_next_event};
+        scheduler->SpawnResult(li_handler.Start(), x11_handler, exit_code);
+#endif
 
         scheduler->Join();
     } catch (const std::exception& e) {

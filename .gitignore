@@ -9,3 +9,4 @@
 /evget/database/generated/
 /build/
 /CMakeUserPresets.json
+/compile_commands.json
