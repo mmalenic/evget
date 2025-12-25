@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "evget/error.h"
+#include "evget/next_event.h"
 #include "evgetx11/input_event.h"
 #include "evgetx11/x11_api.h"
 
@@ -18,7 +19,7 @@ namespace evgetx11 {
  * \brief Handles X11 input events by wrapping the X11 API. This class sets
  * event masks and checks that the X11 API is at least version 2.2.
  */
-class InputHandler {
+class InputHandler : public evget::NextEvent<InputEvent> {
 public:
     /**
      * \brief Construct an `InputHandler` with an X11 API wrapper.
@@ -30,7 +31,7 @@ public:
      * \brief Get the next input event from the X11 system.
      * \return the next input event
      */
-    [[nodiscard]] InputEvent GetEvent() const;
+    [[nodiscard]] boost::asio::awaitable<evget::Result<InputEvent>> Next() const override;
 
 private:
     std::reference_wrapper<X11Api> x_wrapper_;

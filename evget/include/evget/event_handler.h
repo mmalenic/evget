@@ -30,9 +30,9 @@ public:
      * \brief Create the event listener with storage.
      * \param storage storage
      * \param transformer transformer
-     * \param event_loop event loop
+     * \param next_event the next event interface
      */
-    EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop);
+    EventHandler(Store& storage, EventTransformer<T>& transformer, NextEvent<T>& next_event);
 
     boost::asio::awaitable<Result<void>> Notify(T event) override;
     boost::asio::awaitable<Result<void>> Start() override;
@@ -45,26 +45,23 @@ public:
 private:
     std::reference_wrapper<Store> storage_;
     std::reference_wrapper<EventTransformer<T>> transformer_;
-    std::reference_wrapper<EventLoop<T>> event_loop_;
+    std::reference_wrapper<NextEvent<T>> next_event_;
+    EventLoop<T> event_loop_;
 };
 
 template <typename T>
 boost::asio::awaitable<Result<void>> EventHandler<T>::Start() {
-    // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
-    co_return co_await event_loop_.get().Start();
-    // NOLINTEND(clang-analyzer-core.CallAndMessage)
+    co_return co_await event_loop_.Start();
 }
 
 template <typename T>
 void EventHandler<T>::Stop() {
-    event_loop_.get().Stop();
+    event_loop_.Stop();
 }
 
 template <typename T>
-EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, EventLoop<T>& event_loop)
-    : storage_{storage}, transformer_{transformer}, event_loop_{event_loop} {
-    event_loop.RegisterEventListener(*this);
-}
+EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, NextEvent<T>& next_event)
+    : storage_{storage}, transformer_{transformer}, next_event_{next_event}, event_loop_{next_event, {{*this}}} {}
 
 template <typename T>
 boost::asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
