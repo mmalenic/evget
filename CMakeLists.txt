@@ -87,3 +87,11 @@ endif()
 if(EVGET_INSTALL_BIN AND EVGET_BUILD_BIN)
     install(TARGETS ${PROJECT_NAME})
 endif()
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+    add_custom_target(
+        copy_compile_commands ALL
+        ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
+        COMMENT "copying compile_commands.json to project root"
+    )
+endif()

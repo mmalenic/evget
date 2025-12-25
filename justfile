@@ -76,6 +76,10 @@ check $COMPILER_VERSION='' *build_options='': \
     (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" -o "&:run_clang_tidy=True" -o "&:verify_headers=True" ' \
     + build_options) lint
 
+# Run clang tidy for X11 and libinput implementations.
+check_linux $COMPILER_VERSION='' *build_options='': (check COMPILER_VERSION \
+    '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
+
 # Run clang tidy on code and fix errors.
 check-fix $COMPILER_VERSION='' *build_options='': \
     (check 'Debug' COMPILER_VERSION '-o "&:clang_tidy_fix_errors=True" ' + build_options)
