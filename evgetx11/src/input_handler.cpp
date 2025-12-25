@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
+#include <boost/asio/awaitable.hpp>
 #include <evget/error.h>
 #include <spdlog/spdlog.h>
 
@@ -57,8 +58,8 @@ void evgetx11::InputHandlerBuilder::SetMask(X11Api& x_wrapper) {
     x_wrapper.SelectEvents(mask);
 }
 
-evgetx11::InputEvent evgetx11::InputHandler::GetEvent() const {
-    return InputEvent::NextEvent(x_wrapper_.get());
+boost::asio::awaitable<evget::Result<evgetx11::InputEvent>> evgetx11::InputHandler::Next() const {
+    co_return InputEvent::NextEvent(x_wrapper_.get());
 }
 
 evget::Result<evgetx11::InputHandler> evgetx11::InputHandlerBuilder::Build(X11Api& x_wrapper) {
