@@ -1,3 +1,8 @@
+/**
+ * \file libinput_api.h
+ * \brief The libinput API abstraction layer for all libinput functions used within evget.
+ */
+
 #ifndef EVGETLIBINPUT_LIBINPUT_API_H
 #define EVGETLIBINPUT_LIBINPUT_API_H
 
@@ -9,9 +14,13 @@
 #include "evget/error.h"
 
 namespace evgetlibinput {
+/**
+ * \brief A pointer to an input event with a libinput deleter.
+ */
+using InputEvent = std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>;
 
 /**
- * RAII wrapper and API abstraction for libinput
+ * \brief API abstraction for libinput.
  */
 class LibInputApi {
 public:
@@ -25,9 +34,10 @@ public:
     LibInputApi& operator=(const LibInputApi&) = delete;
 
     /**
-     * Get the next event from libinput.
+     * \brief Get the next event from libinput.
+     * \return the next event from the queue
      */
-    virtual evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() = 0;
+    virtual evget::Result<InputEvent> GetEvent() = 0;
 
     // /**
     //  * Initialize libinput context
@@ -71,7 +81,8 @@ public:
     LibInputApiImpl() = default;
 
     /**
-     * Create a new LibInputApi context.
+     * \brief Create a new LibInputApi context as a pointer to the interface.
+     * \return a unique pointer to a LibInputApi context
      */
     static evget::Result<std::unique_ptr<LibInputApi>> New();
 

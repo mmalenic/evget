@@ -10,8 +10,10 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE # ${SRC}/event_loop.cpp ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp
-            # ${SRC}/event_switch_touch.cpp ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
+    PRIVATE ${SRC}/next_event.cpp
+            ${SRC}/event_transformer.cpp
+            # ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp ${SRC}/event_switch_touch.cpp
+            # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
             ${SRC}/libinput_api.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
@@ -19,9 +21,11 @@ target_sources(
            BASE_DIRS
            include
            FILES
-           # ${INCLUDE}/event_handler.h ${INCLUDE}/event_loop.h ${INCLUDE}/event_switch.h
-           # ${INCLUDE}/event_switch_pointer_key.h ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h
-           # ${INCLUDE}/input_event.h ${INCLUDE}/input_handler.h
+           ${INCLUDE}/event_transformer.h
+           ${INCLUDE}/next_event.h
+           # ${INCLUDE}/event_handler.h ${INCLUDE}/event_switch.h ${INCLUDE}/event_switch_pointer_key.h
+           # ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h ${INCLUDE}/input_event.h
+           # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput_api.h
     # ${INCLUDE}/udev_context.h
 )

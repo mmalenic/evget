@@ -56,8 +56,7 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
     return std::move(lib_input);
 }
 
-evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>>
-evgetlibinput::LibInputApiImpl::GetEvent() {
+evget::Result<evgetlibinput::InputEvent> evgetlibinput::LibInputApiImpl::GetEvent() {
     auto dispatch = libinput_dispatch(libinput_context_.get());
     if (dispatch != 0) {
         return evget::Err{
@@ -66,9 +65,7 @@ evgetlibinput::LibInputApiImpl::GetEvent() {
     }
 
     auto* event = libinput_get_event(libinput_context_.get());
-    return evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>>{
-        {event, libinput_event_destroy}
-    };
+    return evget::Result<InputEvent>{{event, libinput_event_destroy}};
 }
 
 // namespace evgetlibinput {
