@@ -34,6 +34,7 @@ enum class StorageType : uint8_t {
  */
 enum class EventSource : uint8_t {
     kX11, ///< source events from the X11 windowing system
+    kLibInput, ///< source events from libinput
 };
 
 /**
@@ -43,8 +44,9 @@ class Cli {
 public:
     /**
      * \brief Create a cli object.
+     * \param default_event_source the default event source if left unspecified by the user
      */
-    Cli() = default;
+    explicit Cli(evget::EventSource default_event_source);
 
     /**
      * \brief Get the output location.

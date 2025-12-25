@@ -26,6 +26,8 @@
 #include "evget/storage/json_storage.h"
 #include "evget/storage/store.h"
 
+evget::Cli::Cli(evget::EventSource default_event_source) : event_source_{default_event_source} {}
+
 const std::vector<std::string>& evget::Cli::Output() const {
     return this->output_;
 }

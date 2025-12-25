@@ -24,7 +24,7 @@
 #endif
 
 int main(int argc, char* argv[]) {
-    auto cli = evget::Cli{};
+    auto cli = evget::Cli{evget::EventSource::kX11};
     auto exit = cli.Parse(argc, argv);
     if (!exit.has_value()) {
         return exit.error();
