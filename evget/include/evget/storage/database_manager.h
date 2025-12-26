@@ -67,7 +67,7 @@ private:
     std::vector<std::shared_ptr<Store>> store_in_;
     size_t n_events_{};
     std::chrono::seconds store_after_{};
-    std::shared_ptr<LockingVector<Data>> data_;
+    std::shared_ptr<LockingVector<Data>> data_ = std::make_shared<LockingVector<Data>>();
 };
 
 } // namespace evget
