@@ -62,9 +62,9 @@ boost::asio::awaitable<evget::Result<evgetx11::InputEvent>> evgetx11::InputHandl
     co_return InputEvent::NextEvent(x_wrapper_.get());
 }
 
-evget::Result<evgetx11::InputHandler> evgetx11::InputHandlerBuilder::Build(X11Api& x_wrapper) {
+evget::Result<std::unique_ptr<evgetx11::InputHandler>> evgetx11::InputHandlerBuilder::Build(X11Api& x_wrapper) {
     return AnnounceVersion(x_wrapper).transform([&x_wrapper] {
         SetMask(x_wrapper);
-        return InputHandler{x_wrapper};
+        return std::make_unique<InputHandler>(x_wrapper);
     });
 }

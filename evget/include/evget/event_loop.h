@@ -6,8 +6,6 @@
 #ifndef EVGET_EVENT_LOOP_H
 #define EVGET_EVENT_LOOP_H
 
-#include <memory>
-
 #include "evget/event_listener.h"
 #include "evget/next_event.h"
 
@@ -24,12 +22,12 @@ public:
      * \param next_event next event interface
      * \param listeners the listeners to notify
      */
-    EventLoop(NextEvent<T>& next_event, std::vector<std::reference_wrapper<evget::EventListener<T>>> listeners);
+    EventLoop(NextEvent<T>& next_event, std::vector<std::reference_wrapper<EventListener<T>>> listeners);
 
     /**
      * \brief Start processing events and notify listeners.
      */
-    boost::asio::awaitable<evget::Result<void>> Start();
+    boost::asio::awaitable<Result<void>> Start();
 
     /**
      * \brief Stop the event loop.
@@ -44,7 +42,7 @@ public:
 
 private:
     std::reference_wrapper<NextEvent<T>> next_event_;
-    std::vector<std::reference_wrapper<evget::EventListener<T>>> listeners_;
+    std::vector<std::reference_wrapper<EventListener<T>>> listeners_;
 
     bool stopped_{false};
 };

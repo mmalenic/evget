@@ -47,7 +47,7 @@ public:
      * \param x_wrapper reference to the X11 API wrapper
      * \return result containing the constructed InputHandler or an error
      */
-    static evget::Result<InputHandler> Build(X11Api& x_wrapper);
+    static evget::Result<std::unique_ptr<InputHandler>> Build(X11Api& x_wrapper);
 
 private:
     static constexpr int kVersionMajor = 2;

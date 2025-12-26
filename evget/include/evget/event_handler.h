@@ -45,7 +45,6 @@ public:
 private:
     std::reference_wrapper<Store> storage_;
     std::reference_wrapper<EventTransformer<T>> transformer_;
-    std::reference_wrapper<NextEvent<T>> next_event_;
     EventLoop<T> event_loop_;
 };
 
@@ -61,7 +60,7 @@ void EventHandler<T>::Stop() {
 
 template <typename T>
 EventHandler<T>::EventHandler(Store& storage, EventTransformer<T>& transformer, NextEvent<T>& next_event)
-    : storage_{storage}, transformer_{transformer}, next_event_{next_event}, event_loop_{next_event, {{*this}}} {}
+    : storage_{storage}, transformer_{transformer}, event_loop_{next_event, {{*this}}} {}
 
 template <typename T>
 boost::asio::awaitable<Result<void>> EventHandler<T>::Notify(T event) {
