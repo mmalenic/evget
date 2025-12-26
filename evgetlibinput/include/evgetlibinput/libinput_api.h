@@ -78,8 +78,6 @@ public:
  */
 class LibInputApiImpl : public LibInputApi {
 public:
-    LibInputApiImpl() = default;
-
     /**
      * \brief Create a new LibInputApi context as a pointer to the interface.
      * \return a unique pointer to a LibInputApi context
@@ -89,6 +87,8 @@ public:
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
 private:
+    LibInputApiImpl() = default;
+
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
 };

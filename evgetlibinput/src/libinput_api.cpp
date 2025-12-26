@@ -29,7 +29,7 @@ constexpr libinput_interface kLibInputInterface = {
 };
 
 evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInputApiImpl::New() {
-    auto lib_input = std::make_unique<LibInputApiImpl>();
+    auto lib_input = std::unique_ptr<LibInputApiImpl>(new LibInputApiImpl{});
 
     lib_input->udev_context_ = {udev_new(), udev_unref};
     if (lib_input->udev_context_ == nullptr) {
