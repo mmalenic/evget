@@ -1,3 +1,8 @@
+#include <set>
+#if !defined(FEATURE_EVGETLIBINPUT) && !defined(FEATURE_EVGETX11)
+#error "define at least one of `FEATURE_EVGETLIBINPUT`or `FEATURE_EVGETX11`"
+#endif
+
 #include <spdlog/spdlog.h>
 
 #include <exception>
@@ -9,6 +14,12 @@
 #include "evget/event_handler.h"
 #include "evget/storage/database_manager.h"
 
+#ifdef FEATURE_EVGETLIBINPUT
+#include "evgetlibinput/event_transformer.h"
+#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/next_event.h"
+#endif
+
 #ifdef FEATURE_EVGETX11
 #include <X11/Xlib.h>
 
@@ -17,14 +28,16 @@
 #include "evgetx11/x11_api.h"
 #endif
 
+int main(int argc, char* argv[]) {
+    auto features = std::pmr::set<evget::EventSource>{};
 #ifdef FEATURE_EVGETLIBINPUT
-#include "evgetlibinput/event_transformer.h"
-#include "evgetlibinput/libinput_api.h"
-#include "evgetlibinput/next_event.h"
+    features.emplace(evget::EventSource::kLibInput);
+#endif
+#ifdef FEATURE_EVGETX11
+    features.emplace(evget::EventSource::kX11);
 #endif
 
-int main(int argc, char* argv[]) {
-    auto cli = evget::Cli{evget::EventSource::kX11};
+    auto cli = evget::Cli{*features.begin()};
     auto exit = cli.Parse(argc, argv);
     if (!exit.has_value()) {
         return exit.error();
@@ -53,28 +66,27 @@ int main(int argc, char* argv[]) {
 
     auto exit_code = 0;
     try {
-#ifdef FEATURE_EVGETX11
-        Display* display = XOpenDisplay(nullptr);
-        evgetx11::X11ApiImpl x11_api{*display};
-        auto builder = evgetx11::EventTransformerBuilder{}.PointerKey(x11_api).Touch();
-        auto x11_transformer = std::move(builder).Build(x11_api);
-        auto x11_next_event = evgetx11::InputHandlerBuilder::Build(x11_api);
-        if (!x11_next_event.has_value()) {
-            spdlog::error("{}", stores.error());
-            return 1;
+        auto event_source = cli.EventSource();
+        if (event_source == evget::EventSource::kLibInput && features.contains(event_source)) {
+            auto lib_input = evgetlibinput::LibInputApiImpl{};
+            auto li_transformer = evgetlibinput::EventTransformer{};
+            auto li_next_event = evgetlibinput::NextEvent{lib_input};
+            auto li_handler = evget::EventHandler{manager, li_transformer, li_next_event};
+            scheduler->SpawnResult(li_handler.Start(), li_handler, exit_code);
+        } else if (event_source == evget::EventSource::kX11 && features.contains(event_source)) {
+            Display* display = XOpenDisplay(nullptr);
+            evgetx11::X11ApiImpl x11_api{*display};
+            auto builder = evgetx11::EventTransformerBuilder{}.PointerKey(x11_api).Touch();
+            auto x11_transformer = std::move(builder).Build(x11_api);
+            auto x11_next_event = evgetx11::InputHandlerBuilder::Build(x11_api);
+            if (!x11_next_event.has_value()) {
+                spdlog::error("{}", stores.error());
+                return 1;
+            }
+
+            auto x11_handler = evget::EventHandler{manager, *x11_transformer, *x11_next_event};
+            scheduler->SpawnResult(x11_handler.Start(), x11_handler, exit_code);
         }
-
-        auto x11_handler = evget::EventHandler{manager, *x11_transformer, *x11_next_event};
-        scheduler->SpawnResult(x11_handler.Start(), x11_handler, exit_code);
-#endif
-
-#ifdef FEATURE_EVGETLIBINPUT
-        auto lib_input = evgetlibinput::LibInputApiImpl{};
-        auto li_transformer = evgetlibinput::EventTransformer{};
-        auto li_next_event = evgetlibinput::NextEvent{lib_input};
-        auto li_handler = evget::EventHandler{manager, li_transformer, li_next_event};
-        scheduler->SpawnResult(li_handler.Start(), x11_handler, exit_code);
-#endif
 
         scheduler->Join();
     } catch (const std::exception& e) {

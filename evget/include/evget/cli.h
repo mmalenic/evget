@@ -33,8 +33,8 @@ enum class StorageType : uint8_t {
  * \brief Where to source events from.
  */
 enum class EventSource : uint8_t {
-    kX11, ///< source events from the X11 windowing system
     kLibInput, ///< source events from libinput
+    kX11, ///< source events from the X11 windowing system
 };
 
 /**
