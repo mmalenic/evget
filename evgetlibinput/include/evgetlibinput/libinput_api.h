@@ -39,35 +39,12 @@ public:
      */
     virtual evget::Result<InputEvent> GetEvent() = 0;
 
-    // /**
-    //  * Initialize libinput context
-    //  */
-    // evget::Result<void> Initialize();
-    //
-    // /**
-    //  * Get the next event from libinput
-    //  */
-    // struct libinput_event* GetEvent();
-    //
-    // /**
-    //  * Dispatch pending events
-    //  */
-    // int Dispatch();
-    //
-    // /**
-    //  * Get the file descriptor for polling
-    //  */
-    // [[nodiscard]] int GetFd() const;
-    //
-    // /**
-    //  * Check if the context is valid
-    //  */
-    // [[nodiscard]] bool IsValid() const;
-    //
-    // /**
-    //  * Get the raw libinput context pointer
-    //  */
-    // [[nodiscard]] struct libinput* Get() const;
+    /**
+     * \brief Get the type of libinput event.
+     * \param event libinput event
+     * @return the event type
+     */
+    virtual libinput_event_type GetEventType(libinput_event& event) = 0;
 };
 
 /**
@@ -85,6 +62,8 @@ public:
     static evget::Result<std::unique_ptr<LibInputApi>> New();
 
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
+
+    libinput_event_type GetEventType(libinput_event& event) override;
 
 private:
     LibInputApiImpl() = default;

@@ -1,4 +1,3 @@
-#include <set>
 #if !defined(FEATURE_EVGETLIBINPUT) && !defined(FEATURE_EVGETX11)
 #error "define at least one of `FEATURE_EVGETLIBINPUT`or `FEATURE_EVGETX11`"
 #endif
@@ -7,11 +6,13 @@
 
 #include <exception>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
 #include "evget/event_handler.h"
+#include "evget/event_transformer.h"
 #include "evget/storage/database_manager.h"
 
 #ifdef FEATURE_EVGETLIBINPUT
@@ -24,6 +25,7 @@
 #include <X11/Xlib.h>
 
 #include "evgetx11/event_transformer.h"
+#include "evgetx11/input_event.h"
 #include "evgetx11/input_handler.h"
 #include "evgetx11/x11_api.h"
 #endif
@@ -31,6 +33,7 @@
 int main(int argc, char* argv[]) {
     evget::EventSource default_source{};
 #ifdef FEATURE_EVGETX11
+    // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
     default_source = evget::EventSource::kX11;
 #endif
 #ifdef FEATURE_EVGETLIBINPUT
