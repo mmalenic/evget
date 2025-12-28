@@ -46,7 +46,8 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
         };
     }
 
-    auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "evget");
+    // Default udev seat.
+    auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "seat0");
     if (seat != 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to assign udev seat"}

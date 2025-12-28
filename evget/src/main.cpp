@@ -30,11 +30,11 @@
 
 int main(int argc, char* argv[]) {
     evget::EventSource default_source{};
-#ifdef FEATURE_EVGETLIBINPUT
-    default_source = evget::EventSource::kLibInput;
-#endif
 #ifdef FEATURE_EVGETX11
     default_source = evget::EventSource::kX11;
+#endif
+#ifdef FEATURE_EVGETLIBINPUT
+    default_source = evget::EventSource::kLibInput;
 #endif
 
     auto cli = evget::Cli{default_source};

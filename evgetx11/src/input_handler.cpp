@@ -10,6 +10,7 @@
 
 #include <array>
 #include <format>
+#include <memory>
 
 #include "evgetx11/input_event.h"
 #include "evgetx11/x11_api.h"
