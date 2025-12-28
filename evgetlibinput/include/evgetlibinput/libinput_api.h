@@ -45,6 +45,14 @@ public:
      * @return the event type
      */
     virtual libinput_event_type GetEventType(libinput_event& event) = 0;
+
+    /**
+     * \brief Get a pointer event from the libinput event. The type must be checked
+     *        before calling this function.
+     * @param event libinput event
+     * @return pointer event
+     */
+    virtual libinput_event_pointer* GetPointerEvent(libinput_event& event) = 0;
 };
 
 /**
@@ -64,6 +72,8 @@ public:
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
     libinput_event_type GetEventType(libinput_event& event) override;
+
+    libinput_event_pointer* GetPointerEvent(libinput_event& event) override;
 
 private:
     LibInputApiImpl() = default;

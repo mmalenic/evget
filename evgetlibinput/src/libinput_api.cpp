@@ -72,3 +72,7 @@ evget::Result<evgetlibinput::InputEvent> evgetlibinput::LibInputApiImpl::GetEven
 libinput_event_type evgetlibinput::LibInputApiImpl::GetEventType(libinput_event& event) {
     return libinput_event_get_type(&event);
 }
+
+libinput_event_pointer* evgetlibinput::LibInputApiImpl::GetPointerEvent(libinput_event& event) {
+    return libinput_event_get_pointer_event(&event);
+}
