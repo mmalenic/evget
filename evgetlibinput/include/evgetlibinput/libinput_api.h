@@ -8,6 +8,7 @@
 
 #include <libinput.h>
 #include <libudev.h>
+#include <sys/poll.h>
 
 #include <memory>
 
@@ -80,6 +81,8 @@ private:
 
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
+    pollfd pollfd_{};
+    bool wait_for_poll_{};
 };
 
 } // namespace evgetlibinput

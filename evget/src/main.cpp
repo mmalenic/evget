@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
         auto event_source = cli.EventSource();
 
 #ifdef FEATURE_EVGETLIBINPUT
-        std::unique_ptr<evgetlibinput::LibInputApi> lib_input{};
+        std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
         std::optional<evget::EventHandler<evgetlibinput::InputEvent>> li_handler{};
@@ -83,10 +83,10 @@ int main(int argc, char* argv[]) {
                 spdlog::error("{}", stores.error());
                 return 1;
             }
-            lib_input = std::move(*lib_input_result);
+            libinput = std::move(*lib_input_result);
 
-            li_transformer.emplace();
-            li_next_event.emplace(*lib_input);
+            li_transformer.emplace(*libinput);
+            li_next_event.emplace(*libinput);
             li_handler.emplace(manager, *li_transformer, *li_next_event);
 
             scheduler->SpawnResult(li_handler->Start(), *li_handler, exit_code);

@@ -46,6 +46,11 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
         };
     }
 
+    lib_input->pollfd_.fd = libinput_get_fd(lib_input->libinput_context_.get());
+    lib_input->pollfd_.events = POLLIN;
+    lib_input->pollfd_.revents = 0;
+    lib_input->wait_for_poll_ = true;
+
     // Default udev seat.
     auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "seat0");
     if (seat != 0) {
@@ -58,14 +63,29 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
 }
 
 evget::Result<evgetlibinput::InputEvent> evgetlibinput::LibInputApiImpl::GetEvent() {
-    auto dispatch = libinput_dispatch(libinput_context_.get());
-    if (dispatch != 0) {
-        return evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to dispatch next event"}
-        };
+    libinput_event* event = nullptr;
+    // Loop until there is a non-null event, polling and dispatching the context if the current
+    // event is null.
+    while (event == nullptr) {
+        if (wait_for_poll_) {
+            if (poll(&pollfd_, 1, -1) <= 0) {
+                return evget::Err{
+                    {.error_type = evget::ErrorType::kEventHandlerError, .message = "polling for events failed"}
+                };
+            }
+
+            auto dispatch = libinput_dispatch(libinput_context_.get());
+            if (dispatch != 0) {
+                return evget::Err{
+                    {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to dispatch next event"}
+                };
+            }
+        }
+
+        event = libinput_get_event(libinput_context_.get());
+        wait_for_poll_ = event == nullptr;
     }
 
-    auto* event = libinput_get_event(libinput_context_.get());
     return evget::Result<InputEvent>{{event, libinput_event_destroy}};
 }
 

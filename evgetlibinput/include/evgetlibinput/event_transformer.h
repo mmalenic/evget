@@ -12,7 +12,16 @@
 namespace evgetlibinput {
 class EventTransformer : public evget::EventTransformer<InputEvent> {
 public:
+    /**
+     * Create an event transformer.
+     * \param libinput_api the API wrapper
+     */
+    explicit EventTransformer(LibInputApi& libinput_api);
+
     evget::Data TransformEvent(InputEvent event) override;
+
+private:
+    std::reference_wrapper<LibInputApi> libinput_api_;
 };
 } // namespace evgetlibinput
 
