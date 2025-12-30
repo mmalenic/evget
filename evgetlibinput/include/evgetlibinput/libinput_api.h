@@ -43,17 +43,24 @@ public:
     /**
      * \brief Get the type of libinput event.
      * \param event libinput event
-     * @return the event type
+     * \return the event type
      */
     virtual libinput_event_type GetEventType(libinput_event& event) = 0;
 
     /**
      * \brief Get a pointer event from the libinput event. The type must be checked
      *        before calling this function.
-     * @param event libinput event
-     * @return pointer event
+     * \param event libinput event
+     * \return pointer event
      */
     virtual libinput_event_pointer* GetPointerEvent(libinput_event& event) = 0;
+
+    /**
+     * \brief Get the device associated with the event.
+     * \param event the associated event
+     * \return the libinput device
+     */
+    virtual libinput_device* GetDevice(libinput_event& event) = 0;
 };
 
 /**
@@ -75,6 +82,8 @@ public:
     libinput_event_type GetEventType(libinput_event& event) override;
 
     libinput_event_pointer* GetPointerEvent(libinput_event& event) override;
+
+    libinput_device* GetDevice(libinput_event& event) override;
 
 private:
     LibInputApiImpl() = default;

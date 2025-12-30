@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <libinput.h>
 #include <libudev.h>
+#include <poll.h>
 #include <unistd.h>
 
 #include <cerrno>
@@ -95,4 +96,8 @@ libinput_event_type evgetlibinput::LibInputApiImpl::GetEventType(libinput_event&
 
 libinput_event_pointer* evgetlibinput::LibInputApiImpl::GetPointerEvent(libinput_event& event) {
     return libinput_event_get_pointer_event(&event);
+}
+
+libinput_device* evgetlibinput::LibInputApiImpl::GetDevice(libinput_event& event) {
+    return libinput_event_get_device(&event);
 }
