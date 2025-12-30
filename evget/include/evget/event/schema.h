@@ -131,6 +131,11 @@ using IntervalType = std::chrono::microseconds;
 /// \brief Type alias for system clock time points.
 using TimestampType = std::chrono::time_point<std::chrono::system_clock>;
 
+/// \brief Get the current timestamp at this moment using system time.
+constexpr TimestampType Now() {
+    return std::chrono::system_clock::now();
+}
+
 /// \brief Type alias for field definition pairs.
 using FieldDefinition = std::pair<std::string_view, DataType>;
 

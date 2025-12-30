@@ -7,9 +7,7 @@
 #include "evgetx11/x11_api.h"
 
 evgetx11::InputEvent::InputEvent(X11Api& x_wrapper)
-    : event_{x_wrapper.NextEvent()},
-      timestamp_{std::chrono::system_clock::now()},
-      cookie_{x_wrapper.EventData(event_)} {}
+    : event_{x_wrapper.NextEvent()}, timestamp_{evget::Now()}, cookie_{x_wrapper.EventData(event_)} {}
 
 bool evgetx11::InputEvent::HasData() const {
     return cookie_ != nullptr;
