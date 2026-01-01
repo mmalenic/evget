@@ -37,6 +37,7 @@ target_sources(
            ${INCLUDE}/database/query.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/event_handler.h
+           ${INCLUDE}/input_event.h
            ${INCLUDE}/next_event.h
            ${INCLUDE}/storage/store.h
            ${INCLUDE}/event_loop.h
