@@ -41,9 +41,20 @@ public:
      */
     [[nodiscard]] std::pair<TimestampType, T> IntoInner() &&;
 
+    /**
+     * \brief Calculate the time interval since the last event using the event's own timestamp in microseconds.
+     *
+     * If the input time is less than the time of the previous event `std::nullopt` is returned.
+     *
+     * \param time current event time
+     * \return optional interval in microseconds, `std::nullopt` if no previous time
+     */
+    std::optional<std::chrono::microseconds> Interval(std::uint64_t time);
+
 private:
     T event_;
     TimestampType timestamp_{Now()};
+    std::optional<std::uint64_t> previous_;
 };
 
 } // namespace evget
@@ -64,6 +75,19 @@ T& evget::InputEvent<T>::ViewData() {
 template <typename T>
 std::pair<evget::TimestampType, T> evget::InputEvent<T>::IntoInner() && {
     return {std::move(timestamp_), std::move(event_)};
+}
+
+template <typename T>
+std::optional<std::chrono::microseconds> evget::InputEvent<T>::Interval(std::uint64_t time) {
+    if (!previous_.has_value() || time < *previous_) {
+        previous_ = time;
+        return std::nullopt;
+    }
+
+    std::chrono::microseconds interval{time - *previous_};
+    previous_ = time;
+
+    return interval;
 }
 
 #endif // EVGET_INPUT_EVENT_H
