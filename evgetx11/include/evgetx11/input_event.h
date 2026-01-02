@@ -9,6 +9,7 @@
 #include <X11/Xlib.h>
 
 #include "evget/event/schema.h"
+#include "evget/input_event.h"
 #include "evgetx11/x11_api.h"
 
 namespace evgetx11 {
@@ -61,8 +62,7 @@ private:
      */
     explicit InputEvent(X11Api& x_wrapper);
 
-    XEvent event_;
-    evget::TimestampType timestamp_;
+    evget::InputEvent<XEvent> event_;
     XEventPointer cookie_;
 };
 

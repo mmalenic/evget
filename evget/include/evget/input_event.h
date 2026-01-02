@@ -33,7 +33,7 @@ public:
      * \brief Get a reference to the event data.
      * \return reference to the event data
      */
-    [[nodiscard]] const T& ViewData() const;
+    [[nodiscard]] T& ViewData();
 
 private:
     T event_;
@@ -51,7 +51,7 @@ const evget::TimestampType& evget::InputEvent<T>::GetTimestamp() const {
 }
 
 template <typename T>
-const T& evget::InputEvent<T>::ViewData() const {
+T& evget::InputEvent<T>::ViewData() {
     return event_;
 }
 
