@@ -2,6 +2,10 @@
 
 #include <evget/event/schema.h>
 
+#include <chrono>
+#include <cstdint>
+#include <optional>
+
 #include "evgetx11/x11_api.h"
 
 evgetx11::InputEvent::InputEvent(X11Api& x_wrapper)
@@ -21,4 +25,8 @@ const evget::TimestampType& evgetx11::InputEvent::GetTimestamp() const {
 
 evgetx11::InputEvent evgetx11::InputEvent::NextEvent(X11Api& x_wrapper) {
     return InputEvent{x_wrapper};
+}
+
+std::optional<std::chrono::microseconds> evgetx11::InputEvent::Interval(std::uint64_t time) {
+    return event_.Interval(time);
 }

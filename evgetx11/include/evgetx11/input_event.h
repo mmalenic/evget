@@ -55,6 +55,16 @@ public:
      */
     static InputEvent NextEvent(X11Api& x_wrapper);
 
+    /**
+     * \brief Calculate the time interval since the last event using the event's own timestamp in microseconds.
+     *
+     * If the input time is less than the time of the previous event `std::nullopt` is returned.
+     *
+     * \param time current event time
+     * \return optional interval in microseconds, `std::nullopt` if no previous time
+     */
+    std::optional<std::chrono::microseconds> Interval(std::uint64_t time);
+
 private:
     /**
      * \brief Private constructor for creating InputEvent instances.

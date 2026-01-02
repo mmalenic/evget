@@ -59,13 +59,6 @@ public:
 
 private:
     /**
-     * \brief Calculate the time interval since the last event.
-     * \param time current event time
-     * \return optional interval in microseconds, `nullopt` if no previous time
-     */
-    std::optional<std::chrono::microseconds> GetInterval(Time time);
-
-    /**
      * \brief Refresh the device information from the X11 system.
      */
     void RefreshDevices();
@@ -73,7 +66,6 @@ private:
     std::reference_wrapper<X11Api> x_wrapper_;
     EventSwitch x_event_switch_;
     std::optional<Time> previous_{std::nullopt};
-    std::optional<Time> previous_from_event_{std::nullopt};
 
     std::unordered_map<int, evget::DeviceType> devices_;
     std::unordered_map<int, std::string> id_to_name_;
@@ -189,19 +181,6 @@ void EventTransformer<Switches...>::RefreshDevices() {
 }
 
 template <typename... Switches>
-std::optional<std::chrono::microseconds> EventTransformer<Switches...>::GetInterval(Time time) {
-    if (!previous_.has_value() || time < *previous_) {
-        previous_ = time;
-        return std::nullopt;
-    }
-
-    std::chrono::microseconds interval{time - *previous_};
-    previous_ = time;
-
-    return interval;
-}
-
-template <typename... Switches>
 evget::Data EventTransformer<Switches...>::TransformEvent(InputEvent event) {
     evget::Data data{};
     if (event.HasData()) {
@@ -220,7 +199,7 @@ evget::Data EventTransformer<Switches...>::TransformEvent(InputEvent event) {
                      data,
                      x_event_switch_,
                      [this, &event](Time time) {
-                         auto interval = GetInterval(time);
+                         auto interval = event.Interval(time);
                          if (interval.has_value()) {
                              spdlog::trace(
                                  "interval {} with event type {}",
