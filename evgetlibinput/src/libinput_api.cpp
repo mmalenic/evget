@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <cerrno>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -100,4 +101,8 @@ libinput_event_pointer* evgetlibinput::LibInputApiImpl::GetPointerEvent(libinput
 
 libinput_device* evgetlibinput::LibInputApiImpl::GetDevice(libinput_event& event) {
     return libinput_event_get_device(&event);
+}
+
+std::uint64_t evgetlibinput::LibInputApiImpl::GetPointerTimeMicroseconds(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_time_usec(&event);
 }

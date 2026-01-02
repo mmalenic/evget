@@ -56,6 +56,13 @@ public:
     virtual libinput_event_pointer* GetPointerEvent(libinput_event& event) = 0;
 
     /**
+     * \brief Get the event time for a pointer event.
+     * @param event pointer event
+     * @return event time in microseconds
+     */
+    virtual std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) = 0;
+
+    /**
      * \brief Get the device associated with the event.
      * \param event the associated event
      * \return the libinput device
@@ -84,6 +91,8 @@ public:
     libinput_event_pointer* GetPointerEvent(libinput_event& event) override;
 
     libinput_device* GetDevice(libinput_event& event) override;
+
+    std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) override;
 
 private:
     LibInputApiImpl() = default;
