@@ -18,7 +18,7 @@ namespace evgetlibinput {
 /**
  * \brief A pointer to an input event with a libinput deleter.
  */
-using InputEvent = std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>;
+using LibInputEvent = std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>;
 
 /**
  * \brief API abstraction for libinput.
@@ -38,7 +38,7 @@ public:
      * \brief Get the next event from libinput.
      * \return the next event from the queue
      */
-    virtual evget::Result<InputEvent> GetEvent() = 0;
+    virtual evget::Result<LibInputEvent> GetEvent() = 0;
 
     /**
      * \brief Get the type of libinput event.

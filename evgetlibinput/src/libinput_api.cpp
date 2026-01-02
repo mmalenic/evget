@@ -63,7 +63,7 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
     return std::move(lib_input);
 }
 
-evget::Result<evgetlibinput::InputEvent> evgetlibinput::LibInputApiImpl::GetEvent() {
+evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInputApiImpl::GetEvent() {
     libinput_event* event = nullptr;
     // Loop until there is a non-null event, polling and dispatching the context if the current
     // event is null.
@@ -87,7 +87,7 @@ evget::Result<evgetlibinput::InputEvent> evgetlibinput::LibInputApiImpl::GetEven
         wait_for_poll_ = event == nullptr;
     }
 
-    return evget::Result<InputEvent>{{event, libinput_event_destroy}};
+    return evget::Result<LibInputEvent>{{event, libinput_event_destroy}};
 }
 
 libinput_event_type evgetlibinput::LibInputApiImpl::GetEventType(libinput_event& event) {

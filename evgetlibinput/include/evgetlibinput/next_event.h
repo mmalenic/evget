@@ -8,6 +8,7 @@
 
 #include <functional>
 
+#include "evget/input_event.h"
 #include "evget/next_event.h"
 #include "evgetlibinput/libinput_api.h"
 
@@ -16,7 +17,7 @@ namespace evgetlibinput {
 /**
  * \brief A libinput implementation for the `NextEvent` interface.
  */
-class NextEvent : public evget::NextEvent<InputEvent> {
+class NextEvent : public evget::NextEvent<evget::InputEvent<LibInputEvent>> {
 public:
     /**
      * \brief Construct a new `NextEvent`.
@@ -24,7 +25,7 @@ public:
      */
     explicit NextEvent(LibInputApi& libinput_api);
 
-    [[nodiscard]] boost::asio::awaitable<evget::Result<InputEvent>> Next() const override;
+    [[nodiscard]] boost::asio::awaitable<evget::Result<evget::InputEvent<LibInputEvent>>> Next() const override;
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;

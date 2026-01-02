@@ -7,10 +7,11 @@
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
 #include "evget/event_transformer.h"
+#include "evget/input_event.h"
 #include "evgetlibinput/libinput_api.h"
 
 namespace evgetlibinput {
-class EventTransformer : public evget::EventTransformer<InputEvent> {
+class EventTransformer : public evget::EventTransformer<evget::InputEvent<LibInputEvent>> {
 public:
     /**
      * Create an event transformer.
@@ -18,7 +19,7 @@ public:
      */
     explicit EventTransformer(LibInputApi& libinput_api);
 
-    evget::Data TransformEvent(InputEvent event) override;
+    evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;

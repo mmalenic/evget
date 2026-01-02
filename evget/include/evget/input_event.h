@@ -35,6 +35,12 @@ public:
      */
     [[nodiscard]] T& ViewData();
 
+    /**
+     * \brief Get the inner data of this class by moving out of the class.
+     * \return the timestamp and inner event data
+     */
+    [[nodiscard]] std::pair<TimestampType, T> IntoInner() &&;
+
 private:
     T event_;
     TimestampType timestamp_{Now()};
@@ -43,7 +49,7 @@ private:
 } // namespace evget
 
 template <typename T>
-evget::InputEvent<T>::InputEvent(T event) : event_{event} {}
+evget::InputEvent<T>::InputEvent(T event) : event_{std::move(event)} {}
 
 template <typename T>
 const evget::TimestampType& evget::InputEvent<T>::GetTimestamp() const {
@@ -53,6 +59,11 @@ const evget::TimestampType& evget::InputEvent<T>::GetTimestamp() const {
 template <typename T>
 T& evget::InputEvent<T>::ViewData() {
     return event_;
+}
+
+template <typename T>
+std::pair<evget::TimestampType, T> evget::InputEvent<T>::IntoInner() && {
+    return {std::move(timestamp_), std::move(event_)};
 }
 
 #endif // EVGET_INPUT_EVENT_H
