@@ -12,6 +12,8 @@
 #include <memory>
 #include <utility>
 
+#include "evgetlibinput/libinput_api.h"
+
 namespace {
 constexpr int OpenRestricted(const char* path, int flags, void* /* unused */) {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
@@ -105,4 +107,8 @@ libinput_device* evgetlibinput::LibInputApiImpl::GetDevice(libinput_event& event
 
 std::uint64_t evgetlibinput::LibInputApiImpl::GetPointerTimeMicroseconds(libinput_event_pointer& event) {
     return libinput_event_pointer_get_time_usec(&event);
+}
+
+int evgetlibinput::LibInputApiImpl::GetDeviceFingerCount(libinput_device& device) {
+    return libinput_device_config_tap_get_finger_count(&device);
 }

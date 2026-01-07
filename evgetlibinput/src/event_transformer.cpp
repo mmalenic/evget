@@ -21,12 +21,10 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
         case LIBINPUT_EVENT_POINTER_MOTION:
-            auto builder = evget::MouseMove{}.Timestamp(event.GetTimestamp());
-
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
-            builder.Interval(event.Interval(event_time));
+            auto builder = evget::MouseMove{}.Timestamp(event.GetTimestamp()).Interval(event.Interval(event_time));
 
             std::cout << libinput_event_pointer_get_dx(pointer_event);
             break;

@@ -68,6 +68,13 @@ public:
      * \return the libinput device
      */
     virtual libinput_device* GetDevice(libinput_event& event) = 0;
+
+    /**
+     * \brief Get the number of fingers that can be used for tap to click if supported.
+     * \param device device to check
+     * \return number of fingers
+     */
+    virtual int GetDeviceFingerCount(libinput_device& device) = 0;
 };
 
 /**
@@ -93,6 +100,8 @@ public:
     libinput_device* GetDevice(libinput_event& event) override;
 
     std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) override;
+
+    int GetDeviceFingerCount(libinput_device& event) override;
 
 private:
     LibInputApiImpl() = default;
