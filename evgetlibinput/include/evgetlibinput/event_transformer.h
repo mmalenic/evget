@@ -23,6 +23,8 @@ public:
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;
+
+    evget::DeviceType GetDeviceType(LibInputEvent& event) const;
 };
 } // namespace evgetlibinput
 

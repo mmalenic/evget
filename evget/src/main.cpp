@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
-        std::optional<evget::EventHandler<evgetlibinput::LibInputEvent>> li_handler{};
+        std::optional<evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>> li_handler{};
 
         if (event_source == evget::EventSource::kLibInput) {
             auto lib_input_result = evgetlibinput::LibInputApiImpl::New();

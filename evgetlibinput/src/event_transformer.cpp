@@ -24,11 +24,43 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
-            auto builder = evget::MouseMove{}.Timestamp(event.GetTimestamp()).Interval(event.Interval(event_time));
+            auto builder = evget::MouseMove{}
+                               .Timestamp(event.GetTimestamp())
+                               .Interval(event.Interval(event_time))
+                               .Device(this->GetDeviceType(inner_event));
 
             std::cout << libinput_event_pointer_get_dx(pointer_event);
             break;
     }
 
     return evget::Data{};
+}
+
+evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event) const {
+    if (event == nullptr) {
+        return evget::DeviceType::kUnknown;
+    }
+
+    auto* device = this->libinput_api_.get().GetDevice(*event);
+    if (device == nullptr) {
+        return evget::DeviceType::kUnknown;
+    }
+
+    // Use ordering defined by xf86-input-libinput to match X11 behaviour:
+    // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L3805-3846
+    if (this->libinput_api_.get().GetDeviceFingerCount(*device) > 0) {
+        return evget::DeviceType::kTouchpad;
+    }
+    if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TOUCH)) {
+        return evget::DeviceType::kTouchscreen;
+    }
+    if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_POINTER)) {
+        return evget::DeviceType::kMouse;
+    }
+    if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_TOOL) ||
+        this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_PAD)) {
+        return evget::DeviceType::kUnknown;
+    }
+
+    return evget::DeviceType::kKeyboard;
 }
