@@ -75,6 +75,14 @@ public:
      * \return number of fingers
      */
     virtual int GetDeviceFingerCount(libinput_device& device) = 0;
+
+    /**
+     * \brief Check if a device has the capability.
+     * \param device device to check
+     * \param capability capability
+     * \return true or false indicating if the device has the capability
+     */
+    virtual bool DeviceHasCapability(libinput_device& device, libinput_device_capability capability) = 0;
 };
 
 /**
@@ -102,6 +110,8 @@ public:
     std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) override;
 
     int GetDeviceFingerCount(libinput_device& event) override;
+
+    bool DeviceHasCapability(libinput_device& device, libinput_device_capability capability) override;
 
 private:
     LibInputApiImpl() = default;

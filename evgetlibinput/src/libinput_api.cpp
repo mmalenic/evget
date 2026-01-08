@@ -112,3 +112,10 @@ std::uint64_t evgetlibinput::LibInputApiImpl::GetPointerTimeMicroseconds(libinpu
 int evgetlibinput::LibInputApiImpl::GetDeviceFingerCount(libinput_device& device) {
     return libinput_device_config_tap_get_finger_count(&device);
 }
+
+bool evgetlibinput::LibInputApiImpl::DeviceHasCapability(
+    libinput_device& device,
+    libinput_device_capability capability
+) {
+    return libinput_device_has_capability(&device, capability) != 0;
+}
