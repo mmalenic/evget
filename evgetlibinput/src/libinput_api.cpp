@@ -119,3 +119,11 @@ bool evgetlibinput::LibInputApiImpl::DeviceHasCapability(
 ) {
     return libinput_device_has_capability(&device, capability) != 0;
 }
+
+double evgetlibinput::LibInputApiImpl::GetPointerDx(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_dx(&event);
+}
+
+double evgetlibinput::LibInputApiImpl::GetPointerDy(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_dy(&event);
+}

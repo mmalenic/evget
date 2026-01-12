@@ -57,10 +57,24 @@ public:
 
     /**
      * \brief Get the event time for a pointer event.
-     * @param event pointer event
-     * @return event time in microseconds
+     * \param event pointer event
+     * \return event time in microseconds
      */
     virtual std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) = 0;
+
+    /**
+     * \brief Get the change in x position from the previous event.
+     * \param event event
+     * \return change in x direction
+     */
+    virtual double GetPointerDx(libinput_event_pointer& event) = 0;
+
+    /**
+     * \brief Get the change in y position from the previous event.
+     * \param event event
+     * \return change in y direction
+     */
+    virtual double GetPointerDy(libinput_event_pointer& event) = 0;
 
     /**
      * \brief Get the device associated with the event.
@@ -112,6 +126,10 @@ public:
     int GetDeviceFingerCount(libinput_device& event) override;
 
     bool DeviceHasCapability(libinput_device& device, libinput_device_capability capability) override;
+
+    double GetPointerDx(libinput_event_pointer& event) override;
+
+    double GetPointerDy(libinput_event_pointer& event) override;
 
 private:
     LibInputApiImpl() = default;
