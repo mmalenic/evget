@@ -97,6 +97,13 @@ public:
      * \return true or false indicating if the device has the capability
      */
     virtual bool DeviceHasCapability(libinput_device& device, libinput_device_capability capability) = 0;
+
+    /**
+     * \brief Get the name of the device.
+     * \param device device to get name of
+     * \return name of device
+     */
+    virtual const char* GetDeviceName(libinput_device& device) = 0;
 };
 
 /**
@@ -130,6 +137,8 @@ public:
     double GetPointerDx(libinput_event_pointer& event) override;
 
     double GetPointerDy(libinput_event_pointer& event) override;
+
+    const char* GetDeviceName(libinput_device& device) override;
 
 private:
     LibInputApiImpl() = default;

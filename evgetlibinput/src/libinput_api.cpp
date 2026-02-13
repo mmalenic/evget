@@ -127,3 +127,7 @@ double evgetlibinput::LibInputApiImpl::GetPointerDx(libinput_event_pointer& even
 double evgetlibinput::LibInputApiImpl::GetPointerDy(libinput_event_pointer& event) {
     return libinput_event_pointer_get_dy(&event);
 }
+
+const char* evgetlibinput::LibInputApiImpl::GetDeviceName(libinput_device& device) {
+    return libinput_device_get_name(&device);
+}

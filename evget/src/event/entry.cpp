@@ -23,12 +23,12 @@ const std::vector<std::string>& evget::Entry::Modifiers() const {
 
 void evget::Entry::ToNamedRepresentation() {
     if (data_.size() >= detail::kMouseMoveNFields) {
-        data_[detail::kMouseMoveNFields - 1] =
-            FromDevice(FromUnderlying<DeviceType>(data_[detail::kMouseMoveNFields - 1]));
+        data_.at(detail::kMouseMoveNFields - 1) =
+            FromDevice(FromUnderlying<DeviceType>(data_.at(detail::kMouseMoveNFields - 1)));
     }
     if (data_.size() >= detail::kMouseClickNFields) {
-        data_[detail::kMouseClickNFields - 1] =
-            FromButtonAction(FromUnderlying<ButtonAction>(data_[detail::kMouseClickNFields - 1]));
+        data_.at(detail::kMouseClickNFields - 1) =
+            FromButtonAction(FromUnderlying<ButtonAction>(data_.at(detail::kMouseClickNFields - 1)));
     }
 
     std::ranges::for_each(modifiers_.begin(), modifiers_.end(), [](std::string& modifier) {
