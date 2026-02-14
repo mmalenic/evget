@@ -9,6 +9,7 @@
 #include <libinput.h>
 #include <libudev.h>
 #include <sys/poll.h>
+#include <xkbcommon/xkbcommon.h>
 
 #include <memory>
 
@@ -145,6 +146,11 @@ private:
 
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
+
+    std::unique_ptr<xkb_context, decltype(&xkb_context_unref)> xkb_context_{nullptr, xkb_context_unref};
+    std::unique_ptr<xkb_keymap, decltype(&xkb_keymap_unref)> xkb_key_map_{nullptr, xkb_keymap_unref};
+    std::unique_ptr<xkb_state, decltype(&xkb_state_unref)> xkb_state_{nullptr, xkb_state_unref};
+
     pollfd pollfd_{};
     bool wait_for_poll_{};
 };

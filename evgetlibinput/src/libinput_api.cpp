@@ -6,6 +6,7 @@
 #include <libudev.h>
 #include <poll.h>
 #include <unistd.h>
+#include <xkbcommon/xkbcommon.h>
 
 #include <cerrno>
 #include <cstdint>
@@ -58,6 +59,36 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
     if (seat != 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to assign udev seat"}
+        };
+    }
+
+    // Initialize xkb context and state.
+    lib_input->xkb_context_ = {xkb_context_new(XKB_CONTEXT_NO_FLAGS), xkb_context_unref};
+    if (lib_input->xkb_context_ == nullptr) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to initialize xkb context"}
+        };
+    }
+    lib_input->xkb_key_map_ = {
+        // Recommended to use XKB_KEYMAP_FORMAT_TEXT_V1 for now instead of V2:
+        // https://xkbcommon.org/doc/current/group__keymap.html#gab0f75d6cc5773e5dd404e2c3f61366a3
+        xkb_keymap_new_from_names2(
+            lib_input->xkb_context_.get(),
+            nullptr,
+            XKB_KEYMAP_FORMAT_TEXT_V1,
+            XKB_KEYMAP_COMPILE_NO_FLAGS
+        ),
+        xkb_keymap_unref
+    };
+    if (lib_input->xkb_key_map_ == nullptr) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to initialize xkb keymap"}
+        };
+    }
+    lib_input->xkb_state_ = {xkb_state_new(lib_input->xkb_key_map_.get()), xkb_state_unref};
+    if (lib_input->xkb_state_ == nullptr) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to initialize xkb state"}
         };
     }
 
