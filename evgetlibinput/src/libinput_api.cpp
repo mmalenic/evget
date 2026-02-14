@@ -12,8 +12,6 @@
 #include <memory>
 #include <utility>
 
-#include "evgetlibinput/libinput_api.h"
-
 namespace {
 constexpr int OpenRestricted(const char* path, int flags, void* /* unused */) {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)

@@ -2,10 +2,10 @@
 
 #include <libinput.h>
 
-#include <iostream>
 #include <utility>
 
 #include "evget/event/data.h"
+#include "evget/event/device_type.h"
 #include "evget/event/mouse_move.h"
 #include "evget/input_event.h"
 #include "evgetlibinput/libinput_api.h"
@@ -15,6 +15,11 @@ evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api) : l
 evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<LibInputEvent> event) {
     auto inner_event = std::move(event.ViewData());
     if (inner_event == nullptr) {
+        return {};
+    }
+
+    auto* device = this->libinput_api_.get().GetDevice(*inner_event);
+    if (device == nullptr) {
         return {};
     }
 
@@ -30,7 +35,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Interval(event.Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .PositionX(libinput_api_.get().GetPointerDx(*pointer_event))
-                    .PositionY(libinput_api_.get().GetPointerDy(*pointer_event));
+                    .PositionY(libinput_api_.get().GetPointerDy(*pointer_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device));
 
             break;
     }

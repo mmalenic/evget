@@ -20,9 +20,10 @@ bool evgetx11::EventSwitch::HasDevice(int device_id) const {
 
 void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, int device_id) {
     auto map = x_wrapper_.get().GetDeviceButtonMapping(device_id, button_info.num_buttons);
-    if (map) {
+    if (map != nullptr) {
         auto labels = std::span(button_info.labels, button_info.num_buttons);
         for (auto i = 0; i < labels.size(); i++) {
+            // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
             if (labels[i] != 0U) {
                 auto name = x_wrapper_.get().AtomName(labels[i]);
                 if (name) {
@@ -31,6 +32,7 @@ void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, i
                     button_map_[device_id][map[i]] = "";
                 }
             }
+            // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
         }
     }
 }

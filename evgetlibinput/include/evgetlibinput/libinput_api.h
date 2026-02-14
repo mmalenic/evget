@@ -130,7 +130,7 @@ public:
 
     std::uint64_t GetPointerTimeMicroseconds(libinput_event_pointer& event) override;
 
-    int GetDeviceFingerCount(libinput_device& event) override;
+    int GetDeviceFingerCount(libinput_device& device) override;
 
     bool DeviceHasCapability(libinput_device& device, libinput_device_capability capability) override;
 
