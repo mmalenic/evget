@@ -88,11 +88,15 @@ class EvgetRecipe(ConanFile):
         self.options["spdlog"].use_std_fmt = True
 
     def requirements(self):
-        if self.options.require_system_packages:
-            if self.options.build_evgetx11:
+        if self.options.build_evgetx11:
+            if self.options.require_system_packages:
                 self.requires("xorg/system")
-            if self.options.build_evgetlibinput:
-                self.requires("libinput/[^1]")
+        if self.options.build_evgetlibinput:
+            if self.options.require_system_packages:
+                self.requires("libudev/system")
+
+            self.requires("libinput/[^1]")
+            self.requires("xkbcommon/[^1]")
 
     def validate(self):
         if self.settings.compiler.cppstd:
