@@ -54,16 +54,27 @@ toolbelt_add_dep(
     REQUIRED
 )
 
-# Try conan-specific install first, otherwise fallback to system install.
 toolbelt_add_dep(
     ${LIBRARY_NAME}
-    libinput
+    libudev
     VISIBILITY
     PUBLIC
     LINK_COMPONENTS
-    libinput::libinput
     libudev::libudev
+    REQUIRED
 )
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    xkbcommon
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    xkbcommon::xkbcommon
+    REQUIRED
+)
+
+# Try conan-specific install first, otherwise fallback to system install.
+toolbelt_add_dep(${LIBRARY_NAME} libinput VISIBILITY PUBLIC LINK_COMPONENTS libinput::libinput)
 if(NOT TARGET libinput::libinput)
     toolbelt_add_dep(
         ${LIBRARY_NAME}
