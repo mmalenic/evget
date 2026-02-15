@@ -29,14 +29,6 @@
 
 namespace evgetx11 {
 /**
- * \brief Check whether the template parameter is a builder with a modifier function.
- */
-template <typename T>
-concept BuilderHasModifier = requires(T builder, evget::ModifierValue modifier_value) {
-    { builder.Modifier(modifier_value) } -> std::convertible_to<T>;
-};
-
-/**
  * \brief Check whether the template parameter is a builder with focus window functions.
  */
 template <typename T>
@@ -148,7 +140,7 @@ public:
      * \param builder reference to the builder to modify
      * \return reference to the modified builder
      */
-    template <BuilderHasModifier T>
+    template <evget::BuilderHasModifier T>
     static T& SetModifierValue(unsigned int modifier_state, T& builder);
 
     /**
@@ -186,7 +178,7 @@ private:
     int pointer_id_{};
 };
 
-template <BuilderHasModifier T>
+template <evget::BuilderHasModifier T>
 T& EventSwitch::SetModifierValue(unsigned int modifier_state, T& builder) {
     // Based on https://github.com/glfw/glfw/blob/dd8a678a66f1967372e5a5e3deac41ebf65ee127/src/x11_window.c#L215-L235
     if (modifier_state & ShiftMask) {
