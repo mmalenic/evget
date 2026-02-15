@@ -164,3 +164,9 @@ const char* evgetlibinput::LibInputApiImpl::GetDeviceName(libinput_device& devic
 bool evgetlibinput::LibInputApiImpl::IsModifierActive(const char* modifier_name) {
     return xkb_state_mod_name_is_active(this->xkb_state_.get(), modifier_name, XKB_STATE_MODS_EFFECTIVE) != 0;
 }
+
+void evgetlibinput::LibInputApiImpl::UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) {
+    // From xkb's perspective, evget is considered a server as it handles libinput events directly, so
+    // use the server version of the updating state rather than xkb_state_update_mask.
+    xkb_state_update_key(this->xkb_state_.get(), key, direction);
+}

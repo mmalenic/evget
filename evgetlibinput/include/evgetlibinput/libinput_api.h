@@ -113,6 +113,13 @@ public:
      * \return if the modifier is active
      */
     virtual bool IsModifierActive(const char* modifier_name) = 0;
+
+    /**
+     * \brief Update the key state for a given key.
+     * \param key the key to update
+     * \param direction the direction, either pressed or released
+     */
+    virtual void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) = 0;
 };
 
 /**
@@ -150,6 +157,8 @@ public:
     const char* GetDeviceName(libinput_device& device) override;
 
     bool IsModifierActive(const char* modifier_name) override;
+
+    void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) override;
 
 private:
     LibInputApiImpl() = default;
