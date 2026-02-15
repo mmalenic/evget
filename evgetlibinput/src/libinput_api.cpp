@@ -160,3 +160,7 @@ double evgetlibinput::LibInputApiImpl::GetPointerDy(libinput_event_pointer& even
 const char* evgetlibinput::LibInputApiImpl::GetDeviceName(libinput_device& device) {
     return libinput_device_get_name(&device);
 }
+
+bool evgetlibinput::LibInputApiImpl::IsModifierActive(const char* modifier_name) {
+    return xkb_state_mod_name_is_active(this->xkb_state_.get(), modifier_name, XKB_STATE_MODS_EFFECTIVE) != 0;
+}

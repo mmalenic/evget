@@ -105,6 +105,14 @@ public:
      * \return name of device
      */
     virtual const char* GetDeviceName(libinput_device& device) = 0;
+
+    /**
+     * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
+     *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
+     * \param modifier_name modifier name
+     * \return if the modifier is active
+     */
+    virtual bool IsModifierActive(const char* modifier_name) = 0;
 };
 
 /**
@@ -140,6 +148,8 @@ public:
     double GetPointerDy(libinput_event_pointer& event) override;
 
     const char* GetDeviceName(libinput_device& device) override;
+
+    bool IsModifierActive(const char* modifier_name) override;
 
 private:
     LibInputApiImpl() = default;
