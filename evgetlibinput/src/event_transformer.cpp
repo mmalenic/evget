@@ -38,7 +38,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .PositionY(libinput_api_.get().GetPointerDy(*pointer_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device));
             SetModifierValues(builder);
-
             break;
     }
 

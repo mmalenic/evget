@@ -61,6 +61,7 @@ toolbelt_add_dep(
     PUBLIC
     LINK_COMPONENTS
     libudev::libudev
+    FIND_PACKAGE_ARGS
     REQUIRED
 )
 toolbelt_add_dep(
@@ -70,6 +71,7 @@ toolbelt_add_dep(
     PUBLIC
     LINK_COMPONENTS
     xkbcommon::xkbcommon
+    FIND_PACKAGE_ARGS
     REQUIRED
 )
 

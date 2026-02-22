@@ -78,6 +78,20 @@ public:
     virtual double GetPointerDy(libinput_event_pointer& event) = 0;
 
     /**
+     * \brief Get the x position for absolute pointer event.
+     * \param event event
+     * \return x position
+     */
+    virtual double GetPointerAbsoluteX(libinput_event_pointer& event) = 0;
+
+    /**
+     * \brief Get the y position for absolute pointer event.
+     * \param event event
+     * \return y position
+     */
+    virtual double GetPointerAbsoluteY(libinput_event_pointer& event) = 0;
+
+    /**
      * \brief Get the device associated with the event.
      * \param event the associated event
      * \return the libinput device
@@ -159,6 +173,10 @@ public:
     bool IsModifierActive(const char* modifier_name) override;
 
     void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) override;
+
+    double GetPointerAbsoluteX(libinput_event_pointer& event) override;
+
+    double GetPointerAbsoluteY(libinput_event_pointer& event) override;
 
 private:
     LibInputApiImpl() = default;

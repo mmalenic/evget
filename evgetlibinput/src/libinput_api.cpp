@@ -170,3 +170,11 @@ void evgetlibinput::LibInputApiImpl::UpdateKeyState(xkb_keycode_t key, xkb_key_d
     // use the server version of the updating state rather than xkb_state_update_mask.
     xkb_state_update_key(this->xkb_state_.get(), key, direction);
 }
+
+double evgetlibinput::LibInputApiImpl::GetPointerAbsoluteX(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_absolute_x(&event);
+}
+
+double evgetlibinput::LibInputApiImpl::GetPointerAbsoluteY(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_absolute_y(&event);
+}
