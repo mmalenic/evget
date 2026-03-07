@@ -78,18 +78,22 @@ public:
     virtual double GetPointerDy(libinput_event_pointer& event) = 0;
 
     /**
-     * \brief Get the x position for absolute pointer event.
+     * \brief Get the x position for absolute pointer event. This uses the transformed libinput function
+     *        so a screen width is required.
      * \param event event
+     * \param width screen width
      * \return x position
      */
-    virtual double GetPointerAbsoluteX(libinput_event_pointer& event) = 0;
+    virtual double GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) = 0;
 
     /**
-     * \brief Get the y position for absolute pointer event.
+     * \brief Get the y position for absolute pointer event. This uses the transformed libinput function
+     *        so a screen width is required.
      * \param event event
+     * \param width screen width
      * \return y position
      */
-    virtual double GetPointerAbsoluteY(libinput_event_pointer& event) = 0;
+    virtual double GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) = 0;
 
     /**
      * \brief Get the device associated with the event.
@@ -174,9 +178,9 @@ public:
 
     void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) override;
 
-    double GetPointerAbsoluteX(libinput_event_pointer& event) override;
+    double GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) override;
 
-    double GetPointerAbsoluteY(libinput_event_pointer& event) override;
+    double GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) override;
 
 private:
     LibInputApiImpl() = default;
