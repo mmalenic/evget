@@ -97,6 +97,7 @@ class EvgetRecipe(ConanFile):
 
             self.requires("libinput/[^1]")
             self.requires("xkbcommon/[^1]")
+            self.requires("wayland/[^1]")
 
     def validate(self):
         if self.settings.compiler.cppstd:
