@@ -8,7 +8,7 @@
 #include "evget/event/device_type.h"
 #include "evget/event/mouse_move.h"
 #include "evget/input_event.h"
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 
 evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api) : libinput_api_{libinput_api} {}
 

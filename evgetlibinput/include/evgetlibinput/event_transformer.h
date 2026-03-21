@@ -10,7 +10,7 @@
 #include "evget/event/modifier_value.h"
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 
 namespace evgetlibinput {
 class EventTransformer : public evget::EventTransformer<evget::InputEvent<LibInputEvent>> {

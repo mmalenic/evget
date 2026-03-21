@@ -4,7 +4,7 @@
 
 #include "evget/error.h"
 #include "evget/input_event.h"
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 
 evgetlibinput::NextEvent::NextEvent(LibInputApi& libinput_api) : libinput_api_{libinput_api} {}
 

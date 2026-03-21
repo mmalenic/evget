@@ -10,7 +10,7 @@
 
 #include "evget/input_event.h"
 #include "evget/next_event.h"
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 
 namespace evgetlibinput {
 

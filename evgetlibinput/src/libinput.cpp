@@ -1,4 +1,4 @@
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 
 #include <evget/error.h>
 #include <fcntl.h>
