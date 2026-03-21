@@ -146,13 +146,13 @@ public:
  * This class provides the actual implementation of libinput library function calls,
  * wrapping the low-level libinput API.
  */
-class LibInputApiImpl : public LibInputApi {
+class LibInput : public LibInputApi {
 public:
     /**
      * \brief Create a new LibInputApi context as a pointer to the interface.
      * \return a unique pointer to a LibInputApi context
      */
-    static evget::Result<std::unique_ptr<LibInputApi>> New();
+    static evget::Result<std::unique_ptr<LibInput>> New();
 
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
@@ -183,7 +183,7 @@ public:
     double GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) override;
 
 private:
-    LibInputApiImpl() = default;
+    LibInput() = default;
 
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};

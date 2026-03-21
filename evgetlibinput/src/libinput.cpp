@@ -31,8 +31,8 @@ constexpr libinput_interface kLibInputInterface = {
     .close_restricted = CloseRestricted,
 };
 
-evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInputApiImpl::New() {
-    auto lib_input = std::unique_ptr<LibInputApiImpl>(new LibInputApiImpl{});
+evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput::New() {
+    auto lib_input = std::unique_ptr<LibInput>(new LibInput{});
 
     lib_input->udev_context_ = {udev_new(), udev_unref};
     if (lib_input->udev_context_ == nullptr) {
@@ -95,7 +95,7 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInputApi>> evgetlibinput::LibInp
     return std::move(lib_input);
 }
 
-evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInputApiImpl::GetEvent() {
+evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() {
     libinput_event* event = nullptr;
     // Loop until there is a non-null event, polling and dispatching the context if the current
     // event is null.
@@ -122,59 +122,56 @@ evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInputApiImpl::GetE
     return evget::Result<LibInputEvent>{{event, libinput_event_destroy}};
 }
 
-libinput_event_type evgetlibinput::LibInputApiImpl::GetEventType(libinput_event& event) {
+libinput_event_type evgetlibinput::LibInput::GetEventType(libinput_event& event) {
     return libinput_event_get_type(&event);
 }
 
-libinput_event_pointer* evgetlibinput::LibInputApiImpl::GetPointerEvent(libinput_event& event) {
+libinput_event_pointer* evgetlibinput::LibInput::GetPointerEvent(libinput_event& event) {
     return libinput_event_get_pointer_event(&event);
 }
 
-libinput_device* evgetlibinput::LibInputApiImpl::GetDevice(libinput_event& event) {
+libinput_device* evgetlibinput::LibInput::GetDevice(libinput_event& event) {
     return libinput_event_get_device(&event);
 }
 
-std::uint64_t evgetlibinput::LibInputApiImpl::GetPointerTimeMicroseconds(libinput_event_pointer& event) {
+std::uint64_t evgetlibinput::LibInput::GetPointerTimeMicroseconds(libinput_event_pointer& event) {
     return libinput_event_pointer_get_time_usec(&event);
 }
 
-int evgetlibinput::LibInputApiImpl::GetDeviceFingerCount(libinput_device& device) {
+int evgetlibinput::LibInput::GetDeviceFingerCount(libinput_device& device) {
     return libinput_device_config_tap_get_finger_count(&device);
 }
 
-bool evgetlibinput::LibInputApiImpl::DeviceHasCapability(
-    libinput_device& device,
-    libinput_device_capability capability
-) {
+bool evgetlibinput::LibInput::DeviceHasCapability(libinput_device& device, libinput_device_capability capability) {
     return libinput_device_has_capability(&device, capability) != 0;
 }
 
-double evgetlibinput::LibInputApiImpl::GetPointerDx(libinput_event_pointer& event) {
+double evgetlibinput::LibInput::GetPointerDx(libinput_event_pointer& event) {
     return libinput_event_pointer_get_dx(&event);
 }
 
-double evgetlibinput::LibInputApiImpl::GetPointerDy(libinput_event_pointer& event) {
+double evgetlibinput::LibInput::GetPointerDy(libinput_event_pointer& event) {
     return libinput_event_pointer_get_dy(&event);
 }
 
-const char* evgetlibinput::LibInputApiImpl::GetDeviceName(libinput_device& device) {
+const char* evgetlibinput::LibInput::GetDeviceName(libinput_device& device) {
     return libinput_device_get_name(&device);
 }
 
-bool evgetlibinput::LibInputApiImpl::IsModifierActive(const char* modifier_name) {
+bool evgetlibinput::LibInput::IsModifierActive(const char* modifier_name) {
     return xkb_state_mod_name_is_active(this->xkb_state_.get(), modifier_name, XKB_STATE_MODS_EFFECTIVE) != 0;
 }
 
-void evgetlibinput::LibInputApiImpl::UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) {
+void evgetlibinput::LibInput::UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) {
     // From xkb's perspective, evget is considered a server as it handles libinput events directly, so
     // use the server version of the updating state rather than xkb_state_update_mask.
     xkb_state_update_key(this->xkb_state_.get(), key, direction);
 }
 
-double evgetlibinput::LibInputApiImpl::GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) {
+double evgetlibinput::LibInput::GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) {
     return libinput_event_pointer_get_absolute_x_transformed(&event, width);
 }
 
-double evgetlibinput::LibInputApiImpl::GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) {
+double evgetlibinput::LibInput::GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) {
     return libinput_event_pointer_get_absolute_y_transformed(&event, width);
 }

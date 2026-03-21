@@ -14,9 +14,9 @@ target_sources(
             ${SRC}/event_transformer.cpp
             # ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp ${SRC}/event_switch_touch.cpp
             # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
-            ${SRC}/libinput_api.cpp
+            ${SRC}/libinput.cpp
             ${SRC}/wayland_output.cpp
-            ${SRC}/drm_output.cpp
+            ${SRC}/drm.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
            HEADERS
@@ -28,9 +28,9 @@ target_sources(
            # ${INCLUDE}/event_handler.h ${INCLUDE}/event_switch.h ${INCLUDE}/event_switch_pointer_key.h
            # ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h ${INCLUDE}/input_event.h
            # ${INCLUDE}/input_handler.h
-           ${INCLUDE}/libinput_api.h
+           ${INCLUDE}/libinput.h
            ${INCLUDE}/wayland_output.h
-           ${INCLUDE}/drm_output.h
+           ${INCLUDE}/drm.h
     # ${INCLUDE}/udev_context.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetlibinput)
