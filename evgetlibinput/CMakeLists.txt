@@ -15,6 +15,8 @@ target_sources(
             # ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp ${SRC}/event_switch_touch.cpp
             # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
             ${SRC}/libinput_api.cpp
+            ${SRC}/wayland_output.cpp
+            ${SRC}/drm_output.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
            HEADERS
@@ -27,6 +29,8 @@ target_sources(
            # ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h ${INCLUDE}/input_event.h
            # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput_api.h
+           ${INCLUDE}/wayland_output.h
+           ${INCLUDE}/drm_output.h
     # ${INCLUDE}/udev_context.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetlibinput)
@@ -71,6 +75,27 @@ toolbelt_add_dep(
     PUBLIC
     LINK_COMPONENTS
     xkbcommon::xkbcommon
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    wayland
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    wayland::wayland-client
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    libdrm
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    libdrm::libdrm
     FIND_PACKAGE_ARGS
     REQUIRED
 )
