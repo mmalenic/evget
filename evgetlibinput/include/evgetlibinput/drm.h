@@ -36,7 +36,7 @@ public:
     DrmApi& operator=(const DrmApi&) = delete;
 
     /**
-     * \brief Get the screen dimensions from the DRM.
+     * \brief Get the screen dimensions from the DRM. Finds the largest dimension when multiple screens are detected.
      * \return screen dimensions
      */
     virtual evget::Result<ScreenDimensions> GetDimensions() = 0;
@@ -58,7 +58,40 @@ public:
     evget::Result<ScreenDimensions> GetDimensions() override;
 
 private:
+    /**
+     * \brief A wrapper around a file descriptor to manager open and close automatically.
+     */
+    struct File {
+        /**
+         * \brief Open a path and manage the file descriptor.
+         * \param path path to open
+         * \return error if file failed to open or the file result
+         */
+        static evget::Result<std::unique_ptr<File>> Open(const char* path);
+
+        /**
+         * \brief Get the file descriptor.
+         * \return file descriptor
+         */
+        [[nodiscard]] int GetFile() const;
+
+        ~File();
+
+        File(File&&) noexcept = delete;
+        File& operator=(File&&) noexcept = delete;
+
+        File(const File&) = delete;
+        File& operator=(const File&) = delete;
+
+    private:
+        explicit File(int file);
+
+        int file_;
+    };
+
     DrmOutput() = default;
+
+    static evget::Result<std::vector<ScreenDimensions>> QueryCard(File& file);
 
     std::vector<ScreenDimensions> all_dimensions_;
 };
