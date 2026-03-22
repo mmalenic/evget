@@ -38,7 +38,7 @@ void evgetx11::InputHandlerBuilder::SetMask(X11Api& x_wrapper) {
     mask.deviceid = XIAllMasterDevices;
 
     std::array<unsigned char, XI_LASTEVENT> event_mask{};
-    X11ApiImpl::SetMask(
+    X11::SetMask(
         event_mask.data(),
         {
             XI_RawButtonPress,

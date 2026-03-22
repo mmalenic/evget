@@ -10,13 +10,10 @@
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
 // cppcoreguidelines-pro-type-vararg, hicpp-vararg)
-evgetx11::X11ApiImpl::X11ApiImpl(Display& display) : display_{display} {}
+evgetx11::X11::X11(Display& display) : display_{display} {}
 
-std::string evgetx11::X11ApiImpl::LookupCharacter(
-    const XIRawEvent& event,
-    const QueryPointerResult& query_pointer,
-    KeySym& key_sym
-) {
+std::string
+evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) {
     if (event.evtype == XI_RawKeyPress) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems
         // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
@@ -58,7 +55,7 @@ std::string evgetx11::X11ApiImpl::LookupCharacter(
     return {};
 }
 
-std::unique_ptr<_XIC, decltype(&XDestroyIC)> evgetx11::X11ApiImpl::CreateIc(Display& display, XIM xim) {
+std::unique_ptr<_XIC, decltype(&XDestroyIC)> evgetx11::X11::CreateIc(Display& display, XIM xim) {
     if (xim != nullptr) {
         XIMStyles* styles_ptr = nullptr;
         auto* values = XGetIMValues(xim, XNQueryInputStyle, &styles_ptr, nullptr);
@@ -98,7 +95,7 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> evgetx11::X11ApiImpl::CreateIc(Disp
     return {nullptr, XDestroyIC};
 }
 
-std::unique_ptr<unsigned char[]> evgetx11::X11ApiImpl::GetDeviceButtonMapping(int device_id, int map_size) {
+std::unique_ptr<unsigned char[]> evgetx11::X11::GetDeviceButtonMapping(int device_id, int map_size) {
     auto device = std::unique_ptr<XDevice, DisplayDeleter<XCloseDevice>>(
         XOpenDevice(&display_.get(), device_id),
         DisplayDeleter<XCloseDevice>{display_.get()}
@@ -111,19 +108,19 @@ std::unique_ptr<unsigned char[]> evgetx11::X11ApiImpl::GetDeviceButtonMapping(in
     return nullptr;
 }
 
-std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> evgetx11::X11ApiImpl::ListInputDevices(int& n_devices) {
+std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> evgetx11::X11::ListInputDevices(int& n_devices) {
     return {XListInputDevices(&display_.get(), &n_devices), XFreeDeviceList};
 }
 
-std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> evgetx11::X11ApiImpl::QueryDevice(int& n_devices) {
+std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> evgetx11::X11::QueryDevice(int& n_devices) {
     return {XIQueryDevice(&display_.get(), XIAllDevices, &n_devices), XIFreeDeviceInfo};
 }
 
-std::unique_ptr<char[], decltype(&XFree)> evgetx11::X11ApiImpl::AtomName(Atom atom) {
+std::unique_ptr<char[], decltype(&XFree)> evgetx11::X11::AtomName(Atom atom) {
     return {XGetAtomName(&display_.get(), atom), XFree};
 }
 
-std::optional<Atom> evgetx11::X11ApiImpl::GetAtom(const char* atom_name) const {
+std::optional<Atom> evgetx11::X11::GetAtom(const char* atom_name) const {
     Atom atom = XInternAtom(&display_.get(), atom_name, True);
     if (atom == None) {
         spdlog::warn("failed to get {} atom");
@@ -132,13 +129,13 @@ std::optional<Atom> evgetx11::X11ApiImpl::GetAtom(const char* atom_name) const {
     return atom;
 }
 
-XEvent evgetx11::X11ApiImpl::NextEvent() {
+XEvent evgetx11::X11::NextEvent() {
     XEvent event;
     XNextEvent(&display_.get(), &event);
     return event;
 }
 
-evgetx11::XEventPointer evgetx11::X11ApiImpl::EventData(XEvent& event) {
+evgetx11::XEventPointer evgetx11::X11::EventData(XEvent& event) {
     auto deleter = std::function<void(XGenericEventCookie*)>{DisplayDeleter<XFreeEventData>{display_.get()}};
     if (XGetEventData(&display_.get(), &event.xcookie) != 0 && (&event.xcookie)->type == GenericEvent) {
         spdlog::trace(std::format("Event type {} captured.", (&event.xcookie)->type));
@@ -147,7 +144,7 @@ evgetx11::XEventPointer evgetx11::X11ApiImpl::EventData(XEvent& event) {
     return {nullptr, [](XGenericEventCookie*) {}};
 }
 
-evgetx11::QueryPointerResult evgetx11::X11ApiImpl::QueryPointer(int device_id) {
+evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
     Window _root_return = 0;
     Window _window_return = 0;
     double _win_x = 0;
@@ -191,16 +188,16 @@ evgetx11::QueryPointerResult evgetx11::X11ApiImpl::QueryPointer(int device_id) {
     };
 }
 
-Status evgetx11::X11ApiImpl::QueryVersion(int& major, int& minor) {
+Status evgetx11::X11::QueryVersion(int& major, int& minor) {
     return XIQueryVersion(&display_.get(), &major, &minor);
 }
 
-void evgetx11::X11ApiImpl::SelectEvents(XIEventMask& mask) {
+void evgetx11::X11::SelectEvents(XIEventMask& mask) {
     XISelectEvents(&display_.get(), XDefaultRootWindow(&display_.get()), &mask, 1);
     XSync(&display_.get(), False);
 }
 
-evgetx11::X11ApiImpl::GetPropertyResult evgetx11::X11ApiImpl::GetProperty(Atom atom, Window window) const {
+evgetx11::X11::GetPropertyResult evgetx11::X11::GetProperty(Atom atom, Window window) const {
     unsigned char* data = nullptr;
     unsigned long _bytes_after = 0;
 
@@ -240,7 +237,7 @@ evgetx11::X11ApiImpl::GetPropertyResult evgetx11::X11ApiImpl::GetProperty(Atom a
     return {.n_items = n_items, .type = type, .size = size, .property = std::move(prop)};
 }
 
-std::optional<std::string> evgetx11::X11ApiImpl::GetWindowName(Window window) {
+std::optional<std::string> evgetx11::X11::GetWindowName(Window window) {
     auto wm_name_atom = GetAtom("_NET_WM_NAME");
     if (!wm_name_atom) {
         return std::nullopt;
@@ -265,7 +262,7 @@ std::optional<std::string> evgetx11::X11ApiImpl::GetWindowName(Window window) {
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
-std::optional<Window> evgetx11::X11ApiImpl::GetActiveWindow() {
+std::optional<Window> evgetx11::X11::GetActiveWindow() {
     auto active_window = GetAtom("_NET_ACTIVE_WINDOW");
     if (!active_window) {
         return std::nullopt;
@@ -283,7 +280,7 @@ std::optional<Window> evgetx11::X11ApiImpl::GetActiveWindow() {
     return std::nullopt;
 }
 
-std::optional<Window> evgetx11::X11ApiImpl::GetFocusWindow() {
+std::optional<Window> evgetx11::X11::GetFocusWindow() {
     Window window = 0;
     int _revert = 0;
 
@@ -296,7 +293,7 @@ std::optional<Window> evgetx11::X11ApiImpl::GetFocusWindow() {
     return window;
 }
 
-std::optional<XWindowAttributes> evgetx11::X11ApiImpl::GetWindowAttributes(Window window) const {
+std::optional<XWindowAttributes> evgetx11::X11::GetWindowAttributes(Window window) const {
     XWindowAttributes attributes;
 
     if (window == 0) {
@@ -312,7 +309,7 @@ std::optional<XWindowAttributes> evgetx11::X11ApiImpl::GetWindowAttributes(Windo
     return attributes;
 }
 
-std::optional<evgetx11::XWindowDimensions> evgetx11::X11ApiImpl::GetWindowSize(Window window) {
+std::optional<evgetx11::XWindowDimensions> evgetx11::X11::GetWindowSize(Window window) {
     auto attributes = GetWindowAttributes(window);
 
     if (!attributes.has_value()) {
@@ -325,7 +322,7 @@ std::optional<evgetx11::XWindowDimensions> evgetx11::X11ApiImpl::GetWindowSize(W
     return {{.width = width, .height = height}};
 }
 
-std::optional<evgetx11::XWindowDimensions> evgetx11::X11ApiImpl::GetWindowPosition(Window window) {
+std::optional<evgetx11::XWindowDimensions> evgetx11::X11::GetWindowPosition(Window window) {
     auto attributes = GetWindowAttributes(window);
 
     if (!attributes.has_value()) {
@@ -358,13 +355,13 @@ std::optional<evgetx11::XWindowDimensions> evgetx11::X11ApiImpl::GetWindowPositi
     return {{.width = width, .height = height}};
 }
 
-void evgetx11::X11ApiImpl::SetMask(unsigned char* mask, std::initializer_list<int> events) {
+void evgetx11::X11::SetMask(unsigned char* mask, std::initializer_list<int> events) {
     for (auto event : events) {
         XISetMask(mask, event);
     }
 }
 
-std::string evgetx11::X11ApiImpl::KeySymToString(KeySym key_sym) {
+std::string evgetx11::X11::KeySymToString(KeySym key_sym) {
     if (key_sym != NoSymbol) {
         auto* name = XKeysymToString(key_sym);
         if (name != nullptr) {

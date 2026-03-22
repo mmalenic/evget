@@ -183,7 +183,7 @@ void EventSwitchPointerKey::KeyEvent(
         // NOLINTEND(hicpp-signed-bitwise)
     }
 
-    const std::string name = X11ApiImpl::KeySymToString(key_sym);
+    const std::string name = X11::KeySymToString(key_sym);
 
     evget::Key builder{};
     builder.Interval(get_time(raw_event.time))

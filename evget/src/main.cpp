@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
 #ifdef FEATURE_EVGETX11
         Display* display = nullptr;
-        std::optional<evgetx11::X11ApiImpl> x11_api{};
+        std::optional<evgetx11::X11> x11_api{};
         std::unique_ptr<evget::EventTransformer<evgetx11::InputEvent>> x11_transformer{};
         std::unique_ptr<evgetx11::InputHandler> x11_next_event{};
         std::optional<evget::EventHandler<evgetx11::InputEvent>> x11_handler{};

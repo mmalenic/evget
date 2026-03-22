@@ -1,5 +1,5 @@
 /**
- * \file x11_api.h
+ * \file x11.h
  * \brief X11 API abstraction layer for window system interaction and input handling.
  */
 
@@ -255,13 +255,13 @@ private:
  * This class provides the actual implementation of X11 library function calls,
  * wrapping the low-level X11 API.
  */
-class X11ApiImpl : public X11Api {
+class X11 : public X11Api {
 public:
     /**
-     * \brief Construct an `X11ApiImpl` with a display connection.
+     * \brief Construct an `X11` with a display connection.
      * \param display reference to the X11 Display connection
      */
-    explicit X11ApiImpl(Display& display);
+    explicit X11(Display& display);
 
     std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) override;
@@ -335,7 +335,7 @@ private:
     std::unique_ptr<_XIC, decltype(&XDestroyIC)> xic_ = CreateIc(display_, xim_.get());
 };
 
-void X11ApiImpl::OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function) {
+void X11::OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function) {
     for (int i = 0; i < mask_len * kMaskBits; i++) {
         if (XIMaskIsSet(mask, i)) {
             function(i);

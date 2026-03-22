@@ -71,7 +71,7 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
 std::map<int, int> evgetx11::EventSwitchPointerKey::GetValuators(const XIValuatorState& valuator_state) {
     std::map<int, int> valuators{};
     auto* values = valuator_state.values;
-    X11ApiImpl::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
+    X11::OnMasks(valuator_state.mask, valuator_state.mask_len, [&valuators, &values](int mask) {
         valuators.emplace(mask, (*values)++);
     });
     return valuators;

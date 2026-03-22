@@ -7,7 +7,7 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
-#include <cstdint>
+#include <cstddef>
 #include <format>
 #include <memory>
 #include <optional>
