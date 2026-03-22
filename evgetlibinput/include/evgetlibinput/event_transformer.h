@@ -6,10 +6,12 @@
 #ifndef EVGETLIBINPUT_EVENT_TRANSFORMER_H
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
+#include "drm.h"
 #include "evget/error.h"
 #include "evget/event/modifier_value.h"
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
+#include "evgetlibinput/drm.h"
 #include "evgetlibinput/libinput.h"
 
 namespace evgetlibinput {
@@ -17,14 +19,16 @@ class EventTransformer : public evget::EventTransformer<evget::InputEvent<LibInp
 public:
     /**
      * Create an event transformer.
-     * \param libinput_api the API wrapper
+     * \param libinput_api the libinput API wrapper
+     * \param drm_api the DRM API wrapper
      */
-    explicit EventTransformer(LibInputApi& libinput_api);
+    explicit EventTransformer(LibInputApi& libinput_api, DrmApi& drm_api);
 
     evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;
+    std::reference_wrapper<DrmApi> drm_api_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
 

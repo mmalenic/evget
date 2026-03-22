@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "../../evgetlibinput/include/evgetlibinput/drm.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
 #include "evget/event_handler.h"
@@ -17,7 +18,7 @@
 
 #ifdef FEATURE_EVGETLIBINPUT
 #include "evgetlibinput/event_transformer.h"
-#include "evgetlibinput/libinput_api.h"
+#include "evgetlibinput/libinput.h"
 #include "evgetlibinput/next_event.h"
 #endif
 
@@ -73,19 +74,28 @@ int main(int argc, char* argv[]) {
 
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
+        std::unique_ptr<evgetlibinput::DrmApi> drm_api{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
         std::optional<evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>> li_handler{};
 
         if (event_source == evget::EventSource::kLibInput) {
-            auto lib_input_result = evgetlibinput::LibInputApiImpl::New();
+            auto lib_input_result = evgetlibinput::LibInput::New();
             if (!lib_input_result.has_value()) {
-                spdlog::error("{}", stores.error());
+                spdlog::error("{}", lib_input_result.error());
                 return 1;
             }
-            libinput = std::move(*lib_input_result);
 
-            li_transformer.emplace(*libinput);
+            auto drm_result = evgetlibinput::DrmOutput::New();
+            if (!drm_result.has_value()) {
+                spdlog::error("{}", drm_result.error());
+                return 1;
+            }
+
+            libinput = std::move(*lib_input_result);
+            drm_result = std::move(*drm_result);
+
+            li_transformer.emplace(*libinput, *drm_api);
             li_next_event.emplace(*libinput);
             li_handler.emplace(manager, *li_transformer, *li_next_event);
 

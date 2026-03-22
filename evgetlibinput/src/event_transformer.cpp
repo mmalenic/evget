@@ -10,7 +10,8 @@
 #include "evget/input_event.h"
 #include "evgetlibinput/libinput.h"
 
-evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api) : libinput_api_{libinput_api} {}
+evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api, DrmApi& drm_api)
+    : libinput_api_{libinput_api}, drm_api_{drm_api} {}
 
 evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<LibInputEvent> event) {
     auto inner_event = std::move(event.ViewData());

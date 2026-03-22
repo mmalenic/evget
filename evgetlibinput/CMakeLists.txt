@@ -15,7 +15,6 @@ target_sources(
             # ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp ${SRC}/event_switch_touch.cpp
             # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
             ${SRC}/libinput.cpp
-            ${SRC}/wayland_output.cpp
             ${SRC}/drm.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
@@ -29,7 +28,6 @@ target_sources(
            # ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h ${INCLUDE}/input_event.h
            # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput.h
-           ${INCLUDE}/wayland_output.h
            ${INCLUDE}/drm.h
     # ${INCLUDE}/udev_context.h
 )
