@@ -14,7 +14,7 @@
 #include <span>
 #include <string>
 
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace test {

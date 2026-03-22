@@ -8,7 +8,7 @@
 #include <span>
 #include <string>
 
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 evget::DeviceType evgetx11::EventSwitch::GetDevice(int device_id) const {
     return devices_.at(device_id);

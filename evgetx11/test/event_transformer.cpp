@@ -11,7 +11,7 @@
 #include <array>
 #include <utility>
 
-#include "common/x11_api_mock.h"
+#include "common/x11_mock.h"
 #include "evgetx11/event_switch.h"
 #include "evgetx11/event_switch_pointer_key.h"
 // clang-format off

@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 evgetx11::InputEvent::InputEvent(X11Api& x_wrapper)
     : event_{x_wrapper.NextEvent()}, cookie_{x_wrapper.EventData(event_.ViewData())} {}

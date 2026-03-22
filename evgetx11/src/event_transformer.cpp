@@ -5,7 +5,7 @@
 
 #include "evget/event_transformer.h"
 #include "evgetx11/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 evgetx11::EventTransformerBuilder& evgetx11::EventTransformerBuilder::PointerKey(X11Api& x_wrapper) {
     pointer_key_ = EventSwitchPointerKey{x_wrapper};

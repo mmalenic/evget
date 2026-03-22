@@ -16,20 +16,19 @@ target_sources(
             ${SRC}/event_transformer.cpp
             ${SRC}/input_event.cpp
             ${SRC}/input_handler.cpp
-            ${SRC}/x11_api.cpp
+            ${SRC}/x11.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
            include
            FILES
-           ${INCLUDE}/display_deleter.h
            ${INCLUDE}/event_switch.h
            ${INCLUDE}/event_switch_pointer_key.h
            ${INCLUDE}/event_switch_touch.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/input_event.h
            ${INCLUDE}/input_handler.h
-           ${INCLUDE}/x11_api.h
+           ${INCLUDE}/x11.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
 
@@ -78,8 +77,8 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/x11_api_mock.cpp test/common/x11_api_mock.h test/event_switch.cpp
-               test/event_switch_pointer_key.cpp test/event_switch_touch.cpp test/event_transformer.cpp
+        PUBLIC test/common/x11_mock.cpp test/common/x11_mock.h test/event_switch.cpp test/event_switch_pointer_key.cpp
+               test/event_switch_touch.cpp test/event_transformer.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

@@ -14,7 +14,7 @@
 #include <evget/event/device_type.h>
 #include <evget/event/modifier_value.h>
 #include <evget/event/schema.h>
-#include <evgetx11/x11_api.h>
+#include <evgetx11/x11.h>
 #include <spdlog/spdlog.h>
 
 #include <chrono>

@@ -10,7 +10,7 @@
 #include <optional>
 #include <stdexcept>
 
-#include "common/x11_api_mock.h"
+#include "common/x11_mock.h"
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"

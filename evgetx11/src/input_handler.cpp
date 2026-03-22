@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "evgetx11/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 evgetx11::InputHandler::InputHandler(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 

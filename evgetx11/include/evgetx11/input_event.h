@@ -10,7 +10,7 @@
 
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 namespace evgetx11 {
 /**

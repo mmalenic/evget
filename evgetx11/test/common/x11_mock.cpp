@@ -1,4 +1,4 @@
-#include "common/x11_api_mock.h"
+#include "common/x11_mock.h"
 
 #include <gmock/gmock.h>
 
@@ -8,7 +8,7 @@
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
-#include <evgetx11/x11_api.h>
+#include <evgetx11/x11.h>
 
 #include <array>
 #include <cstdint>

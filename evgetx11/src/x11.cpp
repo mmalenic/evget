@@ -1,4 +1,4 @@
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>

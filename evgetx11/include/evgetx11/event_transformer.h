@@ -32,7 +32,7 @@
 #include "evgetx11/event_switch_pointer_key.h"
 #include "evgetx11/event_switch_touch.h"
 #include "evgetx11/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 namespace evgetx11 {
 /**

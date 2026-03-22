@@ -28,7 +28,7 @@
 #include "evgetx11/event_transformer.h"
 #include "evgetx11/input_event.h"
 #include "evgetx11/input_handler.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 #endif
 
 int main(int argc, char* argv[]) {

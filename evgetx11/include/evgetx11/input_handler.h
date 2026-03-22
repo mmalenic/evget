@@ -11,7 +11,7 @@
 #include "evget/error.h"
 #include "evget/next_event.h"
 #include "evgetx11/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 namespace evgetx11 {
 

@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "evgetx11/event_switch.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 evgetx11::EventSwitchPointerKey::EventSwitchPointerKey(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 

@@ -13,7 +13,7 @@
 #include <optional>
 #include <string>
 
-#include "common/x11_api_mock.h"
+#include "common/x11_mock.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
@@ -23,7 +23,7 @@
 #include "evgetx11/event_switch_pointer_key.h"
 // clang-format on
 #include "evgetx11/input_event.h"
-#include "evgetx11/x11_api.h"
+#include "evgetx11/x11.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
