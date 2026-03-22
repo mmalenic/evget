@@ -8,8 +8,6 @@
 #include <array>
 #include <format>
 
-#include "evgetx11/display_deleter.h"
-
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
 // cppcoreguidelines-pro-type-vararg, hicpp-vararg)
 evgetx11::X11ApiImpl::X11ApiImpl(Display& display) : display_{display} {}
