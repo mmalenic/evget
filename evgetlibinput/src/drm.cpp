@@ -8,6 +8,7 @@
 #include <xf86drmMode.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <format>
 #include <memory>
 #include <optional>
@@ -26,18 +27,21 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
         };
     }
 
-    std::vector<drmDevicePtr> devices{static_cast<std::size_t>(device_count)};
-    const int fetched = drmGetDevices2(0, devices.data(), device_count);
+    // Create device pointers automatically managed with custom deleter.
+    // NOLINTBEGIN(modernize-avoid-c-arrays, hicpp-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays)
+    auto devices =
+        std::unique_ptr<drmDevicePtr[], DrmDevicesDeleter>(new drmDevicePtr[device_count], DrmDevicesDeleter{});
+    // NOLINTEND(modernize-avoid-c-arrays, hicpp-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays)
+    const int fetched = drmGetDevices2(0, devices.get(), device_count);
     if (fetched < 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to fetch DRM devices"}
         };
     }
+    // Count is only known after calling drmGetDevices2, so set it here to properly free with deleter.
+    devices.get_deleter().SetCount(fetched);
 
-    for (const auto& device : devices) {
-        if (device == nullptr) {
-            break;
-        }
+    for (const auto& device : std::span{devices.get(), static_cast<std::size_t>(fetched)}) {
         // Only find primary nodes, e.g. /dev/dri/card0
         if ((static_cast<unsigned int>(device->available_nodes) & 1U << DRM_NODE_PRIMARY) == 0) {
             continue;
@@ -57,8 +61,6 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
 
         drm_output->all_dimensions_.insert(drm_output->all_dimensions_.end(), (*result).begin(), (*result).end());
     }
-
-    drmFreeDevices(devices.data(), fetched);
 
     if (drm_output->all_dimensions_.empty()) {
         return evget::Err{
@@ -154,4 +156,10 @@ evgetlibinput::DrmOutput::File::~File() {
     if (result != 0) {
         spdlog::warn("failed to close file descriptor");
     }
+}
+
+evgetlibinput::DrmOutput::DrmDevicesDeleter::DrmDevicesDeleter(int count) : count_{count} {}
+
+void evgetlibinput::DrmOutput::DrmDevicesDeleter::SetCount(int count) {
+    count_ = count;
 }
