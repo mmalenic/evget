@@ -11,9 +11,7 @@
 #include <cstdint>
 #include <format>
 #include <memory>
-#include <optional>
 #include <span>
-#include <vector>
 
 #include "evget/error.h"
 
@@ -21,7 +19,7 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
     auto drm_output = std::unique_ptr<DrmOutput>(new DrmOutput{});
 
     const int device_count = drmGetDevices2(0, nullptr, 0);
-    if (device_count < 0) {
+    if (device_count <= 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to find DRM devices"}
         };
@@ -33,7 +31,8 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
         std::unique_ptr<drmDevicePtr[], DrmDevicesDeleter>(new drmDevicePtr[device_count], DrmDevicesDeleter{});
     // NOLINTEND(modernize-avoid-c-arrays, hicpp-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays)
     const int fetched = drmGetDevices2(0, devices.get(), device_count);
-    if (fetched < 0) {
+    if (fetched <= 0) {
+        // No need to update deleter count on error.
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to fetch DRM devices"}
         };
@@ -54,15 +53,13 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
             return evget::Err{file.error()};
         }
 
-        auto result = QueryCard(**file);
+        auto result = drm_output->QueryCard(**file);
         if (!result.has_value()) {
             return evget::Err{result.error()};
         }
-
-        drm_output->all_dimensions_.insert(drm_output->all_dimensions_.end(), (*result).begin(), (*result).end());
     }
 
-    if (drm_output->all_dimensions_.empty()) {
+    if (drm_output->dimensions_.width == 0 && drm_output->dimensions_.height == 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "no connected DRM outputs found"}
         };
@@ -71,7 +68,7 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
     return drm_output;
 }
 
-evget::Result<std::vector<evgetlibinput::ScreenDimensions>> evgetlibinput::DrmOutput::QueryCard(File& file) {
+evget::Result<void> evgetlibinput::DrmOutput::QueryCard(File& file) {
     std::unique_ptr<drmModeRes, decltype(&drmModeFreeResources)> resources{
         drmModeGetResources(file.GetFile()),
         drmModeFreeResources
@@ -82,7 +79,6 @@ evget::Result<std::vector<evgetlibinput::ScreenDimensions>> evgetlibinput::DrmOu
         };
     }
 
-    std::vector<ScreenDimensions> dimensions;
     for (const auto connector :
          std::span{resources->connectors, static_cast<std::uint32_t>(resources->count_connectors)}) {
         std::unique_ptr<drmModeConnector, decltype(&drmModeFreeConnector)> mode_connector{
@@ -97,40 +93,22 @@ evget::Result<std::vector<evgetlibinput::ScreenDimensions>> evgetlibinput::DrmOu
         for (const auto mode :
              std::span{mode_connector->modes, static_cast<std::uint32_t>(mode_connector->count_modes)}) {
             if ((mode.type & DRM_MODE_TYPE_PREFERRED) != 0U) {
-                dimensions.push_back(
-                    ScreenDimensions{
+                if (mode.hdisplay * mode.vdisplay > dimensions_.width * dimensions_.height) {
+                    dimensions_ = ScreenDimensions{
                         .width = mode.hdisplay,
                         .height = mode.vdisplay,
-                    }
-                );
+                    };
+                }
                 break;
             }
         }
     }
 
-    return dimensions;
+    return {};
 }
 
 evget::Result<evgetlibinput::ScreenDimensions> evgetlibinput::DrmOutput::GetDimensions() {
-    std::optional<ScreenDimensions> largest_dimension = std::nullopt;
-    for (const auto dimension : all_dimensions_) {
-        if (!largest_dimension.has_value()) {
-            largest_dimension = dimension;
-            continue;
-        }
-
-        if (dimension.width * dimension.height > largest_dimension->width * largest_dimension->height) {
-            largest_dimension = dimension;
-        }
-    }
-
-    if (!largest_dimension.has_value()) {
-        return evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to get screen dimensions"}
-        };
-    }
-
-    return *largest_dimension;
+    return dimensions_;
 }
 
 evgetlibinput::DrmOutput::File::File(int file) : file_{file} {}

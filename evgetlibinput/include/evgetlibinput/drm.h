@@ -97,7 +97,7 @@ private:
     struct DrmDevicesDeleter {
         /**
          * \brief Create a drm devices delete.
-         * \param count number if device pointers
+         * \param count number of device pointers
          */
         explicit DrmDevicesDeleter(int count);
 
@@ -119,9 +119,12 @@ private:
 
     DrmOutput() = default;
 
-    static evget::Result<std::vector<ScreenDimensions>> QueryCard(File& file);
+    evget::Result<void> QueryCard(File& file);
 
-    std::vector<ScreenDimensions> all_dimensions_;
+    ScreenDimensions dimensions_ = {
+        .width = 0,
+        .height = 0,
+    };
 };
 
 } // namespace evgetlibinput
