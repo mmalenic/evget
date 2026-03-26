@@ -7,6 +7,7 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -26,21 +27,27 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
     }
 
     // Create device pointers automatically managed with custom deleter.
-    // NOLINTBEGIN(modernize-avoid-c-arrays, hicpp-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays)
-    auto devices =
-        std::unique_ptr<drmDevicePtr[], DrmDevicesDeleter>(new drmDevicePtr[device_count], DrmDevicesDeleter{});
-    // NOLINTEND(modernize-avoid-c-arrays, hicpp-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays)
-    const int fetched = drmGetDevices2(0, devices.get(), device_count);
+    auto devices = std::vector<drmDevicePtr>(device_count);
+    const int fetched = drmGetDevices2(0, devices.data(), device_count);
     if (fetched <= 0) {
-        // No need to update deleter count on error.
+        // No need to free if nothing returned
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to fetch DRM devices"}
         };
     }
-    // Count is only known after calling drmGetDevices2, so set it here to properly free with deleter.
-    devices.get_deleter().SetCount(fetched);
 
-    for (const auto& device : std::span{devices.get(), static_cast<std::size_t>(fetched)}) {
+    // Manage devices with deleter automatically.
+    auto deleter = [](drmDevice* device) { drmFreeDevice(&device); };
+    auto devices_deleter = std::vector<std::unique_ptr<drmDevice, decltype(deleter)>>{};
+    // Go up to `fetched` elements, as the rest are nullptr.
+    std::ranges::transform(
+        devices.begin(),
+        devices.begin() + fetched,
+        std::back_inserter(devices_deleter),
+        [&deleter](drmDevicePtr device) { return std::unique_ptr<drmDevice, decltype(deleter)>{device, deleter}; }
+    );
+
+    for (const auto& device : devices_deleter) {
         // Only find primary nodes, e.g. /dev/dri/card0
         if ((static_cast<unsigned int>(device->available_nodes) & 1U << DRM_NODE_PRIMARY) == 0) {
             continue;

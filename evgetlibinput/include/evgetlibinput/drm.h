@@ -111,6 +111,7 @@ private:
 
         void operator()(drmDevicePtr* devices) const {
             drmFreeDevices(devices, count_);
+            delete[] devices;
         }
 
     private:
