@@ -6,6 +6,8 @@
 #ifndef EVGETLIBINPUT_EVENT_TRANSFORMER_H
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
+#include <optional>
+
 #include "drm.h"
 #include "evget/error.h"
 #include "evget/event/modifier_value.h"
@@ -29,6 +31,9 @@ public:
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;
     std::reference_wrapper<DrmApi> drm_api_;
+
+    std::optional<double> previous_absolute_x_;
+    std::optional<double> previous_absolute_y_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
 

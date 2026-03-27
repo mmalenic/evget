@@ -51,10 +51,21 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Timestamp(event.GetTimestamp())
                     .Interval(event.Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
-                    .PositionX(libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions.width))
-                    .PositionY(libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions.height))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device));
             SetModifierValues(builder);
+
+            auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions.width);
+            auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions.height);
+
+            // Convert absolute motion to relative motion so that there is consistency with
+            // `LIBINPUT_EVENT_POINTER_MOTION`.
+            if (previous_absolute_x_.has_value() && previous_absolute_y_.has_value()) {
+                builder.PositionX(absolute_x - *previous_absolute_x_).PositionY(absolute_y - *previous_absolute_y_);
+            }
+
+            previous_absolute_x_ = absolute_x;
+            previous_absolute_y_ = absolute_y;
+
             break;
         }
     }
