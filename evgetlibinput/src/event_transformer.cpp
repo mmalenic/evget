@@ -26,7 +26,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
-        case LIBINPUT_EVENT_POINTER_MOTION:
+        case LIBINPUT_EVENT_POINTER_MOTION: {
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
@@ -40,6 +40,23 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device));
             SetModifierValues(builder);
             break;
+        }
+        case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
+            auto dimensions = drm_api_.get().GetDimensions();
+            auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
+
+            auto builder =
+                evget::MouseMove{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(event.Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .PositionX(libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions.width))
+                    .PositionY(libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions.height))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device));
+            SetModifierValues(builder);
+            break;
+        }
     }
 
     return evget::Data{};

@@ -41,7 +41,7 @@ public:
      * \brief Get the screen dimensions from the DRM. Finds the largest dimension when multiple screens are detected.
      * \return screen dimensions
      */
-    virtual evget::Result<ScreenDimensions> GetDimensions() = 0;
+    virtual ScreenDimensions GetDimensions() = 0;
 };
 
 /**
@@ -57,7 +57,7 @@ public:
      */
     static evget::Result<std::unique_ptr<DrmOutput>> New();
 
-    evget::Result<ScreenDimensions> GetDimensions() override;
+    ScreenDimensions GetDimensions() override;
 
 private:
     /**

@@ -114,7 +114,7 @@ evget::Result<void> evgetlibinput::DrmOutput::QueryCard(File& file) {
     return {};
 }
 
-evget::Result<evgetlibinput::ScreenDimensions> evgetlibinput::DrmOutput::GetDimensions() {
+evgetlibinput::ScreenDimensions evgetlibinput::DrmOutput::GetDimensions() {
     return dimensions_;
 }
 
