@@ -4,8 +4,10 @@
 
 #include <utility>
 
+#include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
+#include "evget/event/mouse_click.h"
 #include "evget/event/mouse_move.h"
 #include "evget/input_event.h"
 #include "evgetlibinput/libinput.h"
@@ -67,9 +69,29 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
             break;
         }
+        case LIBINPUT_EVENT_POINTER_BUTTON: {
+            auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
+            auto action = GetButtonAction(libinput_api_.get().GetPointerButtonState(*pointer_event));
+
+            auto builder =
+                evget::MouseClick{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(event.Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(static_cast<int>(libinput_api_.get().GetPointerButton(*pointer_event)))
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device));
+            SetModifierValues(builder);
+            break;
+        }
     }
 
     return evget::Data{};
+}
+
+evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
+    return state == LIBINPUT_BUTTON_STATE_PRESSED ? evget::ButtonAction::kPress : evget::ButtonAction::kRelease;
 }
 
 evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event) const {

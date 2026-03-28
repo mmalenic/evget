@@ -6,10 +6,13 @@
 #ifndef EVGETLIBINPUT_EVENT_TRANSFORMER_H
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
+#include <libinput.h>
+
 #include <optional>
 
 #include "drm.h"
 #include "evget/error.h"
+#include "evget/event/button_action.h"
 #include "evget/event/modifier_value.h"
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
@@ -36,6 +39,7 @@ private:
     std::optional<double> previous_absolute_y_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
+    static evget::ButtonAction GetButtonAction(libinput_button_state state);
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;
