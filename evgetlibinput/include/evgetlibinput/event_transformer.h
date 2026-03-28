@@ -14,6 +14,7 @@
 #include "evget/error.h"
 #include "evget/event/button_action.h"
 #include "evget/event/modifier_value.h"
+#include "evget/event/mouse_move.h"
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
 #include "evgetlibinput/drm.h"
@@ -40,6 +41,7 @@ private:
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
+    void SetRelativePosition(evget::MouseMove& builder, libinput_event_pointer& pointer_event);
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;

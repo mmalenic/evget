@@ -55,17 +55,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device));
             SetModifierValues(builder);
 
-            auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions_.width);
-            auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions_.height);
-
-            // Convert absolute motion to relative motion so that there is consistency with
-            // `LIBINPUT_EVENT_POINTER_MOTION`.
-            if (previous_absolute_x_.has_value() && previous_absolute_y_.has_value()) {
-                builder.PositionX(absolute_x - *previous_absolute_x_).PositionY(absolute_y - *previous_absolute_y_);
-            }
-
-            previous_absolute_x_ = absolute_x;
-            previous_absolute_y_ = absolute_y;
+            SetRelativePosition(builder, *pointer_event);
 
             break;
         }
@@ -88,6 +78,23 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     }
 
     return evget::Data{};
+}
+
+void evgetlibinput::EventTransformer::SetRelativePosition(
+    evget::MouseMove& builder,
+    libinput_event_pointer& pointer_event
+) {
+    auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(pointer_event, dimensions_.width);
+    auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(pointer_event, dimensions_.height);
+
+    // Convert absolute motion to relative motion so that there is consistency with
+    // `LIBINPUT_EVENT_POINTER_MOTION`.
+    if (previous_absolute_x_.has_value() && previous_absolute_y_.has_value()) {
+        builder.PositionX(absolute_x - *previous_absolute_x_).PositionY(absolute_y - *previous_absolute_y_);
+    }
+
+    previous_absolute_x_ = absolute_x;
+    previous_absolute_y_ = absolute_y;
 }
 
 evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
