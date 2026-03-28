@@ -96,6 +96,20 @@ public:
     virtual double GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) = 0;
 
     /**
+     * \brief Get the button code for a pointer button event.
+     * \param event pointer event
+     * \return button code
+     */
+    virtual std::uint32_t GetPointerButton(libinput_event_pointer& event) = 0;
+
+    /**
+     * \brief Get the button state for a pointer button event.
+     * \param event pointer event
+     * \return button state
+     */
+    virtual libinput_button_state GetPointerButtonState(libinput_event_pointer& event) = 0;
+
+    /**
      * \brief Get the device associated with the event.
      * \param event the associated event
      * \return the libinput device
@@ -181,6 +195,10 @@ public:
     double GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) override;
 
     double GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) override;
+
+    std::uint32_t GetPointerButton(libinput_event_pointer& event) override;
+
+    libinput_button_state GetPointerButtonState(libinput_event_pointer& event) override;
 
 private:
     LibInput() = default;

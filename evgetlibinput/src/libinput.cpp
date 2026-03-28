@@ -175,3 +175,11 @@ double evgetlibinput::LibInput::GetPointerAbsoluteX(libinput_event_pointer& even
 double evgetlibinput::LibInput::GetPointerAbsoluteY(libinput_event_pointer& event, std::uint32_t width) {
     return libinput_event_pointer_get_absolute_y_transformed(&event, width);
 }
+
+std::uint32_t evgetlibinput::LibInput::GetPointerButton(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_button(&event);
+}
+
+libinput_button_state evgetlibinput::LibInput::GetPointerButtonState(libinput_event_pointer& event) {
+    return libinput_event_pointer_get_button_state(&event);
+}
