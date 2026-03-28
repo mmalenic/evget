@@ -10,8 +10,8 @@
 #include "evget/input_event.h"
 #include "evgetlibinput/libinput.h"
 
-evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api, DrmApi& drm_api)
-    : libinput_api_{libinput_api}, drm_api_{drm_api} {}
+evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api, ScreenDimensions dimensions)
+    : libinput_api_{libinput_api}, dimensions_{dimensions} {}
 
 evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<LibInputEvent> event) {
     auto inner_event = std::move(event.ViewData());
@@ -42,7 +42,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             break;
         }
         case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
-            auto dimensions = drm_api_.get().GetDimensions();
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
@@ -54,8 +53,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device));
             SetModifierValues(builder);
 
-            auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions.width);
-            auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions.height);
+            auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(*pointer_event, dimensions_.width);
+            auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(*pointer_event, dimensions_.height);
 
             // Convert absolute motion to relative motion so that there is consistency with
             // `LIBINPUT_EVENT_POINTER_MOTION`.

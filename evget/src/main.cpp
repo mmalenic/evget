@@ -74,7 +74,6 @@ int main(int argc, char* argv[]) {
 
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
-        std::unique_ptr<evgetlibinput::DrmApi> drm_api{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
         std::optional<evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>> li_handler{};
@@ -85,17 +84,22 @@ int main(int argc, char* argv[]) {
                 spdlog::error("{}", lib_input_result.error());
                 return 1;
             }
+            libinput = std::move(*lib_input_result);
 
-            auto drm_result = evgetlibinput::DrmOutput::New();
-            if (!drm_result.has_value()) {
-                spdlog::error("{}", drm_result.error());
-                return 1;
+            evgetlibinput::ScreenDimensions dimensions{};
+            auto cli_dimensions = cli.ScreenDimensions();
+            if (cli_dimensions) {
+                dimensions = {.width = cli_dimensions->first, .height = cli_dimensions->second};
+            } else {
+                auto drm_result = evgetlibinput::DrmOutput::New();
+                if (!drm_result.has_value()) {
+                    spdlog::error("{}", drm_result.error());
+                    return 1;
+                }
+                dimensions = (*drm_result)->GetDimensions();
             }
 
-            libinput = std::move(*lib_input_result);
-            drm_result = std::move(*drm_result);
-
-            li_transformer.emplace(*libinput, *drm_api);
+            li_transformer.emplace(*libinput, dimensions);
             li_next_event.emplace(*libinput);
             li_handler.emplace(manager, *li_transformer, *li_next_event);
 

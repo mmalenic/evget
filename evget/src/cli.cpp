@@ -66,6 +66,23 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
         ->option_text(FormatEnum("EVENT_SOURCE", "The source of events.", event_source_descriptions_));
 
     app.add_option_function<std::string>(
+        "-d,--screen-dimensions",
+        [this](const std::string& value) {
+            auto pos = value.find('x');
+            if (pos == std::string::npos) {
+                throw CLI::ValidationError("--screen-dimensions", "expected format <width>x<height> (e.g. 1920x1080)");
+            }
+
+            auto width = std::stoul(value.substr(0, pos));
+            auto height = std::stoul(value.substr(pos + 1));
+            screen_dimensions_.emplace(static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height));
+        },
+        "Screen dimensions as <width>x<height> (e.g. 1920x1080). "
+        "Used to convert absolute pointer motion to screen coordinates for evgetlibinput only. "
+        "If not specified, dimensions are queried from DRM for a single screen."
+    );
+
+    app.add_option_function<std::string>(
            "-o,--output",
            [this](std::string value) {
                if (value == "-") {
@@ -191,4 +208,8 @@ std::size_t evget::Cli::StoreNEvents() const {
 
 std::chrono::seconds evget::Cli::StoreAfter() const {
     return store_after_;
+}
+
+std::optional<std::pair<std::uint32_t, std::uint32_t>> evget::Cli::ScreenDimensions() const {
+    return screen_dimensions_;
 }

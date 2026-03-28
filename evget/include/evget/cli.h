@@ -13,7 +13,9 @@
 #include <format>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "evget/error.h"
@@ -95,6 +97,12 @@ public:
      */
     [[nodiscard]] std::chrono::seconds StoreAfter() const;
 
+    /**
+     * \brief Get the screen dimensions.
+     * \return optional pair of (width, height) in pixels
+     */
+    [[nodiscard]] std::optional<std::pair<std::uint32_t, std::uint32_t>> ScreenDimensions() const;
+
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{60};
@@ -104,6 +112,7 @@ private:
     std::size_t store_n_events_{kDefaultNEvents};
     std::chrono::seconds store_after_{kDefaultStoreAfter};
     evget::EventSource event_source_{EventSource::kX11};
+    std::optional<std::pair<std::uint32_t, std::uint32_t>> screen_dimensions_;
     std::vector<std::string> event_source_descriptions_{EventSourceDescriptions()};
 
     static std::string FormatEnum(

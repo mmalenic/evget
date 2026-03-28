@@ -22,15 +22,15 @@ public:
     /**
      * Create an event transformer.
      * \param libinput_api the libinput API wrapper
-     * \param drm_api the DRM API wrapper
+     * \param dimensions the screen dimensions for absolute transformation
      */
-    explicit EventTransformer(LibInputApi& libinput_api, DrmApi& drm_api);
+    explicit EventTransformer(LibInputApi& libinput_api, ScreenDimensions dimensions);
 
     evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;
-    std::reference_wrapper<DrmApi> drm_api_;
+    ScreenDimensions dimensions_;
 
     std::optional<double> previous_absolute_x_;
     std::optional<double> previous_absolute_y_;
