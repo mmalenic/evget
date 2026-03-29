@@ -134,6 +134,13 @@ public:
     MouseScroll& Modifier(ModifierValue modifier);
 
     /**
+     * \brief Add device id.
+     * \param device_id unique device identifier
+     * \return reference to this `MouseScroll` object
+     */
+    MouseScroll& DeviceId(int device_id);
+
+    /**
      * \brief Build mouse wheel event.
      * \param data data container to add the event to
      * \return reference to the data container
@@ -146,6 +153,7 @@ private:
     std::optional<DeviceType> device_;
     std::optional<double> position_x_;
     std::optional<double> position_y_;
+    std::optional<int> device_id_;
     std::optional<double> vertical_;
     std::optional<double> horizontal_;
     std::optional<std::string> device_name_;

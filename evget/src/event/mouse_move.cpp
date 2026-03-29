@@ -75,6 +75,11 @@ evget::MouseMove& evget::MouseMove::Screen(int screen) {
     return *this;
 }
 
+evget::MouseMove& evget::MouseMove::DeviceId(int device_id) {
+    device_id_ = device_id;
+    return *this;
+}
+
 evget::MouseMove& evget::MouseMove::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
@@ -94,6 +99,7 @@ evget::Data& evget::MouseMove::Build(Data& data) const {
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
          FromInt(screen_),
+         FromInt(device_id_),
          ToUnderlyingOptional(device_)},
         modifiers_
     };

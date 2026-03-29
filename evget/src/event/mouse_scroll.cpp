@@ -80,6 +80,11 @@ evget::MouseScroll& evget::MouseScroll::FocusWindowHeight(double height) {
     return *this;
 }
 
+evget::MouseScroll& evget::MouseScroll::DeviceId(int device_id) {
+    device_id_ = device_id;
+    return *this;
+}
+
 evget::MouseScroll& evget::MouseScroll::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
@@ -104,6 +109,7 @@ evget::Data& evget::MouseScroll::Build(Data& data) const {
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
          FromInt(screen_),
+         FromInt(device_id_),
          ToUnderlyingOptional(device_),
          FromDouble(vertical_),
          FromDouble(horizontal_)},

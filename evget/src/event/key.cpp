@@ -96,6 +96,11 @@ evget::Key& evget::Key::Screen(int screen) {
     return *this;
 }
 
+evget::Key& evget::Key::DeviceId(int device_id) {
+    device_id_ = device_id;
+    return *this;
+}
+
 evget::Key& evget::Key::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
@@ -116,6 +121,7 @@ evget::Data& evget::Key::Build(Data& data) const {
             FromDouble(focus_window_width_),
             FromDouble(focus_window_height_),
             FromInt(screen_),
+            FromInt(device_id_),
             ToUnderlyingOptional(device_),
             FromInt(button_),
             FromString(name_),

@@ -86,6 +86,11 @@ evget::MouseClick& evget::MouseClick::FocusWindowHeight(double height) {
     return *this;
 }
 
+evget::MouseClick& evget::MouseClick::DeviceId(int device_id) {
+    device_id_ = device_id;
+    return *this;
+}
+
 evget::MouseClick& evget::MouseClick::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
@@ -111,6 +116,7 @@ evget::Data& evget::MouseClick::Build(Data& data) const {
             FromDouble(focus_window_width_),
             FromDouble(focus_window_height_),
             FromInt(screen_),
+            FromInt(device_id_),
             ToUnderlyingOptional(device_),
             FromInt(button_),
             FromString(name_),
