@@ -138,7 +138,7 @@ public:
      * \param device_id unique device identifier
      * \return reference to this `MouseScroll` object
      */
-    MouseScroll& DeviceId(int device_id);
+    MouseScroll& DeviceId(std::string device_id);
 
     /**
      * \brief Build mouse wheel event.
@@ -153,7 +153,7 @@ private:
     std::optional<DeviceType> device_;
     std::optional<double> position_x_;
     std::optional<double> position_y_;
-    std::optional<int> device_id_;
+    std::optional<std::string> device_id_;
     std::optional<double> vertical_;
     std::optional<double> horizontal_;
     std::optional<std::string> device_name_;

@@ -153,7 +153,7 @@ public:
      * \param device_id unique device identifier
      * \return reference to this `Key` object
      */
-    Key& DeviceId(int device_id);
+    Key& DeviceId(std::string device_id);
 
     /**
      * \brief Build key event.
@@ -168,7 +168,7 @@ private:
     std::optional<DeviceType> device_;
     std::optional<double> position_x_;
     std::optional<double> position_y_;
-    std::optional<int> device_id_;
+    std::optional<std::string> device_id_;
     std::optional<ButtonAction> action_;
     std::optional<int> button_;
     std::optional<std::string> name_;

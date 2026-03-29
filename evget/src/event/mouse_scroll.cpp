@@ -80,8 +80,8 @@ evget::MouseScroll& evget::MouseScroll::FocusWindowHeight(double height) {
     return *this;
 }
 
-evget::MouseScroll& evget::MouseScroll::DeviceId(int device_id) {
-    device_id_ = device_id;
+evget::MouseScroll& evget::MouseScroll::DeviceId(std::string device_id) {
+    device_id_ = std::move(device_id);
     return *this;
 }
 
@@ -109,7 +109,7 @@ evget::Data& evget::MouseScroll::Build(Data& data) const {
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
          FromInt(screen_),
-         FromInt(device_id_),
+         FromString(device_id_),
          ToUnderlyingOptional(device_),
          FromDouble(vertical_),
          FromDouble(horizontal_)},

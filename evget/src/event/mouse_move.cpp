@@ -75,8 +75,8 @@ evget::MouseMove& evget::MouseMove::Screen(int screen) {
     return *this;
 }
 
-evget::MouseMove& evget::MouseMove::DeviceId(int device_id) {
-    device_id_ = device_id;
+evget::MouseMove& evget::MouseMove::DeviceId(std::string device_id) {
+    device_id_ = std::move(device_id);
     return *this;
 }
 
@@ -99,7 +99,7 @@ evget::Data& evget::MouseMove::Build(Data& data) const {
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
          FromInt(screen_),
-         FromInt(device_id_),
+         FromString(device_id_),
          ToUnderlyingOptional(device_)},
         modifiers_
     };

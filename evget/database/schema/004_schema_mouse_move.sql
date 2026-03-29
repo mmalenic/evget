@@ -12,7 +12,7 @@ create table mouse_move (
     focus_window_width real,
     focus_window_height real,
     screen real,
-    device_id integer,
+    device_id text,
     device_type integer not null references device_type(id)
 );
 

@@ -196,7 +196,7 @@ constexpr FieldDefinition kModifierField{"Modifier", DataType::kString};
 constexpr FieldDefinition kDeviceNameField{"DeviceName", DataType::kString};
 
 /// \brief Field definition for device identifier.
-constexpr FieldDefinition kDeviceIdField{"DeviceId", DataType::kInteger};
+constexpr FieldDefinition kDeviceIdField{"DeviceId", DataType::kString};
 
 /// \brief Field definition for focused window name.
 constexpr FieldDefinition kFocusWindowNameField{"FocusWindowName", DataType::kString};

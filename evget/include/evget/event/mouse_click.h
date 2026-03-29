@@ -146,7 +146,7 @@ public:
      * \param device_id unique device identifier
      * \return reference to this `MouseClick` object
      */
-    MouseClick& DeviceId(int device_id);
+    MouseClick& DeviceId(std::string device_id);
 
     /**
      * \brief Build mouse click event.
@@ -161,7 +161,7 @@ private:
     std::optional<DeviceType> device_;
     std::optional<double> position_x_;
     std::optional<double> position_y_;
-    std::optional<int> device_id_;
+    std::optional<std::string> device_id_;
     std::optional<ButtonAction> action_;
     std::optional<int> button_;
     std::optional<std::string> name_;

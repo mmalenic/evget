@@ -96,8 +96,8 @@ evget::Key& evget::Key::Screen(int screen) {
     return *this;
 }
 
-evget::Key& evget::Key::DeviceId(int device_id) {
-    device_id_ = device_id;
+evget::Key& evget::Key::DeviceId(std::string device_id) {
+    device_id_ = std::move(device_id);
     return *this;
 }
 
@@ -121,7 +121,7 @@ evget::Data& evget::Key::Build(Data& data) const {
             FromDouble(focus_window_width_),
             FromDouble(focus_window_height_),
             FromInt(screen_),
-            FromInt(device_id_),
+            FromString(device_id_),
             ToUnderlyingOptional(device_),
             FromInt(button_),
             FromString(name_),
