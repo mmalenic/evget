@@ -175,7 +175,7 @@ evget::Result<void> evget::DatabaseStorage::BindValuesModifier(
     const std::string& entry_uuid
 ) {
     for (const auto& modifier : modifiers) {
-        auto modifier_uuid = to_string(boost::uuids::random_generator()());
+        auto modifier_uuid = boost::uuids::to_string(boost::uuids::random_generator()());
         query->BindChars(0, modifier_uuid.c_str());
         query->BindChars(1, entry_uuid.c_str());
         query->BindChars(2, modifier.c_str());

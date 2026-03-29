@@ -37,17 +37,20 @@ private:
     std::reference_wrapper<LibInputApi> libinput_api_;
     ScreenDimensions dimensions_;
 
-    std::unordered_map<libinput_device*, int> device_ids_;
-    int next_device_id_{};
+    std::unordered_map<libinput_device*, std::string> device_uuids_;
 
-    std::unordered_map<int, double> previous_absolute_x_;
-    std::unordered_map<int, double> previous_absolute_y_;
-    std::unordered_map<int, evget::IntervalTracker> device_intervals_;
+    std::unordered_map<std::string, double> previous_absolute_x_;
+    std::unordered_map<std::string, double> previous_absolute_y_;
+    std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
-    int GetDeviceId(libinput_device& device);
-    void SetRelativePosition(evget::MouseMove& builder, int device_id, libinput_event_pointer& pointer_event);
+    const std::string& GetDeviceUuid(libinput_device& device);
+    void SetRelativePosition(
+        evget::MouseMove& builder,
+        const std::string& device_uuid,
+        libinput_event_pointer& pointer_event
+    );
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;

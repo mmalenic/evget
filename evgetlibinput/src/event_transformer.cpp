@@ -1,5 +1,7 @@
 #include "evgetlibinput/event_transformer.h"
 
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <libinput.h>
 
 #include <utility>
@@ -27,7 +29,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         return {};
     }
 
-    auto device_id = GetDeviceId(*device);
+    const auto& device_uuid = GetDeviceUuid(*device);
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
         case LIBINPUT_EVENT_POINTER_MOTION: {
@@ -37,12 +39,12 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto builder =
                 evget::MouseMove{}
                     .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_id].Interval(event_time))
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .PositionX(libinput_api_.get().GetPointerDx(*pointer_event))
                     .PositionY(libinput_api_.get().GetPointerDy(*pointer_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_id);
+                    .DeviceId(device_uuid);
             SetModifierValues(builder);
             break;
         }
@@ -53,13 +55,13 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto builder =
                 evget::MouseMove{}
                     .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_id].Interval(event_time))
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_id);
+                    .DeviceId(device_uuid);
             SetModifierValues(builder);
 
-            SetRelativePosition(builder, device_id, *pointer_event);
+            SetRelativePosition(builder, device_uuid, *pointer_event);
 
             break;
         }
@@ -71,12 +73,12 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto builder =
                 evget::MouseClick{}
                     .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_id].Interval(event_time))
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .Button(static_cast<int>(libinput_api_.get().GetPointerButton(*pointer_event)))
                     .Action(action)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_id);
+                    .DeviceId(device_uuid);
             SetModifierValues(builder);
             break;
         }
@@ -85,17 +87,17 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     return evget::Data{};
 }
 
-int evgetlibinput::EventTransformer::GetDeviceId(libinput_device& device) {
-    auto [iterator, inserted] = device_ids_.try_emplace(&device, next_device_id_);
+const std::string& evgetlibinput::EventTransformer::GetDeviceUuid(libinput_device& device) {
+    auto [iterator, inserted] = device_uuids_.try_emplace(&device);
     if (inserted) {
-        next_device_id_++;
+        iterator->second = boost::uuids::to_string(boost::uuids::random_generator()());
     }
     return iterator->second;
 }
 
 void evgetlibinput::EventTransformer::SetRelativePosition(
     evget::MouseMove& builder,
-    int device_id,
+    const std::string& device_uuid,
     libinput_event_pointer& pointer_event
 ) {
     auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(pointer_event, dimensions_.width);
@@ -103,13 +105,13 @@ void evgetlibinput::EventTransformer::SetRelativePosition(
 
     // Convert absolute motion to relative motion so that there is consistency with
     // `LIBINPUT_EVENT_POINTER_MOTION`.
-    if (previous_absolute_x_.contains(device_id) && previous_absolute_y_.contains(device_id)) {
-        builder.PositionX(absolute_x - previous_absolute_x_[device_id])
-            .PositionY(absolute_y - previous_absolute_y_[device_id]);
+    if (previous_absolute_x_.contains(device_uuid) && previous_absolute_y_.contains(device_uuid)) {
+        builder.PositionX(absolute_x - previous_absolute_x_[device_uuid])
+            .PositionY(absolute_y - previous_absolute_y_[device_uuid]);
     }
 
-    previous_absolute_x_[device_id] = absolute_x;
-    previous_absolute_y_[device_id] = absolute_y;
+    previous_absolute_x_[device_uuid] = absolute_x;
+    previous_absolute_y_[device_uuid] = absolute_y;
 }
 
 evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
