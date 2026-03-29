@@ -28,6 +28,7 @@
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
 #include "evget/event_transformer.h"
+#include "evget/interval_tracker.h"
 #include "evgetx11/event_switch.h"
 #include "evgetx11/event_switch_pointer_key.h"
 #include "evgetx11/event_switch_touch.h"
@@ -69,6 +70,7 @@ private:
 
     std::unordered_map<int, evget::DeviceType> devices_;
     std::unordered_map<int, std::string> id_to_name_;
+    std::unordered_map<int, evget::IntervalTracker> device_intervals_;
 
     std::tuple<Switches...> switches_;
     std::optional<int> pointer_id_;
@@ -106,10 +108,7 @@ private:
 
 template <typename... Switches>
 EventTransformer<Switches...>::EventTransformer(X11Api& x_wrapper, EventSwitch x_event_switch, Switches... switches)
-    : evget::EventTransformer<InputEvent>{},
-      x_wrapper_{x_wrapper},
-      x_event_switch_{std::move(x_event_switch)},
-      switches_{std::move(switches)...} {
+    : x_wrapper_{x_wrapper}, x_event_switch_{std::move(x_event_switch)}, switches_{std::move(switches)...} {
     RefreshDevices();
 }
 
@@ -191,15 +190,16 @@ evget::Data EventTransformer<Switches...>::TransformEvent(InputEvent event) {
             return data;
         }
 
+        auto source_id = event.ViewData<XIRawEvent>().sourceid;
         // Iterate through switches until the first one returns true.
         std::apply(
-            [&event, &data, this](auto&&... event_switches) {
+            [&event, &data, this, source_id](auto&&... event_switches) {
                 ((event_switches.SwitchOnEvent(
                      event,
                      data,
                      x_event_switch_,
-                     [this, &event](Time time) {
-                         auto interval = event.Interval(time);
+                     [this, &event, source_id](Time time) {
+                         auto interval = device_intervals_[source_id].Interval(time);
                          if (interval.has_value()) {
                              spdlog::trace(
                                  "interval {} with event type {}",

@@ -263,6 +263,7 @@ void EventSwitch::AddMotionEvent(
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid))
+        .DeviceId(event.sourceid)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 
@@ -288,6 +289,7 @@ void EventSwitch::AddButtonEvent(
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid))
+        .DeviceId(event.sourceid)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Action(action)
