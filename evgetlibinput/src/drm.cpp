@@ -8,11 +8,12 @@
 #include <xf86drmMode.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <format>
+#include <iterator>
 #include <memory>
 #include <span>
+#include <vector>
 
 #include "evget/error.h"
 
@@ -141,10 +142,4 @@ evgetlibinput::DrmOutput::File::~File() {
     if (result != 0) {
         spdlog::warn("failed to close file descriptor");
     }
-}
-
-evgetlibinput::DrmOutput::DrmDevicesDeleter::DrmDevicesDeleter(int count) : count_{count} {}
-
-void evgetlibinput::DrmOutput::DrmDevicesDeleter::SetCount(int count) {
-    count_ = count;
 }

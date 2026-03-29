@@ -1,5 +1,5 @@
 /**
- * \file libinput_api.h
+ * \file libinput.h
  * \brief The libinput API abstraction layer for all libinput functions used within evget.
  */
 

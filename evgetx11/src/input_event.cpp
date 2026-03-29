@@ -2,10 +2,6 @@
 
 #include <evget/event/schema.h>
 
-#include <chrono>
-#include <cstdint>
-#include <optional>
-
 #include "evgetx11/x11.h"
 
 evgetx11::InputEvent::InputEvent(X11Api& x_wrapper)

@@ -8,15 +8,16 @@
 
 #include <libinput.h>
 
-#include <optional>
+#include <chrono>
+#include <unordered_map>
 
-#include "drm.h"
 #include "evget/error.h"
 #include "evget/event/button_action.h"
 #include "evget/event/modifier_value.h"
 #include "evget/event/mouse_move.h"
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
+#include "evget/interval_tracker.h"
 #include "evgetlibinput/drm.h"
 #include "evgetlibinput/libinput.h"
 
@@ -36,12 +37,17 @@ private:
     std::reference_wrapper<LibInputApi> libinput_api_;
     ScreenDimensions dimensions_;
 
-    std::optional<double> previous_absolute_x_;
-    std::optional<double> previous_absolute_y_;
+    std::unordered_map<libinput_device*, int> device_ids_;
+    int next_device_id_{};
+
+    std::unordered_map<int, double> previous_absolute_x_;
+    std::unordered_map<int, double> previous_absolute_y_;
+    std::unordered_map<int, evget::IntervalTracker> device_intervals_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
-    void SetRelativePosition(evget::MouseMove& builder, libinput_event_pointer& pointer_event);
+    int GetDeviceId(libinput_device& device);
+    void SetRelativePosition(evget::MouseMove& builder, int device_id, libinput_event_pointer& pointer_event);
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;

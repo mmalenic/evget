@@ -6,10 +6,7 @@
 #ifndef EVGETLIBINPUT_DRM_H
 #define EVGETLIBINPUT_DRM_H
 
-#include <xf86drm.h>
-
 #include <memory>
-#include <vector>
 
 #include "evget/error.h"
 
@@ -89,33 +86,6 @@ private:
         explicit File(int file);
 
         int file_;
-    };
-
-    /**
-     * \brief A custom deleter for device pointers.
-     */
-    struct DrmDevicesDeleter {
-        /**
-         * \brief Create a drm devices delete.
-         * \param count number of device pointers
-         */
-        explicit DrmDevicesDeleter(int count);
-
-        /**
-         * \brief Set the count after construction.
-         * \param count count
-         */
-        void SetCount(int count);
-
-        DrmDevicesDeleter() = default;
-
-        void operator()(drmDevicePtr* devices) const {
-            drmFreeDevices(devices, count_);
-            delete[] devices;
-        }
-
-    private:
-        int count_ = 0;
     };
 
     DrmOutput() = default;
