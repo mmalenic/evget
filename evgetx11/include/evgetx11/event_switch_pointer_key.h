@@ -190,7 +190,7 @@ void EventSwitchPointerKey::KeyEvent(
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Device(x_event_switch.GetDevice(raw_event.sourceid))
-        .DeviceId(raw_event.sourceid)
+        .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
         .Timestamp(event.GetTimestamp())
         .Action(action)
         .Button(raw_event.detail)
@@ -244,7 +244,7 @@ void EventSwitchPointerKey::ScrollEvent(
     builder.Interval(get_time(raw_event.time))
         .Timestamp(event.GetTimestamp())
         .Device(x_event_switch.GetDevice(raw_event.sourceid))
-        .DeviceId(raw_event.sourceid)
+        .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 

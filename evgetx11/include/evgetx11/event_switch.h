@@ -8,6 +8,7 @@
 
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>
+#include <boost/uuid/uuid_io.hpp>
 #include <evget/error.h>
 #include <evget/event/button_action.h>
 #include <evget/event/data.h>
@@ -134,6 +135,13 @@ public:
     [[nodiscard]] bool HasDevice(int device_id) const;
 
     /**
+     * \brief Get the UUID for the given device ID, generating one if needed.
+     * \param device_id the ID of the device
+     * \return reference to the device UUID string
+     */
+    [[nodiscard]] const std::string& GetDeviceUuid(int device_id);
+
+    /**
      * \brief Set the modifier state for a builder.
      * \tparam T builder type that supports modifier functions
      * \param modifier_state the X11 modifier state bitmask
@@ -175,6 +183,7 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::string>> button_map_;
     std::unordered_map<int, evget::DeviceType> devices_;
     std::unordered_map<int, std::string> id_to_name_;
+    std::unordered_map<int, std::string> device_uuids_;
     int pointer_id_{};
 };
 
@@ -263,7 +272,7 @@ void EventSwitch::AddMotionEvent(
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid))
-        .DeviceId(event.sourceid)
+        .DeviceId(GetDeviceUuid(event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 
@@ -289,7 +298,7 @@ void EventSwitch::AddButtonEvent(
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid))
-        .DeviceId(event.sourceid)
+        .DeviceId(GetDeviceUuid(event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Action(action)
