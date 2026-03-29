@@ -25,6 +25,7 @@ target_sources(
             ${SRC}/database/sqlite/query.cpp
             ${SRC}/async/scheduler/interval.cpp
             ${SRC}/async/scheduler/scheduler.cpp
+            ${SRC}/interval_tracker.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -61,6 +62,7 @@ target_sources(
            ${INCLUDE}/async/container/locking_vector.h
            ${INCLUDE}/async/scheduler/interval.h
            ${INCLUDE}/async/scheduler/scheduler.h
+           ${INCLUDE}/interval_tracker.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evget)
 
