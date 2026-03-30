@@ -16,6 +16,7 @@ target_sources(
             # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
             ${SRC}/libinput.cpp
             ${SRC}/drm.cpp
+            ${SRC}/evdev.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
            HEADERS
@@ -29,6 +30,7 @@ target_sources(
            # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput.h
            ${INCLUDE}/drm.h
+           ${INCLUDE}/evdev.h
     # ${INCLUDE}/udev_context.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetlibinput)
@@ -94,6 +96,16 @@ toolbelt_add_dep(
     PUBLIC
     LINK_COMPONENTS
     libdrm::libdrm
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    libevdev
+    VISIBILITY
+    PRIVATE
+    LINK_COMPONENTS
+    libevdev::libevdev
     FIND_PACKAGE_ARGS
     REQUIRED
 )

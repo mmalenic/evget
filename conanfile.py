@@ -53,7 +53,7 @@ class EvgetRecipe(ConanFile):
         # Verify headers by setting CMAKE_VERIFY_INTERFACE_HEADER_SETS:
         # https://cmake.org/cmake/help/latest/variable/CMAKE_VERIFY_INTERFACE_HEADER_SETS.html#variable:CMAKE_VERIFY_INTERFACE_HEADER_SETS
         "verify_headers": [True, False],
-        # Whether system packages like X11 or libinput are installed as well as regular dependencies.
+        # Whether system packages like X11 or libudev are installed as well as regular dependencies.
         "require_system_packages": [True, False],
         # Whether to build the evgetx11 library.
         "build_evgetx11": [True, False],
@@ -96,6 +96,7 @@ class EvgetRecipe(ConanFile):
                 self.requires("libudev/system")
 
             self.requires("libinput/[^1]")
+            self.requires("libevdev/[^1]")
             self.requires("xkbcommon/[^1]")
             self.requires("wayland/[^1]")
             self.requires("libdrm/[^2]")
