@@ -63,6 +63,7 @@ target_sources(
            ${INCLUDE}/async/scheduler/interval.h
            ${INCLUDE}/async/scheduler/scheduler.h
            ${INCLUDE}/interval_tracker.h
+           ${INCLUDE}/device_id.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evget)
 
