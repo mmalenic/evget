@@ -28,7 +28,7 @@ TEST(KeyTest, Event) {
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
             .Button(1)
-            .Name("name")
+            .ButtonName("name")
             .Action(evget::ButtonAction::kPress)
             .Character("a")
             .Modifier(evget::ModifierValue::kAlt)

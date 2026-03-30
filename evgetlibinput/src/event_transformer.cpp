@@ -86,7 +86,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
             const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, button_code);
             if (button_name != nullptr) {
-                builder.Name(button_name);
+                builder.ButtonName(button_name);
             }
 
             SetModifierValues(builder);

@@ -28,7 +28,7 @@ TEST(MouseClickTest, Event) {
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
             .Button(1)
-            .Name("name")
+            .ButtonName("name")
             .Action(evget::ButtonAction::kPress)
             .Modifier(evget::ModifierValue::kAlt)
             .Build(data);

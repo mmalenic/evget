@@ -79,11 +79,11 @@ public:
     Key& Button(int button);
 
     /**
-     * \brief Add id.
-     * \param name key name
+     * \brief Add button name.
+     * \param name button name
      * \return reference to this `Key` object
      */
-    Key& Name(std::string name);
+    Key& ButtonName(std::string name);
 
     /**
      * \brief Add character.

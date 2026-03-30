@@ -51,7 +51,7 @@ evget::MouseClick& evget::MouseClick::Button(int button) {
     return *this;
 }
 
-evget::MouseClick& evget::MouseClick::Name(std::string name) {
+evget::MouseClick& evget::MouseClick::ButtonName(std::string name) {
     name_ = std::move(name);
     return *this;
 }

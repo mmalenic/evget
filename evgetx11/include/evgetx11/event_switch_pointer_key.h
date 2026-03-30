@@ -195,7 +195,7 @@ void EventSwitchPointerKey::KeyEvent(
         .Action(action)
         .Button(raw_event.detail)
         .Character(character)
-        .Name(name);
+        .ButtonName(name);
 
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);

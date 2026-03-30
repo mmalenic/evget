@@ -79,11 +79,11 @@ public:
     MouseClick& Button(int button);
 
     /**
-     * \brief Add name.
+     * \brief Add button name.
      * \param name button name
      * \return reference to this `MouseClick` object
      */
-    MouseClick& Name(std::string name);
+    MouseClick& ButtonName(std::string name);
 
     /**
      * \brief Add the device name.

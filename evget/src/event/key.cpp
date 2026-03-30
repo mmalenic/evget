@@ -51,7 +51,7 @@ evget::Key& evget::Key::Button(int button) {
     return *this;
 }
 
-evget::Key& evget::Key::Name(std::string name) {
+evget::Key& evget::Key::ButtonName(std::string name) {
     name_ = std::move(name);
     return *this;
 }

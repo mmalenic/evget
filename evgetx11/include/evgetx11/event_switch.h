@@ -303,7 +303,7 @@ void EventSwitch::AddButtonEvent(
         .PositionY(query_pointer.root_y)
         .Action(action)
         .Button(button)
-        .Name(button_map_[event.sourceid][button]);
+        .ButtonName(button_map_[event.sourceid][button]);
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
