@@ -20,6 +20,7 @@
 #include "evget/input_event.h"
 #include "evget/interval_tracker.h"
 #include "evgetlibinput/drm.h"
+#include "evgetlibinput/evdev.h"
 #include "evgetlibinput/libinput.h"
 
 namespace evgetlibinput {
@@ -28,14 +29,16 @@ public:
     /**
      * Create an event transformer.
      * \param libinput_api the libinput API wrapper
+     * \param evdev_api the evdev API wrapper
      * \param dimensions the screen dimensions for absolute transformation
      */
-    explicit EventTransformer(LibInputApi& libinput_api, ScreenDimensions dimensions);
+    EventTransformer(LibInputApi& libinput_api, EvdevApi& evdev_api, ScreenDimensions dimensions);
 
     evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
 private:
     std::reference_wrapper<LibInputApi> libinput_api_;
+    std::reference_wrapper<EvdevApi> evdev_api_;
     ScreenDimensions dimensions_;
 
     evget::DeviceId<libinput_device*> device_ids_;

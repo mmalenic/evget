@@ -74,6 +74,7 @@ int main(int argc, char* argv[]) {
 
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
+        evgetlibinput::Evdev evdev{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
         std::optional<evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>> li_handler{};
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
                 dimensions = (*drm_result)->GetDimensions();
             }
 
-            li_transformer.emplace(*libinput, dimensions);
+            li_transformer.emplace(*libinput, evdev, dimensions);
             li_next_event.emplace(*libinput);
             li_handler.emplace(manager, *li_transformer, *li_next_event);
 

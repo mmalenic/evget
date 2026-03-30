@@ -1,6 +1,7 @@
 #include "evgetlibinput/event_transformer.h"
 
 #include <libinput.h>
+#include <linux/input-event-codes.h>
 
 #include <utility>
 
@@ -13,8 +14,12 @@
 #include "evgetlibinput/drm.h"
 #include "evgetlibinput/libinput.h"
 
-evgetlibinput::EventTransformer::EventTransformer(LibInputApi& libinput_api, evgetlibinput::ScreenDimensions dimensions)
-    : libinput_api_{libinput_api}, dimensions_{dimensions} {}
+evgetlibinput::EventTransformer::EventTransformer(
+    LibInputApi& libinput_api,
+    EvdevApi& evdev_api,
+    ScreenDimensions dimensions
+)
+    : libinput_api_{libinput_api}, evdev_api_{evdev_api}, dimensions_{dimensions} {}
 
 evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<LibInputEvent> event) {
     auto inner_event = std::move(event.ViewData());
@@ -66,6 +71,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_POINTER_BUTTON: {
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
+            auto button_code = libinput_api_.get().GetPointerButton(*pointer_event);
             auto action = GetButtonAction(libinput_api_.get().GetPointerButtonState(*pointer_event));
 
             auto builder =
@@ -73,10 +79,16 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Timestamp(event.GetTimestamp())
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(libinput_api_.get().GetPointerButton(*pointer_event)))
+                    .Button(static_cast<int>(button_code))
                     .Action(action)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
+
+            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, button_code);
+            if (button_name != nullptr) {
+                builder.Name(button_name);
+            }
+
             SetModifierValues(builder);
             break;
         }
