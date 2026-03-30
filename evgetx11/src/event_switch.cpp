@@ -2,8 +2,6 @@
 
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <evget/event/device_type.h>
 
 #include <optional>
@@ -72,11 +70,7 @@ void evgetx11::EventSwitch::RefreshDevices(
 evgetx11::EventSwitch::EventSwitch(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
 const std::string& evgetx11::EventSwitch::GetDeviceUuid(int device_id) {
-    auto [iterator, inserted] = device_uuids_.try_emplace(device_id);
-    if (inserted) {
-        iterator->second = boost::uuids::to_string(boost::uuids::random_generator()());
-    }
-    return iterator->second;
+    return device_ids_.Uuid(device_id);
 }
 
 const std::string& evgetx11::EventSwitch::GetButtonName(int device_id, int button) const {

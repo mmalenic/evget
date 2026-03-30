@@ -1,7 +1,5 @@
 #include "evgetlibinput/event_transformer.h"
 
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <libinput.h>
 
 #include <utility>
@@ -29,7 +27,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         return {};
     }
 
-    const auto& device_uuid = GetDeviceUuid(*device);
+    const auto& device_uuid = device_ids_.Uuid(device);
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
         case LIBINPUT_EVENT_POINTER_MOTION: {
@@ -85,14 +83,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     }
 
     return evget::Data{};
-}
-
-const std::string& evgetlibinput::EventTransformer::GetDeviceUuid(libinput_device& device) {
-    auto [iterator, inserted] = device_uuids_.try_emplace(&device);
-    if (inserted) {
-        iterator->second = boost::uuids::to_string(boost::uuids::random_generator()());
-    }
-    return iterator->second;
 }
 
 void evgetlibinput::EventTransformer::SetRelativePosition(

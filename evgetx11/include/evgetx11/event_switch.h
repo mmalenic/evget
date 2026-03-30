@@ -8,7 +8,7 @@
 
 #include <X11/X.h>
 #include <X11/extensions/XInput2.h>
-#include <boost/uuid/uuid_io.hpp>
+#include <evget/device_id.h>
 #include <evget/error.h>
 #include <evget/event/button_action.h>
 #include <evget/event/data.h>
@@ -135,11 +135,11 @@ public:
     [[nodiscard]] bool HasDevice(int device_id) const;
 
     /**
-     * \brief Get the UUID for the given device ID, generating one if needed.
+     * \brief Get the UUID for the given device ID.
      * \param device_id the ID of the device
-     * \return reference to the device UUID string
+     * \return reference to the UUID
      */
-    [[nodiscard]] const std::string& GetDeviceUuid(int device_id);
+    const std::string& GetDeviceUuid(int device_id);
 
     /**
      * \brief Set the modifier state for a builder.
@@ -183,7 +183,7 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::string>> button_map_;
     std::unordered_map<int, evget::DeviceType> devices_;
     std::unordered_map<int, std::string> id_to_name_;
-    std::unordered_map<int, std::string> device_uuids_;
+    evget::DeviceId<int> device_ids_;
     int pointer_id_{};
 };
 

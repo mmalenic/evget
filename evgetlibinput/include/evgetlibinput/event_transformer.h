@@ -11,6 +11,7 @@
 #include <chrono>
 #include <unordered_map>
 
+#include "evget/device_id.h"
 #include "evget/error.h"
 #include "evget/event/button_action.h"
 #include "evget/event/modifier_value.h"
@@ -37,7 +38,7 @@ private:
     std::reference_wrapper<LibInputApi> libinput_api_;
     ScreenDimensions dimensions_;
 
-    std::unordered_map<libinput_device*, std::string> device_uuids_;
+    evget::DeviceId<libinput_device*> device_ids_;
 
     std::unordered_map<std::string, double> previous_absolute_x_;
     std::unordered_map<std::string, double> previous_absolute_y_;
@@ -45,7 +46,6 @@ private:
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
-    const std::string& GetDeviceUuid(libinput_device& device);
     void SetRelativePosition(
         evget::MouseMove& builder,
         const std::string& device_uuid,
