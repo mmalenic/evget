@@ -207,3 +207,7 @@ std::uint32_t evgetlibinput::LibInput::GetTabletToolButton(libinput_event_tablet
 libinput_button_state evgetlibinput::LibInput::GetTabletToolButtonState(libinput_event_tablet_tool& event) {
     return libinput_event_tablet_tool_get_button_state(&event);
 }
+
+libinput_tablet_tool_tip_state evgetlibinput::LibInput::GetTabletToolTipState(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_tip_state(&event);
+}

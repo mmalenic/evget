@@ -181,6 +181,13 @@ public:
     virtual libinput_button_state GetTabletToolButtonState(libinput_event_tablet_tool& event) = 0;
 
     /**
+     * \brief Get the tip state for a tablet tool event.
+     * \param event tablet tool event
+     * \return tip state
+     */
+    virtual libinput_tablet_tool_tip_state GetTabletToolTipState(libinput_event_tablet_tool& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -253,6 +260,8 @@ public:
     std::uint32_t GetTabletToolButton(libinput_event_tablet_tool& event) override;
 
     libinput_button_state GetTabletToolButtonState(libinput_event_tablet_tool& event) override;
+
+    libinput_tablet_tool_tip_state GetTabletToolTipState(libinput_event_tablet_tool& event) override;
 
 private:
     LibInput() = default;
