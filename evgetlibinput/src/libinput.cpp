@@ -183,3 +183,11 @@ std::uint32_t evgetlibinput::LibInput::GetPointerButton(libinput_event_pointer& 
 libinput_button_state evgetlibinput::LibInput::GetPointerButtonState(libinput_event_pointer& event) {
     return libinput_event_pointer_get_button_state(&event);
 }
+
+libinput_event_tablet_tool* evgetlibinput::LibInput::GetTabletToolEvent(libinput_event& event) {
+    return libinput_event_get_tablet_tool_event(&event);
+}
+
+std::uint64_t evgetlibinput::LibInput::GetTabletToolTimeMicroseconds(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_time_usec(&event);
+}
