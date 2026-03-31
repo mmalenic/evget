@@ -16,4 +16,5 @@ insert into device_type values (0, 'Mouse'),
     (1, 'Keyboard'),
     (2, 'Touchpad'),
     (3, 'Touchscreen'),
-    (4, 'Unknown');
+    (4, 'Tablet'),
+    (5, 'Unknown');

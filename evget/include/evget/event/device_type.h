@@ -17,6 +17,7 @@ enum class DeviceType : std::uint8_t {
     kKeyboard, ///< Keyboard device
     kTouchpad, ///< Touchpad device
     kTouchscreen, ///< Touchscreen device
+    kTablet, ///< Tablet device
     kUnknown ///< Unknown or unrecognized device type
 };
 } // namespace evget

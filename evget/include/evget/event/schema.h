@@ -50,6 +50,9 @@ constexpr std::string_view kDeviceTypeTouchpad{"Touchpad"};
 /// \brief String representation for touchscreen device type.
 constexpr std::string_view kDeviceTypeTouchscreen{"Touchscreen"};
 
+/// \brief String representation for tablet device type.
+constexpr std::string_view kDeviceTypeTablet{"Tablet"};
+
 /// \brief String representation for unknown device type.
 constexpr std::string_view kDeviceTypeUnknown{"Unknown"};
 
@@ -333,6 +336,8 @@ constexpr std::string FromDevice(const std::optional<DeviceType> optional) {
                 return std::string{detail::kDeviceTypeTouchpad};
             case DeviceType::kTouchscreen:
                 return std::string{detail::kDeviceTypeTouchscreen};
+            case DeviceType::kTablet:
+                return std::string{detail::kDeviceTypeTablet};
             case DeviceType::kUnknown:
                 return std::string{detail::kDeviceTypeUnknown};
             default:
