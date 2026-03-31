@@ -199,3 +199,11 @@ double evgetlibinput::LibInput::GetTabletToolDx(libinput_event_tablet_tool& even
 double evgetlibinput::LibInput::GetTabletToolDy(libinput_event_tablet_tool& event) {
     return libinput_event_tablet_tool_get_dy(&event);
 }
+
+std::uint32_t evgetlibinput::LibInput::GetTabletToolButton(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_button(&event);
+}
+
+libinput_button_state evgetlibinput::LibInput::GetTabletToolButtonState(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_button_state(&event);
+}
