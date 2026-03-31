@@ -153,6 +153,20 @@ public:
     virtual std::uint64_t GetTabletToolTimeMicroseconds(libinput_event_tablet_tool& event) = 0;
 
     /**
+     * \brief Get the change in x position from a tablet tool event.
+     * \param event tablet tool event
+     * \return change in x direction
+     */
+    virtual double GetTabletToolDx(libinput_event_tablet_tool& event) = 0;
+
+    /**
+     * \brief Get the change in y position from a tablet tool event.
+     * \param event tablet tool event
+     * \return change in y direction
+     */
+    virtual double GetTabletToolDy(libinput_event_tablet_tool& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -217,6 +231,10 @@ public:
     libinput_event_tablet_tool* GetTabletToolEvent(libinput_event& event) override;
 
     std::uint64_t GetTabletToolTimeMicroseconds(libinput_event_tablet_tool& event) override;
+
+    double GetTabletToolDx(libinput_event_tablet_tool& event) override;
+
+    double GetTabletToolDy(libinput_event_tablet_tool& event) override;
 
 private:
     LibInput() = default;

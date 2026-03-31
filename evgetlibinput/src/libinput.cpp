@@ -191,3 +191,11 @@ libinput_event_tablet_tool* evgetlibinput::LibInput::GetTabletToolEvent(libinput
 std::uint64_t evgetlibinput::LibInput::GetTabletToolTimeMicroseconds(libinput_event_tablet_tool& event) {
     return libinput_event_tablet_tool_get_time_usec(&event);
 }
+
+double evgetlibinput::LibInput::GetTabletToolDx(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_dx(&event);
+}
+
+double evgetlibinput::LibInput::GetTabletToolDy(libinput_event_tablet_tool& event) {
+    return libinput_event_tablet_tool_get_dy(&event);
+}
