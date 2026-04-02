@@ -231,3 +231,7 @@ libinput_button_state evgetlibinput::LibInput::GetTabletPadButtonState(libinput_
 double evgetlibinput::LibInput::GetTabletPadRing(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_ring_position(&event);
 }
+
+double evgetlibinput::LibInput::GetTabletPadStrip(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_strip_position(&event);
+}

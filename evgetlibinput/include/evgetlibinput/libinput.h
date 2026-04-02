@@ -223,6 +223,13 @@ public:
     virtual double GetTabletPadRing(libinput_event_tablet_pad& event) = 0;
 
     /**
+     * \brief Get the strip for a tablet pad event.
+     * \param event tablet pad event
+     * \return strip position
+     */
+    virtual double GetTabletPadStrip(libinput_event_tablet_pad& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -307,6 +314,8 @@ public:
     libinput_button_state GetTabletPadButtonState(libinput_event_tablet_pad& event) override;
 
     double GetTabletPadRing(libinput_event_tablet_pad& event) override;
+
+    double GetTabletPadStrip(libinput_event_tablet_pad& event) override;
 
 private:
     LibInput() = default;
