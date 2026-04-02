@@ -8,8 +8,10 @@
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
+#include "evget/event/key.h"
 #include "evget/event/mouse_click.h"
 #include "evget/event/mouse_move.h"
+#include "evget/event/mouse_scroll.h"
 #include "evget/input_event.h"
 #include "evgetlibinput/drm.h"
 #include "evgetlibinput/libinput.h"
@@ -35,6 +37,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     const auto& device_uuid = device_ids_.Uuid(device);
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
+        // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1647
         case LIBINPUT_EVENT_POINTER_MOTION: {
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
@@ -51,6 +55,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             SetModifierValues(builder);
             break;
         }
+        // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1675
         case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
@@ -68,6 +74,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
             break;
         }
+        // xf86-input-libinput uses xf86PostButtonEvent which is mouse click:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1703
         case LIBINPUT_EVENT_POINTER_BUTTON: {
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
@@ -89,6 +97,24 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                 builder.ButtonName(button_name);
             }
 
+            SetModifierValues(builder);
+            break;
+        }
+        // xf86-input-libinput uses xf86PostMotionEventM via xf86libinput_post_tablet_motion which is mouse move:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2368
+        case LIBINPUT_EVENT_TABLET_TOOL_AXIS: {
+            auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
+
+            auto builder =
+                evget::MouseMove{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
+                    .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
             SetModifierValues(builder);
             break;
         }
@@ -146,7 +172,7 @@ evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& 
     }
     if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_TOOL) ||
         this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_PAD)) {
-        return evget::DeviceType::kUnknown;
+        return evget::DeviceType::kTablet;
     }
 
     return evget::DeviceType::kKeyboard;
