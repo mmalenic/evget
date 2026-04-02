@@ -219,3 +219,11 @@ libinput_event_tablet_pad* evgetlibinput::LibInput::GetTabletPadEvent(libinput_e
 std::uint64_t evgetlibinput::LibInput::GetTabletPadTimeMicroseconds(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_time_usec(&event);
 }
+
+std::uint32_t evgetlibinput::LibInput::GetTabletPadButtonNumber(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_button_number(&event);
+}
+
+libinput_button_state evgetlibinput::LibInput::GetTabletPadButtonState(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_button_state(&event);
+}
