@@ -235,3 +235,11 @@ double evgetlibinput::LibInput::GetTabletPadRing(libinput_event_tablet_pad& even
 double evgetlibinput::LibInput::GetTabletPadStrip(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_strip_position(&event);
 }
+
+std::uint32_t evgetlibinput::LibInput::GetTabletPadKey(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_key(&event);
+}
+
+libinput_key_state evgetlibinput::LibInput::GetTabletPadKeyState(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_key_state(&event);
+}

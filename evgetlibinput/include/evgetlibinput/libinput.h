@@ -230,6 +230,20 @@ public:
     virtual double GetTabletPadStrip(libinput_event_tablet_pad& event) = 0;
 
     /**
+     * \brief Get the key code for a tablet pad event.
+     * \param event tablet pad event
+     * \return key code
+     */
+    virtual std::uint32_t GetTabletPadKey(libinput_event_tablet_pad& event) = 0;
+
+    /**
+     * \brief Get the key state for a tablet pad event.
+     * \param event tablet pad event
+     * \return key state
+     */
+    virtual libinput_key_state GetTabletPadKeyState(libinput_event_tablet_pad& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -316,6 +330,10 @@ public:
     double GetTabletPadRing(libinput_event_tablet_pad& event) override;
 
     double GetTabletPadStrip(libinput_event_tablet_pad& event) override;
+
+    std::uint32_t GetTabletPadKey(libinput_event_tablet_pad& event) override;
+
+    libinput_key_state GetTabletPadKeyState(libinput_event_tablet_pad& event) override;
 
 private:
     LibInput() = default;
