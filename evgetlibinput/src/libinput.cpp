@@ -227,3 +227,7 @@ std::uint32_t evgetlibinput::LibInput::GetTabletPadButtonNumber(libinput_event_t
 libinput_button_state evgetlibinput::LibInput::GetTabletPadButtonState(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_button_state(&event);
 }
+
+double evgetlibinput::LibInput::GetTabletPadRing(libinput_event_tablet_pad& event) {
+    return libinput_event_tablet_pad_get_ring_position(&event);
+}
