@@ -118,6 +118,31 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             SetModifierValues(builder);
             break;
         }
+        // xf86-input-libinput uses xf86PostButtonEventP which is mouse click:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2233
+        case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
+            auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
+            auto action = GetTipAction(libinput_api_.get().GetTabletToolTipState(*tool_event));
+
+            auto builder =
+                evget::MouseClick{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(BTN_TOUCH)
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, BTN_TOUCH);
+            if (button_name != nullptr) {
+                builder.ButtonName(button_name);
+            }
+
+            SetModifierValues(builder);
+            break;
+        }
     }
 
     return evget::Data{};
@@ -144,6 +169,13 @@ void evgetlibinput::EventTransformer::SetRelativePosition(
 
 evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
     if (state == LIBINPUT_BUTTON_STATE_PRESSED) {
+        return evget::ButtonAction::kPress;
+    }
+    return evget::ButtonAction::kRelease;
+}
+
+evget::ButtonAction evgetlibinput::EventTransformer::GetTipAction(libinput_tablet_tool_tip_state state) {
+    if (state == LIBINPUT_TABLET_TOOL_TIP_DOWN) {
         return evget::ButtonAction::kPress;
     }
     return evget::ButtonAction::kRelease;

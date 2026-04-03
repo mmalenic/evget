@@ -52,6 +52,7 @@ private:
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
+    static evget::ButtonAction GetTipAction(libinput_tablet_tool_tip_state state);
     void SetRelativePosition(
         evget::MouseMove& builder,
         const std::string& device_uuid,
