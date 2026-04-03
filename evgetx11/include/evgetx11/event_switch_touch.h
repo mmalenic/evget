@@ -12,6 +12,7 @@
 #include <evget/event/button_action.h>
 #include <evget/event/data.h>
 #include <evget/event/device_type.h>
+#include <evget/event/mouse_click.h>
 
 #include <chrono>
 #include <optional>
@@ -98,7 +99,6 @@ bool EventSwitchTouch::SwitchOnEvent(
             TouchMotion(event, data, x_event_switch, get_time);
             return true;
         case XI_RawTouchEnd:
-            TouchMotion(event, data, x_event_switch, get_time);
             TouchButton(event, data, evget::ButtonAction::kRelease, x_event_switch, get_time);
             return true;
         default:
@@ -114,9 +114,25 @@ void EventSwitchTouch::TouchButton(
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
-    if (x_event_switch.HasDevice(raw_event.sourceid)) {
-        x_event_switch.AddButtonEvent(raw_event, event.GetTimestamp(), data, action, raw_event.detail, get_time);
+    if (!x_event_switch.HasDevice(raw_event.sourceid)) {
+        return;
     }
+
+    auto query_pointer = x_event_switch.QueryPointerForDevice();
+
+    evget::MouseClick builder{};
+    builder.Interval(get_time(raw_event.time))
+        .Timestamp(event.GetTimestamp())
+        .Device(x_event_switch.GetDevice(raw_event.sourceid))
+        .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
+        .PositionX(query_pointer.root_x)
+        .PositionY(query_pointer.root_y)
+        .Action(action);
+    EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
+    x_event_switch.SetWindowFields(builder);
+    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
+
+    builder.Build(data);
 }
 
 void EventSwitchTouch::TouchMotion(

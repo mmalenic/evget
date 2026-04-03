@@ -172,6 +172,12 @@ public:
     T& SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
 
     /**
+     * \brief Query the current pointer position for the tracked pointer device.
+     * \return query pointer result containing position and modifier state
+     */
+    QueryPointerResult QueryPointerForDevice();
+
+    /**
      * \brief Set the button map for a device.
      * \param button_info the XI button class information
      * \param device_id the ID of the device

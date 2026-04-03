@@ -76,3 +76,7 @@ const std::string& evgetx11::EventSwitch::GetDeviceUuid(int device_id) {
 const std::string& evgetx11::EventSwitch::GetButtonName(int device_id, int button) const {
     return button_map_.at(device_id).at(button);
 }
+
+evgetx11::QueryPointerResult evgetx11::EventSwitch::QueryPointerForDevice() {
+    return x_wrapper_.get().QueryPointer(pointer_id_);
+}
