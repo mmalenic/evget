@@ -251,3 +251,7 @@ double evgetlibinput::LibInput::GetTouchX(libinput_event_touch& event, std::uint
 double evgetlibinput::LibInput::GetTouchY(libinput_event_touch& event, std::uint32_t height) {
     return libinput_event_touch_get_y_transformed(&event, height);
 }
+
+std::int32_t evgetlibinput::LibInput::GetTouchSeatSlot(libinput_event_touch& event) {
+    return libinput_event_touch_get_seat_slot(&event);
+}

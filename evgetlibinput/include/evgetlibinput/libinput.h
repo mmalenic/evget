@@ -262,6 +262,13 @@ public:
     virtual double GetTouchY(libinput_event_touch& event, std::uint32_t height) = 0;
 
     /**
+     * \brief Get the seat slot for a touch event, acting as a unique identifier for multiple touch points.
+     * \param event touch event
+     * \return seat slot
+     */
+    virtual std::int32_t GetTouchSeatSlot(libinput_event_touch& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -356,6 +363,8 @@ public:
     double GetTouchX(libinput_event_touch& event, std::uint32_t width) override;
 
     double GetTouchY(libinput_event_touch& event, std::uint32_t height) override;
+
+    std::int32_t GetTouchSeatSlot(libinput_event_touch& event) override;
 
 private:
     LibInput() = default;
