@@ -212,6 +212,32 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
+        // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
+        case LIBINPUT_EVENT_TABLET_PAD_KEY: {
+            auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
+            auto key_code = libinput_api_.get().GetTabletPadKey(*pad_event);
+            auto action = GetKeyAction(libinput_api_.get().GetTabletPadKeyState(*pad_event));
+
+            auto builder =
+                evget::Key{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(static_cast<int>(key_code))
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            const auto* key_name = evdev_api_.get().EventCodeName(EV_KEY, key_code);
+            if (key_name != nullptr) {
+                builder.ButtonName(key_name);
+            }
+
+            SetModifierValues(builder);
+            builder.Build(data);
+            break;
+        }
     }
 
     return data;
