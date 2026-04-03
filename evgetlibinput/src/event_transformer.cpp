@@ -36,6 +36,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
     const auto& device_uuid = device_ids_.Uuid(device);
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
+    auto data = evget::Data{};
     switch (event_type) {
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1647
@@ -53,6 +54,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
             SetModifierValues(builder);
+            builder.Build(data);
             break;
         }
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
@@ -72,6 +74,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
             SetRelativePosition(builder, device_uuid, *pointer_event);
 
+            builder.Build(data);
             break;
         }
         // xf86-input-libinput uses xf86PostButtonEvent which is mouse click:
@@ -98,6 +101,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             }
 
             SetModifierValues(builder);
+            builder.Build(data);
             break;
         }
         // xf86-input-libinput uses xf86PostMotionEventM via xf86libinput_post_tablet_motion which is mouse move:
@@ -116,16 +120,30 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
             SetModifierValues(builder);
+            builder.Build(data);
             break;
         }
-        // xf86-input-libinput uses xf86PostButtonEventP which is mouse click:
+        // xf86-input-libinput uses xf86PostButtonEventP which is mouse click and a motion event via
+        // xf86libinput_post_tablet_motion:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2233
         case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
-            auto action = GetTipAction(libinput_api_.get().GetTabletToolTipState(*tool_event));
 
-            auto builder =
+            auto move_builder =
+                evget::MouseMove{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
+                    .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+            SetModifierValues(move_builder);
+            move_builder.Build(data);
+
+            auto action = GetTipAction(libinput_api_.get().GetTabletToolTipState(*tool_event));
+            auto click_builder =
                 evget::MouseClick{}
                     .Timestamp(event.GetTimestamp())
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
@@ -137,15 +155,16 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
 
             const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, BTN_TOUCH);
             if (button_name != nullptr) {
-                builder.ButtonName(button_name);
+                click_builder.ButtonName(button_name);
             }
 
-            SetModifierValues(builder);
+            SetModifierValues(click_builder);
+            click_builder.Build(data);
             break;
         }
     }
 
-    return evget::Data{};
+    return data;
 }
 
 void evgetlibinput::EventTransformer::SetRelativePosition(
