@@ -59,6 +59,11 @@ private:
         const std::string& device_uuid,
         libinput_event_pointer& pointer_event
     );
+    void SetTouchRelativePosition(
+        evget::MouseMove& builder,
+        const std::string& device_uuid,
+        libinput_event_touch& touch_event
+    );
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;

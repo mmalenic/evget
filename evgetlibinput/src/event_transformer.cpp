@@ -147,17 +147,9 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Timestamp(event.GetTimestamp())
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
-                    .Button(BTN_LEFT)
                     .Action(action)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
-
-            // `BTN_LEFT` is somewhat arbitrary, we use it to match conceptually what X11 sees, which maps 1 to
-            // the left button.
-            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, BTN_LEFT);
-            if (button_name != nullptr) {
-                click_builder.ButtonName(button_name);
-            }
 
             SetModifierValues(click_builder);
             click_builder.Build(data);
@@ -250,6 +242,25 @@ void evgetlibinput::EventTransformer::SetRelativePosition(
 ) {
     auto absolute_x = libinput_api_.get().GetPointerAbsoluteX(pointer_event, dimensions_.width);
     auto absolute_y = libinput_api_.get().GetPointerAbsoluteY(pointer_event, dimensions_.height);
+
+    // Convert absolute motion to relative motion so that there is consistency with
+    // `LIBINPUT_EVENT_POINTER_MOTION`.
+    if (previous_absolute_x_.contains(device_uuid) && previous_absolute_y_.contains(device_uuid)) {
+        builder.PositionX(absolute_x - previous_absolute_x_[device_uuid])
+            .PositionY(absolute_y - previous_absolute_y_[device_uuid]);
+    }
+
+    previous_absolute_x_[device_uuid] = absolute_x;
+    previous_absolute_y_[device_uuid] = absolute_y;
+}
+
+void evgetlibinput::EventTransformer::SetTouchRelativePosition(
+    evget::MouseMove& builder,
+    const std::string& device_uuid,
+    libinput_event_touch& touch_event
+) {
+    auto absolute_x = libinput_api_.get().GetTouchX(touch_event, dimensions_.width);
+    auto absolute_y = libinput_api_.get().GetTouchY(touch_event, dimensions_.height);
 
     // Convert absolute motion to relative motion so that there is consistency with
     // `LIBINPUT_EVENT_POINTER_MOTION`.
