@@ -110,6 +110,22 @@ public:
     virtual libinput_button_state GetPointerButtonState(libinput_event_pointer& event) = 0;
 
     /**
+     * \brief Check if the pointer event has a scroll value for the given axis.
+     * \param event pointer event
+     * \param axis the axis to check
+     * \return true if the axis has a scroll value
+     */
+    virtual bool GetPointerHasAxis(libinput_event_pointer& event, libinput_pointer_axis axis) = 0;
+
+    /**
+     * \brief Get the scroll value for the axis.
+     * \param event pointer event
+     * \param axis the axis to get the scroll value for
+     * \return the scroll value
+     */
+    virtual double GetPointerScrollValue(libinput_event_pointer& event, libinput_pointer_axis axis) = 0;
+
+    /**
      * \brief Get the device associated with the event.
      * \param event the associated event
      * \return the libinput device
@@ -329,6 +345,10 @@ public:
     std::uint32_t GetPointerButton(libinput_event_pointer& event) override;
 
     libinput_button_state GetPointerButtonState(libinput_event_pointer& event) override;
+
+    bool GetPointerHasAxis(libinput_event_pointer& event, libinput_pointer_axis axis) override;
+
+    double GetPointerScrollValue(libinput_event_pointer& event, libinput_pointer_axis axis) override;
 
     libinput_event_tablet_tool* GetTabletToolEvent(libinput_event& event) override;
 

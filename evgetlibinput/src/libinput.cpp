@@ -184,6 +184,14 @@ libinput_button_state evgetlibinput::LibInput::GetPointerButtonState(libinput_ev
     return libinput_event_pointer_get_button_state(&event);
 }
 
+bool evgetlibinput::LibInput::GetPointerHasAxis(libinput_event_pointer& event, libinput_pointer_axis axis) {
+    return libinput_event_pointer_has_axis(&event, axis) != 0;
+}
+
+double evgetlibinput::LibInput::GetPointerScrollValue(libinput_event_pointer& event, libinput_pointer_axis axis) {
+    return libinput_event_pointer_get_scroll_value(&event, axis);
+}
+
 libinput_event_tablet_tool* evgetlibinput::LibInput::GetTabletToolEvent(libinput_event& event) {
     return libinput_event_get_tablet_tool_event(&event);
 }
