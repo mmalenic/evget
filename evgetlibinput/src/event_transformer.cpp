@@ -123,8 +123,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
-        // xf86-input-libinput uses xf86PostButtonEventP which is mouse click and a motion event via
-        // xf86libinput_post_tablet_motion:
+        // xf86-input-libinput uses xf86PostButtonEventP and xf86libinput_post_tablet_motion is mouse move and click:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2233
         case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
@@ -148,18 +147,47 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Timestamp(event.GetTimestamp())
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
-                    .Button(BTN_TOUCH)
+                    .Button(BTN_LEFT)
                     .Action(action)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
 
-            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, BTN_TOUCH);
+            // `BTN_LEFT` is somewhat arbitrary, we use it to match conceptually what X11 sees, which maps 1 to
+            // the left button.
+            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, BTN_LEFT);
             if (button_name != nullptr) {
                 click_builder.ButtonName(button_name);
             }
 
             SetModifierValues(click_builder);
             click_builder.Build(data);
+            break;
+        }
+        // xf86-input-libinput uses xf86PostButtonEventP for mouse click:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2256
+        case LIBINPUT_EVENT_TABLET_TOOL_BUTTON: {
+            auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
+            auto button_code = libinput_api_.get().GetTabletToolButton(*tool_event);
+            auto action = GetButtonAction(libinput_api_.get().GetTabletToolButtonState(*tool_event));
+
+            auto builder =
+                evget::MouseClick{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(static_cast<int>(button_code))
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, button_code);
+            if (button_name != nullptr) {
+                builder.ButtonName(button_name);
+            }
+
+            SetModifierValues(builder);
+            builder.Build(data);
             break;
         }
     }
