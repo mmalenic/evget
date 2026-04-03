@@ -258,7 +258,18 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
 
-            auto builder =
+            // Position data is not available on TOUCH_UP events.
+            auto move_builder =
+                evget::MouseMove{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+            SetModifierValues(move_builder);
+            move_builder.Build(data);
+
+            auto click_builder =
                 evget::MouseClick{}
                     .Timestamp(event.GetTimestamp())
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
@@ -267,8 +278,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
                     .DeviceId(device_uuid);
 
-            SetModifierValues(builder);
-            builder.Build(data);
+            SetModifierValues(click_builder);
+            click_builder.Build(data);
             break;
         }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.

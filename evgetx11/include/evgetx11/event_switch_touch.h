@@ -91,6 +91,9 @@ bool EventSwitchTouch::SwitchOnEvent(
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     switch (event.GetEventType()) {
+        // Touch events generate motion and button for XI_RawTouchBegin and XI_RawTouchEnd,
+        // and just motion for XI_RawTouchUpdate:
+        // https://www.x.org/releases/X11R7.7/doc/inputproto/XI2proto.txt
         case XI_RawTouchBegin:
             TouchMotion(event, data, x_event_switch, get_time);
             TouchButton(event, data, evget::ButtonAction::kPress, x_event_switch, get_time);
@@ -99,6 +102,7 @@ bool EventSwitchTouch::SwitchOnEvent(
             TouchMotion(event, data, x_event_switch, get_time);
             return true;
         case XI_RawTouchEnd:
+            TouchMotion(event, data, x_event_switch, get_time);
             TouchButton(event, data, evget::ButtonAction::kRelease, x_event_switch, get_time);
             return true;
         default:
