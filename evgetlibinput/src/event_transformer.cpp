@@ -200,6 +200,13 @@ evget::ButtonAction evgetlibinput::EventTransformer::GetTipAction(libinput_table
     return evget::ButtonAction::kRelease;
 }
 
+evget::ButtonAction evgetlibinput::EventTransformer::GetKeyAction(libinput_key_state state) {
+    if (state == LIBINPUT_KEY_STATE_PRESSED) {
+        return evget::ButtonAction::kPress;
+    }
+    return evget::ButtonAction::kRelease;
+}
+
 evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event) const {
     if (event == nullptr) {
         return evget::DeviceType::kUnknown;
