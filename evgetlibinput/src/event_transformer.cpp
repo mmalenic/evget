@@ -291,6 +291,37 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             ClearTouchPosition(device_uuid, seat_slot);
             break;
         }
+        // xf86-input-libinput uses xf86PostMotionEventM with scroll valuators for all scroll event types:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1922
+        case LIBINPUT_EVENT_POINTER_SCROLL_WHEEL:
+        case LIBINPUT_EVENT_POINTER_SCROLL_FINGER:
+        case LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS: {
+            auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
+
+            auto builder =
+                evget::MouseScroll{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)) {
+                builder.Vertical(
+                    libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)
+                );
+            }
+            if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)) {
+                builder.Horizontal(
+                    libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)
+                );
+            }
+
+            SetModifierValues(builder);
+            builder.Build(data);
+            break;
+        }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
         case LIBINPUT_EVENT_TABLET_PAD_KEY: {
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
