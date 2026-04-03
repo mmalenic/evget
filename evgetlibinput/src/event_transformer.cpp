@@ -190,6 +190,28 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
+        // xf86-input-libinput uses xf86PostButtonEvent which is mouse click:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2526
+        case LIBINPUT_EVENT_TABLET_PAD_BUTTON: {
+            auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
+            auto button_number = libinput_api_.get().GetTabletPadButtonNumber(*pad_event);
+            auto action = GetButtonAction(libinput_api_.get().GetTabletPadButtonState(*pad_event));
+
+            auto builder =
+                evget::MouseClick{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(static_cast<int>(button_number))
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            SetModifierValues(builder);
+            builder.Build(data);
+            break;
+        }
     }
 
     return data;
