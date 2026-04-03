@@ -9,6 +9,8 @@
 #include <libinput.h>
 
 #include <chrono>
+#include <cstdint>
+#include <map>
 #include <unordered_map>
 
 #include "evget/device_id.h"
@@ -48,6 +50,8 @@ private:
 
     std::unordered_map<std::string, double> previous_absolute_x_;
     std::unordered_map<std::string, double> previous_absolute_y_;
+    std::map<std::pair<std::string, std::int32_t>, double> previous_touch_x_;
+    std::map<std::pair<std::string, std::int32_t>, double> previous_touch_y_;
     std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event) const;
@@ -62,8 +66,10 @@ private:
     void SetTouchRelativePosition(
         evget::MouseMove& builder,
         const std::string& device_uuid,
+        std::int32_t seat_slot,
         libinput_event_touch& touch_event
     );
+    void ClearTouchPosition(const std::string& device_uuid, std::int32_t seat_slot);
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;

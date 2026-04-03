@@ -209,6 +209,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_DOWN: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
             auto move_builder =
                 evget::MouseMove{}
@@ -216,9 +217,10 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+                    .DeviceId(device_uuid)
+                    .TouchId(seat_slot);
             SetModifierValues(move_builder);
-            SetTouchRelativePosition(move_builder, device_uuid, *touch_event);
+            SetTouchRelativePosition(move_builder, device_uuid, seat_slot, *touch_event);
             move_builder.Build(data);
 
             auto click_builder =
@@ -228,7 +230,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Device(this->GetDeviceType(inner_event))
                     .Action(evget::ButtonAction::kPress)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+                    .DeviceId(device_uuid)
+                    .TouchId(seat_slot);
 
             SetModifierValues(click_builder);
             click_builder.Build(data);
@@ -239,6 +242,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_MOTION: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
             auto builder =
                 evget::MouseMove{}
@@ -246,9 +250,10 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+                    .DeviceId(device_uuid)
+                    .TouchId(seat_slot);
             SetModifierValues(builder);
-            SetTouchRelativePosition(builder, device_uuid, *touch_event);
+            SetTouchRelativePosition(builder, device_uuid, seat_slot, *touch_event);
             builder.Build(data);
             break;
         }
@@ -257,6 +262,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_UP: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
             // Position data is not available on TOUCH_UP events.
             auto move_builder =
@@ -265,7 +271,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Interval(device_intervals_[device_uuid].Interval(event_time))
                     .Device(this->GetDeviceType(inner_event))
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+                    .DeviceId(device_uuid)
+                    .TouchId(seat_slot);
             SetModifierValues(move_builder);
             move_builder.Build(data);
 
@@ -276,10 +283,12 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                     .Device(this->GetDeviceType(inner_event))
                     .Action(evget::ButtonAction::kRelease)
                     .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+                    .DeviceId(device_uuid)
+                    .TouchId(seat_slot);
 
             SetModifierValues(click_builder);
             click_builder.Build(data);
+            ClearTouchPosition(device_uuid, seat_slot);
             break;
         }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
@@ -335,20 +344,29 @@ void evgetlibinput::EventTransformer::SetRelativePosition(
 void evgetlibinput::EventTransformer::SetTouchRelativePosition(
     evget::MouseMove& builder,
     const std::string& device_uuid,
+    std::int32_t seat_slot,
     libinput_event_touch& touch_event
 ) {
+    // Each relative motion stream for touch events must take into account the seat slot to support
+    // multiple touch points.
+    auto key = std::make_pair(device_uuid, seat_slot);
     auto absolute_x = libinput_api_.get().GetTouchX(touch_event, dimensions_.width);
     auto absolute_y = libinput_api_.get().GetTouchY(touch_event, dimensions_.height);
 
     // Convert absolute motion to relative motion so that there is consistency with
     // `LIBINPUT_EVENT_POINTER_MOTION`.
-    if (previous_absolute_x_.contains(device_uuid) && previous_absolute_y_.contains(device_uuid)) {
-        builder.PositionX(absolute_x - previous_absolute_x_[device_uuid])
-            .PositionY(absolute_y - previous_absolute_y_[device_uuid]);
+    if (previous_touch_x_.contains(key) && previous_touch_y_.contains(key)) {
+        builder.PositionX(absolute_x - previous_touch_x_[key]).PositionY(absolute_y - previous_touch_y_[key]);
     }
 
-    previous_absolute_x_[device_uuid] = absolute_x;
-    previous_absolute_y_[device_uuid] = absolute_y;
+    previous_touch_x_[key] = absolute_x;
+    previous_touch_y_[key] = absolute_y;
+}
+
+void evgetlibinput::EventTransformer::ClearTouchPosition(const std::string& device_uuid, std::int32_t seat_slot) {
+    auto key = std::make_pair(device_uuid, seat_slot);
+    previous_touch_x_.erase(key);
+    previous_touch_y_.erase(key);
 }
 
 evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
