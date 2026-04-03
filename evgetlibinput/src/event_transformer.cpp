@@ -234,6 +234,24 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             click_builder.Build(data);
             break;
         }
+        // xf86-input-libinput uses xf86PostTouchEvent which matches a motion event:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
+        case LIBINPUT_EVENT_TOUCH_MOTION: {
+            auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
+
+            auto builder =
+                evget::MouseMove{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+            SetModifierValues(builder);
+            SetTouchRelativePosition(builder, device_uuid, *touch_event);
+            builder.Build(data);
+            break;
+        }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
         case LIBINPUT_EVENT_TABLET_PAD_KEY: {
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
