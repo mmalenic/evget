@@ -216,20 +216,6 @@ public:
     virtual libinput_button_state GetTabletPadButtonState(libinput_event_tablet_pad& event) = 0;
 
     /**
-     * \brief Get the ring for a tablet pad event.
-     * \param event tablet pad event
-     * \return ring position
-     */
-    virtual double GetTabletPadRing(libinput_event_tablet_pad& event) = 0;
-
-    /**
-     * \brief Get the strip for a tablet pad event.
-     * \param event tablet pad event
-     * \return strip position
-     */
-    virtual double GetTabletPadStrip(libinput_event_tablet_pad& event) = 0;
-
-    /**
      * \brief Get the key code for a tablet pad event.
      * \param event tablet pad event
      * \return key code
@@ -326,10 +312,6 @@ public:
     std::uint32_t GetTabletPadButtonNumber(libinput_event_tablet_pad& event) override;
 
     libinput_button_state GetTabletPadButtonState(libinput_event_tablet_pad& event) override;
-
-    double GetTabletPadRing(libinput_event_tablet_pad& event) override;
-
-    double GetTabletPadStrip(libinput_event_tablet_pad& event) override;
 
     std::uint32_t GetTabletPadKey(libinput_event_tablet_pad& event) override;
 

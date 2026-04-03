@@ -228,14 +228,6 @@ libinput_button_state evgetlibinput::LibInput::GetTabletPadButtonState(libinput_
     return libinput_event_tablet_pad_get_button_state(&event);
 }
 
-double evgetlibinput::LibInput::GetTabletPadRing(libinput_event_tablet_pad& event) {
-    return libinput_event_tablet_pad_get_ring_position(&event);
-}
-
-double evgetlibinput::LibInput::GetTabletPadStrip(libinput_event_tablet_pad& event) {
-    return libinput_event_tablet_pad_get_strip_position(&event);
-}
-
 std::uint32_t evgetlibinput::LibInput::GetTabletPadKey(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_key(&event);
 }
