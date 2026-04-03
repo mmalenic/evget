@@ -230,6 +230,38 @@ public:
     virtual libinput_key_state GetTabletPadKeyState(libinput_event_tablet_pad& event) = 0;
 
     /**
+     * \brief Get a touch event from the libinput event.
+     * \param event libinput event
+     * \return touch event
+     */
+    virtual libinput_event_touch* GetTouchEvent(libinput_event& event) = 0;
+
+    /**
+     * \brief Get the event time for a touch event.
+     * \param event touch event
+     * \return event time in microseconds
+     */
+    virtual std::uint64_t GetTouchTimeMicroseconds(libinput_event_touch& event) = 0;
+
+    /**
+     * \brief Get the transformed x position for a touch event. This uses the transformed libinput function
+     *        so a screen width is required.
+     * \param event touch event
+     * \param width screen width
+     * \return x position
+     */
+    virtual double GetTouchX(libinput_event_touch& event, std::uint32_t width) = 0;
+
+    /**
+     * \brief Get the transformed y position for a touch event. This uses the transformed libinput function
+     *        so a screen height is required.
+     * \param event touch event
+     * \param height screen height
+     * \return y position
+     */
+    virtual double GetTouchY(libinput_event_touch& event, std::uint32_t height) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -316,6 +348,14 @@ public:
     std::uint32_t GetTabletPadKey(libinput_event_tablet_pad& event) override;
 
     libinput_key_state GetTabletPadKeyState(libinput_event_tablet_pad& event) override;
+
+    libinput_event_touch* GetTouchEvent(libinput_event& event) override;
+
+    std::uint64_t GetTouchTimeMicroseconds(libinput_event_touch& event) override;
+
+    double GetTouchX(libinput_event_touch& event, std::uint32_t width) override;
+
+    double GetTouchY(libinput_event_touch& event, std::uint32_t height) override;
 
 private:
     LibInput() = default;

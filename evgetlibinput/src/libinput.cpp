@@ -235,3 +235,19 @@ std::uint32_t evgetlibinput::LibInput::GetTabletPadKey(libinput_event_tablet_pad
 libinput_key_state evgetlibinput::LibInput::GetTabletPadKeyState(libinput_event_tablet_pad& event) {
     return libinput_event_tablet_pad_get_key_state(&event);
 }
+
+libinput_event_touch* evgetlibinput::LibInput::GetTouchEvent(libinput_event& event) {
+    return libinput_event_get_touch_event(&event);
+}
+
+std::uint64_t evgetlibinput::LibInput::GetTouchTimeMicroseconds(libinput_event_touch& event) {
+    return libinput_event_touch_get_time_usec(&event);
+}
+
+double evgetlibinput::LibInput::GetTouchX(libinput_event_touch& event, std::uint32_t width) {
+    return libinput_event_touch_get_x_transformed(&event, width);
+}
+
+double evgetlibinput::LibInput::GetTouchY(libinput_event_touch& event, std::uint32_t height) {
+    return libinput_event_touch_get_y_transformed(&event, height);
+}
