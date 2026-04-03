@@ -91,6 +91,11 @@ evget::MouseClick& evget::MouseClick::DeviceId(std::string device_id) {
     return *this;
 }
 
+evget::MouseClick& evget::MouseClick::TouchId(int touch_id) {
+    touch_id_ = touch_id;
+    return *this;
+}
+
 evget::MouseClick& evget::MouseClick::Modifier(ModifierValue modifier_value) {
     modifiers_.push_back(ToUnderlying(modifier_value));
     return *this;
@@ -118,6 +123,7 @@ evget::Data& evget::MouseClick::Build(Data& data) const {
             FromInt(screen_),
             FromString(device_id_),
             ToUnderlyingOptional(device_),
+            FromInt(touch_id_),
             FromInt(button_),
             FromString(name_),
             ToUnderlyingOptional(action_),

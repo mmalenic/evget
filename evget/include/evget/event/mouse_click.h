@@ -149,6 +149,13 @@ public:
     MouseClick& DeviceId(std::string device_id);
 
     /**
+     * \brief Add touch point identifier.
+     * \param touch_id touch point identifier
+     * \return reference to this `MouseClick` object
+     */
+    MouseClick& TouchId(int touch_id);
+
+    /**
      * \brief Build mouse click event.
      * \param data data container to add the event to
      * \return reference to the data container
@@ -172,6 +179,7 @@ private:
     std::optional<double> focus_window_width_;
     std::optional<double> focus_window_height_;
     std::optional<int> screen_;
+    std::optional<int> touch_id_;
 
     std::vector<std::string> modifiers_;
 };

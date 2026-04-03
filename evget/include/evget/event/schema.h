@@ -216,6 +216,9 @@ constexpr FieldDefinition kFocusWindowWidthField{"FocusWindowWidth", DataType::k
 /// \brief Field definition for focused window height.
 constexpr FieldDefinition kFocusWindowHeightField{"FocusWindowHeight", DataType::kDouble};
 
+/// \brief Field definition for touch point identifier.
+constexpr FieldDefinition kTouchIdField{"TouchId", DataType::kInteger};
+
 /**
  * \brief Get the name of the `FieldDefinition`.
  * \param field field definition to get name from

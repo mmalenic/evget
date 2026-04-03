@@ -18,14 +18,17 @@
 namespace evget {
 
 namespace detail {
+/// \brief Number of fields common to all events.
+constexpr auto kBaseNFields = 13;
+
 /// \brief Number of fields in a mouse move event entry.
-constexpr auto kMouseMoveNFields = 13;
+constexpr auto kMouseMoveNFields = 14;
 
 /// \brief Number of fields in a mouse scroll event entry.
 constexpr auto kMouseScrollNFields = 15;
 
 /// \brief Number of fields in a mouse click event entry.
-constexpr auto kMouseClickNFields = 16;
+constexpr auto kMouseClickNFields = 17;
 
 /// \brief Number of fields in a key event entry.
 constexpr auto kKeyNFields = 17;
@@ -55,8 +58,8 @@ AddToArray(std::array<std::string_view, From> from, AddElements add_elements) {
     return out;
 }
 
-/// \brief Field names for mouse move events.
-constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields{
+/// \brief Common field names shared by all event types.
+constexpr std::array<std::string_view, kBaseNFields> kBaseFields{
     "interval",
     "timestamp",
     "position_x",
@@ -72,31 +75,44 @@ constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields{
     "device_type",
 };
 
-/// \brief Field names for mouse scroll events (extends mouse move fields).
+/// \brief Field names for mouse move events.
+constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields =
+    AddToArray<kBaseNFields, kMouseMoveNFields>(
+        kBaseFields,
+        std::vector{
+            "touch_id",
+        }
+    );
+
+/// \brief Field names for mouse scroll events.
 constexpr std::array<std::string_view, kMouseScrollNFields> kMouseScrollFields =
-    AddToArray<kMouseMoveNFields, kMouseScrollNFields>(
-        kMouseMoveFields,
+    AddToArray<kBaseNFields, kMouseScrollNFields>(
+        kBaseFields,
         std::vector{
             "scroll_vertical",
             "scroll_horizontal",
         }
     );
 
-/// \brief Field names for mouse click events (extends mouse move fields).
+/// \brief Field names for mouse click events.
 constexpr std::array<std::string_view, kMouseClickNFields> kMouseClickFields =
-    AddToArray<kMouseMoveNFields, kMouseClickNFields>(
-        kMouseMoveFields,
+    AddToArray<kBaseNFields, kMouseClickNFields>(
+        kBaseFields,
         std::vector{
+            "touch_id",
             "button_id",
             "button_name",
             "button_action",
         }
     );
 
-/// \brief Field names for key events (extends mouse click fields).
-constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kMouseClickNFields, kKeyNFields>(
-    kMouseClickFields,
+/// \brief Field names for key events.
+constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kBaseNFields, kKeyNFields>(
+    kBaseFields,
     std::vector{
+        "button_id",
+        "button_name",
+        "button_action",
         "character",
     }
 );
