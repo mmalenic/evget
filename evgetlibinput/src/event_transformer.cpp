@@ -322,6 +322,48 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
+        // xf86-input-libinput uses xf86PostKeyboardEvent which is a key event:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1724
+        case LIBINPUT_EVENT_KEYBOARD_KEY: {
+            auto* keyboard_event = libinput_api_.get().GetKeyboardEvent(*inner_event);
+            auto event_time = libinput_api_.get().GetKeyboardTimeMicroseconds(*keyboard_event);
+            auto key_code = libinput_api_.get().GetKeyboardKey(*keyboard_event);
+            auto key_state = libinput_api_.get().GetKeyboardKeyState(*keyboard_event);
+            auto action = GetKeyAction(key_state);
+
+            // Documentation states that xkb key codes are evdev key codes + 8 for X11-compatibility. See
+            // https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/c66a910753941c905299e62d9e31a4e90c0bbe98/types/wlr_keyboard.c#L110
+            // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L53
+            constexpr auto kKeyCodeOffset = 8;
+            const xkb_keycode_t xkb_key = key_code + kKeyCodeOffset;
+
+            auto key_name = libinput_api_.get().GetKeyName(xkb_key);
+            auto character = libinput_api_.get().GetKeyCharacter(xkb_key);
+
+            // Update xkb state to keep modifier tracking in sync.
+            libinput_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
+
+            auto builder =
+                evget::Key{}
+                    .Timestamp(event.GetTimestamp())
+                    .Interval(device_intervals_[device_uuid].Interval(event_time))
+                    .Device(this->GetDeviceType(inner_event))
+                    .Button(static_cast<int>(key_code))
+                    .Action(action)
+                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                    .DeviceId(device_uuid);
+
+            if (key_name.has_value()) {
+                builder.ButtonName(std::move(*key_name));
+            }
+            if (character.has_value()) {
+                builder.Character(std::move(*character));
+            }
+
+            SetModifierValues(builder);
+            builder.Build(data);
+            break;
+        }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
         case LIBINPUT_EVENT_TABLET_PAD_KEY: {
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
@@ -419,6 +461,13 @@ evget::ButtonAction evgetlibinput::EventTransformer::GetKeyAction(libinput_key_s
         return evget::ButtonAction::kPress;
     }
     return evget::ButtonAction::kRelease;
+}
+
+xkb_key_direction evgetlibinput::EventTransformer::GetXkbDirection(libinput_key_state state) {
+    if (state == LIBINPUT_KEY_STATE_PRESSED) {
+        return XKB_KEY_DOWN;
+    }
+    return XKB_KEY_UP;
 }
 
 evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event) const {
