@@ -203,6 +203,13 @@ public:
     virtual libinput_tablet_tool_tip_state GetTabletToolTipState(libinput_event_tablet_tool& event) = 0;
 
     /**
+     * \brief Get the proximity state for a tablet tool event.
+     * \param event tablet tool event
+     * \return proximity state
+     */
+    virtual libinput_tablet_tool_proximity_state GetTabletToolProximityState(libinput_event_tablet_tool& event) = 0;
+
+    /**
      * \brief Get a tablet pad event from the libinput event.
      * \param event libinput event
      * \return tablet pad event
@@ -371,6 +378,8 @@ public:
     libinput_button_state GetTabletToolButtonState(libinput_event_tablet_tool& event) override;
 
     libinput_tablet_tool_tip_state GetTabletToolTipState(libinput_event_tablet_tool& event) override;
+
+    libinput_tablet_tool_proximity_state GetTabletToolProximityState(libinput_event_tablet_tool& event) override;
 
     libinput_event_tablet_pad* GetTabletPadEvent(libinput_event& event) override;
 

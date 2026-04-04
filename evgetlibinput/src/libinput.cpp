@@ -179,6 +179,12 @@ libinput_tablet_tool_tip_state evgetlibinput::LibInput::GetTabletToolTipState(li
     return libinput_event_tablet_tool_get_tip_state(&event);
 }
 
+libinput_tablet_tool_proximity_state evgetlibinput::LibInput::GetTabletToolProximityState(
+    libinput_event_tablet_tool& event
+) {
+    return libinput_event_tablet_tool_get_proximity_state(&event);
+}
+
 libinput_event_tablet_pad* evgetlibinput::LibInput::GetTabletPadEvent(libinput_event& event) {
     return libinput_event_get_tablet_pad_event(&event);
 }
