@@ -105,6 +105,30 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
+        // xf86-input-libinput uses xf86PostProximityEventM and posts a motion event on proximity-in:
+        // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2479
+        case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY: {
+            auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
+            auto proximity_state = libinput_api_.get().GetTabletToolProximityState(*tool_event);
+
+            // Only proximity-in generates a motion event, matching xf86-input-libinput behaviour.
+            if (proximity_state == LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN) {
+                auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
+
+                auto builder =
+                    evget::MouseMove{}
+                        .Timestamp(event.GetTimestamp())
+                        .Interval(device_intervals_[device_uuid].Interval(event_time))
+                        .Device(this->GetDeviceType(inner_event))
+                        .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
+                        .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
+                        .DeviceName(libinput_api_.get().GetDeviceName(*device))
+                        .DeviceId(device_uuid);
+                SetModifierValues(builder);
+                builder.Build(data);
+            }
+            break;
+        }
         // xf86-input-libinput uses xf86PostMotionEventM via xf86libinput_post_tablet_motion which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2368
         case LIBINPUT_EVENT_TABLET_TOOL_AXIS: {
@@ -258,7 +282,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
-        // xf86-input-libinput uses xf86PostTouchEvent which matches a button release
+        // xf86-input-libinput uses xf86PostTouchEvent for both UP and CANCEL which matches a button release
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
         case LIBINPUT_EVENT_TOUCH_UP: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
