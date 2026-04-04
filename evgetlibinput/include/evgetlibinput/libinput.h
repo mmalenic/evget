@@ -320,6 +320,13 @@ public:
     virtual std::optional<std::string> GetKeyName(xkb_keycode_t key) = 0;
 
     /**
+     * \brief Get the UTF-8 character for a key code.
+     * \param key the xkb key code
+     * \return the character, or std::nullopt if not printable
+     */
+    virtual std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -430,6 +437,8 @@ public:
     libinput_key_state GetKeyboardKeyState(libinput_event_keyboard& event) override;
 
     std::optional<std::string> GetKeyName(xkb_keycode_t key) override;
+
+    std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) override;
 
 private:
     LibInput() = default;

@@ -307,3 +307,15 @@ std::optional<std::string> evgetlibinput::LibInput::GetKeyName(xkb_keycode_t key
     xkb_keysym_get_name(sym, name.data(), name.size() + 1);
     return name;
 }
+
+std::optional<std::string> evgetlibinput::LibInput::GetKeyCharacter(xkb_keycode_t key) {
+    // xkb_state_key_get_utf8 with null buffer returns the required size.
+    auto size = xkb_state_key_get_utf8(xkb_state_.get(), key, nullptr, 0);
+    if (size <= 0) {
+        return std::nullopt;
+    }
+
+    std::string character(size, '\0');
+    xkb_state_key_get_utf8(xkb_state_.get(), key, character.data(), character.size() + 1);
+    return character;
+}
