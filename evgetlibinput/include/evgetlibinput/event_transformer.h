@@ -7,15 +7,18 @@
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
 #include <libinput.h>
+#include <linux/input-event-codes.h>
 
 #include <chrono>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <unordered_map>
 
 #include "evget/device_id.h"
 #include "evget/error.h"
 #include "evget/event/button_action.h"
+#include "evget/event/concepts.h"
 #include "evget/event/key.h"
 #include "evget/event/modifier_value.h"
 #include "evget/event/mouse_click.h"
@@ -48,6 +51,13 @@ public:
     evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
 private:
+    struct EventContext {
+        evget::TimestampType timestamp;
+        evget::DeviceType device_type;
+        const char* device_name;
+        std::reference_wrapper<const std::string> device_uuid;
+    };
+
     std::reference_wrapper<LibInputApi> libinput_api_;
     std::reference_wrapper<EvdevApi> evdev_api_;
     std::reference_wrapper<XkbCommonApi> xkb_api_;
@@ -78,10 +88,39 @@ private:
         libinput_event_touch& touch_event
     );
     void ClearTouchPosition(const std::string& device_uuid, std::int32_t seat_slot);
+    void BuildTabletToolMove(
+        evget::Data& data,
+        const EventContext& ctx,
+        std::uint64_t event_time,
+        libinput_event_tablet_tool& tool_event
+    );
+    template <evget::BuilderHasButtonName T>
+    void SetButtonName(T& builder, std::uint32_t code);
+
+    template <evget::BuilderHasBaseFields T>
+    T& SetBaseFields(T& builder, const EventContext& ctx, std::uint64_t event_time);
 
     template <evget::BuilderHasModifier T>
     T& SetModifierValues(T& builder) const;
 };
+
+template <evget::BuilderHasBaseFields T>
+T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uint64_t event_time) {
+    builder.Timestamp(ctx.timestamp)
+        .Interval(device_intervals_[ctx.device_uuid].Interval(event_time))
+        .Device(ctx.device_type)
+        .DeviceName(ctx.device_name)
+        .DeviceId(ctx.device_uuid);
+    return SetModifierValues(builder);
+}
+
+template <evget::BuilderHasButtonName T>
+void EventTransformer::SetButtonName(T& builder, std::uint32_t code) {
+    const auto* name = evdev_api_.get().EventCodeName(EV_KEY, code);
+    if (name != nullptr) {
+        builder.ButtonName(name);
+    }
+}
 
 template <evget::BuilderHasModifier T>
 T& EventTransformer::SetModifierValues(T& builder) const {

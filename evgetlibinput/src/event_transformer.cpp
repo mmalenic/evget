@@ -36,8 +36,15 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     }
 
     const auto& device_uuid = device_ids_.Uuid(device);
-    auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
+    auto ctx = EventContext{
+        .timestamp = event.GetTimestamp(),
+        .device_type = this->GetDeviceType(inner_event),
+        .device_name = libinput_api_.get().GetDeviceName(*device),
+        .device_uuid = device_uuid,
+    };
+
     auto data = evget::Data{};
+    auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1647
@@ -45,16 +52,11 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
-            auto builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .PositionX(libinput_api_.get().GetPointerDx(*pointer_event))
-                    .PositionY(libinput_api_.get().GetPointerDy(*pointer_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-            SetModifierValues(builder);
+            auto builder = evget::MouseMove{};
+            SetBaseFields(builder, ctx, event_time);
+            builder.PositionX(libinput_api_.get().GetPointerDx(*pointer_event))
+                .PositionY(libinput_api_.get().GetPointerDy(*pointer_event));
+
             builder.Build(data);
             break;
         }
@@ -64,15 +66,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
-            auto builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-            SetModifierValues(builder);
-
+            auto builder = evget::MouseMove{};
+            SetBaseFields(builder, ctx, event_time);
             SetRelativePosition(builder, device_uuid, *pointer_event);
 
             builder.Build(data);
@@ -86,22 +81,11 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto button_code = libinput_api_.get().GetPointerButton(*pointer_event);
             auto action = GetButtonAction(libinput_api_.get().GetPointerButtonState(*pointer_event));
 
-            auto builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(button_code))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+            auto builder = evget::MouseClick{};
+            SetBaseFields(builder, ctx, event_time);
+            builder.Button(static_cast<int>(button_code)).Action(action);
+            SetButtonName(builder, button_code);
 
-            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, button_code);
-            if (button_name != nullptr) {
-                builder.ButtonName(button_name);
-            }
-
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
@@ -114,18 +98,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             // Only proximity-in generates a motion event, matching xf86-input-libinput behaviour.
             if (proximity_state == LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN) {
                 auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
-
-                auto builder =
-                    evget::MouseMove{}
-                        .Timestamp(event.GetTimestamp())
-                        .Interval(device_intervals_[device_uuid].Interval(event_time))
-                        .Device(this->GetDeviceType(inner_event))
-                        .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
-                        .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
-                        .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                        .DeviceId(device_uuid);
-                SetModifierValues(builder);
-                builder.Build(data);
+                BuildTabletToolMove(data, ctx, event_time, *tool_event);
             }
             break;
         }
@@ -135,17 +108,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
 
-            auto builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
-                    .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-            SetModifierValues(builder);
-            builder.Build(data);
+            BuildTabletToolMove(data, ctx, event_time, *tool_event);
             break;
         }
         // xf86-input-libinput uses xf86PostButtonEventP and xf86libinput_post_tablet_motion is mouse move and click:
@@ -154,29 +117,13 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
 
-            auto move_builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .PositionX(libinput_api_.get().GetTabletToolDx(*tool_event))
-                    .PositionY(libinput_api_.get().GetTabletToolDy(*tool_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-            SetModifierValues(move_builder);
-            move_builder.Build(data);
+            BuildTabletToolMove(data, ctx, event_time, *tool_event);
 
+            auto click_builder = evget::MouseClick{};
             auto action = GetTipAction(libinput_api_.get().GetTabletToolTipState(*tool_event));
-            auto click_builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+            SetBaseFields(click_builder, ctx, event_time);
+            click_builder.Action(action);
 
-            SetModifierValues(click_builder);
             click_builder.Build(data);
             break;
         }
@@ -185,25 +132,14 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TABLET_TOOL_BUTTON: {
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
-            auto button_code = libinput_api_.get().GetTabletToolButton(*tool_event);
+
+            auto builder = evget::MouseClick{};
             auto action = GetButtonAction(libinput_api_.get().GetTabletToolButtonState(*tool_event));
+            auto button_code = libinput_api_.get().GetTabletToolButton(*tool_event);
+            SetBaseFields(builder, ctx, event_time);
+            SetButtonName(builder, button_code);
+            builder.Button(static_cast<int>(button_code)).Action(action);
 
-            auto builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(button_code))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-
-            const auto* button_name = evdev_api_.get().EventCodeName(EV_KEY, button_code);
-            if (button_name != nullptr) {
-                builder.ButtonName(button_name);
-            }
-
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
@@ -212,20 +148,13 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TABLET_PAD_BUTTON: {
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
+
+            auto builder = evget::MouseClick{};
+            SetBaseFields(builder, ctx, event_time);
             auto button_number = libinput_api_.get().GetTabletPadButtonNumber(*pad_event);
             auto action = GetButtonAction(libinput_api_.get().GetTabletPadButtonState(*pad_event));
+            builder.Button(static_cast<int>(button_number)).Action(action);
 
-            auto builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(button_number))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
@@ -234,31 +163,19 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_DOWN: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
-            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
-            auto move_builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid)
-                    .TouchId(seat_slot);
-            SetModifierValues(move_builder);
+            auto move_builder = evget::MouseMove{};
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
+            SetBaseFields(move_builder, ctx, event_time);
+            move_builder.TouchId(seat_slot);
             SetTouchRelativePosition(move_builder, device_uuid, seat_slot, *touch_event);
+
             move_builder.Build(data);
 
-            auto click_builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Action(evget::ButtonAction::kPress)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid)
-                    .TouchId(seat_slot);
+            auto click_builder = evget::MouseClick{};
+            SetBaseFields(click_builder, ctx, event_time);
+            click_builder.Action(evget::ButtonAction::kPress).TouchId(seat_slot);
 
-            SetModifierValues(click_builder);
             click_builder.Build(data);
             break;
         }
@@ -267,18 +184,13 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_MOTION: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
-            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
-            auto builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid)
-                    .TouchId(seat_slot);
-            SetModifierValues(builder);
+            auto builder = evget::MouseMove{};
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
+            SetBaseFields(builder, ctx, event_time);
+            builder.TouchId(seat_slot);
             SetTouchRelativePosition(builder, device_uuid, seat_slot, *touch_event);
+
             builder.Build(data);
             break;
         }
@@ -288,33 +200,21 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TOUCH_UP: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
-            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
 
             // Position data is not available on TOUCH_UP events.
-            auto move_builder =
-                evget::MouseMove{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid)
-                    .TouchId(seat_slot);
-            SetModifierValues(move_builder);
+            auto move_builder = evget::MouseMove{};
+            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
+            SetBaseFields(move_builder, ctx, event_time);
+            move_builder.TouchId(seat_slot);
             move_builder.Build(data);
 
-            auto click_builder =
-                evget::MouseClick{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Action(evget::ButtonAction::kRelease)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid)
-                    .TouchId(seat_slot);
+            auto click_builder = evget::MouseClick{};
+            SetBaseFields(click_builder, ctx, event_time);
+            click_builder.Action(evget::ButtonAction::kRelease).TouchId(seat_slot);
 
-            SetModifierValues(click_builder);
-            click_builder.Build(data);
             ClearTouchPosition(device_uuid, seat_slot);
+
+            click_builder.Build(data);
             break;
         }
         // xf86-input-libinput uses xf86PostMotionEventM with scroll valuators for all scroll event types:
@@ -325,13 +225,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
-            auto builder =
-                evget::MouseScroll{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+            auto builder = evget::MouseScroll{};
+            SetBaseFields(builder, ctx, event_time);
 
             if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)) {
                 builder.Vertical(
@@ -344,7 +239,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                 );
             }
 
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
@@ -353,6 +247,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_KEYBOARD_KEY: {
             auto* keyboard_event = libinput_api_.get().GetKeyboardEvent(*inner_event);
             auto event_time = libinput_api_.get().GetKeyboardTimeMicroseconds(*keyboard_event);
+
             auto key_code = libinput_api_.get().GetKeyboardKey(*keyboard_event);
             auto key_state = libinput_api_.get().GetKeyboardKeyState(*keyboard_event);
             auto action = GetKeyAction(key_state);
@@ -366,18 +261,12 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto key_name = xkb_api_.get().GetKeyName(xkb_key);
             auto character = xkb_api_.get().GetKeyCharacter(xkb_key);
 
-            // Update xkb state to keep modifier tracking in sync.
+            // Update xkb state before SetBaseFields so modifier tracking reflects this key event.
             xkb_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
 
-            auto builder =
-                evget::Key{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(key_code))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
+            auto builder = evget::Key{};
+            SetBaseFields(builder, ctx, event_time);
+            builder.Button(static_cast<int>(key_code)).Action(action);
 
             if (key_name.has_value()) {
                 builder.ButtonName(std::move(*key_name));
@@ -386,7 +275,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
                 builder.Character(std::move(*character));
             }
 
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
@@ -394,31 +282,33 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         case LIBINPUT_EVENT_TABLET_PAD_KEY: {
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
+
+            auto builder = evget::Key{};
             auto key_code = libinput_api_.get().GetTabletPadKey(*pad_event);
             auto action = GetKeyAction(libinput_api_.get().GetTabletPadKeyState(*pad_event));
+            SetBaseFields(builder, ctx, event_time);
+            builder.Button(static_cast<int>(key_code)).Action(action);
+            SetButtonName(builder, key_code);
 
-            auto builder =
-                evget::Key{}
-                    .Timestamp(event.GetTimestamp())
-                    .Interval(device_intervals_[device_uuid].Interval(event_time))
-                    .Device(this->GetDeviceType(inner_event))
-                    .Button(static_cast<int>(key_code))
-                    .Action(action)
-                    .DeviceName(libinput_api_.get().GetDeviceName(*device))
-                    .DeviceId(device_uuid);
-
-            const auto* key_name = evdev_api_.get().EventCodeName(EV_KEY, key_code);
-            if (key_name != nullptr) {
-                builder.ButtonName(key_name);
-            }
-
-            SetModifierValues(builder);
             builder.Build(data);
             break;
         }
     }
 
     return data;
+}
+
+void evgetlibinput::EventTransformer::BuildTabletToolMove(
+    evget::Data& data,
+    const EventContext& ctx,
+    std::uint64_t event_time,
+    libinput_event_tablet_tool& tool_event
+) {
+    auto builder = evget::MouseMove{};
+    SetBaseFields(builder, ctx, event_time);
+    builder.PositionX(libinput_api_.get().GetTabletToolDx(tool_event))
+        .PositionY(libinput_api_.get().GetTabletToolDy(tool_event));
+    builder.Build(data);
 }
 
 void evgetlibinput::EventTransformer::SetRelativePosition(
