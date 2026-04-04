@@ -1,8 +1,9 @@
 #include "evgetlibinput/event_transformer.h"
 
 #include <libinput.h>
-#include <linux/input-event-codes.h>
+#include <xkbcommon/xkbcommon.h>
 
+#include <cstdint>
 #include <utility>
 
 #include "evget/event/button_action.h"
@@ -14,7 +15,9 @@
 #include "evget/event/mouse_scroll.h"
 #include "evget/input_event.h"
 #include "evgetlibinput/drm.h"
+#include "evgetlibinput/evdev.h"
 #include "evgetlibinput/libinput.h"
+#include "evgetlibinput/xkbcommon.h"
 
 evgetlibinput::EventTransformer::EventTransformer(
     LibInputApi& libinput_api,
@@ -293,6 +296,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
+        default:
+            break;
     }
 
     return data;

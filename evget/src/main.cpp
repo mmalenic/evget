@@ -17,6 +17,8 @@
 #include "evget/storage/database_manager.h"
 
 #ifdef FEATURE_EVGETLIBINPUT
+#include "evget/input_event.h"
+#include "evgetlibinput/evdev.h"
 #include "evgetlibinput/event_transformer.h"
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/next_event.h"
