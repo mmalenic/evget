@@ -285,6 +285,34 @@ public:
     virtual std::int32_t GetTouchSeatSlot(libinput_event_touch& event) = 0;
 
     /**
+     * \brief Get the keyboard event from a libinput event.
+     * \param event libinput event
+     * \return the keyboard event
+     */
+    virtual libinput_event_keyboard* GetKeyboardEvent(libinput_event& event) = 0;
+
+    /**
+     * \brief Get the time of the keyboard event in microseconds.
+     * \param event keyboard event
+     * \return time in microseconds
+     */
+    virtual std::uint64_t GetKeyboardTimeMicroseconds(libinput_event_keyboard& event) = 0;
+
+    /**
+     * \brief Get the key code for a keyboard event.
+     * \param event keyboard event
+     * \return key code
+     */
+    virtual std::uint32_t GetKeyboardKey(libinput_event_keyboard& event) = 0;
+
+    /**
+     * \brief Get the key state for a keyboard event.
+     * \param event keyboard event
+     * \return key state
+     */
+    virtual libinput_key_state GetKeyboardKeyState(libinput_event_keyboard& event) = 0;
+
+    /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
      *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
      * \param modifier_name modifier name
@@ -385,6 +413,14 @@ public:
     double GetTouchY(libinput_event_touch& event, std::uint32_t height) override;
 
     std::int32_t GetTouchSeatSlot(libinput_event_touch& event) override;
+
+    libinput_event_keyboard* GetKeyboardEvent(libinput_event& event) override;
+
+    std::uint64_t GetKeyboardTimeMicroseconds(libinput_event_keyboard& event) override;
+
+    std::uint32_t GetKeyboardKey(libinput_event_keyboard& event) override;
+
+    libinput_key_state GetKeyboardKeyState(libinput_event_keyboard& event) override;
 
 private:
     LibInput() = default;

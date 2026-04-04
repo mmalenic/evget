@@ -263,3 +263,19 @@ double evgetlibinput::LibInput::GetTouchY(libinput_event_touch& event, std::uint
 std::int32_t evgetlibinput::LibInput::GetTouchSeatSlot(libinput_event_touch& event) {
     return libinput_event_touch_get_seat_slot(&event);
 }
+
+libinput_event_keyboard* evgetlibinput::LibInput::GetKeyboardEvent(libinput_event& event) {
+    return libinput_event_get_keyboard_event(&event);
+}
+
+std::uint64_t evgetlibinput::LibInput::GetKeyboardTimeMicroseconds(libinput_event_keyboard& event) {
+    return libinput_event_keyboard_get_time_usec(&event);
+}
+
+std::uint32_t evgetlibinput::LibInput::GetKeyboardKey(libinput_event_keyboard& event) {
+    return libinput_event_keyboard_get_key(&event);
+}
+
+libinput_key_state evgetlibinput::LibInput::GetKeyboardKeyState(libinput_event_keyboard& event) {
+    return libinput_event_keyboard_get_key_state(&event);
+}
