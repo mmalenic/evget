@@ -29,27 +29,6 @@
 #include "evget/event/mouse_move.h"
 
 namespace evgetx11 {
-/**
- * \brief Check whether the template parameter is a builder with focus window functions.
- */
-template <typename T>
-concept BuilderHasWindowFunctions =
-    requires(T builder, std::string name, double x_pos, double y_pos, double width, double height) {
-        { builder.FocusWindowName(name) } -> std::convertible_to<T>;
-        { builder.FocusWindowPositionX(x_pos) } -> std::convertible_to<T>;
-        { builder.FocusWindowPositionY(y_pos) } -> std::convertible_to<T>;
-        { builder.FocusWindowWidth(width) } -> std::convertible_to<T>;
-        { builder.FocusWindowHeight(height) } -> std::convertible_to<T>;
-    };
-
-/**
- * \brief Check whether the template parameter is a builder with a device name function.
- */
-template <typename T>
-concept BuilderHasDeviceNameFunctions = requires(T builder, std::string device_name, int screen) {
-    { builder.DeviceName(device_name) } -> std::convertible_to<T>;
-    { builder.Screen(screen) } -> std::convertible_to<T>;
-};
 
 /**
  * \brief Handles processing different types of X11 input events and converting them to the
@@ -157,7 +136,7 @@ public:
      * \param builder reference to the builder to modify
      * \return reference to the modified builder
      */
-    template <BuilderHasWindowFunctions T>
+    template <evget::BuilderHasWindowFunctions T>
     T& SetWindowFields(T& builder);
 
     /**
@@ -168,7 +147,8 @@ public:
      * \param screen screen number
      * \return reference to the modified builder
      */
-    template <BuilderHasDeviceNameFunctions T>
+    template <typename T>
+        requires evget::BuilderHasScreenFunction<T> && evget::BuilderHasDeviceName<T>
     T& SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
 
     /**
@@ -224,7 +204,7 @@ T& EventSwitch::SetModifierValue(unsigned int modifier_state, T& builder) {
     return builder;
 }
 
-template <BuilderHasWindowFunctions T>
+template <evget::BuilderHasWindowFunctions T>
 T& EventSwitch::SetWindowFields(T& builder) {
     auto window = x_wrapper_.get().GetActiveWindow();
 
@@ -259,7 +239,8 @@ T& EventSwitch::SetWindowFields(T& builder) {
     return builder;
 }
 
-template <BuilderHasDeviceNameFunctions T>
+template <typename T>
+    requires evget::BuilderHasScreenFunction<T> && evget::BuilderHasDeviceName<T>
 T& EventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
     auto name = id_to_name_.at(event.sourceid);
 
