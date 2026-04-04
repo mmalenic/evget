@@ -282,8 +282,9 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             builder.Build(data);
             break;
         }
-        // xf86-input-libinput uses xf86PostTouchEvent for both UP and CANCEL which matches a button release
+        // xf86-input-libinput uses xf86PostTouchEvent for both UP and CANCEL which matches a button release:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
+        case LIBINPUT_EVENT_TOUCH_CANCEL:
         case LIBINPUT_EVENT_TOUCH_UP: {
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
