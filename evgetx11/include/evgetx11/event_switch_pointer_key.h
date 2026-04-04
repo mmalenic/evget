@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "evget/event/concepts.h"
 #include "evget/event/key.h"
 #include "evget/event/mouse_scroll.h"
 #include "evgetx11/event_switch.h"

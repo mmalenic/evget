@@ -42,6 +42,7 @@ target_sources(
            ${INCLUDE}/next_event.h
            ${INCLUDE}/storage/store.h
            ${INCLUDE}/event_loop.h
+           ${INCLUDE}/event/concepts.h
            ${INCLUDE}/event/mouse_move.h
            ${INCLUDE}/event/mouse_click.h
            ${INCLUDE}/event/mouse_scroll.h

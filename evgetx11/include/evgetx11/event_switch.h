@@ -25,6 +25,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "evget/event/concepts.h"
 #include "evget/event/mouse_click.h"
 #include "evget/event/mouse_move.h"
 
