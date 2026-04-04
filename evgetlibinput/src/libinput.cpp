@@ -8,9 +8,12 @@
 #include <unistd.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include <array>
 #include <cerrno>
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 namespace {
@@ -278,4 +281,29 @@ std::uint32_t evgetlibinput::LibInput::GetKeyboardKey(libinput_event_keyboard& e
 
 libinput_key_state evgetlibinput::LibInput::GetKeyboardKeyState(libinput_event_keyboard& event) {
     return libinput_event_keyboard_get_key_state(&event);
+}
+
+std::optional<std::string> evgetlibinput::LibInput::GetKeyName(xkb_keycode_t key) {
+    auto sym = xkb_state_key_get_one_sym(xkb_state_.get(), key);
+    if (sym == XKB_KEY_NoSymbol) {
+        return std::nullopt;
+    }
+
+    // xkb_keysym_get_name recommends a buffer of 64 bytes.
+    constexpr auto kKeySymBufSize = 64;
+    std::array<char, kKeySymBufSize> buf{};
+    auto needed = xkb_keysym_get_name(sym, buf.data(), buf.size());
+    if (needed <= 0) {
+        return std::nullopt;
+    }
+
+    if (needed < buf.size()) {
+        // String output is null-terminated.
+        return std::string{buf.data()};
+    }
+
+    // If this has failed for some reason, try again with the correct amount of bytes.
+    std::string name(needed, '\0');
+    xkb_keysym_get_name(sym, name.data(), name.size() + 1);
+    return name;
 }
