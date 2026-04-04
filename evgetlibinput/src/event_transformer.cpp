@@ -19,9 +19,10 @@
 evgetlibinput::EventTransformer::EventTransformer(
     LibInputApi& libinput_api,
     EvdevApi& evdev_api,
+    XkbCommonApi& xkb_api,
     ScreenDimensions dimensions
 )
-    : libinput_api_{libinput_api}, evdev_api_{evdev_api}, dimensions_{dimensions} {}
+    : libinput_api_{libinput_api}, evdev_api_{evdev_api}, xkb_api_{xkb_api}, dimensions_{dimensions} {}
 
 evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<LibInputEvent> event) {
     auto inner_event = std::move(event.ViewData());
@@ -337,11 +338,11 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             constexpr auto kKeyCodeOffset = 8;
             const xkb_keycode_t xkb_key = key_code + kKeyCodeOffset;
 
-            auto key_name = libinput_api_.get().GetKeyName(xkb_key);
-            auto character = libinput_api_.get().GetKeyCharacter(xkb_key);
+            auto key_name = xkb_api_.get().GetKeyName(xkb_key);
+            auto character = xkb_api_.get().GetKeyCharacter(xkb_key);
 
             // Update xkb state to keep modifier tracking in sync.
-            libinput_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
+            xkb_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
 
             auto builder =
                 evget::Key{}

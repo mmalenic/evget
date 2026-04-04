@@ -20,6 +20,7 @@
 #include "evgetlibinput/event_transformer.h"
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/next_event.h"
+#include "evgetlibinput/xkbcommon.h"
 #endif
 
 #ifdef FEATURE_EVGETX11
@@ -74,6 +75,7 @@ int main(int argc, char* argv[]) {
 
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::LibInputApi> libinput{};
+        std::unique_ptr<evgetlibinput::XkbCommonApi> xkb{};
         evgetlibinput::Evdev evdev{};
         std::optional<evgetlibinput::EventTransformer> li_transformer{};
         std::optional<evgetlibinput::NextEvent> li_next_event{};
@@ -86,6 +88,13 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             libinput = std::move(*lib_input_result);
+
+            auto xkb_result = evgetlibinput::XkbCommon::New();
+            if (!xkb_result.has_value()) {
+                spdlog::error("{}", xkb_result.error());
+                return 1;
+            }
+            xkb = std::move(*xkb_result);
 
             evgetlibinput::ScreenDimensions dimensions{};
             auto cli_dimensions = cli.ScreenDimensions();
@@ -100,7 +109,7 @@ int main(int argc, char* argv[]) {
                 dimensions = (*drm_result)->GetDimensions();
             }
 
-            li_transformer.emplace(*libinput, evdev, dimensions);
+            li_transformer.emplace(*libinput, evdev, *xkb, dimensions);
             li_next_event.emplace(*libinput);
             li_handler.emplace(manager, *li_transformer, *li_next_event);
 

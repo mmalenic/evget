@@ -17,6 +17,7 @@ target_sources(
             ${SRC}/libinput.cpp
             ${SRC}/drm.cpp
             ${SRC}/evdev.cpp
+            ${SRC}/xkbcommon.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
            HEADERS
@@ -31,6 +32,7 @@ target_sources(
            ${INCLUDE}/libinput.h
            ${INCLUDE}/drm.h
            ${INCLUDE}/evdev.h
+           ${INCLUDE}/xkbcommon.h
     # ${INCLUDE}/udev_context.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetlibinput)

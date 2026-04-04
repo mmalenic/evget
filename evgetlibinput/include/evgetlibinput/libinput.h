@@ -9,7 +9,6 @@
 #include <libinput.h>
 #include <libudev.h>
 #include <sys/poll.h>
-#include <xkbcommon/xkbcommon.h>
 
 #include <memory>
 
@@ -311,35 +310,6 @@ public:
      * \return key state
      */
     virtual libinput_key_state GetKeyboardKeyState(libinput_event_keyboard& event) = 0;
-
-    /**
-     * \brief Get the xkb keysym name for a key code.
-     * \param key the xkb key code
-     * \return the keysym name
-     */
-    virtual std::optional<std::string> GetKeyName(xkb_keycode_t key) = 0;
-
-    /**
-     * \brief Get the UTF-8 character for a key code.
-     * \param key the xkb key code
-     * \return the character, or std::nullopt if not printable
-     */
-    virtual std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) = 0;
-
-    /**
-     * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
-     *        active, previous calls to `UpdateKeyState` should happen in response to libinput key events.
-     * \param modifier_name modifier name
-     * \return if the modifier is active
-     */
-    virtual bool IsModifierActive(const char* modifier_name) = 0;
-
-    /**
-     * \brief Update the key state for a given key.
-     * \param key the key to update
-     * \param direction the direction, either pressed or released
-     */
-    virtual void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) = 0;
 };
 
 /**
@@ -375,10 +345,6 @@ public:
     double GetPointerDy(libinput_event_pointer& event) override;
 
     const char* GetDeviceName(libinput_device& device) override;
-
-    bool IsModifierActive(const char* modifier_name) override;
-
-    void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) override;
 
     double GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) override;
 
@@ -436,19 +402,11 @@ public:
 
     libinput_key_state GetKeyboardKeyState(libinput_event_keyboard& event) override;
 
-    std::optional<std::string> GetKeyName(xkb_keycode_t key) override;
-
-    std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) override;
-
 private:
     LibInput() = default;
 
     std::unique_ptr<udev, decltype(&udev_unref)> udev_context_{nullptr, udev_unref};
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
-
-    std::unique_ptr<xkb_context, decltype(&xkb_context_unref)> xkb_context_{nullptr, xkb_context_unref};
-    std::unique_ptr<xkb_keymap, decltype(&xkb_keymap_unref)> xkb_key_map_{nullptr, xkb_keymap_unref};
-    std::unique_ptr<xkb_state, decltype(&xkb_state_unref)> xkb_state_{nullptr, xkb_state_unref};
 
     pollfd pollfd_{};
     bool wait_for_poll_{};
