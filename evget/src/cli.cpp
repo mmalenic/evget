@@ -178,7 +178,7 @@ std::string evget::Cli::FormatEnum(
     );
     for (auto i = 0; i < descriptions.size(); ++i) {
         out_description.append(std::format("{: <{}}{}", "", kIndentBy, descriptions.at(i)));
-        if (i > 1) {
+        if (descriptions.size() > 1 && i < descriptions.size() - 1) {
             out_description.append("\n");
         }
     }
@@ -188,12 +188,14 @@ std::string evget::Cli::FormatEnum(
 
 std::vector<std::string> evget::Cli::EventSourceDescriptions() {
     return {
+        "- libinput: source events from libinput",
         "- x11: source events from the X11 windowing system",
     };
 }
 
 std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
     return {
+        {"libinput", EventSource::kLibInput},
         {"x11", EventSource::kX11},
     };
 }
