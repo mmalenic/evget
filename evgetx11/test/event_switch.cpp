@@ -33,10 +33,11 @@ TEST(XEventSwitchTest, RefreshDevices) {
 TEST(XEventSwitchTest, GetDevice) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
-    ASSERT_THROW(static_cast<void>(x_event_switch.GetDevice(1)), std::out_of_range);
+    ASSERT_THROW(static_cast<void>(x_event_switch.GetDevice(1, XI_RawMotion)), std::out_of_range);
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
-    ASSERT_EQ(x_event_switch.GetDevice(1), evget::DeviceType::kMouse);
+    ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawMotion), evget::DeviceType::kMouse);
+    ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawKeyPress), evget::DeviceType::kKeyboard);
 }
 
 TEST(XEventSwitchTest, GetButtonName) {

@@ -10,8 +10,14 @@
 
 #include "evgetx11/x11.h"
 
-evget::DeviceType evgetx11::EventSwitch::GetDevice(int device_id) const {
-    return devices_.at(device_id);
+evget::DeviceType evgetx11::EventSwitch::GetDevice(int device_id, int xi2_event_type) const {
+    switch (xi2_event_type) {
+        case XI_RawKeyPress:
+        case XI_RawKeyRelease:
+            return evget::DeviceType::kKeyboard;
+        default:
+            return devices_.at(device_id);
+    }
 }
 
 bool evgetx11::EventSwitch::HasDevice(int device_id) const {

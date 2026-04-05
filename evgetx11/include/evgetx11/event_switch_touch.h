@@ -128,7 +128,7 @@ void EventSwitchTouch::TouchButton(
     evget::MouseClick builder{};
     builder.Interval(get_time(raw_event.time))
         .Timestamp(event.GetTimestamp())
-        .Device(x_event_switch.GetDevice(raw_event.sourceid))
+        .Device(x_event_switch.GetDevice(raw_event.sourceid, raw_event.evtype))
         .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
@@ -157,7 +157,7 @@ void EventSwitchTouch::TouchMotion(
     evget::MouseMove builder{};
     builder.Interval(get_time(raw_event.time))
         .Timestamp(event.GetTimestamp())
-        .Device(x_event_switch.GetDevice(raw_event.sourceid))
+        .Device(x_event_switch.GetDevice(raw_event.sourceid, raw_event.evtype))
         .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)

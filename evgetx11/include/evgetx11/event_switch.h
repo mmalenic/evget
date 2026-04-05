@@ -100,11 +100,12 @@ public:
     [[nodiscard]] const std::string& GetButtonName(int device_id, int button) const;
 
     /**
-     * \brief Get the device type for the given device ID.
+     * \brief Get the device type for the given device ID and event type.
      * \param device_id the ID of the device
+     * \param xi2_event_type the XI2 event type
      * \return device type enumeration value
      */
-    [[nodiscard]] evget::DeviceType GetDevice(int device_id) const;
+    [[nodiscard]] evget::DeviceType GetDevice(int device_id, int xi2_event_type) const;
 
     /**
      * \brief Check whether the device with the given ID has already been
@@ -259,7 +260,7 @@ void EventSwitch::AddMotionEvent(
     evget::MouseMove builder{};
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
-        .Device(GetDevice(event.sourceid))
+        .Device(GetDevice(event.sourceid, event.evtype))
         .DeviceId(GetDeviceUuid(event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
@@ -285,7 +286,7 @@ void EventSwitch::AddButtonEvent(
     evget::MouseClick builder{};
     builder.Interval(get_time(event.time))
         .Timestamp(date_time)
-        .Device(GetDevice(event.sourceid))
+        .Device(GetDevice(event.sourceid, event.evtype))
         .DeviceId(GetDeviceUuid(event.sourceid))
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
