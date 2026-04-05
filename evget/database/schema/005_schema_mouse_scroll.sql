@@ -13,6 +13,7 @@ create table mouse_scroll (
     focus_window_height real,
     screen real,
     device_id text,
+    system_event text,
     device_type integer not null references device_type(id),
     scroll_vertical real,
     scroll_horizontal real

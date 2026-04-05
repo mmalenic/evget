@@ -95,6 +95,11 @@ evget::MouseScroll& evget::MouseScroll::Screen(int screen) {
     return *this;
 }
 
+evget::MouseScroll& evget::MouseScroll::SystemEvent(std::string system_event) {
+    system_event_ = std::move(system_event);
+    return *this;
+}
+
 evget::Data& evget::MouseScroll::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseScroll,
@@ -110,6 +115,7 @@ evget::Data& evget::MouseScroll::Build(Data& data) const {
          FromDouble(focus_window_height_),
          FromInt(screen_),
          FromString(device_id_),
+         FromString(system_event_),
          ToUnderlyingOptional(device_),
          FromDouble(vertical_),
          FromDouble(horizontal_)},

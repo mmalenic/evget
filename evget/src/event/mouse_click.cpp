@@ -106,6 +106,11 @@ evget::MouseClick& evget::MouseClick::Screen(int screen) {
     return *this;
 }
 
+evget::MouseClick& evget::MouseClick::SystemEvent(std::string system_event) {
+    system_event_ = std::move(system_event);
+    return *this;
+}
+
 evget::Data& evget::MouseClick::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseClick,
@@ -122,6 +127,7 @@ evget::Data& evget::MouseClick::Build(Data& data) const {
             FromDouble(focus_window_height_),
             FromInt(screen_),
             FromString(device_id_),
+            FromString(system_event_),
             ToUnderlyingOptional(device_),
             FromInt(touch_id_),
             FromInt(button_),

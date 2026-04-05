@@ -141,6 +141,13 @@ public:
     MouseScroll& DeviceId(std::string device_id);
 
     /**
+     * \brief Add the system event name.
+     * \param system_event name of the underlying system event
+     * \return reference to this `MouseScroll` object
+     */
+    MouseScroll& SystemEvent(std::string system_event);
+
+    /**
      * \brief Build mouse wheel event.
      * \param data data container to add the event to
      * \return reference to the data container
@@ -163,6 +170,7 @@ private:
     std::optional<double> focus_window_width_;
     std::optional<double> focus_window_height_;
     std::optional<int> screen_;
+    std::optional<std::string> system_event_;
 
     std::vector<std::string> modifiers_;
 };
