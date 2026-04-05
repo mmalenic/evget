@@ -22,16 +22,30 @@ const std::vector<std::string>& evget::Entry::Modifiers() const {
 }
 
 void evget::Entry::ToNamedRepresentation() {
-    if (data_.size() >= detail::kMouseMoveNFields) {
-        data_.at(detail::kMouseMoveNFields - 1) =
-            FromDevice(FromUnderlying<DeviceType>(data_.at(detail::kMouseMoveNFields - 1)));
-    }
-    if (data_.size() >= detail::kMouseClickNFields) {
-        data_.at(detail::kMouseClickNFields - 1) =
-            FromButtonAction(FromUnderlying<ButtonAction>(data_.at(detail::kMouseClickNFields - 1)));
+    constexpr auto kDeviceTypeIndex = detail::kBaseNFields - 1;
+    if (data_.size() > kDeviceTypeIndex) {
+        data_.at(kDeviceTypeIndex) = FromDevice(FromUnderlying<DeviceType>(data_.at(kDeviceTypeIndex)));
     }
 
-    std::ranges::for_each(modifiers_.begin(), modifiers_.end(), [](std::string& modifier) {
+    // button_action position depends on the entry type.
+    switch (type_) {
+        case EntryType::kMouseClick:
+            if (data_.size() >= detail::kMouseClickNFields) {
+                constexpr auto kIndex = detail::kMouseClickNFields - 1;
+                data_.at(kIndex) = FromButtonAction(FromUnderlying<ButtonAction>(data_.at(kIndex)));
+            }
+            break;
+        case EntryType::kKey:
+            if (data_.size() >= detail::kKeyNFields) {
+                constexpr auto kIndex = detail::kKeyNFields - 1;
+                data_.at(kIndex) = FromButtonAction(FromUnderlying<ButtonAction>(data_.at(kIndex)));
+            }
+            break;
+        default:
+            break;
+    }
+
+    std::ranges::for_each(modifiers_, [](std::string& modifier) {
         modifier = FromModifierValue(FromUnderlying<ModifierValue>(modifier));
     });
 }

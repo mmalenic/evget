@@ -125,8 +125,8 @@ evget::Data& evget::Key::Build(Data& data) const {
             ToUnderlyingOptional(device_),
             FromInt(button_),
             FromString(name_),
-            ToUnderlyingOptional(action_),
             FromString(character_),
+            ToUnderlyingOptional(action_),
         },
         modifiers_
     };

@@ -112,8 +112,8 @@ constexpr std::array<std::string_view, kKeyNFields> kKeyFields = AddToArray<kBas
     std::vector{
         "button_id",
         "button_name",
-        "button_action",
         "character",
+        "button_action",
     }
 );
 } // namespace detail
@@ -170,7 +170,7 @@ public:
     [[nodiscard]] const std::vector<std::string>& Modifiers() const;
 
     /**
-     * \brief Rearrange the entry fields from an integer to named representation.
+     * \brief Convert enum integer fields to named string representations for display.
      */
     void ToNamedRepresentation();
 
