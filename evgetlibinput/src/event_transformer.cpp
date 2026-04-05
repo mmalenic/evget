@@ -264,9 +264,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             auto key_name = xkb_api_.get().GetKeyName(xkb_key);
             auto character = xkb_api_.get().GetKeyCharacter(xkb_key);
 
-            // Update xkb state before SetBaseFields so modifier tracking reflects this key event.
-            xkb_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
-
             auto builder = evget::Key{};
             SetBaseFields(builder, ctx, event_time);
             builder.Button(static_cast<int>(key_code)).Action(action);
@@ -279,6 +276,8 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             }
 
             builder.Build(data);
+
+            xkb_api_.get().UpdateKeyState(xkb_key, GetXkbDirection(key_state));
             break;
         }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.

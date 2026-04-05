@@ -16,8 +16,8 @@ create table key (
     device_type integer not null references device_type(id),
     button_id integer,
     button_name text,
-    button_action integer not null references button_action(id),
-    character text
+    character text,
+    button_action integer not null references button_action(id)
 );
 
 -- Linking table to modifier
