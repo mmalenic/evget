@@ -2,6 +2,7 @@ import os
 
 from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import cmake_layout, CMakeToolchain, CMake
+from conan.tools.system import package_manager
 from conan import ConanFile
 
 
@@ -95,11 +96,29 @@ class EvgetRecipe(ConanFile):
             if self.options.require_system_packages:
                 self.requires("libudev/system")
 
-            self.requires("libinput/[^1]")
             self.requires("libevdev/[^1]")
             self.requires("xkbcommon/[^1]")
             self.requires("wayland/[^1]")
             self.requires("libdrm/[^2]")
+
+    def system_requirements(self):
+        # The conan libinput package has a broken runtime paths for device quirks, so install a
+        # system package here instead if requested.
+        if self.options.build_evgetlibinput:
+            apt = package_manager.Apt(self)
+            apt.install(["libinput-dev"], update=True, check=True)
+
+            dnf = package_manager.Dnf(self)
+            dnf.install(["libinput-devel"], update=True, check=True)
+
+            yum = package_manager.Yum(self)
+            yum.install(["libinput-devel"], update=True, check=True)
+
+            pacman = package_manager.PacMan(self)
+            pacman.install(["libinput"], update=True, check=True)
+
+            zypper = package_manager.Zypper(self)
+            zypper.install(["libinput-devel"], update=True, check=True)
 
     def validate(self):
         if self.settings.compiler.cppstd:

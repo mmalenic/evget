@@ -112,20 +112,17 @@ toolbelt_add_dep(
     REQUIRED
 )
 
-# Try conan-specific install first, otherwise fallback to system install.
-toolbelt_add_dep(${LIBRARY_NAME} libinput VISIBILITY PUBLIC LINK_COMPONENTS libinput::libinput)
-if(NOT TARGET libinput::libinput)
-    toolbelt_add_dep(
-        ${LIBRARY_NAME}
-        Libinput
-        VISIBILITY
-        PUBLIC
-        LINK_COMPONENTS
-        Libinput::Libinput
-        FIND_PACKAGE_ARGS
-        REQUIRED
-    )
-endif()
+# Use system libinput which conan is able to install.
+toolbelt_add_dep(
+    ${LIBRARY_NAME}
+    Libinput
+    VISIBILITY
+    PUBLIC
+    LINK_COMPONENTS
+    Libinput::Libinput
+    FIND_PACKAGE_ARGS
+    REQUIRED
+)
 
 # if(BUILD_TESTING) target_sources( ${TEST_EXECUTABLE_NAME} PUBLIC test/common/libinput_api_mock.cpp
 # test/common/libinput_api_mock.h test/event_switch.cpp test/event_switch_pointer_key.cpp test/event_switch_touch.cpp

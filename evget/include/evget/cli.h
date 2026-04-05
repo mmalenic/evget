@@ -105,7 +105,7 @@ public:
 
 private:
     static constexpr std::size_t kDefaultNEvents{100};
-    static constexpr std::size_t kDefaultStoreAfter{60};
+    static constexpr std::size_t kDefaultStoreAfter{100};
     static constexpr std::size_t kIndentBy{30};
 
     std::vector<std::string> output_;
