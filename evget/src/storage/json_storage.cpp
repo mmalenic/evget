@@ -37,9 +37,7 @@ evget::Result<void> evget::JsonStorage::StoreEvent(Data events) {
         );
     }
 
-    nlohmann::json output{};
-    output.at("entries") = formatted_entries;
-
+    const nlohmann::json output{{"entries", formatted_entries}};
     std::visit([output](auto&& ostream) { *ostream << output.dump(4) << "\n"; }, ostream_);
 
     return Result<void>{};
