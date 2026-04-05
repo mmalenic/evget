@@ -39,15 +39,15 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
     }
 
     const auto& device_uuid = device_ids_.Uuid(device);
+    auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     auto ctx = EventContext{
         .timestamp = event.GetTimestamp(),
-        .device_type = this->GetDeviceType(inner_event),
+        .device_type = this->GetDeviceType(inner_event, event_type),
         .device_name = libinput_api_.get().GetDeviceName(*device),
         .device_uuid = device_uuid,
     };
 
     auto data = evget::Data{};
-    auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     switch (event_type) {
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1647
@@ -390,9 +390,27 @@ xkb_key_direction evgetlibinput::EventTransformer::GetXkbDirection(libinput_key_
     return XKB_KEY_UP;
 }
 
-evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event) const {
+evget::DeviceType
+evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& event, libinput_event_type event_type) const {
     if (event == nullptr) {
         return evget::DeviceType::kUnknown;
+    }
+
+    // Keyboard and tablet events unambiguously identify the device type.
+    switch (event_type) {
+        case LIBINPUT_EVENT_KEYBOARD_KEY:
+        case LIBINPUT_EVENT_TABLET_PAD_KEY:
+            return evget::DeviceType::kKeyboard;
+        case LIBINPUT_EVENT_TABLET_TOOL_AXIS:
+        case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY:
+        case LIBINPUT_EVENT_TABLET_TOOL_TIP:
+        case LIBINPUT_EVENT_TABLET_TOOL_BUTTON:
+        case LIBINPUT_EVENT_TABLET_PAD_BUTTON:
+        case LIBINPUT_EVENT_TABLET_PAD_RING:
+        case LIBINPUT_EVENT_TABLET_PAD_STRIP:
+            return evget::DeviceType::kTablet;
+        default:
+            break;
     }
 
     auto* device = this->libinput_api_.get().GetDevice(*event);
@@ -400,8 +418,10 @@ evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& 
         return evget::DeviceType::kUnknown;
     }
 
-    // Use ordering defined by xf86-input-libinput to match X11 behaviour:
+    // For pointer and touch events, use capability ordering defined by xf86-input-libinput:
     // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L3805-3846
+    // This is intentionally different to xf86-input-libinput because keyboards often report pointer capability
+    // resulting in an incorrect device type.
     if (this->libinput_api_.get().GetDeviceFingerCount(*device) > 0) {
         return evget::DeviceType::kTouchpad;
     }
@@ -411,10 +431,6 @@ evget::DeviceType evgetlibinput::EventTransformer::GetDeviceType(LibInputEvent& 
     if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_POINTER)) {
         return evget::DeviceType::kMouse;
     }
-    if (this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_TOOL) ||
-        this->libinput_api_.get().DeviceHasCapability(*device, LIBINPUT_DEVICE_CAP_TABLET_PAD)) {
-        return evget::DeviceType::kTablet;
-    }
 
-    return evget::DeviceType::kKeyboard;
+    return evget::DeviceType::kUnknown;
 }

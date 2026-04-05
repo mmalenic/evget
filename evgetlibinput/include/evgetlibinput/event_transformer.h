@@ -71,7 +71,7 @@ private:
     std::map<std::pair<std::string, std::int32_t>, double> previous_touch_y_;
     std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
 
-    evget::DeviceType GetDeviceType(LibInputEvent& event) const;
+    evget::DeviceType GetDeviceType(LibInputEvent& event, libinput_event_type event_type) const;
     static evget::ButtonAction GetButtonAction(libinput_button_state state);
     static evget::ButtonAction GetTipAction(libinput_tablet_tool_tip_state state);
     static evget::ButtonAction GetKeyAction(libinput_key_state state);
