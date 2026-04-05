@@ -25,6 +25,7 @@
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/modifier_value.h"
+#include "evget/util.h"
 
 namespace evget {
 

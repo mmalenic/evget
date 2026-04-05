@@ -8,20 +8,12 @@
 
 #include <spdlog/spdlog.h>
 
-#include <concepts>
 #include <cstdint>
 #include <expected>
 #include <format>
 #include <string>
-#include <type_traits>
 
 namespace evget {
-/**
- * \brief Invocable concept with a checked return type.
- */
-template <class F, class R, class... Args>
-concept Invocable = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
-
 /**
  * \brief Error struct.
  */

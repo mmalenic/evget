@@ -60,6 +60,7 @@ target_sources(
            ${INCLUDE}/event/entry.h
            ${INCLUDE}/storage/database_manager.h
            ${INCLUDE}/error.h
+           ${INCLUDE}/util.h
            ${INCLUDE}/async/container/locking_vector.h
            ${INCLUDE}/async/scheduler/interval.h
            ${INCLUDE}/async/scheduler/scheduler.h

@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "evget/error.h"
+#include "evget/util.h"
 
 namespace evget {
 
