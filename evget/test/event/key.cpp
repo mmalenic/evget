@@ -27,6 +27,7 @@ TEST(KeyTest, Event) {
             .FocusWindowHeight(1)
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
+            .SystemEvent("test_event")
             .Button(1)
             .ButtonName("name")
             .Action(evget::ButtonAction::kPress)
@@ -51,11 +52,13 @@ TEST(KeyTest, Event) {
         "1.000000",
         "1.000000",
         "1",
+        "",
+        "test_event",
         "Keyboard",
         "1",
         "name",
+        "a",
         "Press",
-        "a"
     };
 
     ASSERT_EQ(named_entry.type, evget::EntryType::kKey);

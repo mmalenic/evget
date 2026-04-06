@@ -25,6 +25,7 @@ TEST(MouseMoveTest, Event) {
             .FocusWindowHeight(1)
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
+            .SystemEvent("test_event")
             .Modifier(evget::ModifierValue::kAlt)
             .Build(data);
 
@@ -46,7 +47,10 @@ TEST(MouseMoveTest, Event) {
         "1.000000",
         "1.000000",
         "1",
-        "Keyboard"
+        "",
+        "test_event",
+        "Keyboard",
+        "",
     };
 
     ASSERT_EQ(named_entry.type, evget::EntryType::kMouseMove);

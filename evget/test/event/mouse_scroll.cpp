@@ -26,6 +26,7 @@ TEST(MouseScrollTest, Event) {
             .FocusWindowHeight(1)
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
+            .SystemEvent("test_event")
             .Vertical(1)
             .Horizontal(1)
             .Modifier(evget::ModifierValue::kAlt)
@@ -49,9 +50,11 @@ TEST(MouseScrollTest, Event) {
         "1.000000",
         "1.000000",
         "1",
+        "",
+        "test_event",
         "Keyboard",
         "1.000000",
-        "1.000000"
+        "1.000000",
     };
 
     ASSERT_EQ(named_entry.type, evget::EntryType::kMouseScroll);

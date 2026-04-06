@@ -27,6 +27,7 @@ TEST(MouseClickTest, Event) {
             .FocusWindowHeight(1)
             .Screen(1)
             .Device(evget::DeviceType::kKeyboard)
+            .SystemEvent("test_event")
             .Button(1)
             .ButtonName("name")
             .Action(evget::ButtonAction::kPress)
@@ -51,10 +52,13 @@ TEST(MouseClickTest, Event) {
         "1.000000",
         "1.000000",
         "1",
+        "",
+        "test_event",
         "Keyboard",
+        "",
         "1",
         "name",
-        "Press"
+        "Press",
     };
 
     ASSERT_EQ(named_entry.type, evget::EntryType::kMouseClick);
