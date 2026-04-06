@@ -14,6 +14,7 @@
 #include "evget/event/mouse_move.h"
 #include "evget/event/mouse_scroll.h"
 #include "evget/input_event.h"
+#include "evget/util.h"
 #include "evgetlibinput/drm.h"
 #include "evgetlibinput/evdev.h"
 #include "evgetlibinput/libinput.h"
@@ -52,6 +53,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1647
         case LIBINPUT_EVENT_POINTER_MOTION: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_MOTION);
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
@@ -66,6 +68,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostMotionEventM which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1675
         case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE);
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
 
@@ -79,6 +82,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostButtonEvent which is mouse click:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1703
         case LIBINPUT_EVENT_POINTER_BUTTON: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_BUTTON);
             auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
             auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
             auto button_code = libinput_api_.get().GetPointerButton(*pointer_event);
@@ -95,6 +99,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostProximityEventM and posts a motion event on proximity-in:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2479
         case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY);
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto proximity_state = libinput_api_.get().GetTabletToolProximityState(*tool_event);
 
@@ -108,6 +113,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostMotionEventM via xf86libinput_post_tablet_motion which is mouse move:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2368
         case LIBINPUT_EVENT_TABLET_TOOL_AXIS: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_TOOL_AXIS);
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
 
@@ -117,6 +123,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostButtonEventP and xf86libinput_post_tablet_motion is mouse move and click:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2233
         case LIBINPUT_EVENT_TABLET_TOOL_TIP: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_TOOL_TIP);
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
 
@@ -133,6 +140,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostButtonEventP for mouse click:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2256
         case LIBINPUT_EVENT_TABLET_TOOL_BUTTON: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_TOOL_BUTTON);
             auto* tool_event = libinput_api_.get().GetTabletToolEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletToolTimeMicroseconds(*tool_event);
 
@@ -149,6 +157,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostButtonEvent which is mouse click:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L2526
         case LIBINPUT_EVENT_TABLET_PAD_BUTTON: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_PAD_BUTTON);
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
 
@@ -164,6 +173,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostTouchEvent which matches motion and button press:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
         case LIBINPUT_EVENT_TOUCH_DOWN: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TOUCH_DOWN);
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
 
@@ -185,6 +195,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         // xf86-input-libinput uses xf86PostTouchEvent which matches a motion event:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
         case LIBINPUT_EVENT_TOUCH_MOTION: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TOUCH_MOTION);
             auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
 
@@ -199,55 +210,37 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         }
         // xf86-input-libinput uses xf86PostTouchEvent for both UP and CANCEL which matches a button release:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1965
-        case LIBINPUT_EVENT_TOUCH_CANCEL:
+        case LIBINPUT_EVENT_TOUCH_CANCEL: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TOUCH_CANCEL);
+            BuildTouchRelease(data, ctx, device_uuid, inner_event);
+            break;
+        }
         case LIBINPUT_EVENT_TOUCH_UP: {
-            auto* touch_event = libinput_api_.get().GetTouchEvent(*inner_event);
-            auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
-
-            // Position data is not available on TOUCH_UP events.
-            auto move_builder = evget::MouseMove{};
-            auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
-            SetBaseFields(move_builder, ctx, event_time);
-            move_builder.TouchId(seat_slot);
-            move_builder.Build(data);
-
-            auto click_builder = evget::MouseClick{};
-            SetBaseFields(click_builder, ctx, event_time);
-            click_builder.Action(evget::ButtonAction::kRelease).TouchId(seat_slot);
-
-            ClearTouchPosition(device_uuid, seat_slot);
-
-            click_builder.Build(data);
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TOUCH_UP);
+            BuildTouchRelease(data, ctx, device_uuid, inner_event);
             break;
         }
         // xf86-input-libinput uses xf86PostMotionEventM with scroll valuators for all scroll event types:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1922
-        case LIBINPUT_EVENT_POINTER_SCROLL_WHEEL:
-        case LIBINPUT_EVENT_POINTER_SCROLL_FINGER:
+        case LIBINPUT_EVENT_POINTER_SCROLL_WHEEL: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_SCROLL_WHEEL);
+            BuildScrollEvent(data, ctx, inner_event);
+            break;
+        }
+        case LIBINPUT_EVENT_POINTER_SCROLL_FINGER: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_SCROLL_FINGER);
+            BuildScrollEvent(data, ctx, inner_event);
+            break;
+        }
         case LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS: {
-            auto* pointer_event = libinput_api_.get().GetPointerEvent(*inner_event);
-            auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
-
-            auto builder = evget::MouseScroll{};
-            SetBaseFields(builder, ctx, event_time);
-
-            if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)) {
-                builder.Vertical(
-                    libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)
-                );
-            }
-            if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)) {
-                builder.Horizontal(
-                    libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)
-                );
-            }
-
-            builder.Build(data);
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS);
+            BuildScrollEvent(data, ctx, inner_event);
             break;
         }
         // xf86-input-libinput uses xf86PostKeyboardEvent which is a key event:
         // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L1724
         case LIBINPUT_EVENT_KEYBOARD_KEY: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_KEYBOARD_KEY);
             auto* keyboard_event = libinput_api_.get().GetKeyboardEvent(*inner_event);
             auto event_time = libinput_api_.get().GetKeyboardTimeMicroseconds(*keyboard_event);
 
@@ -282,6 +275,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         }
         // xf86-input-libinput does not implement LIBINPUT_EVENT_TABLET_PAD_KEY, Key is the closest equivalent.
         case LIBINPUT_EVENT_TABLET_PAD_KEY: {
+            ctx.system_event = EVGET_STRINGIFY(LIBINPUT_EVENT_TABLET_PAD_KEY);
             auto* pad_event = libinput_api_.get().GetTabletPadEvent(*inner_event);
             auto event_time = libinput_api_.get().GetTabletPadTimeMicroseconds(*pad_event);
 
@@ -313,6 +307,56 @@ void evgetlibinput::EventTransformer::BuildTabletToolMove(
     builder.PositionX(libinput_api_.get().GetTabletToolDx(tool_event))
         .PositionY(libinput_api_.get().GetTabletToolDy(tool_event));
     builder.Build(data);
+}
+
+void evgetlibinput::EventTransformer::BuildScrollEvent(
+    evget::Data& data,
+    const EventContext& ctx,
+    LibInputEvent& event
+) {
+    auto* pointer_event = libinput_api_.get().GetPointerEvent(*event);
+    auto event_time = libinput_api_.get().GetPointerTimeMicroseconds(*pointer_event);
+
+    auto builder = evget::MouseScroll{};
+    SetBaseFields(builder, ctx, event_time);
+
+    if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)) {
+        builder.Vertical(
+            libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)
+        );
+    }
+    if (libinput_api_.get().GetPointerHasAxis(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)) {
+        builder.Horizontal(
+            libinput_api_.get().GetPointerScrollValue(*pointer_event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)
+        );
+    }
+
+    builder.Build(data);
+}
+
+void evgetlibinput::EventTransformer::BuildTouchRelease(
+    evget::Data& data,
+    const EventContext& ctx,
+    const std::string& device_uuid,
+    LibInputEvent& event
+) {
+    auto* touch_event = libinput_api_.get().GetTouchEvent(*event);
+    auto event_time = libinput_api_.get().GetTouchTimeMicroseconds(*touch_event);
+
+    // Position data is not available on TOUCH_UP events.
+    auto move_builder = evget::MouseMove{};
+    auto seat_slot = libinput_api_.get().GetTouchSeatSlot(*touch_event);
+    SetBaseFields(move_builder, ctx, event_time);
+    move_builder.TouchId(seat_slot);
+    move_builder.Build(data);
+
+    auto click_builder = evget::MouseClick{};
+    SetBaseFields(click_builder, ctx, event_time);
+    click_builder.Action(evget::ButtonAction::kRelease).TouchId(seat_slot);
+
+    ClearTouchPosition(device_uuid, seat_slot);
+
+    click_builder.Build(data);
 }
 
 void evgetlibinput::EventTransformer::SetRelativePosition(

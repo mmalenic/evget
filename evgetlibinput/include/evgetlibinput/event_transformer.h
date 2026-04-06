@@ -56,6 +56,7 @@ private:
         evget::DeviceType device_type;
         const char* device_name;
         std::reference_wrapper<const std::string> device_uuid;
+        std::string system_event;
     };
 
     std::reference_wrapper<LibInputApi> libinput_api_;
@@ -94,6 +95,9 @@ private:
         std::uint64_t event_time,
         libinput_event_tablet_tool& tool_event
     );
+    void BuildScrollEvent(evget::Data& data, const EventContext& ctx, LibInputEvent& event);
+    void
+    BuildTouchRelease(evget::Data& data, const EventContext& ctx, const std::string& device_uuid, LibInputEvent& event);
     template <evget::BuilderHasButtonName T>
     void SetButtonName(T& builder, std::uint32_t code);
 
@@ -110,7 +114,8 @@ T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uin
         .Interval(device_intervals_[ctx.device_uuid].Interval(event_time))
         .Device(ctx.device_type)
         .DeviceName(ctx.device_name)
-        .DeviceId(ctx.device_uuid);
+        .DeviceId(ctx.device_uuid)
+        .SystemEvent(ctx.system_event);
     return SetModifierValues(builder);
 }
 
