@@ -55,10 +55,13 @@ TEST(EventTransformer, TransformEvent) {
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_EQ(entries.at(0).Data().at(11), "0");
-    ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "");
-    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
+    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "");
+    ASSERT_EQ(entries.at(0).Data().at(15), "0");
+    ASSERT_EQ(entries.at(0).Data().at(16), "");
+    ASSERT_EQ(entries.at(0).Data().at(17), "0");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

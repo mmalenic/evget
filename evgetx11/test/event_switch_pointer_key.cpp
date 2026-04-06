@@ -128,10 +128,13 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_EQ(entries.at(0).Data().at(11), "0");
-    ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "");
-    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
+    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "");
+    ASSERT_EQ(entries.at(0).Data().at(15), "0");
+    ASSERT_EQ(entries.at(0).Data().at(16), "");
+    ASSERT_EQ(entries.at(0).Data().at(17), "0");
 }
 
 TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)
@@ -166,11 +169,13 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_EQ(entries.at(0).Data().at(11), "1");
-    ASSERT_EQ(entries.at(0).Data().at(12), "0");
-    ASSERT_EQ(entries.at(0).Data().at(13), "a");
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawKeyPress");
+    ASSERT_EQ(entries.at(0).Data().at(13), "1");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
     ASSERT_EQ(entries.at(0).Data().at(15), "a");
+    ASSERT_EQ(entries.at(0).Data().at(16), "a");
+    ASSERT_EQ(entries.at(0).Data().at(17), "0");
 }
 
 TEST(XEventSwitchCoreTest, TestMotionEvent) {
@@ -229,7 +234,9 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_EQ(entries.at(0).Data().at(11), "0");
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
+    ASSERT_EQ(entries.at(0).Data().at(13), "0");
 }
 
 TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cognitive-complexity)
@@ -285,9 +292,11 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_EQ(entries.at(0).Data().at(11), "0");
-    ASSERT_EQ(entries.at(0).Data().at(12), evget::FromDouble(2.0));
-    ASSERT_EQ(entries.at(0).Data().at(13), "");
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
+    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), evget::FromDouble(2.0));
+    ASSERT_EQ(entries.at(0).Data().at(15), "");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
