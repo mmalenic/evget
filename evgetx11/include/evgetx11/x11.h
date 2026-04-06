@@ -18,6 +18,7 @@
 
 #include "evget/error.h"
 #include "evget/event/concepts.h"
+#include "evget/util.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace evgetx11 {

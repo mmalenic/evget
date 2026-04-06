@@ -74,6 +74,7 @@ public:
         evget::Data& data,
         evget::ButtonAction action,
         int button,
+        const char* system_event,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -82,12 +83,14 @@ public:
      * \param event the raw XI event
      * \param date_time timestamp of the event
      * \param data data structure to add the event to
+     * \param system_event stringified event type name
      * \param get_time function to get time intervals
      */
     void AddMotionEvent(
         const XIRawEvent& event,
         evget::TimestampType date_time,
         evget::Data& data,
+        const char* system_event,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -253,6 +256,7 @@ void EventSwitch::AddMotionEvent(
     const XIRawEvent& event,
     evget::TimestampType date_time,
     evget::Data& data,
+    const char* system_event,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
@@ -262,6 +266,7 @@ void EventSwitch::AddMotionEvent(
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid, event.evtype))
         .DeviceId(GetDeviceUuid(event.sourceid))
+        .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y);
 
@@ -279,6 +284,7 @@ void EventSwitch::AddButtonEvent(
     evget::Data& data,
     evget::ButtonAction action,
     int button,
+    const char* system_event,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
@@ -288,6 +294,7 @@ void EventSwitch::AddButtonEvent(
         .Timestamp(date_time)
         .Device(GetDevice(event.sourceid, event.evtype))
         .DeviceId(GetDeviceUuid(event.sourceid))
+        .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Action(action)

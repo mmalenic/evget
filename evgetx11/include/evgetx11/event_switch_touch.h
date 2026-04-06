@@ -20,6 +20,7 @@
 #include <string>
 
 #include "evget/error.h"
+#include "evget/util.h"
 #include "evgetx11/event_switch.h"
 #include "evgetx11/input_event.h"
 
@@ -74,6 +75,7 @@ private:
         evget::Data& data,
         evget::ButtonAction action,
         EventSwitch& x_event_switch,
+        const char* system_event,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 
@@ -81,6 +83,7 @@ private:
         const InputEvent& event,
         evget::Data& data,
         EventSwitch& x_event_switch,
+        const char* system_event,
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
 };
@@ -95,17 +98,21 @@ bool EventSwitchTouch::SwitchOnEvent(
         // Touch events generate motion and button for XI_RawTouchBegin and XI_RawTouchEnd,
         // and just motion for XI_RawTouchUpdate:
         // https://www.x.org/releases/X11R7.7/doc/inputproto/XI2proto.txt
-        case XI_RawTouchBegin:
-            TouchMotion(event, data, x_event_switch, get_time);
-            TouchButton(event, data, evget::ButtonAction::kPress, x_event_switch, get_time);
+        case XI_RawTouchBegin: {
+            const auto* system_event = EVGET_STRINGIFY(XI_RawTouchBegin);
+            TouchMotion(event, data, x_event_switch, system_event, get_time);
+            TouchButton(event, data, evget::ButtonAction::kPress, x_event_switch, system_event, get_time);
             return true;
+        }
         case XI_RawTouchUpdate:
-            TouchMotion(event, data, x_event_switch, get_time);
+            TouchMotion(event, data, x_event_switch, EVGET_STRINGIFY(XI_RawTouchUpdate), get_time);
             return true;
-        case XI_RawTouchEnd:
-            TouchMotion(event, data, x_event_switch, get_time);
-            TouchButton(event, data, evget::ButtonAction::kRelease, x_event_switch, get_time);
+        case XI_RawTouchEnd: {
+            const auto* system_event = EVGET_STRINGIFY(XI_RawTouchEnd);
+            TouchMotion(event, data, x_event_switch, system_event, get_time);
+            TouchButton(event, data, evget::ButtonAction::kRelease, x_event_switch, system_event, get_time);
             return true;
+        }
         default:
             return false;
     }
@@ -116,6 +123,7 @@ void EventSwitchTouch::TouchButton(
     evget::Data& data,
     evget::ButtonAction action,
     EventSwitch& x_event_switch,
+    const char* system_event,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -130,6 +138,7 @@ void EventSwitchTouch::TouchButton(
         .Timestamp(event.GetTimestamp())
         .Device(x_event_switch.GetDevice(raw_event.sourceid, raw_event.evtype))
         .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
+        .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Action(action)
@@ -145,6 +154,7 @@ void EventSwitchTouch::TouchMotion(
     const InputEvent& event,
     evget::Data& data,
     EventSwitch& x_event_switch,
+    const char* system_event,
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
@@ -159,6 +169,7 @@ void EventSwitchTouch::TouchMotion(
         .Timestamp(event.GetTimestamp())
         .Device(x_event_switch.GetDevice(raw_event.sourceid, raw_event.evtype))
         .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
+        .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .TouchId(raw_event.detail);
