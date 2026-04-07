@@ -21,40 +21,23 @@ struct ScreenDimensions {
 };
 
 /**
- * \brief An interface for querying DRM for screen dimensions.
- */
-class DrmApi {
-public:
-    DrmApi() = default;
-    virtual ~DrmApi() = default;
-
-    DrmApi(DrmApi&&) noexcept = delete;
-    DrmApi& operator=(DrmApi&&) noexcept = delete;
-
-    DrmApi(const DrmApi&) = delete;
-    DrmApi& operator=(const DrmApi&) = delete;
-
-    /**
-     * \brief Get the screen dimensions from the DRM. Finds the largest dimension when multiple screens are detected.
-     * \return screen dimensions
-     */
-    virtual ScreenDimensions GetDimensions() = 0;
-};
-
-/**
  * \brief Queries DRM for screen dimensions.
  *
  * Opens `/dev/dri/card*` devices to determine screen dimensions.
  */
-class DrmOutput : public DrmApi {
+class DrmOutput {
 public:
     /**
      * \brief Create a new instance of the DrmOutput.
      * \return DrmOutput
      */
-    static evget::Result<std::unique_ptr<DrmOutput>> New();
+    static evget::Result<DrmOutput> New();
 
-    ScreenDimensions GetDimensions() override;
+    /**
+     * \brief Get the screen dimensions from the DRM. Finds the largest dimension when multiple screens are detected.
+     * \return screen dimensions
+     */
+    ScreenDimensions GetDimensions();
 
 private:
     /**

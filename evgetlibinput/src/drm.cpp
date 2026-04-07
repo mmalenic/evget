@@ -17,8 +17,8 @@
 
 #include "evget/error.h"
 
-evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutput::New() {
-    auto drm_output = std::unique_ptr<DrmOutput>(new DrmOutput{});
+evget::Result<evgetlibinput::DrmOutput> evgetlibinput::DrmOutput::New() {
+    auto drm_output = DrmOutput{};
 
     const int device_count = drmGetDevices2(0, nullptr, 0);
     if (device_count <= 0) {
@@ -61,13 +61,13 @@ evget::Result<std::unique_ptr<evgetlibinput::DrmOutput>> evgetlibinput::DrmOutpu
             return evget::Err{file.error()};
         }
 
-        auto result = drm_output->QueryCard(**file);
+        auto result = drm_output.QueryCard(**file);
         if (!result.has_value()) {
             return evget::Err{result.error()};
         }
     }
 
-    if (drm_output->dimensions_.width == 0 && drm_output->dimensions_.height == 0) {
+    if (drm_output.dimensions_.width == 0 && drm_output.dimensions_.height == 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "no connected DRM outputs found"}
         };
