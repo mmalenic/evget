@@ -6,6 +6,7 @@
 #ifndef EVGETLIBINPUT_EVENT_TRANSFORMER_H
 #define EVGETLIBINPUT_EVENT_TRANSFORMER_H
 
+#include <libevdev/libevdev.h>
 #include <libinput.h>
 #include <linux/input-event-codes.h>
 
@@ -28,7 +29,6 @@
 #include "evget/input_event.h"
 #include "evget/interval_tracker.h"
 #include "evgetlibinput/drm.h"
-#include "evgetlibinput/evdev.h"
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/xkbcommon.h"
 
@@ -38,15 +38,10 @@ public:
     /**
      * Create an event transformer.
      * \param libinput_api the libinput API wrapper
-     * \param evdev_api the evdev API wrapper
+     * \param xkb the xkbcommon wrapper used for keysym translation and modifier state
      * \param dimensions the screen dimensions for absolute transformation
      */
-    EventTransformer(
-        LibInputApi& libinput_api,
-        EvdevApi& evdev_api,
-        XkbCommonApi& xkb_api,
-        ScreenDimensions dimensions
-    );
+    EventTransformer(LibInputApi& libinput_api, XkbCommon& xkb, ScreenDimensions dimensions);
 
     evget::Data TransformEvent(evget::InputEvent<LibInputEvent> event) override;
 
@@ -60,8 +55,7 @@ private:
     };
 
     std::reference_wrapper<LibInputApi> libinput_api_;
-    std::reference_wrapper<EvdevApi> evdev_api_;
-    std::reference_wrapper<XkbCommonApi> xkb_api_;
+    std::reference_wrapper<XkbCommon> xkb_;
     ScreenDimensions dimensions_;
 
     evget::DeviceId<libinput_device*> device_ids_;
@@ -121,7 +115,7 @@ T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uin
 
 template <evget::BuilderHasButtonName T>
 void EventTransformer::SetButtonName(T& builder, std::uint32_t code) {
-    const auto* name = evdev_api_.get().EventCodeName(EV_KEY, code);
+    const auto* name = libevdev_event_code_get_name(EV_KEY, code);
     if (name != nullptr) {
         builder.ButtonName(name);
     }
@@ -129,28 +123,28 @@ void EventTransformer::SetButtonName(T& builder, std::uint32_t code) {
 
 template <evget::BuilderHasModifier T>
 T& EventTransformer::SetModifierValues(T& builder) const {
-    if (this->xkb_api_.get().IsModifierActive(XKB_MOD_NAME_SHIFT)) {
+    if (this->xkb_.get().IsModifierActive(XKB_MOD_NAME_SHIFT)) {
         builder.Modifier(evget::ModifierValue::kShift);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_MOD_NAME_CAPS)) {
+    if (this->xkb_.get().IsModifierActive(XKB_MOD_NAME_CAPS)) {
         builder.Modifier(evget::ModifierValue::kCapsLock);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_MOD_NAME_CTRL)) {
+    if (this->xkb_.get().IsModifierActive(XKB_MOD_NAME_CTRL)) {
         builder.Modifier(evget::ModifierValue::kControl);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_VMOD_NAME_ALT)) {
+    if (this->xkb_.get().IsModifierActive(XKB_VMOD_NAME_ALT)) {
         builder.Modifier(evget::ModifierValue::kAlt);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_VMOD_NAME_NUM)) {
+    if (this->xkb_.get().IsModifierActive(XKB_VMOD_NAME_NUM)) {
         builder.Modifier(evget::ModifierValue::kNumLock);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_MOD_NAME_MOD3)) {
+    if (this->xkb_.get().IsModifierActive(XKB_MOD_NAME_MOD3)) {
         builder.Modifier(evget::ModifierValue::kMod3);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_VMOD_NAME_SUPER)) {
+    if (this->xkb_.get().IsModifierActive(XKB_VMOD_NAME_SUPER)) {
         builder.Modifier(evget::ModifierValue::kSuper);
     }
-    if (this->xkb_api_.get().IsModifierActive(XKB_MOD_NAME_MOD5)) {
+    if (this->xkb_.get().IsModifierActive(XKB_MOD_NAME_MOD5)) {
         builder.Modifier(evget::ModifierValue::kMod5);
     }
 

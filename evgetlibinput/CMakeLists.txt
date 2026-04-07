@@ -16,7 +16,6 @@ target_sources(
             # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
             ${SRC}/libinput.cpp
             ${SRC}/drm.cpp
-            ${SRC}/evdev.cpp
             ${SRC}/xkbcommon.cpp
             # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
@@ -31,7 +30,6 @@ target_sources(
            # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput.h
            ${INCLUDE}/drm.h
-           ${INCLUDE}/evdev.h
            ${INCLUDE}/xkbcommon.h
     # ${INCLUDE}/udev_context.h
 )
@@ -105,7 +103,7 @@ toolbelt_add_dep(
     ${LIBRARY_NAME}
     libevdev
     VISIBILITY
-    PRIVATE
+    PUBLIC
     LINK_COMPONENTS
     libevdev::libevdev
     FIND_PACKAGE_ARGS
@@ -124,9 +122,13 @@ toolbelt_add_dep(
     REQUIRED
 )
 
-# if(BUILD_TESTING) target_sources( ${TEST_EXECUTABLE_NAME} PUBLIC test/common/libinput_api_mock.cpp
-# test/common/libinput_api_mock.h test/event_switch.cpp test/event_switch_pointer_key.cpp test/event_switch_touch.cpp
-# test/event_transformer.cpp ) target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test) endif()
+if(BUILD_TESTING)
+    target_sources(
+        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/libinput_mock.cpp test/common/libinput_mock.h
+                                       test/event_transformer.cpp test/xkbcommon.cpp
+    )
+    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
+endif()
 
 if(EVGET_INSTALL_LIB)
     install(TARGETS ${LIBRARY_NAME} FILE_SET headers)

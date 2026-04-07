@@ -17,32 +17,36 @@
 namespace evgetlibinput {
 
 /**
- * \brief An interface for xkbcommon.
+ * \brief A wrapper around xkbcommon that tracks keymap and modifier state.
  */
-class XkbCommonApi {
+class XkbCommon {
 public:
-    XkbCommonApi() = default;
-    virtual ~XkbCommonApi() = default;
+    /**
+     * \brief Create a new XkbCommon context using system/environment defaults.
+     * \return a unique pointer to an XkbCommon instance
+     */
+    static evget::Result<XkbCommon> New();
 
-    XkbCommonApi(XkbCommonApi&&) noexcept = delete;
-    XkbCommonApi& operator=(XkbCommonApi&&) noexcept = delete;
-
-    XkbCommonApi(const XkbCommonApi&) = delete;
-    XkbCommonApi& operator=(const XkbCommonApi&) = delete;
+    /**
+     * \brief Create a new XkbCommon context with an explicit keymap layout.
+     * \param names xkb rule names
+     * \return a unique pointer to an XkbCommon instance
+     */
+    static evget::Result<XkbCommon> NewWithNames(const xkb_rule_names* names);
 
     /**
      * \brief Get the xkb keysym name for a key code.
      * \param key the xkb key code
      * \return the keysym name
      */
-    virtual std::optional<std::string> GetKeyName(xkb_keycode_t key) = 0;
+    [[nodiscard]] std::optional<std::string> GetKeyName(xkb_keycode_t key) const;
 
     /**
      * \brief Get the UTF-8 character for a key code.
      * \param key the xkb key code
      * \return the character, or std::nullopt if unavailable
      */
-    virtual std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) = 0;
+    [[nodiscard]] std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) const;
 
     /**
      * \brief Check if the effective xkb modifier with the given name is active in the xkb state. For modifiers to be
@@ -50,34 +54,14 @@ public:
      * \param modifier_name modifier name
      * \return if the modifier is active
      */
-    virtual bool IsModifierActive(const char* modifier_name) = 0;
+    bool IsModifierActive(const char* modifier_name) const;
 
     /**
      * \brief Update the key state for a given key.
      * \param key the key to update
      * \param direction the direction
      */
-    virtual void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) = 0;
-};
-
-/**
- * \brief Implementation of the `XkbCommonApi` interface.
- */
-class XkbCommon : public XkbCommonApi {
-public:
-    /**
-     * \brief Create a new XkbCommon context.
-     * \return a unique pointer to an XkbCommon instance
-     */
-    static evget::Result<std::unique_ptr<XkbCommon>> New();
-
-    std::optional<std::string> GetKeyName(xkb_keycode_t key) override;
-
-    std::optional<std::string> GetKeyCharacter(xkb_keycode_t key) override;
-
-    bool IsModifierActive(const char* modifier_name) override;
-
-    void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) override;
+    void UpdateKeyState(xkb_keycode_t key, xkb_key_direction direction) const;
 
 private:
     XkbCommon() = default;
