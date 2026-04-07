@@ -124,7 +124,7 @@ toolbelt_add_dep(
 
 if(BUILD_TESTING)
     target_sources(
-        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/libinput_mock.cpp test/common/libinput_mock.h
+        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/test_helpers.cpp test/common/test_helpers.h
                                        test/event_transformer.cpp test/xkbcommon.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
