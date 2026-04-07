@@ -93,6 +93,7 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(1).Data().at(17), "0");
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(XEventSwitchTouchTest, TestTouchUpdate) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

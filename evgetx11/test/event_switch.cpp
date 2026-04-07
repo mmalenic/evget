@@ -121,6 +121,7 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(17), "0"); // button_action = kPress
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

@@ -178,6 +178,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(17), "0");
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(XEventSwitchCoreTest, TestMotionEvent) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

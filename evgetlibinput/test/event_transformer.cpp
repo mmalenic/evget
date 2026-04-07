@@ -1,3 +1,6 @@
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+#include "evgetlibinput/event_transformer.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -5,27 +8,69 @@
 #include <linux/input-event-codes.h>
 
 #include <string>
+#include <utility>
 
 #include "common/test_helpers.h"
+#include "evget/event/entry.h"
 #include "evget/event/schema.h"
+#include "evget/input_event.h"
+#include "evgetlibinput/libinput.h"
+
+// libinput exposes its event/device handles only as forward-declared opaque structs. Real types must
+// be defined here for the code to compile. The completions are local to this TU and never participate
+// in linkage with libinput's own definitions because the mocks never call into libinput.
+struct libinput_event {};
+
+struct libinput_device {};
+
+struct libinput_event_pointer {};
+
+struct libinput_event_keyboard {};
+
+struct libinput_event_touch {};
+
+struct libinput_event_tablet_tool {};
+
+struct libinput_event_tablet_pad {};
 
 namespace {
 
-using test::g_device;
-using test::g_event;
-using test::g_keyboard_event;
-using test::g_pointer_event;
-using test::g_tablet_pad_event;
-using test::g_tablet_tool_event;
-using test::g_touch_event;
 using test::kDeviceName;
 using test::kDimensions;
-using test::MakeInputEvent;
 using test::MakeUsXkb;
-using test::SetCommonMocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+void NoopDestroyLibInputEvent(libinput_event* /*event*/) noexcept {} // NOLINT(readability/casting)
+
+evgetlibinput::LibInputEvent WrapLibInputEvent(libinput_event* event) {
+    return evgetlibinput::LibInputEvent{event, NoopDestroyLibInputEvent};
+}
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
+libinput_event g_event{};
+libinput_device g_device{};
+libinput_event_pointer g_pointer_event{};
+libinput_event_keyboard g_keyboard_event{};
+libinput_event_touch g_touch_event{};
+libinput_event_tablet_tool g_tablet_tool_event{};
+libinput_event_tablet_pad g_tablet_pad_event{};
+
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
+
+evget::InputEvent<evgetlibinput::LibInputEvent> MakeInputEvent() {
+    return evget::InputEvent{WrapLibInputEvent(&g_event)};
+}
+
+void SetCommonMocks(test::LibInputApiMock& mock, libinput_event_type event_type) {
+    EXPECT_CALL(mock, GetDevice(_)).WillRepeatedly(Return(&g_device));
+    EXPECT_CALL(mock, GetDeviceName(_)).WillRepeatedly(Return(kDeviceName));
+    EXPECT_CALL(mock, GetEventType(_)).WillRepeatedly(Return(event_type));
+    EXPECT_CALL(mock, GetDeviceFingerCount(_)).WillRepeatedly(Return(0));
+    EXPECT_CALL(mock, DeviceHasCapability(_, LIBINPUT_DEVICE_CAP_TOUCH)).WillRepeatedly(Return(false));
+    EXPECT_CALL(mock, DeviceHasCapability(_, LIBINPUT_DEVICE_CAP_POINTER)).WillRepeatedly(Return(true));
+}
 
 } // namespace
 
@@ -35,7 +80,7 @@ TEST(EvgetLibInputTransformer, TransformNullEventEmpty) {
 
     evgetlibinput::EventTransformer transformer{libinput_mock, xkb, kDimensions};
 
-    evget::InputEvent input_event{evgetlibinput::LibInputEvent{nullptr, test::NoopDestroyLibInputEvent}};
+    evget::InputEvent input_event{evgetlibinput::LibInputEvent{nullptr, NoopDestroyLibInputEvent}};
 
     auto data = transformer.TransformEvent(std::move(input_event));
     ASSERT_TRUE(data.Empty());
@@ -548,3 +593,5 @@ TEST(EvgetLibInputTransformer, DeviceTypeUnknownWhenNoCapabilities) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Data().at(13), "5");
 }
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

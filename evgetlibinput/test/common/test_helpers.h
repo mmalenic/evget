@@ -9,27 +9,9 @@
 #include <cstdint>
 
 #include "evget/error.h"
-#include "evget/input_event.h"
-#include "evgetlibinput/event_transformer.h"
+#include "evgetlibinput/drm.h"
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/xkbcommon.h"
-
-// libinput exposes its event/device handles only as forward-declared opaque structs. Real types must
-// be defined here for the code to compile. The completions are local to test TUs and never participate
-// in linkage with libinput's own definitions because the mocks never call into libinput.
-struct libinput_event {};
-
-struct libinput_device {};
-
-struct libinput_event_pointer {};
-
-struct libinput_event_keyboard {};
-
-struct libinput_event_touch {};
-
-struct libinput_event_tablet_tool {};
-
-struct libinput_event_tablet_pad {};
 
 namespace test {
 
@@ -42,23 +24,7 @@ constexpr xkb_keycode_t XkbKey(unsigned int evdev_key) {
     return evdev_key + kKeyCodeOffset;
 }
 
-// Real instances of the opaque libinput types. The mocks accept their addresses but never
-// inspect the contents.
-inline libinput_event g_event{};
-inline libinput_device g_device{};
-inline libinput_event_pointer g_pointer_event{};
-inline libinput_event_keyboard g_keyboard_event{};
-inline libinput_event_touch g_touch_event{};
-inline libinput_event_tablet_tool g_tablet_tool_event{};
-inline libinput_event_tablet_pad g_tablet_pad_event{};
-
-void NoopDestroyLibInputEvent(libinput_event* /* unused */) noexcept;
-
-evgetlibinput::LibInputEvent WrapLibInputEvent(libinput_event* event);
-
 evgetlibinput::XkbCommon MakeUsXkb();
-
-evget::InputEvent<evgetlibinput::LibInputEvent> MakeInputEvent();
 
 class LibInputApiMock : public evgetlibinput::LibInputApi {
 public:
@@ -122,8 +88,6 @@ public:
     MOCK_METHOD(std::uint32_t, GetKeyboardKey, (libinput_event_keyboard & event), (override));
     MOCK_METHOD(libinput_key_state, GetKeyboardKeyState, (libinput_event_keyboard & event), (override));
 };
-
-void SetCommonMocks(LibInputApiMock& mock, libinput_event_type event_type);
 
 } // namespace test
 

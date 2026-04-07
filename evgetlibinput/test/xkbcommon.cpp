@@ -1,6 +1,10 @@
+// NOLINTBEGIN(bugprone-unchecked-optional-access)
+#include "evgetlibinput/xkbcommon.h"
+
 #include <gtest/gtest.h>
 
 #include <linux/input-event-codes.h>
+#include <xkbcommon/xkbcommon-names.h>
 #include <xkbcommon/xkbcommon.h>
 
 #include "common/test_helpers.h"
@@ -72,3 +76,5 @@ TEST(XkbCommonTest, GetKeyCharacterShift) {
     ASSERT_TRUE(character_lower.has_value());
     ASSERT_EQ(*character_lower, "a");
 }
+
+// NOLINTEND(bugprone-unchecked-optional-access)
