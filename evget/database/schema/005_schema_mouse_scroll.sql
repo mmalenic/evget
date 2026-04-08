@@ -14,6 +14,7 @@ create table mouse_scroll (
     screen real,
     device_id text,
     system_event text,
+    event_source text,
     device_type integer not null references device_type(id),
     scroll_vertical real,
     scroll_horizontal real

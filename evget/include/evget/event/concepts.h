@@ -55,6 +55,7 @@ concept BuilderHasBaseFields = evget::BuilderHasModifier<T> && evget::BuilderHas
         { builder.DeviceName(std::move(name)) } -> std::convertible_to<T>;
         { builder.DeviceId(std::move(device_id)) } -> std::convertible_to<T>;
         { builder.SystemEvent(std::move(name)) } -> std::convertible_to<T>;
+        { builder.EventSource(std::move(name)) } -> std::convertible_to<T>;
     };
 
 /**

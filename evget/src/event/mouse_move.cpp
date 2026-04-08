@@ -95,6 +95,11 @@ evget::MouseMove& evget::MouseMove::SystemEvent(std::string system_event) {
     return *this;
 }
 
+evget::MouseMove& evget::MouseMove::EventSource(std::string event_source) {
+    event_source_ = std::move(event_source);
+    return *this;
+}
+
 evget::Data& evget::MouseMove::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseMove,
@@ -111,6 +116,7 @@ evget::Data& evget::MouseMove::Build(Data& data) const {
          FromInt(screen_),
          FromString(device_id_),
          FromString(system_event_),
+         FromString(event_source_),
          ToUnderlyingOptional(device_),
          FromInt(touch_id_)},
         modifiers_

@@ -100,6 +100,11 @@ evget::MouseScroll& evget::MouseScroll::SystemEvent(std::string system_event) {
     return *this;
 }
 
+evget::MouseScroll& evget::MouseScroll::EventSource(std::string event_source) {
+    event_source_ = std::move(event_source);
+    return *this;
+}
+
 evget::Data& evget::MouseScroll::Build(Data& data) const {
     const Entry entry{
         EntryType::kMouseScroll,
@@ -116,6 +121,7 @@ evget::Data& evget::MouseScroll::Build(Data& data) const {
          FromInt(screen_),
          FromString(device_id_),
          FromString(system_event_),
+         FromString(event_source_),
          ToUnderlyingOptional(device_),
          FromDouble(vertical_),
          FromDouble(horizontal_)},

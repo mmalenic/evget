@@ -41,23 +41,15 @@ TEST(MouseClickTest, Event) {
     auto expected_fields =
         std::vector<std::string>{evget::detail::kMouseClickFields.begin(), evget::detail::kMouseClickFields.end()};
     const std::vector<std::string> expected_data{
-        "1",
-        "1970-01-01T00:00:00.000000000+0000",
-        "1.000000",
-        "1.000000",
-        "name",
-        "name",
-        "1.000000",
-        "1.000000",
-        "1.000000",
-        "1.000000",
-        "1",
-        "",
-        "test_event",
-        "Keyboard",
-        "",
-        "1",
-        "name",
+        "1",          "1970-01-01T00:00:00.000000000+0000",
+        "1.000000",   "1.000000",
+        "name",       "name",
+        "1.000000",   "1.000000",
+        "1.000000",   "1.000000",
+        "1",          "",
+        "test_event", "",
+        "Keyboard",   "",
+        "1",          "name",
         "Press",
     };
 

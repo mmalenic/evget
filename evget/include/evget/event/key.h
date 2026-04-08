@@ -163,6 +163,13 @@ public:
     Key& SystemEvent(std::string system_event);
 
     /**
+     * \brief Add the event source.
+     * \param event_source name of the backend that produced this event
+     * \return reference to this `Key` object
+     */
+    Key& EventSource(std::string event_source);
+
+    /**
      * \brief Build key event.
      * \param data data container to add the event to
      * \return reference to the data container
@@ -188,6 +195,7 @@ private:
     std::optional<double> focus_window_height_;
     std::optional<int> screen_;
     std::optional<std::string> system_event_;
+    std::optional<std::string> event_source_;
 
     std::vector<std::string> modifiers_;
 };

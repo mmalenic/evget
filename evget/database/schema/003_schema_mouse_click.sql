@@ -14,6 +14,7 @@ create table mouse_click (
     screen real,
     device_id text,
     system_event text,
+    event_source text,
     device_type integer not null references device_type(id),
     touch_id integer,
     button_id integer,

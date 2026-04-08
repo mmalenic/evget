@@ -220,6 +220,9 @@ constexpr FieldDefinition kFocusWindowHeightField{"FocusWindowHeight", DataType:
 /// \brief Field definition for touch point identifier.
 constexpr FieldDefinition kTouchIdField{"TouchId", DataType::kInteger};
 
+/// \brief Field definition for event source backend.
+constexpr FieldDefinition kEventSourceField{"EventSource", DataType::kString};
+
 /**
  * \brief Get the name of the `FieldDefinition`.
  * \param field field definition to get name from

@@ -49,6 +49,7 @@ TEST(MouseMoveTest, Event) {
         "1",
         "",
         "test_event",
+        "",
         "Keyboard",
         "",
     };

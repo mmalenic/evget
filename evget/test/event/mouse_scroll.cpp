@@ -52,6 +52,7 @@ TEST(MouseScrollTest, Event) {
         "1",
         "",
         "test_event",
+        "",
         "Keyboard",
         "1.000000",
         "1.000000",

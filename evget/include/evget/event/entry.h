@@ -19,19 +19,19 @@ namespace evget {
 
 namespace detail {
 /// \brief Number of fields common to all events.
-constexpr auto kBaseNFields = 14;
+constexpr auto kBaseNFields = 15;
 
 /// \brief Number of fields in a mouse move event entry.
-constexpr auto kMouseMoveNFields = 15;
+constexpr auto kMouseMoveNFields = 16;
 
 /// \brief Number of fields in a mouse scroll event entry.
-constexpr auto kMouseScrollNFields = 16;
+constexpr auto kMouseScrollNFields = 17;
 
 /// \brief Number of fields in a mouse click event entry.
-constexpr auto kMouseClickNFields = 18;
+constexpr auto kMouseClickNFields = 19;
 
 /// \brief Number of fields in a key event entry.
-constexpr auto kKeyNFields = 18;
+constexpr auto kKeyNFields = 19;
 
 template <std::size_t From, std::size_t To, typename AddElements>
 concept AddArray = std::ranges::range<AddElements> &&
@@ -73,6 +73,7 @@ constexpr std::array<std::string_view, kBaseNFields> kBaseFields{
     "screen",
     "device_id",
     "system_event",
+    "event_source",
     "device_type",
 };
 

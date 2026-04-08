@@ -111,6 +111,11 @@ evget::Key& evget::Key::SystemEvent(std::string system_event) {
     return *this;
 }
 
+evget::Key& evget::Key::EventSource(std::string event_source) {
+    event_source_ = std::move(event_source);
+    return *this;
+}
+
 evget::Data& evget::Key::Build(Data& data) const {
     const Entry entry{
         EntryType::kKey,
@@ -128,6 +133,7 @@ evget::Data& evget::Key::Build(Data& data) const {
             FromInt(screen_),
             FromString(device_id_),
             FromString(system_event_),
+            FromString(event_source_),
             ToUnderlyingOptional(device_),
             FromInt(button_),
             FromString(name_),
