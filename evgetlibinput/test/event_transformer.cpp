@@ -121,7 +121,7 @@ TEST(EvgetLibInputTransformer, TransformPointerMotion) {
     ASSERT_EQ(entries.at(0).Data().at(4), kDeviceName);
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_MOTION");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
 TEST(EvgetLibInputTransformer, TransformPointerMotionSecondInterval) {
@@ -206,10 +206,10 @@ TEST(EvgetLibInputTransformer, TransformPointerButton) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_BUTTON");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
-    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(BTN_LEFT));
-    ASSERT_EQ(entries.at(0).Data().at(16), "BTN_LEFT");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_EQ(entries.at(0).Data().at(16), std::to_string(BTN_LEFT));
+    ASSERT_EQ(entries.at(0).Data().at(17), "BTN_LEFT");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 TEST(EvgetLibInputTransformer, TransformPointerButtonRelease) {
@@ -228,9 +228,9 @@ TEST(EvgetLibInputTransformer, TransformPointerButtonRelease) {
 
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
-    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(BTN_RIGHT));
-    ASSERT_EQ(entries.at(0).Data().at(16), "BTN_RIGHT");
-    ASSERT_EQ(entries.at(0).Data().at(17), "1");
+    ASSERT_EQ(entries.at(0).Data().at(16), std::to_string(BTN_RIGHT));
+    ASSERT_EQ(entries.at(0).Data().at(17), "BTN_RIGHT");
+    ASSERT_EQ(entries.at(0).Data().at(18), "1");
 }
 
 TEST(EvgetLibInputTransformer, TransformPointerScrollWheel) {
@@ -251,8 +251,8 @@ TEST(EvgetLibInputTransformer, TransformPointerScrollWheel) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_SCROLL_WHEEL");
-    ASSERT_EQ(entries.at(0).Data().at(14), evget::FromDouble(15.0));
-    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(15.0));
+    ASSERT_EQ(entries.at(0).Data().at(16), "");
 }
 
 TEST(EvgetLibInputTransformer, TransformKeyboardKeyNoModifiers) {
@@ -272,11 +272,11 @@ TEST(EvgetLibInputTransformer, TransformKeyboardKeyNoModifiers) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kKey);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_KEYBOARD_KEY");
-    ASSERT_EQ(entries.at(0).Data().at(13), "1");
-    ASSERT_EQ(entries.at(0).Data().at(14), std::to_string(KEY_A));
-    ASSERT_EQ(entries.at(0).Data().at(15), "a");
+    ASSERT_EQ(entries.at(0).Data().at(14), "1");
+    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(KEY_A));
     ASSERT_EQ(entries.at(0).Data().at(16), "a");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(17), "a");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
     ASSERT_EQ(entries.at(0).Modifiers().size(), 0);
 }
 
@@ -311,21 +311,21 @@ TEST(EvgetLibInputTransformer, TransformKeyboardKeyShiftHeld) {
     ASSERT_EQ(shifted_entries.size(), 1);
     ASSERT_EQ(shifted_entries.at(0).Type(), evget::EntryType::kKey);
     ASSERT_EQ(shifted_entries.at(0).Data().at(12), "LIBINPUT_EVENT_KEYBOARD_KEY");
-    ASSERT_EQ(shifted_entries.at(0).Data().at(13), "1");
-    ASSERT_EQ(shifted_entries.at(0).Data().at(14), std::to_string(KEY_A));
-    ASSERT_EQ(shifted_entries.at(0).Data().at(15), "A");
+    ASSERT_EQ(shifted_entries.at(0).Data().at(14), "1");
+    ASSERT_EQ(shifted_entries.at(0).Data().at(15), std::to_string(KEY_A));
     ASSERT_EQ(shifted_entries.at(0).Data().at(16), "A");
-    ASSERT_EQ(shifted_entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(shifted_entries.at(0).Data().at(17), "A");
+    ASSERT_EQ(shifted_entries.at(0).Data().at(18), "0");
     ASSERT_EQ(shifted_entries.at(0).Modifiers().size(), 1);
     ASSERT_EQ(shifted_entries.at(0).Modifiers().at(0), "0");
 
     const auto& unshifted_entries = unshifted.Entries();
     ASSERT_EQ(unshifted_entries.size(), 1);
     ASSERT_EQ(unshifted_entries.at(0).Type(), evget::EntryType::kKey);
-    ASSERT_EQ(unshifted_entries.at(0).Data().at(14), std::to_string(KEY_A));
-    ASSERT_EQ(unshifted_entries.at(0).Data().at(15), "a");
+    ASSERT_EQ(unshifted_entries.at(0).Data().at(15), std::to_string(KEY_A));
     ASSERT_EQ(unshifted_entries.at(0).Data().at(16), "a");
-    ASSERT_EQ(unshifted_entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(unshifted_entries.at(0).Data().at(17), "a");
+    ASSERT_EQ(unshifted_entries.at(0).Data().at(18), "0");
     ASSERT_EQ(unshifted_entries.at(0).Modifiers().size(), 0);
 }
 
@@ -349,11 +349,11 @@ TEST(EvgetLibInputTransformer, TransformTouchDownProducesMoveAndPress) {
     ASSERT_EQ(entries.size(), 2);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_TOUCH_DOWN");
-    ASSERT_EQ(entries.at(0).Data().at(13), "3");
-    ASSERT_EQ(entries.at(0).Data().at(14), "7");
+    ASSERT_EQ(entries.at(0).Data().at(14), "3");
+    ASSERT_EQ(entries.at(0).Data().at(15), "7");
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
-    ASSERT_EQ(entries.at(1).Data().at(14), "7");
-    ASSERT_EQ(entries.at(1).Data().at(17), "0");
+    ASSERT_EQ(entries.at(1).Data().at(15), "7");
+    ASSERT_EQ(entries.at(1).Data().at(18), "0");
 }
 
 TEST(EvgetLibInputTransformer, TransformTouchMotionComputesDelta) {
@@ -400,11 +400,11 @@ TEST(EvgetLibInputTransformer, TransformTouchUpProducesMoveAndRelease) {
     ASSERT_EQ(entries.size(), 2);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
     ASSERT_EQ(entries.at(0).Data().at(2), "");
-    ASSERT_EQ(entries.at(0).Data().at(14), "2");
+    ASSERT_EQ(entries.at(0).Data().at(15), "2");
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(1).Data().at(12), "LIBINPUT_EVENT_TOUCH_UP");
-    ASSERT_EQ(entries.at(1).Data().at(14), "2");
-    ASSERT_EQ(entries.at(1).Data().at(17), "1");
+    ASSERT_EQ(entries.at(1).Data().at(15), "2");
+    ASSERT_EQ(entries.at(1).Data().at(18), "1");
 }
 
 TEST(EvgetLibInputTransformer, TransformTabletToolAxis) {
@@ -426,7 +426,7 @@ TEST(EvgetLibInputTransformer, TransformTabletToolAxis) {
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.25));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(-0.75));
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_TABLET_TOOL_AXIS");
-    ASSERT_EQ(entries.at(0).Data().at(13), "4");
+    ASSERT_EQ(entries.at(0).Data().at(14), "4");
 }
 
 TEST(EvgetLibInputTransformer, TransformTabletToolButton) {
@@ -446,10 +446,10 @@ TEST(EvgetLibInputTransformer, TransformTabletToolButton) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_TABLET_TOOL_BUTTON");
-    ASSERT_EQ(entries.at(0).Data().at(13), "4");
-    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(BTN_STYLUS));
-    ASSERT_EQ(entries.at(0).Data().at(16), "BTN_STYLUS");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "4");
+    ASSERT_EQ(entries.at(0).Data().at(16), std::to_string(BTN_STYLUS));
+    ASSERT_EQ(entries.at(0).Data().at(17), "BTN_STYLUS");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 TEST(EvgetLibInputTransformer, TransformTabletPadButton) {
@@ -469,9 +469,9 @@ TEST(EvgetLibInputTransformer, TransformTabletPadButton) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_TABLET_PAD_BUTTON");
-    ASSERT_EQ(entries.at(0).Data().at(13), "4");
-    ASSERT_EQ(entries.at(0).Data().at(15), "3");
-    ASSERT_EQ(entries.at(0).Data().at(17), "1");
+    ASSERT_EQ(entries.at(0).Data().at(14), "4");
+    ASSERT_EQ(entries.at(0).Data().at(16), "3");
+    ASSERT_EQ(entries.at(0).Data().at(18), "1");
 }
 
 TEST(EvgetLibInputTransformer, TransformTabletPadKey) {
@@ -491,10 +491,10 @@ TEST(EvgetLibInputTransformer, TransformTabletPadKey) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kKey);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_TABLET_PAD_KEY");
-    ASSERT_EQ(entries.at(0).Data().at(13), "1");
-    ASSERT_EQ(entries.at(0).Data().at(14), std::to_string(KEY_F1));
-    ASSERT_EQ(entries.at(0).Data().at(15), "KEY_F1");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(14), "1");
+    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(KEY_F1));
+    ASSERT_EQ(entries.at(0).Data().at(16), "KEY_F1");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 TEST(EvgetLibInputTransformer, TransformTabletToolProximityInGeneratesMove) {
@@ -553,7 +553,7 @@ TEST(EvgetLibInputTransformer, TransformTabletToolTipProducesMoveAndClick) {
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(2.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(3.0));
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
-    ASSERT_EQ(entries.at(1).Data().at(17), "0");
+    ASSERT_EQ(entries.at(1).Data().at(18), "0");
 }
 
 TEST(EvgetLibInputTransformer, DeviceTypeTouchpadFromFingerCount) {
@@ -572,7 +572,7 @@ TEST(EvgetLibInputTransformer, DeviceTypeTouchpadFromFingerCount) {
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
-    ASSERT_EQ(entries.at(0).Data().at(13), "2");
+    ASSERT_EQ(entries.at(0).Data().at(14), "2");
 }
 
 TEST(EvgetLibInputTransformer, DeviceTypeUnknownWhenNoCapabilities) {
@@ -591,7 +591,7 @@ TEST(EvgetLibInputTransformer, DeviceTypeUnknownWhenNoCapabilities) {
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
-    ASSERT_EQ(entries.at(0).Data().at(13), "5");
+    ASSERT_EQ(entries.at(0).Data().at(14), "5");
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

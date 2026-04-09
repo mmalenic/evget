@@ -33,6 +33,10 @@
 #include "evgetlibinput/xkbcommon.h"
 
 namespace evgetlibinput {
+
+/// \brief Event source for the libinput backend.
+constexpr std::string_view kEventSourceName{"libinput"};
+
 class EventTransformer : public evget::EventTransformer<evget::InputEvent<LibInputEvent>> {
 public:
     /**
@@ -109,7 +113,8 @@ T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uin
         .Device(ctx.device_type)
         .DeviceName(ctx.device_name)
         .DeviceId(ctx.device_uuid)
-        .SystemEvent(ctx.system_event);
+        .SystemEvent(ctx.system_event)
+        .EventSource(std::string{kEventSourceName});
     return SetModifierValues(builder);
 }
 
