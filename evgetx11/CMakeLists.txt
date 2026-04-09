@@ -10,7 +10,8 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/event_switch.cpp
+    PRIVATE ${SRC}/backend.cpp
+            ${SRC}/event_switch.cpp
             ${SRC}/event_switch_pointer_key.cpp
             ${SRC}/event_switch_touch.cpp
             ${SRC}/event_transformer.cpp
@@ -22,6 +23,7 @@ target_sources(
            BASE_DIRS
            include
            FILES
+           ${INCLUDE}/backend.h
            ${INCLUDE}/event_switch.h
            ${INCLUDE}/event_switch_pointer_key.h
            ${INCLUDE}/event_switch_touch.h
