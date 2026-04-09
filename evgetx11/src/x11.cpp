@@ -123,7 +123,7 @@ std::unique_ptr<char[], decltype(&XFree)> evgetx11::X11::AtomName(Atom atom) {
 std::optional<Atom> evgetx11::X11::GetAtom(const char* atom_name) const {
     Atom atom = XInternAtom(&display_.get(), atom_name, True);
     if (atom == None) {
-        spdlog::warn("failed to get {} atom");
+        spdlog::warn("failed to get {} atom", atom_name);
         return std::nullopt;
     }
     return atom;
@@ -317,7 +317,7 @@ std::optional<evgetx11::XWindowDimensions> evgetx11::X11::GetWindowSize(Window w
     }
 
     const unsigned int width = attributes->width;
-    const unsigned int height = attributes->width;
+    const unsigned int height = attributes->height;
 
     return {{.width = width, .height = height}};
 }

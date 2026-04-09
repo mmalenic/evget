@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "../../evgetlibinput/include/evgetlibinput/drm.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
 #include "evget/event_handler.h"
@@ -18,6 +17,7 @@
 
 #ifdef FEATURE_EVGETLIBINPUT
 #include "evget/input_event.h"
+#include "evgetlibinput/drm.h"
 #include "evgetlibinput/event_transformer.h"
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/next_event.h"
@@ -118,14 +118,14 @@ int main(int argc, char* argv[]) {
 #endif
 
 #ifdef FEATURE_EVGETX11
-        Display* display = nullptr;
+        std::unique_ptr<Display, decltype(&XCloseDisplay)> display{nullptr, XCloseDisplay};
         std::optional<evgetx11::X11> x11_api{};
         std::unique_ptr<evget::EventTransformer<evgetx11::InputEvent>> x11_transformer{};
         std::unique_ptr<evgetx11::InputHandler> x11_next_event{};
         std::optional<evget::EventHandler<evgetx11::InputEvent>> x11_handler{};
 
         if (event_source == evget::EventSource::kX11) {
-            display = XOpenDisplay(nullptr);
+            display.reset(XOpenDisplay(nullptr));
             x11_api.emplace(*display);
 
             auto builder = evgetx11::EventTransformerBuilder{}.PointerKey(*x11_api).Touch();
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
             auto x11_next_event_result = evgetx11::InputHandlerBuilder::Build(*x11_api);
             if (!x11_next_event_result.has_value()) {
-                spdlog::error("{}", stores.error());
+                spdlog::error("{}", x11_next_event_result.error());
                 return 1;
             }
             x11_next_event = std::move(*x11_next_event_result);
