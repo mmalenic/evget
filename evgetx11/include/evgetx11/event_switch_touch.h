@@ -142,7 +142,8 @@ void EventSwitchTouch::TouchButton(
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
         .Action(action)
-        .TouchId(raw_event.detail);
+        .TouchId(raw_event.detail)
+        .EventSource(std::string{kEventSourceName});
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
     x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
@@ -172,7 +173,8 @@ void EventSwitchTouch::TouchMotion(
         .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
         .PositionY(query_pointer.root_y)
-        .TouchId(raw_event.detail);
+        .TouchId(raw_event.detail)
+        .EventSource(std::string{kEventSourceName});
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
     x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);

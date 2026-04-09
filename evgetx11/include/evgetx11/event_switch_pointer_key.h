@@ -223,7 +223,8 @@ void EventSwitchPointerKey::KeyEvent(
         .Action(action)
         .Button(raw_event.detail)
         .Character(character)
-        .ButtonName(name);
+        .ButtonName(name)
+        .EventSource(std::string{kEventSourceName});
 
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
@@ -276,7 +277,8 @@ void EventSwitchPointerKey::ScrollEvent(
         .DeviceId(x_event_switch.GetDeviceUuid(raw_event.sourceid))
         .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
-        .PositionY(query_pointer.root_y);
+        .PositionY(query_pointer.root_y)
+        .EventSource(std::string{kEventSourceName});
 
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);

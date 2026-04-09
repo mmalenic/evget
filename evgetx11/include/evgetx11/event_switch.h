@@ -31,6 +31,9 @@
 
 namespace evgetx11 {
 
+/// \brief Event source for the X11 backend.
+constexpr std::string_view kEventSourceName{"x11"};
+
 /**
  * \brief Handles processing different types of X11 input events and converting them to the
  *        evget data format.
@@ -268,7 +271,8 @@ void EventSwitch::AddMotionEvent(
         .DeviceId(GetDeviceUuid(event.sourceid))
         .SystemEvent(system_event)
         .PositionX(query_pointer.root_x)
-        .PositionY(query_pointer.root_y);
+        .PositionY(query_pointer.root_y)
+        .EventSource(std::string{kEventSourceName});
 
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
@@ -299,7 +303,8 @@ void EventSwitch::AddButtonEvent(
         .PositionY(query_pointer.root_y)
         .Action(action)
         .Button(button)
-        .ButtonName(button_map_[event.sourceid][button]);
+        .ButtonName(button_map_[event.sourceid][button])
+        .EventSource(std::string{kEventSourceName});
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
