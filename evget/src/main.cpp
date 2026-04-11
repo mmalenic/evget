@@ -10,7 +10,6 @@
 
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
-#include "evget/error.h"
 #include "evget/storage/database_manager.h"
 
 #ifdef FEATURE_EVGETLIBINPUT

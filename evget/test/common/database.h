@@ -4,8 +4,11 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <string_view>
+
+#include "evget/storage/database_storage.h"
 
 namespace test {
 
@@ -28,6 +31,7 @@ public:
 
     [[nodiscard]] std::filesystem::path Directory() const;
     [[nodiscard]] std::filesystem::path DatabaseFile() const;
+    [[nodiscard]] evget::DatabaseStorage MakeStorage() const;
 
 private:
     std::filesystem::path directory_;

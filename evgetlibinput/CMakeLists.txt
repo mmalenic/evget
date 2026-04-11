@@ -10,15 +10,8 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/next_event.cpp
-            ${SRC}/event_transformer.cpp
-            ${SRC}/backend.cpp
-            # ${SRC}/event_switch.cpp ${SRC}/event_switch_pointer_key.cpp ${SRC}/event_switch_touch.cpp
-            # ${SRC}/event_transformer.cpp ${SRC}/input_event.cpp ${SRC}/input_handler.cpp
-            ${SRC}/libinput.cpp
-            ${SRC}/drm.cpp
+    PRIVATE ${SRC}/next_event.cpp ${SRC}/event_transformer.cpp ${SRC}/backend.cpp ${SRC}/libinput.cpp ${SRC}/drm.cpp
             ${SRC}/xkbcommon.cpp
-            # ${SRC}/udev_context.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -27,13 +20,9 @@ target_sources(
            ${INCLUDE}/backend.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/next_event.h
-           # ${INCLUDE}/event_handler.h ${INCLUDE}/event_switch.h ${INCLUDE}/event_switch_pointer_key.h
-           # ${INCLUDE}/event_switch_touch.h ${INCLUDE}/event_transformer.h ${INCLUDE}/input_event.h
-           # ${INCLUDE}/input_handler.h
            ${INCLUDE}/libinput.h
            ${INCLUDE}/drm.h
            ${INCLUDE}/xkbcommon.h
-    # ${INCLUDE}/udev_context.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetlibinput)
 

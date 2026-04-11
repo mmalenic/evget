@@ -5,10 +5,12 @@
 
 #include <filesystem>
 #include <format>
+#include <memory>
 #include <string>
 
 #include "evget/database/connection.h"
 #include "evget/database/sqlite/connection.h"
+#include "evget/storage/database_storage.h"
 
 test::DatabaseTest::DatabaseTest()
     : directory_{std::filesystem::temp_directory_path()}, database_file_{directory_ / TestDatabaseName()} {
@@ -46,4 +48,8 @@ std::filesystem::path test::DatabaseTest::DatabaseFile() const {
 std::string test::DatabaseTest::TestDatabaseName() {
     auto uuid = boost::uuids::to_string(boost::uuids::random_generator()());
     return std::format("test-database-{}", uuid);
+}
+
+evget::DatabaseStorage test::DatabaseTest::MakeStorage() const {
+    return {std::make_unique<evget::SQLiteConnection>(), DatabaseFile().string()};
 }
