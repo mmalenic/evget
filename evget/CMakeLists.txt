@@ -262,8 +262,11 @@ if(BUILD_TESTING)
                test/interval_tracker.cpp
                test/storage/json_storage.cpp
                test/storage/database_storage.cpp
+               test/storage/database_manager.cpp
                test/common/database.h
                test/common/database.cpp
+               test/common/store.h
+               test/common/store.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()
