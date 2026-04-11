@@ -35,34 +35,20 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
         ninja -C {{ dir }} {{ targets }}
     fi
 
-# Create the ignorelist for sanitizer tests to ignore non-project code.
-create_ignore_list dir:
-    mkdir -p build/Debug && echo "src:{{ dir }}/*" >> build/Debug/ignorelist.txt
-
-# Error if the log file from sanitizers is non-empty.
-error_non_empty_log:
-    #!/usr/bin/env bash
-    set -euxo pipefail
-
-    if [ -f log ] && [ -s log ]; then
-        cat log
-        exit 1
-    fi
-
 # Test using an llvm sanitizer build directory.
 _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPILER_VERSION='20' *build_options='':
     #!/usr/bin/env bash
     set -euxo pipefail
 
     dir=$(realpath llvm-project/{{ dir }})
-    just create_ignore_list "$dir"
+    mkdir -p build/Debug && echo "src:$dir/*" > build/Debug/ignorelist.txt
 
     LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
         -pr {{ profile }} '-o "&:build_testing=True" {{ build_options }}'
 
     cd build/Debug
-    {{ symbolizer_path }}=llvm-symbolizer-{{ COMPILER_VERSION }} ./evgettest --gtest_filter={{ filter }} 2> log
-    just error_non_empty_log
+    UBSAN_OPTIONS=print_stacktrace=1 ASAN_OPTIONS=check_initialization_order=1:strict_init_order=1 \
+        {{ symbolizer_path }}=llvm-symbolizer-{{ COMPILER_VERSION }} ./evgettest --gtest_filter={{ filter }}
 
 # Run tests with the memory sanitizer.
 test_valgrind filter='*' $COMPILER_VERSION='' *build_options='': \
@@ -81,10 +67,6 @@ test_msan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_msan COMPILER_VERSION build_options) \
     (_test_llvm "build-msan" "MSAN_SYMBOLIZER_PATH" "./profiles/llvm_msan" filter COMPILER_VERSION build_options)
 
-# Remove the built msan directory.
-clean_msan: clean_cache
-    rm -rf llvm-project/build-msan
-
 # Build llvm cxx and cxxabi with the address sanitizer.
 build_asan $COMPILER_VERSION='20' *build_options='': \
     (build_llvm "build-asan" "libcxx;libcxxabi;libunwind" "Address;Undefined" "cxx cxxabi" \
@@ -95,6 +77,6 @@ test_asan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_asan COMPILER_VERSION build_options) \
     (_test_llvm "build-asan" "ASAN_SYMBOLIZER_PATH" "./profiles/llvm_asan" filter COMPILER_VERSION build_options)
 
-# Remove the built asan directory.
-clean_asan: clean_cache
-    rm -rf llvm-project/build-asan
+# Remove a built sanitizer directory (e.g. `just clean_sanitizer msan`).
+clean_sanitizer name: clean_cache
+    rm -rf llvm-project/build-{{ name }}

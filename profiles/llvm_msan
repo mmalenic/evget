@@ -2,7 +2,7 @@
 
 include(./llvm_libc)
 
-{% set flags = ['-fsanitize=memory', '-fno-omit-frame-pointer'] %}
+{% set flags = ['-fsanitize=memory', '-fno-omit-frame-pointer', '-fsanitize-memory-track-origins=2'] %}
 
 [conf]
 tools.build:cxxflags+={{ flags }}
