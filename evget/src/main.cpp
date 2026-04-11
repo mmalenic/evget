@@ -15,27 +15,10 @@
 
 #ifdef FEATURE_EVGETLIBINPUT
 #include "evgetlibinput/backend.h"
-#include "evgetlibinput/drm.h"
 #endif
 
 #ifdef FEATURE_EVGETX11
 #include "evgetx11/backend.h"
-#endif
-
-#ifdef FEATURE_EVGETLIBINPUT
-namespace {
-evget::Result<evgetlibinput::ScreenDimensions> ResolveScreenDimensions(evget::Cli& cli) {
-    if (auto cli_dimensions = cli.ScreenDimensions()) {
-        return evgetlibinput::ScreenDimensions{.width = cli_dimensions->first, .height = cli_dimensions->second};
-    }
-
-    auto drm = evgetlibinput::DrmOutput::New();
-    if (!drm.has_value()) {
-        return std::unexpected(drm.error());
-    }
-    return drm->GetDimensions();
-}
-} // namespace
 #endif
 
 int main(int argc, char* argv[]) {
@@ -82,12 +65,7 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::Backend> li_backend{};
         if (event_source == evget::EventSource::kLibInput) {
-            auto dimensions = ResolveScreenDimensions(cli);
-            if (!dimensions.has_value()) {
-                spdlog::error("{}", dimensions.error());
-                return 1;
-            }
-            auto result = evgetlibinput::Backend::Create(*dimensions, manager);
+            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), manager);
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;

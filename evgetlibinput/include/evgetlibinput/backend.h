@@ -6,7 +6,10 @@
 #ifndef EVGETLIBINPUT_BACKEND_H
 #define EVGETLIBINPUT_BACKEND_H
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "evget/error.h"
 #include "evget/event_handler.h"
@@ -27,11 +30,12 @@ class Backend {
 public:
     /**
      * \brief Create the libinput backend.
-     * \param dimensions the screen dimensions
+     * \param dimensions screen dimensions (width, height)
      * \param storage the event storage
      * \return the backend
      */
-    static evget::Result<std::unique_ptr<Backend>> Create(ScreenDimensions dimensions, evget::Store& storage);
+    static evget::Result<std::unique_ptr<Backend>>
+    Create(std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions, evget::Store& storage);
 
     /**
      * \brief Get the event handler.
