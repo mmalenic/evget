@@ -12,7 +12,7 @@ evgetx11::Backend::Backend(std::unique_ptr<Display, decltype(&XCloseDisplay)> di
 evget::Result<std::unique_ptr<evgetx11::Backend>> evgetx11::Backend::Create(evget::Store& storage) {
     auto backend = std::unique_ptr<Backend>(new Backend({XOpenDisplay(nullptr), XCloseDisplay}));
 
-    backend->transformer_ = EventTransformerBuilder{}.PointerKey(backend->api_).Touch().Build(backend->api_);
+    backend->transformer_ = std::move(EventTransformerBuilder{}.PointerKey(backend->api_).Touch()).Build(backend->api_);
 
     auto next_event = InputHandlerBuilder::Build(backend->api_);
     if (!next_event.has_value()) {
