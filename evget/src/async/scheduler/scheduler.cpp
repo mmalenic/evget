@@ -18,8 +18,8 @@ void evget::Scheduler::Stop() {
     pool_.stop();
 }
 
-boost::asio::awaitable<bool> evget::Scheduler::IsStopped() const {
-    co_return stopped_.load();
+bool evget::Scheduler::IsStopped() const {
+    return stopped_.load();
 }
 
 void evget::Scheduler::LogException(const std::exception_ptr& error) {

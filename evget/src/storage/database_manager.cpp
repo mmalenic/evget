@@ -75,13 +75,22 @@ evget::DatabaseManager::StoreCoroutine(Data data, std::vector<std::shared_ptr<St
 }
 
 boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evget::DatabaseManager::StoreAfterCoroutine(
-    std::shared_ptr<Scheduler> scheduler,
+    std::weak_ptr<Scheduler> scheduler_weak,
     std::shared_ptr<LockingVector<Data>> data,
     std::vector<std::shared_ptr<Store>> store_in,
     std::chrono::seconds store_after
 ) {
     auto store_interval = Interval{store_after};
-    while (!co_await scheduler->IsStopped()) {
+    // Use a weak_ptr here to break cycle between scheduler and database manager, this must
+    // live in a block that ends before the next co_await to avoid re-introducing the cycle.
+    while (true) {
+        {
+            auto scheduler = scheduler_weak.lock();
+            if (!scheduler || scheduler->IsStopped()) {
+                break;
+            }
+        }
+
         auto result = co_await store_interval.Tick();
 
         spdlog::debug(std::format("timer threshold of {} seconds reached", store_interval.Period().count()));
@@ -90,16 +99,24 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
             co_return Err{Error{.error_type = ErrorType::kDatabaseManagerError, .message = result.error().message}};
         }
 
-        auto data_inner = data->IntoInner();
-        SpawnStoreData(data_inner, store_in, *scheduler);
+        {
+            auto scheduler = scheduler_weak.lock();
+            if (!scheduler) {
+                break;
+            }
+
+            auto data_inner = data->IntoInner();
+            SpawnStoreData(data_inner, store_in, *scheduler);
+        }
     }
 
     co_return Result<void>{};
 }
 
 void evget::DatabaseManager::SpawnStoreAfter() const {
+    std::weak_ptr<Scheduler> weak_scheduler = scheduler_;
     scheduler_->Spawn<Result<void>>(
-        StoreAfterCoroutine(scheduler_, data_, store_in_, store_after_),
+        StoreAfterCoroutine(std::move(weak_scheduler), data_, store_in_, store_after_),
         [this](Result<void> result) { ResultHandler(std::move(result), *this->scheduler_); }
     );
 }

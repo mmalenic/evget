@@ -54,7 +54,7 @@ private:
     );
     static boost::asio::awaitable<Result<void>> StoreCoroutine(Data data, std::vector<std::shared_ptr<Store>> store_in);
     static boost::asio::awaitable<Result<void>> StoreAfterCoroutine(
-        std::shared_ptr<Scheduler> scheduler,
+        std::weak_ptr<Scheduler> scheduler,
         std::shared_ptr<LockingVector<Data>> data,
         std::vector<std::shared_ptr<Store>> store_in,
         std::chrono::seconds store_after
