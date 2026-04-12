@@ -88,6 +88,67 @@ class EvgetRecipe(ConanFile):
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
 
+        # evget uses only basic SQL
+        sqlite_opts = self.options["sqlite3"]
+        sqlite_opts.enable_rtree = False
+        sqlite_opts.enable_math_functions = False
+        sqlite_opts.enable_unlock_notify = False
+        sqlite_opts.build_executable = False
+
+        # evget only uses SHA-512 from libcrypto so disable all additional features.
+        openssl_features = frozenset(
+            {
+                "apps",
+                "async",
+                "autoload_config",
+                "comp",
+                "deprecated",
+                "engine",
+                "fips",
+                "legacy",
+                "zlib",
+                "dgram",
+                "sock",
+                "ssl3",
+                "tls1",
+                "cms",
+                "ct",
+                "ocsp",
+                "rfc3779",
+                "srp",
+                "srtp",
+                "ts",
+                "dh",
+                "dsa",
+                "ec",
+                "ecdh",
+                "ecdsa",
+                "aria",
+                "bf",
+                "camellia",
+                "cast",
+                "chacha",
+                "des",
+                "idea",
+                "rc2",
+                "rc4",
+                "rc5",
+                "seed",
+                "sm4",
+                "blake2",
+                "md4",
+                "mdc2",
+                "rmd160",
+                "sm3",
+                "whirlpool",
+                "gost",
+                "sm2",
+            }
+        )
+        openssl_opts = self.options["openssl"]
+        for feature in openssl_features:
+            openssl_opts.__setattr__(f"no_{feature}", True)
+
         # Every compiled boost library.
         boost_components = frozenset(
             {
@@ -130,16 +191,8 @@ class EvgetRecipe(ConanFile):
         )
         # Boost libraries that evget needs.
         boost_evget_requires = frozenset(
-            {
-                "atomic",
-                "chrono",
-                "date_time",
-                "exception",
-                "random",
-                "system",
-            }
+            {"atomic", "chrono", "date_time", "exception", "random", "system"}
         )
-        # Disable every compiled boost library we don't need.
         boost_opts = self.options["boost"]
         for component in boost_components - boost_evget_requires:
             boost_opts.__setattr__(f"without_{component}", True)

@@ -221,7 +221,7 @@ toolbelt_add_dep(
     VISIBILITY
     PUBLIC
     LINK_COMPONENTS
-    openssl::openssl
+    OpenSSL::Crypto
     FIND_PACKAGE_ARGS
     REQUIRED
 )
