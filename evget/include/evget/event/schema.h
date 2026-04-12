@@ -301,8 +301,9 @@ constexpr std::string FromInt(std::optional<int> value) {
  */
 constexpr std::string FromTimestamp(const std::optional<TimestampType> optional) {
     return detail::OptionalToString(optional, [](auto value) {
+        auto nanoseconds = std::chrono::time_point_cast<std::chrono::nanoseconds>(value);
         std::stringstream stream{};
-        stream << std::format("{:%Y-%m-%dT%H:%M:%S%z}", value);
+        stream << std::format("{:%Y-%m-%dT%H:%M:%S%z}", nanoseconds);
         return stream.str();
     });
 }
