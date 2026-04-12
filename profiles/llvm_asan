@@ -6,4 +6,3 @@ include(./llvm_libc)
 
 [conf]
 tools.build:cxxflags+={{ flags }}
-tools.build:cflags+={{ flags }}
