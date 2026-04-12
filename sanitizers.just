@@ -28,7 +28,7 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
         # Prevent libunwind from being sanitizer-instrumented.
         ignorelist="$(realpath ..)/build/Debug/ignorelist.txt"
         mkdir -p "$(dirname "$ignorelist")"
-        printf 'src:*/libunwind/*\n' > "$ignorelist"
+        echo 'src:*/libunwind/*' > "$ignorelist"
 
         CC=clang-{{ COMPILER_VERSION }} CXX=clang++-{{ COMPILER_VERSION }} \
             cmake -G Ninja -S runtimes -B {{ dir }} \
@@ -50,13 +50,15 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    # Clear build/Debug to avoid issues when running asan/msan separately.
+    rm -rf build/Debug
     dir=$(realpath llvm-project/{{ dir }})
     mkdir -p build/Debug
     # Keep this in sync with the ignorelist written in `build_llvm`.
     {
-        printf 'src:*/libunwind/*\n'
-        printf 'src:%s/*\n' "$dir"
-        printf 'src:%s/.conan2/*\n' "$HOME"
+        echo 'src:*/libunwind/*'
+        echo "src:$dir/*"
+        echo "src:$HOME/.conan2/*"
     } > build/Debug/ignorelist.txt
 
     LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
