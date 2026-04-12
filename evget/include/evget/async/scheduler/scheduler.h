@@ -110,8 +110,13 @@ public:
     /**
      * \brief Whether the scheduler has been stopped.
      * \return stopped value
+     *
+     * \note Deliberately not an `awaitable<bool>`: callers check this from coroutines running
+     *       on the scheduler's own thread pool. If checking it required `co_await`, any
+     *       locked `shared_ptr<Scheduler>` held across the suspension would be preserved in
+     *       the coroutine frame and keep the scheduler alive indefinitely.
      */
-    [[nodiscard]] boost::asio::awaitable<bool> IsStopped() const;
+    [[nodiscard]] bool IsStopped() const;
 
 private:
     boost::asio::thread_pool pool_{DefaultThreadPoolSize()};

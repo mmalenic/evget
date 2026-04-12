@@ -23,13 +23,16 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
         echo "llvm at {{ dir }} already built - skipping"
     else
         # Extract the compiler launcher from a string such as '-o "&:compiler_launcher=..."'
-        launcher=$(echo {{ build_options }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g")
+        launcher=$(echo {{ build_options }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g" || true)
 
         CC=clang-{{ COMPILER_VERSION }} CXX=clang++-{{ COMPILER_VERSION }} \
             cmake -G Ninja -S runtimes -B {{ dir }} \
             -DCMAKE_BUILD_TYPE=Debug \
             -DLLVM_ENABLE_RUNTIMES="{{ runtimes }}" \
             -DLLVM_USE_SANITIZER="{{ use_sanitizer }}" \
+            -DLIBCXX_INCLUDE_TESTS=OFF \
+            -DLIBCXXABI_INCLUDE_TESTS=OFF \
+            -DLIBUNWIND_INCLUDE_TESTS=OFF \
             -DCMAKE_C_COMPILER_LAUNCHER="$launcher" \
             -DCMAKE_CXX_COMPILER_LAUNCHER="$launcher"
         ninja -C {{ dir }} {{ targets }}
@@ -42,6 +45,7 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
 
     dir=$(realpath llvm-project/{{ dir }})
     mkdir -p build/Debug && echo "src:$dir/*" > build/Debug/ignorelist.txt
+    echo "src:$HOME/.conan2/*" >> build/Debug/ignorelist.txt
 
     LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
         -pr {{ profile }} '-o "&:build_testing=True" {{ build_options }}'
@@ -54,8 +58,8 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
 test_valgrind filter='*' $COMPILER_VERSION='' *build_options='': \
     (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options)
     cd build/Debug && \
-        valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --error-exitcode=1  \
-        ./evgettest --gtest_filter={{ filter }}
+        valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all \
+        --suppressions=../../profiles/valgrind.supp --error-exitcode=1 ./evgettest --gtest_filter={{ filter }}
 
 # Build llvm cxx and cxxabi with the memory sanitizer.
 build_msan $COMPILER_VERSION='20' *build_options='': \

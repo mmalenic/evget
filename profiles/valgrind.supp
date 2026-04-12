@@ -1,0 +1,21 @@
+# Valgrind suppressions, which currently contains gmock suppressions as they keep
+# still reachable leaks for the entire process.
+
+{
+   gmock-UninterestingCallReactionMap-object
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN7testing12_GLOBAL__N_1L28UninterestingCallReactionMapEv
+   ...
+}
+
+{
+   gmock-UninterestingCallReactionMap-hashtable-buckets
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   ...
+   fun:_ZN7testing12_GLOBAL__N_1L31SetReactionOnUninterestingCallsEmNS_8internal12CallReactionE
+   ...
+}
