@@ -25,6 +25,11 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
         # Extract the compiler launcher from a string such as '-o "&:compiler_launcher=..."'
         launcher=$(echo {{ build_options }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g" || true)
 
+        # Prevent libunwind from being sanitizer-instrumented.
+        ignorelist="$(realpath ..)/build/Debug/ignorelist.txt"
+        mkdir -p "$(dirname "$ignorelist")"
+        printf 'src:*/libunwind/*\n' > "$ignorelist"
+
         CC=clang-{{ COMPILER_VERSION }} CXX=clang++-{{ COMPILER_VERSION }} \
             cmake -G Ninja -S runtimes -B {{ dir }} \
             -DCMAKE_BUILD_TYPE=Debug \
@@ -33,6 +38,8 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
             -DLIBCXX_INCLUDE_TESTS=OFF \
             -DLIBCXXABI_INCLUDE_TESTS=OFF \
             -DLIBUNWIND_INCLUDE_TESTS=OFF \
+            -DCMAKE_C_FLAGS="-fsanitize-ignorelist=$ignorelist" \
+            -DCMAKE_CXX_FLAGS="-fsanitize-ignorelist=$ignorelist" \
             -DCMAKE_C_COMPILER_LAUNCHER="$launcher" \
             -DCMAKE_CXX_COMPILER_LAUNCHER="$launcher"
         ninja -C {{ dir }} {{ targets }}
@@ -44,8 +51,13 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
     set -euxo pipefail
 
     dir=$(realpath llvm-project/{{ dir }})
-    mkdir -p build/Debug && echo "src:$dir/*" > build/Debug/ignorelist.txt
-    echo "src:$HOME/.conan2/*" >> build/Debug/ignorelist.txt
+    mkdir -p build/Debug
+    # Keep this in sync with the ignorelist written in `build_llvm`.
+    {
+        printf 'src:*/libunwind/*\n'
+        printf 'src:%s/*\n' "$dir"
+        printf 'src:%s/.conan2/*\n' "$HOME"
+    } > build/Debug/ignorelist.txt
 
     LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
         -pr {{ profile }} '-o "&:build_testing=True" {{ build_options }}'
