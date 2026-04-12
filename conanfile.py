@@ -88,6 +88,62 @@ class EvgetRecipe(ConanFile):
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
 
+        # Every compiled boost library.
+        boost_components = frozenset(
+            {
+                "atomic",
+                "charconv",
+                "chrono",
+                "cobalt",
+                "container",
+                "context",
+                "contract",
+                "coroutine",
+                "date_time",
+                "exception",
+                "fiber",
+                "filesystem",
+                "graph",
+                "graph_parallel",
+                "iostreams",
+                "json",
+                "locale",
+                "log",
+                "math",
+                "mpi",
+                "nowide",
+                "process",
+                "program_options",
+                "python",
+                "random",
+                "regex",
+                "serialization",
+                "stacktrace",
+                "system",
+                "test",
+                "thread",
+                "timer",
+                "type_erasure",
+                "url",
+                "wave",
+            }
+        )
+        # Boost libraries that evget needs.
+        boost_evget_requires = frozenset(
+            {
+                "atomic",
+                "chrono",
+                "date_time",
+                "exception",
+                "random",
+                "system",
+            }
+        )
+        # Disable every compiled boost library we don't need.
+        boost_opts = self.options["boost"]
+        for component in boost_components - boost_evget_requires:
+            boost_opts.__setattr__(f"without_{component}", True)
+
     def requirements(self):
         if self.options.build_evgetx11:
             if self.options.require_system_packages:
@@ -152,7 +208,6 @@ class EvgetRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.requires = [
-            "boost::algorithm",
             "boost::asio",
             "boost::uuid",
             "boost::numeric-conversion",
