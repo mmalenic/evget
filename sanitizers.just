@@ -50,6 +50,12 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    # Each sanitizer variant needs its own conan cache as sanitizer-instrumented
+    # dependencies cannot link to a different sanitizer. E.g. ASAN cannot link with
+    # MSAN cache.
+    export CONAN_HOME="$HOME/.conan2-{{ dir }}"
+    mkdir -p "$CONAN_HOME"
+
     # Clear build/Debug to avoid issues when running asan/msan separately.
     rm -rf build/Debug
     dir=$(realpath llvm-project/{{ dir }})
@@ -58,7 +64,7 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
     {
         echo 'src:*/libunwind/*'
         echo "src:$dir/*"
-        echo "src:$HOME/.conan2/*"
+        echo "src:$CONAN_HOME/*"
     } > build/Debug/ignorelist.txt
 
     LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
@@ -66,14 +72,19 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
 
     cd build/Debug
     UBSAN_OPTIONS=print_stacktrace=1 ASAN_OPTIONS=check_initialization_order=1:strict_init_order=1 \
-        {{ symbolizer_path }}=llvm-symbolizer-{{ COMPILER_VERSION }} ./evgettest --gtest_filter={{ filter }}
+        {{ symbolizer_path }}=$(command -v llvm-symbolizer-{{ COMPILER_VERSION }}) \
+        ./evgettest --gtest_filter={{ filter }}
 
-# Run tests with the memory sanitizer.
+# Run tests with valgrind.
 test_valgrind filter='*' $COMPILER_VERSION='' *build_options='': \
     (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options)
     cd build/Debug && \
         valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all \
         --suppressions=../../profiles/valgrind.supp --error-exitcode=1 ./evgettest --gtest_filter={{ filter }}
+
+# Run tests with valgrind for both Wayland and X11 evget components.
+test_valgrind_linux filter='*' $COMPILER_VERSION='' *build_options='': \
+    (test_valgrind filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
 
 # Build llvm cxx and cxxabi with the memory sanitizer.
 build_msan $COMPILER_VERSION='20' *build_options='': \
@@ -85,6 +96,10 @@ test_msan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_msan COMPILER_VERSION build_options) \
     (_test_llvm "build-msan" "MSAN_SYMBOLIZER_PATH" "./profiles/llvm_msan" filter COMPILER_VERSION build_options)
 
+# Run tests with the memory sanitizer for both Wayland and X11 evget components.
+test_msan_linux filter='*' $COMPILER_VERSION='20' *build_options='': \
+    (test_msan filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
+
 # Build llvm cxx and cxxabi with the address sanitizer.
 build_asan $COMPILER_VERSION='20' *build_options='': \
     (build_llvm "build-asan" "libcxx;libcxxabi;libunwind" "Address;Undefined" "cxx cxxabi" \
@@ -94,6 +109,10 @@ build_asan $COMPILER_VERSION='20' *build_options='': \
 test_asan filter='*' $COMPILER_VERSION='20' *build_options='': \
     (build_asan COMPILER_VERSION build_options) \
     (_test_llvm "build-asan" "ASAN_SYMBOLIZER_PATH" "./profiles/llvm_asan" filter COMPILER_VERSION build_options)
+
+# Run tests with the address sanitizer for both Wayland and X11 evget components.
+test_asan_linux filter='*' $COMPILER_VERSION='20' *build_options='': \
+    (test_asan filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
 
 # Remove a built sanitizer directory (e.g. `just clean_sanitizer msan`).
 clean_sanitizer name: clean_cache

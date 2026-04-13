@@ -8,6 +8,8 @@ include(./clang)
     '-nostdinc++', '-stdlib=libc++', '-lc++abi', '-L{}/lib'.format(dir), '-I{}/include'.format(dir),
     '-I{}/include/c++/v1'.format(dir), '-Wl,--rpath={}/lib'.format(dir), '-fsanitize-ignorelist={}'.format(ignore_list)
 ] %}
+{% set c_flags = ['-fsanitize-ignorelist={}'.format(ignore_list)] %}
 
 [conf]
 tools.build:cxxflags={{ cxx_flags }}
+tools.build:cflags={{ c_flags }}

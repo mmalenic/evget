@@ -67,6 +67,10 @@ test_clang filter='*' $COMPILER_VERSION='20' *build_options='': \
 test_gcc filter='*' $COMPILER_VERSION='15' *build_options='': \
     (build_gcc 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options) (_run_tests filter)
 
+# Build and test both Wayland and X11 evget components.
+test_linux filter='*' $COMPILER_VERSION='' *build_options='': \
+    (test filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
+
 # Run pre-commit and other lints.
 lint:
     pre-commit run --all-files
