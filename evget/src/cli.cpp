@@ -55,14 +55,16 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
            store_n_events_,
            "Controls how many events to receive before outputting them to the store."
     )
-        ->default_val(kDefaultNEvents);
+        ->default_val(kDefaultNEvents)
+        ->check(CLI::PositiveNumber);
     app.add_option(
            "-s,--store-after-seconds",
            store_after_,
            "Store events at least every interval specified with this option, even if fewer events than "
            "`--store-n-events` has been receieved."
     )
-        ->default_val(kDefaultStoreAfter);
+        ->default_val(kDefaultStoreAfter)
+        ->check(CLI::PositiveNumber);
     app.add_option("-e,--event-source", event_source_)
         ->transform(CLI::Transformer{EventSourceMappings(), CLI::ignore_case})
         ->option_text(FormatEnum("EVENT_SOURCE", "The source of events.", event_source_descriptions_));
