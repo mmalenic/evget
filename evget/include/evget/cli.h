@@ -6,6 +6,8 @@
 #ifndef EVGET_CLI_H
 #define EVGET_CLI_H
 
+#include <spdlog/common.h>
+
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -48,7 +50,7 @@ public:
      * \brief Create a cli object.
      * \param default_event_source the default event source if left unspecified by the user
      */
-    explicit Cli(evget::EventSource default_event_source);
+    explicit Cli(EventSource default_event_source);
 
     /**
      * \brief Get the output location.
@@ -71,7 +73,7 @@ public:
      * \param output reference to the output string
      * \return storage type enumeration value
      */
-    static StorageType GetStorageType(std::string& output);
+    static StorageType GetStorageType(const std::string& output);
 
     /**
      * \brief Convert CLI configuration to `Store` objects.
@@ -112,8 +114,10 @@ private:
     std::size_t store_n_events_{kDefaultNEvents};
     std::chrono::seconds store_after_{kDefaultStoreAfter};
     evget::EventSource event_source_{EventSource::kX11};
+    std::optional<spdlog::level::level_enum> log_level_;
     std::optional<std::pair<std::uint32_t, std::uint32_t>> screen_dimensions_;
     std::vector<std::string> event_source_descriptions_{EventSourceDescriptions()};
+    std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
 
     static std::string FormatEnum(
         const std::string& value_descriptor,
@@ -122,6 +126,8 @@ private:
     );
     static std::vector<std::string> EventSourceDescriptions();
     static std::map<std::string, evget::EventSource> EventSourceMappings();
+    static std::vector<std::string> LogLevelDescriptions();
+    static std::map<std::string, spdlog::level::level_enum> LogLevelMappings();
 };
 } // namespace evget
 

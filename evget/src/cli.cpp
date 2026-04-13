@@ -86,15 +86,17 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
     )
         ->option_text("WIDTHxHEIGHT");
 
-    app.add_option_function<std::string>(
-           "-o,--output",
-           [this](const std::string& value) {
-               if (value == "-") {
-                   spdlog::set_level(spdlog::level::off);
-               }
+    app.add_option("-l,--log-level", log_level_)
+        ->transform(CLI::Transformer{LogLevelMappings(), CLI::ignore_case})
+        ->option_text(FormatEnum(
+            "LEVEL",
+            "The logging level. Overrides the SPDLOG_LEVEL environment variable.",
+            log_level_descriptions_
+        ));
 
-               output_.emplace_back(value);
-           },
+    app.add_option(
+           "-o,--output",
+           output_,
            "The output location of the storage. "
            "The file extension determines the storage format. "
            "Either JSON files or sqlite databases are supported using .json or .sqlite endings. "
@@ -110,13 +112,18 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
 
     if (output_.empty()) {
         output_.emplace_back("-");
+    }
+
+    if (std::ranges::contains(output_, "-")) {
         spdlog::set_level(spdlog::level::off);
+    } else if (log_level_.has_value()) {
+        spdlog::set_level(*log_level_);
     }
 
     return should_exit;
 }
 
-evget::StorageType evget::Cli::GetStorageType(std::string& output) {
+evget::StorageType evget::Cli::GetStorageType(const std::string& output) {
     auto pos = output.rfind('.');
     if (pos == std::string::npos) {
         return StorageType::kJson;
@@ -205,6 +212,30 @@ std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
     return {
         {"libinput", EventSource::kLibInput},
         {"x11", EventSource::kX11},
+    };
+}
+
+std::vector<std::string> evget::Cli::LogLevelDescriptions() {
+    return {
+        "- trace: show all messages",
+        "- debug: show debug and above",
+        "- info: show info and above",
+        "- warn: show warnings and above",
+        "- error: show errors and above",
+        "- critical: show critical messages",
+        "- off: disable logging",
+    };
+}
+
+std::map<std::string, spdlog::level::level_enum> evget::Cli::LogLevelMappings() {
+    return {
+        {"trace", spdlog::level::trace},
+        {"debug", spdlog::level::debug},
+        {"info", spdlog::level::info},
+        {"warn", spdlog::level::warn},
+        {"error", spdlog::level::err},
+        {"critical", spdlog::level::critical},
+        {"off", spdlog::level::off},
     };
 }
 
