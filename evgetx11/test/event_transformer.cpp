@@ -57,11 +57,12 @@ TEST(EventTransformer, TransformEvent) {
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
-    ASSERT_EQ(entries.at(0).Data().at(14), "");
-    ASSERT_EQ(entries.at(0).Data().at(15), "0");
-    ASSERT_EQ(entries.at(0).Data().at(16), "");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_EQ(entries.at(0).Data().at(16), "0");
+    ASSERT_EQ(entries.at(0).Data().at(17), "");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

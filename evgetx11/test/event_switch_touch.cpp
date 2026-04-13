@@ -79,7 +79,8 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawTouchBegin");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(1).Data().at(0), "1");
@@ -88,9 +89,10 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(1).Data().at(4), "name");
     ASSERT_FALSE(entries.at(1).Data().at(11).empty());
     ASSERT_EQ(entries.at(1).Data().at(12), "XI_RawTouchBegin");
-    ASSERT_EQ(entries.at(1).Data().at(13), "0");
+    ASSERT_EQ(entries.at(1).Data().at(13), "x11");
     ASSERT_EQ(entries.at(1).Data().at(14), "0");
-    ASSERT_EQ(entries.at(1).Data().at(17), "0");
+    ASSERT_EQ(entries.at(1).Data().at(15), "0");
+    ASSERT_EQ(entries.at(1).Data().at(18), "0");
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -142,7 +144,8 @@ TEST(XEventSwitchTouchTest, TestTouchUpdate) {
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawTouchUpdate");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
 TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cognitive-complexity)
@@ -200,7 +203,8 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cogni
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawTouchEnd");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(1).Data().at(0), "1");
@@ -209,9 +213,10 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cogni
     ASSERT_EQ(entries.at(1).Data().at(4), "name");
     ASSERT_FALSE(entries.at(1).Data().at(11).empty());
     ASSERT_EQ(entries.at(1).Data().at(12), "XI_RawTouchEnd");
-    ASSERT_EQ(entries.at(1).Data().at(13), "0");
+    ASSERT_EQ(entries.at(1).Data().at(13), "x11");
     ASSERT_EQ(entries.at(1).Data().at(14), "0");
-    ASSERT_EQ(entries.at(1).Data().at(17), "1");
+    ASSERT_EQ(entries.at(1).Data().at(15), "0");
+    ASSERT_EQ(entries.at(1).Data().at(18), "1");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

@@ -130,11 +130,12 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
-    ASSERT_EQ(entries.at(0).Data().at(14), "");
-    ASSERT_EQ(entries.at(0).Data().at(15), "0");
-    ASSERT_EQ(entries.at(0).Data().at(16), "");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_EQ(entries.at(0).Data().at(16), "0");
+    ASSERT_EQ(entries.at(0).Data().at(17), "");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)
@@ -171,11 +172,12 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawKeyPress");
-    ASSERT_EQ(entries.at(0).Data().at(13), "1");
-    ASSERT_EQ(entries.at(0).Data().at(14), "0");
-    ASSERT_EQ(entries.at(0).Data().at(15), "a");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "1");
+    ASSERT_EQ(entries.at(0).Data().at(15), "0");
     ASSERT_EQ(entries.at(0).Data().at(16), "a");
-    ASSERT_EQ(entries.at(0).Data().at(17), "0");
+    ASSERT_EQ(entries.at(0).Data().at(17), "a");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -237,7 +239,8 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
 TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cognitive-complexity)
@@ -295,9 +298,10 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
-    ASSERT_EQ(entries.at(0).Data().at(14), evget::FromDouble(2.0));
-    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(2.0));
+    ASSERT_EQ(entries.at(0).Data().at(16), "");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

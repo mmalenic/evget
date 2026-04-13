@@ -112,13 +112,14 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty()); // device_id (UUID)
-    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress"); // system_event
-    ASSERT_EQ(entries.at(0).Data().at(13), "0"); // device_type = kMouse
-    ASSERT_EQ(entries.at(0).Data().at(14), ""); // touch_id
-    ASSERT_EQ(entries.at(0).Data().at(15), "0"); // button_id
-    ASSERT_EQ(entries.at(0).Data().at(16), ""); // button_name
-    ASSERT_EQ(entries.at(0).Data().at(17), "0"); // button_action = kPress
+    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
+    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_EQ(entries.at(0).Data().at(16), "0");
+    ASSERT_EQ(entries.at(0).Data().at(17), "");
+    ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -155,7 +156,8 @@ TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
     ASSERT_FALSE(entries.at(0).Data().at(11).empty());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
-    ASSERT_EQ(entries.at(0).Data().at(13), "0");
+    ASSERT_EQ(entries.at(0).Data().at(13), "x11");
+    ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
