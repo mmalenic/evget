@@ -86,14 +86,11 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
 
     app.add_option_function<std::string>(
            "-o,--output",
-           [this](std::string value) {
+           [this](const std::string& value) {
                if (value == "-") {
                    spdlog::set_level(spdlog::level::off);
                }
 
-               std::ranges::transform(value, value.begin(), [](unsigned char character) {
-                   return std::tolower(character);
-               });
                output_.emplace_back(value);
            },
            "The output location of the storage. "
@@ -118,8 +115,15 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
 }
 
 evget::StorageType evget::Cli::GetStorageType(std::string& output) {
-    if (output.ends_with(".sqlite") || output.ends_with(".sqlite3") || output.ends_with(".db") ||
-        output.ends_with(".db3") || output.ends_with(".s3db") || output.ends_with(".sl3")) {
+    auto pos = output.rfind('.');
+    if (pos == std::string::npos) {
+        return StorageType::kJson;
+    }
+
+    auto ext = output.substr(pos);
+    std::ranges::transform(ext, ext.begin(), [](unsigned char character) { return std::tolower(character); });
+
+    if (ext == ".sqlite" || ext == ".sqlite3" || ext == ".db" || ext == ".db3" || ext == ".s3db" || ext == ".sl3") {
         return StorageType::kSqLite;
     }
 
