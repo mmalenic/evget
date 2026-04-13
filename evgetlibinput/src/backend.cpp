@@ -1,8 +1,18 @@
 #include "evgetlibinput/backend.h"
 
+#include <cstdint>
 #include <expected>
 #include <memory>
+#include <optional>
 #include <utility>
+
+#include "evget/error.h"
+#include "evget/event_handler.h"
+#include "evget/input_event.h"
+#include "evget/storage/store.h"
+#include "evgetlibinput/drm.h"
+#include "evgetlibinput/libinput.h"
+#include "evgetlibinput/xkbcommon.h"
 
 evgetlibinput::Backend::Backend(
     std::unique_ptr<LibInputApi> libinput,

@@ -9,6 +9,7 @@
 #include <cctype>
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <expected>
 #include <format>
 #include <fstream>
@@ -16,6 +17,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>

@@ -49,7 +49,7 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput:
     }
 
     lib_input->pollfd_.fd = libinput_get_fd(lib_input->libinput_context_.get());
-    lib_input->pollfd_.events = POLLIN;
+    lib_input->pollfd_.events = POLLIN; // NOLINT(misc-include-cleaner)
     lib_input->pollfd_.revents = 0;
     lib_input->wait_for_poll_ = true;
 
@@ -70,7 +70,7 @@ evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() 
     // event is null.
     while (event == nullptr) {
         if (wait_for_poll_) {
-            if (poll(&pollfd_, 1, -1) <= 0) {
+            if (poll(&pollfd_, 1, -1) <= 0) { // NOLINT(misc-include-cleaner)
                 return evget::Err{
                     {.error_type = evget::ErrorType::kEventHandlerError, .message = "polling for events failed"}
                 };

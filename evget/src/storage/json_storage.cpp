@@ -1,6 +1,6 @@
 #include "evget/storage/json_storage.h"
 
-#include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp> // NOLINT(misc-include-cleaner)
 #include <nlohmann/json_fwd.hpp>
 
 #include <functional>
