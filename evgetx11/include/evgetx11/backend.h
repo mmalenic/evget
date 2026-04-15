@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "evget/error.h"
 #include "evget/event_handler.h"
@@ -29,9 +30,12 @@ public:
     /**
      * \brief Create the X11 backend.
      * \param storage the event storage
+     * \param display optional X11 display name to connect to. If unset, the default display
+     *        is used.
      * \return the backend
      */
-    static evget::Result<std::unique_ptr<Backend>> Create(evget::Store& storage);
+    static evget::Result<std::unique_ptr<Backend>>
+    Create(evget::Store& storage, const std::optional<std::string>& display);
 
     /**
      * \brief Get the event handler.
