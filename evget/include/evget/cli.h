@@ -50,7 +50,7 @@ public:
      * \brief Create a cli object.
      * \param default_event_source the default event source if left unspecified by the user
      */
-    explicit Cli(EventSource default_event_source);
+    explicit Cli(evget::EventSource default_event_source);
 
     /**
      * \brief Get the output location.
@@ -105,6 +105,18 @@ public:
      */
     [[nodiscard]] std::optional<std::pair<std::uint32_t, std::uint32_t>> ScreenDimensions() const;
 
+    /**
+     * \brief Get the X11 display name to connect to.
+     * \return optional display name, if empty, the default display is used
+     */
+    [[nodiscard]] const std::optional<std::string>& Display() const;
+
+    /**
+     * \brief Get the libinput udev seat name to assign.
+     * \return optional seat name, if empty, the default seat is used
+     */
+    [[nodiscard]] const std::optional<std::string>& Seat() const;
+
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{100};
@@ -112,20 +124,24 @@ private:
 
     std::vector<std::string> output_;
     std::size_t store_n_events_{kDefaultNEvents};
-    std::chrono::seconds store_after_{kDefaultStoreAfter};
+    std::size_t store_after_{kDefaultStoreAfter};
     evget::EventSource event_source_{EventSource::kX11};
     std::optional<spdlog::level::level_enum> log_level_;
     std::optional<std::pair<std::uint32_t, std::uint32_t>> screen_dimensions_;
+    std::optional<std::string> display_;
+    std::optional<std::string> seat_;
     std::vector<std::string> event_source_descriptions_{EventSourceDescriptions()};
     std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
 
     static std::string FormatEnum(
         const std::string& value_descriptor,
         const std::string& enum_description,
-        std::vector<std::string>& descriptions
+        std::vector<std::string>& descriptions,
+        const std::string& default_value
     );
     static std::vector<std::string> EventSourceDescriptions();
     static std::map<std::string, evget::EventSource> EventSourceMappings();
+    static std::string ToString(evget::EventSource event_source);
     static std::vector<std::string> LogLevelDescriptions();
     static std::map<std::string, spdlog::level::level_enum> LogLevelMappings();
 };

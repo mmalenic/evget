@@ -67,7 +67,19 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
         ->check(CLI::PositiveNumber);
     app.add_option("-e,--event-source", event_source_)
         ->transform(CLI::Transformer{EventSourceMappings(), CLI::ignore_case})
-        ->option_text(FormatEnum("EVENT_SOURCE", "The source of events.", event_source_descriptions_));
+        ->option_text(
+            FormatEnum("EVENT_SOURCE", "The source of events.", event_source_descriptions_, ToString(event_source_))
+        );
+
+    app.add_option(
+           "-D,--display",
+           display_,
+           "X11 display to connect to (e.g. ':0'). If not specified, the default display is used. "
+           "Only used by the X11 event source."
+    )
+        ->default_str("$DISPLAY");
+    app.add_option("-S,--seat", seat_, "libinput udev seat to assign. Only used by the libinput event source.")
+        ->default_str("seat0");
 
     app.add_option_function<std::string>(
            "-d,--screen-dimensions",
@@ -84,14 +96,16 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
            "Screen dimensions used to convert absolute pointer motion to screen "
            "coordinates for evgetlibinput. If not specified, dimensions are queried from DRM."
     )
-        ->option_text("WIDTHxHEIGHT");
+        ->option_text("WIDTHxHEIGHT [DRM query]")
+        ->default_str("DRM query");
 
     app.add_option("-l,--log-level", log_level_)
         ->transform(CLI::Transformer{LogLevelMappings(), CLI::ignore_case})
         ->option_text(FormatEnum(
             "LEVEL",
             "The logging level. Overrides the SPDLOG_LEVEL environment variable.",
-            log_level_descriptions_
+            log_level_descriptions_,
+            "$SPDLOG_LEVEL or info"
         ));
 
     app.add_option(
@@ -180,11 +194,13 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
 std::string evget::Cli::FormatEnum(
     const std::string& value_descriptor,
     const std::string& enum_description,
-    std::vector<std::string>& descriptions
+    std::vector<std::string>& descriptions,
+    const std::string& default_value
 ) {
     auto out_description = std::format(
-        "{}\n{: <{}}{}\n{: <{}}Possible values:\n",
+        "{} [{}]\n{: <{}}{}\n{: <{}}Possible values:\n",
         value_descriptor,
+        default_value,
         "",
         kIndentBy,
         enum_description,
@@ -213,6 +229,16 @@ std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
         {"libinput", EventSource::kLibInput},
         {"x11", EventSource::kX11},
     };
+}
+
+std::string evget::Cli::ToString(evget::EventSource event_source) {
+    switch (event_source) {
+        case EventSource::kLibInput:
+            return "libinput";
+        case EventSource::kX11:
+            return "x11";
+    }
+    return {};
 }
 
 std::vector<std::string> evget::Cli::LogLevelDescriptions() {
@@ -248,9 +274,17 @@ std::size_t evget::Cli::StoreNEvents() const {
 }
 
 std::chrono::seconds evget::Cli::StoreAfter() const {
-    return store_after_;
+    return std::chrono::seconds{store_after_};
 }
 
 std::optional<std::pair<std::uint32_t, std::uint32_t>> evget::Cli::ScreenDimensions() const {
     return screen_dimensions_;
+}
+
+const std::optional<std::string>& evget::Cli::Display() const {
+    return display_;
+}
+
+const std::optional<std::string>& evget::Cli::Seat() const {
+    return seat_;
 }

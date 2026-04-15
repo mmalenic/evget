@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::Backend> li_backend{};
         if (event_source == evget::EventSource::kLibInput) {
-            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), manager);
+            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), manager, cli.Seat());
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETX11
         std::unique_ptr<evgetx11::Backend> x11_backend{};
         if (event_source == evget::EventSource::kX11) {
-            auto result = evgetx11::Backend::Create(manager);
+            auto result = evgetx11::Backend::Create(manager, cli.Display());
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;
