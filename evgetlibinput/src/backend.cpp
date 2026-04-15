@@ -4,6 +4,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "evget/error.h"
@@ -28,7 +29,8 @@ evgetlibinput::Backend::Backend(
 
 evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::Create(
     std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions,
-    evget::Store& storage
+    evget::Store& storage,
+    const std::optional<std::string>& seat
 ) {
     ScreenDimensions resolved_dimensions{};
     if (dimensions) {
@@ -41,7 +43,7 @@ evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::C
         resolved_dimensions = drm->GetDimensions();
     }
 
-    auto libinput = LibInput::New();
+    auto libinput = LibInput::New(seat);
     if (!libinput.has_value()) {
         return std::unexpected(libinput.error());
     }

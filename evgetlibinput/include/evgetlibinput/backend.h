@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "evget/error.h"
@@ -32,10 +33,14 @@ public:
      * \brief Create the libinput backend.
      * \param dimensions screen dimensions (width, height)
      * \param storage the event storage
+     * \param seat optional udev seat name to assign. If unset, `seat0` is used.
      * \return the backend
      */
-    static evget::Result<std::unique_ptr<Backend>>
-    Create(std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions, evget::Store& storage);
+    static evget::Result<std::unique_ptr<Backend>> Create(
+        std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions,
+        evget::Store& storage,
+        const std::optional<std::string>& seat
+    );
 
     /**
      * \brief Get the event handler.

@@ -9,7 +9,10 @@
 
 #include <cerrno>
 #include <cstdint>
+#include <format>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 namespace {
@@ -30,7 +33,9 @@ constexpr libinput_interface kLibInputInterface = {
     .close_restricted = CloseRestricted,
 };
 
-evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput::New() {
+evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput::New(
+    const std::optional<std::string>& seat
+) {
     auto lib_input = std::unique_ptr<LibInput>(new LibInput{});
 
     lib_input->udev_context_ = {udev_new(), udev_unref};
@@ -53,11 +58,12 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput:
     lib_input->pollfd_.revents = 0;
     lib_input->wait_for_poll_ = true;
 
-    // Default udev seat.
-    auto seat = libinput_udev_assign_seat(lib_input->libinput_context_.get(), "seat0");
-    if (seat != 0) {
+    const std::string& seat_name = seat.value_or("seat0");
+    auto assign = libinput_udev_assign_seat(lib_input->libinput_context_.get(), seat_name.c_str());
+    if (assign != 0) {
         return evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to assign udev seat"}
+            {.error_type = evget::ErrorType::kEventHandlerError,
+             .message = std::format("unable to assign udev seat '{}'", seat_name)}
         };
     }
 

@@ -11,6 +11,8 @@
 #include <sys/poll.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "evget/error.h"
 
@@ -329,9 +331,10 @@ class LibInput : public LibInputApi {
 public:
     /**
      * \brief Create a new LibInputApi context as a pointer to the interface.
+     * \param seat optional udev seat name to assign. If unset, `seat0` is used.
      * \return a unique pointer to a LibInputApi context
      */
-    static evget::Result<std::unique_ptr<LibInput>> New();
+    static evget::Result<std::unique_ptr<LibInput>> New(const std::optional<std::string>& seat);
 
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
