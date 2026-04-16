@@ -53,15 +53,16 @@ evget::Result<bool> evget::SQLiteQuery::Next() {
             return Err{{.error_type = ErrorType::kDatabaseError, .message = "database not set"}};
         }
         if (!statement_.has_value()) {
-            statement_ = {database->get(), query_};
+            statement_.emplace(database->get(), query_);
         }
 
-        for (auto [position, value] : this->binds_) {
-            std::visit([this, &position](auto&& value) { this->statement_->bind(position + 1, value); }, value);
+        auto& statement = statement_.value();
+        for (auto& [position, bind_value] : this->binds_) {
+            std::visit([&statement, pos = position](auto&& inner) { statement.bind(pos + 1, inner); }, bind_value);
         }
         this->binds_.clear();
 
-        return this->statement_->executeStep();
+        return statement.executeStep();
     } catch (std::exception& e) {
         const auto* what = e.what();
         spdlog::error("error building query: {}", what);

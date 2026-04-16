@@ -22,9 +22,8 @@ const std::vector<std::string>& evget::Entry::Modifiers() const {
 }
 
 void evget::Entry::ToNamedRepresentation() {
-    constexpr auto kDeviceTypeIndex = detail::kBaseNFields - 1;
-    if (data_.size() > kDeviceTypeIndex) {
-        data_.at(kDeviceTypeIndex) = FromDevice(FromUnderlying<DeviceType>(data_.at(kDeviceTypeIndex)));
+    if (data_.size() > detail::kDeviceTypeIndex) {
+        data_.at(detail::kDeviceTypeIndex) = FromDevice(FromUnderlying<DeviceType>(data_.at(detail::kDeviceTypeIndex)));
     }
 
     // button_action position depends on the entry type.
