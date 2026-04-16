@@ -20,6 +20,7 @@ target_sources(
             ${SRC}/storage/database_storage.cpp
             ${SRC}/event/entry.cpp
             ${SRC}/storage/database_manager.cpp
+            ${SRC}/storage/filter_store.cpp
             ${SRC}/database/migrate.cpp
             ${SRC}/database/sqlite/connection.cpp
             ${SRC}/database/sqlite/query.cpp
@@ -59,6 +60,7 @@ target_sources(
            ${INCLUDE}/event/data.h
            ${INCLUDE}/event/entry.h
            ${INCLUDE}/storage/database_manager.h
+           ${INCLUDE}/storage/filter_store.h
            ${INCLUDE}/error.h
            ${INCLUDE}/util.h
            ${INCLUDE}/async/container/locking_vector.h
@@ -263,6 +265,7 @@ if(BUILD_TESTING)
                test/storage/json_storage.cpp
                test/storage/database_storage.cpp
                test/storage/database_manager.cpp
+               test/storage/filter_store.cpp
                test/common/database.h
                test/common/database.cpp
                test/common/store.h
