@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -14,12 +15,13 @@ TEST(FilterStoreTest, AllDeviceTypesPassThrough) {
     test::StoreMock inner{};
     evget::FilterStore filter{
         inner,
-        {evget::DeviceType::kMouse,
-         evget::DeviceType::kKeyboard,
-         evget::DeviceType::kTouchpad,
-         evget::DeviceType::kTouchscreen,
-         evget::DeviceType::kTablet,
-         evget::DeviceType::kUnknown}
+        std::set{
+            evget::DeviceType::kMouse,
+            evget::DeviceType::kKeyboard,
+            evget::DeviceType::kTouchpad,
+            evget::DeviceType::kTouchscreen,
+            evget::DeviceType::kTablet
+        }
     };
 
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard)).has_value());
@@ -31,7 +33,7 @@ TEST(FilterStoreTest, AllDeviceTypesPassThrough) {
 
 TEST(FilterStoreTest, MatchingDeviceTypesForwarded) {
     test::StoreMock inner{};
-    evget::FilterStore filter{inner, {evget::DeviceType::kKeyboard}};
+    evget::FilterStore filter{inner, std::set{evget::DeviceType::kKeyboard}};
 
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard)).has_value());
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeMouseClickData(evget::DeviceType::kMouse)).has_value());
@@ -43,7 +45,7 @@ TEST(FilterStoreTest, MatchingDeviceTypesForwarded) {
 
 TEST(FilterStoreTest, MultipleAllowedDeviceTypes) {
     test::StoreMock inner{};
-    evget::FilterStore filter{inner, {evget::DeviceType::kKeyboard, evget::DeviceType::kMouse}};
+    evget::FilterStore filter{inner, std::set{evget::DeviceType::kKeyboard, evget::DeviceType::kMouse}};
 
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard)).has_value());
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeMouseClickData(evget::DeviceType::kMouse)).has_value());
@@ -53,9 +55,20 @@ TEST(FilterStoreTest, MultipleAllowedDeviceTypes) {
     ASSERT_EQ(events.size(), 2);
 }
 
+TEST(FilterStoreTest, NulloptAllowsAll) {
+    test::StoreMock inner{};
+    evget::FilterStore filter{inner, std::nullopt};
+
+    ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard)).has_value());
+    ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeMouseClickData(evget::DeviceType::kMouse)).has_value());
+
+    auto events = inner.Events();
+    ASSERT_EQ(events.size(), 2);
+}
+
 TEST(FilterStoreTest, EmptyAllowedSetFiltersAll) {
     test::StoreMock inner{};
-    evget::FilterStore filter{inner, {}};
+    evget::FilterStore filter{inner, std::set<evget::DeviceType>{}};
 
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard)).has_value());
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeMouseClickData(evget::DeviceType::kMouse)).has_value());
@@ -65,7 +78,7 @@ TEST(FilterStoreTest, EmptyAllowedSetFiltersAll) {
 
 TEST(FilterStoreTest, MixedEntriesInSingleDataFiltered) {
     test::StoreMock inner{};
-    evget::FilterStore filter{inner, {evget::DeviceType::kKeyboard}};
+    evget::FilterStore filter{inner, std::set{evget::DeviceType::kKeyboard}};
 
     evget::Data combined{};
     for (auto&& entry : test::StoreMock::MakeKeyData(evget::DeviceType::kKeyboard).IntoEntries()) {
@@ -85,7 +98,7 @@ TEST(FilterStoreTest, MixedEntriesInSingleDataFiltered) {
 
 TEST(FilterStoreTest, EntryWithoutDeviceTypePasses) {
     test::StoreMock inner{};
-    evget::FilterStore filter{inner, {evget::DeviceType::kKeyboard}};
+    evget::FilterStore filter{inner, std::set{evget::DeviceType::kKeyboard}};
 
     ASSERT_TRUE(filter.StoreEvent(test::StoreMock::MakeData()).has_value());
 

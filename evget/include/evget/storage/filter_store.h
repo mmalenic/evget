@@ -6,6 +6,7 @@
 #ifndef EVGET_STORAGE_FILTER_STORE_H
 #define EVGET_STORAGE_FILTER_STORE_H
 
+#include <optional>
 #include <set>
 
 #include "evget/error.h"
@@ -24,15 +25,15 @@ public:
     /**
      * \brief Construct a filter store.
      * \param inner reference to the inner store to forward to
-     * \param allowed set of device types that should be forwarded
+     * \param allowed optional set of device types that should be forwarded, nullopt allows all
      */
-    FilterStore(Store& inner, std::set<DeviceType> allowed);
+    FilterStore(Store& inner, std::optional<std::set<DeviceType>> allowed);
 
     Result<void> StoreEvent(Data event) override;
 
 private:
     Store* inner_;
-    std::set<DeviceType> allowed_;
+    std::optional<std::set<DeviceType>> allowed_;
 };
 
 } // namespace evget

@@ -11,6 +11,7 @@
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
 #include "evget/storage/database_manager.h"
+#include "evget/storage/filter_store.h"
 
 #ifdef FEATURE_EVGETLIBINPUT
 #include "evgetlibinput/backend.h"
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
         manager.AddStore(std::move(store));
     }
 
+    auto filter = evget::FilterStore{manager, cli.Filter()};
     auto exit_code = 0;
     try {
         auto event_source = cli.EventSource();
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETLIBINPUT
         std::unique_ptr<evgetlibinput::Backend> li_backend{};
         if (event_source == evget::EventSource::kLibInput) {
-            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), manager, cli.Seat());
+            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), filter, cli.Seat());
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;
@@ -77,7 +79,7 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETX11
         std::unique_ptr<evgetx11::Backend> x11_backend{};
         if (event_source == evget::EventSource::kX11) {
-            auto result = evgetx11::Backend::Create(manager, cli.Display());
+            auto result = evgetx11::Backend::Create(filter, cli.Display());
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;

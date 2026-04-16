@@ -16,11 +16,13 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "evget/error.h"
+#include "evget/event/device_type.h"
 #include "evget/storage/store.h"
 
 namespace evget {
@@ -117,6 +119,12 @@ public:
      */
     [[nodiscard]] const std::optional<std::string>& Seat() const;
 
+    /**
+     * \brief Get the set of device types allowed through the event filter.
+     * \return optional set of allowed device types, nullopt allows all
+     */
+    [[nodiscard]] const std::optional<std::set<DeviceType>>& Filter() const;
+
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{100};
@@ -130,8 +138,10 @@ private:
     std::optional<std::pair<std::uint32_t, std::uint32_t>> screen_dimensions_;
     std::optional<std::string> display_;
     std::optional<std::string> seat_;
+    std::optional<std::set<DeviceType>> filter_;
     std::vector<std::string> event_source_descriptions_{EventSourceDescriptions()};
     std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
+    std::vector<std::string> device_type_descriptions_{DeviceTypeDescriptions()};
 
     static std::string FormatEnum(
         const std::string& value_descriptor,
@@ -144,6 +154,8 @@ private:
     static std::string ToString(evget::EventSource event_source);
     static std::vector<std::string> LogLevelDescriptions();
     static std::map<std::string, spdlog::level::level_enum> LogLevelMappings();
+    static std::vector<std::string> DeviceTypeDescriptions();
+    static std::map<std::string, DeviceType> DeviceTypeMappings();
 };
 } // namespace evget
 

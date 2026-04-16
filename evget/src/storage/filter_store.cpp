@@ -1,5 +1,6 @@
 #include "evget/storage/filter_store.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -10,10 +11,14 @@
 #include "evget/event/schema.h"
 #include "evget/storage/store.h"
 
-evget::FilterStore::FilterStore(Store& inner, std::set<DeviceType> allowed)
+evget::FilterStore::FilterStore(Store& inner, std::optional<std::set<DeviceType>> allowed)
     : inner_{&inner}, allowed_{std::move(allowed)} {}
 
 evget::Result<void> evget::FilterStore::StoreEvent(Data event) {
+    if (!allowed_.has_value()) {
+        return inner_->StoreEvent(std::move(event));
+    }
+
     Data filtered{};
     for (auto&& entry : std::move(event).IntoEntries()) {
         const auto& data = entry.Data();
@@ -23,7 +28,7 @@ evget::Result<void> evget::FilterStore::StoreEvent(Data event) {
         }
 
         auto device = FromUnderlying<DeviceType>(data.at(detail::kDeviceTypeIndex));
-        if (!device.has_value() || allowed_.contains(*device)) {
+        if (!device.has_value() || allowed_->contains(*device)) {
             filtered.AddEntry(std::move(entry));
         }
     }

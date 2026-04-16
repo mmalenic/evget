@@ -18,12 +18,14 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "evget/database/sqlite/connection.h"
 #include "evget/error.h"
+#include "evget/event/device_type.h"
 #include "evget/storage/database_storage.h"
 #include "evget/storage/json_storage.h"
 #include "evget/storage/store.h"
@@ -81,6 +83,12 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
     app.add_option("-S,--seat", seat_, "libinput udev seat to assign. Only used by the libinput event source.")
         ->default_str("seat0");
 
+    std::vector<std::string> raw_filter;
+    app.add_option("-f,--filter", raw_filter, "Only capture events from the comma-separated list of device types.")
+        ->transform(CLI::IsMember({"all", "mouse", "keyboard", "touchpad", "touchscreen", "tablet"}, CLI::ignore_case))
+        ->option_text(FormatEnum("DEVICES", "Filter captured events by device type.", device_type_descriptions_, "all"))
+        ->delimiter(',');
+
     app.add_option_function<std::string>(
            "-d,--screen-dimensions",
            [this](const std::string& value) {
@@ -122,6 +130,16 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
         app.parse(argc, argv);
     } catch (const CLI::ParseError& e) {
         return std::unexpected{app.exit(e)};
+    }
+
+    if (!raw_filter.empty() && !std::ranges::contains(raw_filter, "all")) {
+        auto mappings = DeviceTypeMappings();
+        filter_.emplace();
+        for (const auto& value : raw_filter) {
+            if (mappings.contains(value)) {
+                filter_->insert(mappings.at(value));
+            }
+        }
     }
 
     if (output_.empty()) {
@@ -265,6 +283,27 @@ std::map<std::string, spdlog::level::level_enum> evget::Cli::LogLevelMappings() 
     };
 }
 
+std::vector<std::string> evget::Cli::DeviceTypeDescriptions() {
+    return {
+        "- all: all device types",
+        "- mouse: mouse events",
+        "- keyboard: keyboard events",
+        "- touchpad: touchpad events",
+        "- touchscreen: touchscreen events",
+        "- tablet: tablet events",
+    };
+}
+
+std::map<std::string, evget::DeviceType> evget::Cli::DeviceTypeMappings() {
+    return {
+        {"mouse", DeviceType::kMouse},
+        {"keyboard", DeviceType::kKeyboard},
+        {"touchpad", DeviceType::kTouchpad},
+        {"touchscreen", DeviceType::kTouchscreen},
+        {"tablet", DeviceType::kTablet},
+    };
+}
+
 evget::EventSource evget::Cli::EventSource() const {
     return event_source_;
 }
@@ -287,4 +326,8 @@ const std::optional<std::string>& evget::Cli::Display() const {
 
 const std::optional<std::string>& evget::Cli::Seat() const {
     return seat_;
+}
+
+const std::optional<std::set<evget::DeviceType>>& evget::Cli::Filter() const {
+    return filter_;
 }
