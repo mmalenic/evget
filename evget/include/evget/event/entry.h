@@ -33,6 +33,9 @@ constexpr auto kMouseClickNFields = 19;
 /// \brief Number of fields in a key event entry.
 constexpr auto kKeyNFields = 19;
 
+/// \brief Index of the device type field within a base entry.
+constexpr auto kDeviceTypeIndex = kBaseNFields - 1;
+
 template <std::size_t From, std::size_t To, typename AddElements>
 concept AddArray = std::ranges::range<AddElements> &&
     To > From&& requires(AddElements add_elements) { add_elements.size() <= To - From; };

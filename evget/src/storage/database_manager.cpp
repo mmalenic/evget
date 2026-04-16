@@ -38,7 +38,7 @@ void evget::DatabaseManager::SpawnStoreData(
         spdlog::info(std::format("reached threshold, storing {} events", inner->size()));
 
         Data out{};
-        for (auto data : *std::move(inner)) {
+        for (auto&& data : *std::move(inner)) {
             out.MergeWith(std::move(data));
         }
 
