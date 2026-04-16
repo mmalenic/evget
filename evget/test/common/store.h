@@ -8,6 +8,7 @@
 
 #include "evget/error.h"
 #include "evget/event/data.h"
+#include "evget/event/device_type.h"
 #include "evget/storage/store.h"
 
 namespace test {
@@ -22,6 +23,8 @@ public:
     std::vector<evget::Data> Events();
 
     static evget::Data MakeData();
+    static evget::Data MakeKeyData(evget::DeviceType device);
+    static evget::Data MakeMouseClickData(evget::DeviceType device);
 
 private:
     std::vector<evget::Data> events_;
