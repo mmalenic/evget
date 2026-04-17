@@ -29,6 +29,10 @@ evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, 
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
 evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
+    if (events.Empty()) {
+        return {};
+    }
+
     return connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
         .and_then([this] { return connection_->Transaction(); })
         .transform_error([](const Error<ErrorType>& error) {
