@@ -38,7 +38,7 @@ evget::Result<std::vector<evget::AppliedMigration>> evget::Migrate::GetAppliedMi
     std::vector<AppliedMigration> migrations{};
     auto next = query->Next();
     while (next.has_value() && *next) {
-        auto version = query->AsBool(0);
+        auto version = query->AsInt(0);
         auto checksum = query->AsString(1);
 
         if (!version.has_value() || !checksum.has_value()) {
@@ -120,7 +120,7 @@ evget::Result<void> evget::Migrate::ApplyMigrations() {
                     return migration_result;
                 }
 
-                spdlog::info("applied migration with checksum: {}", migration.version, checksum);
+                spdlog::info("applied migration version {} with checksum: {}", migration.version, checksum);
             }
 
             return evget::Result<void>{};
