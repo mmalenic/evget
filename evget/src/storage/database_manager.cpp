@@ -35,7 +35,7 @@ evget::DatabaseManager::DatabaseManager(
 }
 
 std::vector<std::shared_ptr<evget::Store>> evget::DatabaseManager::Snapshot(StoresHolder& holder) {
-    const std::lock_guard lock{holder.lock};
+    const std::scoped_lock lock{holder.lock};
     return holder.stores;
 }
 
@@ -67,8 +67,8 @@ evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
     return {};
 }
 
-void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) {
-    const std::lock_guard lock{store_in_->lock};
+void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) const {
+    const std::scoped_lock lock{store_in_->lock};
     store_in_->stores.emplace_back(std::move(store));
 }
 

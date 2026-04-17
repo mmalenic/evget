@@ -3,6 +3,7 @@
 
 #include <condition_variable>
 #include <cstddef>
+#include <memory>
 #include <mutex>
 #include <vector>
 
@@ -38,6 +39,19 @@ private:
 class StoreErrorMock : public evget::Store {
 public:
     evget::Result<void> StoreEvent(evget::Data /*event*/) override;
+};
+
+/**
+ * \brief Store that forwards events to an inner store.
+ */
+class StoreForwarder : public evget::Store {
+public:
+    explicit StoreForwarder(std::shared_ptr<Store> inner);
+
+    evget::Result<void> StoreEvent(evget::Data event) override;
+
+private:
+    std::shared_ptr<Store> inner_;
 };
 
 } // namespace test

@@ -2,31 +2,18 @@
 
 #include <gtest/gtest.h>
 
-#include <array>
 #include <chrono>
-#include <string>
 
+#include "common/args.h"
 #include "evget/event/device_type.h"
 
-namespace {
-
-std::array<char*, 3> ArgvOf(const char* arg0, const char* arg1, const char* arg2) {
-    // CLI11's parse() takes char** because it's allowed to mutate argv. Our test strings
-    // string literals so the cast is unavoidable.
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-const-cast)
-    return {const_cast<char*>(arg0), const_cast<char*>(arg1), const_cast<char*>(arg2)};
-    // NOLINTEND(cppcoreguidelines-pro-type-const-cast)
-}
-
-} // namespace
-
-TEST(CliTest, GetStorageTypeIsJsonByDefault) {
+TEST(CliTest, GetStorageTypeJsonDefault) {
     EXPECT_EQ(evget::Cli::GetStorageType("-"), evget::StorageType::kJson);
     EXPECT_EQ(evget::Cli::GetStorageType("out.json"), evget::StorageType::kJson);
     EXPECT_EQ(evget::Cli::GetStorageType("noextension"), evget::StorageType::kJson);
 }
 
-TEST(CliTest, GetStorageTypeRecognisesSqliteExtensions) {
+TEST(CliTest, GetStorageTypeSqliteExtensions) {
     EXPECT_EQ(evget::Cli::GetStorageType("events.sqlite"), evget::StorageType::kSqLite);
     EXPECT_EQ(evget::Cli::GetStorageType("events.sqlite3"), evget::StorageType::kSqLite);
     EXPECT_EQ(evget::Cli::GetStorageType("events.db"), evget::StorageType::kSqLite);
@@ -35,16 +22,16 @@ TEST(CliTest, GetStorageTypeRecognisesSqliteExtensions) {
     EXPECT_EQ(evget::Cli::GetStorageType("events.sl3"), evget::StorageType::kSqLite);
 }
 
-TEST(CliTest, GetStorageTypeExtensionIsCaseInsensitive) {
+TEST(CliTest, GetStorageTypeExtensionCaseInsensitive) {
     EXPECT_EQ(evget::Cli::GetStorageType("events.SQLITE"), evget::StorageType::kSqLite);
     EXPECT_EQ(evget::Cli::GetStorageType("events.Db"), evget::StorageType::kSqLite);
 }
 
-TEST(CliTest, ParseDefaultsExposedThroughAccessors) {
+TEST(CliTest, ParseDefaults) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--output", "-");
+    test::Args argv{{"evget", "--output", "-"}};
 
-    auto result = cli.Parse(3, argv.data());
+    auto result = cli.Parse(argv.Argc(), argv.Argv());
 
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(*result);
@@ -57,11 +44,11 @@ TEST(CliTest, ParseDefaultsExposedThroughAccessors) {
     EXPECT_FALSE(cli.ScreenDimensions().has_value());
 }
 
-TEST(CliTest, ParseFilterExpandsDeviceSet) {
+TEST(CliTest, ParseFilterDeviceSet) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--filter", "mouse,keyboard");
+    test::Args argv{{"evget", "--filter", "mouse,keyboard"}};
 
-    ASSERT_TRUE(cli.Parse(3, argv.data()).has_value());
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
     const auto& filter = cli.Filter();
     if (!filter.has_value()) {
         FAIL() << "filter should be populated when --filter is given";
@@ -71,19 +58,19 @@ TEST(CliTest, ParseFilterExpandsDeviceSet) {
     EXPECT_FALSE(filter->contains(evget::DeviceType::kTablet));
 }
 
-TEST(CliTest, ParseFilterAllLeavesNoFilter) {
+TEST(CliTest, ParseFilterAllNoFilter) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--filter", "all");
+    test::Args argv{{"evget", "--filter", "all"}};
 
-    ASSERT_TRUE(cli.Parse(3, argv.data()).has_value());
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
     EXPECT_FALSE(cli.Filter().has_value());
 }
 
-TEST(CliTest, ParseScreenDimensionsReadsWidthHeight) {
+TEST(CliTest, ParseScreenDimensions) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--screen-dimensions", "1920x1080");
+    test::Args argv{{"evget", "--screen-dimensions", "1920x1080"}};
 
-    ASSERT_TRUE(cli.Parse(3, argv.data()).has_value());
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
     const auto dimensions = cli.ScreenDimensions();
     if (!dimensions.has_value()) {
         FAIL() << "screen dimensions should be populated";
@@ -92,19 +79,19 @@ TEST(CliTest, ParseScreenDimensionsReadsWidthHeight) {
     EXPECT_EQ(dimensions->second, 1080U);
 }
 
-TEST(CliTest, ParseRejectsMalformedScreenDimensions) {
+TEST(CliTest, ParseMalformedScreenDimensions) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--screen-dimensions", "badformat");
+    test::Args argv{{"evget", "--screen-dimensions", "badformat"}};
 
-    auto result = cli.Parse(3, argv.data());
+    auto result = cli.Parse(argv.Argc(), argv.Argv());
 
     ASSERT_FALSE(result.has_value());
 }
 
 TEST(CliTest, ParseEventSourceOverride) {
     evget::Cli cli{evget::EventSource::kX11};
-    auto argv = ArgvOf("evget", "--event-source", "libinput");
+    test::Args argv{{"evget", "--event-source", "libinput"}};
 
-    ASSERT_TRUE(cli.Parse(3, argv.data()).has_value());
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
     EXPECT_EQ(cli.EventSource(), evget::EventSource::kLibInput);
 }

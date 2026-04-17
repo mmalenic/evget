@@ -4,32 +4,17 @@
 
 #include <chrono>
 #include <memory>
-#include <utility>
 
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
-#include "evget/error.h"
-#include "evget/event/data.h"
-#include "evget/storage/store.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 namespace {
 
 using test::StoreErrorMock;
+using test::StoreForwarder;
 using test::StoreMock;
-
-class StoreForwarder : public evget::Store {
-public:
-    explicit StoreForwarder(std::shared_ptr<evget::Store> inner) : inner_{std::move(inner)} {}
-
-    evget::Result<void> StoreEvent(evget::Data event) override {
-        return inner_->StoreEvent(std::move(event));
-    }
-
-private:
-    std::shared_ptr<evget::Store> inner_;
-};
 
 } // namespace
 

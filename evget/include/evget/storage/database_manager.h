@@ -45,7 +45,7 @@ public:
      * \brief Add a store to the database manager.
      * \param store unique pointer to the store to add
      */
-    void AddStore(std::unique_ptr<Store> store);
+    void AddStore(std::unique_ptr<Store> store) const;
 
 private:
     struct StoresHolder {

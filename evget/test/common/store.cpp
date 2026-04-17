@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstddef>
 #include <expected>
+#include <memory>
 #include <mutex>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "evget/event/modifier_value.h"
 #include "evget/event/mouse_click.h"
 #include "evget/event/schema.h"
+#include "evget/storage/store.h"
 
 evget::Result<void> test::StoreMock::StoreEvent(evget::Data event) {
     const std::scoped_lock guard{lock_};
@@ -93,4 +95,10 @@ evget::Result<void> test::StoreErrorMock::StoreEvent(evget::Data /*event*/) {
     return std::unexpected{
         evget::Error{.error_type = evget::ErrorType::kDatabaseManagerError, .message = "mock error"}
     };
+}
+
+test::StoreForwarder::StoreForwarder(std::shared_ptr<Store> inner) : inner_{std::move(inner)} {}
+
+evget::Result<void> test::StoreForwarder::StoreEvent(evget::Data event) {
+    return inner_->StoreEvent(std::move(event));
 }

@@ -267,6 +267,8 @@ if(BUILD_TESTING)
                test/storage/database_storage.cpp
                test/storage/database_manager.cpp
                test/storage/filter_store.cpp
+               test/common/args.h
+               test/common/args.cpp
                test/common/database.h
                test/common/database.cpp
                test/common/store.h
