@@ -253,6 +253,7 @@ if(BUILD_TESTING)
         PUBLIC test/async/container/locking_vector.cpp
                test/async/scheduler/interval.cpp
                test/async/scheduler/scheduler.cpp
+               test/cli.cpp
                test/database/sqlite/connection.cpp
                test/database/sqlite/migrate.cpp
                test/database/sqlite/query.cpp
