@@ -4,6 +4,9 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
+#include <format>
 #include <string>
 #include <vector>
 
@@ -85,12 +88,16 @@ evget::Result<void> evget::Migrate::ApplyMigrationSql(const Migration& migration
 }
 
 std::string evget::Migrate::Checksum(const Migration& migration) {
-    // Reinterpret cast is unavoidable here to continue using the signed std::string variety.
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto* checksum =
-        SHA512(reinterpret_cast<const unsigned char*>(migration.sql.c_str()), migration.sql.length(), nullptr);
-    return std::string{reinterpret_cast<const char*>(checksum)};
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::array<unsigned char, SHA512_DIGEST_LENGTH> digest{};
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    SHA512(reinterpret_cast<const unsigned char*>(migration.sql.c_str()), migration.sql.length(), digest.data());
+
+    std::string hex{};
+    hex.reserve(static_cast<std::size_t>(SHA512_DIGEST_LENGTH) * 2);
+    for (const unsigned char byte : digest) {
+        hex += std::format("{:02x}", byte);
+    }
+    return hex;
 }
 
 evget::Result<void> evget::Migrate::ApplyMigrations() {
