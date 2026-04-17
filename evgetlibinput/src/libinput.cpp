@@ -76,7 +76,12 @@ evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() 
     // event is null.
     while (event == nullptr) {
         if (wait_for_poll_) {
-            if (poll(&pollfd_, 1, -1) <= 0) { // NOLINT(misc-include-cleaner)
+            int poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
+            while (poll_result < 0 && errno == EINTR) {
+                poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
+            }
+
+            if (poll_result <= 0) {
                 return evget::Err{
                     {.error_type = evget::ErrorType::kEventHandlerError, .message = "polling for events failed"}
                 };
