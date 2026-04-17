@@ -127,6 +127,43 @@ TEST_F(DatabaseTest, MigrateConflictingChecksum) {
     ASSERT_TRUE(select_two_result.has_value());
 }
 
+TEST_F(DatabaseTest, MigrateAppliesMultipleVersions) {
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadWriteCreate);
+
+    auto migration_one = evget::Migration{
+        .version = 1,
+        .description = "first",
+        .sql = std::format("insert into {} ({}) values (\"value_one\");", kTestTableName, kTestTableColumn),
+        .exec = true,
+    };
+    auto migration_two = evget::Migration{
+        .version = 2,
+        .description = "second",
+        .sql = std::format("insert into {} ({}) values (\"value_two\");", kTestTableName, kTestTableColumn),
+        .exec = true,
+    };
+    const std::vector migrations{migration_one, migration_two};
+
+    evget::Migrate migrate{connection, migrations};
+
+    ASSERT_TRUE(migrate.ApplyMigrations().has_value());
+
+    auto select_migrations =
+        connection.BuildQuery(std::format("select version, description from _migrations order by version;"));
+
+    ASSERT_TRUE(select_migrations->Next().value());
+    ASSERT_EQ(select_migrations->AsString(0).value(), "1");
+    ASSERT_EQ(select_migrations->AsString(1).value(), "first");
+
+    ASSERT_TRUE(select_migrations->Next().value());
+    ASSERT_EQ(select_migrations->AsString(0).value(), "2");
+    ASSERT_EQ(select_migrations->AsString(1).value(), "second");
+
+    evget::Migrate migrate_again{connection, migrations};
+    ASSERT_TRUE(migrate_again.ApplyMigrations().has_value());
+}
+
 TEST_F(DatabaseTest, MigrateConflictingVersion) {
     evget::SQLiteConnection connection{};
     auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadWriteCreate);
