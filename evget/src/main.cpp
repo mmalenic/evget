@@ -85,7 +85,12 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             x11_backend = std::move(*result);
-            scheduler->SpawnResult(x11_backend->Handler().Start(), x11_backend->Handler(), exit_code);
+            auto handler = x11_backend->Handler();
+            if (!handler.has_value()) {
+                spdlog::error("{}", handler.error());
+                return 1;
+            }
+            scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
         }
 #endif
 

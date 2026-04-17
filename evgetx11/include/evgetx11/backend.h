@@ -8,6 +8,7 @@
 
 #include <X11/Xlib.h>
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -39,9 +40,10 @@ public:
 
     /**
      * \brief Get the event handler.
-     * \return reference to the event handler
+     * \return reference to the event handler, or an error if the backend was not created
+     *         through \ref Create.
      */
-    evget::EventHandler<InputEvent>& Handler();
+    evget::Result<std::reference_wrapper<evget::EventHandler<InputEvent>>> Handler();
 
     Backend(const Backend&) = delete;
     Backend(Backend&&) = delete;

@@ -4,6 +4,7 @@
 
 #include <expected>
 #include <format>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -48,7 +49,12 @@ evgetx11::Backend::Create(evget::Store& storage, const std::optional<std::string
     return backend;
 }
 
-evget::EventHandler<evgetx11::InputEvent>& evgetx11::Backend::Handler() {
-    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    return *handler_;
+evget::Result<std::reference_wrapper<evget::EventHandler<evgetx11::InputEvent>>> evgetx11::Backend::Handler() {
+    if (!handler_.has_value()) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError,
+             .message = "`Handler` called before `Create` completed"}
+        };
+    }
+    return std::ref(*handler_);
 }
