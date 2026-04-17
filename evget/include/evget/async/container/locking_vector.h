@@ -51,9 +51,8 @@ public:
     constexpr std::optional<std::vector<T>> UnsafeIntoInner();
 
     /**
-     * \brief Consume the inner vector when its size is greater than or equal to
-     * the size parameter without locking. Thread-safe.
-     * \return the consumed vector if there are elements in it.
+     * \brief Consume the inner vector by locking. Thread-safe.
+     * \return the consumed vector. See \ref IntoInnerAt for a size variant.
      */
     constexpr std::optional<std::vector<T>> IntoInner();
 
