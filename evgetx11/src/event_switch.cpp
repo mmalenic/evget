@@ -4,7 +4,9 @@
 #include <X11/extensions/XInput2.h>
 #include <evget/event/device_type.h>
 
+#include <cstddef>
 #include <optional>
+#include <ranges>
 #include <span>
 #include <string>
 
@@ -25,21 +27,19 @@ bool evgetx11::EventSwitch::HasDevice(int device_id) const {
 }
 
 void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, int device_id) {
-    auto map = x_wrapper_.get().GetDeviceButtonMapping(device_id, button_info.num_buttons);
-    if (map != nullptr) {
-        auto labels = std::span(button_info.labels, button_info.num_buttons);
-        for (auto i = 0; i < labels.size(); i++) {
-            // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
-            if (labels[i] != 0U) {
-                auto name = x_wrapper_.get().AtomName(labels[i]);
-                if (name) {
-                    button_map_[device_id][map[i]] = name.get();
-                } else {
-                    button_map_[device_id][map[i]] = "";
-                }
-            }
-            // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+    auto map_buf = x_wrapper_.get().GetDeviceButtonMapping(device_id, button_info.num_buttons);
+    if (map_buf == nullptr) {
+        return;
+    }
+    const auto count = static_cast<std::size_t>(button_info.num_buttons);
+    auto labels = std::span{button_info.labels, count};
+    auto map = std::span{map_buf.get(), count};
+    for (auto [label, button_index] : std::views::zip(labels, map)) {
+        if (label == 0U) {
+            continue;
         }
+        auto name = x_wrapper_.get().AtomName(label);
+        button_map_[device_id][button_index] = name ? name.get() : "";
     }
 }
 
