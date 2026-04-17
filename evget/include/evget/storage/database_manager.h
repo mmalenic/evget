@@ -11,6 +11,7 @@
 #include <chrono>
 #include <cstddef>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <vector>
 
@@ -47,6 +48,12 @@ public:
     void AddStore(std::unique_ptr<Store> store);
 
 private:
+    struct StoresHolder {
+        std::mutex lock;
+        std::vector<std::shared_ptr<Store>> stores;
+    };
+
+    static std::vector<std::shared_ptr<Store>> Snapshot(StoresHolder& holder);
     static void SpawnStoreData(
         std::optional<std::vector<Data>> inner,
         std::vector<std::shared_ptr<Store>> store_in,
@@ -56,7 +63,7 @@ private:
     static boost::asio::awaitable<Result<void>> StoreAfterCoroutine(
         std::weak_ptr<Scheduler> scheduler,
         std::shared_ptr<LockingVector<Data>> data,
-        std::vector<std::shared_ptr<Store>> store_in,
+        std::shared_ptr<StoresHolder> store_in,
         std::chrono::seconds store_after
     );
     static void ResultHandler(Result<void> result, Scheduler& scheduler);
@@ -64,7 +71,7 @@ private:
     void SpawnStoreAfter() const;
 
     std::shared_ptr<Scheduler> scheduler_;
-    std::vector<std::shared_ptr<Store>> store_in_;
+    std::shared_ptr<StoresHolder> store_in_;
     size_t n_events_{};
     std::chrono::seconds store_after_{};
     std::shared_ptr<LockingVector<Data>> data_ = std::make_shared<LockingVector<Data>>();

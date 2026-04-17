@@ -8,6 +8,7 @@
 #include <expected>
 #include <format>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -25,8 +26,17 @@ evget::DatabaseManager::DatabaseManager(
     std::size_t n_events,
     std::chrono::seconds store_after
 )
-    : scheduler_{std::move(scheduler)}, store_in_{std::move(store_in)}, n_events_{n_events}, store_after_{store_after} {
+    : scheduler_{std::move(scheduler)},
+      store_in_{std::make_shared<StoresHolder>()},
+      n_events_{n_events},
+      store_after_{store_after} {
+    store_in_->stores = std::move(store_in);
     SpawnStoreAfter();
+}
+
+std::vector<std::shared_ptr<evget::Store>> evget::DatabaseManager::Snapshot(StoresHolder& holder) {
+    const std::lock_guard lock{holder.lock};
+    return holder.stores;
 }
 
 void evget::DatabaseManager::SpawnStoreData(
@@ -52,13 +62,14 @@ evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
     data_->PushBack(std::move(events));
 
     auto inner = data_->IntoInnerAt(n_events_);
-    SpawnStoreData(inner, store_in_, *scheduler_);
+    SpawnStoreData(inner, Snapshot(*store_in_), *scheduler_);
 
     return {};
 }
 
 void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) {
-    this->store_in_.emplace_back(std::move(store));
+    const std::lock_guard lock{store_in_->lock};
+    store_in_->stores.emplace_back(std::move(store));
 }
 
 boost::asio::awaitable<evget::Result<void>>
@@ -77,7 +88,7 @@ evget::DatabaseManager::StoreCoroutine(Data data, std::vector<std::shared_ptr<St
 boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evget::DatabaseManager::StoreAfterCoroutine(
     std::weak_ptr<Scheduler> scheduler_weak,
     std::shared_ptr<LockingVector<Data>> data,
-    std::vector<std::shared_ptr<Store>> store_in,
+    std::shared_ptr<StoresHolder> store_in,
     std::chrono::seconds store_after
 ) {
     auto store_interval = Interval{store_after};
@@ -106,7 +117,7 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
             }
 
             auto data_inner = data->IntoInner();
-            SpawnStoreData(data_inner, store_in, *scheduler);
+            SpawnStoreData(data_inner, Snapshot(*store_in), *scheduler);
         }
     }
 

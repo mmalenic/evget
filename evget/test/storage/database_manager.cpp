@@ -4,9 +4,13 @@
 
 #include <chrono>
 #include <memory>
+#include <utility>
 
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
+#include "evget/error.h"
+#include "evget/event/data.h"
+#include "evget/storage/store.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
@@ -14,6 +18,18 @@ namespace {
 
 using test::StoreErrorMock;
 using test::StoreMock;
+
+class StoreForwarder : public evget::Store {
+public:
+    explicit StoreForwarder(std::shared_ptr<evget::Store> inner) : inner_{std::move(inner)} {}
+
+    evget::Result<void> StoreEvent(evget::Data event) override {
+        return inner_->StoreEvent(std::move(event));
+    }
+
+private:
+    std::shared_ptr<evget::Store> inner_;
+};
 
 } // namespace
 
@@ -91,18 +107,38 @@ TEST(DatabaseManagerTest, MultipleStoresReceiveEvents) {
 
 TEST(DatabaseManagerTest, AddStoreReceivesEvents) {
     auto scheduler = std::make_shared<evget::Scheduler>();
-    auto shared_store = std::make_shared<StoreMock>();
+    auto constructor_store = std::make_shared<StoreMock>();
+    auto added_store = std::make_shared<StoreMock>();
 
-    evget::DatabaseManager manager{scheduler, {shared_store}, 1, std::chrono::seconds{60}};
-    manager.AddStore(std::make_unique<StoreMock>());
+    evget::DatabaseManager manager{scheduler, {constructor_store}, 1, std::chrono::seconds{60}};
+    manager.AddStore(std::make_unique<StoreForwarder>(added_store));
 
     ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
 
-    shared_store->WaitForEvents(1);
+    constructor_store->WaitForEvents(1);
+    added_store->WaitForEvents(1);
     scheduler->Stop();
     scheduler->Join();
 
-    ASSERT_EQ(shared_store->Events().size(), 1);
+    ASSERT_EQ(constructor_store->Events().size(), 1);
+    ASSERT_EQ(added_store->Events().size(), 1);
+}
+
+TEST(DatabaseManagerTest, AddStoreVisibleToTimerFlush) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto added_store = std::make_shared<StoreMock>();
+
+    // High n_events ensures only the timer will flush.
+    evget::DatabaseManager manager{scheduler, {}, 100, std::chrono::seconds{1}};
+    manager.AddStore(std::make_unique<StoreForwarder>(added_store));
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    added_store->WaitForEvents(1);
+    scheduler->Stop();
+    scheduler->Join();
+
+    ASSERT_EQ(added_store->Events().size(), 1);
 }
 
 TEST(DatabaseManagerTest, TimerFlushesBelowThreshold) {
