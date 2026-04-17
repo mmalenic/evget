@@ -187,12 +187,6 @@ constexpr FieldDefinition kScrollVerticalField{"ScrollVertical", DataType::kDoub
 /// \brief Field definition for horizontal scroll amount.
 constexpr FieldDefinition kScrollHorizontalField{"ScrollHorizontal", DataType::kDouble};
 
-/// \brief Field definition for right scroll direction.
-constexpr FieldDefinition kScrollrightField{"ScrollRight", DataType::kDouble};
-
-/// \brief Field definition for upward scroll direction.
-constexpr FieldDefinition kScrollupField{"ScrollUp", DataType::kDouble};
-
 /// \brief Field definition for modifier key state.
 constexpr FieldDefinition kModifierField{"Modifier", DataType::kString};
 
