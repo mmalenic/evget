@@ -76,10 +76,11 @@ evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() 
     // event is null.
     while (event == nullptr) {
         if (wait_for_poll_) {
-            int poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
-            while (poll_result < 0 && errno == EINTR) {
+            int poll_result = 0;
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+            do {
                 poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
-            }
+            } while (poll_result < 0 && errno == EINTR);
 
             if (poll_result <= 0) {
                 return evget::Err{
