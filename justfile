@@ -101,3 +101,6 @@ doc $COMPILER_VERSION='' *build_options='': (build 'Debug' COMPILER_VERSION buil
     git clone --depth 1 --branch v2.3.4 https://github.com/jothepro/doxygen-awesome-css.git build/doxygen-awesome-css \
         || true
     CLANG_DATABASE_PATH=build/Debug doxygen
+
+# Windows related commands
+mod windows 'windows.just'
