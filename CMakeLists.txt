@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.30)
 set(CMAKE_CXX_STANDARD 23)
 
 # x-release-please-start-version
@@ -22,6 +22,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${toolbelt_SOURCE_DIR}/src")
 include(toolbelt)
+include(cmake/windows_defines.cmake)
 
 if(EVGET_RUN_CLANG_TIDY)
     if(DEFINED EVGET_CLANG_TIDY_EXECUTABLE)
@@ -94,4 +95,14 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
         ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
         COMMENT "copying compile_commands.json to project root"
     )
+endif()
+
+if(WIN32)
+    evget_apply_windows_defines(${EVGET_LIBRARY_NAME})
+    if(EVGET_BUILD_BIN)
+        evget_apply_windows_defines(${PROJECT_NAME})
+    endif()
+    if(BUILD_TESTING)
+        evget_apply_windows_defines(${TEST_EXECUTABLE_NAME})
+    endif()
 endif()
