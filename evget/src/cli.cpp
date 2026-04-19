@@ -225,7 +225,7 @@ std::string evget::Cli::FormatEnum(
         "",
         kIndentBy
     );
-    for (auto i = 0; i < descriptions.size(); ++i) {
+    for (std::size_t i = 0; i < descriptions.size(); ++i) {
         out_description.append(std::format("{: <{}}{}", "", kIndentBy, descriptions.at(i)));
         if (descriptions.size() > 1 && i < descriptions.size() - 1) {
             out_description.append("\n");
