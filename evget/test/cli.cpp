@@ -95,3 +95,11 @@ TEST(CliTest, ParseEventSourceOverride) {
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
     EXPECT_EQ(cli.EventSource(), evget::EventSource::kLibInput);
 }
+
+TEST(CliTest, EventSourceMappingsIncludesWindows) {
+    evget::Cli cli{evget::EventSource::kX11};
+    test::Args argv{{"evget", "--event-source", "windows"}};
+
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
+    EXPECT_EQ(cli.EventSource(), evget::EventSource::kWindows);
+}
