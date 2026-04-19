@@ -110,6 +110,9 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             win_backend = std::move(*result);
+
+            spdlog::error("Windows backend handler not yet implemented");
+            return 1;
         }
 #endif
 
