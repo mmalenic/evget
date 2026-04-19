@@ -75,6 +75,9 @@ class EvgetRecipe(ConanFile):
         "export_compilation_database": True,
         "verify_headers": False,
         "require_system_packages": True,
+        "build_evgetx11": None,
+        "build_evgetlibinput": None,
+        "build_evgetwindows": None,
     }
 
     def config_options(self):
