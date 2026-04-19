@@ -41,6 +41,7 @@ enum class StorageType : uint8_t {
 enum class EventSource : uint8_t {
     kLibInput, ///< source events from libinput
     kX11, ///< source events from the X11 windowing system
+    kWindows, ///< source events from the Windows Raw Input API
 };
 
 /**

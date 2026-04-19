@@ -239,6 +239,7 @@ std::vector<std::string> evget::Cli::EventSourceDescriptions() {
     return {
         "- libinput: source events from libinput",
         "- x11: source events from the X11 windowing system",
+        "- windows: source events from the Windows Raw Input API",
     };
 }
 
@@ -246,6 +247,7 @@ std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
     return {
         {"libinput", EventSource::kLibInput},
         {"x11", EventSource::kX11},
+        {"windows", EventSource::kWindows},
     };
 }
 
@@ -255,6 +257,8 @@ std::string evget::Cli::ToString(evget::EventSource event_source) {
             return "libinput";
         case EventSource::kX11:
             return "x11";
+        case EventSource::kWindows:
+            return "windows";
     }
     return {};
 }
