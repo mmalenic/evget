@@ -212,7 +212,7 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
 std::string evget::Cli::FormatEnum(
     const std::string& value_descriptor,
     const std::string& enum_description,
-    std::vector<std::string>& descriptions,
+    const std::vector<std::string>& descriptions,
     const std::string& default_value
 ) {
     auto out_description = std::format(

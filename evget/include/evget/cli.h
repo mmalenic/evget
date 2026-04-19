@@ -147,7 +147,7 @@ private:
     static std::string FormatEnum(
         const std::string& value_descriptor,
         const std::string& enum_description,
-        std::vector<std::string>& descriptions,
+        const std::vector<std::string>& descriptions,
         const std::string& default_value
     );
     static std::vector<std::string> EventSourceDescriptions();
