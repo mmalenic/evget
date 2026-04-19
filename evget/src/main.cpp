@@ -1,5 +1,5 @@
-#if !defined(FEATURE_EVGETLIBINPUT) && !defined(FEATURE_EVGETX11)
-#error "define at least one of `FEATURE_EVGETLIBINPUT`or `FEATURE_EVGETX11`"
+#if !defined(FEATURE_EVGETLIBINPUT) && !defined(FEATURE_EVGETX11) && !defined(FEATURE_EVGETWINDOWS)
+#error "define at least one of `FEATURE_EVGETLIBINPUT`, `FEATURE_EVGETX11`, or `FEATURE_EVGETWINDOWS`"
 #endif
 
 #include <spdlog/spdlog.h>
@@ -21,6 +21,10 @@
 #include "evgetx11/backend.h"
 #endif
 
+#ifdef FEATURE_EVGETWINDOWS
+#include "evgetwindows/backend.h"
+#endif
+
 int main(int argc, char* argv[]) {
     evget::EventSource default_source{};
 #ifdef FEATURE_EVGETX11
@@ -29,6 +33,9 @@ int main(int argc, char* argv[]) {
 #endif
 #ifdef FEATURE_EVGETLIBINPUT
     default_source = evget::EventSource::kLibInput;
+#endif
+#ifdef FEATURE_EVGETWINDOWS
+    default_source = evget::EventSource::kWindows;
 #endif
 
     auto cli = evget::Cli{default_source};
@@ -91,6 +98,18 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
+        }
+#endif
+
+#ifdef FEATURE_EVGETWINDOWS
+        std::unique_ptr<evgetwindows::Backend> win_backend{};
+        if (event_source == evget::EventSource::kWindows) {
+            auto result = evgetwindows::Backend::Create(filter);
+            if (!result.has_value()) {
+                spdlog::error("{}", result.error());
+                return 1;
+            }
+            win_backend = std::move(*result);
         }
 #endif
 
