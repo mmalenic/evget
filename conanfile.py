@@ -60,6 +60,8 @@ class EvgetRecipe(ConanFile):
         "build_evgetx11": [True, False],
         # Whether to build the evgetlibinput library.
         "build_evgetlibinput": [True, False],
+        # Whether to build the evgetwindows library.
+        "build_evgetwindows": [True, False],
     }
     default_options = {
         "build_bin": True,
@@ -78,12 +80,15 @@ class EvgetRecipe(ConanFile):
     def config_options(self):
         is_wayland = os.getenv("WAYLAND_DISPLAY") is not None
         is_linux = self.settings.os == "Linux" or self.settings.os.subsystem == "wsl"
+        is_windows = self.settings.os == "Windows"
         # Must compare with ==
         # https://github.com/conan-io/conan/issues/3524
         if self.options.build_evgetx11 == None:  # noqa: E711
             self.options.build_evgetx11 = not is_wayland and is_linux
         if self.options.build_evgetlibinput == None:  # noqa: E711
             self.options.build_evgetlibinput = is_wayland and is_linux
+        if self.options.build_evgetwindows == None:  # noqa: E711
+            self.options.build_evgetwindows = is_windows
 
     def configure(self):
         self.options["spdlog"].use_std_fmt = True
@@ -244,6 +249,7 @@ class EvgetRecipe(ConanFile):
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
         tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
         tc.variables["EVGET_BUILD_EVGETLIBINPUT"] = self.options.build_evgetlibinput
+        tc.variables["EVGET_BUILD_EVGETWINDOWS"] = self.options.build_evgetwindows
 
         if self.options.clang_tidy_executable:
             tc.variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
