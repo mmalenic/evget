@@ -72,7 +72,10 @@ endif()
 
 if(EVGET_BUILD_BIN)
     # Check if at least one feature has been built
-    if(NOT EVGET_BUILD_EVGETX11 AND NOT EVGET_BUILD_EVGETLIBINPUT AND NOT EVGET_BUILD_EVGETWINDOWS)
+    if(NOT EVGET_BUILD_EVGETX11
+       AND NOT EVGET_BUILD_EVGETLIBINPUT
+       AND NOT EVGET_BUILD_EVGETWINDOWS
+    )
         message(FATAL_ERROR "evget: at least one feature should be built - evgetx11, evgetlibinput, evgetwindows")
     endif()
 
