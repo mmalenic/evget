@@ -1,0 +1,19 @@
+# Compilation using clang-cl and default flags.
+
+include(./default_flags)
+
+{% set version = os.getenv("COMPILER_VERSION") | default("19") %}
+
+[settings]
+os=Windows
+arch=x86_64
+compiler=clang
+compiler.version={{ version }}
+compiler.cppstd=23
+compiler.runtime=dynamic
+compiler.runtime_type={{ "Debug" if settings.build_type == "Debug" else "Release" }}
+build_type=Release
+
+[conf]
+tools.build:compiler_executables={'c': 'clang-cl', 'cpp': 'clang-cl'}
+tools.cmake.cmaketoolchain:generator=Ninja

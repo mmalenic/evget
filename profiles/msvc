@@ -1,0 +1,13 @@
+# Compilation using msvc and default flags.
+
+include(./default_flags)
+
+[settings]
+os=Windows
+arch=x86_64
+compiler=msvc
+compiler.version=194
+compiler.cppstd=23
+compiler.runtime=dynamic
+compiler.runtime_type={{ "Debug" if settings.build_type == "Debug" else "Release" }}
+build_type=Release
