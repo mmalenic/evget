@@ -227,6 +227,12 @@ toolbelt_add_dep(
     FIND_PACKAGE_ARGS
     REQUIRED
 )
+
+# See https://github.com/boostorg/uuid/issues/122
+if(WIN32)
+    target_link_libraries(${LIBRARY_NAME} PRIVATE bcrypt)
+endif()
+
 toolbelt_add_dep(
     ${LIBRARY_NAME}
     CLI11
