@@ -56,6 +56,13 @@ public:
     explicit Cli(evget::EventSource default_event_source);
 
     /**
+     * \brief Create a cli object and whether ensure_utf8 is used for `Parse()`.
+     * \param default_event_source the default event source if left unspecified by the user
+     * \param ensure_utf8_argv whether `Parse` should call `App::ensure_utf8(argv)`
+     */
+    Cli(evget::EventSource default_event_source, bool ensure_utf8_argv);
+
+    /**
      * \brief Get the output location.
      * \return output location
      */
@@ -131,6 +138,7 @@ private:
     static constexpr std::size_t kDefaultStoreAfter{100};
     static constexpr std::size_t kIndentBy{30};
 
+    bool ensure_utf8_argv_{true};
     std::vector<std::string> output_;
     std::size_t store_n_events_{kDefaultNEvents};
     std::size_t store_after_{kDefaultStoreAfter};

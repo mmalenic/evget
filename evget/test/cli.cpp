@@ -28,7 +28,7 @@ TEST(CliTest, GetStorageTypeExtensionCaseInsensitive) {
 }
 
 TEST(CliTest, ParseDefaults) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--output", "-"}};
 
     auto result = cli.Parse(argv.Argc(), argv.Argv());
@@ -45,7 +45,7 @@ TEST(CliTest, ParseDefaults) {
 }
 
 TEST(CliTest, ParseFilterDeviceSet) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--filter", "mouse,keyboard"}};
 
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
@@ -59,7 +59,7 @@ TEST(CliTest, ParseFilterDeviceSet) {
 }
 
 TEST(CliTest, ParseFilterAllNoFilter) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--filter", "all"}};
 
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
@@ -67,7 +67,7 @@ TEST(CliTest, ParseFilterAllNoFilter) {
 }
 
 TEST(CliTest, ParseScreenDimensions) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--screen-dimensions", "1920x1080"}};
 
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
@@ -80,7 +80,7 @@ TEST(CliTest, ParseScreenDimensions) {
 }
 
 TEST(CliTest, ParseMalformedScreenDimensions) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--screen-dimensions", "badformat"}};
 
     auto result = cli.Parse(argv.Argc(), argv.Argv());
@@ -89,7 +89,7 @@ TEST(CliTest, ParseMalformedScreenDimensions) {
 }
 
 TEST(CliTest, ParseEventSourceOverride) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--event-source", "libinput"}};
 
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
@@ -97,7 +97,7 @@ TEST(CliTest, ParseEventSourceOverride) {
 }
 
 TEST(CliTest, EventSourceMappingsIncludesWindows) {
-    evget::Cli cli{evget::EventSource::kX11};
+    evget::Cli cli{evget::EventSource::kX11, false};
     test::Args argv{{"evget", "--event-source", "windows"}};
 
     ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());

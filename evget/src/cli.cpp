@@ -32,6 +32,9 @@
 
 evget::Cli::Cli(evget::EventSource default_event_source) : event_source_{default_event_source} {}
 
+evget::Cli::Cli(evget::EventSource default_event_source, bool ensure_utf8_argv)
+    : ensure_utf8_argv_{ensure_utf8_argv}, event_source_{default_event_source} {}
+
 const std::vector<std::string>& evget::Cli::Output() const {
     return this->output_;
 }
@@ -40,14 +43,16 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
     spdlog::cfg::load_env_levels();
 
     CLI::App app{"Show and store events from input devices.", "evget"};
-    argv = app.ensure_utf8(argv);
+    if (ensure_utf8_argv_) {
+        argv = app.ensure_utf8(argv);
+    }
 
     auto should_exit = false;
     app.add_flag_callback(
         "-v,--version",
         [&should_exit] {
             should_exit = true;
-            std::cout << std::format("evlist {}\n\n{}\n{}\n", EVGET_VERSION, EVGET_LICENSE, EVGET_COPYRIGHT);
+            std::cout << std::format("evget {}\n\n{}\n{}\n", EVGET_VERSION, EVGET_LICENSE, EVGET_COPYRIGHT);
         },
         "Print version"
     );
