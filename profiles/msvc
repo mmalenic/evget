@@ -1,13 +1,15 @@
-# Compilation using msvc and default flags.
+# Windows MSVC profile.
 
-include(./default_flags)
+include(./base)
+
+{% set compiler = os.getenv("EVGET_COMPILER") or detect_api.detect_msvc_compiler() %}
+{% set version = os.getenv("EVGET_VERSION") or compiler[1].major %}
 
 [settings]
-os=Windows
-arch=x86_64
-compiler=msvc
-compiler.version=194
+compiler={{ compiler[0] }}
+compiler.version={{ version }}
 compiler.cppstd=23
 compiler.runtime=dynamic
-compiler.runtime_type={{ "Debug" if settings.build_type == "Debug" else "Release" }}
-build_type=Release
+
+[conf]
+tools.cmake.cmaketoolchain:generator=Ninja

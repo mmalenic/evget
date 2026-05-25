@@ -1,0 +1,9 @@
+# Shared base profile.
+
+{% set operating_system = os.getenv("EVGET_OS") or detect_api.detect_os() %}
+{% set architecture = os.getenv("EVGET_ARCH") or detect_api.detect_arch() %}
+
+[settings]
+os={{ operating_system }}
+arch={{ architecture }}
+build_type=Debug

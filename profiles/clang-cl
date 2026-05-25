@@ -1,19 +1,17 @@
-# Compilation using clang-cl and default flags.
+# Windows clang-cl profile.
 
-include(./default_flags)
+include(./base)
 
-{% set version = os.getenv("COMPILER_VERSION") | default("19") %}
+{% set compiler = os.getenv("EVGET_COMPILER") or detect_api.detect_clang_compiler("clang-cl") %}
+{% set version = os.getenv("EVGET_VERSION") or compiler[1].major %}
 
 [settings]
-os=Windows
-arch=x86_64
-compiler=clang
+compiler={{ compiler[0] }}
 compiler.version={{ version }}
 compiler.cppstd=23
 compiler.runtime=dynamic
-compiler.runtime_type={{ "Debug" if settings.build_type == "Debug" else "Release" }}
-build_type=Release
+compiler.runtime_version=v143
 
 [conf]
-tools.build:compiler_executables={'c': 'clang-cl', 'cpp': 'clang-cl'}
+tools.build:compiler_executables={'c': '{{ compiler[2] }}', 'cpp': '{{ compiler[2] }}'}
 tools.cmake.cmaketoolchain:generator=Ninja

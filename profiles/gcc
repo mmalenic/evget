@@ -1,12 +1,15 @@
-# Compilation using gcc and default flags.
+# Linux GCC profile.
 
-include(./default_flags)
+include(./base)
 
-{% set version = os.getenv("COMPILER_VERSION") %}
+{% set compiler = os.getenv("EVGET_COMPILER") or detect_api.detect_gcc_compiler() %}
+{% set version = os.getenv("EVGET_VERSION") or compiler[1].major %}
 
 [settings]
-compiler=gcc
+compiler={{ compiler[0] }}
 compiler.version={{ version }}
+compiler.cppstd=23
+compiler.libcxx=libstdc++11
 
 [conf]
-tools.build:compiler_executables={'c': 'gcc-{{ version }}', 'cpp': 'g++-{{ version }}'}
+tools.build:compiler_executables={'c': 'gcc', 'cpp': 'g++'}
