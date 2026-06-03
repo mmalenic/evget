@@ -7,6 +7,7 @@ import '../check.just'
 profile_args := '-pr ./profiles/clang'
 backend_args := '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True'
 check_args := '-o evget/*:run_clang_tidy=True'
+build_dir := 'build/clang-' + lowercase(build_type)
 
 # Fetch the llvm repo for building sanitized binaries.
 fetch_llvm $CLANG_VERSION='20':
@@ -34,7 +35,7 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *opts='': (
         launcher=$(echo {{ opts }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g" || true)
 
         # Prevent libunwind from being sanitizer-instrumented.
-        ignorelist="$(realpath ..)/build/Debug/ignorelist.txt"
+        ignorelist="$(realpath ..)/{{ build_dir }}/ignorelist.txt"
         mkdir -p "$(dirname "$ignorelist")"
         echo 'src:*/libunwind/*' > "$ignorelist"
 
@@ -64,21 +65,21 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
     export CONAN_HOME="$HOME/.conan2-{{ dir }}"
     mkdir -p "$CONAN_HOME"
 
-    # Clear build/Debug to avoid issues when running asan/msan separately.
-    rm -rf build/Debug
+    # Clear the build dir to avoid issues when running asan/msan separately.
+    rm -rf {{ build_dir }}
     dir=$(realpath llvm-project/{{ dir }})
-    mkdir -p build/Debug
+    mkdir -p {{ build_dir }}
     # Keep this in sync with the ignorelist written in `build_llvm`.
     {
         echo 'src:*/libunwind/*'
         echo "src:$dir/*"
         echo "src:$CONAN_HOME/*"
-    } > build/Debug/ignorelist.txt
+    } > {{ build_dir }}/ignorelist.txt
 
-    LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build_test \
+    LLVM_DIR=$dir IGNORE_LIST=$(realpath {{ build_dir }})/ignorelist.txt just build_test \
         -pr {{ profile }} {{ opts }}
 
-    cd build/Debug
+    cd {{ build_dir }}
     UBSAN_OPTIONS=print_stacktrace=1 ASAN_OPTIONS=check_initialization_order=1:strict_init_order=1 \
         {{ symbolizer_path }}=$(command -v llvm-symbolizer-{{ COMPILER_VERSION }}) \
         ./evgettest --gtest_filter={{ filter }}
@@ -106,5 +107,5 @@ test_asan filter='*' $COMPILER_VERSION='20' *opts='': \
     '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True ' + opts)
 
 # Remove a built sanitizer directory (e.g. `just linux::clang::clean_sanitizer msan`).
-clean_sanitizer name: clean_cache
-    rm -rf llvm-project/build-{{ name }}
+clean_sanitizer name:
+    rm -rf {{ build_dir }} llvm-project/build-{{ name }}

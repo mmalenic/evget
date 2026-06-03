@@ -8,3 +8,4 @@ import '../check.just'
 profile_args := '-pr:a profiles/clang-cl -c tools.cmake.cmaketoolchain:generator=Ninja'
 backend_args := '-o evget/*:build_evgetwindows=True'
 check_args := '-o evget/*:run_clang_tidy=True'
+build_dir := 'build/clang-' + lowercase(build_type)
