@@ -7,3 +7,7 @@
 os={{ operating_system }}
 arch={{ architecture }}
 build_type=Debug
+
+[conf]
+# Give each compiler its own build tree so switching toolchains never collides.
+tools.cmake.cmake_layout:build_folder_vars=['settings.compiler', 'settings.build_type']
