@@ -20,7 +20,7 @@ PLATFORMS = [
     ("msvc", "armv8", "windows"),
     ("clang-cl", "x86_64", "windows"),
     ("clang-cl", "armv8", "windows"),
-    ("mingw", "x86_64", "windows"),
+    ("gcc", "x86_64", "windows"),
 ]
 
 
@@ -34,11 +34,18 @@ def main() -> None:
         locks.append(lock)
         subprocess.run(
             [
-                "conan", "lock", "create", ".",
-                "--lockfile-out", lock,
-                "-pr:a", f"profiles/{profile}",
-                "-s:a", f"arch={arch}",
-                "-o", f"&:build_evget{backend}=True",
+                "conan",
+                "lock",
+                "create",
+                ".",
+                "--lockfile-out",
+                lock,
+                "-pr:a",
+                f"profiles/{profile}",
+                "-s:a",
+                f"arch={arch}",
+                "-o",
+                f"&:build_evget{backend}=True",
             ],
             check=True,
         )
