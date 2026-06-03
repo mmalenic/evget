@@ -1,4 +1,12 @@
-# Test evlist using address and memory sanitizers. This needs to compile libcxx and libcxxabi with sanitiziers enabled.
+# clang recipes for evget, including the libc++ sanitizer flow (needs clang and a sanitizer-instrumented libc++).
+set working-directory := '../..'
+
+import '../common.just'
+import '../check.just'
+
+profile_args := '-pr ./profiles/clang'
+backend_args := '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True'
+check_args := '-o evget/*:run_clang_tidy=True'
 
 # Fetch the llvm repo for building sanitized binaries.
 fetch_llvm $CLANG_VERSION='20':
@@ -13,7 +21,7 @@ fetch_llvm $CLANG_VERSION='20':
     fi
 
 # Build llvm with options.
-build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_options='': (fetch_llvm COMPILER_VERSION)
+build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *opts='': (fetch_llvm COMPILER_VERSION)
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -22,8 +30,8 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
     if [ -d "{{ dir }}" ]; then
         echo "llvm at {{ dir }} already built - skipping"
     else
-        # Extract the compiler launcher from a string such as '-o "&:compiler_launcher=..."'
-        launcher=$(echo {{ build_options }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g" || true)
+        # Extract the compiler launcher from a string such as '-o evget/*:compiler_launcher=...'
+        launcher=$(echo {{ opts }} | grep -Po 'compiler_launcher=\K(.*)(?=")?' | sed -e "s/\"\|'//g" || true)
 
         # Prevent libunwind from being sanitizer-instrumented.
         ignorelist="$(realpath ..)/build/Debug/ignorelist.txt"
@@ -46,7 +54,7 @@ build_llvm dir runtimes use_sanitizer targets $COMPILER_VERSION='20' *build_opti
     fi
 
 # Test using an llvm sanitizer build directory.
-_test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPILER_VERSION='20' *build_options='':
+_test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPILER_VERSION='20' *opts='':
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -67,53 +75,36 @@ _test_llvm dir symbolizer_path profile='./profiles/llvm_libc' filter='*' $COMPIL
         echo "src:$CONAN_HOME/*"
     } > build/Debug/ignorelist.txt
 
-    LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build Debug {{ COMPILER_VERSION }} \
-        -pr {{ profile }} '-o "&:build_testing=True" {{ build_options }}'
+    LLVM_DIR=$dir IGNORE_LIST=$(realpath build/Debug)/ignorelist.txt just build_test \
+        -pr {{ profile }} {{ opts }}
 
     cd build/Debug
     UBSAN_OPTIONS=print_stacktrace=1 ASAN_OPTIONS=check_initialization_order=1:strict_init_order=1 \
         {{ symbolizer_path }}=$(command -v llvm-symbolizer-{{ COMPILER_VERSION }}) \
         ./evgettest --gtest_filter={{ filter }}
 
-# Run tests with valgrind.
-test_valgrind filter='*' $COMPILER_VERSION='' *build_options='': \
-    (build 'Debug' COMPILER_VERSION '-o "&:build_testing=True" ' + build_options)
-    cd build/Debug && \
-        valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all \
-        --suppressions=../../profiles/valgrind.supp --error-exitcode=1 ./evgettest --gtest_filter={{ filter }}
-
-# Run tests with valgrind for both Wayland and X11 evget components.
-test_valgrind_linux filter='*' $COMPILER_VERSION='' *build_options='': \
-    (test_valgrind filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
-
 # Build llvm cxx and cxxabi with the memory sanitizer.
-build_msan $COMPILER_VERSION='20' *build_options='': \
+build_msan $COMPILER_VERSION='20' *opts='': \
     (build_llvm "build-msan" "libcxx;libcxxabi;libunwind" "MemoryWithOrigins" "cxx cxxabi" \
-    COMPILER_VERSION build_options)
+    COMPILER_VERSION opts)
 
-# Run tests with the memory sanitizer.
-test_msan filter='*' $COMPILER_VERSION='20' *build_options='': \
-    (build_msan COMPILER_VERSION build_options) \
-    (_test_llvm "build-msan" "MSAN_SYMBOLIZER_PATH" "./profiles/llvm_msan" filter COMPILER_VERSION build_options)
-
-# Run tests with the memory sanitizer for both Wayland and X11 evget components.
-test_msan_linux filter='*' $COMPILER_VERSION='20' *build_options='': \
-    (test_msan filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
+# Run tests with the memory sanitizer against the X11 and libinput backends.
+test_msan filter='*' $COMPILER_VERSION='20' *opts='': \
+    (build_msan COMPILER_VERSION opts) \
+    (_test_llvm "build-msan" "MSAN_SYMBOLIZER_PATH" "./profiles/llvm_msan" filter COMPILER_VERSION \
+    '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True ' + opts)
 
 # Build llvm cxx and cxxabi with the address sanitizer.
-build_asan $COMPILER_VERSION='20' *build_options='': \
+build_asan $COMPILER_VERSION='20' *opts='': \
     (build_llvm "build-asan" "libcxx;libcxxabi;libunwind" "Address;Undefined" "cxx cxxabi" \
-    COMPILER_VERSION build_options)
+    COMPILER_VERSION opts)
 
-# Run tests with the address sanitizer.
-test_asan filter='*' $COMPILER_VERSION='20' *build_options='': \
-    (build_asan COMPILER_VERSION build_options) \
-    (_test_llvm "build-asan" "ASAN_SYMBOLIZER_PATH" "./profiles/llvm_asan" filter COMPILER_VERSION build_options)
+# Run tests with the address sanitizer against the X11 and libinput backends.
+test_asan filter='*' $COMPILER_VERSION='20' *opts='': \
+    (build_asan COMPILER_VERSION opts) \
+    (_test_llvm "build-asan" "ASAN_SYMBOLIZER_PATH" "./profiles/llvm_asan" filter COMPILER_VERSION \
+    '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True ' + opts)
 
-# Run tests with the address sanitizer for both Wayland and X11 evget components.
-test_asan_linux filter='*' $COMPILER_VERSION='20' *build_options='': \
-    (test_asan filter COMPILER_VERSION '-o "&:build_evgetx11=True" -o "&:build_evgetlibinput=True" ' + build_options)
-
-# Remove a built sanitizer directory (e.g. `just clean_sanitizer msan`).
+# Remove a built sanitizer directory (e.g. `just linux::clang::clean_sanitizer msan`).
 clean_sanitizer name: clean_cache
     rm -rf llvm-project/build-{{ name }}

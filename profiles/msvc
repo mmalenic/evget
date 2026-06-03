@@ -10,6 +10,3 @@ compiler={{ compiler[0] }}
 compiler.version={{ version }}
 compiler.cppstd=23
 compiler.runtime=dynamic
-
-[conf]
-tools.cmake.cmaketoolchain:generator=Ninja

@@ -14,4 +14,3 @@ compiler.runtime_version=v143
 
 [conf]
 tools.build:compiler_executables={'c': '{{ compiler[2] }}', 'cpp': '{{ compiler[2] }}'}
-tools.cmake.cmaketoolchain:generator=Ninja
