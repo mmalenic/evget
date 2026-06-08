@@ -233,6 +233,7 @@ class GccAsan(Variant):
     """
 
     name = "asan"
+    # MinGW doesn't have asan, so this is linux only.
     oses = frozenset({"linux"})
     compilers = frozenset({"gcc"})
     env = SANITIZER_ENV
