@@ -227,6 +227,22 @@ class ClangMsan(Variant):
         path.write_text("".join(f"src:{p}\n" for p in patterns))
         return path
 
+class GccAsan(Variant):
+    """
+    GCC asan variant.
+    """
+
+    name = "asan"
+    oses = frozenset({"linux"})
+    compilers = frozenset({"gcc"})
+    env = SANITIZER_ENV
+    isolated = True
+
+    FLAGS = ["-fsanitize=address,undefined,leak", "-fno-sanitize-recover=all", "-fno-omit-frame-pointer"]
+
+    def build(self) -> Path:
+        return self.ctx.conan_build(extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"])
+
 class MsvcAsan(Variant):
     """
     MSVC asan build.
@@ -311,7 +327,7 @@ def main() -> None:
     parser.add_argument("--opts", default="")
     args = parser.parse_args()
 
-    variants = [ClangAsan, ClangMsan, MsvcAsan, MsvcRuntimeChecks, PageHeap, AppVerifier]
+    variants = [ClangAsan, ClangMsan, GccAsan, MsvcAsan, MsvcRuntimeChecks, PageHeap, AppVerifier]
     classes = [
         cls
         for cls in variants
