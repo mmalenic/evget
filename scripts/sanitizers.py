@@ -87,6 +87,8 @@ class Variant:
 
     name = ""
     oses: frozenset[str] = frozenset()
+    # Empty means the variant runs on any compiler for the OS.
+    compilers: frozenset[str] = frozenset()
     env: dict[str, str] = {}
     # By default, run on both Debug and Release to catch as many issues as possible.
     build_types: tuple[str, ...] = ("Debug", "RelWithDebInfo")
@@ -125,6 +127,7 @@ class ClangAsan(Variant):
 
     name = "asan"
     oses = frozenset({"linux"})
+    compilers = frozenset({"clang"})
     env = SANITIZER_ENV
     isolated = True
 
@@ -141,6 +144,7 @@ class ClangMsan(Variant):
 
     name = "msan"
     oses = frozenset({"linux"})
+    compilers = frozenset({"clang"})
     env = SANITIZER_ENV
     isolated = True
 
@@ -230,6 +234,7 @@ class MsvcAsan(Variant):
 
     name = "asan"
     oses = frozenset({"windows"})
+    compilers = frozenset({"msvc", "clang"})
     isolated = True
 
     def build(self) -> Path:
@@ -243,6 +248,7 @@ class MsvcRuntimeChecks(Variant):
 
     name = "runtime-checks"
     oses = frozenset({"windows"})
+    compilers = frozenset({"msvc"})
     isolated = True
     # Only run on debug as it's a compiler requirement.
     build_types = ("Debug",)
@@ -306,10 +312,14 @@ def main() -> None:
     args = parser.parse_args()
 
     variants = [ClangAsan, ClangMsan, MsvcAsan, MsvcRuntimeChecks, PageHeap, AppVerifier]
-    here = [cls for cls in variants if OS in cls.oses]
+    classes = [
+        cls
+        for cls in variants
+        if OS in cls.oses and (len(cls.compilers) == 0 or (args.compiler in cls.compilers))
+    ]
 
     if args.action == "list":
-        print(" ".join(cls.name for cls in here))
+        print(" ".join(cls.name for cls in classes))
         return
 
     def context(cls: type[Variant], build_type: str) -> Ctx:
@@ -324,21 +334,21 @@ def main() -> None:
         )
 
     def find(name: str) -> type[Variant]:
-        cls = next((cls for cls in here if cls.name == name), None)
+        cls = next((cls for cls in classes if cls.name == name), None)
         if cls is None:
-            parser.error(f"no `{name}` sanitizer on {OS}")
+            parser.error(f"no `{name}` sanitizer for {args.compiler} on {OS}")
         return cls
 
     if args.action == "clean":
         if not args.name:
-            for directory in {context(cls, build).directory for cls in here for build in cls.build_types}:
+            for directory in {context(cls, build).directory for cls in classes for build in cls.build_types}:
                 shutil.rmtree(directory, ignore_errors=True)
             return
         shutil.rmtree(context(find(args.name), args.build_type).directory, ignore_errors=True)
         return
 
     if args.action == "run" and not args.name:
-        matrix = [(cls, build) for cls in here for build in cls.build_types]
+        matrix = [(cls, build) for cls in classes for build in cls.build_types]
         for cls, build in matrix:
             rc = cls(context(cls, build)).do_check()
             if rc != 0:
