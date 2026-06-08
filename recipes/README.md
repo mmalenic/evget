@@ -23,9 +23,10 @@ Each compiler will also use it's own build directory to not conflict with other 
 recipes supported by all modules include `build`, `run` and `test`. `check` runs clang-tidy for
 clang-based compilers or MSVC `/analyze`.
 
-Compiler-specific address and memory sanitizers are also available. Note that clang requires re-building LLVM
-for memory sanitizer (see [sanitizers.py](../scripts/sanitizers.py) for details). Windows hosts can use
-runtime checks like pageheap and appverifier.
+Compiler-specific address and memory sanitizers are also available. The clang memory sanitizer re-builds LLVM,
+and the Windows address sanitizer re-builds all dependencies with instrumentation, both into an dedicated
+Conan cache (see [sanitizers.py](../scripts/sanitizers.py) for details). Windows hosts can also use runtime
+checks like pageheap and appverifier.
 
 ## Conventions
 

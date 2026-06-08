@@ -254,8 +254,23 @@ class MsvcAsan(Variant):
     compilers = frozenset({"msvc", "clang"})
     isolated = True
 
+    FLAGS = ["/fsanitize=address"]
+
+    def __init__(self, ctx: Ctx):
+        super().__init__(ctx)
+
+        # This needs to instrument deps as well to support all checks.
+        self.home = self.ctx.directory / ".conan2"
+        self.home.mkdir(parents=True, exist_ok=True)
+
     def build(self) -> Path:
-        return self.ctx.conan_build(extra=["-o", "evget/*:enable_asan=True"])
+        return self.ctx.conan_build(
+            env={**os.environ, "CONAN_HOME": str(self.home)},
+            extra=[
+                "-c", f"tools.build:cxxflags={self.FLAGS!r}",
+                "-c", f"tools.build:cflags={self.FLAGS!r}",
+            ],
+        )
 
 
 class MsvcRuntimeChecks(Variant):
