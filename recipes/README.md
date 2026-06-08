@@ -20,4 +20,16 @@ just --list linux::clang
 ```
 
 Each compiler will also use it's own build directory to not conflict with other builds. Common
-recipes supported by all modules include `build`, `check`, `run` and `test.
+recipes supported by all modules include `build`, `run` and `test`. `check` runs clang-tidy for
+clang-based compilers or MSVC `/analyze`.
+
+Compiler-specific address and memory sanitizers are also available. Note that clang requires re-building LLVM
+for memory sanitizer (see [sanitizers.py](../scripts/sanitizers.py) for details). Windows hosts can use
+runtime checks like pageheap and appverifier.
+
+## Conventions
+
+- Pass extra Conan flags through `*opts`, e.g. `just windows::msvc::build -o evget/*:build_bin=False`.
+- Override the build type with `just build_type=Release <recipe>`.
+- Run a subset of tests with a filter `just test 'MouseClick*'`.
+- CLI arguments need to be quoted through `run`, e.g. `just run '--filter mouse,keyboard'`.
