@@ -1,8 +1,0 @@
-# Compilation with clang and the llvm AddressSanitizer.
-
-include(./llvm_libc)
-
-{% set flags = ['-fsanitize=address,undefined,leak,integer', '-fno-sanitize-recover=all', '-fno-omit-frame-pointer'] %}
-
-[conf]
-tools.build:cxxflags+={{ flags }}
