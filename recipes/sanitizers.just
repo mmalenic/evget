@@ -12,7 +12,7 @@ _sanitizer action name filter='*' *opts='':
 [group('sanitizer')]
 test_sanitizer name filter='*' *opts='': (_sanitizer 'run' name filter opts)
 
-# Run every sanitizer for this OS.
+# Run every sanitizer this compiler supports.
 [group('sanitizer')]
 test_sanitizers filter='*' *opts='': (_sanitizer 'run' '' filter opts)
 
@@ -26,7 +26,7 @@ clean_sanitizer name:
     python scripts/sanitizers.py clean {{ name }} \
         --compiler {{ compiler }} --build-type {{ capitalize(build_type) }}
 
-# Remove every sanitizer build for this OS.
+# Remove every sanitizer build this compiler supports.
 [group('sanitizer')]
 clean_sanitizers:
     python scripts/sanitizers.py clean \
