@@ -40,6 +40,10 @@ class EvgetRecipe(ConanFile):
         "clang_tidy_executable": [None, "ANY"],
         # Fix clang tidy errors by passing "--fix-errors" to clang-tidy.
         "clang_tidy_fix_errors": [True, False],
+        # Whether to run MSVC /analyze.
+        "run_msvc_analyze": [True, False],
+        # Whether to enable MSVC native runtime checks (/GS, /sdl, /RTC1, CRT debug heap).
+        "msvc_runtime_checks": [True, False],
         # Specifies a compiler launcher, such as sccache, which sets CMAKE_<LANG>_COMPILER_LAUNCHER.
         "compiler_launcher": [None, "ANY"],
         # Add a cmake install command after for the binary target if `build_binary` is also true:
@@ -69,6 +73,8 @@ class EvgetRecipe(ConanFile):
         "run_clang_tidy": False,
         "clang_tidy_executable": None,
         "clang_tidy_fix_errors": False,
+        "run_msvc_analyze": False,
+        "msvc_runtime_checks": False,
         "compiler_launcher": None,
         "install_bin": True,
         "install_lib": True,
@@ -157,6 +163,9 @@ class EvgetRecipe(ConanFile):
         for feature in openssl_features:
             openssl_opts.__setattr__(f"no_{feature}", True)
 
+        if self.settings.os == "Windows":
+            openssl_opts.shared = True
+
         # Every compiled boost library.
         boost_components = frozenset(
             {
@@ -218,6 +227,10 @@ class EvgetRecipe(ConanFile):
             self.requires("wayland/[^1]")
             self.requires("libdrm/[^2]")
 
+    def build_requirements(self):
+        self.tool_requires("cmake/[>=3.30 <4]")
+        self.tool_requires("ninja/[^1.11]")
+
     def system_requirements(self):
         # The conan libinput package has a broken runtime paths for device quirks, so install a
         # system package here instead if requested.
@@ -248,6 +261,8 @@ class EvgetRecipe(ConanFile):
         tc.variables["BUILD_TESTING"] = self.options.build_testing
         tc.variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
         tc.variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
+        tc.variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
+        tc.variables["EVGET_MSVC_RUNTIME_CHECKS"] = self.options.msvc_runtime_checks
         tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
         tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
