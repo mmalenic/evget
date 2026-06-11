@@ -37,10 +37,6 @@ if(EVGET_RUN_CLANG_TIDY)
     endif()
 endif()
 
-if(EVGET_ENABLE_ASAN AND EVGET_MSVC_RUNTIME_CHECKS)
-    message(FATAL_ERROR "evget: enable_asan and msvc_runtime_checks are mutually exclusive")
-endif()
-
 if(BUILD_TESTING)
     enable_testing()
     set(TEST_EXECUTABLE_NAME evgettest)

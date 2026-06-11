@@ -12,16 +12,6 @@ function(evget_apply_warnings target)
         target_compile_options(${target} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/analyze;/WX>)
     endif()
 
-    # address sanitizer config for windows and linux.
-    if(EVGET_ENABLE_ASAN)
-        if(MSVC)
-            target_compile_options(${target} PRIVATE /fsanitize=address)
-        else()
-            target_compile_options(${target} PRIVATE -fsanitize=address)
-            target_link_options(${target} PRIVATE -fsanitize=address)
-        endif()
-    endif()
-
     # The MSVC runtime checks.
     if(EVGET_MSVC_RUNTIME_CHECKS)
         target_compile_options(
