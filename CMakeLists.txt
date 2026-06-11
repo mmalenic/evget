@@ -19,10 +19,11 @@ if(NOT DEFINED toolbelt_SOURCE_DIR)
     )
     FetchContent_MakeAvailable(toolbelt)
 endif()
-
 list(APPEND CMAKE_MODULE_PATH "${toolbelt_SOURCE_DIR}/src")
+
 include(toolbelt)
-include(cmake/windows_defines.cmake)
+include(cmake/windows.cmake)
+include(cmake/warnings.cmake)
 
 if(EVGET_RUN_CLANG_TIDY)
     if(DEFINED EVGET_CLANG_TIDY_EXECUTABLE)
@@ -34,6 +35,10 @@ if(EVGET_RUN_CLANG_TIDY)
     if(EVGET_CLANG_TIDY_FIX_ERRORS)
         list(APPEND CMAKE_CXX_CLANG_TIDY "--fix-errors")
     endif()
+endif()
+
+if(EVGET_ENABLE_ASAN AND EVGET_MSVC_RUNTIME_CHECKS)
+    message(FATAL_ERROR "evget: enable_asan and msvc_runtime_checks are mutually exclusive")
 endif()
 
 if(BUILD_TESTING)
@@ -68,6 +73,8 @@ if(BUILD_TESTING)
     endif()
 
     toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
+
+    evget_copy_runtime_dlls(${TEST_EXECUTABLE_NAME})
 endif()
 
 if(EVGET_BUILD_BIN)
@@ -96,13 +103,15 @@ if(EVGET_BUILD_BIN)
         target_compile_definitions(${PROJECT_NAME} PRIVATE FEATURE_EVGETWINDOWS=1)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${EVGETWINDOWS_LIBRARY_NAME})
     endif()
+
+    evget_copy_runtime_dlls(${PROJECT_NAME})
 endif()
 
 if(EVGET_INSTALL_BIN AND EVGET_BUILD_BIN)
     install(TARGETS ${PROJECT_NAME})
 endif()
 
-if(CMAKE_EXPORT_COMPILE_COMMANDS)
+if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_GENERATOR MATCHES "Ninja|Makefiles")
     add_custom_target(
         copy_compile_commands ALL
         ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
@@ -110,15 +119,13 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
     )
 endif()
 
-if(WIN32)
-    evget_apply_windows_defines(${EVGET_LIBRARY_NAME})
-    if(EVGET_BUILD_BIN)
-        evget_apply_windows_defines(${PROJECT_NAME})
+foreach(target ${EVGET_LIBRARY_NAME} ${PROJECT_NAME} ${TEST_EXECUTABLE_NAME} ${EVGETX11_LIBRARY_NAME}
+               ${EVGETLIBINPUT_LIBRARY_NAME} ${EVGETWINDOWS_LIBRARY_NAME}
+)
+    if(TARGET ${target})
+        evget_apply_warnings(${target})
+        if(WIN32)
+            evget_apply_windows_defines(${target})
+        endif()
     endif()
-    if(BUILD_TESTING)
-        evget_apply_windows_defines(${TEST_EXECUTABLE_NAME})
-    endif()
-    if(EVGET_BUILD_EVGETWINDOWS)
-        evget_apply_windows_defines(${EVGETWINDOWS_LIBRARY_NAME})
-    endif()
-endif()
+endforeach()
