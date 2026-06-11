@@ -7,6 +7,7 @@
 #define EVGET_DATABASE_CONNECTION_H
 
 #include <cstdint>
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -33,7 +34,7 @@ public:
      * \brief Connect to the database.
      * \return a result indicating whether the connection was successful
      */
-    virtual Result<void> Connect(std::string database, ConnectOptions options) = 0;
+    virtual Result<void> Connect(std::filesystem::path database, ConnectOptions options) = 0;
 
     /**
      * \brief Start a transaction. Only one transaction is allowed per connection; however, this can be called again

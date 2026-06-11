@@ -9,6 +9,7 @@
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Transaction.h>
 
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -36,7 +37,7 @@ public:
      * \param options connection options
      * \return result indicating success or failure
      */
-    Result<void> Connect(std::string database, ConnectOptions options) override;
+    Result<void> Connect(std::filesystem::path database, ConnectOptions options) override;
 
     /**
      * \brief Start a new transaction.

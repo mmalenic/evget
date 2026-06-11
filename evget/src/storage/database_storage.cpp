@@ -3,6 +3,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,7 +26,7 @@
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
 
-evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::string database)
+evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::filesystem::path database)
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
 evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {

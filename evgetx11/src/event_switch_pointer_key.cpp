@@ -60,8 +60,10 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
             if (strcmp(valuator_name.get(), AXIS_LABEL_PROP_ABS_X) == 0 ||
                 strcmp(valuator_name.get(), AXIS_LABEL_PROP_REL_X) == 0) {
                 valuator_x_[device_id] = valuator_info->number;
-            } else if (strcmp(valuator_name.get(), AXIS_LABEL_PROP_ABS_Y) == 0 ||
-                       strcmp(valuator_name.get(), AXIS_LABEL_PROP_REL_Y) == 0) {
+            } else if (
+                strcmp(valuator_name.get(), AXIS_LABEL_PROP_ABS_Y) == 0 ||
+                strcmp(valuator_name.get(), AXIS_LABEL_PROP_REL_Y) == 0
+            ) {
                 valuator_y_[device_id] = valuator_info->number;
             }
         }

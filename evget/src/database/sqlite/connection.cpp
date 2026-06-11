@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 
 #include <exception>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -15,23 +16,24 @@
 #include "evget/database/sqlite/query.h"
 #include "evget/error.h"
 
-evget::Result<void> evget::SQLiteConnection::Connect(std::string database, ConnectOptions options) {
+evget::Result<void> evget::SQLiteConnection::Connect(std::filesystem::path database, ConnectOptions options) {
     try {
+        auto database_string = database.string();
         switch (options) {
             case ConnectOptions::kReadOnly:
-                this->database_ = {database, SQLite::OPEN_READONLY};
+                this->database_ = {database_string, SQLite::OPEN_READONLY};
                 break;
             case ConnectOptions::kReadWrite:
-                this->database_ = {database, SQLite::OPEN_READWRITE};
+                this->database_ = {database_string, SQLite::OPEN_READWRITE};
                 break;
             case ConnectOptions::kReadWriteCreate:
                 // NOLINTBEGIN(hicpp-signed-bitwise)
-                this->database_ = {database, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+                this->database_ = {database_string, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
                 // NOLINTEND(hicpp-signed-bitwise)
                 break;
         }
 
-        spdlog::info("connected to SQLite database: {}", database);
+        spdlog::info("connected to SQLite database: {}", database_string);
         return {};
     } catch (std::exception& e) {
         const auto* what = e.what();

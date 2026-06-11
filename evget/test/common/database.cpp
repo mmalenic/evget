@@ -16,7 +16,7 @@ test::DatabaseTest::DatabaseTest()
     : directory_{std::filesystem::temp_directory_path()}, database_file_{directory_ / TestDatabaseName()} {
     evget::SQLiteConnection connection{};
 
-    auto connect = connection.Connect(database_file_.string(), evget::ConnectOptions::kReadWriteCreate);
+    auto connect = connection.Connect(database_file_, evget::ConnectOptions::kReadWriteCreate);
 
     auto create_table = std::format(
         "create table if not exists {} ("
@@ -51,5 +51,5 @@ std::string test::DatabaseTest::TestDatabaseName() {
 }
 
 evget::DatabaseStorage test::DatabaseTest::MakeStorage() const {
-    return {std::make_unique<evget::SQLiteConnection>(), DatabaseFile().string()};
+    return {std::make_unique<evget::SQLiteConnection>(), DatabaseFile()};
 }

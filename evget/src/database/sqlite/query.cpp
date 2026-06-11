@@ -141,7 +141,7 @@ evget::Result<std::string> evget::SQLiteQuery::AsString(int pos) {
     }
 
     try {
-        return this->statement_->getColumn(pos);
+        return this->statement_->getColumn(pos).getString();
     } catch (std::exception& e) {
         return AsError(e);
     }

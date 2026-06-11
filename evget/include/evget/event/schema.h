@@ -136,7 +136,7 @@ using IntervalType = std::chrono::microseconds;
 using TimestampType = std::chrono::time_point<std::chrono::system_clock>;
 
 /// \brief Get the current timestamp at this moment using system time.
-constexpr TimestampType Now() {
+inline TimestampType Now() {
     return std::chrono::system_clock::now();
 }
 

@@ -157,9 +157,11 @@ void EventTransformer<Switches...>::RefreshDevices() {
                 device_type = evget::DeviceType::kTouchscreen;
                 // See
                 // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L3805-3846
-            } else if (strcmp(type.get(), XI_TABLET) == 0 || strcmp(type.get(), "PAD") == 0 ||
-                       strcmp(type.get(), "STYLUS") == 0 || strcmp(type.get(), "ERASER") == 0 ||
-                       strcmp(type.get(), "CURSOR") == 0) {
+            } else if (
+                strcmp(type.get(), XI_TABLET) == 0 || strcmp(type.get(), "PAD") == 0 ||
+                strcmp(type.get(), "STYLUS") == 0 || strcmp(type.get(), "ERASER") == 0 ||
+                strcmp(type.get(), "CURSOR") == 0
+            ) {
                 device_type = evget::DeviceType::kTablet;
             }
 

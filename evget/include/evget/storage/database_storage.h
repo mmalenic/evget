@@ -6,6 +6,7 @@
 #ifndef EVGET_STORAGE_DATABASE_STORAGE_H
 #define EVGET_STORAGE_DATABASE_STORAGE_H
 
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,7 +31,7 @@ public:
      * \param connection unique pointer to the database connection
      * \param database path to the database file
      */
-    DatabaseStorage(std::unique_ptr<Connection> connection, std::string database);
+    DatabaseStorage(std::unique_ptr<Connection> connection, std::filesystem::path database);
 
     Result<void> StoreEvent(Data events) override;
 
@@ -42,7 +43,7 @@ public:
 
 private:
     std::unique_ptr<Connection> connection_;
-    std::string database_;
+    std::filesystem::path database_;
 
     Result<void> InsertEvents(
         const Entry& entry,
