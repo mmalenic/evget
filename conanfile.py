@@ -42,8 +42,6 @@ class EvgetRecipe(ConanFile):
         "clang_tidy_fix_errors": [True, False],
         # Whether to run MSVC /analyze.
         "run_msvc_analyze": [True, False],
-        # Whether to enable MSVC native runtime checks (/GS, /sdl, /RTC1, CRT debug heap).
-        "msvc_runtime_checks": [True, False],
         # Specifies a compiler launcher, such as sccache, which sets CMAKE_<LANG>_COMPILER_LAUNCHER.
         "compiler_launcher": [None, "ANY"],
         # Add a cmake install command after for the binary target if `build_binary` is also true:
@@ -74,7 +72,6 @@ class EvgetRecipe(ConanFile):
         "clang_tidy_executable": None,
         "clang_tidy_fix_errors": False,
         "run_msvc_analyze": False,
-        "msvc_runtime_checks": False,
         "compiler_launcher": None,
         "install_bin": True,
         "install_lib": True,
@@ -262,7 +259,6 @@ class EvgetRecipe(ConanFile):
         tc.variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
         tc.variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
         tc.variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
-        tc.variables["EVGET_MSVC_RUNTIME_CHECKS"] = self.options.msvc_runtime_checks
         tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
         tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11

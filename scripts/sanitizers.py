@@ -24,6 +24,7 @@ SANITIZER_ENV = {
     "ASAN_OPTIONS": "check_initialization_order=1:strict_init_order=1",
 }
 
+
 def run(cmd, *, check=True, cwd=REPO, env=None, capture=False):
     """
     Run a subprocess from the repo root.
@@ -36,6 +37,7 @@ def run(cmd, *, check=True, cwd=REPO, env=None, capture=False):
         capture_output=capture,
         text=capture,
     )
+
 
 @dataclass
 class Ctx:
@@ -53,7 +55,11 @@ class Ctx:
 
     def __post_init__(self) -> None:
         name = f"{self.compiler}-{self.build_type.lower()}"
-        self.directory = (REPO / "build" / (f"{name}-{self.const}" if self.const is not None else name)).resolve()
+        self.directory = (
+            REPO
+            / "build"
+            / (f"{name}-{self.const}" if self.const is not None else name)
+        ).resolve()
 
     def conan_build(self, *, extra=(), env=None) -> Path:
         """
@@ -68,11 +74,21 @@ class Ctx:
 
         run(
             [
-                "conan", "build", ".", "--build=missing",
-                "-s", f"build_type={self.build_type}",
-                "-s", "compiler.cppstd=23",
-                "-o", "evget/*:build_testing=True",
-                *self.profile_args, *self.backend_args, *layout, *extra, *self.opts,
+                "conan",
+                "build",
+                ".",
+                "--build=missing",
+                "-s",
+                f"build_type={self.build_type}",
+                "-s",
+                "compiler.cppstd=23",
+                "-o",
+                "evget/*:build_testing=True",
+                *self.profile_args,
+                *self.backend_args,
+                *layout,
+                *extra,
+                *self.opts,
             ],
             env=env,
         )
@@ -120,6 +136,7 @@ class Variant:
         """
         return self.check(self.build() / EXE)
 
+
 class ClangAsan(Variant):
     """
     Clang asan variant.
@@ -131,10 +148,16 @@ class ClangAsan(Variant):
     env = SANITIZER_ENV
     isolated = True
 
-    FLAGS = ["-fsanitize=address,undefined,leak,integer", "-fno-sanitize-recover=all", "-fno-omit-frame-pointer"]
+    FLAGS = [
+        "-fsanitize=address,undefined,leak,integer",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+    ]
 
     def build(self) -> Path:
-        return self.ctx.conan_build(extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"])
+        return self.ctx.conan_build(
+            extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"]
+        )
 
 
 class ClangMsan(Variant):
@@ -148,12 +171,16 @@ class ClangMsan(Variant):
     env = SANITIZER_ENV
     isolated = True
 
-    FLAGS = ["-fsanitize=memory", "-fno-omit-frame-pointer", "-fsanitize-memory-track-origins=2"]
+    FLAGS = [
+        "-fsanitize=memory",
+        "-fno-omit-frame-pointer",
+        "-fsanitize-memory-track-origins=2",
+    ]
     LLVM_REPO = "https://github.com/llvm/llvm-project.git"
     LLVM_CMAKE_ARGS = [
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DLLVM_ENABLE_RUNTIMES=libcxx;libcxxabi;libunwind",
-        "-DLLVM_USE_SANITIZER=MemoryWithOrigins",
+        "-DLLVM_USE_SANITIZER=MemoryWithOrigins",  # pragma: allowlist secret
         "-DLIBCXX_INCLUDE_TESTS=OFF",
         "-DLIBCXXABI_INCLUDE_TESTS=OFF",
         "-DLIBUNWIND_INCLUDE_TESTS=OFF",
@@ -166,27 +193,39 @@ class ClangMsan(Variant):
         self.llvm = self.ctx.directory / "llvm-project" / "build"
 
         self.ignore = self.write_ignorelist(
-            self.ctx.directory / "ignorelist.txt", "*/libunwind/*", f"{self.ctx.directory}/*"
+            self.ctx.directory / "ignorelist.txt",
+            "*/libunwind/*",
+            f"{self.ctx.directory}/*",
         )
 
         self.home = self.ctx.directory / ".conan2"
         self.home.mkdir(parents=True, exist_ok=True)
 
         self.cxx_flags = [
-            "-nostdinc++", "-stdlib=libc++", "-lc++abi",
-            f"-L{self.llvm}/lib", f"-I{self.llvm}/include", f"-I{self.llvm}/include/c++/v1",
-            f"-Wl,--rpath={self.llvm}/lib", f"-fsanitize-ignorelist={self.ignore}", *self.FLAGS,
+            "-nostdinc++",
+            "-stdlib=libc++",
+            "-lc++abi",
+            f"-L{self.llvm}/lib",
+            f"-I{self.llvm}/include",
+            f"-I{self.llvm}/include/c++/v1",
+            f"-Wl,--rpath={self.llvm}/lib",
+            f"-fsanitize-ignorelist={self.ignore}",
+            *self.FLAGS,
         ]
-        self.c_flags =  [f"-fsanitize-ignorelist={self.ignore}", *self.FLAGS]
+        self.c_flags = [f"-fsanitize-ignorelist={self.ignore}", *self.FLAGS]
 
     def build(self) -> Path:
         return self.ctx.conan_build(
             env={**os.environ, "CONAN_HOME": str(self.home)},
             extra=[
-                "-c", f"tools.build:cxxflags={self.cxx_flags!r}",
-                "-c", f"tools.build:cflags={self.c_flags!r}",
-                "-c", f"tools.build:sharedlinkflags={self.FLAGS!r}",
-                "-c", f"tools.build:exelinkflags={self.FLAGS!r}",
+                "-c",
+                f"tools.build:cxxflags={self.cxx_flags!r}",
+                "-c",
+                f"tools.build:cflags={self.c_flags!r}",
+                "-c",
+                f"tools.build:sharedlinkflags={self.FLAGS!r}",
+                "-c",
+                f"tools.build:exelinkflags={self.FLAGS!r}",
             ],
         )
 
@@ -197,20 +236,44 @@ class ClangMsan(Variant):
         repo = directory / "llvm-project"
 
         if not repo.exists():
-            show = run(["conan", "profile", "show", *self.ctx.profile_args, "-f", "json"], capture=True)
-            major = json.loads(show.stdout)["host"]["settings"]["compiler.version"].split(".")[0]
+            show = run(
+                ["conan", "profile", "show", *self.ctx.profile_args, "-f", "json"],
+                capture=True,
+            )
+            major = json.loads(show.stdout)["host"]["settings"][
+                "compiler.version"
+            ].split(".")[0]
             directory.mkdir(parents=True, exist_ok=True)
-            run(["git", "clone", "--depth", "1", "--branch", f"release/{major}.x", self.LLVM_REPO, repo])
+            run(
+                [
+                    "git",
+                    "clone",
+                    "--depth",
+                    "1",
+                    "--branch",
+                    f"release/{major}.x",
+                    self.LLVM_REPO,
+                    repo,
+                ]
+            )
 
         build = repo / "build"
         if build.is_dir():
             return
 
-        ignore = self.write_ignorelist(directory / "build-ignorelist.txt", "*/libunwind/*")
+        ignore = self.write_ignorelist(
+            directory / "build-ignorelist.txt", "*/libunwind/*"
+        )
 
         run(
             [
-                "cmake", "-G", "Ninja", "-S", repo / "runtimes", "-B", build,
+                "cmake",
+                "-G",
+                "Ninja",
+                "-S",
+                repo / "runtimes",
+                "-B",
+                build,
                 *self.LLVM_CMAKE_ARGS,
                 f"-DCMAKE_C_FLAGS=-fsanitize-ignorelist={ignore}",
                 f"-DCMAKE_CXX_FLAGS=-fsanitize-ignorelist={ignore}",
@@ -227,6 +290,7 @@ class ClangMsan(Variant):
         path.write_text("".join(f"src:{p}\n" for p in patterns))
         return path
 
+
 class GccAsan(Variant):
     """
     GCC asan variant.
@@ -239,10 +303,17 @@ class GccAsan(Variant):
     env = SANITIZER_ENV
     isolated = True
 
-    FLAGS = ["-fsanitize=address,undefined,leak", "-fno-sanitize-recover=all", "-fno-omit-frame-pointer"]
+    FLAGS = [
+        "-fsanitize=address,undefined,leak",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+    ]
 
     def build(self) -> Path:
-        return self.ctx.conan_build(extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"])
+        return self.ctx.conan_build(
+            extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"]
+        )
+
 
 class MsvcAsan(Variant):
     """
@@ -267,8 +338,10 @@ class MsvcAsan(Variant):
         return self.ctx.conan_build(
             env={**os.environ, "CONAN_HOME": str(self.home)},
             extra=[
-                "-c", f"tools.build:cxxflags={self.FLAGS!r}",
-                "-c", f"tools.build:cflags={self.FLAGS!r}",
+                "-c",
+                f"tools.build:cxxflags={self.FLAGS!r}",
+                "-c",
+                f"tools.build:cflags={self.FLAGS!r}",
             ],
         )
 
@@ -285,8 +358,12 @@ class MsvcRuntimeChecks(Variant):
     # Only run on debug as it's a compiler requirement.
     build_types = ("Debug",)
 
+    FLAGS = ["/RTC1", "/DEVGET_CRT_DEBUG_HEAP=1"]
+
     def build(self) -> Path:
-        return self.ctx.conan_build(extra=["-o", "evget/*:msvc_runtime_checks=True"])
+        return self.ctx.conan_build(
+            extra=["-c", f"&:tools.build:cxxflags={self.FLAGS!r}"]
+        )
 
 
 class PageHeap(Variant):
@@ -332,9 +409,13 @@ class AppVerifier(Variant):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the evget test suite under sanitizers.")
+    parser = argparse.ArgumentParser(
+        description="Run the evget test suite under sanitizers."
+    )
     parser.add_argument("action", choices=["run", "build", "clean", "list"])
-    parser.add_argument("name", nargs="?", help="sanitizer name; omit to run or clean all")
+    parser.add_argument(
+        "name", nargs="?", help="sanitizer name; omit to run or clean all"
+    )
     parser.add_argument("--compiler", required=True)
     parser.add_argument("--build-type", default="Debug")
     parser.add_argument("--profile-args", default="")
@@ -343,11 +424,20 @@ def main() -> None:
     parser.add_argument("--opts", default="")
     args = parser.parse_args()
 
-    variants = [ClangAsan, ClangMsan, GccAsan, MsvcAsan, MsvcRuntimeChecks, PageHeap, AppVerifier]
+    variants = [
+        ClangAsan,
+        ClangMsan,
+        GccAsan,
+        MsvcAsan,
+        MsvcRuntimeChecks,
+        PageHeap,
+        AppVerifier,
+    ]
     classes = [
         cls
         for cls in variants
-        if OS in cls.oses and (len(cls.compilers) == 0 or (args.compiler in cls.compilers))
+        if OS in cls.oses
+        and (len(cls.compilers) == 0 or (args.compiler in cls.compilers))
     ]
 
     if args.action == "list":
@@ -373,10 +463,16 @@ def main() -> None:
 
     if args.action == "clean":
         if not args.name:
-            for directory in {context(cls, build).directory for cls in classes for build in cls.build_types}:
+            for directory in {
+                context(cls, build).directory
+                for cls in classes
+                for build in cls.build_types
+            }:
                 shutil.rmtree(directory, ignore_errors=True)
             return
-        shutil.rmtree(context(find(args.name), args.build_type).directory, ignore_errors=True)
+        shutil.rmtree(
+            context(find(args.name), args.build_type).directory, ignore_errors=True
+        )
         return
 
     if args.action == "run" and not args.name:
