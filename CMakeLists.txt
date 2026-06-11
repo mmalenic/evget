@@ -25,18 +25,6 @@ include(toolbelt)
 include(cmake/windows.cmake)
 include(cmake/warnings.cmake)
 
-if(EVGET_RUN_CLANG_TIDY)
-    if(DEFINED EVGET_CLANG_TIDY_EXECUTABLE)
-        set(CMAKE_CXX_CLANG_TIDY "${EVGET_CLANG_TIDY_EXECUTABLE}")
-    else()
-        set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
-    endif()
-
-    if(EVGET_CLANG_TIDY_FIX_ERRORS)
-        list(APPEND CMAKE_CXX_CLANG_TIDY "--fix-errors")
-    endif()
-endif()
-
 if(BUILD_TESTING)
     enable_testing()
     set(TEST_EXECUTABLE_NAME evgettest)
