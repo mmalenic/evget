@@ -2,6 +2,7 @@
 Update the lockfile, allowing cross-platform dependencies to take effect from any platform.
 """
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -23,40 +24,66 @@ PLATFORMS = [
     ("gcc", "x86_64", "windows"),
 ]
 
+# The locks need the os and arch to be present to compute for that platform.
+PROFILE_SETTINGS = {
+    "clang": ("clang", "19", None),
+    "clang-cl": ("clang", "19", "clang-cl"),
+    "gcc": ("gcc", "14", None),
+    "msvc": ("msvc", "194", None),
+}
+
 
 def main() -> None:
-    # Remove the existing lock so that it's re-generated completely.
-    Path("conan.lock").unlink(missing_ok=True)
-
     locks = []
-    for profile, arch, backend in PLATFORMS:
-        lock = f"lock.{profile}-{arch}-{backend}.lock"
-        locks.append(lock)
-        subprocess.run(
-            [
-                "conan",
-                "lock",
-                "create",
-                ".",
-                "--lockfile-out",
-                lock,
-                "-pr:a",
-                f"profiles/{profile}",
-                "-s:a",
-                f"arch={arch}",
-                "-o",
-                f"&:build_evget{backend}=True",
-            ],
-            check=True,
-        )
+    try:
+        for profile, arch, backend in PLATFORMS:
+            compiler, version, executable = PROFILE_SETTINGS[profile]
+            lock = f"lock.{profile}-{arch}-{backend}.lock"
+            locks.append(lock)
 
-    merge = ["conan", "lock", "merge", "--lockfile-out", "conan.lock"]
-    for lock in locks:
-        merge.extend(["--lockfile", lock])
-    subprocess.run(merge, check=True)
+            # Use environment only to compute lock files so that they are self-contained.
+            env = {
+                **os.environ,
+                "EVGET_OS": "Windows" if backend == "windows" else "Linux",
+                "EVGET_ARCH": arch,
+                "EVGET_COMPILER": compiler,
+                "EVGET_VERSION": version,
+            }
+            if executable is not None:
+                env["EVGET_EXE"] = executable
 
-    for lock in locks:
-        Path(lock).unlink(missing_ok=True)
+            subprocess.run(
+                [
+                    "conan",
+                    "lock",
+                    "create",
+                    ".",
+                    "--lockfile",
+                    "",
+                    "--lockfile-out",
+                    lock,
+                    "-pr:a",
+                    f"profiles/{profile}",
+                    "-s:a",
+                    f"arch={arch}",
+                    "-o",
+                    f"&:build_evget{backend}=True",
+                ],
+                check=True,
+                env=env,
+            )
+
+        merge = ["conan", "lock", "merge", "--lockfile-out", "conan.lock.tmp"]
+        for lock in locks:
+            merge.extend(["--lockfile", lock])
+        subprocess.run(merge, check=True)
+
+        # Replace the lock only once complete.
+        os.replace("conan.lock.tmp", "conan.lock")
+    finally:
+        for lock in locks:
+            Path(lock).unlink(missing_ok=True)
+        Path("conan.lock.tmp").unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
