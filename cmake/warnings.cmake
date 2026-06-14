@@ -3,14 +3,21 @@
 # Apply the evget warning to ``target`` with PRIVATE.
 function(evget_apply_warnings target)
     set(gnu_warnings -Wall -Wextra -Wpedantic)
+    set(msvc_warnings /W4 /permissive- /sdl)
+    set(msvc_analyze /analyze /analyze:external- /external:env:INCLUDE /WX)
+
+    # C6326 has false positives on gtest.
+    if(target STREQUAL TEST_EXECUTABLE_NAME)
+        list(APPEND msvc_analyze /wd6326)
+    endif()
+    # clang-cl needs /clang: prepended.
     if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-        # clang-cl needs /clang: prepended
         list(TRANSFORM gnu_warnings PREPEND "/clang:")
     endif()
 
     target_compile_options(
         ${target} PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:${gnu_warnings}>
-                          $<$<CXX_COMPILER_ID:MSVC>:/W4;/permissive-;/sdl>
+                          $<$<CXX_COMPILER_ID:MSVC>:${msvc_warnings}>
     )
 
     # Clang-tidy static analysis.
@@ -26,13 +33,8 @@ function(evget_apply_warnings target)
         set_target_properties(${target} PROPERTIES CXX_CLANG_TIDY "${clang_tidy}")
     endif()
 
-    # MSVC static analysis with /analyze. Exclude SDK/external headers and silence C6326 from
-    # GoogleTest macro expansions, which are attributed to project lines.
+    # MSVC static analysis with /analyze, excluding external headers.
     if(EVGET_RUN_MSVC_ANALYZE)
-        target_compile_options(
-            ${target}
-            PRIVATE
-                $<$<CXX_COMPILER_ID:MSVC>:/analyze;/analyze:external-;/external:env:INCLUDE;/wd6326;/WX>
-        )
+        target_compile_options(${target} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:${msvc_analyze}>)
     endif()
 endfunction()

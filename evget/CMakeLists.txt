@@ -219,11 +219,11 @@ toolbelt_add_dep(
 )
 toolbelt_add_dep(
     ${LIBRARY_NAME}
-    OpenSSL
+    MbedTLS
     VISIBILITY
     PUBLIC
     LINK_COMPONENTS
-    OpenSSL::Crypto
+    MbedTLS::mbedcrypto
     FIND_PACKAGE_ARGS
     REQUIRED
 )
