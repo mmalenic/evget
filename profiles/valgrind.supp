@@ -6,7 +6,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   fun:_ZN7testing12_GLOBAL__N_1L28UninterestingCallReactionMapEv
+   fun:_ZN7testing12_GLOBAL__N_1*28UninterestingCallReactionMapEv
    ...
 }
 
@@ -16,6 +16,6 @@
    match-leak-kinds: reachable
    fun:_Znwm
    ...
-   fun:_ZN7testing12_GLOBAL__N_1L31SetReactionOnUninterestingCallsEmNS_8internal12CallReactionE
+   fun:_ZN7testing12_GLOBAL__N_1*31SetReactionOnUninterestingCallsEmNS_8internal12CallReactionE
    ...
 }
