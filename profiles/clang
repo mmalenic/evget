@@ -2,11 +2,18 @@
 
 include(./base)
 
-{% set compiler = os.getenv("EVGET_COMPILER") or detect_api.detect_clang_compiler() %}
-{% set version = os.getenv("EVGET_VERSION") or compiler[1].major %}
+{% set compiler = os.getenv("EVGET_COMPILER") %}
+{% set version = os.getenv("EVGET_VERSION") %}
+
+# The detect_compiler functions produce an error if not found so compute in a block.
+{% if not compiler or not version %}
+{% set detected = detect_api.detect_clang_compiler() %}
+{% set compiler = compiler or detected[0] %}
+{% set version = version or detected[1].major %}
+{% endif %}
 
 [settings]
-compiler={{ compiler[0] }}
+compiler={{ compiler }}
 compiler.version={{ version }}
 compiler.cppstd=23
 compiler.libcxx=libstdc++11

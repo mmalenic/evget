@@ -2,15 +2,30 @@
 
 include(./base)
 
-{% set compiler = os.getenv("EVGET_COMPILER") or detect_api.detect_clang_compiler("clang-cl") %}
-{% set version = os.getenv("EVGET_VERSION") or compiler[1].major %}
+{% set compiler = os.getenv("EVGET_COMPILER") %}
+{% set version = os.getenv("EVGET_VERSION") %}
+{% set executable = os.getenv("EVGET_EXE") %}
+
+# The detect_compiler functions produce an error if not found so compute in a block.
+{% if not compiler or not version or not executable %}
+{% set detected = detect_api.detect_clang_compiler("clang-cl") %}
+{% set compiler = compiler or detected[0] %}
+{% set version = version or detected[1].major %}
+{% set executable = executable or detected[2] %}
+{% endif %}
+
+{% set runtime_version = os.getenv("EVGET_RUNTIME_VERSION") %}
+{% if not runtime_version %}
+{% set runtime_map = {"191": "v141", "192": "v142", "193": "v143", "194": "v144", "195": "v145"} %}
+{% set runtime_version = runtime_map.get(detect_api.detect_msvc_compiler()[1] | string, "v143") %}
+{% endif %}
 
 [settings]
-compiler={{ compiler[0] }}
+compiler={{ compiler }}
 compiler.version={{ version }}
 compiler.cppstd=23
 compiler.runtime=dynamic
-compiler.runtime_version=v143
+compiler.runtime_version={{ runtime_version }}
 
 [conf]
-tools.build:compiler_executables={'c': '{{ compiler[2] }}', 'cpp': '{{ compiler[2] }}'}
+tools.build:compiler_executables={'c': '{{ executable }}', 'cpp': '{{ executable }}'}
