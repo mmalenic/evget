@@ -22,7 +22,7 @@ class EvgetRecipe(ConanFile):
         "nlohmann_json/[^3]",
         "sqlitecpp/[^3]",
         "cli11/[^2]",
-        "openssl/[^3]",
+        "mbedtls/[^3]",
     )
     test_requires = "gtest/[^1]"
 
@@ -105,63 +105,6 @@ class EvgetRecipe(ConanFile):
         sqlite_opts.enable_math_functions = False
         sqlite_opts.enable_unlock_notify = False
         sqlite_opts.build_executable = False
-
-        # evget only uses SHA-512 from libcrypto so disable all additional features.
-        openssl_features = frozenset(
-            {
-                "apps",
-                "async",
-                "autoload_config",
-                "comp",
-                "deprecated",
-                "engine",
-                "fips",
-                "legacy",
-                "zlib",
-                "dgram",
-                "sock",
-                "ssl3",
-                "tls1",
-                "cms",
-                "ct",
-                "ocsp",
-                "rfc3779",
-                "srp",
-                "srtp",
-                "ts",
-                "dh",
-                "dsa",
-                "ec",
-                "ecdh",
-                "ecdsa",
-                "aria",
-                "bf",
-                "camellia",
-                "cast",
-                "chacha",
-                "des",
-                "idea",
-                "rc2",
-                "rc4",
-                "rc5",
-                "seed",
-                "sm4",
-                "blake2",
-                "md4",
-                "mdc2",
-                "rmd160",
-                "sm3",
-                "whirlpool",
-                "gost",
-                "sm2",
-            }
-        )
-        openssl_opts = self.options["openssl"]
-        for feature in openssl_features:
-            openssl_opts.__setattr__(f"no_{feature}", True)
-
-        if self.settings.os == "Windows":
-            openssl_opts.shared = True
 
         # Every compiled boost library.
         boost_components = frozenset(
@@ -254,28 +197,31 @@ class EvgetRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
 
-        tc.variables["EVGET_BUILD_BIN"] = self.options.build_bin
-        tc.variables["BUILD_TESTING"] = self.options.build_testing
-        tc.variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
-        tc.variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
-        tc.variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
-        tc.variables["EVGET_INSTALL_BIN"] = self.options.install_bin
-        tc.variables["EVGET_INSTALL_LIB"] = self.options.install_lib
-        tc.variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
-        tc.variables["EVGET_BUILD_EVGETLIBINPUT"] = self.options.build_evgetlibinput
-        tc.variables["EVGET_BUILD_EVGETWINDOWS"] = self.options.build_evgetwindows
+        tc.cache_variables["EVGET_BUILD_BIN"] = self.options.build_bin
+        tc.cache_variables["BUILD_TESTING"] = self.options.build_testing
+        tc.cache_variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
+        tc.cache_variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
+        tc.cache_variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
+        tc.cache_variables["EVGET_INSTALL_BIN"] = self.options.install_bin
+        tc.cache_variables["EVGET_INSTALL_LIB"] = self.options.install_lib
+        tc.cache_variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
+        tc.cache_variables["EVGET_BUILD_EVGETLIBINPUT"] = self.options.build_evgetlibinput
+        tc.cache_variables["EVGET_BUILD_EVGETWINDOWS"] = self.options.build_evgetwindows
 
         if self.options.clang_tidy_executable:
-            tc.variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
+            tc.cache_variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
                 self.options.clang_tidy_executable
             )
         if self.options.compiler_launcher:
-            tc.variables["CMAKE_C_COMPILER_LAUNCHER"] = self.options.compiler_launcher
-            tc.variables["CMAKE_CXX_COMPILER_LAUNCHER"] = self.options.compiler_launcher
+            tc.cache_variables["CMAKE_C_COMPILER_LAUNCHER"] = self.options.compiler_launcher
+            tc.cache_variables["CMAKE_CXX_COMPILER_LAUNCHER"] = self.options.compiler_launcher
         if self.options.export_compilation_database:
-            tc.variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
+            tc.cache_variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
         if self.options.verify_headers:
-            tc.variables["CMAKE_VERIFY_INTERFACE_HEADER_SETS"] = True
+            tc.cache_variables["CMAKE_VERIFY_INTERFACE_HEADER_SETS"] = True
+
+        # No need to scan for modules in this project.
+        tc.cache_variables["CMAKE_CXX_SCAN_FOR_MODULES"] = False
 
         tc.generate()
 
