@@ -1,12 +1,13 @@
-# Sanitizer recipes which call out to scripts/sanitizers.py. Importing modules must define
+# Sanitizer recipes which call out to scripts/sanitizers.py. Importing modules define
 # `profile_args`, `backend_args`, and `compiler`.
 
 [private]
 _sanitizer action name filter='*' *opts='':
     python scripts/sanitizers.py {{ action }} {{ name }} \
         --compiler {{ compiler }} --build-type {{ capitalize(build_type) }} \
-        --profile-args="{{ profile_args }}" --backend-args="{{ backend_args }}" \
-        --filter="{{ filter }}" --opts="{{ opts }}"
+        {{ prepend('--profile-arg=', profile_args) }} \
+        {{ prepend('--backend-arg=', backend_args) }} \
+        --filter={{ filter }} {{ prepend('--opt=', opts) }}
 
 # Run one sanitizer by name.
 [group('sanitizer')]

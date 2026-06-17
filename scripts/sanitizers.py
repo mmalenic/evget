@@ -8,7 +8,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import shlex
 import shutil
 import subprocess
 import sys
@@ -315,14 +314,36 @@ class GccAsan(Variant):
         )
 
 
-class MsvcAsan(Variant):
+class MsvcInstrumented(Variant):
+    """
+    MSVC variant where the test binary needs the toolchain runtime DLLs.
+    """
+
+    def check(self, exe: Path) -> int:
+        vcvars = self.ctx.directory / "generators" / "conanvcvars.bat"
+        return run(
+            [
+                "cmd",
+                "/c",
+                "call",
+                vcvars,
+                "&&",
+                exe,
+                f"--gtest_filter={self.ctx.gtest_filter}",
+            ],
+            cwd=exe.parent,
+            check=False,
+        ).returncode
+
+
+class MsvcAsan(MsvcInstrumented):
     """
     MSVC asan build.
     """
 
     name = "asan"
     oses = frozenset({"windows"})
-    compilers = frozenset({"msvc", "clang"})
+    compilers = frozenset({"msvc"})
     isolated = True
 
     FLAGS = ["/fsanitize=address"]
@@ -346,7 +367,7 @@ class MsvcAsan(Variant):
         )
 
 
-class MsvcRuntimeChecks(Variant):
+class MsvcRuntimeChecks(MsvcInstrumented):
     """
     MSVC runtime checks.
     """
@@ -418,10 +439,14 @@ def main() -> None:
     )
     parser.add_argument("--compiler", required=True)
     parser.add_argument("--build-type", default="Debug")
-    parser.add_argument("--profile-args", default="")
-    parser.add_argument("--backend-args", default="")
+    parser.add_argument(
+        "--profile-arg", dest="profile_args", action="append", default=[]
+    )
+    parser.add_argument(
+        "--backend-arg", dest="backend_args", action="append", default=[]
+    )
     parser.add_argument("--filter", default="*")
-    parser.add_argument("--opts", default="")
+    parser.add_argument("--opt", dest="opts", action="append", default=[])
     args = parser.parse_args()
 
     variants = [
@@ -448,10 +473,10 @@ def main() -> None:
         return Ctx(
             compiler=args.compiler,
             build_type=build_type,
-            profile_args=shlex.split(args.profile_args),
-            backend_args=shlex.split(args.backend_args),
+            profile_args=args.profile_args,
+            backend_args=args.backend_args,
             gtest_filter=args.filter,
-            opts=shlex.split(args.opts),
+            opts=args.opts,
             const=cls.name if cls.isolated else None,
         )
 
@@ -484,7 +509,11 @@ def main() -> None:
         return
 
     cls = find(args.name)
-    v = cls(context(cls, args.build_type))
+    build = args.build_type
+    if build not in cls.build_types:
+        raise ValueError(f"{cls.name}: only supports {cls.build_types}")
+
+    v = cls(context(cls, build))
     if args.action == "build":
         v.build()
         return
