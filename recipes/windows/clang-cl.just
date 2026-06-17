@@ -6,7 +6,7 @@ import '../common.just'
 import '../check.just'
 import '../sanitizers.just'
 
-profile_args := '-pr:a profiles/clang-cl -c tools.cmake.cmaketoolchain:generator=Ninja'
+profile_args := '-pr:h profiles/clang-cl -pr:b profiles/msvc -c tools.cmake.cmaketoolchain:generator=Ninja'
 backend_args := '-o evget/*:build_evgetwindows=True'
 check_args := '-o evget/*:run_clang_tidy=True'
 compiler := 'clang'

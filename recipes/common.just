@@ -25,6 +25,6 @@ rebuild:
 run args='--help' *opts='': (build opts)
     cd {{ build_dir }} && {{ if os_family() == "windows" { "bin\\evget.exe" } else { "./bin/evget" } }} {{ args }}
 
-# Build and test evget. cmd.exe needs `.\` and `.exe`; posix shells need `./`.
+# Build and test evget. cmd needs `.\` and `.exe` and posix needs `./`.
 test filter='*' *opts='': (build_test opts)
-    cd {{ build_dir }} && {{ if os_family() == "windows" { ".\\evgettest.exe" } else { "./evgettest" } }} --gtest_filter="{{ filter }}"
+    cd {{ build_dir }} && {{ if os_family() == "windows" { ".\\evgettest.exe --gtest_filter=" + filter } else { "./evgettest --gtest_filter=" + quote(filter) } }}

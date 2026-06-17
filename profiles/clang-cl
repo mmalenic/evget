@@ -14,6 +14,12 @@ include(./base)
 {% set executable = executable or detected[2] %}
 {% endif %}
 
+# detect returns a bare command, but Boost.Build needs the absolute path.
+{% if ":" not in executable %}
+{% set executable = os.popen('where "' ~ executable ~ '"').read().splitlines()[0].strip() %}
+{% endif %}
+{% set executable = executable | replace("\\", "/") %}
+
 {% set runtime_version = os.getenv("EVGET_RUNTIME_VERSION") %}
 {% if not runtime_version %}
 {% set runtime_map = {"191": "v141", "192": "v142", "193": "v143", "194": "v144", "195": "v145"} %}
