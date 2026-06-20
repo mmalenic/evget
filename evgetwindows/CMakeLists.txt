@@ -43,11 +43,6 @@ toolbelt_add_dep(
     REQUIRED
 )
 
-if(BUILD_TESTING)
-    target_sources(${TEST_EXECUTABLE_NAME} PUBLIC test/compiler_support.cpp)
-    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
-endif()
-
 if(EVGET_INSTALL_LIB)
     install(TARGETS ${LIBRARY_NAME} FILE_SET headers)
 endif()
