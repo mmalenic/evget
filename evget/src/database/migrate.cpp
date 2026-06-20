@@ -1,10 +1,11 @@
 #include "evget/database/migrate.h"
 
-#include <openssl/sha.h>
+#include <mbedtls/sha512.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <format>
 #include <string>
@@ -88,12 +89,13 @@ evget::Result<void> evget::Migrate::ApplyMigrationSql(const Migration& migration
 }
 
 std::string evget::Migrate::Checksum(const Migration& migration) {
-    std::array<unsigned char, SHA512_DIGEST_LENGTH> digest{};
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    SHA512(reinterpret_cast<const unsigned char*>(migration.sql.c_str()), migration.sql.length(), digest.data());
+    constexpr std::size_t kSha512DigestBytes = 64;
+    std::array<unsigned char, kSha512DigestBytes> digest{};
+    const auto* input = std::bit_cast<const unsigned char*>(migration.sql.c_str());
+    mbedtls_sha512(input, migration.sql.length(), digest.data(), 0);
 
     std::string hex{};
-    hex.reserve(static_cast<std::size_t>(SHA512_DIGEST_LENGTH) * 2);
+    hex.reserve(kSha512DigestBytes * 2);
     for (const unsigned char byte : digest) {
         hex += std::format("{:02x}", byte);
     }
@@ -106,7 +108,7 @@ evget::Result<void> evget::Migrate::ApplyMigrations() {
         .and_then([this] { return this->CreateMigrationsTable(); })
         .and_then([this] { return this->GetAppliedMigrations(); })
         .and_then([this](const std::vector<AppliedMigration>& applied) {
-            for (auto i = 0; i < migrations_.size(); i++) {
+            for (std::size_t i = 0; i < migrations_.size(); i++) {
                 auto migration = migrations_.at(i);
                 auto checksum = Checksum(migration);
 
