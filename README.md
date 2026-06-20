@@ -43,7 +43,9 @@ To build the project, run:
 just build
 ```
 
-This requires at least [gcc-14] or [clang-19] because the project uses newer C++23 features.
+This requires a C++23 compiler, at least [gcc-14] or [clang-19] on Linux, or MSVC 17.11 on Windows.
+
+For backend, OS, or compiler specific commands, see [`recipes/README.md`](recipes/README.md).
 
 ## Development
 
