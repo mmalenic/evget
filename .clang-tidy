@@ -75,4 +75,5 @@ CheckOptions:
     value: 1
 WarningsAsErrors: "*"
 HeaderFilterRegex: ".*"
-ExtraArgs: ["-std=c++23"]
+# clang-cl requires these, on regular clang they are enabled by default so no harm.
+ExtraArgsBefore: ["-Xclang", "-fcxx-exceptions"]

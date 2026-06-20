@@ -26,7 +26,7 @@ clang-based compilers or MSVC `/analyze`.
 Compiler-specific address and memory sanitizers are also available. The clang memory sanitizer re-builds LLVM,
 and the Windows address sanitizer re-builds all dependencies with instrumentation, both into an dedicated
 Conan cache (see [sanitizers.py](../scripts/sanitizers.py) for details). Windows hosts can also use runtime
-checks like pageheap and appverifier.
+checks like pageheap and appverifier, which require an elevated shell.
 
 ## Conventions
 

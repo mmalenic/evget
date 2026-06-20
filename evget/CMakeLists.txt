@@ -230,7 +230,7 @@ toolbelt_add_dep(
 
 # See https://github.com/boostorg/uuid/issues/122
 if(WIN32)
-    target_link_libraries(${LIBRARY_NAME} PRIVATE bcrypt)
+    target_link_libraries(${LIBRARY_NAME} PRIVATE bcrypt ws2_32)
 endif()
 
 toolbelt_add_dep(
