@@ -10,14 +10,13 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/backend.cpp ${SRC}/compiler_support.cpp
+    PRIVATE ${SRC}/backend.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
            include
            FILES
            ${INCLUDE}/backend.h
-           ${INCLUDE}/compiler_support.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetwindows)
 
