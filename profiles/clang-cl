@@ -4,21 +4,20 @@ include(./base)
 
 {% set compiler = os.getenv("EVGET_COMPILER") %}
 {% set version = os.getenv("EVGET_VERSION") %}
-{% set executable = os.getenv("EVGET_EXE") %}
 
 # The detect_compiler functions produce an error if not found so compute in a block.
-{% if not compiler or not version or not executable %}
+{% if not compiler or not version %}
 {% set detected = detect_api.detect_clang_compiler("clang-cl") %}
 {% set compiler = compiler or detected[0] %}
 {% set version = version or detected[1].major %}
-{% set executable = executable or detected[2] %}
 {% endif %}
 
-# detect returns a bare command, but Boost.Build needs the absolute path.
-{% if ":" not in executable %}
-{% set executable = os.popen('where "' ~ executable ~ '"').read().splitlines()[0].strip() %}
+{% set executable = "clang-cl" %}
+
+# Boost.Build won't append .exe to a command, so give it an absolute path on Windows.
+{% if platform.system() == "Windows" %}
+{% set executable = os.popen('where ' ~ executable).read().splitlines()[0].strip() | replace("\\", "/") %}
 {% endif %}
-{% set executable = executable | replace("\\", "/") %}
 
 {% set runtime_version = os.getenv("EVGET_RUNTIME_VERSION") %}
 {% if not runtime_version %}

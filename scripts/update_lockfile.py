@@ -26,10 +26,10 @@ PLATFORMS = [
 
 # The locks need the os and arch to be present to compute for that platform.
 PROFILE_SETTINGS = {
-    "clang": ("clang", "19", None),
-    "clang-cl": ("clang", "19", "clang-cl"),
-    "gcc": ("gcc", "14", None),
-    "msvc": ("msvc", "194", None),
+    "clang": ("clang", "19"),
+    "clang-cl": ("clang", "19"),
+    "gcc": ("gcc", "14"),
+    "msvc": ("msvc", "194"),
 }
 
 
@@ -37,7 +37,7 @@ def main() -> None:
     locks = []
     try:
         for profile, arch, backend in PLATFORMS:
-            compiler, version, executable = PROFILE_SETTINGS[profile]
+            compiler, version = PROFILE_SETTINGS[profile]
             lock = f"lock.{profile}-{arch}-{backend}.lock"
             locks.append(lock)
 
@@ -49,8 +49,6 @@ def main() -> None:
                 "EVGET_COMPILER": compiler,
                 "EVGET_VERSION": version,
             }
-            if executable is not None:
-                env["EVGET_EXE"] = executable
 
             subprocess.run(
                 [

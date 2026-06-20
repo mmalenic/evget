@@ -1,4 +1,4 @@
-# Linux GCC profile.
+# Linux GCC profile, also used for the MinGW build on Windows.
 
 include(./base)
 
@@ -12,6 +12,15 @@ include(./base)
 {% set version = version or detected[1].major %}
 {% endif %}
 
+{% set c_exe = "gcc" %}
+{% set cpp_exe = "g++" %}
+
+# Boost.Build won't append .exe to a command, so give it an absolute path on Windows.
+{% if platform.system() == "Windows" %}
+{% set c_exe = os.popen('where ' ~ c_exe).read().splitlines()[0].strip() | replace("\\", "/") %}
+{% set cpp_exe = os.popen('where ' ~ cpp_exe).read().splitlines()[0].strip() | replace("\\", "/") %}
+{% endif %}
+
 [settings]
 compiler={{ compiler }}
 compiler.version={{ version }}
@@ -19,4 +28,4 @@ compiler.cppstd=23
 compiler.libcxx=libstdc++11
 
 [conf]
-tools.build:compiler_executables={'c': 'gcc', 'cpp': 'g++'}
+tools.build:compiler_executables={'c': '{{ c_exe }}', 'cpp': '{{ cpp_exe }}'}
