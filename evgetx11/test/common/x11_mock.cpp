@@ -93,6 +93,7 @@ test::CreateXiRawEvent(int evtype, std::array<unsigned char, 1>& valuator_mask, 
         .detail = 0,
         .flags = 0,
         .valuators = CreateXiValuatorState(valuator_mask, values),
+        .raw_values = nullptr
     };
 }
 

@@ -98,7 +98,7 @@ evget::Result<void> evgetlibinput::DrmOutput::QueryCard(File& file) {
         }
 
         // Iterate over modes and get preferred mode.
-        for (const auto mode :
+        for (const auto& mode :
              std::span{mode_connector->modes, static_cast<std::uint32_t>(mode_connector->count_modes)}) {
             if ((mode.type & DRM_MODE_TYPE_PREFERRED) != 0U) {
                 if (mode.hdisplay * mode.vdisplay > dimensions_.width * dimensions_.height) {

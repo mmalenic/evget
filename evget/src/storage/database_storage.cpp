@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -163,8 +164,8 @@ evget::Result<void> evget::DatabaseStorage::BindValues(
     const std::string& entry_uuid
 ) {
     query->BindChars(0, entry_uuid.c_str());
-    for (auto i = 0; i < data.size(); i++) {
-        query->BindChars(i + 1, data.at(i).c_str());
+    for (const auto& [index, value] : std::views::enumerate(data)) {
+        query->BindChars(static_cast<int>(index) + 1, value.c_str());
     }
 
     return query->NextWhile().and_then(

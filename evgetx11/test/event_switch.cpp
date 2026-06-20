@@ -127,9 +127,6 @@ TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
-    auto valuator_class_info = test::CreateXiValuatorClassInfo();
-    valuator_class_info.number = 0;
-
     std::array<unsigned char, 1> valuator_mask = {1};
     std::array<double, 1> values = {1};
     auto device_event = test::CreateXiRawEvent(XI_RawMotion, valuator_mask, values);

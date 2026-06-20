@@ -28,7 +28,7 @@ TEST_F(DatabaseTest, Next) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsString(0);
     auto entry = select_query->AsString(1);
@@ -69,7 +69,7 @@ TEST_F(DatabaseTest, BindBool) {
     auto select_query = connection.BuildQuery("select $1;");
 
     select_query->BindBool(0, true);
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto result = select_query->AsString(0);
 
@@ -84,7 +84,7 @@ TEST_F(DatabaseTest, BindInt) {
     auto select_query = connection.BuildQuery("select $1;");
 
     select_query->BindInt(0, 1);
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto result = select_query->AsString(0);
 
@@ -99,7 +99,7 @@ TEST_F(DatabaseTest, BindDouble) {
     auto select_query = connection.BuildQuery("select $1;");
 
     select_query->BindDouble(0, 1.0);
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto result = select_query->AsString(0);
 
@@ -114,7 +114,7 @@ TEST_F(DatabaseTest, BindChars) {
     auto select_query = connection.BuildQuery("select $1;");
 
     select_query->BindChars(0, "1");
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto result = select_query->AsString(0);
 
@@ -128,7 +128,7 @@ TEST_F(DatabaseTest, AsBool) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsBool(0);
 
@@ -142,7 +142,7 @@ TEST_F(DatabaseTest, AsInt) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsInt(0);
 
@@ -156,7 +156,7 @@ TEST_F(DatabaseTest, AsDouble) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsDouble(0);
 
@@ -170,7 +170,7 @@ TEST_F(DatabaseTest, AsString) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsString(0);
 

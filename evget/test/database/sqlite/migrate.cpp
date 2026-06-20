@@ -32,7 +32,7 @@ TEST_F(DatabaseTest, Migrate) {
 
     auto select_migration_query = connection.BuildQuery(std::format("select * from _migrations;"));
 
-    select_migration_query->Next().value();
+    ASSERT_TRUE(select_migration_query->Next().value());
 
     auto version = select_migration_query->AsString(0);
     auto description = select_migration_query->AsString(1);
@@ -46,7 +46,7 @@ TEST_F(DatabaseTest, Migrate) {
 
     auto select_query = connection.BuildQuery(std::format("select * from {};", kTestTableName));
 
-    select_query->Next().value();
+    ASSERT_TRUE(select_query->Next().value());
 
     auto pos = select_query->AsString(0);
     auto entry = select_query->AsString(1);

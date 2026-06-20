@@ -149,7 +149,7 @@ void Scheduler::SpawnImpl(
 
 template <typename T>
 void Scheduler::Spawn(boost::asio::awaitable<T>&& task) {
-    SpawnImpl<T>(std::move(task), [this](auto) {}, pool_);
+    SpawnImpl<T>(std::move(task), [](auto) {}, pool_);
 }
 
 template <HandlerWithStop S>

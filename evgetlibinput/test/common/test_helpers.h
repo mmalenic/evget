@@ -17,7 +17,13 @@ namespace test {
 
 constexpr evgetlibinput::ScreenDimensions kDimensions{.width = 1920, .height = 1080};
 constexpr const char* kDeviceName = "test-device";
-constexpr xkb_rule_names kUsLayout{.layout = "us"};
+constexpr xkb_rule_names kUsLayout{
+    .rules = nullptr,
+    .model = nullptr,
+    .layout = "us",
+    .variant = nullptr,
+    .options = nullptr,
+};
 constexpr xkb_keycode_t kKeyCodeOffset = 8;
 
 constexpr xkb_keycode_t XkbKey(unsigned int evdev_key) {

@@ -6,6 +6,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "evget/error.h"
 
@@ -64,7 +65,7 @@ std::optional<std::string> evgetlibinput::XkbCommon::GetKeyName(xkb_keycode_t ke
         return std::nullopt;
     }
 
-    if (needed < buf.size()) {
+    if (std::cmp_less(needed, buf.size())) {
         // String output is null-terminated.
         return std::string{buf.data()};
     }

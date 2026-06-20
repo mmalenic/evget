@@ -44,6 +44,7 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         .device_type = this->GetDeviceType(inner_event, event_type),
         .device_name = libinput_api_.get().GetDeviceName(*device),
         .device_uuid = device_uuid,
+        .system_event = {},
     };
 
     auto data = evget::Data{};

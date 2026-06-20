@@ -13,7 +13,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 
 namespace {
 constexpr int OpenRestricted(const char* path, int flags, void* /* unused */) {
@@ -67,7 +66,7 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput:
         };
     }
 
-    return std::move(lib_input);
+    return lib_input;
 }
 
 evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() {

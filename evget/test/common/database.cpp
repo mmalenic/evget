@@ -7,6 +7,7 @@
 #include <format>
 #include <memory>
 #include <string>
+#include <system_error>
 
 #include "evget/database/connection.h"
 #include "evget/database/sqlite/connection.h"
@@ -34,7 +35,8 @@ test::DatabaseTest::DatabaseTest()
 }
 
 test::DatabaseTest::~DatabaseTest() {
-    std::filesystem::remove_all(DatabaseFile());
+    std::error_code error_code{};
+    std::filesystem::remove_all(database_file_, error_code);
 }
 
 std::filesystem::path test::DatabaseTest::Directory() const {

@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp> // NOLINT(misc-include-cleaner)
 #include <nlohmann/json_fwd.hpp>
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <ostream>
@@ -25,7 +26,7 @@ evget::Result<void> evget::JsonStorage::StoreEvent(Data events) {
         auto entry_with_fields = entry.GetEntryWithFields();
 
         auto formatted_fields = std::vector<nlohmann::json>{};
-        for (auto i = 0; i < entry_with_fields.data.size(); i++) {
+        for (std::size_t i = 0; i < entry_with_fields.data.size(); i++) {
             formatted_fields.push_back(
                 {{"name", entry_with_fields.fields.at(i)}, {"data", entry_with_fields.data.at(i)}}
             );

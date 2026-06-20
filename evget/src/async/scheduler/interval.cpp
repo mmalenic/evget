@@ -14,11 +14,11 @@
 evget::Interval::Interval(std::chrono::seconds period) : period_{period} {}
 
 boost::asio::awaitable<evget::Result<void>> evget::Interval::Tick() {
-    // NOLINTBEGIN(clang-analyzer-core.CallAndMessage)
+    // NOLINTBEGIN(clang-analyzer-core.CallAndMessage, clang-analyzer-core.NullDereference)
     if (!timer_.has_value()) {
         timer_ = boost::asio::steady_timer{co_await boost::asio::this_coro::executor, this->Period()};
     }
-    // NOLINTEND(clang-analyzer-core.CallAndMessage)
+    // NOLINTEND(clang-analyzer-core.CallAndMessage, clang-analyzer-core.NullDereference)
 
     auto [err] = co_await timer_->async_wait(boost::asio::as_tuple(boost::asio::use_awaitable));
     Reset();
