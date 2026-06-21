@@ -4,10 +4,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <csignal>
 #include <exception>
 #include <memory>
+#include <thread>
 #include <utility>
 
 #include "evget/async/scheduler/scheduler.h"
@@ -69,12 +71,15 @@ int main(int argc, char* argv[]) {
 
     auto filter = evget::FilterStore{manager, cli.Filter()};
 
-    boost::asio::signal_set signals{scheduler->Executor(), SIGINT, SIGTERM};
+    boost::asio::io_context signal_context;
+    boost::asio::signal_set signals{signal_context, SIGINT, SIGTERM};
     signals.async_wait([scheduler](const boost::system::error_code& error, int) {
         if (!error) {
+            spdlog::debug("received stop signal, stopping scheduler");
             scheduler->Stop();
         }
     });
+    std::jthread signal_thread{[&signal_context] { signal_context.run(); }};
 
     auto exit_code = 0;
     try {
@@ -130,5 +135,6 @@ int main(int argc, char* argv[]) {
         exit_code = 1;
     }
 
+    signal_context.stop();
     return exit_code;
 }
