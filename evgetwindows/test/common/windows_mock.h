@@ -18,6 +18,10 @@ public:
 evgetwindows::RawEvent MakeMouseRawEvent();
 evgetwindows::RawEvent MakeKeyboardRawEvent();
 
+RAWINPUT MakeMouseRawInput(LONG last_x, LONG last_y);
+RAWINPUT MakeKeyboardRawInput(USHORT vkey);
+RAWINPUT MakeHidRawInput();
+
 } // namespace test
 
 #endif // EVGETWINDOWS_TEST_COMMON_WINDOWS_MOCK_H

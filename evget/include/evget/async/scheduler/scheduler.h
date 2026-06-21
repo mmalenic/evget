@@ -99,6 +99,17 @@ public:
     void Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
 
     /**
+     * \brief Spawn a task on a specific executor. Stops the thread pool on an exception.
+     * \tparam T return type for the task
+     * \param executor executor to run the task on
+     * \param task task awaitable
+     * \param handler handler on completion
+     */
+    template <typename T>
+    void
+    Spawn(boost::asio::any_io_executor executor, boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
+
+    /**
      * \brief Join the scheduler, awaiting all tasks to complete.
      */
     void Join();
@@ -131,7 +142,7 @@ private:
 
     void SpawnImpl(boost::asio::awaitable<void>&& task, Invocable<void> auto&& handler, boost::asio::thread_pool& pool);
     template <typename T>
-    void SpawnImpl(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, boost::asio::thread_pool& pool);
+    void SpawnImpl(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, auto&& execution);
 
     static std::size_t DefaultThreadPoolSize();
     void LogException(const std::exception_ptr& error);
@@ -150,12 +161,16 @@ template <typename T>
 void Scheduler::SpawnImpl(
     boost::asio::awaitable<T>&& task,
     Invocable<void, T> auto&& handler,
-    boost::asio::thread_pool& pool
+    auto&& execution
 ) {
-    boost::asio::co_spawn(pool, std::move(task), [this, handler](const std::exception_ptr& err, T value) {
-        LogException(err);
-        handler(value);
-    });
+    boost::asio::co_spawn(
+        std::forward<decltype(execution)>(execution),
+        std::move(task),
+        [this, handler](const std::exception_ptr& err, T value) {
+            LogException(err);
+            handler(value);
+        }
+    );
 }
 
 template <typename T>
@@ -188,6 +203,15 @@ void Scheduler::SpawnResult(boost::asio::awaitable<Result<T>>&& task, S& stop, i
 template <typename T>
 void Scheduler::Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler) {
     SpawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), pool_);
+}
+
+template <typename T>
+void Scheduler::Spawn(
+    boost::asio::any_io_executor executor,
+    boost::asio::awaitable<T>&& task,
+    Invocable<void, T> auto&& handler
+) {
+    SpawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), std::move(executor));
 }
 
 void Scheduler::SpawnImpl(

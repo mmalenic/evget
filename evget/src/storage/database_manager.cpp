@@ -1,6 +1,7 @@
 #include "evget/storage/database_manager.h"
 
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/strand.hpp>
 #include <spdlog/spdlog.h>
 
 #include <chrono>
@@ -27,6 +28,7 @@ evget::DatabaseManager::DatabaseManager(
     std::chrono::seconds store_after
 )
     : scheduler_{std::move(scheduler)},
+      strand_{boost::asio::make_strand(scheduler_->Executor())},
       store_in_{std::make_shared<StoresHolder>()},
       n_events_{n_events},
       store_after_{store_after} {
@@ -42,7 +44,8 @@ std::vector<std::shared_ptr<evget::Store>> evget::DatabaseManager::Snapshot(Stor
 void evget::DatabaseManager::SpawnStoreData(
     std::optional<std::vector<Data>> inner,
     std::vector<std::shared_ptr<Store>> store_in,
-    Scheduler& scheduler
+    Scheduler& scheduler,
+    boost::asio::strand<boost::asio::any_io_executor> strand
 ) {
     if (inner.has_value()) {
         spdlog::info(std::format("reached threshold, storing {} events", inner->size()));
@@ -52,7 +55,7 @@ void evget::DatabaseManager::SpawnStoreData(
             out.MergeWith(std::move(data));
         }
 
-        scheduler.Spawn<Result<void>>(StoreCoroutine(out, std::move(store_in)), [&scheduler](Result<void> result) {
+        scheduler.Spawn(strand, StoreCoroutine(out, std::move(store_in)), [&scheduler](Result<void> result) {
             ResultHandler(std::move(result), scheduler);
         });
     }
@@ -62,7 +65,7 @@ evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
     data_->PushBack(std::move(events));
 
     auto inner = data_->IntoInnerAt(n_events_);
-    SpawnStoreData(inner, Snapshot(*store_in_), *scheduler_);
+    SpawnStoreData(inner, Snapshot(*store_in_), *scheduler_, strand_);
 
     return {};
 }
@@ -89,7 +92,8 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
     std::weak_ptr<Scheduler> scheduler_weak,
     std::shared_ptr<LockingVector<Data>> data,
     std::shared_ptr<StoresHolder> store_in,
-    std::chrono::seconds store_after
+    std::chrono::seconds store_after,
+    boost::asio::strand<boost::asio::any_io_executor> strand
 ) {
     auto store_interval = Interval{store_after};
     // Use a weak_ptr here to break cycle between scheduler and database manager, this must
@@ -117,7 +121,7 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
             }
 
             auto data_inner = data->IntoInner();
-            SpawnStoreData(data_inner, Snapshot(*store_in), *scheduler);
+            SpawnStoreData(data_inner, Snapshot(*store_in), *scheduler, strand);
         }
     }
 
@@ -127,7 +131,7 @@ boost::asio::awaitable<std::expected<void, evget::Error<evget::ErrorType>>> evge
 void evget::DatabaseManager::SpawnStoreAfter() const {
     std::weak_ptr<Scheduler> weak_scheduler = scheduler_;
     scheduler_->Spawn<Result<void>>(
-        StoreAfterCoroutine(std::move(weak_scheduler), data_, store_in_, store_after_),
+        StoreAfterCoroutine(std::move(weak_scheduler), data_, store_in_, store_after_, strand_),
         [this](Result<void> result) { ResultHandler(std::move(result), *this->scheduler_); }
     );
 }

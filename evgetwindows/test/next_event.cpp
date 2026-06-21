@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "common/windows_mock.h"
 #include "evget/async/scheduler/scheduler.h"
@@ -55,7 +56,7 @@ TEST(WindowsMockTest, MockableApi) {
 
     ASSERT_TRUE(received.has_value());
     ASSERT_TRUE(received->has_value());
-    EXPECT_EQ((*received)->data.keyboard.VKey, injected.data.keyboard.VKey);
+    EXPECT_EQ(std::get<RAWKEYBOARD>((*received)->data).VKey, std::get<RAWKEYBOARD>(injected.data).VKey);
 }
 
 TEST(NextEventTest, EventCrossesChannel) {
@@ -76,8 +77,8 @@ TEST(NextEventTest, EventCrossesChannel) {
 
     ASSERT_TRUE(received.has_value());
     ASSERT_TRUE(received->has_value());
-    EXPECT_EQ((*received)->ViewData().data.mouse.lLastX, injected.data.mouse.lLastX);
-    EXPECT_EQ((*received)->ViewData().data.mouse.lLastY, injected.data.mouse.lLastY);
+    EXPECT_EQ(std::get<RAWMOUSE>((*received)->ViewData().data).lLastX, std::get<RAWMOUSE>(injected.data).lLastX);
+    EXPECT_EQ(std::get<RAWMOUSE>((*received)->ViewData().data).lLastY, std::get<RAWMOUSE>(injected.data).lLastY);
 }
 
 TEST(ChannelBackpressureTest, DropOnIncrement) {

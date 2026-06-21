@@ -3,15 +3,23 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <atomic>
+#include <chrono>
+#include <cstddef>
+#include <expected>
 #include <filesystem>
 #include <format>
 #include <memory>
 #include <string>
 #include <system_error>
+#include <thread>
 
 #include "evget/database/connection.h"
 #include "evget/database/sqlite/connection.h"
+#include "evget/error.h"
+#include "evget/event/data.h"
 #include "evget/storage/database_storage.h"
+#include "evget/storage/store.h"
 
 test::DatabaseTest::DatabaseTest()
     : directory_{std::filesystem::temp_directory_path()}, database_file_{directory_ / TestDatabaseName()} {
@@ -54,4 +62,31 @@ std::string test::DatabaseTest::TestDatabaseName() {
 
 evget::DatabaseStorage test::DatabaseTest::MakeStorage() const {
     return {std::make_unique<evget::SQLiteConnection>(), DatabaseFile()};
+}
+
+evget::Result<void> test::ConcurrencyStore::StoreEvent(evget::Data event) {
+    if (in_flight_.fetch_add(1) != 0) {
+        concurrent_.store(true);
+    }
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    std::this_thread::sleep_for(std::chrono::milliseconds{5});
+    in_flight_.fetch_sub(1);
+
+    total_entries_.fetch_add(event.Entries().size());
+    return {};
+}
+
+void test::ConcurrencyStore::WaitForEntries(std::size_t count) {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    for (int i = 0; i < 5000 && total_entries_.load() < count; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    }
+}
+
+bool test::ConcurrencyStore::Concurrent() const {
+    return concurrent_.load();
+}
+
+std::size_t test::ConcurrencyStore::TotalEntries() const {
+    return total_entries_.load();
 }

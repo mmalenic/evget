@@ -3,15 +3,21 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <cstddef>
 #include <memory>
 
+#include "common/database.h"
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
+#include "evget/error.h"
+#include "evget/event/data.h"
+#include "evget/storage/store.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 namespace {
 
+using test::ConcurrencyStore;
 using test::StoreErrorMock;
 using test::StoreForwarder;
 using test::StoreMock;
@@ -163,6 +169,24 @@ TEST(DatabaseManagerTest, StoreEventReturnsSuccess) {
 
     scheduler->Stop();
     scheduler->Join();
+}
+
+TEST(DatabaseManagerTest, ConcurrentFlushesNeverOverlap) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto probe = std::make_shared<ConcurrencyStore>();
+
+    evget::DatabaseManager manager{scheduler, {probe}, 2, std::chrono::seconds{60}};
+
+    for (std::size_t i = 0; i < 40; ++i) {
+        ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+    }
+
+    probe->WaitForEntries(40);
+    scheduler->Stop();
+    scheduler->Join();
+
+    ASSERT_FALSE(probe->Concurrent());
+    ASSERT_EQ(probe->TotalEntries(), 40);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
