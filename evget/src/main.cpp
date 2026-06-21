@@ -104,15 +104,13 @@ int main(int argc, char* argv[]) {
 #ifdef FEATURE_EVGETWINDOWS
         std::unique_ptr<evgetwindows::Backend> win_backend{};
         if (event_source == evget::EventSource::kWindows) {
-            auto result = evgetwindows::Backend::Create(filter);
+            auto result = evgetwindows::Backend::Create(filter, scheduler->Executor());
             if (!result.has_value()) {
                 spdlog::error("{}", result.error());
                 return 1;
             }
             win_backend = std::move(*result);
-
-            spdlog::error("Windows backend handler not yet implemented");
-            return 1;
+            scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
         }
 #endif
 
