@@ -17,6 +17,8 @@ target_sources(
            include
            FILES
            ${INCLUDE}/backend.h
+           ${INCLUDE}/raw_event.h
+           ${INCLUDE}/windows.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetwindows)
 
@@ -42,6 +44,13 @@ toolbelt_add_dep(
     FIND_PACKAGE_ARGS
     REQUIRED
 )
+
+if(BUILD_TESTING)
+    target_sources(
+        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/next_event.cpp
+    )
+    target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
+endif()
 
 if(EVGET_INSTALL_LIB)
     install(TARGETS ${LIBRARY_NAME} FILE_SET headers)
