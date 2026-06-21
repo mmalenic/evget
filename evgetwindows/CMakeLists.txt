@@ -17,6 +17,7 @@ target_sources(
            include
            FILES
            ${INCLUDE}/backend.h
+           ${INCLUDE}/event_transformer.h
            ${INCLUDE}/message_window.h
            ${INCLUDE}/next_event.h
            ${INCLUDE}/raw_event.h
