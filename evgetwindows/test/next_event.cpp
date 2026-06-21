@@ -2,33 +2,30 @@
 
 #include <gmock/gmock.h>
 
-#include <boost/asio/as_tuple.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/experimental/concurrent_channel.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include <boost/asio/use_awaitable.hpp>
 #include <boost/system/error_code.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <optional>
-#include <tuple>
 
 #include "common/windows_mock.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/error.h"
+#include "evget/input_event.h"
+#include "evgetwindows/next_event.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
 
 namespace {
 using RawEventChannel =
     boost::asio::experimental::concurrent_channel<void(boost::system::error_code, evgetwindows::RawEvent)>;
-using ReceiveResult = std::tuple<boost::system::error_code, evgetwindows::RawEvent>;
+using NextResult = evget::Result<evget::InputEvent<evgetwindows::RawEvent>>;
 
-constexpr std::size_t kRawEventChannelCapacity = 8192;
-
-boost::asio::awaitable<ReceiveResult> ReceiveFrom(RawEventChannel& channel) {
-    co_return co_await channel.async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
+boost::asio::awaitable<void> GetNext(const evgetwindows::NextEvent& next_event, std::optional<NextResult>& out) {
+    out = co_await next_event.Next();
 }
 } // namespace
 
@@ -63,21 +60,24 @@ TEST(WindowsMockTest, MockableApi) {
 
 TEST(NextEventTest, EventCrossesChannel) {
     auto scheduler = std::make_shared<evget::Scheduler>();
-    boost::asio::thread_pool channel_pool{1};
-    RawEventChannel channel{channel_pool.get_executor(), kRawEventChannelCapacity};
+    test::WindowsApiMock mock;
 
     const auto injected = test::MakeMouseRawEvent();
-    ASSERT_TRUE(channel.try_send(boost::system::error_code{}, injected));
+    EXPECT_CALL(mock, ReceiveNext()).WillOnce([injected] {
+        return [](evgetwindows::RawEvent event) -> boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> {
+            co_return event;
+        }(injected);
+    });
 
-    std::optional<ReceiveResult> received{};
-    scheduler->Spawn<ReceiveResult>(ReceiveFrom(channel), [&](auto value) { received = std::move(value); });
+    const evgetwindows::NextEvent next_event{mock};
+    std::optional<NextResult> received{};
+    scheduler->Spawn(GetNext(next_event, received), [] {});
     scheduler->Join();
 
     ASSERT_TRUE(received.has_value());
-    const auto& [error_code, raw] = *received;
-    EXPECT_FALSE(error_code);
-    EXPECT_EQ(raw.data.mouse.lLastX, injected.data.mouse.lLastX);
-    EXPECT_EQ(raw.data.mouse.lLastY, injected.data.mouse.lLastY);
+    ASSERT_TRUE(received->has_value());
+    EXPECT_EQ((*received)->ViewData().data.mouse.lLastX, injected.data.mouse.lLastX);
+    EXPECT_EQ((*received)->ViewData().data.mouse.lLastY, injected.data.mouse.lLastY);
 }
 
 TEST(ChannelBackpressureTest, DropOnIncrement) {
@@ -99,17 +99,19 @@ TEST(ChannelBackpressureTest, DropOnIncrement) {
 
 TEST(NextEventTest, ChannelCloses) {
     auto scheduler = std::make_shared<evget::Scheduler>();
-    boost::asio::thread_pool channel_pool{1};
-    RawEventChannel channel{channel_pool.get_executor(), kRawEventChannelCapacity};
+    test::WindowsApiMock mock;
 
-    std::optional<ReceiveResult> received{};
-    scheduler->Spawn<ReceiveResult>(ReceiveFrom(channel), [&](auto value) { received = std::move(value); });
+    EXPECT_CALL(mock, ReceiveNext()).WillOnce([] {
+        return []() -> boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> {
+            co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "channel closed"}};
+        }();
+    });
 
-    channel.close();
+    const evgetwindows::NextEvent next_event{mock};
+    std::optional<NextResult> received{};
+    scheduler->Spawn(GetNext(next_event, received), [] {});
     scheduler->Join();
 
     ASSERT_TRUE(received.has_value());
-    const auto& [error_code, raw] = *received;
-    static_cast<void>(raw);
-    EXPECT_TRUE(error_code);
+    EXPECT_FALSE(received->has_value());
 }

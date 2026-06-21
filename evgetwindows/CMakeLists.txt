@@ -10,13 +10,15 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/backend.cpp
+    PRIVATE ${SRC}/backend.cpp ${SRC}/message_window.cpp ${SRC}/next_event.cpp ${SRC}/windows.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
            include
            FILES
            ${INCLUDE}/backend.h
+           ${INCLUDE}/message_window.h
+           ${INCLUDE}/next_event.h
            ${INCLUDE}/raw_event.h
            ${INCLUDE}/windows.h
 )
@@ -44,6 +46,10 @@ toolbelt_add_dep(
     FIND_PACKAGE_ARGS
     REQUIRED
 )
+
+if(WIN32)
+    target_link_libraries(${LIBRARY_NAME} PRIVATE user32)
+endif()
 
 if(BUILD_TESTING)
     target_sources(
