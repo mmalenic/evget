@@ -6,6 +6,7 @@
 #ifndef EVGET_ASYNC_SCHEDULER_SCHEDULER_H
 #define EVGET_ASYNC_SCHEDULER_SCHEDULER_H
 
+#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/thread_pool.hpp>
@@ -108,6 +109,12 @@ public:
     void Stop();
 
     /**
+     * \brief Get the underlying pool executor.
+     * \return the pool executor
+     */
+    [[nodiscard]] boost::asio::any_io_executor Executor();
+
+    /**
      * \brief Whether the scheduler has been stopped.
      * \return stopped value
      *
@@ -133,6 +140,10 @@ private:
 inline std::size_t Scheduler::DefaultThreadPoolSize() {
     const auto num_threads = std::thread::hardware_concurrency() * 2;
     return num_threads == 0 ? 2 : num_threads;
+}
+
+inline boost::asio::any_io_executor Scheduler::Executor() {
+    return pool_.get_executor();
 }
 
 template <typename T>
