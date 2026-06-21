@@ -189,4 +189,25 @@ TEST(DatabaseManagerTest, ConcurrentFlushesNeverOverlap) {
     ASSERT_EQ(probe->TotalEntries(), 40);
 }
 
+TEST(DatabaseManagerTest, FlushDrainsBelowThresholdBuffer) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto store = std::make_shared<StoreMock>();
+
+    evget::DatabaseManager manager{scheduler, {store}, 100, std::chrono::seconds{600}};
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    manager.Flush();
+
+    auto events = store->Events();
+    ASSERT_EQ(events.size(), 1);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+    ASSERT_EQ(events[0].Entries().size(), 3);
+
+    scheduler->Stop();
+    scheduler->Join();
+}
+
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

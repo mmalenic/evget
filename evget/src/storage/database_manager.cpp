@@ -1,13 +1,16 @@
 #include "evget/storage/database_manager.h"
 
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
 #include <boost/asio/strand.hpp>
+#include <boost/asio/use_future.hpp>
 #include <spdlog/spdlog.h>
 
 #include <chrono>
 #include <cstddef>
 #include <expected>
 #include <format>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -73,6 +76,27 @@ evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
 void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) const {
     const std::scoped_lock lock{store_in_->lock};
     store_in_->stores.emplace_back(std::move(store));
+}
+
+void evget::DatabaseManager::Flush() {
+    auto inner = data_->IntoInner();
+    if (!inner.has_value() || inner->empty()) {
+        return;
+    }
+
+    spdlog::info(std::format("flushing {} buffered events", inner->size()));
+
+    Data out{};
+    for (auto&& data : *std::move(inner)) {
+        out.MergeWith(std::move(data));
+    }
+
+    // Runs on the signal thread while the pool is alive, so blocking on the future cannot deadlock.
+    auto future = boost::asio::co_spawn(strand_, StoreCoroutine(out, Snapshot(*store_in_)), boost::asio::use_future);
+    auto result = future.get();
+    if (!result.has_value()) {
+        spdlog::error("Error flushing events: {}", result.error().message);
+    }
 }
 
 boost::asio::awaitable<evget::Result<void>>

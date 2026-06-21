@@ -49,6 +49,11 @@ public:
      */
     void AddStore(std::unique_ptr<Store> store) const;
 
+    /**
+     * \brief Write any buffered events to storage, blocking until the write completes.
+     */
+    void Flush();
+
 private:
     struct StoresHolder {
         std::mutex lock;

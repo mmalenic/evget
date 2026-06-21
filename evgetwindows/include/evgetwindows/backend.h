@@ -39,6 +39,11 @@ public:
      */
     evget::EventHandler<evget::InputEvent<RawEvent>>& Handler();
 
+    /**
+     * \brief Stop the Raw Input source, closing the channel so the event loop exits.
+     */
+    void Stop();
+
     Backend(const Backend&) = delete;
     Backend(Backend&&) = delete;
     Backend& operator=(const Backend&) = delete;

@@ -8,6 +8,7 @@
 #include <boost/asio/signal_set.hpp>
 #include <csignal>
 #include <exception>
+#include <functional>
 #include <memory>
 #include <thread>
 #include <utility>
@@ -71,11 +72,14 @@ int main(int argc, char* argv[]) {
 
     auto filter = evget::FilterStore{manager, cli.Filter()};
 
+    std::function<void()> stop_source = [] {};
     boost::asio::io_context signal_context;
     boost::asio::signal_set signals{signal_context, SIGINT, SIGTERM};
-    signals.async_wait([scheduler](const boost::system::error_code& error, int) {
+    signals.async_wait([scheduler, &stop_source, &manager](const boost::system::error_code& error, int) {
         if (!error) {
             spdlog::debug("received stop signal, stopping scheduler");
+            stop_source();
+            manager.Flush();
             scheduler->Stop();
         }
     });
@@ -94,6 +98,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             li_backend = std::move(*result);
+            stop_source = [&li_backend] { li_backend->Handler().Stop(); };
             scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
         }
 #endif
@@ -112,6 +117,12 @@ int main(int argc, char* argv[]) {
                 spdlog::error("{}", handler.error());
                 return 1;
             }
+            stop_source = [&x11_backend] {
+                auto handler = x11_backend->Handler();
+                if (handler.has_value()) {
+                    handler->get().Stop();
+                }
+            };
             scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
         }
 #endif
@@ -125,6 +136,10 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             win_backend = std::move(*result);
+            stop_source = [&win_backend] {
+                win_backend->Handler().Stop();
+                win_backend->Stop();
+            };
             scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
         }
 #endif

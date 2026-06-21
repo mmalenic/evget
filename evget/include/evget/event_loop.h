@@ -61,6 +61,10 @@ boost::asio::awaitable<evget::Result<void>> evget::EventLoop<T>::Start() {
         for (auto& listener : listeners_) {
             auto event = co_await next_event_.get().Next();
             if (!event.has_value()) {
+                // A failed source read after a stop request is a graceful shutdown, not an error.
+                if (co_await IsStopped()) {
+                    co_return evget::Result<void>{};
+                }
                 co_return Err{event.error()};
             }
 

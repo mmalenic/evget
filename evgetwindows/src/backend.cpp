@@ -33,3 +33,7 @@ evget::Result<std::unique_ptr<evgetwindows::Backend>> evgetwindows::Backend::Cre
 evget::EventHandler<evget::InputEvent<evgetwindows::RawEvent>>& evgetwindows::Backend::Handler() {
     return handler_;
 }
+
+void evgetwindows::Backend::Stop() {
+    windows_->Stop();
+}
