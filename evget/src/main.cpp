@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <boost/asio/signal_set.hpp>
+#include <csignal>
 #include <exception>
 #include <memory>
 #include <utility>
@@ -66,6 +68,14 @@ int main(int argc, char* argv[]) {
     }
 
     auto filter = evget::FilterStore{manager, cli.Filter()};
+
+    boost::asio::signal_set signals{scheduler->Executor(), SIGINT, SIGTERM};
+    signals.async_wait([scheduler](const boost::system::error_code& error, int) {
+        if (!error) {
+            scheduler->Stop();
+        }
+    });
+
     auto exit_code = 0;
     try {
         auto event_source = cli.EventSource();
