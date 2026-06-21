@@ -25,7 +25,6 @@ constexpr std::chrono::seconds kJoinTimeout{2};
 evgetwindows::MessageWindow::MessageWindow(boost::asio::any_io_executor executor)
     : channel_{std::move(executor), kRawEventChannelCapacity} {}
 
-// The jthread join would deadlock on GetMessage without WM_QUIT, so Stop() must run first.
 evgetwindows::MessageWindow::~MessageWindow() {
     Stop();
 }

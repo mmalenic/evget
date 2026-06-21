@@ -59,7 +59,7 @@ public:
     MessageWindow& operator=(const MessageWindow&) = delete;
     MessageWindow& operator=(MessageWindow&&) noexcept = delete;
 
-    ~MessageWindow() = default;
+    ~MessageWindow();
 
     /**
      * \brief Launch the channel and message system by creating an invisible window.
