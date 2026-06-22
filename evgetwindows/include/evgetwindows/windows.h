@@ -8,8 +8,10 @@
 
 #include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
+#include <boost/system/error_code.hpp>
 
 #include <memory>
+#include <tuple>
 
 #include "evget/error.h"
 #include "evgetwindows/message_window.h"
@@ -46,7 +48,7 @@ public:
      * \brief Receive the next raw event from the loop.
      * \return the next raw event, or an error if the channel is closed
      */
-    virtual boost::asio::awaitable<evget::Result<RawEvent>> ReceiveNext() = 0;
+    virtual boost::asio::awaitable<std::tuple<boost::system::error_code, RawEvent>> ReceiveNext() = 0;
 };
 
 /**
@@ -69,7 +71,7 @@ public:
 
     evget::Result<void> Start() override;
     void Stop() override;
-    boost::asio::awaitable<evget::Result<RawEvent>> ReceiveNext() override;
+    boost::asio::awaitable<std::tuple<boost::system::error_code, RawEvent>> ReceiveNext() override;
 
 private:
     explicit Windows(boost::asio::any_io_executor executor);

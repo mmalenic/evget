@@ -30,12 +30,35 @@
 evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::filesystem::path database)
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
+evget::Result<void> evget::DatabaseStorage::EnsureConnected() const {
+    if (connected_) {
+        return {};
+    }
+
+    return connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
+        .transform_error([](const Error<ErrorType>& error) {
+            return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
+        })
+        .transform([this] { connected_ = true; });
+}
+
+evget::Result<void> evget::DatabaseStorage::ApplyPragmas() const {
+    auto query = connection_->BuildQuery(
+        "pragma journal_mode=WAL;"
+        "pragma synchronous=NORMAL;"
+        "pragma temp_store=MEMORY;"
+    );
+    return query->Exec().transform_error([](const Error<ErrorType>& error) {
+        return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
+    });
+}
+
 evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
     if (events.Empty()) {
         return {};
     }
 
-    return connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
+    return EnsureConnected()
         .and_then([this] { return connection_->Transaction(); })
         .transform_error([](const Error<ErrorType>& error) {
             return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
@@ -107,10 +130,8 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
 }
 
 evget::Result<void> evget::DatabaseStorage::Init() const {
-    auto result = connection_->Connect(database_, ConnectOptions::kReadWriteCreate)
-                      .transform_error([](const Error<ErrorType>& error) {
-                          return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
-                      })
+    auto result = EnsureConnected()
+                      .and_then([this] { return ApplyPragmas(); })
                       .and_then([this] {
                           auto migrations = std::vector{Migration{
                               .version = 1,
@@ -138,12 +159,12 @@ evget::Result<void> evget::DatabaseStorage::InsertEvents(
     SetOptionalStatement(insert_statement, std::move(insert_query));
     SetOptionalStatement(insert_modifier_statement, std::move(insert_modifier_query));
 
-    auto entry_uuid = to_string(boost::uuids::random_generator()());
+    auto entry_uuid = to_string(generator_());
 
     // Optional is set in previous lines.
     // NOLINTBEGIN(bugprone-unchecked-optional-access)
     return BindValues(*insert_statement, entry.Data(), entry_uuid)
-        .and_then([&insert_modifier_statement, &entry, &entry_uuid] {
+        .and_then([this, &insert_modifier_statement, &entry, &entry_uuid] {
             return BindValuesModifier(*insert_modifier_statement, entry.Modifiers(), entry_uuid);
         });
     // NOLINTEND(bugprone-unchecked-optional-access)
@@ -179,9 +200,9 @@ evget::Result<void> evget::DatabaseStorage::BindValuesModifier(
     std::unique_ptr<Query>& query,
     const std::vector<std::string>& modifiers,
     const std::string& entry_uuid
-) {
+) const {
     for (const auto& modifier : modifiers) {
-        auto modifier_uuid = boost::uuids::to_string(boost::uuids::random_generator()());
+        auto modifier_uuid = boost::uuids::to_string(generator_());
         query->BindChars(0, modifier_uuid.c_str());
         query->BindChars(1, entry_uuid.c_str());
         query->BindChars(2, modifier.c_str());

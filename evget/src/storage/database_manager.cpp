@@ -68,7 +68,9 @@ evget::Result<void> evget::DatabaseManager::StoreEvent(Data events) {
     data_->PushBack(std::move(events));
 
     auto inner = data_->IntoInnerAt(n_events_);
-    SpawnStoreData(inner, Snapshot(*store_in_), *scheduler_, strand_);
+    if (inner.has_value()) {
+        SpawnStoreData(std::move(inner), Snapshot(*store_in_), *scheduler_, strand_);
+    }
 
     return {};
 }

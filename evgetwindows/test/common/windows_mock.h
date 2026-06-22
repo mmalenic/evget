@@ -3,6 +3,11 @@
 
 #include <gmock/gmock.h>
 
+#include <boost/asio/awaitable.hpp>
+#include <boost/system/error_code.hpp>
+
+#include <tuple>
+
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
 
@@ -12,7 +17,12 @@ class WindowsApiMock : public evgetwindows::WindowsApi {
 public:
     MOCK_METHOD(evget::Result<void>, Start, (), (override));
     MOCK_METHOD(void, Stop, (), (override));
-    MOCK_METHOD((boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>>), ReceiveNext, (), (override));
+    MOCK_METHOD(
+        (boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>),
+        ReceiveNext,
+        (),
+        (override)
+    );
 };
 
 evgetwindows::RawEvent MakeMouseRawEvent();

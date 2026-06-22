@@ -4,9 +4,11 @@
 #include <boost/asio/as_tuple.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/use_awaitable.hpp>
+#include <boost/system/error_code.hpp>
 
 #include <expected>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "evget/error.h"
@@ -36,10 +38,7 @@ void evgetwindows::Windows::Stop() {
     message_window_.Stop();
 }
 
-boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> evgetwindows::Windows::ReceiveNext() {
-    auto [error, raw] = co_await message_window_.Channel().async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
-    if (error) {
-        co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = error.message()}};
-    }
-    co_return raw;
+boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>
+evgetwindows::Windows::ReceiveNext() {
+    return message_window_.Channel().async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
 }

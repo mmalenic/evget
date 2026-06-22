@@ -6,6 +6,8 @@
 #ifndef EVGET_STORAGE_DATABASE_STORAGE_H
 #define EVGET_STORAGE_DATABASE_STORAGE_H
 
+#include <boost/uuid/random_generator.hpp>
+
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -44,7 +46,12 @@ public:
 private:
     std::unique_ptr<Connection> connection_;
     std::filesystem::path database_;
+    mutable bool connected_{false};
+    // Writes are serialized on one strand, so the generator needs no synchronization.
+    mutable boost::uuids::random_generator generator_;
 
+    [[nodiscard]] Result<void> EnsureConnected() const;
+    [[nodiscard]] Result<void> ApplyPragmas() const;
     Result<void> InsertEvents(
         const Entry& entry,
         std::optional<std::unique_ptr<Query>>& insert_statement,
@@ -55,11 +62,11 @@ private:
     void SetOptionalStatement(std::optional<std::unique_ptr<Query>>& query, std::string query_string) const;
     static Result<void>
     BindValues(std::unique_ptr<Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid);
-    static Result<void> BindValuesModifier(
+    Result<void> BindValuesModifier(
         std::unique_ptr<Query>& query,
         const std::vector<std::string>& modifiers,
         const std::string& entry_uuid
-    );
+    ) const;
 };
 } // namespace evget
 

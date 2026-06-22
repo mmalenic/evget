@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/error.hpp>
 #include <boost/asio/experimental/concurrent_channel.hpp>
 #include <boost/asio/thread_pool.hpp>
 #include <boost/system/error_code.hpp>
@@ -11,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <variant>
+#include <tuple>
 
 #include "common/windows_mock.h"
 #include "evget/async/scheduler/scheduler.h"
@@ -24,6 +26,7 @@ namespace {
 using RawEventChannel =
     boost::asio::experimental::concurrent_channel<void(boost::system::error_code, evgetwindows::RawEvent)>;
 using NextResult = evget::Result<evget::InputEvent<evgetwindows::RawEvent>>;
+using SeamResult = std::tuple<boost::system::error_code, evgetwindows::RawEvent>;
 
 boost::asio::awaitable<void> GetNext(const evgetwindows::NextEvent& next_event, std::optional<NextResult>& out) {
     out = co_await next_event.Next();
@@ -38,18 +41,16 @@ TEST(WindowsMockTest, MockableApi) {
     EXPECT_CALL(mock, Start()).WillOnce(testing::Return(evget::Result<void>{}));
     EXPECT_CALL(mock, Stop()).Times(1);
     EXPECT_CALL(mock, ReceiveNext()).WillOnce([injected] {
-        return [](evgetwindows::RawEvent event) -> boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> {
-            co_return event;
+        return [](evgetwindows::RawEvent event) -> boost::asio::awaitable<SeamResult> {
+            co_return SeamResult{boost::system::error_code{}, event};
         }(injected);
     });
 
     evgetwindows::WindowsApi& api = mock;
     EXPECT_TRUE(api.Start().has_value());
 
-    std::optional<evget::Result<evgetwindows::RawEvent>> received{};
-    scheduler->Spawn<evget::Result<evgetwindows::RawEvent>>(api.ReceiveNext(), [&](auto value) {
-        received = std::move(value);
-    });
+    std::optional<SeamResult> received{};
+    scheduler->Spawn<SeamResult>(api.ReceiveNext(), [&](auto value) { received = std::move(value); });
     scheduler->Join();
 
     api.Stop();
@@ -65,8 +66,8 @@ TEST(NextEventTest, EventCrossesChannel) {
 
     const auto injected = test::MakeMouseRawEvent();
     EXPECT_CALL(mock, ReceiveNext()).WillOnce([injected] {
-        return [](evgetwindows::RawEvent event) -> boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> {
-            co_return event;
+        return [](evgetwindows::RawEvent event) -> boost::asio::awaitable<SeamResult> {
+            co_return SeamResult{boost::system::error_code{}, event};
         }(injected);
     });
 
@@ -103,8 +104,8 @@ TEST(NextEventTest, ChannelCloses) {
     test::WindowsApiMock mock;
 
     EXPECT_CALL(mock, ReceiveNext()).WillOnce([] {
-        return []() -> boost::asio::awaitable<evget::Result<evgetwindows::RawEvent>> {
-            co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "channel closed"}};
+        return []() -> boost::asio::awaitable<SeamResult> {
+            co_return SeamResult{boost::asio::error::operation_aborted, evgetwindows::RawEvent{}};
         }();
     });
 
