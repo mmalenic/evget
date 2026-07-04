@@ -30,7 +30,7 @@
 evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::filesystem::path database)
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
-evget::Result<void> evget::DatabaseStorage::EnsureConnected() const {
+evget::Result<void> evget::DatabaseStorage::EnsureConnected() {
     if (connected_) {
         return {};
     }
@@ -129,7 +129,7 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
         });
 }
 
-evget::Result<void> evget::DatabaseStorage::Init() const {
+evget::Result<void> evget::DatabaseStorage::Init() {
     auto result = EnsureConnected()
                       .and_then([this] { return ApplyPragmas(); })
                       .and_then([this] {
@@ -155,7 +155,7 @@ evget::Result<void> evget::DatabaseStorage::InsertEvents(
     std::optional<std::unique_ptr<Query>>& insert_modifier_statement,
     std::string insert_query,
     std::string insert_modifier_query
-) const {
+) {
     SetOptionalStatement(insert_statement, std::move(insert_query));
     SetOptionalStatement(insert_modifier_statement, std::move(insert_modifier_query));
 
@@ -200,7 +200,7 @@ evget::Result<void> evget::DatabaseStorage::BindValuesModifier(
     std::unique_ptr<Query>& query,
     const std::vector<std::string>& modifiers,
     const std::string& entry_uuid
-) const {
+) {
     for (const auto& modifier : modifiers) {
         auto modifier_uuid = boost::uuids::to_string(generator_());
         query->BindChars(0, modifier_uuid.c_str());

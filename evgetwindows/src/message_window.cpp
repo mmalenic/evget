@@ -158,15 +158,16 @@ void evgetwindows::MessageWindow::RunPump(
 
     SetWindowLongPtrW(raw_window, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
-    std::array<RAWINPUTDEVICE, 2> devices{};
-    devices[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
-    devices[0].usUsage = HID_USAGE_GENERIC_MOUSE;
-    devices[0].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
-    devices[0].hwndTarget = raw_window;
-    devices[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
-    devices[1].usUsage = HID_USAGE_GENERIC_KEYBOARD;
-    devices[1].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
-    devices[1].hwndTarget = raw_window;
+    const std::array<RAWINPUTDEVICE, 2> devices{
+        {{.usUsagePage = HID_USAGE_PAGE_GENERIC,
+          .usUsage = HID_USAGE_GENERIC_MOUSE,
+          .dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY,
+          .hwndTarget = raw_window},
+         {.usUsagePage = HID_USAGE_PAGE_GENERIC,
+          .usUsage = HID_USAGE_GENERIC_KEYBOARD,
+          .dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY,
+          .hwndTarget = raw_window}}
+    };
 
     SetLastError(ERROR_SUCCESS);
     if (RegisterRawInputDevices(devices.data(), devices.size(), sizeof(RAWINPUTDEVICE)) == FALSE

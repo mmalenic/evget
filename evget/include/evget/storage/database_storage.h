@@ -41,16 +41,16 @@ public:
      * \brief Initialize the database with tables.
      * \return a result indicating success of failure
      */
-    [[nodiscard]] Result<void> Init() const;
+    Result<void> Init();
 
 private:
     std::unique_ptr<Connection> connection_;
     std::filesystem::path database_;
-    mutable bool connected_{false};
+    bool connected_{false};
     // Writes are serialized on one strand, so the generator needs no synchronization.
-    mutable boost::uuids::random_generator generator_;
+    boost::uuids::random_generator generator_;
 
-    [[nodiscard]] Result<void> EnsureConnected() const;
+    Result<void> EnsureConnected();
     [[nodiscard]] Result<void> ApplyPragmas() const;
     Result<void> InsertEvents(
         const Entry& entry,
@@ -58,7 +58,7 @@ private:
         std::optional<std::unique_ptr<Query>>& insert_modifier_statement,
         std::string insert_query,
         std::string insert_modifier_query
-    ) const;
+    );
     void SetOptionalStatement(std::optional<std::unique_ptr<Query>>& query, std::string query_string) const;
     static Result<void>
     BindValues(std::unique_ptr<Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid);
@@ -66,7 +66,7 @@ private:
         std::unique_ptr<Query>& query,
         const std::vector<std::string>& modifiers,
         const std::string& entry_uuid
-    ) const;
+    );
 };
 } // namespace evget
 
