@@ -6,12 +6,10 @@
 #include <boost/asio/error.hpp>
 #include <boost/asio/experimental/concurrent_channel.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include <boost/system/error_code.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <optional>
-#include <variant>
 #include <tuple>
 
 #include "common/windows_mock.h"
@@ -23,11 +21,14 @@
 #include "evgetwindows/windows.h"
 
 namespace {
+// NOLINTBEGIN(misc-include-cleaner)
 using RawEventChannel =
     boost::asio::experimental::concurrent_channel<void(boost::system::error_code, evgetwindows::RawEvent)>;
 using NextResult = evget::Result<evget::InputEvent<evgetwindows::RawEvent>>;
 using SeamResult = std::tuple<boost::system::error_code, evgetwindows::RawEvent>;
+// NOLINTEND(misc-include-cleaner)
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-reference-coroutine-parameters)
 boost::asio::awaitable<void> GetNext(const evgetwindows::NextEvent& next_event, std::optional<NextResult>& out) {
     out = co_await next_event.Next();
 }
@@ -56,8 +57,9 @@ TEST(WindowsMockTest, MockableApi) {
     api.Stop();
 
     ASSERT_TRUE(received.has_value());
-    ASSERT_TRUE(received->has_value());
-    EXPECT_EQ(std::get<RAWKEYBOARD>((*received)->data).VKey, std::get<RAWKEYBOARD>(injected.data).VKey);
+    const auto& [error, raw_event] = *received;
+    ASSERT_FALSE(error);
+    EXPECT_EQ(std::get<RAWKEYBOARD>(raw_event.data).VKey, std::get<RAWKEYBOARD>(injected.data).VKey);
 }
 
 TEST(NextEventTest, EventCrossesChannel) {
@@ -77,26 +79,28 @@ TEST(NextEventTest, EventCrossesChannel) {
     scheduler->Join();
 
     ASSERT_TRUE(received.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     ASSERT_TRUE(received->has_value());
     EXPECT_EQ(std::get<RAWMOUSE>((*received)->ViewData().data).lLastX, std::get<RAWMOUSE>(injected.data).lLastX);
     EXPECT_EQ(std::get<RAWMOUSE>((*received)->ViewData().data).lLastY, std::get<RAWMOUSE>(injected.data).lLastY);
 }
 
 TEST(ChannelBackpressureTest, DropOnIncrement) {
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDelete)
     boost::asio::thread_pool channel_pool{1};
-    constexpr std::size_t capacity = 2;
-    RawEventChannel channel{channel_pool.get_executor(), capacity};
+    constexpr std::size_t kCapacity = 2;
+    RawEventChannel channel{channel_pool.get_executor(), kCapacity};
 
     // Pump only ever calls try_send; a full buffer drops, never blocks.
-    constexpr std::size_t attempts = 5;
+    constexpr std::size_t kAttempts = 5;
     std::size_t dropped = 0;
-    for (std::size_t i = 0; i < attempts; ++i) {
+    for (std::size_t i = 0; i < kAttempts; ++i) {
         if (!channel.try_send(boost::system::error_code{}, test::MakeMouseRawEvent())) {
             ++dropped;
         }
     }
 
-    EXPECT_EQ(dropped, attempts - capacity);
+    EXPECT_EQ(dropped, kAttempts - kCapacity);
 }
 
 TEST(NextEventTest, ChannelCloses) {
@@ -115,5 +119,6 @@ TEST(NextEventTest, ChannelCloses) {
     scheduler->Join();
 
     ASSERT_TRUE(received.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_FALSE(received->has_value());
 }

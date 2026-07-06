@@ -61,7 +61,7 @@ public:
      * \param executor the executor the channel completes on
      * \return the API implementation
      */
-    static evget::Result<std::unique_ptr<Windows>> New(boost::asio::any_io_executor executor);
+    static evget::Result<std::unique_ptr<Windows>> New(const boost::asio::any_io_executor& executor);
 
     Windows(const Windows&) = delete;
     Windows(Windows&&) noexcept = delete;
@@ -74,7 +74,7 @@ public:
     boost::asio::awaitable<std::tuple<boost::system::error_code, RawEvent>> ReceiveNext() override;
 
 private:
-    explicit Windows(boost::asio::any_io_executor executor);
+    explicit Windows(const boost::asio::any_io_executor& executor);
 
     MessageWindow message_window_;
 };

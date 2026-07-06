@@ -17,6 +17,8 @@ using test::MakeKeyboardRawInput;
 using test::MakeMouseRawInput;
 } // namespace
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)
+
 TEST(MessageWindowTest, ToRawEventClassifiesMouse) {
     const auto event = MessageWindow::ToRawEvent(MakeMouseRawInput(0x11, 0x22));
 
@@ -70,3 +72,5 @@ TEST(MessageWindowTest, EnqueueDropsWhenChannelFull) {
     EXPECT_EQ(sent, evgetwindows::kRawEventChannelCapacity);
     EXPECT_EQ(window.Enqueue(mouse), EnqueueOutcome::kDropped);
 }
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)

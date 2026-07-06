@@ -1,7 +1,8 @@
 #include "evget/storage/database_manager.h"
 
+#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
-#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/co_spawn.hpp> // NOLINT(misc-include-cleaner)
 #include <boost/asio/strand.hpp>
 #include <boost/asio/use_future.hpp>
 #include <spdlog/spdlog.h>
@@ -58,7 +59,7 @@ void evget::DatabaseManager::SpawnStoreData(
             out.MergeWith(std::move(data));
         }
 
-        scheduler.Spawn(strand, StoreCoroutine(out, std::move(store_in)), [&scheduler](Result<void> result) {
+        scheduler.Spawn(std::move(strand), StoreCoroutine(out, std::move(store_in)), [&scheduler](Result<void> result) {
             ResultHandler(std::move(result), scheduler);
         });
     }
@@ -94,6 +95,7 @@ void evget::DatabaseManager::Flush() {
     }
 
     // Runs on the signal thread while the pool is alive, so blocking on the future cannot deadlock.
+    // NOLINTNEXTLINE(misc-include-cleaner)
     auto future = boost::asio::co_spawn(strand_, StoreCoroutine(out, Snapshot(*store_in_)), boost::asio::use_future);
     auto result = future.get();
     if (!result.has_value()) {

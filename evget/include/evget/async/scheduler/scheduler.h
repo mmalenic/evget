@@ -106,8 +106,11 @@ public:
      * \param handler handler on completion
      */
     template <typename T>
-    void
-    Spawn(boost::asio::any_io_executor executor, boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler);
+    void Spawn(
+        const boost::asio::any_io_executor& executor,
+        boost::asio::awaitable<T>&& task,
+        Invocable<void, T> auto&& handler
+    );
 
     /**
      * \brief Join the scheduler, awaiting all tasks to complete.
@@ -207,11 +210,11 @@ void Scheduler::Spawn(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&
 
 template <typename T>
 void Scheduler::Spawn(
-    boost::asio::any_io_executor executor,
+    const boost::asio::any_io_executor& executor,
     boost::asio::awaitable<T>&& task,
     Invocable<void, T> auto&& handler
 ) {
-    SpawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), std::move(executor));
+    SpawnImpl<T>(std::move(task), std::forward<decltype(handler)>(handler), executor);
 }
 
 void Scheduler::SpawnImpl(

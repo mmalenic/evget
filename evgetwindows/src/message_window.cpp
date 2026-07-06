@@ -4,9 +4,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include <boost/asio/any_io_executor.hpp>
+
 #include <array>
+#include <atomic>
 #include <chrono>
-#include <cstddef>
+#include <exception>
 #include <format>
 #include <future>
 #include <memory>
@@ -18,15 +21,19 @@
 #include "evgetwindows/raw_event.h"
 
 namespace {
-constexpr wchar_t kWindowClassName[] = L"evget_message_window";
+constexpr const wchar_t* kWindowClassName = L"evget_message_window";
 constexpr std::chrono::seconds kJoinTimeout{2};
 } // namespace
 
-evgetwindows::MessageWindow::MessageWindow(boost::asio::any_io_executor executor)
-    : channel_{std::move(executor), kRawEventChannelCapacity} {}
+evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor)
+    : channel_{executor, kRawEventChannelCapacity} {}
 
 evgetwindows::MessageWindow::~MessageWindow() {
-    Stop();
+    try {
+        Stop();
+    } catch (const std::exception& e) {
+        spdlog::error("failed to stop message window: {}", e.what());
+    }
 }
 
 evgetwindows::RawEventChannel& evgetwindows::MessageWindow::Channel() {
@@ -68,8 +75,10 @@ void evgetwindows::MessageWindow::Stop() {
 
 LRESULT CALLBACK evgetwindows::MessageWindow::WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
     if (message == WM_INPUT) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
         auto* self = reinterpret_cast<MessageWindow*>(GetWindowLongPtrW(window, GWLP_USERDATA));
         if (self != nullptr) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
             self->HandleRawInput(reinterpret_cast<HRAWINPUT>(lparam));
         }
         return 0;
@@ -81,8 +90,10 @@ std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEvent(co
     RawEvent event{};
     event.header = raw.header;
     if (raw.header.dwType == RIM_TYPEMOUSE) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         event.data = raw.data.mouse;
     } else if (raw.header.dwType == RIM_TYPEKEYBOARD) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         event.data = raw.data.keyboard;
     } else {
         return std::nullopt;
@@ -118,8 +129,15 @@ void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
     Enqueue(raw);
 }
 
+evgetwindows::MessageWindow::FinishGuard::FinishGuard(std::shared_ptr<std::promise<void>> finished)
+    : finished_{std::move(finished)} {}
+
 evgetwindows::MessageWindow::FinishGuard::~FinishGuard() {
-    finished->set_value();
+    try {
+        finished_->set_value();
+    } catch (const std::exception& e) {
+        spdlog::error("failed to signal message window completion: {}", e.what());
+    }
 }
 
 void evgetwindows::MessageWindow::RunPump(
@@ -143,6 +161,7 @@ void evgetwindows::MessageWindow::RunPump(
         return;
     }
 
+    // NOLINTNEXTLINE(misc-misplaced-const)
     const HWND raw_window = CreateWindowExW(
         0, kWindowClassName, L"evget", 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, window_class.hInstance, nullptr
     );
@@ -156,6 +175,7 @@ void evgetwindows::MessageWindow::RunPump(
     // DestroyWindow must run on the owning thread.
     const WindowHandle window{raw_window, &DestroyWindow};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     SetWindowLongPtrW(raw_window, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
     const std::array<RAWINPUTDEVICE, 2> devices{
@@ -170,7 +190,7 @@ void evgetwindows::MessageWindow::RunPump(
     };
 
     SetLastError(ERROR_SUCCESS);
-    if (RegisterRawInputDevices(devices.data(), devices.size(), sizeof(RAWINPUTDEVICE)) == FALSE
+    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE
         || GetLastError() != ERROR_SUCCESS) {
         registration.set_value(evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError,

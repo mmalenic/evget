@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdint>
 #include <future>
 #include <memory>
 #include <optional>
@@ -37,7 +38,7 @@ constexpr std::size_t kHighWaterMark = 6144;
 /**
  * \brief The outcome of queuing an input event into the channel.
  */
-enum class EnqueueOutcome {
+enum class EnqueueOutcome : std::uint8_t {
     kSent,    ///< Sent and queued
     kDropped, ///< channel full, counted as dropped
     kIgnored, ///< event type is neither mouse nor keyboard
@@ -52,7 +53,7 @@ public:
      * \brief Construct a message window where the channel finishes the executor.
      * \param executor the executor for the channel
      */
-    explicit MessageWindow(boost::asio::any_io_executor executor);
+    explicit MessageWindow(const boost::asio::any_io_executor& executor);
 
     MessageWindow(const MessageWindow&) = delete;
     MessageWindow(MessageWindow&&) noexcept = delete;
@@ -95,9 +96,17 @@ public:
 private:
     using WindowHandle = std::unique_ptr<std::remove_pointer_t<HWND>, decltype(&DestroyWindow)>;
 
-    struct FinishGuard {
-        std::shared_ptr<std::promise<void>> finished;
+    class FinishGuard {
+    public:
+        explicit FinishGuard(std::shared_ptr<std::promise<void>> finished);
+        FinishGuard(const FinishGuard&) = delete;
+        FinishGuard(FinishGuard&&) = delete;
+        FinishGuard& operator=(const FinishGuard&) = delete;
+        FinishGuard& operator=(FinishGuard&&) = delete;
         ~FinishGuard();
+
+    private:
+        std::shared_ptr<std::promise<void>> finished_;
     };
 
     static LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);

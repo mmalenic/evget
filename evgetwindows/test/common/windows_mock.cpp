@@ -4,6 +4,8 @@
 
 namespace test {
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)
+
 evgetwindows::RawEvent MakeMouseRawEvent() {
     evgetwindows::RawEvent event{};
     event.header.dwType = RIM_TYPEMOUSE;
@@ -43,5 +45,7 @@ RAWINPUT MakeHidRawInput() {
     raw.header.dwType = RIM_TYPEHID;
     return raw;
 }
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)
 
 } // namespace test

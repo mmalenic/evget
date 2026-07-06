@@ -6,7 +6,6 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
-#include <expected>
 #include <filesystem>
 #include <format>
 #include <memory>
@@ -19,7 +18,6 @@
 #include "evget/error.h"
 #include "evget/event/data.h"
 #include "evget/storage/database_storage.h"
-#include "evget/storage/store.h"
 
 test::DatabaseTest::DatabaseTest()
     : directory_{std::filesystem::temp_directory_path()}, database_file_{directory_ / TestDatabaseName()} {

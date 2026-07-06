@@ -16,7 +16,7 @@ namespace evgetwindows {
  * \brief Owned raw input event that can cross a boost channel and is trivially copyable.
  */
 struct RawEvent {
-    RAWINPUTHEADER header;
+    RAWINPUTHEADER header{};
     std::variant<RAWMOUSE, RAWKEYBOARD> data;
 };
 

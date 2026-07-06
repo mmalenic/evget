@@ -54,7 +54,8 @@ endif()
 
 if(BUILD_TESTING)
     target_sources(
-        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/next_event.cpp
+        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/message_window.cpp
+                                       test/next_event.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

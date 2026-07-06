@@ -10,8 +10,6 @@
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/error.h"
-#include "evget/event/data.h"
-#include "evget/storage/store.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
