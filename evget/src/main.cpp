@@ -6,6 +6,7 @@
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <boost/scope/scope_exit.hpp>
 #include <csignal>
 #include <exception>
 #include <functional>
@@ -30,7 +31,8 @@
 #include "evgetwindows/backend.h"
 #endif
 
-int main(int argc, char* argv[]) {
+namespace {
+int Run(int argc, char** argv) {
     evget::EventSource default_source{};
 #ifdef FEATURE_EVGETX11
     // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
@@ -75,6 +77,7 @@ int main(int argc, char* argv[]) {
     std::function<void()> stop_source = [] {};
     boost::asio::io_context signal_context;
     boost::asio::signal_set signals{signal_context, SIGINT, SIGTERM};
+    // NOLINTNEXTLINE(misc-include-cleaner)
     signals.async_wait([scheduler, &stop_source, &manager](const boost::system::error_code& error, int) {
         if (!error) {
             spdlog::debug("received stop signal, stopping scheduler");
@@ -83,73 +86,80 @@ int main(int argc, char* argv[]) {
             scheduler->Stop();
         }
     });
-    std::jthread signal_thread{[&signal_context] { signal_context.run(); }};
+    const std::jthread signal_thread{[&signal_context] { signal_context.run(); }};
+    const boost::scope::scope_exit stop_signals{[&signal_context] { signal_context.stop(); }};
 
     auto exit_code = 0;
-    try {
-        auto event_source = cli.EventSource();
+    auto event_source = cli.EventSource();
 
 #ifdef FEATURE_EVGETLIBINPUT
-        std::unique_ptr<evgetlibinput::Backend> li_backend{};
-        if (event_source == evget::EventSource::kLibInput) {
-            auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), filter, cli.Seat());
-            if (!result.has_value()) {
-                spdlog::error("{}", result.error());
-                return 1;
-            }
-            li_backend = std::move(*result);
-            stop_source = [&li_backend] { li_backend->Handler().Stop(); };
-            scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
+    std::unique_ptr<evgetlibinput::Backend> li_backend{};
+    if (event_source == evget::EventSource::kLibInput) {
+        auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), filter, cli.Seat());
+        if (!result.has_value()) {
+            spdlog::error("{}", result.error());
+            return 1;
         }
+        li_backend = std::move(*result);
+        stop_source = [&li_backend] { li_backend->Handler().Stop(); };
+        scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
+    }
 #endif
 
 #ifdef FEATURE_EVGETX11
-        std::unique_ptr<evgetx11::Backend> x11_backend{};
-        if (event_source == evget::EventSource::kX11) {
-            auto result = evgetx11::Backend::Create(filter, cli.Display());
-            if (!result.has_value()) {
-                spdlog::error("{}", result.error());
-                return 1;
-            }
-            x11_backend = std::move(*result);
-            auto handler = x11_backend->Handler();
-            if (!handler.has_value()) {
-                spdlog::error("{}", handler.error());
-                return 1;
-            }
-            stop_source = [&x11_backend] {
-                auto handler = x11_backend->Handler();
-                if (handler.has_value()) {
-                    handler->get().Stop();
-                }
-            };
-            scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
+    std::unique_ptr<evgetx11::Backend> x11_backend{};
+    if (event_source == evget::EventSource::kX11) {
+        auto result = evgetx11::Backend::Create(filter, cli.Display());
+        if (!result.has_value()) {
+            spdlog::error("{}", result.error());
+            return 1;
         }
+        x11_backend = std::move(*result);
+        auto handler = x11_backend->Handler();
+        if (!handler.has_value()) {
+            spdlog::error("{}", handler.error());
+            return 1;
+        }
+        stop_source = [&x11_backend] {
+            auto handler = x11_backend->Handler();
+            if (handler.has_value()) {
+                handler->get().Stop();
+            }
+        };
+        scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
+    }
 #endif
 
 #ifdef FEATURE_EVGETWINDOWS
-        std::unique_ptr<evgetwindows::Backend> win_backend{};
-        if (event_source == evget::EventSource::kWindows) {
-            auto result = evgetwindows::Backend::Create(filter, scheduler->Executor());
-            if (!result.has_value()) {
-                spdlog::error("{}", result.error());
-                return 1;
-            }
-            win_backend = std::move(*result);
-            stop_source = [&win_backend] {
-                win_backend->Handler().Stop();
-                win_backend->Stop();
-            };
-            scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
+    std::unique_ptr<evgetwindows::Backend> win_backend{};
+    if (event_source == evget::EventSource::kWindows) {
+        auto result = evgetwindows::Backend::Create(filter, scheduler->Executor());
+        if (!result.has_value()) {
+            spdlog::error("{}", result.error());
+            return 1;
         }
+        win_backend = std::move(*result);
+        stop_source = [&win_backend] {
+            win_backend->Handler().Stop();
+            win_backend->Stop();
+        };
+        scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
+    }
 #endif
 
-        scheduler->Join();
+    scheduler->Join();
+    return exit_code;
+}
+} // namespace
+
+int main(int argc, char* argv[]) {
+    try {
+        return Run(argc, argv);
     } catch (const std::exception& e) {
         spdlog::error("{}", e.what());
-        exit_code = 1;
+        return 1;
+    } catch (...) {
+        spdlog::error("unknown error");
+        return 1;
     }
-
-    signal_context.stop();
-    return exit_code;
 }
