@@ -200,12 +200,16 @@ class EvgetRecipe(ConanFile):
         tc.cache_variables["EVGET_BUILD_BIN"] = self.options.build_bin
         tc.cache_variables["BUILD_TESTING"] = self.options.build_testing
         tc.cache_variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
-        tc.cache_variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = self.options.clang_tidy_fix_errors
+        tc.cache_variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = (
+            self.options.clang_tidy_fix_errors
+        )
         tc.cache_variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
         tc.cache_variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.cache_variables["EVGET_INSTALL_LIB"] = self.options.install_lib
         tc.cache_variables["EVGET_BUILD_EVGETX11"] = self.options.build_evgetx11
-        tc.cache_variables["EVGET_BUILD_EVGETLIBINPUT"] = self.options.build_evgetlibinput
+        tc.cache_variables["EVGET_BUILD_EVGETLIBINPUT"] = (
+            self.options.build_evgetlibinput
+        )
         tc.cache_variables["EVGET_BUILD_EVGETWINDOWS"] = self.options.build_evgetwindows
 
         if self.options.clang_tidy_executable:
@@ -213,8 +217,12 @@ class EvgetRecipe(ConanFile):
                 self.options.clang_tidy_executable
             )
         if self.options.compiler_launcher:
-            tc.cache_variables["CMAKE_C_COMPILER_LAUNCHER"] = self.options.compiler_launcher
-            tc.cache_variables["CMAKE_CXX_COMPILER_LAUNCHER"] = self.options.compiler_launcher
+            tc.cache_variables["CMAKE_C_COMPILER_LAUNCHER"] = (
+                self.options.compiler_launcher
+            )
+            tc.cache_variables["CMAKE_CXX_COMPILER_LAUNCHER"] = (
+                self.options.compiler_launcher
+            )
         if self.options.export_compilation_database:
             tc.cache_variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
         if self.options.verify_headers:

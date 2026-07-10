@@ -1,6 +1,7 @@
-#include <gtest/gtest.h>
+#include "evgetwindows/next_event.h"
 
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/error.hpp>
@@ -16,7 +17,6 @@
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/error.h"
 #include "evget/input_event.h"
-#include "evgetwindows/next_event.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
 
@@ -26,6 +26,7 @@ using RawEventChannel =
     boost::asio::experimental::concurrent_channel<void(boost::system::error_code, evgetwindows::RawEvent)>;
 using NextResult = evget::Result<evget::InputEvent<evgetwindows::RawEvent>>;
 using SeamResult = std::tuple<boost::system::error_code, evgetwindows::RawEvent>;
+
 // NOLINTEND(misc-include-cleaner)
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-reference-coroutine-parameters)

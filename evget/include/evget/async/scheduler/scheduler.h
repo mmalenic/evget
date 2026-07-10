@@ -161,11 +161,7 @@ inline boost::asio::any_io_executor Scheduler::Executor() {
 }
 
 template <typename T>
-void Scheduler::SpawnImpl(
-    boost::asio::awaitable<T>&& task,
-    Invocable<void, T> auto&& handler,
-    auto&& execution
-) {
+void Scheduler::SpawnImpl(boost::asio::awaitable<T>&& task, Invocable<void, T> auto&& handler, auto&& execution) {
     boost::asio::co_spawn(
         std::forward<decltype(execution)>(execution),
         std::move(task),

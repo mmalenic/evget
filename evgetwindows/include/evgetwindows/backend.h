@@ -31,10 +31,8 @@ public:
      * \param executor the executor the channel completes on
      * \return the backend, or an error if the loop fails to start
      */
-    static evget::Result<std::unique_ptr<Backend>> Create(
-        evget::Store& storage,
-        const boost::asio::any_io_executor& executor
-    );
+    static evget::Result<std::unique_ptr<Backend>>
+    Create(evget::Store& storage, const boost::asio::any_io_executor& executor);
 
     /**
      * \brief Get the event handler.

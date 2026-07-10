@@ -1,32 +1,44 @@
 #include "evgetwindows/message_window.h"
 
-#include <hidusage.h>
-
-#include <spdlog/spdlog.h>
-
 #include <boost/asio/any_io_executor.hpp>
+#include <hidusage.h>
+#include <spdlog/spdlog.h>
 
 #include <array>
 #include <atomic>
-#include <chrono>
+#include <cstdint>
 #include <exception>
 #include <format>
 #include <future>
 #include <memory>
 #include <optional>
+#include <string>
 #include <thread>
 #include <utility>
 
 #include "evget/error.h"
 #include "evgetwindows/raw_event.h"
 
-namespace {
-constexpr const wchar_t* kWindowClassName = L"evget_message_window";
-constexpr std::chrono::seconds kJoinTimeout{2};
-} // namespace
+std::wstring evgetwindows::MessageWindow::MakeClassName() {
+    static std::atomic<std::uint64_t> counter{0};
+    return std::format(L"evget_message_window_{}", counter.fetch_add(1));
+}
+
+std::array<RAWINPUTDEVICE, 2> evgetwindows::MessageWindow::MakeRawInputDevices(DWORD flags, HWND target) {
+    return {
+        {{.usUsagePage = HID_USAGE_PAGE_GENERIC,
+          .usUsage = HID_USAGE_GENERIC_MOUSE,
+          .dwFlags = flags,
+          .hwndTarget = target},
+         {.usUsagePage = HID_USAGE_PAGE_GENERIC,
+          .usUsage = HID_USAGE_GENERIC_KEYBOARD,
+          .dwFlags = flags,
+          .hwndTarget = target}}
+    };
+}
 
 evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor)
-    : channel_{executor, kRawEventChannelCapacity} {}
+    : class_name_{MakeClassName()}, channel_{executor, kRawEventChannelCapacity} {}
 
 evgetwindows::MessageWindow::~MessageWindow() {
     try {
@@ -41,15 +53,17 @@ evgetwindows::RawEventChannel& evgetwindows::MessageWindow::Channel() {
 }
 
 evget::Result<void> evgetwindows::MessageWindow::Start() {
+    if (thread_.joinable()) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "message window already started"}
+        };
+    }
+
     std::promise<evget::Result<void>> registration;
     std::future<evget::Result<void>> registration_result = registration.get_future();
 
-    auto finished = std::make_shared<std::promise<void>>();
-    finished_ = finished->get_future();
-
-    thread_ = std::jthread{[this, registration = std::move(registration), finished]() mutable {
-        RunPump(std::move(registration), finished);
-    }};
+    thread_ =
+        std::jthread{[this, registration = std::move(registration)]() mutable { RunPump(std::move(registration)); }};
 
     return registration_result.get();
 }
@@ -57,19 +71,13 @@ evget::Result<void> evgetwindows::MessageWindow::Start() {
 void evgetwindows::MessageWindow::Stop() {
     channel_.close();
 
-    const DWORD pump_tid = thread_id_.load(std::memory_order_acquire);
+    const DWORD pump_tid = thread_id_.load();
     if (pump_tid != 0) {
         PostThreadMessageW(pump_tid, WM_QUIT, 0, 0);
     }
 
-    if (!thread_.joinable()) {
-        return;
-    }
-    if (finished_.valid() && finished_.wait_for(kJoinTimeout) == std::future_status::ready) {
+    if (thread_.joinable()) {
         thread_.join();
-    } else {
-        spdlog::error("message window did not exit within {}s", kJoinTimeout.count());
-        thread_.detach();
     }
 }
 
@@ -129,47 +137,80 @@ void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
     Enqueue(raw);
 }
 
-evgetwindows::MessageWindow::FinishGuard::FinishGuard(std::shared_ptr<std::promise<void>> finished)
-    : finished_{std::move(finished)} {}
+evgetwindows::MessageWindow::WindowClass::WindowClass(const wchar_t* class_name, HINSTANCE instance)
+    : class_name_{class_name}, instance_{instance} {}
 
-evgetwindows::MessageWindow::FinishGuard::~FinishGuard() {
-    try {
-        finished_->set_value();
-    } catch (const std::exception& e) {
-        spdlog::error("failed to signal message window completion: {}", e.what());
+evgetwindows::MessageWindow::WindowClass::~WindowClass() {
+    if (UnregisterClassW(class_name_, instance_) == FALSE) {
+        spdlog::error("UnregisterClassW failed: {}", GetLastError());
     }
 }
 
-void evgetwindows::MessageWindow::RunPump(
-    std::promise<evget::Result<void>> registration,
-    std::shared_ptr<std::promise<void>> finished
+evget::Result<std::unique_ptr<evgetwindows::MessageWindow::RawInput>> evgetwindows::MessageWindow::RawInput::Create(
+    HWND target
 ) {
-    const FinishGuard finish_guard{std::move(finished)};
+    const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_INPUTSINK | RIDEV_DEVNOTIFY, target);
+    SetLastError(ERROR_SUCCESS);
+    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE ||
+        GetLastError() != ERROR_SUCCESS) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError,
+             .message = std::format("RegisterRawInputDevices failed: {}", GetLastError())}
+        };
+    }
+    return std::unique_ptr<RawInput>(new RawInput{});
+}
 
+evgetwindows::MessageWindow::RawInput::~RawInput() {
+    // RIDEV_REMOVE requires hwndTarget == nullptr.
+    const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_REMOVE, nullptr);
+    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE) {
+        spdlog::error("RegisterRawInputDevices RIDEV_REMOVE failed: {}", GetLastError());
+    }
+}
+
+void evgetwindows::MessageWindow::RunPump(std::promise<evget::Result<void>> registration) {
     thread_id_.store(GetCurrentThreadId(), std::memory_order_release);
 
     WNDCLASSEXW window_class{};
     window_class.cbSize = sizeof(window_class);
     window_class.lpfnWndProc = &MessageWindow::WndProc;
     window_class.hInstance = GetModuleHandleW(nullptr);
-    window_class.lpszClassName = kWindowClassName;
-    if (RegisterClassExW(&window_class) == 0 && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
-        registration.set_value(evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError,
-             .message = std::format("RegisterClassExW failed: {}", GetLastError())}
-        });
+    window_class.lpszClassName = class_name_.c_str();
+    if (RegisterClassExW(&window_class) == 0) {
+        registration.set_value(
+            evget::Err{
+                {.error_type = evget::ErrorType::kEventHandlerError,
+                 .message = std::format("RegisterClassExW failed: {}", GetLastError())}
+            }
+        );
         return;
     }
+    // Constructed before the window so it unregisters after DestroyWindow.
+    const WindowClass class_guard{class_name_.c_str(), window_class.hInstance};
 
     // NOLINTNEXTLINE(misc-misplaced-const)
     const HWND raw_window = CreateWindowExW(
-        0, kWindowClassName, L"evget", 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, window_class.hInstance, nullptr
+        0,
+        class_name_.c_str(),
+        L"evget",
+        0,
+        0,
+        0,
+        0,
+        0,
+        HWND_MESSAGE,
+        nullptr,
+        window_class.hInstance,
+        nullptr
     );
     if (raw_window == nullptr) {
-        registration.set_value(evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError,
-             .message = std::format("CreateWindowExW failed: {}", GetLastError())}
-        });
+        registration.set_value(
+            evget::Err{
+                {.error_type = evget::ErrorType::kEventHandlerError,
+                 .message = std::format("CreateWindowExW failed: {}", GetLastError())}
+            }
+        );
         return;
     }
     // DestroyWindow must run on the owning thread.
@@ -178,26 +219,12 @@ void evgetwindows::MessageWindow::RunPump(
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     SetWindowLongPtrW(raw_window, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
-    const std::array<RAWINPUTDEVICE, 2> devices{
-        {{.usUsagePage = HID_USAGE_PAGE_GENERIC,
-          .usUsage = HID_USAGE_GENERIC_MOUSE,
-          .dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY,
-          .hwndTarget = raw_window},
-         {.usUsagePage = HID_USAGE_PAGE_GENERIC,
-          .usUsage = HID_USAGE_GENERIC_KEYBOARD,
-          .dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY,
-          .hwndTarget = raw_window}}
-    };
-
-    SetLastError(ERROR_SUCCESS);
-    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE
-        || GetLastError() != ERROR_SUCCESS) {
-        registration.set_value(evget::Err{
-            {.error_type = evget::ErrorType::kEventHandlerError,
-             .message = std::format("RegisterRawInputDevices failed: {}", GetLastError())}
-        });
+    auto raw_input = RawInput::Create(raw_window);
+    if (!raw_input.has_value()) {
+        registration.set_value(evget::Err{raw_input.error()});
         return;
     }
+    const std::unique_ptr<RawInput> raw_input_guard = std::move(*raw_input);
 
     registration.set_value(evget::Result<void>{});
 

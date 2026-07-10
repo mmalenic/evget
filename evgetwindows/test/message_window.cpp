@@ -1,3 +1,5 @@
+#include "evgetwindows/message_window.h"
+
 #include <gtest/gtest.h>
 
 #include <boost/asio/thread_pool.hpp>
@@ -6,7 +8,6 @@
 #include <variant>
 
 #include "common/windows_mock.h"
-#include "evgetwindows/message_window.h"
 #include "evgetwindows/raw_event.h"
 
 namespace {

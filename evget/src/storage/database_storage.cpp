@@ -129,21 +129,19 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
 }
 
 evget::Result<void> evget::DatabaseStorage::Init() {
-    auto result = EnsureConnected()
-                      .and_then([this] { return ApplyPragmas(); })
-                      .and_then([this] {
-                          auto migrations = std::vector{Migration{
-                              .version = 1,
-                              .description = "initialize database tables",
-                              .sql = detail::initialize,
-                              .exec = true,
-                          }};
-                          auto apply_migrations = Migrate{*this->connection_, migrations};
+    auto result = EnsureConnected().and_then([this] { return ApplyPragmas(); }).and_then([this] {
+        auto migrations = std::vector{Migration{
+            .version = 1,
+            .description = "initialize database tables",
+            .sql = detail::initialize,
+            .exec = true,
+        }};
+        auto apply_migrations = Migrate{*this->connection_, migrations};
 
-                          return apply_migrations.ApplyMigrations().transform_error([](const Error<ErrorType>& error) {
-                              return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
-                          });
-                      });
+        return apply_migrations.ApplyMigrations().transform_error([](const Error<ErrorType>& error) {
+            return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
+        });
+    });
 
     return result;
 }

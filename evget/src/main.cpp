@@ -2,11 +2,11 @@
 #error "define at least one of `FEATURE_EVGETLIBINPUT`, `FEATURE_EVGETX11`, or `FEATURE_EVGETWINDOWS`"
 #endif
 
-#include <spdlog/spdlog.h>
-
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/scope/scope_exit.hpp>
+#include <spdlog/spdlog.h>
+
 #include <csignal>
 #include <exception>
 #include <functional>
