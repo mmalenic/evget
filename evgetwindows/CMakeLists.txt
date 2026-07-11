@@ -11,6 +11,7 @@ add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/backend.cpp ${SRC}/message_window.cpp ${SRC}/next_event.cpp ${SRC}/windows.cpp
+            ${SRC}/windows_query_api.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -22,6 +23,7 @@ target_sources(
            ${INCLUDE}/next_event.h
            ${INCLUDE}/raw_event.h
            ${INCLUDE}/windows.h
+           ${INCLUDE}/windows_query_api.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetwindows)
 
