@@ -8,8 +8,13 @@
 
 #include <tuple>
 
+#include <array>
+#include <optional>
+#include <string>
+
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
+#include "evgetwindows/windows_query_api.h"
 
 namespace test {
 
@@ -25,8 +30,28 @@ public:
     );
 };
 
+class WindowsQueryApiMock : public evgetwindows::WindowsQueryApi {
+public:
+    MOCK_METHOD(
+        (std::optional<std::string>),
+        CharacterFor,
+        (UINT vk, UINT scan_code, (const std::array<BYTE, 256>&)key_state),
+        (override)
+    );
+    MOCK_METHOD((std::optional<std::string>), DeviceName, (HANDLE device), (override));
+    MOCK_METHOD((std::optional<evgetwindows::FocusWindowInfo>), FocusWindow, (), (override));
+    MOCK_METHOD(bool, ToggleState, (int vk), (override));
+};
+
 evgetwindows::RawEvent MakeMouseRawEvent();
 evgetwindows::RawEvent MakeKeyboardRawEvent();
+
+evgetwindows::RawEvent MakeMouseMoveRelative(LONG dx, LONG dy);
+evgetwindows::RawEvent MakeMouseWheel(SHORT delta, bool horizontal);
+evgetwindows::RawEvent MakeMouseButton(USHORT button_flags);
+evgetwindows::RawEvent MakeMouseAbsolute(LONG x, LONG y);
+evgetwindows::RawEvent MakeKeyboard(USHORT vkey, USHORT make_code, USHORT flags);
+evgetwindows::RawEvent MakeInjected(USHORT vkey);
 
 RAWINPUT MakeMouseRawInput(LONG last_x, LONG last_y);
 RAWINPUT MakeKeyboardRawInput(USHORT vkey);
