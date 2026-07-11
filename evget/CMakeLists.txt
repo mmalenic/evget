@@ -268,6 +268,7 @@ if(BUILD_TESTING)
                test/event/key.cpp
                test/event/mouse_scroll.cpp
                test/event/data.cpp
+               test/device_id.cpp
                test/interval_tracker.cpp
                test/storage/json_storage.cpp
                test/storage/database_storage.cpp
