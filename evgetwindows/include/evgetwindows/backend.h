@@ -15,8 +15,10 @@
 #include "evget/input_event.h"
 #include "evget/storage/store.h"
 #include "evgetwindows/event_transformer.h"
+#include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/next_event.h"
 #include "evgetwindows/windows.h"
+#include "evgetwindows/windows_query_api.h"
 
 namespace evgetwindows {
 
@@ -55,6 +57,8 @@ private:
     Backend(std::unique_ptr<WindowsApi> windows, evget::Store& storage);
 
     std::unique_ptr<WindowsApi> windows_;
+    std::unique_ptr<WindowsQueryApi> query_;
+    ModifierTracker tracker_;
     EventTransformer transformer_;
     NextEvent next_event_;
     evget::EventHandler<evget::InputEvent<RawEvent>> handler_;
