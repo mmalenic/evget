@@ -10,8 +10,8 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/backend.cpp ${SRC}/message_window.cpp ${SRC}/modifier_tracker.cpp ${SRC}/next_event.cpp
-            ${SRC}/vk_keysym.cpp ${SRC}/windows.cpp ${SRC}/windows_query_api.cpp
+    PRIVATE ${SRC}/backend.cpp ${SRC}/event_transformer.cpp ${SRC}/message_window.cpp ${SRC}/modifier_tracker.cpp
+            ${SRC}/next_event.cpp ${SRC}/vk_keysym.cpp ${SRC}/windows.cpp ${SRC}/windows_query_api.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
