@@ -10,8 +10,8 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/backend.cpp ${SRC}/message_window.cpp ${SRC}/next_event.cpp ${SRC}/windows.cpp
-            ${SRC}/windows_query_api.cpp
+    PRIVATE ${SRC}/backend.cpp ${SRC}/message_window.cpp ${SRC}/modifier_tracker.cpp ${SRC}/next_event.cpp
+            ${SRC}/vk_keysym.cpp ${SRC}/windows.cpp ${SRC}/windows_query_api.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -20,8 +20,10 @@ target_sources(
            ${INCLUDE}/backend.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/message_window.h
+           ${INCLUDE}/modifier_tracker.h
            ${INCLUDE}/next_event.h
            ${INCLUDE}/raw_event.h
+           ${INCLUDE}/vk_keysym.h
            ${INCLUDE}/windows.h
            ${INCLUDE}/windows_query_api.h
 )
@@ -56,8 +58,9 @@ endif()
 
 if(BUILD_TESTING)
     target_sources(
-        ${TEST_EXECUTABLE_NAME} PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/message_window.cpp
-                                       test/next_event.cpp
+        ${TEST_EXECUTABLE_NAME}
+        PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/message_window.cpp test/modifier_tracker.cpp
+               test/next_event.cpp test/vk_keysym.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()
