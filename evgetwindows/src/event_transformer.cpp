@@ -5,6 +5,7 @@
 #include <array>
 #include <chrono>
 #include <cstdint>
+#include <format>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -72,7 +73,7 @@ evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<Raw
     std::string device_name = device == nullptr
         ? std::string{kInjectedDeviceName}
         : query_.get().DeviceName(device).value_or(std::string{kInjectedDeviceName});
-    const std::string& device_uuid = device_ids_.UuidDeterministic(device_name, kDeviceNamespace);
+    const std::string& device_uuid = device_ids_.UuidDeterministic(std::format("evget:windows:device:{}", device_name));
 
     auto device_type = evget::DeviceType::kUnknown;
     switch (raw.header.dwType) {

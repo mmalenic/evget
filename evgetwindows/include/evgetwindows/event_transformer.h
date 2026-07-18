@@ -1,15 +1,12 @@
 /**
  * \file event_transformer.h
- * \brief Transformer for the Windows backend that maps raw input events into the evget schema.
+ * \brief Transformer for the Windows backend that maps raw input events onto the evget schema.
  */
 
 #ifndef EVGETWINDOWS_EVENT_TRANSFORMER_H
 #define EVGETWINDOWS_EVENT_TRANSFORMER_H
 
 #include <windows.h>
-
-#include <boost/uuid/string_generator.hpp>
-#include <boost/uuid/uuid.hpp>
 
 #include <cstdint>
 #include <functional>
@@ -37,10 +34,6 @@ constexpr std::string_view kEventSourceName{"windows"};
 
 /// \brief Virtual device name for when the Raw Input device is null.
 constexpr std::string_view kInjectedDeviceName{"windows-injected"};
-
-/// \brief The evget namespace for Windows device UUIDs.
-inline const boost::uuids::uuid kDeviceNamespace =
-    boost::uuids::string_generator{}("6f3b2a1c-8d4e-5f6a-9b7c-0d1e2f3a4b5c");
 
 /**
  * \brief Event transformer for the Windows backend.
