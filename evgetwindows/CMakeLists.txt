@@ -10,8 +10,14 @@ set(SRC src)
 add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
-    PRIVATE ${SRC}/backend.cpp ${SRC}/event_transformer.cpp ${SRC}/message_window.cpp ${SRC}/modifier_tracker.cpp
-            ${SRC}/next_event.cpp ${SRC}/vk_keysym.cpp ${SRC}/windows.cpp ${SRC}/windows_query_api.cpp
+    PRIVATE ${SRC}/backend.cpp
+            ${SRC}/event_transformer.cpp
+            ${SRC}/message_window.cpp
+            ${SRC}/modifier_tracker.cpp
+            ${SRC}/next_event.cpp
+            ${SRC}/vk_keysym.cpp
+            ${SRC}/windows.cpp
+            ${SRC}/windows_query_api.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -59,8 +65,13 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/windows_mock.cpp test/common/windows_mock.h test/event_transformer.cpp
-               test/message_window.cpp test/modifier_tracker.cpp test/next_event.cpp test/vk_keysym.cpp
+        PUBLIC test/common/windows_mock.cpp
+               test/common/windows_mock.h
+               test/event_transformer.cpp
+               test/message_window.cpp
+               test/modifier_tracker.cpp
+               test/next_event.cpp
+               test/vk_keysym.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

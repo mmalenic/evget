@@ -1,8 +1,7 @@
 #include "evgetwindows/windows_query_api.h"
 
-#include <windows.h>
-
 #include <spdlog/spdlog.h>
+#include <windows.h>
 
 #include <array>
 #include <optional>
@@ -65,8 +64,9 @@ int MonitorIndex(HMONITOR monitor) {
 std::optional<std::string>
 evgetwindows::WindowsQuery::CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) {
     HWND foreground = GetForegroundWindow();
-    const HKL layout = (foreground != nullptr) ? GetKeyboardLayout(GetWindowThreadProcessId(foreground, nullptr))
-                                               : GetKeyboardLayout(0);
+    const HKL layout = (foreground != nullptr)
+        ? GetKeyboardLayout(GetWindowThreadProcessId(foreground, nullptr))
+        : GetKeyboardLayout(0);
 
     std::array<wchar_t, kCharacterBufferSize> buffer{};
     // The no-state-change flag keeps ToUnicodeEx from corrupting the user's live keys.

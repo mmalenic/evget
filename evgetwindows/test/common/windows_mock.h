@@ -6,11 +6,10 @@
 #include <boost/asio/awaitable.hpp>
 #include <boost/system/error_code.hpp>
 
-#include <tuple>
-
 #include <array>
 #include <optional>
 #include <string>
+#include <tuple>
 
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"

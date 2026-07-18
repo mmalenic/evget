@@ -34,8 +34,7 @@ TEST(EvgetWindowsTransformer, MouseMoveRelativePassesThroughDelta) {
     evgetwindows::ModifierTracker tracker{};
     evgetwindows::EventTransformer transformer{query, tracker};
 
-    auto data =
-        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(5, -3)});
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(5, -3)});
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
@@ -184,6 +183,7 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
         int expected_id;
         std::string expected_name;
     };
+
     const std::array<ButtonCase, 5> cases{{
         {RI_MOUSE_LEFT_BUTTON_DOWN, 0x110, "BTN_LEFT"},
         {RI_MOUSE_RIGHT_BUTTON_DOWN, 0x111, "BTN_RIGHT"},
@@ -197,8 +197,7 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
         evgetwindows::ModifierTracker tracker{};
         evgetwindows::EventTransformer transformer{query, tracker};
 
-        auto data =
-            transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseButton(button.flag)});
+        auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseButton(button.flag)});
         const auto& entries = data.Entries();
 
         ASSERT_EQ(entries.size(), 1) << "button id " << button.expected_id;
@@ -212,8 +211,7 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
 TEST(EvgetWindowsTransformer, CharacterFromSeamPopulatesCharacterField) {
     NiceMock<WindowsQueryApiMock> query{};
     evgetwindows::ModifierTracker tracker{};
-    EXPECT_CALL(query, CharacterFor(static_cast<UINT>('A'), _, _))
-        .WillOnce(Return(std::optional<std::string>{"a"}));
+    EXPECT_CALL(query, CharacterFor(static_cast<UINT>('A'), _, _)).WillOnce(Return(std::optional<std::string>{"a"}));
 
     evgetwindows::EventTransformer transformer{query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
@@ -249,9 +247,8 @@ TEST(EvgetWindowsTransformer, KeyReleaseHasNoCharacterLookup) {
     EXPECT_CALL(query, CharacterFor(_, _, _)).Times(0);
 
     evgetwindows::EventTransformer transformer{query, tracker};
-    auto data = transformer.TransformEvent(
-        evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, RI_KEY_BREAK)}
-    );
+    auto data =
+        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, RI_KEY_BREAK)});
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
@@ -268,8 +265,7 @@ TEST(EvgetWindowsTransformer, ModifierStampedBeforeSelfUpdate) {
     auto shift_press = transformer.TransformEvent(
         evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard(VK_LSHIFT, kLeftShiftScan, 0)}
     );
-    auto next_key =
-        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
+    auto next_key = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
 
     ASSERT_EQ(shift_press.Entries().size(), 1);
     EXPECT_EQ(shift_press.Entries().at(0).Modifiers().size(), 0);
@@ -324,8 +320,7 @@ TEST(EvgetWindowsTransformer, FocusWindowPresentPopulatesFields) {
     EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::optional{info}));
 
     evgetwindows::EventTransformer transformer{query, tracker};
-    auto data =
-        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
@@ -343,8 +338,7 @@ TEST(EvgetWindowsTransformer, FocusWindowAbsentLeavesFieldsEmpty) {
     EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::nullopt));
 
     evgetwindows::EventTransformer transformer{query, tracker};
-    auto data =
-        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
@@ -370,8 +364,7 @@ TEST(EvgetWindowsTransformer, SchemaParityFieldCountsMatchCore) {
     evgetwindows::ModifierTracker tracker{};
     evgetwindows::EventTransformer transformer{query, tracker};
 
-    auto move =
-        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
+    auto move = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     ASSERT_EQ(move.Entries().size(), 1);
     EXPECT_EQ(move.Entries().at(0).Data().size(), evget::detail::kMouseMoveNFields);
     EXPECT_EQ(move.Entries().at(0).Data().at(13), "windows");

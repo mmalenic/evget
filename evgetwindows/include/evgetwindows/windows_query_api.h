@@ -50,11 +50,8 @@ public:
      * \param key_state the 256-byte key state
      * \return the UTF-8 character, or nullopt in not available
      */
-    [[nodiscard]] virtual std::optional<std::string> CharacterFor(
-        UINT vk,
-        UINT scan_code,
-        const std::array<BYTE, 256>& key_state
-    ) = 0;
+    [[nodiscard]] virtual std::optional<std::string>
+    CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) = 0;
 
     /**
      * \brief Resolve the device name for a Raw Input device.
@@ -91,11 +88,8 @@ public:
     WindowsQuery(const WindowsQuery&) = delete;
     WindowsQuery& operator=(const WindowsQuery&) = delete;
 
-    [[nodiscard]] std::optional<std::string> CharacterFor(
-        UINT vk,
-        UINT scan_code,
-        const std::array<BYTE, 256>& key_state
-    ) override;
+    [[nodiscard]] std::optional<std::string>
+    CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) override;
     [[nodiscard]] std::optional<std::string> DeviceName(HANDLE device) override;
     [[nodiscard]] std::optional<FocusWindowInfo> FocusWindow() override;
     [[nodiscard]] bool ToggleState(int vk) override;
