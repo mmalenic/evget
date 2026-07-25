@@ -13,6 +13,20 @@
 namespace evgetwindows {
 
 /**
+ * \brief Scan code that VK_RSHIFT maps to on the active layout.
+ * \return the right-shift scan code
+ */
+[[nodiscard]] USHORT RightShiftScanCode();
+
+/**
+ * \brief Map a named or modifier virtual-key to its X11 keysymdef name.
+ * \param vk the virtual-key code
+ * \param e0 the RI_KEY_E0 extended-key bit
+ * \return the keysymdef name, or a fallback for an unmapped key
+ */
+[[nodiscard]] std::string NamedKeysym(UINT vk, bool e0);
+
+/**
  * \brief Map a virtual-key to its X11 keysymdef name.
  * \param vk the virtual-key code
  * \param e0 the RI_KEY_E0 extended-key bit

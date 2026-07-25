@@ -2,19 +2,11 @@
 
 #include <windows.h>
 
+#include <cctype>
 #include <format>
 #include <string>
 
-namespace {
-
-constexpr USHORT kRightShiftScanCode = 0x36;
-
-constexpr UINT kLetterFirst = 'A';
-constexpr UINT kLetterLast = 'Z';
-constexpr UINT kDigitFirst = '0';
-constexpr UINT kDigitLast = '9';
-
-std::string NamedKeysym(UINT vk, bool e0) {
+std::string evgetwindows::NamedKeysym(UINT vk, bool e0) {
     switch (vk) {
         case VK_LSHIFT:
             return "Shift_L";
@@ -127,14 +119,12 @@ std::string NamedKeysym(UINT vk, bool e0) {
     }
 }
 
-} // namespace
-
 std::string evgetwindows::VkToKeysymName(UINT vk, bool e0) {
-    if (vk >= kLetterFirst && vk <= kLetterLast) {
-        return std::string(1, static_cast<char>(vk - kLetterFirst + 'a'));
+    if (vk >= 'A' && vk <= 'Z') {
+        return {static_cast<char>(std::tolower(static_cast<unsigned char>(vk)))};
     }
-    if (vk >= kDigitFirst && vk <= kDigitLast) {
-        return std::string(1, static_cast<char>(vk));
+    if (vk >= '0' && vk <= '9') {
+        return {static_cast<char>(vk)};
     }
     if (vk >= VK_F1 && vk <= VK_F24) {
         return std::format("F{}", vk - VK_F1 + 1);
@@ -145,15 +135,19 @@ std::string evgetwindows::VkToKeysymName(UINT vk, bool e0) {
     return NamedKeysym(vk, e0);
 }
 
+USHORT evgetwindows::RightShiftScanCode() {
+    return static_cast<USHORT>(MapVirtualKey(VK_RSHIFT, MAPVK_VK_TO_VSC));
+}
+
 UINT evgetwindows::ResolveVk(const RAWKEYBOARD& keyboard) {
-    const bool e0 = (keyboard.Flags & RI_KEY_E0) != 0;
+    const bool e0_flag = (keyboard.Flags & RI_KEY_E0) != 0;
     switch (keyboard.VKey) {
         case VK_SHIFT:
-            return (keyboard.MakeCode == kRightShiftScanCode) ? VK_RSHIFT : VK_LSHIFT;
+            return (keyboard.MakeCode == RightShiftScanCode()) ? VK_RSHIFT : VK_LSHIFT;
         case VK_CONTROL:
-            return e0 ? VK_RCONTROL : VK_LCONTROL;
+            return e0_flag ? VK_RCONTROL : VK_LCONTROL;
         case VK_MENU:
-            return e0 ? VK_RMENU : VK_LMENU;
+            return e0_flag ? VK_RMENU : VK_LMENU;
         default:
             return keyboard.VKey;
     }
