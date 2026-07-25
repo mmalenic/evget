@@ -57,12 +57,11 @@ TEST(ModifierTracker, ScrollLockDoesNotProduceModifier) {
 
 TEST(ModifierTracker, KeyStateHasDownBitOnHeldKey) {
     constexpr USHORT kLeftShiftScan = 0x2A;
-    constexpr BYTE kKeyDownBit = 0x80;
     evgetwindows::ModifierTracker tracker{};
 
     tracker.Update(std::get<RAWKEYBOARD>(MakeKeyboard(VK_LSHIFT, kLeftShiftScan, 0).data));
 
     const auto state = tracker.KeyState();
-    EXPECT_EQ(state[VK_LSHIFT] & kKeyDownBit, kKeyDownBit);
-    EXPECT_EQ(state[VK_SHIFT] & kKeyDownBit, kKeyDownBit);
+    EXPECT_EQ(state[VK_LSHIFT] & evgetwindows::kKeyDownBit, evgetwindows::kKeyDownBit);
+    EXPECT_EQ(state[VK_SHIFT] & evgetwindows::kKeyDownBit, evgetwindows::kKeyDownBit);
 }

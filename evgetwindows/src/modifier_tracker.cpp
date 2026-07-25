@@ -9,13 +9,6 @@
 #include "evget/event/modifier_value.h"
 #include "evgetwindows/vk_keysym.h"
 
-namespace {
-
-constexpr BYTE kKeyDownBit = 0x80;
-constexpr BYTE kToggleBit = 0x01;
-
-} // namespace
-
 void evgetwindows::ModifierTracker::Seed(bool caps_lock, bool num_lock, bool scroll_lock) {
     caps_on_ = caps_lock;
     num_on_ = num_lock;
@@ -72,8 +65,8 @@ std::set<evget::ModifierValue> evgetwindows::ModifierTracker::ActiveModifiers() 
     return modifiers;
 }
 
-std::array<BYTE, 256> evgetwindows::ModifierTracker::KeyState() const {
-    std::array<BYTE, 256> state{};
+std::array<BYTE, evgetwindows::kKeyStateSize> evgetwindows::ModifierTracker::KeyState() const {
+    std::array<BYTE, kKeyStateSize> state{};
     for (std::size_t vk = 0; vk < state.size(); ++vk) {
         if (down_[vk]) {
             state[vk] = kKeyDownBit;
