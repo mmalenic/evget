@@ -113,9 +113,6 @@ public:
     Result<std::string> AsString(int pos) override;
 
 private:
-    static Err AsError(const std::exception& error);
-    static Err StatementError();
-
     std::reference_wrapper<SQLiteConnection> connection_;
     std::map<int, std::variant<int, double, const char*, bool>> binds_;
     std::optional<::SQLite::Statement> statement_;

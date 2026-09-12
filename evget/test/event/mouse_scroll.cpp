@@ -24,7 +24,7 @@ TEST(MouseScrollTest, Event) {
             .FocusWindowPositionY(1)
             .FocusWindowWidth(1)
             .FocusWindowHeight(1)
-            .Screen(1)
+            .Screen("1")
             .Device(evget::DeviceType::kKeyboard)
             .SystemEvent("test_event")
             .Vertical(1)

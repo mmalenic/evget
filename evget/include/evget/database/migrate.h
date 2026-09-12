@@ -60,7 +60,6 @@ private:
     [[nodiscard]] Result<void> ApplyMigration(const Migration& migration, const std::string& checksum) const;
     [[nodiscard]] Result<void> ApplyMigrationSql(const Migration& migration) const;
 
-    static std::string Checksum(const Migration& migration);
 };
 } // namespace evget
 

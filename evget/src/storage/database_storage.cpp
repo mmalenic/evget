@@ -26,6 +26,24 @@
 #include "queries/insert_mouse_scroll_modifier.h"
 #include "schema/initialize.h"
 
+namespace {
+
+evget::Result<void>
+BindValues(std::unique_ptr<evget::Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid) {
+    query->BindChars(0, entry_uuid.c_str());
+    for (const auto& [index, value] : std::views::enumerate(data)) {
+        query->BindChars(static_cast<int>(index) + 1, value.c_str());
+    }
+
+    return query->NextWhile().and_then(
+                                 [&query] { return (*query).Reset(); }
+    ).transform_error([](const evget::Error<evget::ErrorType>& error) {
+        return evget::Error{.error_type = evget::ErrorType::kDatabaseError, .message = error.message};
+    });
+}
+
+} // namespace
+
 evget::DatabaseStorage::DatabaseStorage(std::unique_ptr<Connection> connection, std::filesystem::path database)
     : connection_{std::move(connection)}, database_{std::move(database)} {}
 
@@ -174,23 +192,6 @@ void evget::DatabaseStorage::SetOptionalStatement(
     if (!query.has_value()) {
         query = {connection_->BuildQuery(std::move(query_string))};
     }
-}
-
-evget::Result<void> evget::DatabaseStorage::BindValues(
-    std::unique_ptr<Query>& query,
-    const std::vector<std::string>& data,
-    const std::string& entry_uuid
-) {
-    query->BindChars(0, entry_uuid.c_str());
-    for (const auto& [index, value] : std::views::enumerate(data)) {
-        query->BindChars(static_cast<int>(index) + 1, value.c_str());
-    }
-
-    return query->NextWhile().and_then(
-                                 [&query] { return (*query).Reset(); }
-    ).transform_error([](const Error<ErrorType>& error) {
-        return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
-    });
 }
 
 evget::Result<void> evget::DatabaseStorage::BindValuesModifier(

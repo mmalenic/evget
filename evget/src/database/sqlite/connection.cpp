@@ -16,6 +16,14 @@
 #include "evget/database/sqlite/query.h"
 #include "evget/error.h"
 
+namespace {
+
+evget::Err ConnectError(const char* message) {
+    return evget::Err{evget::Error{.error_type = evget::ErrorType::kDatabaseError, .message = message}};
+}
+
+} // namespace
+
 evget::Result<void> evget::SQLiteConnection::Connect(std::filesystem::path database, ConnectOptions options) {
     try {
         auto database_string = database.string();
@@ -80,10 +88,6 @@ evget::Result<void> evget::SQLiteConnection::Transaction() {
 
 std::unique_ptr<evget::Query> evget::SQLiteConnection::BuildQuery(std::string query) {
     return std::make_unique<SQLiteQuery>(*this, std::move(query));
-}
-
-evget::Err evget::SQLiteConnection::ConnectError(const char* message) {
-    return Err{Error{.error_type = ErrorType::kDatabaseError, .message = message}};
 }
 
 evget::Result<void> evget::SQLiteConnection::Rollback() {

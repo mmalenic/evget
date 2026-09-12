@@ -90,8 +90,8 @@ evget::MouseScroll& evget::MouseScroll::Modifier(ModifierValue modifier_value) {
     return *this;
 }
 
-evget::MouseScroll& evget::MouseScroll::Screen(int screen) {
-    screen_ = screen;
+evget::MouseScroll& evget::MouseScroll::Screen(std::string screen) {
+    screen_ = std::move(screen);
     return *this;
 }
 
@@ -118,7 +118,7 @@ evget::Data& evget::MouseScroll::Build(Data& data) const {
          FromDouble(focus_window_position_y_),
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
-         FromInt(screen_),
+         FromString(screen_),
          FromString(device_id_),
          FromString(system_event_),
          FromString(event_source_),

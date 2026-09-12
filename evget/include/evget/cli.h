@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <expected>
 #include <format>
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -136,7 +135,6 @@ public:
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{100};
-    static constexpr std::size_t kIndentBy{30};
 
     bool ensure_utf8_argv_{true};
     std::vector<std::string> output_;
@@ -152,19 +150,9 @@ private:
     std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
     std::vector<std::string> device_type_descriptions_{DeviceTypeDescriptions()};
 
-    static std::string FormatEnum(
-        const std::string& value_descriptor,
-        const std::string& enum_description,
-        const std::vector<std::string>& descriptions,
-        const std::string& default_value
-    );
     static std::vector<std::string> EventSourceDescriptions();
-    static std::map<std::string, evget::EventSource> EventSourceMappings();
-    static std::string ToString(evget::EventSource event_source);
     static std::vector<std::string> LogLevelDescriptions();
-    static std::map<std::string, spdlog::level::level_enum> LogLevelMappings();
     static std::vector<std::string> DeviceTypeDescriptions();
-    static std::map<std::string, DeviceType> DeviceTypeMappings();
 };
 } // namespace evget
 

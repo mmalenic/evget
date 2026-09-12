@@ -14,6 +14,24 @@
 #include "evget/database/connection.h"
 #include "evget/error.h"
 
+namespace {
+
+std::string Checksum(const evget::Migration& migration) {
+    constexpr std::size_t kSha512DigestBytes = 64;
+    std::array<unsigned char, kSha512DigestBytes> digest{};
+    const auto* input = std::bit_cast<const unsigned char*>(migration.sql.c_str());
+    mbedtls_sha512(input, migration.sql.length(), digest.data(), 0);
+
+    std::string hex{};
+    hex.reserve(kSha512DigestBytes * 2);
+    for (const unsigned char byte : digest) {
+        hex += std::format("{:02x}", byte);
+    }
+    return hex;
+}
+
+} // namespace
+
 evget::Migrate::Migrate(Connection& connection, const std::vector<Migration>& migrations)
     : connection_{connection}, migrations_{migrations} {
     std::ranges::sort(
@@ -86,20 +104,6 @@ evget::Result<void> evget::Migrate::ApplyMigrationSql(const Migration& migration
     }
 
     return query->NextWhile().and_then([&query] { return (*query).Reset(); });
-}
-
-std::string evget::Migrate::Checksum(const Migration& migration) {
-    constexpr std::size_t kSha512DigestBytes = 64;
-    std::array<unsigned char, kSha512DigestBytes> digest{};
-    const auto* input = std::bit_cast<const unsigned char*>(migration.sql.c_str());
-    mbedtls_sha512(input, migration.sql.length(), digest.data(), 0);
-
-    std::string hex{};
-    hex.reserve(kSha512DigestBytes * 2);
-    for (const unsigned char byte : digest) {
-        hex += std::format("{:02x}", byte);
-    }
-    return hex;
 }
 
 evget::Result<void> evget::Migrate::ApplyMigrations() {

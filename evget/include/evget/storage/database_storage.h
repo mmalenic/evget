@@ -60,8 +60,6 @@ private:
         std::string insert_modifier_query
     );
     void SetOptionalStatement(std::optional<std::unique_ptr<Query>>& query, std::string query_string) const;
-    static Result<void>
-    BindValues(std::unique_ptr<Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid);
     Result<void> BindValuesModifier(
         std::unique_ptr<Query>& query,
         const std::vector<std::string>& modifiers,

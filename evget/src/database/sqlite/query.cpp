@@ -10,6 +10,22 @@
 #include "evget/database/sqlite/connection.h"
 #include "evget/error.h"
 
+namespace {
+
+evget::Err StatementError() {
+    const auto* what = "statement has not been initialized";
+    spdlog::error(what);
+    return evget::Err{{.error_type = evget::ErrorType::kDatabaseError, .message = what}};
+}
+
+evget::Err AsError(const std::exception& error) {
+    const auto* what = error.what();
+    spdlog::error("error getting column value: {}", what);
+    return evget::Err{{.error_type = evget::ErrorType::kDatabaseError, .message = what}};
+}
+
+} // namespace
+
 evget::SQLiteQuery::SQLiteQuery(SQLiteConnection& connection, std::string query)
     : connection_{connection}, query_{std::move(query)} {}
 
@@ -145,16 +161,4 @@ evget::Result<std::string> evget::SQLiteQuery::AsString(int pos) {
     } catch (std::exception& e) {
         return AsError(e);
     }
-}
-
-evget::Err evget::SQLiteQuery::StatementError() {
-    const auto* what = "statement has not been initialized";
-    spdlog::error(what);
-    return Err{{.error_type = ErrorType::kDatabaseError, .message = what}};
-}
-
-evget::Err evget::SQLiteQuery::AsError(const std::exception& error) {
-    const auto* what = error.what();
-    spdlog::error("error getting column value: {}", what);
-    return Err{{.error_type = ErrorType::kDatabaseError, .message = what}};
 }

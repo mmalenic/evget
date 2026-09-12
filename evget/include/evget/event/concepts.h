@@ -75,7 +75,7 @@ concept BuilderHasWindowFunctions =
  * \brief Check whether the template parameter is a builder with the Screen function.
  */
 template <typename T>
-concept BuilderHasScreenFunction = requires(T builder, std::string device_name, int screen) {
+concept BuilderHasScreenFunction = requires(T builder, std::string device_name, std::string screen) {
     { builder.Screen(screen) } -> std::convertible_to<T>;
 };
 

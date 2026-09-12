@@ -73,8 +73,6 @@ public:
 private:
     std::optional<SQLite::Database> database_;
     std::optional<SQLite::Transaction> transaction_;
-
-    static Err ConnectError(const char* message);
 };
 } // namespace evget
 

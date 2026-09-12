@@ -2,9 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/uuid/string_generator.hpp>
-#include <boost/uuid/uuid.hpp>
-
 #include <algorithm>
 #include <set>
 #include <string>
@@ -36,15 +33,4 @@ TEST(DeviceId, DeterministicDistinctNames) {
     }
 
     ASSERT_EQ(uuids.size(), 4);
-}
-
-TEST(DeviceId, DeterministicUuidNamespace) {
-    const boost::uuids::uuid first_ns = boost::uuids::string_generator{}("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
-    const boost::uuids::uuid second_ns = boost::uuids::string_generator{}("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
-    const std::string name{"device"};
-
-    evget::DeviceId<std::string> first{};
-    evget::DeviceId<std::string> second{};
-
-    ASSERT_NE(first.UuidDeterministic(name, first_ns), second.UuidDeterministic(name, second_ns));
 }

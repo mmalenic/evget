@@ -128,11 +128,11 @@ public:
     MouseClick& FocusWindowHeight(double height);
 
     /**
-     * \brief Add the screen number.
-     * \param screen screen number identifier
+     * \brief Add the screen identifier.
+     * \param screen screen identifier
      * \return reference to this `MouseClick` object
      */
-    MouseClick& Screen(int screen);
+    MouseClick& Screen(std::string screen);
 
     /**
      * \brief Add modifier value.
@@ -192,7 +192,7 @@ private:
     std::optional<double> focus_window_position_y_;
     std::optional<double> focus_window_width_;
     std::optional<double> focus_window_height_;
-    std::optional<int> screen_;
+    std::optional<std::string> screen_;
     std::optional<int> touch_id_;
     std::optional<std::string> system_event_;
     std::optional<std::string> event_source_;

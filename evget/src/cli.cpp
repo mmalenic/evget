@@ -30,6 +30,80 @@
 #include "evget/storage/json_storage.h"
 #include "evget/storage/store.h"
 
+namespace {
+
+constexpr std::size_t kIndentBy{30};
+
+std::string FormatEnum(
+    const std::string& value_descriptor,
+    const std::string& enum_description,
+    const std::vector<std::string>& descriptions,
+    const std::string& default_value
+) {
+    auto out_description = std::format(
+        "{} [{}]\n{: <{}}{}\n{: <{}}Possible values:\n",
+        value_descriptor,
+        default_value,
+        "",
+        kIndentBy,
+        enum_description,
+        "",
+        kIndentBy
+    );
+    for (std::size_t i = 0; i < descriptions.size(); ++i) {
+        out_description.append(std::format("{: <{}}{}", "", kIndentBy, descriptions.at(i)));
+        if (descriptions.size() > 1 && i < descriptions.size() - 1) {
+            out_description.append("\n");
+        }
+    }
+
+    return out_description;
+}
+
+std::map<std::string, evget::EventSource> EventSourceMappings() {
+    return {
+        {"libinput", evget::EventSource::kLibInput},
+        {"x11", evget::EventSource::kX11},
+        {"windows", evget::EventSource::kWindows},
+    };
+}
+
+std::string ToString(evget::EventSource event_source) {
+    switch (event_source) {
+        case evget::EventSource::kLibInput:
+            return "libinput";
+        case evget::EventSource::kX11:
+            return "x11";
+        case evget::EventSource::kWindows:
+            return "windows";
+    }
+    return {};
+}
+
+std::map<std::string, spdlog::level::level_enum> LogLevelMappings() {
+    return {
+        {"trace", spdlog::level::trace},
+        {"debug", spdlog::level::debug},
+        {"info", spdlog::level::info},
+        {"warn", spdlog::level::warn},
+        {"error", spdlog::level::err},
+        {"critical", spdlog::level::critical},
+        {"off", spdlog::level::off},
+    };
+}
+
+std::map<std::string, evget::DeviceType> DeviceTypeMappings() {
+    return {
+        {"mouse", evget::DeviceType::kMouse},
+        {"keyboard", evget::DeviceType::kKeyboard},
+        {"touchpad", evget::DeviceType::kTouchpad},
+        {"touchscreen", evget::DeviceType::kTouchscreen},
+        {"tablet", evget::DeviceType::kTablet},
+    };
+}
+
+} // namespace
+
 evget::Cli::Cli(evget::EventSource default_event_source) : event_source_{default_event_source} {}
 
 evget::Cli::Cli(evget::EventSource default_event_source, bool ensure_utf8_argv)
@@ -214,58 +288,12 @@ evget::Result<std::vector<std::unique_ptr<evget::Store>>> evget::Cli::ToStores()
     return stores;
 }
 
-std::string evget::Cli::FormatEnum(
-    const std::string& value_descriptor,
-    const std::string& enum_description,
-    const std::vector<std::string>& descriptions,
-    const std::string& default_value
-) {
-    auto out_description = std::format(
-        "{} [{}]\n{: <{}}{}\n{: <{}}Possible values:\n",
-        value_descriptor,
-        default_value,
-        "",
-        kIndentBy,
-        enum_description,
-        "",
-        kIndentBy
-    );
-    for (std::size_t i = 0; i < descriptions.size(); ++i) {
-        out_description.append(std::format("{: <{}}{}", "", kIndentBy, descriptions.at(i)));
-        if (descriptions.size() > 1 && i < descriptions.size() - 1) {
-            out_description.append("\n");
-        }
-    }
-
-    return out_description;
-}
-
 std::vector<std::string> evget::Cli::EventSourceDescriptions() {
     return {
         "- libinput: source events from libinput",
         "- x11: source events from the X11 windowing system",
         "- windows: source events from the Windows Raw Input API",
     };
-}
-
-std::map<std::string, evget::EventSource> evget::Cli::EventSourceMappings() {
-    return {
-        {"libinput", EventSource::kLibInput},
-        {"x11", EventSource::kX11},
-        {"windows", EventSource::kWindows},
-    };
-}
-
-std::string evget::Cli::ToString(evget::EventSource event_source) {
-    switch (event_source) {
-        case EventSource::kLibInput:
-            return "libinput";
-        case EventSource::kX11:
-            return "x11";
-        case EventSource::kWindows:
-            return "windows";
-    }
-    return {};
 }
 
 std::vector<std::string> evget::Cli::LogLevelDescriptions() {
@@ -280,18 +308,6 @@ std::vector<std::string> evget::Cli::LogLevelDescriptions() {
     };
 }
 
-std::map<std::string, spdlog::level::level_enum> evget::Cli::LogLevelMappings() {
-    return {
-        {"trace", spdlog::level::trace},
-        {"debug", spdlog::level::debug},
-        {"info", spdlog::level::info},
-        {"warn", spdlog::level::warn},
-        {"error", spdlog::level::err},
-        {"critical", spdlog::level::critical},
-        {"off", spdlog::level::off},
-    };
-}
-
 std::vector<std::string> evget::Cli::DeviceTypeDescriptions() {
     return {
         "- all: all device types",
@@ -300,16 +316,6 @@ std::vector<std::string> evget::Cli::DeviceTypeDescriptions() {
         "- touchpad: touchpad events",
         "- touchscreen: touchscreen events",
         "- tablet: tablet events",
-    };
-}
-
-std::map<std::string, evget::DeviceType> evget::Cli::DeviceTypeMappings() {
-    return {
-        {"mouse", DeviceType::kMouse},
-        {"keyboard", DeviceType::kKeyboard},
-        {"touchpad", DeviceType::kTouchpad},
-        {"touchscreen", DeviceType::kTouchscreen},
-        {"tablet", DeviceType::kTablet},
     };
 }
 

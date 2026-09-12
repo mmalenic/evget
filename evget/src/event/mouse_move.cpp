@@ -70,8 +70,8 @@ evget::MouseMove& evget::MouseMove::FocusWindowHeight(double height) {
     return *this;
 }
 
-evget::MouseMove& evget::MouseMove::Screen(int screen) {
-    screen_ = screen;
+evget::MouseMove& evget::MouseMove::Screen(std::string screen) {
+    screen_ = std::move(screen);
     return *this;
 }
 
@@ -113,7 +113,7 @@ evget::Data& evget::MouseMove::Build(Data& data) const {
          FromDouble(focus_window_position_y_),
          FromDouble(focus_window_width_),
          FromDouble(focus_window_height_),
-         FromInt(screen_),
+         FromString(screen_),
          FromString(device_id_),
          FromString(system_event_),
          FromString(event_source_),
