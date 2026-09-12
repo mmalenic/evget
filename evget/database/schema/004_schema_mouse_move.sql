@@ -11,7 +11,7 @@ create table mouse_move (
     focus_window_position_y real,
     focus_window_width real,
     focus_window_height real,
-    screen real,
+    screen text,
     device_id text,
     system_event text,
     event_source text,
