@@ -19,6 +19,38 @@
 #include "evgetlibinput/libinput.h"
 #include "evgetlibinput/xkbcommon.h"
 
+namespace {
+
+evget::ButtonAction GetButtonAction(libinput_button_state state) {
+    if (state == LIBINPUT_BUTTON_STATE_PRESSED) {
+        return evget::ButtonAction::kPress;
+    }
+    return evget::ButtonAction::kRelease;
+}
+
+evget::ButtonAction GetTipAction(libinput_tablet_tool_tip_state state) {
+    if (state == LIBINPUT_TABLET_TOOL_TIP_DOWN) {
+        return evget::ButtonAction::kPress;
+    }
+    return evget::ButtonAction::kRelease;
+}
+
+evget::ButtonAction GetKeyAction(libinput_key_state state) {
+    if (state == LIBINPUT_KEY_STATE_PRESSED) {
+        return evget::ButtonAction::kPress;
+    }
+    return evget::ButtonAction::kRelease;
+}
+
+xkb_key_direction GetXkbDirection(libinput_key_state state) {
+    if (state == LIBINPUT_KEY_STATE_PRESSED) {
+        return XKB_KEY_DOWN;
+    }
+    return XKB_KEY_UP;
+}
+
+} // namespace
+
 evgetlibinput::EventTransformer::EventTransformer(
     LibInputApi& libinput_api,
     XkbCommon& xkb,
@@ -403,34 +435,6 @@ void evgetlibinput::EventTransformer::ClearTouchPosition(const std::string& devi
     auto key = std::make_pair(device_uuid, seat_slot);
     previous_touch_x_.erase(key);
     previous_touch_y_.erase(key);
-}
-
-evget::ButtonAction evgetlibinput::EventTransformer::GetButtonAction(libinput_button_state state) {
-    if (state == LIBINPUT_BUTTON_STATE_PRESSED) {
-        return evget::ButtonAction::kPress;
-    }
-    return evget::ButtonAction::kRelease;
-}
-
-evget::ButtonAction evgetlibinput::EventTransformer::GetTipAction(libinput_tablet_tool_tip_state state) {
-    if (state == LIBINPUT_TABLET_TOOL_TIP_DOWN) {
-        return evget::ButtonAction::kPress;
-    }
-    return evget::ButtonAction::kRelease;
-}
-
-evget::ButtonAction evgetlibinput::EventTransformer::GetKeyAction(libinput_key_state state) {
-    if (state == LIBINPUT_KEY_STATE_PRESSED) {
-        return evget::ButtonAction::kPress;
-    }
-    return evget::ButtonAction::kRelease;
-}
-
-xkb_key_direction evgetlibinput::EventTransformer::GetXkbDirection(libinput_key_state state) {
-    if (state == LIBINPUT_KEY_STATE_PRESSED) {
-        return XKB_KEY_DOWN;
-    }
-    return XKB_KEY_UP;
 }
 
 evget::DeviceType

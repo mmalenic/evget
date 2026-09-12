@@ -71,10 +71,6 @@ private:
     std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
 
     evget::DeviceType GetDeviceType(LibInputEvent& event, libinput_event_type event_type) const;
-    static evget::ButtonAction GetButtonAction(libinput_button_state state);
-    static evget::ButtonAction GetTipAction(libinput_tablet_tool_tip_state state);
-    static evget::ButtonAction GetKeyAction(libinput_key_state state);
-    static xkb_key_direction GetXkbDirection(libinput_key_state state);
     void SetRelativePosition(
         evget::MouseMove& builder,
         const std::string& device_uuid,
