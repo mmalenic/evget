@@ -39,11 +39,11 @@ TEST(MessageWindowTest, ToRawEventClassifiesKeyboard) {
     EXPECT_EQ(std::get<RAWKEYBOARD>(event->data).VKey, 0x41);
 }
 
-TEST(MessageWindowTest, ToRawEventIgnoresOtherTypes) {
+TEST(MessageWindowTest, ToRawEventIgnoresOther) {
     EXPECT_FALSE(MessageWindow::ToRawEvent(MakeHidRawInput()).has_value());
 }
 
-TEST(MessageWindowTest, EnqueueSendsClassifiedEvents) {
+TEST(MessageWindowTest, EnqueueSendsEvents) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};
 
@@ -51,14 +51,14 @@ TEST(MessageWindowTest, EnqueueSendsClassifiedEvents) {
     EXPECT_EQ(window.Enqueue(MakeKeyboardRawInput(0x41)), EnqueueOutcome::kSent);
 }
 
-TEST(MessageWindowTest, EnqueueIgnoresUnknownType) {
+TEST(MessageWindowTest, EnqueueIgnoresUnknown) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};
 
     EXPECT_EQ(window.Enqueue(MakeHidRawInput()), EnqueueOutcome::kIgnored);
 }
 
-TEST(MessageWindowTest, EnqueueDropsWhenChannelFull) {
+TEST(MessageWindowTest, EnqueueDropsWhenFull) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};
 

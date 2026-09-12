@@ -71,8 +71,6 @@ private:
     void BuildKeyboard(evget::Data& data, EventContext& ctx, const RAWKEYBOARD& keyboard);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
 
-    static std::uint64_t ToMicros(const evget::TimestampType& timestamp);
-
     template <evget::BuilderHasBaseFields T>
     T& SetBaseFields(T& builder, const EventContext& ctx, std::uint64_t event_time);
 
@@ -93,13 +91,15 @@ T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uin
         .DeviceId(ctx.device_uuid)
         .SystemEvent(ctx.system_event)
         .EventSource(std::string{kEventSourceName});
+
     SetWindowFields(builder);
+
     return SetModifierValues(builder);
 }
 
 template <evget::BuilderHasModifier T>
 T& EventTransformer::SetModifierValues(T& builder) const {
-    for (const auto modifier : tracker_.get().ActiveModifiers()) {
+    for (const auto modifier : tracker_.get().Modifiers()) {
         builder.Modifier(modifier);
     }
     return builder;
@@ -108,6 +108,10 @@ T& EventTransformer::SetModifierValues(T& builder) const {
 template <typename T>
     requires evget::BuilderHasWindowFunctions<T> && evget::BuilderHasScreenFunction<T>
 T& EventTransformer::SetWindowFields(T& builder) {
+    if (auto screen = query_.get().Screen(); screen.has_value()) {
+        builder.Screen(std::move(*screen));
+    }
+
     auto window = query_.get().FocusWindow();
     if (!window.has_value()) {
         return builder;
@@ -117,8 +121,8 @@ T& EventTransformer::SetWindowFields(T& builder) {
         .FocusWindowPositionX(window->position_x)
         .FocusWindowPositionY(window->position_y)
         .FocusWindowWidth(window->width)
-        .FocusWindowHeight(window->height)
-        .Screen(window->screen);
+        .FocusWindowHeight(window->height);
+
     return builder;
 }
 

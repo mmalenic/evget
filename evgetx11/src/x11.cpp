@@ -219,8 +219,9 @@ std::optional<std::string> evgetx11::X11::MonitorForPoint(Window root, double ro
     const auto pointer_y = static_cast<int>(root_y);
 
     for (const XRRMonitorInfo& monitor : list) {
-        if (pointer_x >= monitor.x && pointer_x < monitor.x + monitor.width && pointer_y >= monitor.y &&
-            pointer_y < monitor.y + monitor.height) {
+        const bool inside_x = pointer_x >= monitor.x && pointer_x < monitor.x + monitor.width;
+        const bool inside_y = pointer_y >= monitor.y && pointer_y < monitor.y + monitor.height;
+        if (inside_x && inside_y) {
             auto name = AtomName(monitor.name);
             if (name == nullptr) {
                 return std::nullopt;

@@ -6,8 +6,8 @@
 #include <format>
 #include <string>
 
-std::string evgetwindows::NamedKeysym(UINT vk, bool e0) {
-    switch (vk) {
+std::string evgetwindows::NamedKeysym(UINT key, bool extended_key_bit) {
+    switch (key) {
         case VK_LSHIFT:
             return "Shift_L";
         case VK_RSHIFT:
@@ -37,7 +37,7 @@ std::string evgetwindows::NamedKeysym(UINT vk, bool e0) {
         case VK_SCROLL:
             return "Scroll_Lock";
         case VK_RETURN:
-            return e0 ? "KP_Enter" : "Return";
+            return extended_key_bit ? "KP_Enter" : "Return";
         case VK_SPACE:
             return "space";
         case VK_TAB:
@@ -115,24 +115,24 @@ std::string evgetwindows::NamedKeysym(UINT vk, bool e0) {
         case VK_OEM_102:
             return "less";
         default:
-            return std::format("VK_{:#04x}", vk);
+            return std::format("VK_{:#04x}", key);
     }
 }
 
-std::string evgetwindows::VkToKeysymName(UINT vk, bool e0) {
-    if (vk >= 'A' && vk <= 'Z') {
-        return {static_cast<char>(std::tolower(static_cast<unsigned char>(vk)))};
+std::string evgetwindows::VkToKeysymName(UINT key, bool extended_key_bit) {
+    if (key >= 'A' && key <= 'Z') {
+        return {static_cast<char>(std::tolower(static_cast<unsigned char>(key)))};
     }
-    if (vk >= '0' && vk <= '9') {
-        return {static_cast<char>(vk)};
+    if (key >= '0' && key <= '9') {
+        return {static_cast<char>(key)};
     }
-    if (vk >= VK_F1 && vk <= VK_F24) {
-        return std::format("F{}", vk - VK_F1 + 1);
+    if (key >= VK_F1 && key <= VK_F24) {
+        return std::format("F{}", key - VK_F1 + 1);
     }
-    if (vk >= VK_NUMPAD0 && vk <= VK_NUMPAD9) {
-        return std::format("KP_{}", vk - VK_NUMPAD0);
+    if (key >= VK_NUMPAD0 && key <= VK_NUMPAD9) {
+        return std::format("KP_{}", key - VK_NUMPAD0);
     }
-    return NamedKeysym(vk, e0);
+    return NamedKeysym(key, extended_key_bit);
 }
 
 USHORT evgetwindows::RightShiftScanCode() {
@@ -143,7 +143,7 @@ UINT evgetwindows::ResolveVk(const RAWKEYBOARD& keyboard) {
     const bool e0_flag = (keyboard.Flags & RI_KEY_E0) != 0;
     switch (keyboard.VKey) {
         case VK_SHIFT:
-            return (keyboard.MakeCode == RightShiftScanCode()) ? VK_RSHIFT : VK_LSHIFT;
+            return keyboard.MakeCode == RightShiftScanCode() ? VK_RSHIFT : VK_LSHIFT;
         case VK_CONTROL:
             return e0_flag ? VK_RCONTROL : VK_LCONTROL;
         case VK_MENU:

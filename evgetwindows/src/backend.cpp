@@ -21,7 +21,7 @@ evgetwindows::Backend::Backend(std::unique_ptr<WindowsApi> windows, evget::Store
       transformer_(*query_, tracker_),
       next_event_(*this->windows_),
       handler_(storage, transformer_, next_event_) {
-    tracker_.Seed(query_->ToggleState(VK_CAPITAL), query_->ToggleState(VK_NUMLOCK), query_->ToggleState(VK_SCROLL));
+    tracker_.Init(query_->ToggleState(VK_CAPITAL), query_->ToggleState(VK_NUMLOCK), query_->ToggleState(VK_SCROLL));
 }
 
 evget::Result<std::unique_ptr<evgetwindows::Backend>>

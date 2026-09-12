@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 
+#include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
 #include "evgetwindows/windows_query_api.h"
@@ -34,11 +35,12 @@ public:
     MOCK_METHOD(
         (std::optional<std::string>),
         CharacterFor,
-        (UINT vk, UINT scan_code, (const std::array<BYTE, 256>&)key_state),
+        (UINT vk, UINT scan_code, (const std::array<BYTE, evgetwindows::kKeyStateSize>&)key_state),
         (override)
     );
     MOCK_METHOD((std::optional<std::string>), DeviceName, (HANDLE device), (override));
     MOCK_METHOD((std::optional<evgetwindows::FocusWindowInfo>), FocusWindow, (), (override));
+    MOCK_METHOD((std::optional<std::string>), Screen, (), (override));
     MOCK_METHOD(bool, ToggleState, (int vk), (override));
 };
 

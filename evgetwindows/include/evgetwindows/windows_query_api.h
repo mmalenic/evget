@@ -12,10 +12,9 @@
 #include <optional>
 #include <string>
 
-namespace evgetwindows {
+#include "evgetwindows/modifier_tracker.h"
 
-/// ToUnicodeEx wFlags bit that leaves the kernel keyboard state unchanged.
-constexpr UINT kToUnicodeNoKeyStateChange = 0x4;
+namespace evgetwindows {
 
 /**
  * \brief Focussed window context.
@@ -26,7 +25,6 @@ struct FocusWindowInfo {
     double position_y;
     double width;
     double height;
-    int screen;
 };
 
 /**
@@ -45,13 +43,13 @@ public:
 
     /**
      * \brief Translate a virtual-key into its character.
-     * \param vk the virtual key code
+     * \param key the virtual key code
      * \param scan_code the scan code
-     * \param key_state the 256-byte key state
+     * \param key_state the key state array
      * \return the UTF-8 character, or nullopt in not available
      */
     [[nodiscard]] virtual std::optional<std::string>
-    CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) = 0;
+    CharacterFor(UINT key, UINT scan_code, const std::array<BYTE, kKeyStateSize>& key_state) = 0;
 
     /**
      * \brief Resolve the device name for a Raw Input device.
@@ -67,11 +65,17 @@ public:
     [[nodiscard]] virtual std::optional<FocusWindowInfo> FocusWindow() = 0;
 
     /**
+     * \brief The display the pointer is currently on.
+     * \return the display device name, or nullopt if unavailable
+     */
+    [[nodiscard]] virtual std::optional<std::string> Screen() = 0;
+
+    /**
      * \brief Read the toggle state of a lock key.
-     * \param vk the virtual key code
+     * \param key the virtual key code
      * \return true when the toggle is on
      */
-    [[nodiscard]] virtual bool ToggleState(int vk) = 0;
+    [[nodiscard]] virtual bool ToggleState(int key) = 0;
 };
 
 /**
@@ -89,10 +93,11 @@ public:
     WindowsQuery& operator=(const WindowsQuery&) = delete;
 
     [[nodiscard]] std::optional<std::string>
-    CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) override;
+    CharacterFor(UINT key, UINT scan_code, const std::array<BYTE, kKeyStateSize>& key_state) override;
     [[nodiscard]] std::optional<std::string> DeviceName(HANDLE device) override;
     [[nodiscard]] std::optional<FocusWindowInfo> FocusWindow() override;
-    [[nodiscard]] bool ToggleState(int vk) override;
+    [[nodiscard]] std::optional<std::string> Screen() override;
+    [[nodiscard]] bool ToggleState(int key) override;
 };
 
 } // namespace evgetwindows

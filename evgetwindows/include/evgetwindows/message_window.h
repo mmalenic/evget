@@ -11,7 +11,6 @@
 #include <boost/system/error_code.hpp>
 #include <windows.h>
 
-#include <array>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -32,20 +31,26 @@ namespace evgetwindows {
  */
 using RawEventChannel = boost::asio::experimental::concurrent_channel<void(boost::system::error_code, RawEvent)>;
 
+/**
+ * \brief the channel capacity.
+ */
 constexpr std::size_t kRawEventChannelCapacity = 8192;
-constexpr std::size_t kHighWaterMark = 6144;
+/**
+ * \brief the number of values considered when the channel is near capacity.
+ */
+constexpr std::size_t kChannelNearCapacity = kRawEventChannelCapacity * 0.8;
 
 /**
- * \brief The outcome of queuing an input event into the channel.
+ * \brief The result of queuing an input event into the channel.
  */
 enum class EnqueueOutcome : std::uint8_t {
     kSent, ///< Sent and queued
-    kDropped, ///< channel full, counted as dropped
+    kDropped, ///< channel full, dropping event
     kIgnored, ///< event type is neither mouse nor keyboard
 };
 
 /**
- * \brief The message window system that transports `RawEvent` values through a channel.
+ * \brief The message window that transports `RawEvent` values through a channel.
  */
 class MessageWindow {
 public:
@@ -63,13 +68,13 @@ public:
     ~MessageWindow();
 
     /**
-     * \brief Launch the channel and message system by creating an invisible window.
-     * \return a void result, or an error if window creation or device registration fails
+     * \brief Start the channel and message system.
+     * \return a void result, or an error
      */
     [[nodiscard]] evget::Result<void> Start();
 
     /**
-     * \brief Close the channel and join any leftover tasks.
+     * \brief Close the channel and join tasks.
      */
     void Stop();
 
@@ -80,16 +85,16 @@ public:
     [[nodiscard]] RawEventChannel& Channel();
 
     /**
-     * \brief Classify a `RAWINPUT` record into an owned `RawEvent`.
-     * \param raw the raw input record
+     * \brief Convert a `RAWINPUT` record into an owned `RawEvent`.
+     * \param raw the raw input
      * \return the event, or `nullopt` if it is neither a mouse nor keyboard event
      */
     [[nodiscard]] static std::optional<RawEvent> ToRawEvent(const RAWINPUT& raw);
 
     /**
-     * \brief Classify a `RAWINPUT` record and try to queue it.
+     * \brief Convert a `RAWINPUT` record and try to queue it.
      * \param raw the raw input record
-     * \return the queuing outcome
+     * \return the outcome
      */
     EnqueueOutcome Enqueue(const RAWINPUT& raw);
 
@@ -123,8 +128,6 @@ private:
         RawInput() = default;
     };
 
-    static std::wstring MakeClassName();
-    static std::array<RAWINPUTDEVICE, 2> MakeRawInputDevices(DWORD flags, HWND target);
     static LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
     void RunPump(std::promise<evget::Result<void>> registration);
     void HandleRawInput(HRAWINPUT input);

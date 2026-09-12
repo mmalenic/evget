@@ -3,15 +3,17 @@
 #include <spdlog/spdlog.h>
 #include <windows.h>
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace {
 
+constexpr UINT kToUnicodeNoKeyStateChange = 0x4;
 constexpr int kCharacterBufferSize = 8;
-constexpr SHORT kToggleStateMask = 0x1;
 
 std::string Utf16ToUtf8(std::wstring_view wide) {
     if (wide.empty()) {
@@ -21,61 +23,54 @@ std::string Utf16ToUtf8(std::wstring_view wide) {
     const int size =
         WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr);
     if (size <= 0) {
-        spdlog::warn("WideCharToMultiByte sizing failed");
+        spdlog::warn("WideCharToMultiByte size check failed");
         return {};
     }
 
     std::string out(static_cast<size_t>(size), '\0');
-    WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), out.data(), size, nullptr, nullptr);
+    const int converted =
+        WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), out.data(), size, nullptr, nullptr);
+    if (converted <= 0) {
+        spdlog::warn("WideCharToMultiByte conversion failed");
+        return {};
+    }
+
+    out.resize(static_cast<size_t>(converted));
     return out;
 }
 
-struct MonitorSearch {
-    HMONITOR target;
-    int index;
-    int found;
-};
-
-BOOL CALLBACK MonitorEnumProc(HMONITOR monitor, HDC /*hdc*/, LPRECT /*rect*/, LPARAM data) {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto* search = reinterpret_cast<MonitorSearch*>(data);
-    if (monitor == search->target) {
-        search->found = search->index;
-        return FALSE;
-    }
-
-    ++search->index;
-    return TRUE;
-}
-
-int MonitorIndex(HMONITOR monitor) {
+std::optional<std::string> MonitorDevice(HMONITOR monitor) {
     if (monitor == nullptr) {
-        return 0;
+        return std::nullopt;
     }
 
-    MonitorSearch search{.target = monitor, .index = 0, .found = 0};
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    EnumDisplayMonitors(nullptr, nullptr, &MonitorEnumProc, reinterpret_cast<LPARAM>(&search));
-    return search.found;
+    MONITORINFOEXW info{};
+    info.cbSize = sizeof(info);
+    if (GetMonitorInfoW(monitor, &info) == 0) {
+        spdlog::warn("monitor info query failed");
+        return std::nullopt;
+    }
+
+    return Utf16ToUtf8(info.szDevice);
 }
 
 } // namespace
 
 std::optional<std::string>
-evgetwindows::WindowsQuery::CharacterFor(UINT vk, UINT scan_code, const std::array<BYTE, 256>& key_state) {
+evgetwindows::WindowsQuery::CharacterFor(UINT key, UINT scan_code, const std::array<BYTE, kKeyStateSize>& key_state) {
     HWND foreground = GetForegroundWindow();
-    const HKL layout = (foreground != nullptr)
+    HKL layout = foreground != nullptr
         ? GetKeyboardLayout(GetWindowThreadProcessId(foreground, nullptr))
         : GetKeyboardLayout(0);
 
     std::array<wchar_t, kCharacterBufferSize> buffer{};
-    // The no-state-change flag keeps ToUnicodeEx from corrupting the user's live keys.
+    // The flag keeps ToUnicodeEx from overriding the user key state.
     const int written = ToUnicodeEx(
-        vk,
+        key,
         scan_code,
         key_state.data(),
         buffer.data(),
-        static_cast<int>(buffer.size()),
+        buffer.size(),
         kToUnicodeNoKeyStateChange,
         layout
     );
@@ -93,21 +88,19 @@ std::optional<std::string> evgetwindows::WindowsQuery::DeviceName(HANDLE device)
 
     UINT size = 0;
     if (GetRawInputDeviceInfoW(device, RIDI_DEVICENAME, nullptr, &size) != 0) {
-        spdlog::warn("RIDI_DEVICENAME sizing query failed");
+        spdlog::warn("device name sizing call failed");
         return std::nullopt;
     }
 
     std::wstring name(size, L'\0');
     const UINT written = GetRawInputDeviceInfoW(device, RIDI_DEVICENAME, name.data(), &size);
-    if (written == static_cast<UINT>(-1)) {
-        spdlog::warn("RIDI_DEVICENAME data query failed");
+    if (std::cmp_equal(written, -1)) {
+        spdlog::warn("device name data call failed");
         return std::nullopt;
     }
 
-    name.resize(written);
-    if (!name.empty() && name.back() == L'\0') {
-        name.pop_back();
-    }
+    // Remove any excess bytes.
+    name.erase(std::ranges::find(name, L'\0'), name.end());
 
     return Utf16ToUtf8(name);
 }
@@ -119,7 +112,6 @@ std::optional<evgetwindows::FocusWindowInfo> evgetwindows::WindowsQuery::FocusWi
     }
 
     FocusWindowInfo info{};
-
     const int length = GetWindowTextLengthW(window);
     if (length > 0) {
         std::wstring title(static_cast<size_t>(length) + 1, L'\0');
@@ -136,10 +128,20 @@ std::optional<evgetwindows::FocusWindowInfo> evgetwindows::WindowsQuery::FocusWi
         info.height = static_cast<double>(rect.bottom - rect.top);
     }
 
-    info.screen = MonitorIndex(MonitorFromWindow(window, MONITOR_DEFAULTTONULL));
     return info;
 }
 
-bool evgetwindows::WindowsQuery::ToggleState(int vk) {
-    return (GetKeyState(vk) & kToggleStateMask) != 0;
+std::optional<std::string> evgetwindows::WindowsQuery::Screen() {
+    POINT cursor{};
+    if (GetCursorPos(&cursor) == 0) {
+        spdlog::warn("cursor position query failed");
+        return std::nullopt;
+    }
+
+    return MonitorDevice(MonitorFromPoint(cursor, MONITOR_DEFAULTTONULL));
+}
+
+bool evgetwindows::WindowsQuery::ToggleState(int key) {
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return (GetKeyState(key) & kToggleBit) != 0;
 }

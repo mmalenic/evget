@@ -2,14 +2,14 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <array>
-#include <cstddef>
 #include <set>
 
 #include "evget/event/modifier_value.h"
 #include "evgetwindows/vk_keysym.h"
 
-void evgetwindows::ModifierTracker::Seed(bool caps_lock, bool num_lock, bool scroll_lock) {
+void evgetwindows::ModifierTracker::Init(bool caps_lock, bool num_lock, bool scroll_lock) {
     caps_on_ = caps_lock;
     num_on_ = num_lock;
     scroll_on_ = scroll_lock;
@@ -24,7 +24,7 @@ void evgetwindows::ModifierTracker::Update(const RAWKEYBOARD& keyboard) {
         down_[vk] = !is_break;
     }
 
-    // Locks flip on the press transition only, so auto-repeat and release do not double-toggle.
+    // Locks go on the press only and auto-repeat/release should not double the toggle.
     if (!is_break && !was_down) {
         switch (vk) {
             case VK_CAPITAL:
@@ -42,7 +42,7 @@ void evgetwindows::ModifierTracker::Update(const RAWKEYBOARD& keyboard) {
     }
 }
 
-std::set<evget::ModifierValue> evgetwindows::ModifierTracker::ActiveModifiers() const {
+std::set<evget::ModifierValue> evgetwindows::ModifierTracker::Modifiers() const {
     std::set<evget::ModifierValue> modifiers{};
     if (down_[VK_LSHIFT] || down_[VK_RSHIFT]) {
         modifiers.insert(evget::ModifierValue::kShift);
@@ -67,13 +67,8 @@ std::set<evget::ModifierValue> evgetwindows::ModifierTracker::ActiveModifiers() 
 
 std::array<BYTE, evgetwindows::kKeyStateSize> evgetwindows::ModifierTracker::KeyState() const {
     std::array<BYTE, kKeyStateSize> state{};
-    for (std::size_t vk = 0; vk < state.size(); ++vk) {
-        if (down_[vk]) {
-            state[vk] = kKeyDownBit;
-        }
-    }
+    std::ranges::transform(down_, state.begin(), [](const bool is_down) { return is_down ? kKeyDownBit : BYTE{0}; });
 
-    // ToUnicodeEx reads the generic modifier VKs.
     if (down_[VK_LSHIFT] || down_[VK_RSHIFT]) {
         state[VK_SHIFT] = kKeyDownBit;
     }

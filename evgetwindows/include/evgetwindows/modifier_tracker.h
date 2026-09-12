@@ -17,34 +17,34 @@
 namespace evgetwindows {
 
 /**
- * \brief The GetKeyboardState byte flag marking a key as down.
+ * \brief The GetKeyboardState flag for a down key.
  */
 constexpr BYTE kKeyDownBit = 0x80;
 
 /**
- * \brief The GetKeyboardState byte flag marking a lock key as toggled on.
+ * \brief The GetKeyboardState flag for a lock key.
  */
 constexpr BYTE kToggleBit = 0x01;
 
 /**
- * \brief The number of key slots in a state array.
+ * \brief The number of keys in the state array.
  */
 constexpr std::size_t kKeyStateSize = 256;
 
 /**
- * \brief Tracks modifiers without querying the Win32 API.
+ * \brief Tracks modifiers for the evgetwindows backend.
  */
 class ModifierTracker {
 public:
     ModifierTracker() = default;
 
     /**
-     * \brief Seed the lock toggles once from a startup state.
+     * \brief Initialize the lock state.
      * \param caps_lock the initial CapsLock state
      * \param num_lock the initial NumLock state
      * \param scroll_lock the initial ScrollLock state
      */
-    void Seed(bool caps_lock, bool num_lock, bool scroll_lock);
+    void Init(bool caps_lock, bool num_lock, bool scroll_lock);
 
     /**
      * \brief Apply a keyboard event.
@@ -53,13 +53,13 @@ public:
     void Update(const RAWKEYBOARD& keyboard);
 
     /**
-     * \brief The active modifier state.
-     * \return the active `ModifierValue`s
+     * \brief The modifier state.
+     * \return the `ModifierValue`s
      */
-    [[nodiscard]] std::set<evget::ModifierValue> ActiveModifiers() const;
+    [[nodiscard]] std::set<evget::ModifierValue> Modifiers() const;
 
     /**
-     * \brief The array for the ToUnicodeEx character tracking.
+     * \brief The array for ToUnicodeEx.
      * \return the character array
      */
     [[nodiscard]] std::array<BYTE, kKeyStateSize> KeyState() const;

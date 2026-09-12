@@ -19,12 +19,14 @@
 #include "evget/error.h"
 #include "evgetwindows/raw_event.h"
 
-std::wstring evgetwindows::MessageWindow::MakeClassName() {
+namespace {
+
+std::wstring MakeClassName() {
     static std::atomic<std::uint64_t> counter{0};
     return std::format(L"evget_message_window_{}", counter.fetch_add(1));
 }
 
-std::array<RAWINPUTDEVICE, 2> evgetwindows::MessageWindow::MakeRawInputDevices(DWORD flags, HWND target) {
+std::array<RAWINPUTDEVICE, 2> MakeRawInputDevices(DWORD flags, HWND target) {
     return {
         {{.usUsagePage = HID_USAGE_PAGE_GENERIC,
           .usUsage = HID_USAGE_GENERIC_MOUSE,
@@ -36,6 +38,8 @@ std::array<RAWINPUTDEVICE, 2> evgetwindows::MessageWindow::MakeRawInputDevices(D
           .hwndTarget = target}}
     };
 }
+
+} // namespace
 
 evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor)
     : class_name_{MakeClassName()}, channel_{executor, kRawEventChannelCapacity} {}
@@ -116,13 +120,13 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
     }
 
     if (channel_.try_send(boost::system::error_code{}, *event)) {
-        if (in_flight_.fetch_add(1, std::memory_order_relaxed) + 1 == kHighWaterMark) {
-            spdlog::warn("input channel reached {} buffered events", kHighWaterMark);
+        if (in_flight_.fetch_add(1, std::memory_order_relaxed) + 1 == kChannelNearCapacity) {
+            spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
         }
         return EnqueueOutcome::kSent;
     }
 
-    if (dropped_.fetch_add(1, std::memory_order_relaxed) % kHighWaterMark == 0) {
+    if (dropped_.fetch_add(1, std::memory_order_relaxed) % kChannelNearCapacity == 0) {
         spdlog::error("input channel full, dropping events");
     }
     return EnqueueOutcome::kDropped;
@@ -151,7 +155,7 @@ evget::Result<std::unique_ptr<evgetwindows::MessageWindow::RawInput>> evgetwindo
 ) {
     const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_INPUTSINK | RIDEV_DEVNOTIFY, target);
     SetLastError(ERROR_SUCCESS);
-    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE ||
+    if (RegisterRawInputDevices(devices.data(), devices.size(), sizeof(RAWINPUTDEVICE)) == FALSE ||
         GetLastError() != ERROR_SUCCESS) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError,

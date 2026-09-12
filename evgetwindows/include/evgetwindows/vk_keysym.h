@@ -13,31 +13,31 @@
 namespace evgetwindows {
 
 /**
- * \brief Scan code that VK_RSHIFT maps to on the active layout.
- * \return the right-shift scan code
+ * \brief Scan code that VK_RSHIFT maps to.
+ * \return the scan code
  */
 [[nodiscard]] USHORT RightShiftScanCode();
 
 /**
- * \brief Map a named or modifier virtual-key to its X11 keysymdef name.
- * \param vk the virtual-key code
- * \param e0 the RI_KEY_E0 extended-key bit
- * \return the keysymdef name, or a fallback for an unmapped key
+ * \brief The name or modifier key mapping to its X11 name.
+ * \param key the virtual key code
+ * \param extended_key_bit the RI_KEY_E0 bit
+ * \return the keysymdef name or a default value
  */
-[[nodiscard]] std::string NamedKeysym(UINT vk, bool e0);
+[[nodiscard]] std::string NamedKeysym(UINT key, bool extended_key_bit);
 
 /**
- * \brief Map a virtual-key to its X11 keysymdef name.
- * \param vk the virtual-key code
- * \param e0 the RI_KEY_E0 extended-key bit
- * \return the keysymdef name, or a non-empty fallback for an unmapped key
+ * \brief The virtual key mapped to the X11 keysymdef name.
+ * \param key the virtual key code
+ * \param extended_key_bit the RI_KEY_E0 bit
+ * \return the keysymdef name or a default value
  */
-[[nodiscard]] std::string VkToKeysymName(UINT vk, bool e0);
+[[nodiscard]] std::string VkToKeysymName(UINT key, bool extended_key_bit);
 
 /**
- * \brief Resolve a generic modifier virtual-key to its left or right variant.
- * \param keyboard the Raw Input keyboard record
- * \return the virtual-key, or VKey unchanged when already specific
+ * \brief Resolves a modifier key to the left or right variant.
+ * \param keyboard the Raw Input keyboard
+ * \return the resolved key
  */
 [[nodiscard]] UINT ResolveVk(const RAWKEYBOARD& keyboard);
 

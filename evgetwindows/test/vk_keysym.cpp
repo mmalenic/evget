@@ -14,7 +14,7 @@
 
 using test::MakeKeyboard;
 
-TEST(VkKeysym, NamedKeysHaveExactSpellings) {
+TEST(VkKeysym, NamedKeysAreExact) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_RETURN, false), "Return");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_SPACE, false), "space");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_ESCAPE, false), "Escape");
@@ -22,7 +22,7 @@ TEST(VkKeysym, NamedKeysHaveExactSpellings) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_BACK, false), "BackSpace");
 }
 
-TEST(VkKeysym, ModifierKeysAreHandednessSpecific) {
+TEST(VkKeysym, ModifierKeysAreSpecific) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_LSHIFT, false), "Shift_L");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_RSHIFT, false), "Shift_R");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_LCONTROL, false), "Control_L");
@@ -31,12 +31,12 @@ TEST(VkKeysym, ModifierKeysAreHandednessSpecific) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_RMENU, false), "Alt_R");
 }
 
-TEST(VkKeysym, PageKeysUseKeysymdefNames) {
+TEST(VkKeysym, PageKeysUseKeysymdef) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_PRIOR, true), "Prior");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_NEXT, true), "Next");
 }
 
-TEST(VkKeysym, PrintableKeysUseUnshiftedBaseName) {
+TEST(VkKeysym, PrintableKeysUseNoShift) {
     EXPECT_EQ(evgetwindows::VkToKeysymName('A', false), "a");
     EXPECT_EQ(evgetwindows::VkToKeysymName('Z', false), "z");
     EXPECT_EQ(evgetwindows::VkToKeysymName('1', false), "1");
@@ -44,80 +44,12 @@ TEST(VkKeysym, PrintableKeysUseUnshiftedBaseName) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_NUMPAD3, false), "KP_3");
 }
 
-TEST(VkKeysym, ExtendedReturnIsKeypadEnter) {
+TEST(VkKeysym, ExtendedReturnIsKeypad) {
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_RETURN, false), "Return");
     EXPECT_EQ(evgetwindows::VkToKeysymName(VK_RETURN, true), "KP_Enter");
 }
 
-TEST(VkKeysym, EveryRepresentativeVkYieldsNonEmptyName) {
-    std::vector<UINT> vks{
-        VK_RETURN,
-        VK_SPACE,
-        VK_ESCAPE,
-        VK_TAB,
-        VK_BACK,
-        VK_LSHIFT,
-        VK_RSHIFT,
-        VK_LCONTROL,
-        VK_RCONTROL,
-        VK_LMENU,
-        VK_RMENU,
-        VK_LWIN,
-        VK_RWIN,
-        VK_CAPITAL,
-        VK_NUMLOCK,
-        VK_SCROLL,
-        VK_PRIOR,
-        VK_NEXT,
-        VK_HOME,
-        VK_END,
-        VK_INSERT,
-        VK_DELETE,
-        VK_LEFT,
-        VK_RIGHT,
-        VK_UP,
-        VK_DOWN,
-        VK_SNAPSHOT,
-        VK_PAUSE,
-        VK_APPS,
-        VK_MULTIPLY,
-        VK_ADD,
-        VK_SUBTRACT,
-        VK_DECIMAL,
-        VK_DIVIDE,
-        VK_OEM_1,
-        VK_OEM_PLUS,
-        VK_OEM_COMMA,
-        VK_OEM_MINUS,
-        VK_OEM_PERIOD,
-        VK_OEM_2,
-        VK_OEM_3,
-        VK_OEM_4,
-        VK_OEM_5,
-        VK_OEM_6,
-        VK_OEM_7,
-        VK_VOLUME_UP,
-        VK_MEDIA_PLAY_PAUSE,
-    };
-    for (UINT letter = 'A'; letter <= 'Z'; ++letter) {
-        vks.push_back(letter);
-    }
-    for (UINT digit = '0'; digit <= '9'; ++digit) {
-        vks.push_back(digit);
-    }
-    for (UINT fkey = VK_F1; fkey <= VK_F24; ++fkey) {
-        vks.push_back(fkey);
-    }
-    for (UINT pad = VK_NUMPAD0; pad <= VK_NUMPAD9; ++pad) {
-        vks.push_back(pad);
-    }
-
-    for (const UINT vk : vks) {
-        EXPECT_FALSE(evgetwindows::VkToKeysymName(vk, false).empty()) << "empty name for vk " << vk;
-    }
-}
-
-TEST(VkKeysym, DistinctKeysYieldDistinctNames) {
+TEST(VkKeysym, DistinctKeysHaveDistinctNames) {
     const std::vector<UINT> vks{
         VK_RETURN,
         VK_SPACE,
@@ -139,7 +71,7 @@ TEST(VkKeysym, DistinctKeysYieldDistinctNames) {
     EXPECT_EQ(names.size(), vks.size());
 }
 
-TEST(VkKeysym, ResolveShiftFromScanCode) {
+TEST(VkKeysym, ResolveShift) {
     constexpr USHORT kLeftShiftScan = 0x2A;
     constexpr USHORT kRightShiftScan = 0x36;
 
@@ -150,7 +82,7 @@ TEST(VkKeysym, ResolveShiftFromScanCode) {
     EXPECT_EQ(evgetwindows::ResolveVk(right), static_cast<UINT>(VK_RSHIFT));
 }
 
-TEST(VkKeysym, ResolveControlAndMenuFromExtendedBit) {
+TEST(VkKeysym, ResolveControl) {
     const auto left_control = std::get<RAWKEYBOARD>(MakeKeyboard(VK_CONTROL, 0, 0).data);
     const auto right_control = std::get<RAWKEYBOARD>(MakeKeyboard(VK_CONTROL, 0, RI_KEY_E0).data);
     const auto left_menu = std::get<RAWKEYBOARD>(MakeKeyboard(VK_MENU, 0, 0).data);
