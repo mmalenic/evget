@@ -17,6 +17,7 @@
 #include <xorg/xserver-properties.h>
 
 #include <chrono>
+#include <cmath>
 #include <functional>
 #include <map>
 #include <optional>
@@ -229,7 +230,7 @@ void EventSwitchPointerKey::KeyEvent(
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
 
-    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
+    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_name);
 
     builder.Build(data);
 }
@@ -263,10 +264,12 @@ void EventSwitchPointerKey::ScrollEvent(
     }
 
     for (const auto& [valuator, info] : processed_valuators) {
+        // The increment sign is the scroll direction.
+        const double amount = valuators[valuator] * std::copysign(1.0, info.increment);
         if (info.scroll_type == XIScrollTypeHorizontal) {
-            builder.Horizontal(valuators[valuator]);
+            builder.Horizontal(amount);
         } else {
-            builder.Vertical(valuators[valuator]);
+            builder.Vertical(amount);
         }
     }
 
@@ -283,7 +286,7 @@ void EventSwitchPointerKey::ScrollEvent(
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);
 
-    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_number);
+    x_event_switch.SetDeviceNameFields(builder, raw_event, query_pointer.screen_name);
 
     builder.Build(data);
 }

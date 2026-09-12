@@ -157,7 +157,7 @@ public:
      */
     template <typename T>
         requires evget::BuilderHasScreenFunction<T> && evget::BuilderHasDeviceName<T>
-    T& SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen);
+    T& SetDeviceNameFields(T& builder, const XIRawEvent& event, std::optional<std::string> screen);
 
     /**
      * \brief Query the current pointer position for the tracked pointer device.
@@ -249,10 +249,15 @@ T& EventSwitch::SetWindowFields(T& builder) {
 
 template <typename T>
     requires evget::BuilderHasScreenFunction<T> && evget::BuilderHasDeviceName<T>
-T& EventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, int screen) {
+T& EventSwitch::SetDeviceNameFields(T& builder, const XIRawEvent& event, std::optional<std::string> screen) {
     auto name = id_to_name_.at(event.sourceid);
 
-    return builder.DeviceName(name).Screen(screen);
+    builder.DeviceName(name);
+    if (screen.has_value()) {
+        builder.Screen(std::move(*screen));
+    }
+
+    return builder;
 }
 
 void EventSwitch::AddMotionEvent(
@@ -277,7 +282,7 @@ void EventSwitch::AddMotionEvent(
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
-    SetDeviceNameFields(builder, event, query_pointer.screen_number);
+    SetDeviceNameFields(builder, event, query_pointer.screen_name);
 
     builder.Build(data);
 }
@@ -308,7 +313,7 @@ void EventSwitch::AddButtonEvent(
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
-    SetDeviceNameFields(builder, event, query_pointer.screen_number);
+    SetDeviceNameFields(builder, event, query_pointer.screen_name);
 
     builder.Build(data);
 }

@@ -136,7 +136,7 @@ evgetx11::QueryPointerResult test::CreatePointerResult() {
                 .locked = 0,
                 .effective = 0,
             },
-        .screen_number = 0
+        .screen_name = std::nullopt
     };
 }
 

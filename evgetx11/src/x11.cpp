@@ -3,10 +3,20 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+#include <X11/extensions/Xrandr.h>
 #include <spdlog/spdlog.h>
 
 #include <array>
 #include <format>
+#include <memory>
+#include <optional>
+#include <span>
+#include <string>
+
+namespace {
+constexpr int kUtf8MaxBytes = 4;
+constexpr int kWindowPropertySize = 32;
+} // namespace
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
 // cppcoreguidelines-pro-type-vararg, hicpp-vararg)
@@ -145,7 +155,7 @@ evgetx11::XEventPointer evgetx11::X11::EventData(XEvent& event) {
 }
 
 evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
-    Window _root_return = 0;
+    Window root_return = 0;
     Window _window_return = 0;
     double _win_x = 0;
     double _win_y = 0;
@@ -155,14 +165,14 @@ evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
     XIModifierState modifier_state;
     XIGroupState group_state;
 
-    auto screen_number = 0;
+    bool found = false;
     for (auto i = 0; i < XScreenCount(&display_.get()); i++) {
         Screen* screen = XScreenOfDisplay(&display_.get(), i);
         auto result = XIQueryPointer(
             &display_.get(),
             device_id,
             XRootWindowOfScreen(screen),
-            &_root_return,
+            &root_return,
             &_window_return,
             &root_x,
             &root_y,
@@ -173,9 +183,14 @@ evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
             &group_state
         );
         if (result == True) {
-            screen_number = i;
+            found = true;
             break;
         }
+    }
+
+    std::optional<std::string> screen_name;
+    if (found) {
+        screen_name = MonitorForPoint(root_return, root_x, root_y);
     }
 
     return QueryPointerResult{
@@ -184,8 +199,37 @@ evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
         .button_mask = {button_state.mask, XFree},
         .modifier_state = modifier_state,
         .group_state = group_state,
-        .screen_number = screen_number,
+        .screen_name = std::move(screen_name),
     };
+}
+
+std::optional<std::string> evgetx11::X11::MonitorForPoint(Window root, double root_x, double root_y) {
+    int count = 0;
+    const std::unique_ptr<XRRMonitorInfo, decltype(&XRRFreeMonitors)> monitors{
+        XRRGetMonitors(&display_.get(), root, True, &count),
+        XRRFreeMonitors
+    };
+    if (monitors == nullptr || count <= 0) {
+        spdlog::warn("failed to query monitors");
+        return std::nullopt;
+    }
+
+    const std::span<const XRRMonitorInfo> list{monitors.get(), static_cast<size_t>(count)};
+    const auto pointer_x = static_cast<int>(root_x);
+    const auto pointer_y = static_cast<int>(root_y);
+
+    for (const XRRMonitorInfo& monitor : list) {
+        if (pointer_x >= monitor.x && pointer_x < monitor.x + monitor.width && pointer_y >= monitor.y &&
+            pointer_y < monitor.y + monitor.height) {
+            auto name = AtomName(monitor.name);
+            if (name == nullptr) {
+                return std::nullopt;
+            }
+            return std::string{name.get()};
+        }
+    }
+
+    return std::nullopt;
 }
 
 Status evgetx11::X11::QueryVersion(int& major, int& minor) {

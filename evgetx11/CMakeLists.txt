@@ -68,11 +68,13 @@ if(NOT TARGET xorg::xorg)
         LINK_COMPONENTS
         X11::Xi
         X11::Xkb
+        X11::Xrandr
         FIND_PACKAGE_ARGS
         REQUIRED
         COMPONENTS
         Xi
         Xkb
+        Xrandr
     )
 endif()
 

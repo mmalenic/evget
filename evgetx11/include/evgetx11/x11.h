@@ -11,6 +11,7 @@
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 
+#include <climits>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -77,7 +78,7 @@ struct QueryPointerResult {
     std::unique_ptr<unsigned char[], decltype(&XFree)> button_mask; ///< Button press mask
     XIModifierState modifier_state{}; ///< Modifier key states
     XIGroupState group_state{}; ///< Keyboard group state
-    int screen_number{}; ///< Screen number
+    std::optional<std::string> screen_name; ///< The monitor name the pointer is on
 };
 
 /**
@@ -246,9 +247,6 @@ public:
 
     X11Api(const X11Api&) = delete;
     X11Api& operator=(const X11Api&) = delete;
-
-private:
-    static constexpr int kMaskBits = 8;
 };
 
 /**
@@ -317,8 +315,6 @@ private:
         std::unique_ptr<unsigned char[], decltype(&XFree)> property;
     };
 
-    static constexpr int kMaskBits = 8;
-
     [[nodiscard]] std::optional<XWindowAttributes> GetWindowAttributes(Window window) const;
 
     std::optional<Atom> GetAtom(const char* atom_name) const;
@@ -327,8 +323,14 @@ private:
 
     static std::unique_ptr<_XIC, decltype(&XDestroyIC)> CreateIc(Display& display, XIM xim);
 
-    static constexpr int kUtf8MaxBytes = 4;
-    static constexpr int kWindowPropertySize = 32;
+    /**
+     * \brief Find the monitor containing a point.
+     * \param root the root window of the point
+     * \param root_x the X coordinate
+     * \param root_y the Y coordinate
+     * \return the monitor name, or nullopt if unavailable
+     */
+    [[nodiscard]] std::optional<std::string> MonitorForPoint(Window root, double root_x, double root_y);
 
     std::reference_wrapper<Display> display_;
 
@@ -338,7 +340,7 @@ private:
 };
 
 void X11::OnMasks(const unsigned char* mask, int mask_len, evget::Invocable<void, int> auto&& function) {
-    for (int i = 0; i < mask_len * kMaskBits; i++) {
+    for (int i = 0; i < mask_len * CHAR_BIT; i++) {
         if (XIMaskIsSet(mask, i)) {
             function(i);
         }

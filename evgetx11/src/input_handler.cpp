@@ -17,7 +17,12 @@
 
 evgetx11::InputHandler::InputHandler(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
-evget::Result<void> evgetx11::InputHandlerBuilder::AnnounceVersion(X11Api& x_wrapper) {
+namespace {
+
+constexpr int kVersionMajor = 2;
+constexpr int kVersionMinor = 2;
+
+evget::Result<void> AnnounceVersion(evgetx11::X11Api& x_wrapper) {
     int major = kVersionMajor;
     int minor = kVersionMinor;
 
@@ -33,12 +38,12 @@ evget::Result<void> evgetx11::InputHandlerBuilder::AnnounceVersion(X11Api& x_wra
     };
 }
 
-void evgetx11::InputHandlerBuilder::SetMask(X11Api& x_wrapper) {
+void SetMask(evgetx11::X11Api& x_wrapper) {
     XIEventMask mask{};
     mask.deviceid = XIAllMasterDevices;
 
     std::array<unsigned char, XI_LASTEVENT> event_mask{};
-    X11::SetMask(
+    evgetx11::X11::SetMask(
         event_mask.data(),
         {
             XI_RawButtonPress,
@@ -58,6 +63,8 @@ void evgetx11::InputHandlerBuilder::SetMask(X11Api& x_wrapper) {
 
     x_wrapper.SelectEvents(mask);
 }
+} // namespace
+
 
 boost::asio::awaitable<evget::Result<evgetx11::InputEvent>> evgetx11::InputHandler::Next() const {
     co_return InputEvent::NextEvent(x_wrapper_.get());

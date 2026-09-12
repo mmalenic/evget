@@ -48,13 +48,6 @@ public:
      * \return result containing the constructed InputHandler or an error
      */
     static evget::Result<std::unique_ptr<InputHandler>> Build(X11Api& x_wrapper);
-
-private:
-    static constexpr int kVersionMajor = 2;
-    static constexpr int kVersionMinor = 2;
-
-    static void SetMask(X11Api& x_wrapper);
-    static evget::Result<void> AnnounceVersion(X11Api& x_wrapper);
 };
 } // namespace evgetx11
 
