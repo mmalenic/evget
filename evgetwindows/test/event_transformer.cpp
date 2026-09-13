@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "common/windows_mock.h"
 #include "evget/event/entry.h"
@@ -17,6 +18,7 @@
 #include "evget/input_event.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
+#include "evgetwindows/windows_query_api.h"
 
 using test::MakeInjected;
 using test::MakeKeyboard;
@@ -25,7 +27,6 @@ using test::MakeMouseButton;
 using test::MakeMouseMoveRelative;
 using test::MakeMouseWheel;
 using test::WindowsQueryApiMock;
-using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -185,11 +186,11 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
     };
 
     const std::array<ButtonCase, 5> cases{{
-        {RI_MOUSE_LEFT_BUTTON_DOWN, 0x110, "BTN_LEFT"},
-        {RI_MOUSE_RIGHT_BUTTON_DOWN, 0x111, "BTN_RIGHT"},
-        {RI_MOUSE_MIDDLE_BUTTON_DOWN, 0x112, "BTN_MIDDLE"},
-        {RI_MOUSE_BUTTON_4_DOWN, 0x113, "BTN_SIDE"},
-        {RI_MOUSE_BUTTON_5_DOWN, 0x114, "BTN_EXTRA"},
+        {.flag = RI_MOUSE_LEFT_BUTTON_DOWN, .expected_id = 0x110, .expected_name = "BTN_LEFT"},
+        {.flag = RI_MOUSE_RIGHT_BUTTON_DOWN, .expected_id = 0x111, .expected_name = "BTN_RIGHT"},
+        {.flag = RI_MOUSE_MIDDLE_BUTTON_DOWN, .expected_id = 0x112, .expected_name = "BTN_MIDDLE"},
+        {.flag = RI_MOUSE_BUTTON_4_DOWN, .expected_id = 0x113, .expected_name = "BTN_SIDE"},
+        {.flag = RI_MOUSE_BUTTON_5_DOWN, .expected_id = 0x114, .expected_name = "BTN_EXTRA"},
     }};
 
     for (const auto& button : cases) {
@@ -202,16 +203,19 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
 
         ASSERT_EQ(entries.size(), 1) << "button id " << button.expected_id;
         EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
-        EXPECT_EQ(entries.at(0).Data().at(16), std::to_string(button.expected_id));
-        EXPECT_EQ(entries.at(0).Data().at(17), button.expected_name);
-        EXPECT_EQ(entries.at(0).Data().at(18), "0");
+        const auto& fields = entries.at(0).Data();
+        EXPECT_EQ(
+            (std::vector{fields.at(16), fields.at(17), fields.at(18)}),
+            (std::vector{std::to_string(button.expected_id), button.expected_name, std::string{"0"}})
+        );
     }
 }
 
 TEST(EvgetWindowsTransformer, CharacterFieldIsApplied) {
     NiceMock<WindowsQueryApiMock> query{};
     evgetwindows::ModifierTracker tracker{};
-    EXPECT_CALL(query, CharacterFor(static_cast<UINT>('A'), _, _)).WillOnce(Return(std::optional<std::string>{"a"}));
+    EXPECT_CALL(query, CharacterFor(static_cast<UINT>('A'), testing::_, testing::_))
+        .WillOnce(Return(std::optional<std::string>{"a"}));
 
     evgetwindows::EventTransformer transformer{query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
@@ -229,7 +233,7 @@ TEST(EvgetWindowsTransformer, CharacterFieldIsApplied) {
 TEST(EvgetWindowsTransformer, DeadKeyHasCharacterUnset) {
     NiceMock<WindowsQueryApiMock> query{};
     evgetwindows::ModifierTracker tracker{};
-    EXPECT_CALL(query, CharacterFor(_, _, _)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(query, CharacterFor(testing::_, testing::_, testing::_)).WillRepeatedly(Return(std::nullopt));
 
     evgetwindows::EventTransformer transformer{query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
@@ -244,7 +248,7 @@ TEST(EvgetWindowsTransformer, DeadKeyHasCharacterUnset) {
 TEST(EvgetWindowsTransformer, KeyReleaseHasNoCharacterLookup) {
     NiceMock<WindowsQueryApiMock> query{};
     evgetwindows::ModifierTracker tracker{};
-    EXPECT_CALL(query, CharacterFor(_, _, _)).Times(0);
+    EXPECT_CALL(query, CharacterFor(testing::_, testing::_, testing::_)).Times(0);
 
     evgetwindows::EventTransformer transformer{query, tracker};
     auto data =
@@ -296,7 +300,7 @@ TEST(EvgetWindowsTransformer, DeviceNameResolved) {
 TEST(EvgetWindowsTransformer, InjectedDeviceSkipsLookup) {
     NiceMock<WindowsQueryApiMock> query{};
     evgetwindows::ModifierTracker tracker{};
-    EXPECT_CALL(query, DeviceName(_)).Times(0);
+    EXPECT_CALL(query, DeviceName(testing::_)).Times(0);
 
     evgetwindows::EventTransformer transformer{query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeInjected(VK_RETURN)});

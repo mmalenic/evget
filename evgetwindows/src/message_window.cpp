@@ -66,8 +66,13 @@ evget::Result<void> evgetwindows::MessageWindow::Start() {
     std::promise<evget::Result<void>> registration;
     std::future<evget::Result<void>> registration_result = registration.get_future();
 
-    thread_ =
-        std::jthread{[this, registration = std::move(registration)]() mutable { RunPump(std::move(registration)); }};
+    thread_ = std::jthread{[this, registration = std::move(registration)]() mutable {
+        try {
+            RunPump(std::move(registration));
+        } catch (const std::exception& e) {
+            spdlog::error("message pump failed: {}", e.what());
+        }
+    }};
 
     return registration_result.get();
 }
@@ -155,7 +160,7 @@ evget::Result<std::unique_ptr<evgetwindows::MessageWindow::RawInput>> evgetwindo
 ) {
     const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_INPUTSINK | RIDEV_DEVNOTIFY, target);
     SetLastError(ERROR_SUCCESS);
-    if (RegisterRawInputDevices(devices.data(), devices.size(), sizeof(RAWINPUTDEVICE)) == FALSE ||
+    if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE ||
         GetLastError() != ERROR_SUCCESS) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError,

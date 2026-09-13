@@ -38,7 +38,7 @@ constexpr std::size_t kRawEventChannelCapacity = 8192;
 /**
  * \brief the number of values considered when the channel is near capacity.
  */
-constexpr std::size_t kChannelNearCapacity = kRawEventChannelCapacity * 0.8;
+constexpr std::size_t kChannelNearCapacity = kRawEventChannelCapacity * 4 / 5;
 
 /**
  * \brief The result of queuing an input event into the channel.

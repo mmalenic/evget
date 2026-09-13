@@ -1,15 +1,8 @@
 # Apply Windows macros to set compatibility behaviour.
 function(evget_apply_windows_defines target)
-    target_compile_definitions(
-        ${target}
-        PRIVATE UNICODE
-                _UNICODE
-                NOMINMAX
-                WIN32_LEAN_AND_MEAN
-                _WIN32_WINNT=0x0A00
-                WINVER=0x0A00
-                BOOST_ALL_NO_LIB
-    )
+    # Boost.Asio and Boost.WinAPI choose code paths from these, so every TU that includes libevget should have these.
+    target_compile_definitions(${target} PUBLIC _WIN32_WINNT=0x0A00 WINVER=0x0A00 BOOST_USE_WINDOWS_H)
+    target_compile_definitions(${target} PRIVATE UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN BOOST_ALL_NO_LIB)
 endfunction()
 
 # On windows DLLs must sit next to the executable for the loader to find them, so copy them here.

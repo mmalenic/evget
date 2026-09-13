@@ -20,10 +20,13 @@
 #include "evget/event/mouse_click.h"
 #include "evget/event/mouse_move.h"
 #include "evget/event/mouse_scroll.h"
+#include "evget/event/schema.h"
 #include "evget/input_event.h"
 #include "evget/util.h"
+#include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/vk_keysym.h"
+#include "evgetwindows/windows_query_api.h"
 
 namespace {
 

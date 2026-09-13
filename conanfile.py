@@ -235,6 +235,13 @@ class EvgetRecipe(ConanFile):
             "boost::uuid",
             "boost::numeric-conversion",
         ]
+        # Same as the PUBLIC defines in cmake/windows.cmake for downstream consumers.
+        if self.settings.os == "Windows":
+            self.cpp_info.defines = [
+                "_WIN32_WINNT=0x0A00",
+                "WINVER=0x0A00",
+                "BOOST_USE_WINDOWS_H",
+            ]
 
     def layout(self):
         cmake_layout(self)

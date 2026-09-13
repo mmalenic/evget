@@ -5,10 +5,14 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+
+#include "evgetwindows/modifier_tracker.h"
 
 namespace {
 
@@ -27,7 +31,7 @@ std::string Utf16ToUtf8(std::wstring_view wide) {
         return {};
     }
 
-    std::string out(static_cast<size_t>(size), '\0');
+    std::string out(static_cast<std::size_t>(size), '\0');
     const int converted =
         WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), out.data(), size, nullptr, nullptr);
     if (converted <= 0) {
@@ -35,7 +39,7 @@ std::string Utf16ToUtf8(std::wstring_view wide) {
         return {};
     }
 
-    out.resize(static_cast<size_t>(converted));
+    out.resize(static_cast<std::size_t>(converted));
     return out;
 }
 
@@ -51,7 +55,8 @@ std::optional<std::string> MonitorDevice(HMONITOR monitor) {
         return std::nullopt;
     }
 
-    return Utf16ToUtf8(info.szDevice);
+    const std::wstring_view device{std::begin(info.szDevice), std::ranges::find(info.szDevice, L'\0')};
+    return Utf16ToUtf8(device);
 }
 
 } // namespace
@@ -64,13 +69,20 @@ evgetwindows::WindowsQuery::CharacterFor(UINT key, UINT scan_code, const std::ar
 
     std::array<wchar_t, kCharacterBufferSize> buffer{};
     // The flag keeps ToUnicodeEx from overriding the user key state.
-    const int written =
-        ToUnicodeEx(key, scan_code, key_state.data(), buffer.data(), buffer.size(), kToUnicodeNoKeyStateChange, layout);
+    const int written = ToUnicodeEx(
+        key,
+        scan_code,
+        key_state.data(),
+        buffer.data(),
+        kCharacterBufferSize,
+        kToUnicodeNoKeyStateChange,
+        layout
+    );
     if (written <= 0) {
         return std::nullopt;
     }
 
-    return Utf16ToUtf8(std::wstring_view{buffer.data(), static_cast<size_t>(written)});
+    return Utf16ToUtf8(std::wstring_view{buffer.data(), static_cast<std::size_t>(written)});
 }
 
 std::optional<std::string> evgetwindows::WindowsQuery::DeviceName(HANDLE device) {
@@ -106,9 +118,9 @@ std::optional<evgetwindows::FocusWindowInfo> evgetwindows::WindowsQuery::FocusWi
     FocusWindowInfo info{};
     const int length = GetWindowTextLengthW(window);
     if (length > 0) {
-        std::wstring title(static_cast<size_t>(length) + 1, L'\0');
+        std::wstring title(static_cast<std::size_t>(length) + 1, L'\0');
         const int copied = GetWindowTextW(window, title.data(), length + 1);
-        title.resize(static_cast<size_t>(copied));
+        title.resize(static_cast<std::size_t>(copied));
         info.name = Utf16ToUtf8(title);
     }
 

@@ -35,22 +35,22 @@ public:
     MOCK_METHOD(
         (std::optional<std::string>),
         CharacterFor,
-        (UINT vk, UINT scan_code, (const std::array<BYTE, evgetwindows::kKeyStateSize>&)key_state),
+        (UINT key, UINT scan_code, (const std::array<BYTE, evgetwindows::kKeyStateSize>&)key_state),
         (override)
     );
     MOCK_METHOD((std::optional<std::string>), DeviceName, (HANDLE device), (override));
     MOCK_METHOD((std::optional<evgetwindows::FocusWindowInfo>), FocusWindow, (), (override));
     MOCK_METHOD((std::optional<std::string>), Screen, (), (override));
-    MOCK_METHOD(bool, ToggleState, (int vk), (override));
+    MOCK_METHOD(bool, ToggleState, (int key), (override));
 };
 
 evgetwindows::RawEvent MakeMouseRawEvent();
 evgetwindows::RawEvent MakeKeyboardRawEvent();
 
-evgetwindows::RawEvent MakeMouseMoveRelative(LONG dx, LONG dy);
+evgetwindows::RawEvent MakeMouseMoveRelative(LONG last_x, LONG last_y);
 evgetwindows::RawEvent MakeMouseWheel(SHORT delta, bool horizontal);
 evgetwindows::RawEvent MakeMouseButton(USHORT button_flags);
-evgetwindows::RawEvent MakeMouseAbsolute(LONG x, LONG y);
+evgetwindows::RawEvent MakeMouseAbsolute(LONG last_x, LONG last_y);
 evgetwindows::RawEvent MakeKeyboard(USHORT vkey, USHORT make_code, USHORT flags);
 evgetwindows::RawEvent MakeInjected(USHORT vkey);
 

@@ -65,8 +65,8 @@ TEST(VkKeysym, DistinctKeysHaveDistinctNames) {
         '1',
     };
     std::set<std::string> names{};
-    for (const UINT vk : vks) {
-        names.insert(evgetwindows::VkToKeysymName(vk, false));
+    for (const UINT key : vks) {
+        names.insert(evgetwindows::VkToKeysymName(key, false));
     }
     EXPECT_EQ(names.size(), vks.size());
 }

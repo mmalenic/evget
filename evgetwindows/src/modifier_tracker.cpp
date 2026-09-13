@@ -16,17 +16,18 @@ void evgetwindows::ModifierTracker::Init(bool caps_lock, bool num_lock, bool scr
 }
 
 void evgetwindows::ModifierTracker::Update(const RAWKEYBOARD& keyboard) {
-    const UINT vk = ResolveVk(keyboard);
+    const UINT key = ResolveVk(keyboard);
+    if (key >= down_.size()) {
+        return;
+    }
     const bool is_break = (keyboard.Flags & RI_KEY_BREAK) != 0;
 
-    const bool was_down = vk < down_.size() && down_[vk];
-    if (vk < down_.size()) {
-        down_[vk] = !is_break;
-    }
+    const bool was_down = down_.at(key);
+    down_.at(key) = !is_break;
 
     // Locks go on the press only and auto-repeat/release should not double the toggle.
     if (!is_break && !was_down) {
-        switch (vk) {
+        switch (key) {
             case VK_CAPITAL:
                 caps_on_ = !caps_on_;
                 break;

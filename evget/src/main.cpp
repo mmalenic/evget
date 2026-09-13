@@ -86,8 +86,20 @@ int Run(int argc, char** argv) {
             scheduler->Stop();
         }
     });
-    const std::jthread signal_thread{[&signal_context] { signal_context.run(); }};
-    const boost::scope::scope_exit stop_signals{[&signal_context] { signal_context.stop(); }};
+    const std::jthread signal_thread{[&signal_context] {
+        try {
+            signal_context.run();
+        } catch (const std::exception& e) {
+            spdlog::error("signal handling failed: {}", e.what());
+        }
+    }};
+    const boost::scope::scope_exit stop_signals{[&signal_context] {
+        try {
+            signal_context.stop();
+        } catch (const std::exception& e) {
+            spdlog::error("stopping signal handling failed: {}", e.what());
+        }
+    }};
 
     auto exit_code = 0;
     auto event_source = cli.EventSource();

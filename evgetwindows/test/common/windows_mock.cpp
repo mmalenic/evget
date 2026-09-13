@@ -25,13 +25,13 @@ evgetwindows::RawEvent MakeKeyboardRawEvent() {
     return event;
 }
 
-evgetwindows::RawEvent MakeMouseMoveRelative(LONG dx, LONG dy) {
+evgetwindows::RawEvent MakeMouseMoveRelative(LONG last_x, LONG last_y) {
     evgetwindows::RawEvent event{};
     event.header.dwType = RIM_TYPEMOUSE;
     RAWMOUSE mouse{};
     mouse.usFlags = MOUSE_MOVE_RELATIVE;
-    mouse.lLastX = dx;
-    mouse.lLastY = dy;
+    mouse.lLastX = last_x;
+    mouse.lLastY = last_y;
     event.data = mouse;
     return event;
 }
@@ -55,13 +55,13 @@ evgetwindows::RawEvent MakeMouseButton(USHORT button_flags) {
     return event;
 }
 
-evgetwindows::RawEvent MakeMouseAbsolute(LONG x, LONG y) {
+evgetwindows::RawEvent MakeMouseAbsolute(LONG last_x, LONG last_y) {
     evgetwindows::RawEvent event{};
     event.header.dwType = RIM_TYPEMOUSE;
     RAWMOUSE mouse{};
     mouse.usFlags = MOUSE_MOVE_ABSOLUTE;
-    mouse.lLastX = x;
-    mouse.lLastY = y;
+    mouse.lLastX = last_x;
+    mouse.lLastY = last_y;
     event.data = mouse;
     return event;
 }
