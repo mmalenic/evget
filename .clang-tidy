@@ -75,6 +75,8 @@ CheckOptions:
     value: 1
   - key: misc-include-cleaner.IgnoreHeaders
     value: ".*Windows Kits.*"
+  - key: hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
+    value: true
 WarningsAsErrors: "*"
 HeaderFilterRegex: ".*"
 # clang-cl requires these, on regular clang they are enabled by default so no harm.

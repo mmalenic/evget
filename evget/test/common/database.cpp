@@ -42,7 +42,7 @@ test::DatabaseTest::DatabaseTest()
 
 test::DatabaseTest::~DatabaseTest() {
     std::error_code error_code{};
-    std::filesystem::remove_all(database_file_, error_code);
+    std::filesystem::remove(database_file_, error_code);
 }
 
 std::filesystem::path test::DatabaseTest::Directory() const {
