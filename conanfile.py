@@ -247,3 +247,7 @@ class EvgetRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+        # Add here, as CMake does not add header verification by default.
+        if self.options.verify_headers:
+            cmake.build(target="all_verify_interface_header_sets")
