@@ -34,11 +34,13 @@ class EvgetRecipe(ConanFile):
         "build_bin": [True, False],
         # Whether to build test executables.
         "build_testing": [True, False],
-        # Whether to run clang tidy.
+        # Whether to run run-clang-tidy over the compile database after building.
         "run_clang_tidy": [True, False],
-        # An optional clang tidy executable.
+        # An optional run-clang-tidy executable.
+        "run_clang_tidy_executable": [None, "ANY"],
+        # An optional clang-tidy executable, passed to run-clang-tidy.
         "clang_tidy_executable": [None, "ANY"],
-        # Fix clang tidy errors by passing "--fix-errors" to clang-tidy.
+        # Apply clang-tidy fixes by passing "-fix" to run-clang-tidy.
         "clang_tidy_fix_errors": [True, False],
         # Whether to run MSVC /analyze.
         "run_msvc_analyze": [True, False],
@@ -69,6 +71,7 @@ class EvgetRecipe(ConanFile):
         "build_bin": True,
         "build_testing": False,
         "run_clang_tidy": False,
+        "run_clang_tidy_executable": None,
         "clang_tidy_executable": None,
         "clang_tidy_fix_errors": False,
         "run_msvc_analyze": False,
@@ -199,10 +202,6 @@ class EvgetRecipe(ConanFile):
 
         tc.cache_variables["EVGET_BUILD_BIN"] = self.options.build_bin
         tc.cache_variables["BUILD_TESTING"] = self.options.build_testing
-        tc.cache_variables["EVGET_RUN_CLANG_TIDY"] = self.options.run_clang_tidy
-        tc.cache_variables["EVGET_CLANG_TIDY_FIX_ERRORS"] = (
-            self.options.clang_tidy_fix_errors
-        )
         tc.cache_variables["EVGET_RUN_MSVC_ANALYZE"] = self.options.run_msvc_analyze
         tc.cache_variables["EVGET_INSTALL_BIN"] = self.options.install_bin
         tc.cache_variables["EVGET_INSTALL_LIB"] = self.options.install_lib
@@ -212,10 +211,6 @@ class EvgetRecipe(ConanFile):
         )
         tc.cache_variables["EVGET_BUILD_EVGETWINDOWS"] = self.options.build_evgetwindows
 
-        if self.options.clang_tidy_executable:
-            tc.cache_variables["EVGET_CLANG_TIDY_EXECUTABLE"] = (
-                self.options.clang_tidy_executable
-            )
         if self.options.compiler_launcher:
             tc.cache_variables["CMAKE_C_COMPILER_LAUNCHER"] = (
                 self.options.compiler_launcher
@@ -223,7 +218,8 @@ class EvgetRecipe(ConanFile):
             tc.cache_variables["CMAKE_CXX_COMPILER_LAUNCHER"] = (
                 self.options.compiler_launcher
             )
-        if self.options.export_compilation_database:
+        # run-clang-tidy reads the compile database.
+        if self.options.export_compilation_database or self.options.run_clang_tidy:
             tc.cache_variables["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
         if self.options.verify_headers:
             tc.cache_variables["CMAKE_VERIFY_INTERFACE_HEADER_SETS"] = True
@@ -251,3 +247,19 @@ class EvgetRecipe(ConanFile):
         # Add here, as CMake does not add header verification by default.
         if self.options.verify_headers:
             cmake.build(target="all_verify_interface_header_sets")
+
+        # Run on all TUs in the compile database.
+        if self.options.run_clang_tidy:
+            runner = self.options.run_clang_tidy_executable or "run-clang-tidy"
+            command = [str(runner), "-p", f'"{self.build_folder}"', "-quiet"]
+
+            if self.options.clang_tidy_executable:
+                command += [
+                    "-clang-tidy-binary",
+                    str(self.options.clang_tidy_executable),
+                ]
+
+            if self.options.clang_tidy_fix_errors:
+                command.append("-fix")
+
+            self.run(" ".join(command))

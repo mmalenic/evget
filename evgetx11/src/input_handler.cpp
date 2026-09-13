@@ -65,7 +65,6 @@ void SetMask(evgetx11::X11Api& x_wrapper) {
 }
 } // namespace
 
-
 boost::asio::awaitable<evget::Result<evgetx11::InputEvent>> evgetx11::InputHandler::Next() const {
     co_return InputEvent::NextEvent(x_wrapper_.get());
 }

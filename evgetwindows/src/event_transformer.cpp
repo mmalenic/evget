@@ -214,8 +214,7 @@ void evgetwindows::EventTransformer::BuildKeyboard(evget::Data& data, EventConte
 
     auto builder = evget::Key{};
     SetBaseFields(builder, ctx, ToMicros(ctx.timestamp));
-    builder.Button(keyboard.VKey)
-        .Action(down ? evget::ButtonAction::kPress : evget::ButtonAction::kRelease);
+    builder.Button(keyboard.VKey).Action(down ? evget::ButtonAction::kPress : evget::ButtonAction::kRelease);
 
     auto name = VkToKeysymName(resolved_vk, is_extended);
     if (!name.empty()) {

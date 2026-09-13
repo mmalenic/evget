@@ -55,7 +55,8 @@ template <typename Key>
 const std::string& DeviceId<Key>::UuidDeterministic(const Key& key) {
     auto [iterator, inserted] = device_uuids_.try_emplace(key);
     if (inserted) {
-        iterator->second = boost::uuids::to_string(boost::uuids::name_generator_sha1{boost::uuids::ns::url()}(key));
+        const boost::uuids::name_generator_sha1 generator{boost::uuids::ns::url()};
+        iterator->second = boost::uuids::to_string(generator(key));
     }
     return iterator->second;
 }

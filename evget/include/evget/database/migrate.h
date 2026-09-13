@@ -59,7 +59,6 @@ private:
     [[nodiscard]] Result<void> CreateMigrationsTable() const;
     [[nodiscard]] Result<void> ApplyMigration(const Migration& migration, const std::string& checksum) const;
     [[nodiscard]] Result<void> ApplyMigrationSql(const Migration& migration) const;
-
 };
 } // namespace evget
 

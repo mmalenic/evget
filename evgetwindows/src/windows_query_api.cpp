@@ -59,21 +59,13 @@ std::optional<std::string> MonitorDevice(HMONITOR monitor) {
 std::optional<std::string>
 evgetwindows::WindowsQuery::CharacterFor(UINT key, UINT scan_code, const std::array<BYTE, kKeyStateSize>& key_state) {
     HWND foreground = GetForegroundWindow();
-    HKL layout = foreground != nullptr
-        ? GetKeyboardLayout(GetWindowThreadProcessId(foreground, nullptr))
-        : GetKeyboardLayout(0);
+    HKL layout =
+        foreground != nullptr ? GetKeyboardLayout(GetWindowThreadProcessId(foreground, nullptr)) : GetKeyboardLayout(0);
 
     std::array<wchar_t, kCharacterBufferSize> buffer{};
     // The flag keeps ToUnicodeEx from overriding the user key state.
-    const int written = ToUnicodeEx(
-        key,
-        scan_code,
-        key_state.data(),
-        buffer.data(),
-        buffer.size(),
-        kToUnicodeNoKeyStateChange,
-        layout
-    );
+    const int written =
+        ToUnicodeEx(key, scan_code, key_state.data(), buffer.data(), buffer.size(), kToUnicodeNoKeyStateChange, layout);
     if (written <= 0) {
         return std::nullopt;
     }

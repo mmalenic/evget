@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <array>
-#include <bit>
 #include <cstddef>
 #include <format>
 #include <string>
@@ -19,7 +18,8 @@ namespace {
 std::string Checksum(const evget::Migration& migration) {
     constexpr std::size_t kSha512DigestBytes = 64;
     std::array<unsigned char, kSha512DigestBytes> digest{};
-    const auto* input = std::bit_cast<const unsigned char*>(migration.sql.c_str());
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const auto* input = reinterpret_cast<const unsigned char*>(migration.sql.c_str());
     mbedtls_sha512(input, migration.sql.length(), digest.data(), 0);
 
     std::string hex{};
