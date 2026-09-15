@@ -292,34 +292,65 @@ void evgetwindows::EventTransformer::BuildHid(
     state.device_type = ctx.device_type;
 
     const auto event_time = ToMicros(ctx.timestamp);
+    const bool touchscreen = ctx.device_type == evget::DeviceType::kTouchscreen;
+
+    // A touchscreen is mapped to one display, whereas a touchpad goes onto any display the pointer is on.
+    if (touchscreen && !state.monitor.has_value()) {
+        state.monitor = query_.get().MappedMonitor(device);
+    }
+    const auto monitor = touchscreen ? state.monitor : query_.get().PointerMonitor();
+    const auto range = hid_query_.get().AxisRange(device);
+    const bool positionable = monitor.has_value() && range.has_value();
 
     // A defined row order for a multi contact frame.
     std::vector<HidContact> contacts = report->contacts;
     std::ranges::sort(contacts, {}, &HidContact::contact_id);
 
     for (const auto& contact : contacts) {
-        if (!contact.tip_down || !contact.confident || state.tracked.contains(contact.contact_id)) {
+        if (!contact.tip_down || !contact.confident) {
             continue;
         }
 
         const auto touch_id = static_cast<int>(contact.contact_id);
+        const bool down = state.tracked.insert(contact.contact_id).second;
 
+        // The first sample of a contact has no position, matching the libinput touch row shape.
         auto move_builder = evget::MouseMove{};
         SetBaseFields(move_builder, ctx, event_time);
+        if (touchscreen && monitor.has_value()) {
+            move_builder.Screen(monitor->name);
+        }
         move_builder.TouchId(touch_id);
+        if (positionable) {
+            SetTouchRelativePosition(move_builder, state.device_uuid, contact, *range, *monitor);
+        }
         move_builder.Build(data);
+
+        if (!down) {
+            continue;
+        }
 
         auto click_builder = evget::MouseClick{};
         SetBaseFields(click_builder, ctx, event_time);
+        if (touchscreen && monitor.has_value()) {
+            click_builder.Screen(monitor->name);
+        }
         click_builder.Action(evget::ButtonAction::kPress).TouchId(touch_id);
         click_builder.Build(data);
-
-        state.tracked.insert(contact.contact_id);
     }
 }
 
 void evgetwindows::EventTransformer::RemoveDevice(HANDLE device) {
-    touch_devices_.erase(device);
+    const auto entry = touch_devices_.find(device);
+    if (entry == touch_devices_.end()) {
+        return;
+    }
+
+    for (const auto contact_id : entry->second.tracked) {
+        ClearTouchPosition(entry->second.device_uuid, contact_id);
+    }
+
+    touch_devices_.erase(entry);
 }
 
 void evgetwindows::EventTransformer::SetRelativeFromAbsolute(
@@ -335,4 +366,42 @@ void evgetwindows::EventTransformer::SetRelativeFromAbsolute(
 
     previous_absolute_x_[device_uuid] = abs_x;
     previous_absolute_y_[device_uuid] = abs_y;
+}
+
+void evgetwindows::EventTransformer::ClearTouchPosition(const std::string& device_uuid, std::uint32_t contact_id) {
+    const auto key = std::make_pair(device_uuid, contact_id);
+    previous_touch_x_.erase(key);
+    previous_touch_y_.erase(key);
+}
+
+void evgetwindows::EventTransformer::SetTouchRelativePosition(
+    evget::MouseMove& builder,
+    const std::string& device_uuid,
+    const HidContact& contact,
+    const HidAxisRange& range,
+    const MonitorInfo& monitor
+) {
+    if (!contact.position_x.has_value() || !contact.position_y.has_value()) {
+        return;
+    }
+
+    const auto span_x = static_cast<double>(range.max_x) - static_cast<double>(range.min_x);
+    const auto span_y = static_cast<double>(range.max_y) - static_cast<double>(range.min_y);
+    if (span_x <= 0.0 || span_y <= 0.0) {
+        return;
+    }
+
+    const double pixel_x =
+        (static_cast<double>(*contact.position_x) - static_cast<double>(range.min_x)) / span_x * monitor.width;
+    const double pixel_y =
+        (static_cast<double>(*contact.position_y) - static_cast<double>(range.min_y)) / span_y * monitor.height;
+
+    // Each contact carries its own stream, parallel contacts do not share a sample.
+    const auto key = std::make_pair(device_uuid, contact.contact_id);
+    if (previous_touch_x_.contains(key) && previous_touch_y_.contains(key)) {
+        builder.PositionX(pixel_x - previous_touch_x_[key]).PositionY(pixel_y - previous_touch_y_[key]);
+    }
+
+    previous_touch_x_[key] = pixel_x;
+    previous_touch_y_[key] = pixel_y;
 }

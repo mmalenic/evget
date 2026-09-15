@@ -10,10 +10,13 @@
 
 #include <cstdint>
 #include <functional>
+#include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 #include "evget/device_id.h"
 #include "evget/event/concepts.h"
@@ -24,6 +27,7 @@
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
 #include "evget/interval_tracker.h"
+#include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
@@ -66,6 +70,7 @@ private:
         std::string device_name;
         evget::DeviceType device_type{evget::DeviceType::kUnknown};
         std::set<std::uint32_t> tracked;
+        std::optional<MonitorInfo> monitor;
     };
 
     std::reference_wrapper<WindowsQueryApi> query_;
@@ -76,6 +81,8 @@ private:
 
     std::unordered_map<std::string, LONG> previous_absolute_x_;
     std::unordered_map<std::string, LONG> previous_absolute_y_;
+    std::map<std::pair<std::string, std::uint32_t>, double> previous_touch_x_;
+    std::map<std::pair<std::string, std::uint32_t>, double> previous_touch_y_;
     std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
     std::unordered_map<HANDLE, TouchDeviceState> touch_devices_;
 
@@ -85,6 +92,14 @@ private:
 
     void RemoveDevice(HANDLE device);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
+    void ClearTouchPosition(const std::string& device_uuid, std::uint32_t contact_id);
+    void SetTouchRelativePosition(
+        evget::MouseMove& builder,
+        const std::string& device_uuid,
+        const HidContact& contact,
+        const HidAxisRange& range,
+        const MonitorInfo& monitor
+    );
 
     template <evget::BuilderHasBaseFields T>
     T& SetBaseFields(T& builder, const EventContext& ctx, std::uint64_t event_time);

@@ -12,6 +12,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -23,6 +24,12 @@
 #include "evgetwindows/windows_query_api.h"
 
 namespace test {
+
+constexpr std::int32_t kTestAxisMax = 4096;
+constexpr double kTestMonitorWidth = 1920.0;
+constexpr double kTestMonitorHeight = 1280.0;
+constexpr std::string_view kTestPointerDisplay{R"(\\.\DISPLAY1)"};
+constexpr std::string_view kTestMappedDisplay{R"(\\.\DISPLAY2)"};
 
 class WindowsApiMock : public evgetwindows::WindowsApi {
 public:
@@ -90,6 +97,11 @@ const RAWINPUT& AsRawInput(std::span<const std::byte> packet);
 
 evgetwindows::RawEvent MakeHidRawEvent(std::span<const std::byte> report);
 evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, bool confident);
+
+evgetwindows::HidAxisRange MakeAxisRange();
+evgetwindows::MonitorInfo MakeMappedMonitor();
+evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t position_x, std::int32_t position_y);
+evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> contacts);
 
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
 

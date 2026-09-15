@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <span>
 #include <string>
@@ -15,6 +16,7 @@
 #include <vector>
 
 #include "common/windows_mock.h"
+#include "evget/event/data.h"
 #include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
@@ -27,14 +29,23 @@
 
 using test::AsRawInput;
 using test::HidQueryApiMock;
+using test::kTestAxisMax;
+using test::kTestMappedDisplay;
+using test::kTestMonitorWidth;
+using test::kTestPointerDisplay;
+using test::MakeAxisRange;
+using test::MakeContact;
 using test::MakeDeviceChangeRawEvent;
 using test::MakeHidPacket;
 using test::MakeHidPacketNullDevice;
 using test::MakeHidPacketUndersized;
+using test::MakeHidRawEvent;
 using test::MakeHidReport;
 using test::MakeHidReportBytes;
+using test::MakeHidReportFrom;
 using test::MakeInjected;
 using test::MakeKeyboard;
+using test::MakeMappedMonitor;
 using test::MakeMouseAbsolute;
 using test::MakeMouseButton;
 using test::MakeMouseMoveRelative;
@@ -567,6 +578,135 @@ TEST(EvgetWindowsTransformer, DeviceArrivingHasNoRows) {
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeDeviceChangeRawEvent(device, true)});
 
     EXPECT_TRUE(data.Entries().empty());
+}
+
+TEST(EvgetWindowsTransformer, TouchMotionhasPixelChanges) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(Return(std::optional{MakeAxisRange()}));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeHidReportFrom({MakeContact(1, 0, 0)})}))
+        .WillOnce(Return(std::optional{MakeHidReportFrom({MakeContact(1, kTestAxisMax / 16, 0)})}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 1);
+    EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
+    EXPECT_EQ(entries.at(0).Data().at(2), evget::FromDouble(kTestMonitorWidth / 16));
+    EXPECT_EQ(entries.at(0).Data().at(3), evget::FromDouble(0.0));
+}
+
+TEST(EvgetWindowsTransformer, TouchMotionParallelContacts) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(Return(std::optional{MakeAxisRange()}));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeHidReportFrom({MakeContact(2, 0, 0), MakeContact(1, 0, 0)})}))
+        .WillOnce(Return(
+            std::optional{
+                MakeHidReportFrom({MakeContact(2, kTestAxisMax / 8, 0), MakeContact(1, kTestAxisMax / 16, 0)})
+            }
+        ));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 2);
+    EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
+    EXPECT_EQ(entries.at(0).Data().at(15), "1");
+    EXPECT_EQ(entries.at(0).Data().at(2), evget::FromDouble(kTestMonitorWidth / 16));
+    EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseMove);
+    EXPECT_EQ(entries.at(1).Data().at(15), "2");
+    EXPECT_EQ(entries.at(1).Data().at(2), evget::FromDouble(kTestMonitorWidth / 8));
+}
+
+TEST(EvgetWindowsTransformer, TouchScreenColumnMapsToMonitor) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(query, Screen()).WillRepeatedly(Return(std::optional{std::string{kTestPointerDisplay}}));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidReportFrom({MakeContact(1, 0, 0)})}));
+
+    const auto report = MakeHidReportBytes(8);
+
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    evgetwindows::EventTransformer touchscreen{query, hid_query, tracker};
+    auto screen_data = touchscreen.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_FALSE(screen_data.Entries().empty());
+    EXPECT_EQ(screen_data.Entries().at(0).Data().at(10), std::string{kTestMappedDisplay});
+
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchpad));
+    evgetwindows::EventTransformer touchpad{query, hid_query, tracker};
+    auto pad_data = touchpad.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_FALSE(pad_data.Entries().empty());
+    EXPECT_EQ(pad_data.Entries().at(0).Data().at(10), std::string{kTestPointerDisplay});
+}
+
+TEST(EvgetWindowsTransformer, TouchMotionWithoutAxisRange) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidReportFrom({MakeContact(1, kTestAxisMax / 16, 0)})}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto second = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_EQ(second.Entries().size(), 1);
+    EXPECT_EQ(second.Entries().at(0).Data().at(2), "");
+    EXPECT_EQ(second.Entries().at(0).Data().at(3), "");
+
+    auto third = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_EQ(third.Entries().size(), 1);
+    EXPECT_EQ(third.Entries().at(0).Data().at(2), "");
+    EXPECT_EQ(third.Entries().at(0).Data().at(3), "");
+}
+
+TEST(EvgetWindowsTransformer, TouchMotionWithoutMonitor) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(Return(std::optional{MakeAxisRange()}));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidReportFrom({MakeContact(1, kTestAxisMax / 16, 0)})}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto second = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_EQ(second.Entries().size(), 1);
+    EXPECT_EQ(second.Entries().at(0).Data().at(2), "");
+    EXPECT_EQ(second.Entries().at(0).Data().at(3), "");
+
+    auto third = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    ASSERT_EQ(third.Entries().size(), 1);
+    EXPECT_EQ(third.Entries().at(0).Data().at(2), "");
+    EXPECT_EQ(third.Entries().at(0).Data().at(3), "");
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

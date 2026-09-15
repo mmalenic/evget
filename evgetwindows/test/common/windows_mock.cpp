@@ -4,11 +4,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/message_window.h"
 #include "evgetwindows/raw_event.h"
+#include "evgetwindows/windows_query_api.h"
 
 namespace test {
 
@@ -201,6 +204,33 @@ evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, b
         .contact_count = 1,
         .button_one_down = false
     };
+}
+
+evgetwindows::HidAxisRange MakeAxisRange() {
+    return evgetwindows::HidAxisRange{.min_x = 0, .max_x = kTestAxisMax, .min_y = 0, .max_y = kTestAxisMax};
+}
+
+evgetwindows::MonitorInfo MakeMappedMonitor() {
+    return evgetwindows::MonitorInfo{
+        .name = std::string{kTestMappedDisplay},
+        .width = kTestMonitorWidth,
+        .height = kTestMonitorHeight
+    };
+}
+
+evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t position_x, std::int32_t position_y) {
+    return evgetwindows::HidContact{
+        .contact_id = contact_id,
+        .position_x = position_x,
+        .position_y = position_y,
+        .tip_down = true,
+        .confident = true
+    };
+}
+
+evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> contacts) {
+    const auto count = static_cast<std::uint32_t>(contacts.size());
+    return evgetwindows::HidReport{.contacts = std::move(contacts), .contact_count = count, .button_one_down = false};
 }
 
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival) {
