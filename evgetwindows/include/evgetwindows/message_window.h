@@ -101,6 +101,14 @@ public:
     [[nodiscard]] static std::optional<RawEvent> ToRawEventAt(const RAWINPUT& raw, DWORD index);
 
     /**
+     * \brief Build a `RawEvent` for a device arrival or removal.
+     * \param change the device change code
+     * \param device the device handle
+     * \return the event
+     */
+    [[nodiscard]] static RawEvent ToDeviceChangeEvent(WPARAM change, HANDLE device);
+
+    /**
      * \brief Convert a `RAWINPUT` record and try to queue it.
      * \param raw the raw input record
      * \return the outcome
@@ -140,7 +148,8 @@ private:
     static LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
     void RunPump(std::promise<evget::Result<void>> registration);
     void HandleRawInput(HRAWINPUT input);
-    EnqueueOutcome Send(const RawEvent& event);
+    void HandleDeviceChange(WPARAM change, HANDLE device);
+    EnqueueOutcome EnqueueEvent(const RawEvent& event);
 
     std::wstring class_name_;
     RawEventChannel channel_;

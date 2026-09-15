@@ -59,7 +59,7 @@ public:
      * \brief Remove the device state.
      * \param device the Raw Input device
      */
-    virtual void EvictDevice(HANDLE device) = 0;
+    virtual void RemoveDevice(HANDLE device) = 0;
 };
 
 /**
@@ -79,7 +79,7 @@ public:
     [[nodiscard]] evget::DeviceType ClassifyDevice(HANDLE device) override;
     [[nodiscard]] std::optional<HidAxisRange> AxisRange(HANDLE device) override;
     [[nodiscard]] std::optional<HidReport> DecodeReport(HANDLE device, std::span<const std::byte> report) override;
-    void EvictDevice(HANDLE device) override;
+    void RemoveDevice(HANDLE device) override;
 
     /**
      * \brief Derive device capabilities from data bytes.

@@ -25,7 +25,15 @@ constexpr std::size_t kHidReportCapacity = 256;
  */
 struct HidPayload {
     std::array<std::byte, kHidReportCapacity> report;
-    std::uint16_t size;
+    std::uint16_t size{};
+};
+
+/**
+ * \brief A device change, either arriving or leaving.
+ */
+struct DeviceChange {
+    HANDLE device{};
+    bool arrival{};
 };
 
 /**
@@ -33,7 +41,7 @@ struct HidPayload {
  */
 struct RawEvent {
     RAWINPUTHEADER header{};
-    std::variant<RAWMOUSE, RAWKEYBOARD, HidPayload> data;
+    std::variant<RAWMOUSE, RAWKEYBOARD, HidPayload, DeviceChange> data;
 };
 
 } // namespace evgetwindows

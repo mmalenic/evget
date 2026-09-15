@@ -471,6 +471,6 @@ evgetwindows::HidQuery::DecodeReport(HANDLE device, std::span<const std::byte> r
     return decoded;
 }
 
-void evgetwindows::HidQuery::EvictDevice(HANDLE device) {
+void evgetwindows::HidQuery::RemoveDevice(HANDLE device) {
     devices_.erase(device);
 }

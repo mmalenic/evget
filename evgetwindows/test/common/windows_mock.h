@@ -60,7 +60,7 @@ public:
         (HANDLE device, (std::span<const std::byte>)report),
         (override)
     );
-    MOCK_METHOD(void, EvictDevice, (HANDLE device), (override));
+    MOCK_METHOD(void, RemoveDevice, (HANDLE device), (override));
 };
 
 evgetwindows::RawEvent MakeMouseRawEvent();

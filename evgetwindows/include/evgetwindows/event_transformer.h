@@ -82,6 +82,8 @@ private:
     void BuildMouse(evget::Data& data, EventContext& ctx, const RAWMOUSE& mouse);
     void BuildKeyboard(evget::Data& data, EventContext& ctx, const RAWKEYBOARD& keyboard);
     void BuildHid(evget::Data& data, EventContext& ctx, const HidPayload& payload, HANDLE device);
+
+    void RemoveDevice(HANDLE device);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
 
     template <evget::BuilderHasBaseFields T>

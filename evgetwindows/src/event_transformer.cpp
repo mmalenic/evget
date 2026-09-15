@@ -109,6 +109,16 @@ evgetwindows::EventTransformer::EventTransformer(
 evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<RawEvent> event) {
     const auto& raw = event.ViewData();
 
+    // The mouse type's value is zero, so a device change with a default header must not reach the dwType switch.
+    if (const auto* change = std::get_if<DeviceChange>(&raw.data)) {
+        if (!change->arrival) {
+            hid_query_.get().RemoveDevice(raw.header.hDevice);
+            RemoveDevice(raw.header.hDevice);
+        }
+
+        return evget::Data{};
+    }
+
     std::string device_name = query_.get().DeviceName(raw.header.hDevice).value_or(std::string{kInjectedDeviceName});
     const std::string& device_uuid = device_ids_.UuidDeterministic(std::format("evget:windows:device:{}", device_name));
 
@@ -306,6 +316,10 @@ void evgetwindows::EventTransformer::BuildHid(
 
         state.tracked.insert(contact.contact_id);
     }
+}
+
+void evgetwindows::EventTransformer::RemoveDevice(HANDLE device) {
+    touch_devices_.erase(device);
 }
 
 void evgetwindows::EventTransformer::SetRelativeFromAbsolute(

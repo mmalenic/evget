@@ -111,6 +111,15 @@ LRESULT CALLBACK evgetwindows::MessageWindow::WndProc(HWND window, UINT message,
         }
         return 0;
     }
+    if (message == WM_INPUT_DEVICE_CHANGE) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+        auto* self = reinterpret_cast<MessageWindow*>(GetWindowLongPtrW(window, GWLP_USERDATA));
+        if (self != nullptr) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+            self->HandleDeviceChange(GET_DEVICE_CHANGE_WPARAM(wparam), reinterpret_cast<HANDLE>(lparam));
+        }
+        return 0;
+    }
     return DefWindowProcW(window, message, wparam, lparam);
 }
 
@@ -162,7 +171,15 @@ std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEventAt(
     return event;
 }
 
-evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Send(const RawEvent& event) {
+evgetwindows::RawEvent evgetwindows::MessageWindow::ToDeviceChangeEvent(WPARAM change, HANDLE device) {
+    RawEvent event{};
+    event.header.hDevice = device;
+    event.data = DeviceChange{.device = device, .arrival = change == GIDC_ARRIVAL};
+
+    return event;
+}
+
+evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const RawEvent& event) {
     if (channel_.try_send(boost::system::error_code{}, event)) {
         if (in_flight_.fetch_add(1, std::memory_order_relaxed) + 1 == kChannelNearCapacity) {
             spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
@@ -188,7 +205,7 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
                 continue;
             }
 
-            const EnqueueOutcome sent = Send(*report);
+            const EnqueueOutcome sent = EnqueueEvent(*report);
             if (sent == EnqueueOutcome::kDropped || outcome != EnqueueOutcome::kDropped) {
                 outcome = sent;
             }
@@ -202,7 +219,15 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
         return EnqueueOutcome::kIgnored;
     }
 
-    return Send(*event);
+    return EnqueueEvent(*event);
+}
+
+void evgetwindows::MessageWindow::HandleDeviceChange(WPARAM change, HANDLE device) {
+    if (change != GIDC_ARRIVAL && change != GIDC_REMOVAL) {
+        return;
+    }
+
+    EnqueueEvent(ToDeviceChangeEvent(change, device));
 }
 
 void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
