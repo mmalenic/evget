@@ -17,6 +17,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "evget/device_id.h"
 #include "evget/event/concepts.h"
@@ -70,7 +71,12 @@ private:
         std::string device_name;
         evget::DeviceType device_type{evget::DeviceType::kUnknown};
         std::set<std::uint32_t> tracked;
+        std::set<std::uint32_t> rejected;
         std::optional<MonitorInfo> monitor;
+        std::vector<HidContact> accumulated;
+        std::uint32_t expected{};
+        bool frame_open{};
+        bool button_one_down{};
     };
 
     std::reference_wrapper<WindowsQueryApi> query_;
@@ -90,7 +96,44 @@ private:
     void BuildKeyboard(evget::Data& data, EventContext& ctx, const RAWKEYBOARD& keyboard);
     void BuildHid(evget::Data& data, EventContext& ctx, const HidPayload& payload, HANDLE device);
 
-    void RemoveDevice(HANDLE device);
+    void BuildTouchFrame(
+        evget::Data& data,
+        EventContext& ctx,
+        TouchDeviceState& state,
+        const std::optional<HidAxisRange>& range,
+        const std::optional<MonitorInfo>& monitor,
+        std::uint64_t event_time
+    );
+
+    void BuildTouchContactDown(
+        evget::Data& data,
+        EventContext& ctx,
+        const TouchDeviceState& state,
+        const HidContact& contact,
+        const std::optional<HidAxisRange>& range,
+        const std::optional<MonitorInfo>& monitor,
+        std::uint64_t event_time
+    );
+
+    void BuildTouchRelease(
+        evget::Data& data,
+        EventContext& ctx,
+        const TouchDeviceState& state,
+        std::uint32_t contact_id,
+        std::uint64_t event_time
+    );
+
+    void ReleaseTrackedContacts(evget::Data& data, EventContext& ctx, TouchDeviceState& state, std::uint64_t event_time);
+
+    void BuildPadButton(
+        evget::Data& data,
+        EventContext& ctx,
+        TouchDeviceState& state,
+        bool button_one_down,
+        std::uint64_t event_time
+    );
+
+    void RemoveDevice(evget::Data& data, HANDLE device, const evget::TimestampType& timestamp);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
     void ClearTouchPosition(const std::string& device_uuid, std::uint32_t contact_id);
     void SetTouchRelativePosition(

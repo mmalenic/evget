@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <format>
 #include <optional>
+#include <set>
 #include <span>
 #include <string>
 #include <string_view>
@@ -38,6 +39,7 @@ namespace {
 
 // These match the libinput button ids from input-event-codes.h as windows has no concept of a button id.
 constexpr int kButtonIdLeft = 0x110;
+constexpr std::string_view kButtonNameLeft{"BTN_LEFT"};
 constexpr int kButtonIdRight = 0x111;
 constexpr int kButtonIdMiddle = 0x112;
 constexpr int kButtonIdSide = 0x113;
@@ -62,7 +64,7 @@ constexpr std::array<MouseButton, 5> kMouseButtons{{
     {.down_flag = RI_MOUSE_LEFT_BUTTON_DOWN,
      .up_flag = RI_MOUSE_LEFT_BUTTON_UP,
      .button_id = kButtonIdLeft,
-     .name = "BTN_LEFT",
+     .name = kButtonNameLeft,
      .down_event = EVGET_STRINGIFY(RI_MOUSE_LEFT_BUTTON_DOWN),
      .up_event = EVGET_STRINGIFY(RI_MOUSE_LEFT_BUTTON_UP)},
     {.down_flag = RI_MOUSE_RIGHT_BUTTON_DOWN,
@@ -91,6 +93,22 @@ constexpr std::array<MouseButton, 5> kMouseButtons{{
      .up_event = EVGET_STRINGIFY(RI_MOUSE_BUTTON_5_UP)},
 }};
 
+constexpr std::uint32_t kMaxContactsPerFrame = 64;
+constexpr std::size_t kMaxTrackedContacts = 64;
+
+void AccumulateContacts(
+    std::vector<evgetwindows::HidContact>& accumulated,
+    const std::vector<evgetwindows::HidContact>& contacts
+) {
+    for (const auto& contact : contacts) {
+        if (accumulated.size() >= kMaxContactsPerFrame) {
+            return;
+        }
+
+        accumulated.push_back(contact);
+    }
+}
+
 std::uint64_t ToMicros(const evget::TimestampType& timestamp) {
     return static_cast<std::uint64_t>(
         std::chrono::duration_cast<std::chrono::microseconds>(timestamp.time_since_epoch()).count()
@@ -111,12 +129,12 @@ evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<Raw
 
     // The mouse type's value is zero, so a device change with a default header must not reach the dwType switch.
     if (const auto* change = std::get_if<DeviceChange>(&raw.data)) {
+        auto removal = evget::Data{};
         if (!change->arrival) {
-            hid_query_.get().RemoveDevice(raw.header.hDevice);
-            RemoveDevice(raw.header.hDevice);
+            RemoveDevice(removal, raw.header.hDevice, event.GetTimestamp());
         }
 
-        return evget::Data{};
+        return removal;
     }
 
     std::string device_name = query_.get().DeviceName(raw.header.hDevice).value_or(std::string{kInjectedDeviceName});
@@ -300,57 +318,227 @@ void evgetwindows::EventTransformer::BuildHid(
     }
     const auto monitor = touchscreen ? state.monitor : query_.get().PointerMonitor();
     const auto range = hid_query_.get().AxisRange(device);
-    const bool positionable = monitor.has_value() && range.has_value();
 
-    // A defined row order for a multi contact frame.
-    std::vector<HidContact> contacts = report->contacts;
+    bool complete = false;
+    if (report->contact_count.has_value()) {
+        const auto count = *report->contact_count;
+        if (count > 0) {
+            // A frame that never completed is a cancelled one.
+            if (state.frame_open) {
+                ReleaseTrackedContacts(data, ctx, state, event_time);
+            }
+
+            state.frame_open = true;
+            state.expected = std::min(count, kMaxContactsPerFrame);
+            state.accumulated.clear();
+            AccumulateContacts(state.accumulated, report->contacts);
+            complete = state.accumulated.size() >= state.expected;
+        } else if (state.frame_open) {
+            AccumulateContacts(state.accumulated, report->contacts);
+            complete = state.accumulated.size() >= state.expected;
+        }
+    } else if (!report->contacts.empty()) {
+        // A descriptor omitting the contact count still completes.
+        state.frame_open = true;
+        state.expected = 0;
+        state.accumulated.clear();
+        AccumulateContacts(state.accumulated, report->contacts);
+        complete = true;
+    }
+
+    if (complete) {
+        BuildTouchFrame(data, ctx, state, range, monitor, event_time);
+    }
+
+    BuildPadButton(data, ctx, state, report->button_one_down, event_time);
+}
+
+void evgetwindows::EventTransformer::BuildTouchFrame(
+    evget::Data& data,
+    EventContext& ctx,
+    TouchDeviceState& state,
+    const std::optional<HidAxisRange>& range,
+    const std::optional<MonitorInfo>& monitor,
+    std::uint64_t event_time
+) {
+    auto contacts = std::move(state.accumulated);
+    state.accumulated.clear();
+    state.frame_open = false;
+    state.expected = 0;
+
+    // A defined row order for a multi contact frame, and one row set for a contact the frame repeated.
     std::ranges::sort(contacts, {}, &HidContact::contact_id);
+    const auto duplicates = std::ranges::unique(contacts, {}, &HidContact::contact_id);
+    contacts.erase(duplicates.begin(), duplicates.end());
 
+    std::set<std::uint32_t> present;
     for (const auto& contact : contacts) {
-        if (!contact.tip_down || !contact.confident) {
+        present.insert(contact.contact_id);
+
+        // When the confidence is set it means the device considers the contact intentional.
+        const bool active = contact.tip_down && contact.confident;
+        if (state.tracked.contains(contact.contact_id)) {
+            if (active) {
+                BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
+            } else {
+                BuildTouchRelease(data, ctx, state, contact.contact_id, event_time);
+                state.tracked.erase(contact.contact_id);
+            }
             continue;
         }
 
-        const auto touch_id = static_cast<int>(contact.contact_id);
-        const bool down = state.tracked.insert(contact.contact_id).second;
-
-        // The first sample of a contact has no position, matching the libinput touch row shape.
-        auto move_builder = evget::MouseMove{};
-        SetBaseFields(move_builder, ctx, event_time);
-        if (touchscreen && monitor.has_value()) {
-            move_builder.Screen(monitor->name);
-        }
-        move_builder.TouchId(touch_id);
-        if (positionable) {
-            SetTouchRelativePosition(move_builder, state.device_uuid, contact, *range, *monitor);
-        }
-        move_builder.Build(data);
-
-        if (!down) {
+        if (!contact.tip_down) {
+            state.rejected.erase(contact.contact_id);
             continue;
         }
+        if (!active) {
+            state.rejected.insert(contact.contact_id);
+            continue;
+        }
+        if (state.rejected.contains(contact.contact_id)) {
+            continue;
+        }
+
+        if (state.tracked.size() >= kMaxTrackedContacts) {
+            ReleaseTrackedContacts(data, ctx, state, event_time);
+        }
+
+        state.tracked.insert(contact.contact_id);
+        BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
 
         auto click_builder = evget::MouseClick{};
         SetBaseFields(click_builder, ctx, event_time);
-        if (touchscreen && monitor.has_value()) {
+        if (state.device_type == evget::DeviceType::kTouchscreen && monitor.has_value()) {
             click_builder.Screen(monitor->name);
         }
-        click_builder.Action(evget::ButtonAction::kPress).TouchId(touch_id);
+        click_builder.Action(evget::ButtonAction::kPress).TouchId(static_cast<int>(contact.contact_id));
         click_builder.Build(data);
+    }
+
+    std::erase_if(state.rejected, [&present](const auto contact_id) { return !present.contains(contact_id); });
+
+    // A contact the device stopped reporting has released.
+    const auto stale = state.tracked;
+    for (const auto contact_id : stale) {
+        if (present.contains(contact_id)) {
+            continue;
+        }
+
+        BuildTouchRelease(data, ctx, state, contact_id, event_time);
+        state.tracked.erase(contact_id);
     }
 }
 
-void evgetwindows::EventTransformer::RemoveDevice(HANDLE device) {
-    const auto entry = touch_devices_.find(device);
-    if (entry == touch_devices_.end()) {
+void evgetwindows::EventTransformer::BuildTouchContactDown(
+    evget::Data& data,
+    EventContext& ctx,
+    const TouchDeviceState& state,
+    const HidContact& contact,
+    const std::optional<HidAxisRange>& range,
+    const std::optional<MonitorInfo>& monitor,
+    std::uint64_t event_time
+) {
+    // The first sample of a contact has no position, matching the libinput touch row shape.
+    auto move_builder = evget::MouseMove{};
+    SetBaseFields(move_builder, ctx, event_time);
+    if (state.device_type == evget::DeviceType::kTouchscreen && monitor.has_value()) {
+        move_builder.Screen(monitor->name);
+    }
+    move_builder.TouchId(static_cast<int>(contact.contact_id));
+    if (monitor.has_value() && range.has_value()) {
+        SetTouchRelativePosition(move_builder, state.device_uuid, contact, *range, *monitor);
+    }
+    move_builder.Build(data);
+}
+
+void evgetwindows::EventTransformer::BuildTouchRelease(
+    evget::Data& data,
+    EventContext& ctx,
+    const TouchDeviceState& state,
+    std::uint32_t contact_id,
+    std::uint64_t event_time
+) {
+    const auto touch_id = static_cast<int>(contact_id);
+    const bool screen_named = state.device_type == evget::DeviceType::kTouchscreen && state.monitor.has_value();
+
+    // Windows reports the last known position with the tip switch clear, but the release row stays positionless.
+    auto move_builder = evget::MouseMove{};
+    SetBaseFields(move_builder, ctx, event_time);
+    if (screen_named) {
+        move_builder.Screen(state.monitor->name);
+    }
+    move_builder.TouchId(touch_id);
+    move_builder.Build(data);
+
+    auto click_builder = evget::MouseClick{};
+    SetBaseFields(click_builder, ctx, event_time);
+    if (screen_named) {
+        click_builder.Screen(state.monitor->name);
+    }
+    click_builder.Action(evget::ButtonAction::kRelease).TouchId(touch_id);
+
+    ClearTouchPosition(state.device_uuid, contact_id);
+
+    click_builder.Build(data);
+}
+
+void evgetwindows::EventTransformer::ReleaseTrackedContacts(
+    evget::Data& data,
+    EventContext& ctx,
+    TouchDeviceState& state,
+    std::uint64_t event_time
+) {
+    for (const auto contact_id : state.tracked) {
+        BuildTouchRelease(data, ctx, state, contact_id, event_time);
+    }
+
+    state.tracked.clear();
+}
+
+void evgetwindows::EventTransformer::BuildPadButton(
+    evget::Data& data,
+    EventContext& ctx,
+    TouchDeviceState& state,
+    bool button_one_down,
+    std::uint64_t event_time
+) {
+    if (state.device_type != evget::DeviceType::kTouchpad || button_one_down == state.button_one_down) {
         return;
     }
 
-    for (const auto contact_id : entry->second.tracked) {
-        ClearTouchPosition(entry->second.device_uuid, contact_id);
+    state.button_one_down = button_one_down;
+
+    auto builder = evget::MouseClick{};
+    SetBaseFields(builder, ctx, event_time);
+    builder.Button(kButtonIdLeft)
+        .ButtonName(std::string{kButtonNameLeft})
+        .Action(button_one_down ? evget::ButtonAction::kPress : evget::ButtonAction::kRelease);
+    builder.Build(data);
+}
+
+void evgetwindows::EventTransformer::RemoveDevice(
+    evget::Data& data,
+    HANDLE device,
+    const evget::TimestampType& timestamp
+) {
+    const auto entry = touch_devices_.find(device);
+    if (entry != touch_devices_.end()) {
+        auto& state = entry->second;
+
+        // Build this from the remembered state as a removed device's name cannot be resolved.
+        auto ctx = EventContext{
+            .timestamp = timestamp,
+            .device_type = state.device_type,
+            .device_name = state.device_name,
+            .device_uuid = state.device_uuid,
+            .system_event = EVGET_STRINGIFY(RIM_TYPEHID),
+        };
+
+        ReleaseTrackedContacts(data, ctx, state, ToMicros(timestamp));
+        touch_devices_.erase(entry);
     }
 
-    touch_devices_.erase(entry);
+    hid_query_.get().RemoveDevice(device);
 }
 
 void evgetwindows::EventTransformer::SetRelativeFromAbsolute(
