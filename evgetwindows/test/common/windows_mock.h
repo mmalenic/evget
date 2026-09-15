@@ -80,6 +80,7 @@ RAWINPUT MakeHidRawInput();
 std::vector<std::byte> MakeHidReportBytes(std::size_t size);
 
 std::vector<std::byte> MakeHidPacket(std::span<const std::byte> report, DWORD count);
+std::vector<std::byte> MakeHidPacketDistinct(std::size_t report_size, DWORD count);
 std::vector<std::byte> MakeHidPacketNullDevice(std::span<const std::byte> report, DWORD count);
 std::vector<std::byte> MakeHidPacketUndersized(std::span<const std::byte> report, DWORD count);
 
@@ -87,6 +88,8 @@ const RAWINPUT& AsRawInput(std::span<const std::byte> packet);
 
 evgetwindows::RawEvent MakeHidRawEvent(std::span<const std::byte> report);
 evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, bool confident);
+
+evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
 
 } // namespace test
 

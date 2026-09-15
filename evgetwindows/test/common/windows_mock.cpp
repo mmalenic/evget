@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "evgetwindows/hid_frame.h"
+#include "evgetwindows/message_window.h"
 #include "evgetwindows/raw_event.h"
 
 namespace test {
@@ -122,7 +123,7 @@ constexpr std::size_t kHidPacketHeaderSize = offsetof(RAWINPUT, data) + offsetof
 int hid_device_backing = 0;
 
 std::vector<std::byte>
-BuildHidPacket(std::span<const std::byte> report, DWORD count, HANDLE device, bool understate_size) {
+BuildHidPacket(std::span<const std::byte> report, DWORD count, HANDLE device, bool understate_size, bool distinct) {
     const std::size_t packet_size = kHidPacketHeaderSize + (report.size() * count);
     std::vector<std::byte> packet(packet_size);
 
@@ -134,8 +135,12 @@ BuildHidPacket(std::span<const std::byte> report, DWORD count, HANDLE device, bo
     raw->data.hid.dwCount = count;
 
     auto* reports = reinterpret_cast<std::byte*>(raw->data.hid.bRawData);
+    std::vector<std::byte> slice{report.begin(), report.end()};
     for (DWORD index = 0; index < count; ++index) {
-        std::ranges::copy(report, reports + (index * report.size()));
+        if (distinct && !slice.empty()) {
+            slice.front() = static_cast<std::byte>(index);
+        }
+        std::ranges::copy(slice, reports + (index * report.size()));
     }
 
     return packet;
@@ -152,15 +157,20 @@ std::vector<std::byte> MakeHidReportBytes(std::size_t size) {
 }
 
 std::vector<std::byte> MakeHidPacket(std::span<const std::byte> report, DWORD count) {
-    return BuildHidPacket(report, count, &hid_device_backing, false);
+    return BuildHidPacket(report, count, &hid_device_backing, false, false);
+}
+
+std::vector<std::byte> MakeHidPacketDistinct(std::size_t report_size, DWORD count) {
+    const auto report = MakeHidReportBytes(report_size);
+    return BuildHidPacket(report, count, &hid_device_backing, false, true);
 }
 
 std::vector<std::byte> MakeHidPacketNullDevice(std::span<const std::byte> report, DWORD count) {
-    return BuildHidPacket(report, count, nullptr, false);
+    return BuildHidPacket(report, count, nullptr, false, false);
 }
 
 std::vector<std::byte> MakeHidPacketUndersized(std::span<const std::byte> report, DWORD count) {
-    return BuildHidPacket(report, count, &hid_device_backing, true);
+    return BuildHidPacket(report, count, &hid_device_backing, true, false);
 }
 
 const RAWINPUT& AsRawInput(std::span<const std::byte> packet) {
@@ -191,6 +201,10 @@ evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, b
         .contact_count = 1,
         .button_one_down = false
     };
+}
+
+evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival) {
+    return evgetwindows::MessageWindow::ToDeviceChangeEvent(arrival ? GIDC_ARRIVAL : GIDC_REMOVAL, device);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)

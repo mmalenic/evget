@@ -27,6 +27,7 @@
 
 using test::AsRawInput;
 using test::HidQueryApiMock;
+using test::MakeDeviceChangeRawEvent;
 using test::MakeHidPacket;
 using test::MakeHidPacketNullDevice;
 using test::MakeHidPacketUndersized;
@@ -532,6 +533,40 @@ TEST(EvgetWindowsTransformer, TouchInconsistentPackets) {
     const auto packet = MakeHidPacketUndersized(report, 1);
 
     EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet)).has_value());
+}
+
+TEST(EvgetWindowsTransformer, DeviceRemovalRemovesHid) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+
+    int backing = 0;
+    HANDLE device = &backing;
+    EXPECT_CALL(hid_query, EvictDevice(device)).Times(1);
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    auto data =
+        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeDeviceChangeRawEvent(device, false)});
+
+    EXPECT_TRUE(data.Entries().empty());
+}
+
+TEST(EvgetWindowsTransformer, DeviceArrivingHasNoRows) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+
+    int backing = 0;
+    HANDLE device = &backing;
+    EXPECT_CALL(hid_query, EvictDevice(testing::_)).Times(0);
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    auto data =
+        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeDeviceChangeRawEvent(device, true)});
+
+    EXPECT_TRUE(data.Entries().empty());
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

@@ -3,7 +3,9 @@
 #include <gtest/gtest.h>
 
 #include <boost/asio/thread_pool.hpp>
+#include <windows.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <variant>
 
@@ -13,7 +15,13 @@
 namespace {
 using evgetwindows::EnqueueOutcome;
 using evgetwindows::MessageWindow;
+using test::AsRawInput;
+using test::MakeDeviceChangeRawEvent;
+using test::MakeHidPacket;
+using test::MakeHidPacketDistinct;
+using test::MakeHidPacketUndersized;
 using test::MakeHidRawInput;
+using test::MakeHidReportBytes;
 using test::MakeKeyboardRawInput;
 using test::MakeMouseRawInput;
 } // namespace
@@ -72,6 +80,94 @@ TEST(MessageWindowTest, EnqueueDropsWhenFull) {
 
     EXPECT_EQ(sent, evgetwindows::kRawEventChannelCapacity);
     EXPECT_EQ(window.Enqueue(mouse), EnqueueOutcome::kDropped);
+}
+
+TEST(MessageWindowTest, ToRawEventClassifiesHid) {
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacket(report, 1);
+
+    const auto event = MessageWindow::ToRawEvent(AsRawInput(packet));
+
+    ASSERT_TRUE(event.has_value());
+    EXPECT_EQ(event->header.dwType, static_cast<DWORD>(RIM_TYPEHID));
+    ASSERT_TRUE(std::holds_alternative<evgetwindows::HidPayload>(event->data));
+
+    const auto& payload = std::get<evgetwindows::HidPayload>(event->data);
+    EXPECT_EQ(payload.size, report.size());
+    EXPECT_TRUE(std::ranges::equal(report, std::span{payload.report}.first(payload.size)));
+}
+
+TEST(MessageWindowTest, ToRawEventReadsReport) {
+    const auto packet = MakeHidPacketDistinct(8, 2);
+    const auto& raw = AsRawInput(packet);
+
+    const auto first = MessageWindow::ToRawEventAt(raw, 0);
+    const auto second = MessageWindow::ToRawEventAt(raw, 1);
+
+    ASSERT_TRUE(first.has_value());
+    ASSERT_TRUE(second.has_value());
+    ASSERT_TRUE(std::holds_alternative<evgetwindows::HidPayload>(first->data));
+    ASSERT_TRUE(std::holds_alternative<evgetwindows::HidPayload>(second->data));
+
+    EXPECT_EQ(std::get<evgetwindows::HidPayload>(first->data).report.at(0), static_cast<std::byte>(0));
+    EXPECT_EQ(std::get<evgetwindows::HidPayload>(second->data).report.at(0), static_cast<std::byte>(1));
+    EXPECT_FALSE(MessageWindow::ToRawEventAt(raw, 2).has_value());
+}
+
+TEST(MessageWindowTest, EnqueueSendsEventPerReport) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacket(report, 3);
+    const auto& raw = AsRawInput(packet);
+
+    std::size_t accepted = 0;
+    for (std::size_t attempt = 0; attempt < evgetwindows::kRawEventChannelCapacity; ++attempt) {
+        if (window.Enqueue(raw) == EnqueueOutcome::kDropped) {
+            break;
+        }
+        ++accepted;
+    }
+
+    // Only true if every report in the packet became its own channel send.
+    EXPECT_EQ(accepted, evgetwindows::kRawEventChannelCapacity / 3);
+}
+
+TEST(MessageWindowTest, EnqueueIgnoresLargeReport) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    const auto report = MakeHidReportBytes(evgetwindows::kHidReportCapacity + 1);
+    const auto packet = MakeHidPacket(report, 1);
+
+    EXPECT_EQ(window.Enqueue(AsRawInput(packet)), EnqueueOutcome::kIgnored);
+}
+
+TEST(MessageWindowTest, EnqueueIgnoresInvalidPacket) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacketUndersized(report, 1);
+
+    EXPECT_EQ(window.Enqueue(AsRawInput(packet)), EnqueueOutcome::kIgnored);
+}
+
+TEST(MessageWindowTest, ToDeviceChangeEvent) {
+    int backing = 0;
+    HANDLE device = &backing;
+
+    const auto arrival = MakeDeviceChangeRawEvent(device, true);
+    ASSERT_TRUE(std::holds_alternative<evgetwindows::DeviceChange>(arrival.data));
+    EXPECT_TRUE(std::get<evgetwindows::DeviceChange>(arrival.data).arrival);
+    EXPECT_EQ(std::get<evgetwindows::DeviceChange>(arrival.data).device, device);
+    EXPECT_EQ(arrival.header.hDevice, device);
+
+    const auto removal = MakeDeviceChangeRawEvent(device, false);
+    ASSERT_TRUE(std::holds_alternative<evgetwindows::DeviceChange>(removal.data));
+    EXPECT_FALSE(std::get<evgetwindows::DeviceChange>(removal.data).arrival);
+    EXPECT_EQ(removal.header.hDevice, device);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)
