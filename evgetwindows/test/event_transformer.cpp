@@ -7,20 +7,31 @@
 #include <windows.h>
 
 #include <array>
+#include <cstddef>
 #include <optional>
+#include <span>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "common/windows_mock.h"
+#include "evget/event/device_type.h"
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
+#include "evgetwindows/hid_frame.h"
+#include "evgetwindows/message_window.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows_query_api.h"
 
+using test::AsRawInput;
 using test::HidQueryApiMock;
+using test::MakeHidPacket;
+using test::MakeHidPacketNullDevice;
+using test::MakeHidPacketUndersized;
+using test::MakeHidReport;
+using test::MakeHidReportBytes;
 using test::MakeInjected;
 using test::MakeKeyboard;
 using test::MakeMouseAbsolute;
@@ -410,6 +421,117 @@ TEST(EvgetWindowsTransformer, SchemaFieldsMatch) {
     ASSERT_EQ(key.Entries().size(), 1);
     EXPECT_EQ(key.Entries().at(0).Data().size(), evget::detail::kKeyNFields);
     EXPECT_EQ(key.Entries().at(0).Data().at(13), "windows");
+}
+
+TEST(EvgetWindowsTransformer, DownCreatesMoveAndPress) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidReport(7, true, true)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacket(report, 1);
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    ASSERT_TRUE(raw_event.has_value());
+
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 2);
+
+    EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
+    EXPECT_EQ(entries.at(0).Data().at(2), "");
+    EXPECT_EQ(entries.at(0).Data().at(3), "");
+    EXPECT_EQ(entries.at(0).Data().at(12), "RIM_TYPEHID");
+    EXPECT_EQ(entries.at(0).Data().at(13), "windows");
+    EXPECT_EQ(entries.at(0).Data().at(14), "3");
+    EXPECT_EQ(entries.at(0).Data().at(15), "7");
+
+    EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
+    EXPECT_EQ(entries.at(1).Data().at(12), "RIM_TYPEHID");
+    EXPECT_EQ(entries.at(1).Data().at(14), "3");
+    EXPECT_EQ(entries.at(1).Data().at(15), "7");
+    EXPECT_EQ(entries.at(1).Data().at(16), "");
+    EXPECT_EQ(entries.at(1).Data().at(17), "");
+    EXPECT_EQ(entries.at(1).Data().at(18), "0");
+}
+
+TEST(EvgetWindowsTransformer, DownUsesTouchpadDeviceType) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchpad));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidReport(7, true, true)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacket(report, 1);
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    ASSERT_TRUE(raw_event.has_value());
+
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 2);
+    EXPECT_EQ(entries.at(0).Data().at(14), "2");
+    EXPECT_EQ(entries.at(1).Data().at(14), "2");
+}
+
+TEST(EvgetWindowsTransformer, TouchIgnoreUnknownHid) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kUnknown));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_)).Times(0);
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacket(report, 1);
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    ASSERT_TRUE(raw_event.has_value());
+
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
+
+    EXPECT_EQ(data.Entries().size(), 0);
+}
+
+TEST(EvgetWindowsTransformer, TouchIgnoreNull) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_)).Times(0);
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacketNullDevice(report, 1);
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    ASSERT_TRUE(raw_event.has_value());
+
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
+
+    EXPECT_EQ(data.Entries().size(), 0);
+}
+
+TEST(EvgetWindowsTransformer, TouchInvalidReport) {
+    const auto report = MakeHidReportBytes(evgetwindows::kHidReportCapacity + 1);
+    const auto packet = MakeHidPacket(report, 1);
+
+    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet)).has_value());
+}
+
+TEST(EvgetWindowsTransformer, TouchInconsistentPackets) {
+    const auto report = MakeHidReportBytes(8);
+    const auto packet = MakeHidPacketUndersized(report, 1);
+
+    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet)).has_value());
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

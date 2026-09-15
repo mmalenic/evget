@@ -8,10 +8,12 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <span>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_query_api.h"
@@ -74,6 +76,17 @@ evgetwindows::RawEvent MakeInjected(USHORT vkey);
 RAWINPUT MakeMouseRawInput(LONG last_x, LONG last_y);
 RAWINPUT MakeKeyboardRawInput(USHORT vkey);
 RAWINPUT MakeHidRawInput();
+
+std::vector<std::byte> MakeHidReportBytes(std::size_t size);
+
+std::vector<std::byte> MakeHidPacket(std::span<const std::byte> report, DWORD count);
+std::vector<std::byte> MakeHidPacketNullDevice(std::span<const std::byte> report, DWORD count);
+std::vector<std::byte> MakeHidPacketUndersized(std::span<const std::byte> report, DWORD count);
+
+const RAWINPUT& AsRawInput(std::span<const std::byte> packet);
+
+evgetwindows::RawEvent MakeHidRawEvent(std::span<const std::byte> report);
+evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, bool confident);
 
 } // namespace test
 
