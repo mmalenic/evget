@@ -233,6 +233,38 @@ evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> 
     return evgetwindows::HidReport{.contacts = std::move(contacts), .contact_count = count, .button_one_down = false};
 }
 
+HANDLE HidDeviceHandle() {
+    return &hid_device_backing;
+}
+
+evgetwindows::HidContact MakeContactState(
+    std::uint32_t contact_id,
+    std::int32_t position_x,
+    std::int32_t position_y,
+    bool tip_down,
+    bool confident
+) {
+    return evgetwindows::HidContact{
+        .contact_id = contact_id,
+        .position_x = position_x,
+        .position_y = position_y,
+        .tip_down = tip_down,
+        .confident = confident
+    };
+}
+
+evgetwindows::HidReport MakeHidFrame(std::vector<evgetwindows::HidContact> contacts, std::uint32_t contact_count) {
+    return evgetwindows::HidReport{
+        .contacts = std::move(contacts),
+        .contact_count = contact_count,
+        .button_one_down = false
+    };
+}
+
+evgetwindows::HidReport MakeContactlessReport(bool button_one_down) {
+    return evgetwindows::HidReport{.contacts = {}, .contact_count = 0, .button_one_down = button_one_down};
+}
+
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival) {
     return evgetwindows::MessageWindow::ToDeviceChangeEvent(arrival ? GIDC_ARRIVAL : GIDC_REMOVAL, device);
 }

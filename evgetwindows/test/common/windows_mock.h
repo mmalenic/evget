@@ -103,6 +103,16 @@ evgetwindows::MonitorInfo MakeMappedMonitor();
 evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t position_x, std::int32_t position_y);
 evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> contacts);
 
+HANDLE HidDeviceHandle();
+evgetwindows::HidContact MakeContactState(
+    std::uint32_t contact_id,
+    std::int32_t position_x,
+    std::int32_t position_y,
+    bool tip_down,
+    bool confident
+);
+evgetwindows::HidReport MakeHidFrame(std::vector<evgetwindows::HidContact> contacts, std::uint32_t contact_count);
+evgetwindows::HidReport MakeContactlessReport(bool button_one_down);
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
 
 } // namespace test
