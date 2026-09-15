@@ -12,6 +12,7 @@ target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/backend.cpp
             ${SRC}/event_transformer.cpp
+            ${SRC}/hid_query_api.cpp
             ${SRC}/message_window.cpp
             ${SRC}/modifier_tracker.cpp
             ${SRC}/next_event.cpp
@@ -25,6 +26,9 @@ target_sources(
            FILES
            ${INCLUDE}/backend.h
            ${INCLUDE}/event_transformer.h
+           ${INCLUDE}/hid_frame.h
+           ${INCLUDE}/hid_query_api.h
+           ${INCLUDE}/hid_usages.h
            ${INCLUDE}/message_window.h
            ${INCLUDE}/modifier_tracker.h
            ${INCLUDE}/next_event.h
@@ -59,7 +63,7 @@ toolbelt_add_dep(
 )
 
 if(WIN32)
-    target_link_libraries(${LIBRARY_NAME} PRIVATE user32)
+    target_link_libraries(${LIBRARY_NAME} PRIVATE user32 hid)
 endif()
 
 if(BUILD_TESTING)

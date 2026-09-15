@@ -20,6 +20,7 @@
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows_query_api.h"
 
+using test::HidQueryApiMock;
 using test::MakeInjected;
 using test::MakeKeyboard;
 using test::MakeMouseAbsolute;
@@ -32,8 +33,9 @@ using ::testing::Return;
 
 TEST(EvgetWindowsTransformer, MouseMoveRelativeHasChange) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(5, -3)});
     const auto& entries = data.Entries();
@@ -51,8 +53,9 @@ TEST(EvgetWindowsTransformer, MouseMoveRelativeHasChange) {
 
 TEST(EvgetWindowsTransformer, MouseMoveAbsoluteFirstHasNoPosition) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseAbsolute(100, 200)});
     const auto& entries = data.Entries();
@@ -66,8 +69,9 @@ TEST(EvgetWindowsTransformer, MouseMoveAbsoluteFirstHasNoPosition) {
 
 TEST(EvgetWindowsTransformer, MouseMoveAbsoluteSecondHasChange) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     static_cast<void>(
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseAbsolute(100, 200)})
@@ -83,8 +87,9 @@ TEST(EvgetWindowsTransformer, MouseMoveAbsoluteSecondHasChange) {
 
 TEST(EvgetWindowsTransformer, ScrollWheelUpNegatesSign) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data =
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseWheel(WHEEL_DELTA, false)});
@@ -99,8 +104,9 @@ TEST(EvgetWindowsTransformer, ScrollWheelUpNegatesSign) {
 
 TEST(EvgetWindowsTransformer, ScrollWheelDownNegatesSign) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data =
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseWheel(-WHEEL_DELTA, false)});
@@ -114,8 +120,9 @@ TEST(EvgetWindowsTransformer, ScrollWheelDownNegatesSign) {
 
 TEST(EvgetWindowsTransformer, ScrollHorizontalHasSign) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data =
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseWheel(WHEEL_DELTA, true)});
@@ -130,8 +137,9 @@ TEST(EvgetWindowsTransformer, ScrollHorizontalHasSign) {
 
 TEST(EvgetWindowsTransformer, ScrollHorizontalNegativeHasSign) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data =
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseWheel(-WHEEL_DELTA, true)});
@@ -144,8 +152,9 @@ TEST(EvgetWindowsTransformer, ScrollHorizontalNegativeHasSign) {
 
 TEST(EvgetWindowsTransformer, MouseClickLeftPressUsesEvdevCode) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data = transformer.TransformEvent(
         evget::InputEvent<evgetwindows::RawEvent>{MakeMouseButton(RI_MOUSE_LEFT_BUTTON_DOWN)}
@@ -162,8 +171,9 @@ TEST(EvgetWindowsTransformer, MouseClickLeftPressUsesEvdevCode) {
 
 TEST(EvgetWindowsTransformer, MouseClickRightReleaseUsesEvdevCode) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto data = transformer.TransformEvent(
         evget::InputEvent<evgetwindows::RawEvent>{MakeMouseButton(RI_MOUSE_RIGHT_BUTTON_UP)}
@@ -195,8 +205,9 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
 
     for (const auto& button : cases) {
         NiceMock<WindowsQueryApiMock> query{};
+        NiceMock<HidQueryApiMock> hid_query{};
         evgetwindows::ModifierTracker tracker{};
-        evgetwindows::EventTransformer transformer{query, tracker};
+        evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
         auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseButton(button.flag)});
         const auto& entries = data.Entries();
@@ -217,7 +228,8 @@ TEST(EvgetWindowsTransformer, CharacterFieldIsApplied) {
     EXPECT_CALL(query, CharacterFor(static_cast<UINT>('A'), testing::_, testing::_))
         .WillOnce(Return(std::optional<std::string>{"a"}));
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
     const auto& entries = data.Entries();
 
@@ -235,7 +247,8 @@ TEST(EvgetWindowsTransformer, DeadKeyHasCharacterUnset) {
     evgetwindows::ModifierTracker tracker{};
     EXPECT_CALL(query, CharacterFor(testing::_, testing::_, testing::_)).WillRepeatedly(Return(std::nullopt));
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, 0)});
     const auto& entries = data.Entries();
 
@@ -250,7 +263,8 @@ TEST(EvgetWindowsTransformer, KeyReleaseHasNoCharacterLookup) {
     evgetwindows::ModifierTracker tracker{};
     EXPECT_CALL(query, CharacterFor(testing::_, testing::_, testing::_)).Times(0);
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data =
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard('A', 0x1E, RI_KEY_BREAK)});
     const auto& entries = data.Entries();
@@ -263,8 +277,9 @@ TEST(EvgetWindowsTransformer, KeyReleaseHasNoCharacterLookup) {
 TEST(EvgetWindowsTransformer, ModifiersHaveValues) {
     constexpr USHORT kLeftShiftScan = 0x2A;
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto shift_press = transformer.TransformEvent(
         evget::InputEvent<evgetwindows::RawEvent>{MakeKeyboard(VK_LSHIFT, kLeftShiftScan, 0)}
@@ -286,7 +301,8 @@ TEST(EvgetWindowsTransformer, DeviceNameResolved) {
     evgetwindows::ModifierTracker tracker{};
     EXPECT_CALL(query, DeviceName(handle)).WillRepeatedly(Return(std::optional<std::string>{"Test Mouse"}));
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto raw = MakeMouseMoveRelative(1, 1);
     raw.header.hDevice = handle;
@@ -302,7 +318,8 @@ TEST(EvgetWindowsTransformer, InjectedDeviceSkipsLookup) {
     evgetwindows::ModifierTracker tracker{};
     EXPECT_CALL(query, DeviceName(testing::_)).Times(0);
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeInjected(VK_RETURN)});
     const auto& entries = data.Entries();
 
@@ -322,7 +339,8 @@ TEST(EvgetWindowsTransformer, FocusWindowPresentHasFields) {
     };
     EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::optional{info}));
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     const auto& entries = data.Entries();
 
@@ -340,7 +358,8 @@ TEST(EvgetWindowsTransformer, FocusWindowAbsentHasFieldsEmpty) {
     evgetwindows::ModifierTracker tracker{};
     EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::nullopt));
 
-    evgetwindows::EventTransformer transformer{query, tracker};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     const auto& entries = data.Entries();
 
@@ -352,8 +371,9 @@ TEST(EvgetWindowsTransformer, FocusWindowAbsentHasFieldsEmpty) {
 
 TEST(EvgetWindowsTransformer, HidEventNoEntries) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     evgetwindows::RawEvent raw{};
     raw.header.dwType = RIM_TYPEHID;
@@ -364,8 +384,9 @@ TEST(EvgetWindowsTransformer, HidEventNoEntries) {
 
 TEST(EvgetWindowsTransformer, SchemaFieldsMatch) {
     NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
-    evgetwindows::EventTransformer transformer{query, tracker};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto move = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
     ASSERT_EQ(move.Entries().size(), 1);

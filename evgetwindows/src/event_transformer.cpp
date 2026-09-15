@@ -2,16 +2,20 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <climits>
+#include <cstddef>
 #include <cstdint>
 #include <format>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
@@ -23,6 +27,8 @@
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
 #include "evget/util.h"
+#include "evgetwindows/hid_frame.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/vk_keysym.h"
@@ -93,8 +99,12 @@ std::uint64_t ToMicros(const evget::TimestampType& timestamp) {
 
 } // namespace
 
-evgetwindows::EventTransformer::EventTransformer(WindowsQueryApi& query, ModifierTracker& tracker)
-    : query_{query}, tracker_{tracker} {}
+evgetwindows::EventTransformer::EventTransformer(
+    WindowsQueryApi& query,
+    HidQueryApi& hid_query,
+    ModifierTracker& tracker
+)
+    : query_{query}, hid_query_{hid_query}, tracker_{tracker} {}
 
 evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<RawEvent> event) {
     const auto& raw = event.ViewData();
@@ -128,6 +138,22 @@ evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<Raw
             }
 
             break;
+        case RIM_TYPEHID: {
+            if (raw.header.hDevice == nullptr) {
+                break;
+            }
+
+            ctx.device_type = hid_query_.get().ClassifyDevice(raw.header.hDevice);
+            if (ctx.device_type != evget::DeviceType::kTouchscreen && ctx.device_type != evget::DeviceType::kTouchpad) {
+                break;
+            }
+
+            if (const auto* payload = std::get_if<HidPayload>(&raw.data)) {
+                BuildHid(data, ctx, *payload, raw.header.hDevice);
+            }
+
+            break;
+        }
         default:
             break;
     }
@@ -234,6 +260,52 @@ void evgetwindows::EventTransformer::BuildKeyboard(evget::Data& data, EventConte
     builder.Build(data);
 
     tracker_.get().Update(keyboard);
+}
+
+void evgetwindows::EventTransformer::BuildHid(
+    evget::Data& data,
+    EventContext& ctx,
+    const HidPayload& payload,
+    HANDLE device
+) {
+    ctx.system_event = EVGET_STRINGIFY(RIM_TYPEHID);
+
+    const auto report =
+        hid_query_.get().DecodeReport(device, std::span{payload.report.data(), static_cast<std::size_t>(payload.size)});
+    if (!report.has_value()) {
+        return;
+    }
+
+    auto& state = touch_devices_[device];
+    state.device_uuid = ctx.device_uuid.get();
+    state.device_name = ctx.device_name;
+    state.device_type = ctx.device_type;
+
+    const auto event_time = ToMicros(ctx.timestamp);
+
+    // A defined row order for a multi contact frame.
+    std::vector<HidContact> contacts = report->contacts;
+    std::ranges::sort(contacts, {}, &HidContact::contact_id);
+
+    for (const auto& contact : contacts) {
+        if (!contact.tip_down || !contact.confident || state.tracked.contains(contact.contact_id)) {
+            continue;
+        }
+
+        const auto touch_id = static_cast<int>(contact.contact_id);
+
+        auto move_builder = evget::MouseMove{};
+        SetBaseFields(move_builder, ctx, event_time);
+        move_builder.TouchId(touch_id);
+        move_builder.Build(data);
+
+        auto click_builder = evget::MouseClick{};
+        SetBaseFields(click_builder, ctx, event_time);
+        click_builder.Action(evget::ButtonAction::kPress).TouchId(touch_id);
+        click_builder.Build(data);
+
+        state.tracked.insert(contact.contact_id);
+    }
 }
 
 void evgetwindows::EventTransformer::SetRelativeFromAbsolute(

@@ -15,6 +15,7 @@
 #include "evget/input_event.h"
 #include "evget/storage/store.h"
 #include "evgetwindows/event_transformer.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/next_event.h"
 #include "evgetwindows/windows.h"
@@ -58,6 +59,7 @@ private:
 
     std::unique_ptr<WindowsApi> windows_;
     std::unique_ptr<WindowsQueryApi> query_;
+    std::unique_ptr<HidQueryApi> hid_query_;
     ModifierTracker tracker_;
     EventTransformer transformer_;
     NextEvent next_event_;

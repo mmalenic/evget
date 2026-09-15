@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -23,6 +24,7 @@
 #include "evget/event_transformer.h"
 #include "evget/input_event.h"
 #include "evget/interval_tracker.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows_query_api.h"
@@ -43,9 +45,10 @@ public:
     /**
      * \brief Create an event transformer.
      * \param query the Win32 query API
+     * \param hid_query the HID query API
      * \param tracker the modifier state tracker
      */
-    EventTransformer(WindowsQueryApi& query, ModifierTracker& tracker);
+    EventTransformer(WindowsQueryApi& query, HidQueryApi& hid_query, ModifierTracker& tracker);
 
     evget::Data TransformEvent(evget::InputEvent<RawEvent> event) override;
 
@@ -58,7 +61,15 @@ private:
         std::string system_event;
     };
 
+    struct TouchDeviceState {
+        std::string device_uuid;
+        std::string device_name;
+        evget::DeviceType device_type{evget::DeviceType::kUnknown};
+        std::set<std::uint32_t> tracked;
+    };
+
     std::reference_wrapper<WindowsQueryApi> query_;
+    std::reference_wrapper<HidQueryApi> hid_query_;
     std::reference_wrapper<ModifierTracker> tracker_;
 
     evget::DeviceId<std::string> device_ids_;
@@ -66,9 +77,11 @@ private:
     std::unordered_map<std::string, LONG> previous_absolute_x_;
     std::unordered_map<std::string, LONG> previous_absolute_y_;
     std::unordered_map<std::string, evget::IntervalTracker> device_intervals_;
+    std::unordered_map<HANDLE, TouchDeviceState> touch_devices_;
 
     void BuildMouse(evget::Data& data, EventContext& ctx, const RAWMOUSE& mouse);
     void BuildKeyboard(evget::Data& data, EventContext& ctx, const RAWKEYBOARD& keyboard);
+    void BuildHid(evget::Data& data, EventContext& ctx, const HidPayload& payload, HANDLE device);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
 
     template <evget::BuilderHasBaseFields T>

@@ -7,10 +7,14 @@
 #include <boost/system/error_code.hpp>
 
 #include <array>
+#include <cstddef>
 #include <optional>
+#include <span>
 #include <string>
 #include <tuple>
 
+#include "evgetwindows/hid_frame.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
@@ -42,6 +46,19 @@ public:
     MOCK_METHOD((std::optional<evgetwindows::FocusWindowInfo>), FocusWindow, (), (override));
     MOCK_METHOD((std::optional<std::string>), Screen, (), (override));
     MOCK_METHOD(bool, ToggleState, (int key), (override));
+};
+
+class HidQueryApiMock : public evgetwindows::HidQueryApi {
+public:
+    MOCK_METHOD(evget::DeviceType, ClassifyDevice, (HANDLE device), (override));
+    MOCK_METHOD((std::optional<evgetwindows::HidAxisRange>), AxisRange, (HANDLE device), (override));
+    MOCK_METHOD(
+        (std::optional<evgetwindows::HidReport>),
+        DecodeReport,
+        (HANDLE device, (std::span<const std::byte>)report),
+        (override)
+    );
+    MOCK_METHOD(void, EvictDevice, (HANDLE device), (override));
 };
 
 evgetwindows::RawEvent MakeMouseRawEvent();

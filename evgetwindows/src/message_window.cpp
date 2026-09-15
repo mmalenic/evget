@@ -4,8 +4,10 @@
 #include <hidusage.h>
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <format>
@@ -17,6 +19,7 @@
 #include <utility>
 
 #include "evget/error.h"
+#include "evgetwindows/hid_usages.h"
 #include "evgetwindows/raw_event.h"
 
 namespace {
@@ -26,7 +29,7 @@ std::wstring MakeClassName() {
     return std::format(L"evget_message_window_{}", counter.fetch_add(1));
 }
 
-std::array<RAWINPUTDEVICE, 2> MakeRawInputDevices(DWORD flags, HWND target) {
+std::array<RAWINPUTDEVICE, 4> MakeRawInputDevices(DWORD flags, HWND target) {
     return {
         {{.usUsagePage = HID_USAGE_PAGE_GENERIC,
           .usUsage = HID_USAGE_GENERIC_MOUSE,
@@ -34,6 +37,14 @@ std::array<RAWINPUTDEVICE, 2> MakeRawInputDevices(DWORD flags, HWND target) {
           .hwndTarget = target},
          {.usUsagePage = HID_USAGE_PAGE_GENERIC,
           .usUsage = HID_USAGE_GENERIC_KEYBOARD,
+          .dwFlags = flags,
+          .hwndTarget = target},
+         {.usUsagePage = HID_USAGE_PAGE_DIGITIZER,
+          .usUsage = HID_USAGE_DIGITIZER_TOUCH_SCREEN,
+          .dwFlags = flags,
+          .hwndTarget = target},
+         {.usUsagePage = HID_USAGE_PAGE_DIGITIZER,
+          .usUsage = HID_USAGE_DIGITIZER_TOUCH_PAD,
           .dwFlags = flags,
           .hwndTarget = target}}
     };
@@ -113,18 +124,46 @@ std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEvent(co
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         event.data = raw.data.keyboard;
     } else {
-        return std::nullopt;
+        return ToRawEventAt(raw, 0);
     }
     return event;
 }
 
-evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw) {
-    const std::optional<RawEvent> event = ToRawEvent(raw);
-    if (!event.has_value()) {
-        return EnqueueOutcome::kIgnored;
+std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEventAt(const RAWINPUT& raw, DWORD index) {
+    if (raw.header.dwType != RIM_TYPEHID) {
+        return std::nullopt;
     }
 
-    if (channel_.try_send(boost::system::error_code{}, *event)) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+    const RAWHID& hid = raw.data.hid;
+    if (hid.dwSizeHid == 0 || hid.dwSizeHid > kHidReportCapacity || index >= hid.dwCount) {
+        return std::nullopt;
+    }
+
+    // Packet must appear to contain the report as counts come from the device.
+    const auto reports_end = static_cast<std::uint64_t>(offsetof(RAWINPUT, data)) + offsetof(RAWHID, bRawData) +
+        (static_cast<std::uint64_t>(hid.dwSizeHid) * hid.dwCount);
+    if (reports_end > raw.header.dwSize) {
+        return std::nullopt;
+    }
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+    const auto* reports = reinterpret_cast<const std::byte*>(hid.bRawData);
+
+    HidPayload payload{};
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    std::copy_n(reports + (static_cast<std::size_t>(index) * hid.dwSizeHid), hid.dwSizeHid, payload.report.begin());
+    payload.size = static_cast<std::uint16_t>(hid.dwSizeHid);
+
+    RawEvent event{};
+    event.header = raw.header;
+    event.data = payload;
+
+    return event;
+}
+
+evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Send(const RawEvent& event) {
+    if (channel_.try_send(boost::system::error_code{}, event)) {
         if (in_flight_.fetch_add(1, std::memory_order_relaxed) + 1 == kChannelNearCapacity) {
             spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
         }
@@ -137,13 +176,52 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
     return EnqueueOutcome::kDropped;
 }
 
+evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw) {
+    if (raw.header.dwType == RIM_TYPEHID) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        const DWORD count = raw.data.hid.dwCount;
+
+        auto outcome = EnqueueOutcome::kIgnored;
+        for (DWORD index = 0; index < count; ++index) {
+            const std::optional<RawEvent> report = ToRawEventAt(raw, index);
+            if (!report.has_value()) {
+                continue;
+            }
+
+            const EnqueueOutcome sent = Send(*report);
+            if (sent == EnqueueOutcome::kDropped || outcome != EnqueueOutcome::kDropped) {
+                outcome = sent;
+            }
+        }
+
+        return outcome;
+    }
+
+    const std::optional<RawEvent> event = ToRawEvent(raw);
+    if (!event.has_value()) {
+        return EnqueueOutcome::kIgnored;
+    }
+
+    return Send(*event);
+}
+
 void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
-    RAWINPUT raw{};
-    UINT size = sizeof(raw);
-    if (GetRawInputData(input, RID_INPUT, &raw, &size, sizeof(RAWINPUTHEADER)) == static_cast<UINT>(-1)) {
+    UINT size = 0;
+    // The call is a success when it returns 0.
+    if (GetRawInputData(input, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) != 0) {
         return;
     }
-    Enqueue(raw);
+
+    if (raw_buffer_.size() < size) {
+        raw_buffer_.resize(size);
+    }
+
+    if (GetRawInputData(input, RID_INPUT, raw_buffer_.data(), &size, sizeof(RAWINPUTHEADER)) == static_cast<UINT>(-1)) {
+        return;
+    }
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    Enqueue(*reinterpret_cast<const RAWINPUT*>(raw_buffer_.data()));
 }
 
 evgetwindows::MessageWindow::WindowClass::WindowClass(const wchar_t* class_name, HINSTANCE instance)
@@ -158,7 +236,7 @@ evgetwindows::MessageWindow::WindowClass::~WindowClass() {
 evget::Result<std::unique_ptr<evgetwindows::MessageWindow::RawInput>> evgetwindows::MessageWindow::RawInput::Create(
     HWND target
 ) {
-    const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_INPUTSINK | RIDEV_DEVNOTIFY, target);
+    const std::array<RAWINPUTDEVICE, 4> devices = MakeRawInputDevices(RIDEV_INPUTSINK | RIDEV_DEVNOTIFY, target);
     SetLastError(ERROR_SUCCESS);
     if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE ||
         GetLastError() != ERROR_SUCCESS) {
@@ -172,7 +250,7 @@ evget::Result<std::unique_ptr<evgetwindows::MessageWindow::RawInput>> evgetwindo
 
 evgetwindows::MessageWindow::RawInput::~RawInput() {
     // RIDEV_REMOVE requires hwndTarget == nullptr.
-    const std::array<RAWINPUTDEVICE, 2> devices = MakeRawInputDevices(RIDEV_REMOVE, nullptr);
+    const std::array<RAWINPUTDEVICE, 4> devices = MakeRawInputDevices(RIDEV_REMOVE, nullptr);
     if (RegisterRawInputDevices(devices.data(), static_cast<UINT>(devices.size()), sizeof(RAWINPUTDEVICE)) == FALSE) {
         spdlog::error("RegisterRawInputDevices RIDEV_REMOVE failed: {}", GetLastError());
     }

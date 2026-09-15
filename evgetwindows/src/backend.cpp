@@ -11,6 +11,7 @@
 #include "evget/event_handler.h"
 #include "evget/input_event.h"
 #include "evget/storage/store.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
 #include "evgetwindows/windows_query_api.h"
@@ -18,7 +19,8 @@
 evgetwindows::Backend::Backend(std::unique_ptr<WindowsApi> windows, evget::Store& storage)
     : windows_(std::move(windows)),
       query_(std::make_unique<WindowsQuery>()),
-      transformer_(*query_, tracker_),
+      hid_query_(std::make_unique<HidQuery>()),
+      transformer_(*query_, *hid_query_, tracker_),
       next_event_(*this->windows_),
       handler_(storage, transformer_, next_event_) {
     tracker_.Init(query_->ToggleState(VK_CAPITAL), query_->ToggleState(VK_NUMLOCK), query_->ToggleState(VK_SCROLL));

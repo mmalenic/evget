@@ -20,6 +20,7 @@
 #include <string>
 #include <thread>
 #include <type_traits>
+#include <vector>
 
 #include "evget/error.h"
 #include "evgetwindows/raw_event.h"
@@ -46,7 +47,7 @@ constexpr std::size_t kChannelNearCapacity = kRawEventChannelCapacity * 4 / 5;
 enum class EnqueueOutcome : std::uint8_t {
     kSent, ///< Sent and queued
     kDropped, ///< channel full, dropping event
-    kIgnored, ///< event type is neither mouse nor keyboard
+    kIgnored, ///< no raw input event could be extracted from the packet
 };
 
 /**
@@ -87,9 +88,17 @@ public:
     /**
      * \brief Convert a `RAWINPUT` record into an owned `RawEvent`.
      * \param raw the raw input
-     * \return the event, or `nullopt` if it is neither a mouse nor keyboard event
+     * \return the event, or `nullopt` if no raw input event could be extracted
      */
     [[nodiscard]] static std::optional<RawEvent> ToRawEvent(const RAWINPUT& raw);
+
+    /**
+     * \brief Convert a HID report at `index` in the `RAWINPUT` record into an owned `RawEvent`.
+     * \param raw the raw input
+     * \param index the index of the report
+     * \return the event, or `nullopt` if not HID or fails validation
+     */
+    [[nodiscard]] static std::optional<RawEvent> ToRawEventAt(const RAWINPUT& raw, DWORD index);
 
     /**
      * \brief Convert a `RAWINPUT` record and try to queue it.
@@ -131,9 +140,11 @@ private:
     static LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
     void RunPump(std::promise<evget::Result<void>> registration);
     void HandleRawInput(HRAWINPUT input);
+    EnqueueOutcome Send(const RawEvent& event);
 
     std::wstring class_name_;
     RawEventChannel channel_;
+    std::vector<std::byte> raw_buffer_;
     std::jthread thread_;
     std::atomic<DWORD> thread_id_{0};
     std::atomic<std::size_t> in_flight_{0};
