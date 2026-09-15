@@ -12,6 +12,7 @@
 #include <optional>
 #include <span>
 #include <unordered_map>
+#include <vector>
 
 #include "evget/event/device_type.h"
 #include "evgetwindows/hid_frame.h"
@@ -80,8 +81,38 @@ public:
     [[nodiscard]] std::optional<HidReport> DecodeReport(HANDLE device, std::span<const std::byte> report) override;
     void EvictDevice(HANDLE device) override;
 
+    /**
+     * \brief Derive device capabilities from data bytes.
+     * \param preparsed the data bytes
+     * \return the capabilities, or nullopt if the descriptor cannot be read
+     */
+    [[nodiscard]] static std::optional<HidDeviceCaps> CapsFrom(std::span<const std::byte> preparsed);
+
+    /**
+     * \brief Decode the input report from data bytes.
+     * \param preparsed the data bytes
+     * \param caps the derived capabilities
+     * \param report the raw report bytes
+     * \return the decoded report, or nullopt if the parser failed
+     */
+    [[nodiscard]] static std::optional<HidReport>
+    DecodeWith(std::span<const std::byte> preparsed, const HidDeviceCaps& caps, std::span<const std::byte> report);
+
 private:
-    std::unordered_map<HANDLE, evget::DeviceType> device_types_;
+    struct DeviceCache {
+        std::vector<std::byte> preparsed;
+        HidDeviceCaps caps;
+        evget::DeviceType device_type{evget::DeviceType::kUnknown};
+        bool type_resolved{false};
+        bool parse_resolved{false};
+        bool parse_valid{false};
+        bool warned{false};
+    };
+
+    DeviceCache& Entry(HANDLE device);
+    DeviceCache* Parsed(HANDLE device);
+
+    std::unordered_map<HANDLE, DeviceCache> devices_;
 };
 
 } // namespace evgetwindows
