@@ -16,6 +16,9 @@
 #include <tuple>
 #include <vector>
 
+#include "evget/event/data.h"
+#include "evget/event/device_type.h"
+#include "evget/event/entry.h"
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/modifier_tracker.h"
@@ -104,6 +107,8 @@ evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t posi
 evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> contacts);
 
 HANDLE HidDeviceHandle();
+HANDLE HidDeviceHandleAlternate();
+evgetwindows::RawEvent MakeHidRawEventFrom(HANDLE device, std::span<const std::byte> report);
 evgetwindows::HidContact MakeContactState(
     std::uint32_t contact_id,
     std::int32_t position_x,
@@ -114,6 +119,21 @@ evgetwindows::HidContact MakeContactState(
 evgetwindows::HidReport MakeHidFrame(std::vector<evgetwindows::HidContact> contacts, std::uint32_t contact_count);
 evgetwindows::HidReport MakeContactlessReport(bool button_one_down);
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
+
+struct TouchParityRow {
+    evget::EntryType type;
+    std::string_view position;
+    std::string_view action;
+};
+
+void ExpectTouchParityRows(
+    const evget::Data& batch,
+    std::string_view device_column,
+    std::span<const TouchParityRow> expected
+);
+void ExpectTouchParityRow(const evget::Entry& entry, const TouchParityRow& row, std::string_view device_column);
+void ExpectTouchParityColumns(const evget::Entry& entry, std::string_view device_column);
+void ExpectTouchParitySequence(evget::DeviceType device_type, std::string_view device_column);
 
 } // namespace test
 

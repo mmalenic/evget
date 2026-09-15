@@ -1,15 +1,28 @@
 #include "common/windows_mock.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "evget/event/data.h"
+#include "evget/event/device_type.h"
+#include "evget/event/entry.h"
+#include "evget/event/schema.h"
+#include "evget/input_event.h"
+#include "evgetwindows/event_transformer.h"
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/message_window.h"
+#include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows_query_api.h"
 
@@ -181,9 +194,13 @@ const RAWINPUT& AsRawInput(std::span<const std::byte> packet) {
 }
 
 evgetwindows::RawEvent MakeHidRawEvent(std::span<const std::byte> report) {
+    return MakeHidRawEventFrom(&hid_device_backing, report);
+}
+
+evgetwindows::RawEvent MakeHidRawEventFrom(HANDLE device, std::span<const std::byte> report) {
     evgetwindows::RawEvent event{};
     event.header.dwType = RIM_TYPEHID;
-    event.header.hDevice = &hid_device_backing;
+    event.header.hDevice = device;
 
     evgetwindows::HidPayload payload{};
     std::ranges::copy(report, payload.report.begin());
@@ -237,6 +254,11 @@ HANDLE HidDeviceHandle() {
     return &hid_device_backing;
 }
 
+HANDLE HidDeviceHandleAlternate() {
+    static int backing = 0;
+    return &backing;
+}
+
 evgetwindows::HidContact MakeContactState(
     std::uint32_t contact_id,
     std::int32_t position_x,
@@ -267,6 +289,80 @@ evgetwindows::HidReport MakeContactlessReport(bool button_one_down) {
 
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival) {
     return evgetwindows::MessageWindow::ToDeviceChangeEvent(arrival ? GIDC_ARRIVAL : GIDC_REMOVAL, device);
+}
+
+void ExpectTouchParityColumns(const evget::Entry& entry, std::string_view device_column) {
+    // The only two columns a libinput touch row differs from a windows one in.
+    EXPECT_EQ(entry.Data().at(12), "RIM_TYPEHID");
+    EXPECT_EQ(entry.Data().at(13), "windows");
+    EXPECT_EQ(entry.Data().at(14), device_column);
+    EXPECT_EQ(entry.Data().at(15), "7");
+}
+
+void ExpectTouchParityRows(
+    const evget::Data& batch,
+    std::string_view device_column,
+    std::span<const TouchParityRow> expected
+) {
+    ASSERT_EQ(batch.Entries().size(), expected.size());
+
+    for (std::size_t index = 0; index < expected.size(); ++index) {
+        ExpectTouchParityRow(batch.Entries().at(index), expected[index], device_column);
+    }
+}
+
+void ExpectTouchParityRow(const evget::Entry& entry, const TouchParityRow& row, std::string_view device_column) {
+    EXPECT_EQ(entry.Type(), row.type);
+
+    // A move row stops short of the action column, so each row is read at the index its type defines.
+    if (row.type == evget::EntryType::kMouseClick) {
+        EXPECT_EQ(entry.Data().at(18), row.action);
+    } else {
+        EXPECT_EQ(entry.Data().at(2), row.position);
+    }
+
+    ExpectTouchParityColumns(entry, device_column);
+}
+
+void ExpectTouchParitySequence(evget::DeviceType device_type, std::string_view device_column) {
+    testing::NiceMock<WindowsQueryApiMock> query{};
+    testing::NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(testing::Return(device_type));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(testing::Return(std::optional{MakeAxisRange()}));
+    EXPECT_CALL(query, MappedMonitor(testing::_)).WillRepeatedly(testing::Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(query, PointerMonitor()).WillRepeatedly(testing::Return(std::optional{MakeMappedMonitor()}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(testing::Return(std::optional{MakeHidFrame({MakeContact(7, 0, 0)}, 1)}))
+        .WillOnce(testing::Return(std::optional{MakeHidFrame({MakeContact(7, kTestAxisMax / 16, 0)}, 1)}))
+        .WillOnce(
+            testing::Return(std::optional{MakeHidFrame({MakeContactState(7, kTestAxisMax / 16, 0, false, true)}, 1)})
+        );
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    const auto down = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto motion = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto lift = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+
+    const std::array<TouchParityRow, 2> down_rows{
+        {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
+         {.type = evget::EntryType::kMouseClick, .position = "", .action = "0"}}
+    };
+    // Held by name because the row only views it.
+    const auto motion_position = evget::FromDouble(kTestMonitorWidth / 16);
+    const std::array<TouchParityRow, 1> motion_rows{
+        {{.type = evget::EntryType::kMouseMove, .position = motion_position, .action = ""}}
+    };
+    const std::array<TouchParityRow, 2> lift_rows{
+        {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
+         {.type = evget::EntryType::kMouseClick, .position = "", .action = "1"}}
+    };
+
+    ExpectTouchParityRows(down, device_column, down_rows);
+    ExpectTouchParityRows(motion, device_column, motion_rows);
+    ExpectTouchParityRows(lift, device_column, lift_rows);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)
