@@ -43,7 +43,7 @@ std::string Utf16ToUtf8(std::wstring_view wide) {
     return out;
 }
 
-std::optional<std::string> MonitorDevice(HMONITOR monitor) {
+std::optional<evgetwindows::MonitorInfo> MonitorFor(HMONITOR monitor) {
     if (monitor == nullptr) {
         return std::nullopt;
     }
@@ -56,7 +56,21 @@ std::optional<std::string> MonitorDevice(HMONITOR monitor) {
     }
 
     const std::wstring_view device{std::begin(info.szDevice), std::ranges::find(info.szDevice, L'\0')};
-    return Utf16ToUtf8(device);
+    return evgetwindows::MonitorInfo{
+        .name = Utf16ToUtf8(device),
+        .width = static_cast<double>(info.rcMonitor.right - info.rcMonitor.left),
+        .height = static_cast<double>(info.rcMonitor.bottom - info.rcMonitor.top)
+    };
+}
+
+std::optional<evgetwindows::MonitorInfo> MonitorForPointer() {
+    POINT cursor{};
+    if (GetCursorPos(&cursor) == 0) {
+        spdlog::warn("cursor position query failed");
+        return std::nullopt;
+    }
+
+    return MonitorFor(MonitorFromPoint(cursor, MONITOR_DEFAULTTONULL));
 }
 
 } // namespace
@@ -135,14 +149,37 @@ std::optional<evgetwindows::FocusWindowInfo> evgetwindows::WindowsQuery::FocusWi
     return info;
 }
 
-std::optional<std::string> evgetwindows::WindowsQuery::Screen() {
-    POINT cursor{};
-    if (GetCursorPos(&cursor) == 0) {
-        spdlog::warn("cursor position query failed");
+std::optional<evgetwindows::MonitorInfo> evgetwindows::WindowsQuery::MappedMonitor(HANDLE device) {
+    if (device == nullptr) {
         return std::nullopt;
     }
 
-    return MonitorDevice(MonitorFromPoint(cursor, MONITOR_DEFAULTTONULL));
+    // This is a metadata query only, it should not change input delivery.
+    POINTER_DEVICE_INFO info{};
+    if (GetPointerDevice(device, &info) != 0) {
+        if (auto mapped = MonitorFor(info.monitor); mapped.has_value()) {
+            return mapped;
+        }
+    }
+
+    if (fallback_logged_.insert(device).second) {
+        spdlog::debug("display mapping unresolved, scaling against the primary display");
+    }
+
+    return MonitorFor(MonitorFromPoint(POINT{}, MONITOR_DEFAULTTOPRIMARY));
+}
+
+std::optional<evgetwindows::MonitorInfo> evgetwindows::WindowsQuery::PointerMonitor() {
+    return MonitorForPointer();
+}
+
+std::optional<std::string> evgetwindows::WindowsQuery::Screen() {
+    auto monitor = MonitorForPointer();
+    if (!monitor.has_value()) {
+        return std::nullopt;
+    }
+
+    return std::move(monitor->name);
 }
 
 bool evgetwindows::WindowsQuery::ToggleState(int key) {

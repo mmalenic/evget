@@ -11,6 +11,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <unordered_set>
 
 #include "evgetwindows/modifier_tracker.h"
 
@@ -23,6 +24,15 @@ struct FocusWindowInfo {
     std::string name;
     double position_x;
     double position_y;
+    double width;
+    double height;
+};
+
+/**
+ * \brief A monitor display device.
+ */
+struct MonitorInfo {
+    std::string name;
     double width;
     double height;
 };
@@ -65,6 +75,19 @@ public:
     [[nodiscard]] virtual std::optional<FocusWindowInfo> FocusWindow() = 0;
 
     /**
+     * \brief The mapping of the digitizer to the display.
+     * \param device the Raw Input device handle
+     * \return the display, or nullopt if unresolvable
+     */
+    [[nodiscard]] virtual std::optional<MonitorInfo> MappedMonitor(HANDLE device) = 0;
+
+    /**
+     * \brief The display the pointer is currently on.
+     * \return the display, or nullopt if unavailable
+     */
+    [[nodiscard]] virtual std::optional<MonitorInfo> PointerMonitor() = 0;
+
+    /**
      * \brief The display the pointer is currently on.
      * \return the display device name, or nullopt if unavailable
      */
@@ -96,8 +119,13 @@ public:
     CharacterFor(UINT key, UINT scan_code, const std::array<BYTE, kKeyStateSize>& key_state) override;
     [[nodiscard]] std::optional<std::string> DeviceName(HANDLE device) override;
     [[nodiscard]] std::optional<FocusWindowInfo> FocusWindow() override;
+    [[nodiscard]] std::optional<MonitorInfo> MappedMonitor(HANDLE device) override;
+    [[nodiscard]] std::optional<MonitorInfo> PointerMonitor() override;
     [[nodiscard]] std::optional<std::string> Screen() override;
     [[nodiscard]] bool ToggleState(int key) override;
+
+private:
+    std::unordered_set<HANDLE> fallback_logged_;
 };
 
 } // namespace evgetwindows

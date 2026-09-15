@@ -46,6 +46,8 @@ public:
     );
     MOCK_METHOD((std::optional<std::string>), DeviceName, (HANDLE device), (override));
     MOCK_METHOD((std::optional<evgetwindows::FocusWindowInfo>), FocusWindow, (), (override));
+    MOCK_METHOD((std::optional<evgetwindows::MonitorInfo>), MappedMonitor, (HANDLE device), (override));
+    MOCK_METHOD((std::optional<evgetwindows::MonitorInfo>), PointerMonitor, (), (override));
     MOCK_METHOD((std::optional<std::string>), Screen, (), (override));
     MOCK_METHOD(bool, ToggleState, (int key), (override));
 };
