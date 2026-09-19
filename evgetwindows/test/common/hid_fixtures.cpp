@@ -539,6 +539,17 @@ test::ContactById(const evgetwindows::HidReport& report, std::uint32_t contact_i
     return *found;
 }
 
+bool test::ContactIdsUnique(const evgetwindows::HidReport& report) {
+    std::vector<std::uint32_t> ids;
+    ids.reserve(report.contacts.size());
+    for (const auto& contact : report.contacts) {
+        ids.push_back(contact.contact_id);
+    }
+
+    std::ranges::sort(ids);
+    return std::ranges::adjacent_find(ids) == ids.end();
+}
+
 bool test::WithinAxis(const evgetwindows::HidContact& contact, const evgetwindows::HidAxisRange& axis) {
     if (!contact.position_x.has_value() || !contact.position_y.has_value()) {
         return false;

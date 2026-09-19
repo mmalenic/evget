@@ -20,6 +20,7 @@
 using test::ActiveContacts;
 using test::AsBytes;
 using test::ContactById;
+using test::ContactIdsUnique;
 using test::ExpectContact;
 using test::kTouchpadAxis;
 using test::kTouchpadButtonExpected;
@@ -210,6 +211,39 @@ TEST(EvgetWindowsHidQuery, DecodeRecordedTouchpadButton) {
     for (std::size_t index = 0; index < active.size(); ++index) {
         ExpectContact(active.at(index), kTouchpadButtonExpected.contacts[index], resolved.axis);
     }
+}
+
+TEST(EvgetWindowsHidQuery, DecodeKeepsTheDeviceUses) {
+    const auto caps = evgetwindows::HidQuery::CapsFrom(AsBytes(kTouchpadPreparsedData));
+    ASSERT_TRUE(caps.has_value());
+    const evgetwindows::HidDeviceCaps& resolved = caps.value();
+
+    const auto report =
+        evgetwindows::HidQuery::DecodeWith(AsBytes(kTouchpadPreparsedData), resolved, AsBytes(kTouchpadButtonReport));
+
+    ASSERT_TRUE(report.has_value());
+    const evgetwindows::HidReport& decoded = report.value();
+    ASSERT_TRUE(decoded.contact_count.has_value());
+    EXPECT_EQ(decoded.contacts.size(), decoded.contact_count.value());
+    EXPECT_TRUE(ContactIdsUnique(decoded));
+}
+
+TEST(EvgetWindowsHidQuery, DecodeRemovesEmptyEntries) {
+    const auto caps = evgetwindows::HidQuery::CapsFrom(AsBytes(kTouchscreenPreparsedData));
+    ASSERT_TRUE(caps.has_value());
+    const evgetwindows::HidDeviceCaps& resolved = caps.value();
+
+    const auto report = evgetwindows::HidQuery::DecodeWith(
+        AsBytes(kTouchscreenPreparsedData),
+        resolved,
+        AsBytes(kTouchscreenContactDownReport)
+    );
+
+    ASSERT_TRUE(report.has_value());
+    const evgetwindows::HidReport& decoded = report.value();
+    EXPECT_TRUE(ContactIdsUnique(decoded));
+    EXPECT_FALSE(ContactById(decoded, 0).has_value());
+    EXPECT_TRUE(ContactById(decoded, kTouchscreenContactDownExpected.contacts.front().contact_id).has_value());
 }
 
 TEST(EvgetWindowsHidQuery, DecodeRejectTruncatedReport) {

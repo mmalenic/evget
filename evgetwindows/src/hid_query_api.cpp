@@ -199,6 +199,13 @@ FieldOutcome DecodeContact(
     contact.tip_down = Contains(set_usages, HID_USAGE_DIGITIZER_TIP_SWITCH);
     contact.confident = !caps.reports_touch_valid || Contains(set_usages, HID_USAGE_DIGITIZER_TOUCH_VALID);
 
+    // If the entry has a readable report and 0 id while held down, then this would collide so it should be marked
+    // absent.
+    if (!contact.tip_down && !contact.confident && contact.position_x.value_or(0) == 0 &&
+        contact.position_y.value_or(0) == 0) {
+        return FieldOutcome::kAbsent;
+    }
+
     return FieldOutcome::kRead;
 }
 

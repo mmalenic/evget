@@ -135,6 +135,13 @@ template <std::size_t Size>
 ContactById(const evgetwindows::HidReport& report, std::uint32_t contact_id);
 
 /**
+ * \brief Whether a contact of a decoded report has a unique id.
+ * \param report the decoded report
+ * \return true if unique id
+ */
+[[nodiscard]] bool ContactIdsUnique(const evgetwindows::HidReport& report);
+
+/**
  * \brief Whether a decoded contact has a position inside descriptor bounds.
  * \param contact the decoded contact
  * \param axis the axis bounds
