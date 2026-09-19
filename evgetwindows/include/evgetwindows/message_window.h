@@ -21,6 +21,7 @@
 #include <string>
 #include <thread>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 #include "evget/error.h"
@@ -181,6 +182,7 @@ private:
     std::atomic<DWORD> thread_id_{0};
     std::atomic<std::size_t> in_flight_{0};
     std::atomic<std::size_t> dropped_{0};
+    std::unordered_set<HANDLE> oversized_logged_;
 };
 
 } // namespace evgetwindows

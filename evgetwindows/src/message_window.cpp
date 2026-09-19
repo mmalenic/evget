@@ -202,8 +202,19 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
     DrainDeviceChanges();
 
     if (raw.header.dwType == RIM_TYPEHID) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
         const DWORD count = raw.data.hid.dwCount;
+        const DWORD report_size = raw.data.hid.dwSizeHid;
+        // NOLINTEND(cppcoreguidelines-pro-type-union-access)
+
+        // A device which does not fit reports has no touch device.
+        if (report_size > kHidReportCapacity && oversized_logged_.insert(raw.header.hDevice).second) {
+            spdlog::warn(
+                "hid report of {} bytes exceeds the {} byte capacity, dropping reports",
+                report_size,
+                kHidReportCapacity
+            );
+        }
 
         auto outcome = EnqueueOutcome::kIgnored;
         for (DWORD index = 0; index < count; ++index) {
