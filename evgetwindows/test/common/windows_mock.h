@@ -103,6 +103,7 @@ evgetwindows::HidReport MakeHidReport(std::uint32_t contact_id, bool tip_down, b
 
 evgetwindows::HidAxisRange MakeAxisRange();
 evgetwindows::MonitorInfo MakeMappedMonitor();
+evgetwindows::MonitorInfo MakeMappedMonitorExtent(double width, double height);
 evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t position_x, std::int32_t position_y);
 evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> contacts);
 

@@ -320,8 +320,10 @@ void evgetwindows::EventTransformer::BuildHid(
     const bool touchscreen = ctx.device_type == evget::DeviceType::kTouchscreen;
 
     // A touchscreen is mapped to one display, whereas a touchpad goes onto any display the pointer is on.
-    if (touchscreen && !state.monitor.has_value()) {
-        state.monitor = query_.get().MappedMonitor(device);
+    if (touchscreen) {
+        if (auto mapped = query_.get().MappedMonitor(device); mapped.has_value()) {
+            state.monitor = std::move(mapped);
+        }
     }
     const auto monitor = touchscreen ? state.monitor : query_.get().PointerMonitor();
     const auto range = hid_query_.get().AxisRange(device);

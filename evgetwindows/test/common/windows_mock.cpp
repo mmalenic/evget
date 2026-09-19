@@ -229,11 +229,11 @@ evgetwindows::HidAxisRange MakeAxisRange() {
 }
 
 evgetwindows::MonitorInfo MakeMappedMonitor() {
-    return evgetwindows::MonitorInfo{
-        .name = std::string{kTestMappedDisplay},
-        .width = kTestMonitorWidth,
-        .height = kTestMonitorHeight
-    };
+    return MakeMappedMonitorExtent(kTestMonitorWidth, kTestMonitorHeight);
+}
+
+evgetwindows::MonitorInfo MakeMappedMonitorExtent(double width, double height) {
+    return evgetwindows::MonitorInfo{.name = std::string{kTestMappedDisplay}, .width = width, .height = height};
 }
 
 evgetwindows::HidContact MakeContact(std::uint32_t contact_id, std::int32_t position_x, std::int32_t position_y) {

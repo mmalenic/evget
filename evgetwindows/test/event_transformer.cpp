@@ -37,6 +37,7 @@ using test::HidDeviceHandleAt;
 using test::HidQueryApiMock;
 using test::kTestAxisMax;
 using test::kTestMappedDisplay;
+using test::kTestMonitorHeight;
 using test::kTestMonitorWidth;
 using test::kTestPointerDisplay;
 using test::MakeAxisRange;
@@ -56,6 +57,7 @@ using test::MakeHidReportFrom;
 using test::MakeInjected;
 using test::MakeKeyboard;
 using test::MakeMappedMonitor;
+using test::MakeMappedMonitorExtent;
 using test::MakeMouseAbsolute;
 using test::MakeMouseButton;
 using test::MakeMouseMoveRelative;
@@ -667,6 +669,30 @@ TEST(EvgetWindowsTransformer, TouchScreenColumnMapsToMonitor) {
     auto pad_data = touchpad.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     ASSERT_FALSE(pad_data.Entries().empty());
     EXPECT_EQ(pad_data.Entries().at(0).Data().at(10), std::string{kTestPointerDisplay});
+}
+
+TEST(EvgetWindowsTransformer, TouchMotionScalesMonitor) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, AxisRange(testing::_)).WillRepeatedly(Return(std::optional{MakeAxisRange()}));
+    EXPECT_CALL(query, MappedMonitor(testing::_))
+        .WillOnce(Return(std::optional{MakeMappedMonitor()}))
+        .WillRepeatedly(Return(std::optional{MakeMappedMonitorExtent(kTestMonitorWidth / 2, kTestMonitorHeight / 2)}));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContact(1, 0, 0)}, 1)}))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContact(1, kTestAxisMax / 16, 0)}, 1)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto motion = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto& entries = motion.Entries();
+
+    ASSERT_EQ(entries.size(), 1);
+    EXPECT_EQ(entries.at(0).Data().at(2), evget::FromDouble(kTestMonitorWidth / 2 / 16));
 }
 
 TEST(EvgetWindowsTransformer, TouchMotionWithoutAxisRange) {
