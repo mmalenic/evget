@@ -244,15 +244,18 @@ std::optional<evgetwindows::HidDeviceCaps> evgetwindows::HidQuery::CapsFrom(std:
 
     // Must be a set to preserve order and deduplication.
     std::set<std::uint32_t> collections;
+    for (const auto& value : value_caps) {
+        if (value.LinkCollection != 0 && value.UsagePage == HID_USAGE_PAGE_DIGITIZER &&
+            ValueCapsCover(value, HID_USAGE_DIGITIZER_CONTACT_IDENTIFIER)) {
+            collections.insert(value.LinkCollection);
+        }
+    }
+
     HidAxisRange axis{};
     bool has_x = false;
     bool has_y = false;
     for (const auto& value : value_caps) {
-        if (value.LinkCollection != 0) {
-            collections.insert(value.LinkCollection);
-        }
-
-        if (value.UsagePage != HID_USAGE_PAGE_GENERIC) {
+        if (value.UsagePage != HID_USAGE_PAGE_GENERIC || !collections.contains(value.LinkCollection)) {
             continue;
         }
         if (!has_x && ValueCapsCover(value, HID_USAGE_GENERIC_X)) {
@@ -276,8 +279,8 @@ std::optional<evgetwindows::HidDeviceCaps> evgetwindows::HidQuery::CapsFrom(std:
     if (button_caps_length != 0 &&
         HidP_GetButtonCaps(HidP_Input, button_caps.data(), &button_caps_length, parsed) == HIDP_STATUS_SUCCESS) {
         button_caps.resize(button_caps_length);
-        reports_touch_valid = std::ranges::any_of(button_caps, [](const HIDP_BUTTON_CAPS& button) {
-            return button.UsagePage == HID_USAGE_PAGE_DIGITIZER &&
+        reports_touch_valid = std::ranges::any_of(button_caps, [&collections](const HIDP_BUTTON_CAPS& button) {
+            return button.UsagePage == HID_USAGE_PAGE_DIGITIZER && collections.contains(button.LinkCollection) &&
                 ButtonCapsCover(button, HID_USAGE_DIGITIZER_TOUCH_VALID);
         });
     }

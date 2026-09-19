@@ -42,6 +42,9 @@ extern const std::array<std::uint8_t, 30> kTouchpadButtonReport;
 
 constexpr std::uint32_t kTouchscreenReportByteLength = 169;
 constexpr std::uint32_t kTouchpadReportByteLength = 30;
+constexpr std::size_t kTouchscreenContactCollections = 5;
+constexpr std::size_t kTouchpadContactCollections = 5;
+
 constexpr evgetwindows::HidAxisRange kTouchscreenAxis{.min_x = 0, .max_x = 25977, .min_y = 0, .max_y = 17318};
 constexpr evgetwindows::HidAxisRange kTouchpadAxis{.min_x = 0, .max_x = 1956, .min_y = 0, .max_y = 997};
 

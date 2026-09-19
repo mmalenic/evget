@@ -25,11 +25,13 @@ using test::ExpectContact;
 using test::kTouchpadAxis;
 using test::kTouchpadButtonExpected;
 using test::kTouchpadButtonReport;
+using test::kTouchpadContactCollections;
 using test::kTouchpadContactExpected;
 using test::kTouchpadContactReport;
 using test::kTouchpadPreparsedData;
 using test::kTouchpadReportByteLength;
 using test::kTouchscreenAxis;
+using test::kTouchscreenContactCollections;
 using test::kTouchscreenContactDownExpected;
 using test::kTouchscreenContactDownReport;
 using test::kTouchscreenContactMoveExpected;
@@ -46,7 +48,7 @@ TEST(EvgetWindowsHidQuery, CapsFromRecordedTouchscreen) {
 
     ASSERT_TRUE(caps.has_value());
     const evgetwindows::HidDeviceCaps& resolved = caps.value();
-    EXPECT_FALSE(resolved.contact_collections.empty());
+    EXPECT_EQ(resolved.contact_collections.size(), kTouchscreenContactCollections);
     EXPECT_TRUE(resolved.axis_valid);
     EXPECT_GT(resolved.axis.max_x, resolved.axis.min_x);
     EXPECT_GT(resolved.axis.max_y, resolved.axis.min_y);
@@ -63,7 +65,7 @@ TEST(EvgetWindowsHidQuery, CapsFromRecordedTouchpad) {
 
     ASSERT_TRUE(caps.has_value());
     const evgetwindows::HidDeviceCaps& resolved = caps.value();
-    EXPECT_FALSE(resolved.contact_collections.empty());
+    EXPECT_EQ(resolved.contact_collections.size(), kTouchpadContactCollections);
     EXPECT_TRUE(resolved.axis_valid);
     EXPECT_GT(resolved.axis.max_x, resolved.axis.min_x);
     EXPECT_GT(resolved.axis.max_y, resolved.axis.min_y);
