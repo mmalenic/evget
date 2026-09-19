@@ -143,6 +143,8 @@ private:
         std::uint64_t event_time
     );
 
+    void ReleaseDeviceState(evget::Data& data, TouchDeviceState& state, const evget::TimestampType& timestamp);
+    void ReleaseAllDevices(evget::Data& data, const evget::TimestampType& timestamp);
     void RemoveDevice(evget::Data& data, HANDLE device, const evget::TimestampType& timestamp);
     void SetRelativeFromAbsolute(evget::MouseMove& builder, const std::string& device_uuid, LONG abs_x, LONG abs_y);
     void ClearTouchPosition(const std::string& device_uuid, std::uint32_t contact_id);

@@ -353,8 +353,8 @@ evgetwindows::HidQuery::DeviceCache& evgetwindows::HidQuery::Entry(HANDLE device
         return cached->second;
     }
 
-    if (devices_.size() >= kMaxCachedDevices) {
-        spdlog::warn("hid device cache reached {} entries, clearing it", kMaxCachedDevices);
+    if (devices_.size() >= evgetwindows::kMaxCachedDevices) {
+        spdlog::warn("hid device cache reached {} entries", evgetwindows::kMaxCachedDevices);
         devices_.clear();
     }
 

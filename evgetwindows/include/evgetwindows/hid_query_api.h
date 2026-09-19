@@ -20,6 +20,11 @@
 namespace evgetwindows {
 
 /**
+ * \brief The maximum number of devices that's cached.
+ */
+constexpr std::size_t kMaxCachedDevices = 32;
+
+/**
  * \brief HID query the transformer goes through.
  */
 class HidQueryApi {

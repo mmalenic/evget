@@ -154,6 +154,26 @@ TEST(MessageWindowTest, EnqueueIgnoresInvalidPacket) {
     EXPECT_EQ(window.Enqueue(AsRawInput(packet)), EnqueueOutcome::kIgnored);
 }
 
+TEST(MessageWindowTest, DeviceChangeRetryWhenFull) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+    int backing = 0;
+    HANDLE device = &backing;
+
+    const RAWINPUT mouse = MakeMouseRawInput(1, 2);
+    while (window.Enqueue(mouse) == EnqueueOutcome::kSent) {
+    }
+
+    window.EnqueueDeviceChange(GIDC_REMOVAL, device);
+    EXPECT_EQ(window.PendingDeviceChanges(), 1);
+
+    ASSERT_TRUE(window.Channel().try_receive([](const auto& /*error*/, const evgetwindows::RawEvent& /*event*/) {}));
+
+    // The next enqueue is what gives the held change its retry, so it reaches the channel ahead of the input.
+    static_cast<void>(window.Enqueue(mouse));
+    EXPECT_EQ(window.PendingDeviceChanges(), 0);
+}
+
 TEST(MessageWindowTest, ToDeviceChangeEvent) {
     int backing = 0;
     HANDLE device = &backing;

@@ -24,6 +24,9 @@
 
 namespace {
 
+// A device change is not frequent so if it ever reaches this the consuming channel has stopped.
+constexpr std::size_t kMaxPendingDeviceChanges = 1024;
+
 std::wstring MakeClassName() {
     static std::atomic<std::uint64_t> counter{0};
     return std::format(L"evget_message_window_{}", counter.fetch_add(1));
@@ -116,7 +119,7 @@ LRESULT CALLBACK evgetwindows::MessageWindow::WndProc(HWND window, UINT message,
         auto* self = reinterpret_cast<MessageWindow*>(GetWindowLongPtrW(window, GWLP_USERDATA));
         if (self != nullptr) {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
-            self->HandleDeviceChange(GET_DEVICE_CHANGE_WPARAM(wparam), reinterpret_cast<HANDLE>(lparam));
+            self->EnqueueDeviceChange(GET_DEVICE_CHANGE_WPARAM(wparam), reinterpret_cast<HANDLE>(lparam));
         }
         return 0;
     }
@@ -194,6 +197,8 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const Raw
 }
 
 evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw) {
+    DrainDeviceChanges();
+
     if (raw.header.dwType == RIM_TYPEHID) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         const DWORD count = raw.data.hid.dwCount;
@@ -222,12 +227,28 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
     return EnqueueEvent(*event);
 }
 
-void evgetwindows::MessageWindow::HandleDeviceChange(WPARAM change, HANDLE device) {
+void evgetwindows::MessageWindow::EnqueueDeviceChange(WPARAM change, HANDLE device) {
     if (change != GIDC_ARRIVAL && change != GIDC_REMOVAL) {
         return;
     }
 
-    EnqueueEvent(ToDeviceChangeEvent(change, device));
+    device_changes_.push_back(ToDeviceChangeEvent(change, device));
+    if (device_changes_.size() > kMaxPendingDeviceChanges) {
+        spdlog::error("device change reached {} events, dropping events", kMaxPendingDeviceChanges);
+        device_changes_.pop_front();
+    }
+
+    DrainDeviceChanges();
+}
+
+std::size_t evgetwindows::MessageWindow::PendingDeviceChanges() const {
+    return device_changes_.size();
+}
+
+void evgetwindows::MessageWindow::DrainDeviceChanges() {
+    while (!device_changes_.empty() && channel_.try_send(boost::system::error_code{}, device_changes_.front())) {
+        device_changes_.pop_front();
+    }
 }
 
 void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {

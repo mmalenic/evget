@@ -1,5 +1,6 @@
 #include "evgetwindows/event_transformer.h"
 
+#include <spdlog/spdlog.h>
 #include <windows.h>
 
 #include <algorithm>
@@ -305,6 +306,11 @@ void evgetwindows::EventTransformer::BuildHid(
         return;
     }
 
+    if (!touch_devices_.contains(device) && touch_devices_.size() >= kMaxCachedDevices) {
+        spdlog::warn("touch device state reached {} entries", kMaxCachedDevices);
+        ReleaseAllDevices(data, ctx.timestamp);
+    }
+
     auto& state = touch_devices_[device];
     state.device_uuid = ctx.device_uuid.get();
     state.device_name = ctx.device_name;
@@ -543,6 +549,32 @@ void evgetwindows::EventTransformer::BuildPadButton(
     builder.Build(data);
 }
 
+void evgetwindows::EventTransformer::ReleaseDeviceState(
+    evget::Data& data,
+    TouchDeviceState& state,
+    const evget::TimestampType& timestamp
+) {
+    // Use the state as a removed device's name cannot be resolved.
+    auto ctx = EventContext{
+        .timestamp = timestamp,
+        .device_type = state.device_type,
+        .device_name = state.device_name,
+        .device_uuid = state.device_uuid,
+        .system_event = EVGET_STRINGIFY(RIM_TYPEHID),
+    };
+
+    BuildPadButton(data, ctx, state, false, ToMicros(timestamp));
+    ReleaseTrackedContacts(data, ctx, state, ToMicros(timestamp));
+}
+
+void evgetwindows::EventTransformer::ReleaseAllDevices(evget::Data& data, const evget::TimestampType& timestamp) {
+    for (auto& [device, state] : touch_devices_) {
+        ReleaseDeviceState(data, state, timestamp);
+    }
+
+    touch_devices_.clear();
+}
+
 void evgetwindows::EventTransformer::RemoveDevice(
     evget::Data& data,
     HANDLE device,
@@ -550,19 +582,7 @@ void evgetwindows::EventTransformer::RemoveDevice(
 ) {
     const auto entry = touch_devices_.find(device);
     if (entry != touch_devices_.end()) {
-        auto& state = entry->second;
-
-        // Build this from the remembered state as a removed device's name cannot be resolved.
-        auto ctx = EventContext{
-            .timestamp = timestamp,
-            .device_type = state.device_type,
-            .device_name = state.device_name,
-            .device_uuid = state.device_uuid,
-            .system_event = EVGET_STRINGIFY(RIM_TYPEHID),
-        };
-
-        BuildPadButton(data, ctx, state, false, ToMicros(timestamp));
-        ReleaseTrackedContacts(data, ctx, state, ToMicros(timestamp));
+        ReleaseDeviceState(data, entry->second, timestamp);
         touch_devices_.erase(entry);
     }
 

@@ -14,6 +14,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <future>
 #include <memory>
 #include <optional>
@@ -115,6 +116,21 @@ public:
      */
     EnqueueOutcome Enqueue(const RAWINPUT& raw);
 
+    /**
+     * \brief Queue a device for arrival or removal.
+     * \param change the device change code
+     * \param device the device handle
+     *
+     * If the removal is lost it won't be recovered and a device change is not dropped.
+     */
+    void EnqueueDeviceChange(WPARAM change, HANDLE device);
+
+    /**
+     * \brief The number of device changes available.
+     * \return the device change count
+     */
+    [[nodiscard]] std::size_t PendingDeviceChanges() const;
+
 private:
     using WindowHandle = std::unique_ptr<std::remove_pointer_t<HWND>, decltype(&DestroyWindow)>;
 
@@ -148,12 +164,13 @@ private:
     static LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
     void RunPump(std::promise<evget::Result<void>> registration);
     void HandleRawInput(HRAWINPUT input);
-    void HandleDeviceChange(WPARAM change, HANDLE device);
+    void DrainDeviceChanges();
     EnqueueOutcome EnqueueEvent(const RawEvent& event);
 
     std::wstring class_name_;
     RawEventChannel channel_;
     std::vector<std::byte> raw_buffer_;
+    std::deque<RawEvent> device_changes_;
     std::jthread thread_;
     std::atomic<DWORD> thread_id_{0};
     std::atomic<std::size_t> in_flight_{0};

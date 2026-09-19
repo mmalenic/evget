@@ -21,6 +21,7 @@
 #include "evget/input_event.h"
 #include "evgetwindows/event_transformer.h"
 #include "evgetwindows/hid_frame.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/message_window.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
@@ -257,6 +258,11 @@ HANDLE HidDeviceHandle() {
 HANDLE HidDeviceHandleAlternate() {
     static int backing = 0;
     return &backing;
+}
+
+HANDLE HidDeviceHandleAt(std::size_t index) {
+    static std::array<int, evgetwindows::kMaxCachedDevices + 1> backing{};
+    return &backing.at(index);
 }
 
 evgetwindows::HidContact MakeContactState(

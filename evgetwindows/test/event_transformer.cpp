@@ -23,6 +23,7 @@
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
 #include "evgetwindows/hid_frame.h"
+#include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/message_window.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
@@ -32,6 +33,7 @@ using test::AsRawInput;
 using test::ExpectTouchParitySequence;
 using test::HidDeviceHandle;
 using test::HidDeviceHandleAlternate;
+using test::HidDeviceHandleAt;
 using test::HidQueryApiMock;
 using test::kTestAxisMax;
 using test::kTestMappedDisplay;
@@ -1198,6 +1200,41 @@ TEST(EvgetWindowsTransformer, TouchTwoDevicesTrackedIndependently) {
     ASSERT_EQ(first_up.Entries().size(), 2);
     EXPECT_EQ(first_up.Entries().at(0).Data().at(4), "touch-first");
     EXPECT_EQ(first_up.Entries().at(1).Data().at(18), "1");
+}
+
+TEST(EvgetWindowsTransformer, TouchDeviceStateHasBound) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillRepeatedly(Return(std::optional{MakeHidFrame({MakeContact(1, 0, 0)}, 1)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    std::size_t held_rows = 0;
+    for (std::size_t index = 0; index < evgetwindows::kMaxCachedDevices; ++index) {
+        const auto batch = transformer.TransformEvent(
+            evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEventFrom(HidDeviceHandleAt(index), report)}
+        );
+        held_rows += batch.Entries().size();
+    }
+    ASSERT_EQ(held_rows, 2 * evgetwindows::kMaxCachedDevices);
+
+    auto data = transformer.TransformEvent(
+        evget::InputEvent<evgetwindows::RawEvent>{
+            MakeHidRawEventFrom(HidDeviceHandleAt(evgetwindows::kMaxCachedDevices), report)
+        }
+    );
+    const auto& entries = data.Entries();
+
+    // Each held device is released as the ceiling clears the map, then the arriving device presses its contact.
+    ASSERT_EQ(entries.size(), 2 * (evgetwindows::kMaxCachedDevices + 1));
+    EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
+    EXPECT_EQ(entries.at(1).Data().at(18), "1");
+    EXPECT_EQ(entries.back().Type(), evget::EntryType::kMouseClick);
+    EXPECT_EQ(entries.back().Data().at(18), "0");
 }
 
 // Mirrors the touch down, motion and up assertions the evgetlibinput transformer tests make.
