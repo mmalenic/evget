@@ -271,7 +271,8 @@ std::optional<evgetwindows::HidDeviceCaps> evgetwindows::HidQuery::CapsFrom(std:
     }
 
     // A descriptor can have the sign extended.
-    const bool axis_valid = has_x && has_y && axis.max_x > axis.min_x && axis.max_y > axis.min_y;
+    const bool axis_valid =
+        has_x && has_y && axis.min_x >= 0 && axis.min_y >= 0 && axis.max_x > axis.min_x && axis.max_y > axis.min_y;
 
     std::vector<HIDP_BUTTON_CAPS> button_caps(caps.NumberInputButtonCaps);
     USHORT button_caps_length = caps.NumberInputButtonCaps;
