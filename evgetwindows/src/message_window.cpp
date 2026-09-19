@@ -126,7 +126,8 @@ LRESULT CALLBACK evgetwindows::MessageWindow::WndProc(HWND window, UINT message,
     return DefWindowProcW(window, message, wparam, lparam);
 }
 
-std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEvent(const RAWINPUT& raw) {
+std::optional<evgetwindows::RawEvent>
+evgetwindows::MessageWindow::ToRawEvent(const RAWINPUT& raw, std::size_t packet_size) {
     RawEvent event{};
     event.header = raw.header;
     if (raw.header.dwType == RIM_TYPEMOUSE) {
@@ -136,12 +137,13 @@ std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEvent(co
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         event.data = raw.data.keyboard;
     } else {
-        return ToRawEventAt(raw, 0);
+        return ToRawEventAt(raw, 0, packet_size);
     }
     return event;
 }
 
-std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEventAt(const RAWINPUT& raw, DWORD index) {
+std::optional<evgetwindows::RawEvent>
+evgetwindows::MessageWindow::ToRawEventAt(const RAWINPUT& raw, DWORD index, std::size_t packet_size) {
     if (raw.header.dwType != RIM_TYPEHID) {
         return std::nullopt;
     }
@@ -155,7 +157,7 @@ std::optional<evgetwindows::RawEvent> evgetwindows::MessageWindow::ToRawEventAt(
     // Packet must appear to contain the report as counts come from the device.
     const auto reports_end = static_cast<std::uint64_t>(offsetof(RAWINPUT, data)) + offsetof(RAWHID, bRawData) +
         (static_cast<std::uint64_t>(hid.dwSizeHid) * hid.dwCount);
-    if (reports_end > raw.header.dwSize) {
+    if (reports_end > std::min<std::uint64_t>(raw.header.dwSize, packet_size)) {
         return std::nullopt;
     }
 
@@ -196,7 +198,7 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const Raw
     return EnqueueOutcome::kDropped;
 }
 
-evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw) {
+evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw, std::size_t packet_size) {
     DrainDeviceChanges();
 
     if (raw.header.dwType == RIM_TYPEHID) {
@@ -205,7 +207,7 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
 
         auto outcome = EnqueueOutcome::kIgnored;
         for (DWORD index = 0; index < count; ++index) {
-            const std::optional<RawEvent> report = ToRawEventAt(raw, index);
+            const std::optional<RawEvent> report = ToRawEventAt(raw, index, packet_size);
             if (!report.has_value()) {
                 continue;
             }
@@ -219,7 +221,7 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
         return outcome;
     }
 
-    const std::optional<RawEvent> event = ToRawEvent(raw);
+    const std::optional<RawEvent> event = ToRawEvent(raw, packet_size);
     if (!event.has_value()) {
         return EnqueueOutcome::kIgnored;
     }
@@ -267,7 +269,7 @@ void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    Enqueue(*reinterpret_cast<const RAWINPUT*>(raw_buffer_.data()));
+    Enqueue(*reinterpret_cast<const RAWINPUT*>(raw_buffer_.data()), size);
 }
 
 evgetwindows::MessageWindow::WindowClass::WindowClass(const wchar_t* class_name, HINSTANCE instance)

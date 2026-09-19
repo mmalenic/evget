@@ -457,7 +457,7 @@ TEST(EvgetWindowsTransformer, DownCreatesMoveAndPress) {
 
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacket(report, 1);
-    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size());
     ASSERT_TRUE(raw_event.has_value());
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
@@ -494,7 +494,7 @@ TEST(EvgetWindowsTransformer, DownUsesTouchpadDeviceType) {
 
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacket(report, 1);
-    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size());
     ASSERT_TRUE(raw_event.has_value());
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
@@ -516,7 +516,7 @@ TEST(EvgetWindowsTransformer, TouchIgnoreUnknownHid) {
 
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacket(report, 1);
-    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size());
     ASSERT_TRUE(raw_event.has_value());
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
@@ -534,7 +534,7 @@ TEST(EvgetWindowsTransformer, TouchIgnoreNull) {
 
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacketNullDevice(report, 1);
-    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet));
+    const auto raw_event = evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size());
     ASSERT_TRUE(raw_event.has_value());
 
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{*raw_event});
@@ -546,14 +546,14 @@ TEST(EvgetWindowsTransformer, TouchInvalidReport) {
     const auto report = MakeHidReportBytes(evgetwindows::kHidReportCapacity + 1);
     const auto packet = MakeHidPacket(report, 1);
 
-    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet)).has_value());
+    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size()).has_value());
 }
 
 TEST(EvgetWindowsTransformer, TouchInconsistentPackets) {
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacketUndersized(report, 1);
 
-    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet)).has_value());
+    EXPECT_FALSE(evgetwindows::MessageWindow::ToRawEvent(AsRawInput(packet), packet.size()).has_value());
 }
 
 TEST(EvgetWindowsTransformer, DeviceRemovalRemovesHid) {

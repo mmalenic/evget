@@ -89,6 +89,7 @@ public:
     /**
      * \brief Convert a `RAWINPUT` record into an owned `RawEvent`.
      * \param raw the raw input
+     * \param packet_size the number of bytes within `raw` that is the target
      * \return the event, or `nullopt` if no raw input event could be extracted
      */
     [[nodiscard]] static std::optional<RawEvent> ToRawEvent(const RAWINPUT& raw);
@@ -97,9 +98,13 @@ public:
      * \brief Convert a HID report at `index` in the `RAWINPUT` record into an owned `RawEvent`.
      * \param raw the raw input
      * \param index the index of the report
+     * \param packet_size the number of bytes within `raw` that is the target
      * \return the event, or `nullopt` if not HID or fails validation
+     *
+     * The packet states its own length, so the reports are bounded by the caller's extent as well as by that.
      */
-    [[nodiscard]] static std::optional<RawEvent> ToRawEventAt(const RAWINPUT& raw, DWORD index);
+    [[nodiscard]] static std::optional<RawEvent>
+    ToRawEventAt(const RAWINPUT& raw, DWORD index, std::size_t packet_size);
 
     /**
      * \brief Build a `RawEvent` for a device arrival or removal.
@@ -112,9 +117,10 @@ public:
     /**
      * \brief Convert a `RAWINPUT` record and try to queue it.
      * \param raw the raw input record
+     * \param packet_size the number of bytes within `raw` that is the target
      * \return the outcome
      */
-    EnqueueOutcome Enqueue(const RAWINPUT& raw);
+    EnqueueOutcome Enqueue(const RAWINPUT& raw, std::size_t packet_size);
 
     /**
      * \brief Queue a device for arrival or removal.
