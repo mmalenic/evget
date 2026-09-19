@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <format>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <span>
 #include <string>
@@ -367,9 +368,10 @@ void evgetwindows::EventTransformer::BuildTouchFrame(
     state.expected = 0;
 
     // A defined row order for a multi contact frame, and one row set for a contact the frame repeated.
-    std::ranges::sort(contacts, {}, &HidContact::contact_id);
-    const auto duplicates = std::ranges::unique(contacts, {}, &HidContact::contact_id);
-    contacts.erase(duplicates.begin(), duplicates.end());
+    std::ranges::stable_sort(contacts, {}, &HidContact::contact_id);
+    // Keep only the last sample when there is a repeat.
+    const auto duplicates = std::ranges::unique(std::views::reverse(contacts), {}, &HidContact::contact_id);
+    contacts.erase(contacts.begin(), duplicates.begin().base());
 
     std::set<std::uint32_t> present;
     for (const auto& contact : contacts) {
