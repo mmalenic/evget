@@ -376,50 +376,12 @@ void evgetwindows::EventTransformer::BuildTouchFrame(
     std::set<std::uint32_t> present;
     for (const auto& contact : contacts) {
         present.insert(contact.contact_id);
-
-        // When the confidence is set it means the device considers the contact intentional.
-        const bool active = contact.tip_down && contact.confident;
-        if (state.tracked.contains(contact.contact_id)) {
-            if (active) {
-                BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
-            } else {
-                BuildTouchRelease(data, ctx, state, contact.contact_id, event_time);
-                state.tracked.erase(contact.contact_id);
-            }
-            continue;
-        }
-
-        if (!contact.tip_down) {
-            state.rejected.erase(contact.contact_id);
-            continue;
-        }
-        if (!active) {
-            state.rejected.insert(contact.contact_id);
-            continue;
-        }
-        if (state.rejected.contains(contact.contact_id)) {
-            continue;
-        }
-
-        if (state.tracked.size() >= kMaxTrackedContacts) {
-            ReleaseTrackedContacts(data, ctx, state, event_time);
-        }
-
-        state.tracked.insert(contact.contact_id);
-        BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
-
-        auto click_builder = evget::MouseClick{};
-        SetBaseFields(click_builder, ctx, event_time);
-        if (state.device_type == evget::DeviceType::kTouchscreen && monitor.has_value()) {
-            click_builder.Screen(monitor->name);
-        }
-        click_builder.Action(evget::ButtonAction::kPress).TouchId(static_cast<int>(contact.contact_id));
-        click_builder.Build(data);
+        BuildTouchContact(data, ctx, state, contact, range, monitor, event_time);
     }
 
     std::erase_if(state.rejected, [&present](const auto contact_id) { return !present.contains(contact_id); });
 
-    // A contact the device stopped reporting has released.
+    // When the confidence is set it means the device considers the contact intentional.
     const auto stale = state.tracked;
     for (const auto contact_id : stale) {
         if (present.contains(contact_id)) {
@@ -429,6 +391,63 @@ void evgetwindows::EventTransformer::BuildTouchFrame(
         BuildTouchRelease(data, ctx, state, contact_id, event_time);
         state.tracked.erase(contact_id);
     }
+}
+
+void evgetwindows::EventTransformer::BuildTouchContact(
+    evget::Data& data,
+    EventContext& ctx,
+    TouchDeviceState& state,
+    const HidContact& contact,
+    const std::optional<HidAxisRange>& range,
+    const std::optional<MonitorInfo>& monitor,
+    std::uint64_t event_time
+) {
+    // A set confidence bit means the device considers the contact intentional.
+    const bool active = contact.tip_down && contact.confident;
+    if (state.tracked.contains(contact.contact_id)) {
+        if (active) {
+            BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
+            return;
+        }
+
+        BuildTouchRelease(data, ctx, state, contact.contact_id, event_time);
+        state.tracked.erase(contact.contact_id);
+        // If the tip is down, then state should be rejected if confidence is back.
+        if (contact.tip_down) {
+            state.rejected.insert(contact.contact_id);
+        }
+        return;
+    }
+
+    if (!contact.tip_down) {
+        state.rejected.erase(contact.contact_id);
+        return;
+    }
+
+    if (!active) {
+        state.rejected.insert(contact.contact_id);
+        return;
+    }
+
+    // The device rejected this contact while it was down, so a returning confidence must not press it.
+    if (state.rejected.contains(contact.contact_id)) {
+        return;
+    }
+
+    if (state.tracked.size() >= kMaxTrackedContacts) {
+        ReleaseTrackedContacts(data, ctx, state, event_time);
+    }
+
+    state.tracked.insert(contact.contact_id);
+    BuildTouchContactDown(data, ctx, state, contact, range, monitor, event_time);
+
+    auto click_builder = evget::MouseClick{};
+    SetBaseFields(click_builder, ctx, event_time);
+    if (state.device_type == evget::DeviceType::kTouchscreen && monitor.has_value()) {
+        click_builder.Screen(monitor->name);
+    }
+    click_builder.Action(evget::ButtonAction::kPress).TouchId(static_cast<int>(contact.contact_id));
+    click_builder.Build(data);
 }
 
 void evgetwindows::EventTransformer::BuildTouchContactDown(

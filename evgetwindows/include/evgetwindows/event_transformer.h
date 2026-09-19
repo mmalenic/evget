@@ -105,6 +105,16 @@ private:
         std::uint64_t event_time
     );
 
+    void BuildTouchContact(
+        evget::Data& data,
+        EventContext& ctx,
+        TouchDeviceState& state,
+        const HidContact& contact,
+        const std::optional<HidAxisRange>& range,
+        const std::optional<MonitorInfo>& monitor,
+        std::uint64_t event_time
+    );
+
     void BuildTouchContactDown(
         evget::Data& data,
         EventContext& ctx,

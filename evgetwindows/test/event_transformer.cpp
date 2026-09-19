@@ -796,6 +796,28 @@ TEST(EvgetWindowsTransformer, TouchContactNoConfidenceIsReleased) {
     EXPECT_EQ(entries.at(1).Data().at(18), "1");
 }
 
+TEST(EvgetWindowsTransformer, TouchContactWithConfidencePress) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContactState(3, 0, 0, true, true)}, 1)}))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContactState(3, 0, 0, true, false)}, 1)}))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContactState(3, 0, 0, true, true)}, 1)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto rejected = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    auto regained = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+
+    ASSERT_EQ(rejected.Entries().size(), 2);
+    EXPECT_EQ(rejected.Entries().at(1).Data().at(18), "1");
+    EXPECT_TRUE(regained.Entries().empty());
+}
+
 TEST(EvgetWindowsTransformer, TouchNoConfidentContactNoPress) {
     NiceMock<WindowsQueryApiMock> query{};
     NiceMock<HidQueryApiMock> hid_query{};
