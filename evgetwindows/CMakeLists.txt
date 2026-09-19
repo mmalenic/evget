@@ -69,9 +69,12 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/windows_mock.cpp
+        PUBLIC test/common/hid_fixtures.cpp
+               test/common/hid_fixtures.h
+               test/common/windows_mock.cpp
                test/common/windows_mock.h
                test/event_transformer.cpp
+               test/hid_query_api.cpp
                test/message_window.cpp
                test/modifier_tracker.cpp
                test/next_event.cpp
