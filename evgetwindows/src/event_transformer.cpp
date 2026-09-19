@@ -337,6 +337,12 @@ void evgetwindows::EventTransformer::BuildHid(
         } else if (state.frame_open) {
             AccumulateContacts(state.accumulated, report->contacts);
             complete = state.accumulated.size() >= state.expected;
+        } else {
+            // A 0 count outside a frame means the contact has been stopped.
+            state.expected = 0;
+            state.accumulated.clear();
+            AccumulateContacts(state.accumulated, report->contacts);
+            complete = true;
         }
     } else if (!report->contacts.empty()) {
         // A descriptor omitting the contact count still completes.

@@ -986,11 +986,13 @@ TEST(EvgetWindowsTransformer, TouchpadContactlessReportAndButton) {
     EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchpad));
     EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
         .WillOnce(Return(std::optional{MakeHidFrame({MakeContact(1, 0, 0)}, 1)}))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContactState(1, 0, 0, false, true)}, 1)}))
         .WillOnce(Return(std::optional{MakeContactlessReport(true)}));
 
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     const auto report = MakeHidReportBytes(8);
 
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
     auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     const auto& entries = data.Entries();
@@ -999,6 +1001,30 @@ TEST(EvgetWindowsTransformer, TouchpadContactlessReportAndButton) {
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
     EXPECT_EQ(entries.at(0).Data().at(16), std::to_string(0x110));
     EXPECT_EQ(entries.at(0).Data().at(18), "0");
+}
+
+TEST(EvgetWindowsTransformer, TouchZeroContacteleases) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeHidFrame({MakeContact(1, 0, 0)}, 1)}))
+        .WillOnce(Return(std::optional{MakeHidFrame({}, 0)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 2);
+    EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
+    EXPECT_EQ(entries.at(0).Data().at(15), "1");
+    EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
+    EXPECT_EQ(entries.at(1).Data().at(15), "1");
+    EXPECT_EQ(entries.at(1).Data().at(18), "1");
 }
 
 TEST(EvgetWindowsTransformer, TouchIdenticalCoordinatesIndependent) {
