@@ -48,4 +48,21 @@ The data source when using X11 is the X11 [api][x11-api] functions. Namely, data
 from `XIRawEvent` and functions like `XIQueryPointer`. The x and y position of the pointer is absolute, and button
 names, ids, screens, and scroll amounts are sourced from the raw event.
 
+## Windows touch behaviour
+
+For windows, touch events are source from the Raw Input HID report. Like the rest of evget, pen inputs are not captured.
+Touch events on windows produce the same rows as the libinput backend, i.e. mouse click press, mouse move, mouse click 
+release.
+
+Touch positions are based in screen pixel deltas on the `screen` where the touch event occurred. Windows also creates
+pointer input from touch and touchpad events, so touch events on windows carry duplicate mouse move rows. This is
+required because they capture different kinds of information. The touch event represents what was touched on the screen,
+whereas the mouse event shows what happens to the pointer after this. It is not possible to precisely correlate these,
+so evget doesn't attempt to and just records both.
+
+The values can be used to determine pointer behaviour across devices, or to capture windows specific decision about the
+pointer, such as two-finger scrolling, press and hold right click, acceleration, etc. The `device_type` or `device_id`
+can be used to distinguish these events. If windows thinks the device touch is unintentional, it will mark the event
+as such, and these events will not be recorded by evget.
+
 [x11-api]: https://www.x.org/releases/X11R7.6/doc/

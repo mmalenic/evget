@@ -127,7 +127,7 @@ evgetwindows::EventTransformer::EventTransformer(
 evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<RawEvent> event) {
     const auto& raw = event.ViewData();
 
-    // The mouse type's value is zero, so a device change with a default header must not reach the dwType switch.
+    // A device change makes dwType 0, i.e. RIM_TYPEMOUSE, so we should return early here on it.
     if (const auto* change = std::get_if<DeviceChange>(&raw.data)) {
         auto removal = evget::Data{};
         if (!change->arrival) {
