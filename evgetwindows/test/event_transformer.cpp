@@ -955,6 +955,30 @@ TEST(EvgetWindowsTransformer, TouchpadButtonOneIsLeftClick) {
     EXPECT_EQ(release.Entries().at(0).Data().at(18), "1");
 }
 
+TEST(EvgetWindowsTransformer, TouchpadRemovalReleasesButton) {
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchpad));
+    EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
+        .WillOnce(Return(std::optional{MakeContactlessReport(true)}));
+
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    const auto report = MakeHidReportBytes(8);
+
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
+    auto data = transformer.TransformEvent(
+        evget::InputEvent<evgetwindows::RawEvent>{MakeDeviceChangeRawEvent(HidDeviceHandle(), false)}
+    );
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 1);
+    EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
+    EXPECT_EQ(entries.at(0).Data().at(16), std::to_string(0x110));
+    EXPECT_EQ(entries.at(0).Data().at(17), "BTN_LEFT");
+    EXPECT_EQ(entries.at(0).Data().at(18), "1");
+}
+
 TEST(EvgetWindowsTransformer, TouchpadContactlessReportAndButton) {
     NiceMock<WindowsQueryApiMock> query{};
     NiceMock<HidQueryApiMock> hid_query{};

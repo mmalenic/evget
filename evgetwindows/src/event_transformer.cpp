@@ -555,6 +555,7 @@ void evgetwindows::EventTransformer::RemoveDevice(
             .system_event = EVGET_STRINGIFY(RIM_TYPEHID),
         };
 
+        BuildPadButton(data, ctx, state, false, ToMicros(timestamp));
         ReleaseTrackedContacts(data, ctx, state, ToMicros(timestamp));
         touch_devices_.erase(entry);
     }
