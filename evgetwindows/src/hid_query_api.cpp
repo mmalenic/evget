@@ -1,5 +1,7 @@
 #include "evgetwindows/hid_query_api.h"
 
+#include <hidpi.h>
+#include <hidsdi.h>
 #include <spdlog/spdlog.h>
 #include <windows.h>
 
@@ -15,9 +17,6 @@
 #include "evget/event/device_type.h"
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_usages.h"
-
-#include <hidsdi.h>
-#include <hidpi.h>
 
 #ifdef EVGET_HID_REPORT_DUMP
 #include <format>

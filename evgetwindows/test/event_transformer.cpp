@@ -565,7 +565,7 @@ TEST(EvgetWindowsTransformer, DeviceRemovalRemovesHid) {
 
     int backing = 0;
     HANDLE device = &backing;
-    EXPECT_CALL(hid_query, EvictDevice(device)).Times(1);
+    EXPECT_CALL(hid_query, RemoveDevice(device)).Times(1);
 
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
@@ -582,7 +582,7 @@ TEST(EvgetWindowsTransformer, DeviceArrivingHasNoRows) {
 
     int backing = 0;
     HANDLE device = &backing;
-    EXPECT_CALL(hid_query, EvictDevice(testing::_)).Times(0);
+    EXPECT_CALL(hid_query, RemoveDevice(testing::_)).Times(0);
 
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
@@ -872,7 +872,7 @@ TEST(EvgetWindowsTransformer, TouchDeviceRemovalReleases) {
     EXPECT_CALL(hid_query, ClassifyDevice(testing::_)).WillRepeatedly(Return(evget::DeviceType::kTouchscreen));
     EXPECT_CALL(hid_query, DecodeReport(testing::_, testing::_))
         .WillRepeatedly(Return(std::optional{MakeHidFrame({MakeContact(1, 0, 0), MakeContact(2, 0, 0)}, 2)}));
-    EXPECT_CALL(hid_query, EvictDevice(HidDeviceHandle())).Times(1);
+    EXPECT_CALL(hid_query, RemoveDevice(HidDeviceHandle())).Times(1);
 
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
     const auto report = MakeHidReportBytes(8);

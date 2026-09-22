@@ -51,7 +51,7 @@ names, ids, screens, and scroll amounts are sourced from the raw event.
 ## Windows touch behaviour
 
 For windows, touch events are source from the Raw Input HID report. Like the rest of evget, pen inputs are not captured.
-Touch events on windows produce the same rows as the libinput backend, i.e. mouse click press, mouse move, mouse click 
+Touch events on windows produce the same rows as the libinput backend, i.e. mouse click press, mouse move, mouse click
 release.
 
 Touch positions are based in screen pixel deltas on the `screen` where the touch event occurred. Windows also creates

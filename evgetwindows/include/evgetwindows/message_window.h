@@ -93,7 +93,7 @@ public:
      * \param packet_size the number of bytes within `raw` that is the target
      * \return the event, or `nullopt` if no raw input event could be extracted
      */
-    [[nodiscard]] static std::optional<RawEvent> ToRawEvent(const RAWINPUT& raw);
+    [[nodiscard]] static std::optional<RawEvent> ToRawEvent(const RAWINPUT& raw, std::size_t packet_size);
 
     /**
      * \brief Convert a HID report at `index` in the `RAWINPUT` record into an owned `RawEvent`.
