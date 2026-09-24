@@ -13,6 +13,7 @@ build_dir := 'build/' + shell('python scripts/detect_compiler.py') + '-' + lower
 
 mod gcc 'linux/gcc.just'
 mod clang 'linux/clang.just'
+mod clangcl 'linux/clang-cl.just'
 
 # Run tests under valgrind against the X11 and libinput backends.
 test_valgrind filter='*' *opts='': (build_test opts)

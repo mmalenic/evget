@@ -28,6 +28,12 @@ and the Windows address sanitizer re-builds all dependencies with instrumentatio
 Conan cache (see [sanitizers.py](../scripts/sanitizers.py) for details). Windows hosts can also use runtime
 checks like pageheap and appverifier, which require an elevated shell.
 
+## Cross-compiling Windows from Linux
+
+`just linux::clangcl::<recipe>` builds the Windows backend on a Linux host with clang-cl, runs `check` with
+clang-tidy, and runs `test` using wine. It needs all of these tools installed to work. Note that it requires
+an MSVC style sysroot to use the Visual Studio layout, see example from [msvc-wine](https://github.com/mstorsjo/msvc-wine)
+
 ## Conventions
 
 - Pass extra Conan flags through `*opts`, e.g. `just windows::msvc::build -o evget/*:build_bin=False`.

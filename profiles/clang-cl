@@ -1,4 +1,4 @@
-# Windows clang-cl profile.
+# Windows clang-cl profile. This can also cross-compile on non-Windows hosts using Wine.
 
 include(./base)
 
@@ -13,24 +13,41 @@ include(./base)
 {% endif %}
 
 {% set executable = "clang-cl" %}
+{% set cross = platform.system() != "Windows" %}
 
 # Boost.Build won't append .exe to a command, so give it an absolute path on Windows.
-{% if platform.system() == "Windows" %}
+{% if not cross %}
 {% set executable = os.popen('where ' ~ executable).read().splitlines()[0].strip() | replace("\\", "/") %}
 {% endif %}
 
 {% set runtime_version = os.getenv("EVGET_RUNTIME_VERSION") %}
-{% if not runtime_version %}
+{% if not runtime_version and not cross %}
 {% set runtime_map = {"191": "v141", "192": "v142", "193": "v143", "194": "v144", "195": "v145"} %}
 {% set runtime_version = runtime_map.get(detect_api.detect_msvc_compiler()[1] | string, "v143") %}
 {% endif %}
 
 [settings]
+os=Windows
 compiler={{ compiler }}
 compiler.version={{ version }}
 compiler.cppstd=23
+{% if cross %}
+compiler.runtime=static
+{% else %}
 compiler.runtime=dynamic
+{% endif %}
+{% if runtime_version %}
 compiler.runtime_version={{ runtime_version }}
+{% endif %}
 
 [conf]
 tools.build:compiler_executables={'c': '{{ executable }}', 'cpp': '{{ executable }}'}
+{% if cross %}
+{% set winsysroot = os.getenv("EVGET_WINSYSROOT") %}
+tools.build:cflags=['/winsysroot', '{{ winsysroot }}']
+tools.build:cxxflags=['/winsysroot', '{{ winsysroot }}']
+tools.build:exelinkflags=['/winsysroot:{{ winsysroot }}']
+tools.build:sharedlinkflags=['/winsysroot:{{ winsysroot }}']
+tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CROSSCOMPILING_EMULATOR': 'wine', 'CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE': 'PRE_TEST'}
+tools.cmake.cmake_layout:build_folder_vars=['settings.os', 'settings.compiler', 'settings.build_type']
+{% endif %}

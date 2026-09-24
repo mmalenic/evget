@@ -42,6 +42,8 @@ class EvgetRecipe(ConanFile):
         "clang_tidy_executable": [None, "ANY"],
         # Apply clang-tidy fixes by passing "-fix" to run-clang-tidy.
         "clang_tidy_fix_errors": [True, False],
+        # Extra arguments for run-clang-tidy.
+        "clang_tidy_args": [None, "ANY"],
         # Whether to run MSVC /analyze.
         "run_msvc_analyze": [True, False],
         # Specifies a compiler launcher, such as sccache, which sets CMAKE_<LANG>_COMPILER_LAUNCHER.
@@ -74,6 +76,7 @@ class EvgetRecipe(ConanFile):
         "run_clang_tidy_executable": None,
         "clang_tidy_executable": None,
         "clang_tidy_fix_errors": False,
+        "clang_tidy_args": None,
         "run_msvc_analyze": False,
         "compiler_launcher": None,
         "install_bin": True,
@@ -268,5 +271,8 @@ class EvgetRecipe(ConanFile):
 
             if self.options.clang_tidy_fix_errors:
                 command.append("-fix")
+
+            if self.options.clang_tidy_args:
+                command.append(str(self.options.clang_tidy_args))
 
             self.run(" ".join(command))
