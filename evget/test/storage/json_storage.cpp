@@ -11,13 +11,21 @@
 #include <sstream>
 #include <utility>
 
+#include "common/stream.h"
 #include "evget/event/data.h"
 #include "evget/event/entry.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
+namespace {
+
+using test::SyncCountingBuffer;
+
+} // namespace
+
 TEST(JsonStorageTest, EmptyDataNoOutput) {
-    std::ostringstream stream{};
+    SyncCountingBuffer buffer{};
+    std::ostream stream{&buffer};
     evget::JsonStorage storage{
         std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
     };
@@ -26,7 +34,27 @@ TEST(JsonStorageTest, EmptyDataNoOutput) {
     auto result = storage.StoreEvent(std::move(data));
 
     ASSERT_TRUE(result.has_value());
-    ASSERT_TRUE(stream.str().empty());
+    ASSERT_TRUE(buffer.str().empty());
+    ASSERT_EQ(buffer.SyncCount(), 0);
+}
+
+TEST(JsonStorageTest, FlushesAfterWrite) {
+    SyncCountingBuffer buffer{};
+    std::ostream stream{&buffer};
+    evget::JsonStorage storage{
+        std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
+    };
+
+    evget::Data first{};
+    first.AddEntry({evget::EntryType::kKey, {"value1"}, {}});
+    evget::Data second{};
+    second.AddEntry({evget::EntryType::kKey, {"value2"}, {}});
+
+    ASSERT_TRUE(storage.StoreEvent(std::move(first)).has_value());
+    ASSERT_TRUE(storage.StoreEvent(std::move(second)).has_value());
+
+    ASSERT_EQ(buffer.SyncCount(), 2);
+    ASSERT_FALSE(buffer.str().empty());
 }
 
 TEST(JsonStorageTest, SingleKeyEntry) {

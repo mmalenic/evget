@@ -286,6 +286,8 @@ if(BUILD_TESTING)
                test/common/event_loop.cpp
                test/common/store.h
                test/common/store.cpp
+               test/common/stream.h
+               test/common/stream.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()
