@@ -94,7 +94,7 @@ void evget::DatabaseManager::Flush() {
         out.MergeWith(std::move(data));
     }
 
-    // Runs on the signal thread while the pool is alive, so blocking on the future cannot deadlock.
+    // This never uses pool threads, so blocking on the future cannot deadlock.
     // NOLINTNEXTLINE(misc-include-cleaner)
     auto future = boost::asio::co_spawn(strand_, StoreCoroutine(out, Snapshot(*store_in_)), boost::asio::use_future);
     auto result = future.get();

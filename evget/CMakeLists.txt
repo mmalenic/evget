@@ -27,6 +27,7 @@ target_sources(
             ${SRC}/async/scheduler/interval.cpp
             ${SRC}/async/scheduler/scheduler.cpp
             ${SRC}/interval_tracker.cpp
+            ${SRC}/shutdown.cpp
     PUBLIC FILE_SET
            HEADERS
            BASE_DIRS
@@ -68,6 +69,7 @@ target_sources(
            ${INCLUDE}/async/scheduler/scheduler.h
            ${INCLUDE}/interval_tracker.h
            ${INCLUDE}/device_id.h
+           ${INCLUDE}/shutdown.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evget)
 
@@ -270,6 +272,7 @@ if(BUILD_TESTING)
                test/event/data.cpp
                test/device_id.cpp
                test/interval_tracker.cpp
+               test/shutdown.cpp
                test/storage/json_storage.cpp
                test/storage/database_storage.cpp
                test/storage/database_manager.cpp

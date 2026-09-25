@@ -7,15 +7,19 @@
 #include <boost/scope/scope_exit.hpp>
 #include <spdlog/spdlog.h>
 
+#ifndef _WIN32
+#include <signal.h> // NOLINT(hicpp-deprecated-headers,modernize-deprecated-headers)
+#endif
+
 #include <csignal>
 #include <exception>
-#include <functional>
 #include <memory>
 #include <thread>
 #include <utility>
 
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/cli.h"
+#include "evget/shutdown.h"
 #include "evget/storage/database_manager.h"
 #include "evget/storage/filter_store.h"
 
@@ -73,17 +77,24 @@ int Run(int argc, char** argv) {
     }
 
     auto filter = evget::FilterStore{manager, cli.Filter()};
+    auto shutdown = std::make_shared<evget::Shutdown>(scheduler, [&manager] { manager.Flush(); });
 
-    std::function<void()> stop_source = [] {};
     boost::asio::io_context signal_context;
     boost::asio::signal_set signals{signal_context, SIGINT, SIGTERM};
+
+#ifndef _WIN32
+    // Asio's handler replaces the SIG_IGN so SIGHUP must be added back in.
+    struct sigaction hangup{};
+    if (sigaction(SIGHUP, nullptr, &hangup) == 0 && hangup.sa_handler != SIG_IGN) {
+        signals.add(SIGHUP);
+    }
+#endif
+
     // NOLINTNEXTLINE(misc-include-cleaner)
-    signals.async_wait([scheduler, &stop_source, &manager](const boost::system::error_code& error, int) {
+    signals.async_wait([shutdown](const boost::system::error_code& error, int) {
         if (!error) {
             spdlog::debug("received stop signal, stopping scheduler");
-            stop_source();
-            manager.Flush();
-            scheduler->Stop();
+            shutdown->Request();
         }
     });
     const std::jthread signal_thread{[&signal_context] {
@@ -113,7 +124,7 @@ int Run(int argc, char** argv) {
             return 1;
         }
         li_backend = std::move(*result);
-        stop_source = [&li_backend] { li_backend->Handler().Stop(); };
+        shutdown->SetSource([&li_backend] { li_backend->Handler().Stop(); });
         scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
     }
 #endif
@@ -132,12 +143,12 @@ int Run(int argc, char** argv) {
             spdlog::error("{}", handler.error());
             return 1;
         }
-        stop_source = [&x11_backend] {
+        shutdown->SetSource([&x11_backend] {
             auto handler = x11_backend->Handler();
             if (handler.has_value()) {
                 handler->get().Stop();
             }
-        };
+        });
         scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
     }
 #endif
@@ -151,15 +162,16 @@ int Run(int argc, char** argv) {
             return 1;
         }
         win_backend = std::move(*result);
-        stop_source = [&win_backend] {
+        shutdown->SetSource([&win_backend] {
             win_backend->Handler().Stop();
             win_backend->Stop();
-        };
+        });
         scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
     }
 #endif
 
     scheduler->Join();
+    shutdown->Request();
     return exit_code;
 }
 } // namespace
