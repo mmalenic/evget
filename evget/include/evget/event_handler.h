@@ -8,6 +8,7 @@
 
 #include <boost/asio/awaitable.hpp>
 
+#include <chrono>
 #include <functional>
 #include <utility>
 
@@ -42,6 +43,18 @@ public:
      */
     void Stop();
 
+    /**
+     * \brief Stop the event handler once there no more events.
+     */
+    void StopWhenDrained();
+
+    /**
+     * \brief Wait until the event handler has finished processing, up to `timeout`.
+     * \param timeout maximum time to wait
+     * \return whether processing finished in time
+     */
+    [[nodiscard]] bool WaitFinished(std::chrono::milliseconds timeout);
+
 private:
     std::reference_wrapper<Store> storage_;
     std::reference_wrapper<EventTransformer<T>> transformer_;
@@ -56,6 +69,16 @@ boost::asio::awaitable<Result<void>> EventHandler<T>::Start() {
 template <typename T>
 void EventHandler<T>::Stop() {
     event_loop_.Stop();
+}
+
+template <typename T>
+void EventHandler<T>::StopWhenDrained() {
+    event_loop_.StopWhenDrained();
+}
+
+template <typename T>
+bool EventHandler<T>::WaitFinished(std::chrono::milliseconds timeout) {
+    return event_loop_.WaitFinished(timeout);
 }
 
 template <typename T>

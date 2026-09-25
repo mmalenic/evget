@@ -6,7 +6,12 @@
 #ifndef EVGET_EVENT_LOOP_H
 #define EVGET_EVENT_LOOP_H
 
+#include <boost/scope/scope_exit.hpp>
+
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 
 #include "evget/event_listener.h"
 #include "evget/next_event.h"
@@ -37,20 +42,33 @@ public:
     void Stop();
 
     /**
+     * \brief Stop the loop once the source reports that it has no more events.
+     */
+    void StopWhenDrained();
+
+    /**
+     * \brief Wait until `Start` has returned, up to `timeout`.
+     * \param timeout maximum time to wait
+     * \return whether `Start` returned
+     */
+    [[nodiscard]] bool WaitFinished(std::chrono::milliseconds timeout);
+
+    /**
      * \brief Check if the event loop has been stopped.
      * \return awaitable boolean indicating if the loop is stopped
      */
     boost::asio::awaitable<bool> IsStopped();
 
-    void StopWhenDrained();
-
-    [[nodiscard]] bool WaitFinished(std::chrono::milliseconds timeout);
-
 private:
     std::reference_wrapper<NextEvent<T>> next_event_;
     std::vector<std::reference_wrapper<EventListener<T>>> listeners_;
 
-    bool stopped_{false};
+    std::atomic<bool> stopped_{false};
+    std::atomic<bool> draining_{false};
+
+    std::mutex finished_mutex_;
+    std::condition_variable finished_;
+    bool is_finished_{false};
 };
 } // namespace evget
 
@@ -63,12 +81,18 @@ evget::EventLoop<T>::EventLoop(
 
 template <typename T>
 boost::asio::awaitable<evget::Result<void>> evget::EventLoop<T>::Start() {
+    const boost::scope::scope_exit mark_finished{[this] {
+        const std::scoped_lock lock{finished_mutex_};
+        is_finished_ = true;
+        finished_.notify_all();
+    }};
+
     while (!co_await IsStopped()) {
         for (auto& listener : listeners_) {
             auto event = co_await next_event_.get().Next();
             if (!event.has_value()) {
-                // A failed source read after a stop request is a graceful shutdown, not an error.
-                if (co_await IsStopped()) {
+                // A failed source read after a stop or drain request is a graceful shutdown, not an error.
+                if (co_await IsStopped() || draining_.load()) {
                     co_return evget::Result<void>{};
                 }
                 co_return Err{event.error()};
@@ -86,20 +110,23 @@ boost::asio::awaitable<evget::Result<void>> evget::EventLoop<T>::Start() {
 
 template <typename T>
 void evget::EventLoop<T>::Stop() {
-    stopped_ = true;
+    stopped_.store(true);
+}
+
+template <typename T>
+void evget::EventLoop<T>::StopWhenDrained() {
+    draining_.store(true);
+}
+
+template <typename T>
+bool evget::EventLoop<T>::WaitFinished(std::chrono::milliseconds timeout) {
+    std::unique_lock lock{finished_mutex_};
+    return finished_.wait_for(lock, timeout, [this] { return is_finished_; });
 }
 
 template <typename T>
 boost::asio::awaitable<bool> evget::EventLoop<T>::IsStopped() {
-    co_return stopped_;
-}
-
-template <typename T>
-void evget::EventLoop<T>::StopWhenDrained() {}
-
-template <typename T>
-bool evget::EventLoop<T>::WaitFinished(std::chrono::milliseconds /*timeout*/) {
-    return false;
+    co_return stopped_.load();
 }
 
 #endif
