@@ -1,6 +1,6 @@
 /**
  * \file hid_query_api.h
- * \brief HID queries for the event transformer.
+ * \brief HID queries for the event transformer which allows touchscreen and touchpad support.
  */
 
 #ifndef EVGETWINDOWS_HID_QUERY_API_H
@@ -87,16 +87,16 @@ public:
     void RemoveDevice(HANDLE device) override;
 
     /**
-     * \brief Derive device capabilities from data bytes.
-     * \param preparsed the data bytes
+     * \brief Get device capabilities from bytes.
+     * \param preparsed the bytes
      * \return the capabilities, or nullopt if the descriptor cannot be read
      */
     [[nodiscard]] static std::optional<HidDeviceCaps> CapsFrom(std::span<const std::byte> preparsed);
 
     /**
-     * \brief Decode the input report from data bytes.
-     * \param preparsed the data bytes
-     * \param caps the derived capabilities
+     * \brief Decode the input report from bytes.
+     * \param preparsed the bytes
+     * \param caps the capabilities
      * \param report the raw report bytes
      * \return the decoded report, or nullopt if the parser failed
      */

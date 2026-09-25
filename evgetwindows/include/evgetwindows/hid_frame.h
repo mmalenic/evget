@@ -1,6 +1,6 @@
 /**
  * \file hid_frame.h
- * \brief Value types describing a decoded HID report.
+ * \brief Types describing a HID report.
  */
 
 #ifndef EVGETWINDOWS_HID_FRAME_H
@@ -13,7 +13,7 @@
 namespace evgetwindows {
 
 /**
- * \brief A single contact as the device reported it.
+ * \brief The HID contact.
  */
 struct HidContact {
     std::uint32_t contact_id{};
@@ -33,7 +33,7 @@ struct HidReport {
 };
 
 /**
- * \brief The axis a reports has positions in.
+ * \brief The axis for a report.
  */
 struct HidAxisRange {
     std::int32_t min_x{};
@@ -43,7 +43,7 @@ struct HidAxisRange {
 };
 
 /**
- * \brief Derives a report descriptor.
+ * \brief The device caps which derive a report descriptor.
  */
 struct HidDeviceCaps {
     std::vector<std::uint32_t> contact_collections;

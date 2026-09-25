@@ -17,11 +17,11 @@ using test::kButtonPressed;
 using test::kButtonPressedReport;
 using test::kDownAndLifted;
 using test::kDownAndLiftedReport;
-using test::kTouchscreenReportByteLength;
 using test::kTouchpad;
 using test::kTouchpadAxis;
 using test::kTouchpadContactCollections;
 using test::kTouchpadPreparsedData;
+using test::kTouchscreenReportByteLength;
 
 TEST(EvgetWindowsHidQuery, CapsFrom) {
     const auto caps = evgetwindows::HidQuery::CapsFrom(AsBytes(kTouchpadPreparsedData));

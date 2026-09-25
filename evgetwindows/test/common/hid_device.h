@@ -92,7 +92,8 @@ struct PreparsedCaps {
 
 namespace detail {
 
-// See https://github.com/libusb/hidapi/blob/5bec5896c26578a45bbe7930622513ad652123e0/windows/hidapi_descriptor_reconstruct.h#L103-L239
+// See
+// https://github.com/libusb/hidapi/blob/5bec5896c26578a45bbe7930622513ad652123e0/windows/hidapi_descriptor_reconstruct.h#L103-L239
 constexpr std::array<char, 8> kMagic{'H', 'i', 'd', 'P', ' ', 'K', 'D', 'R'};
 constexpr std::size_t kHeaderSize = 44;
 constexpr std::size_t kCapSize = 104;

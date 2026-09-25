@@ -139,7 +139,10 @@ evget::Data evgetwindows::EventTransformer::TransformEvent(evget::InputEvent<Raw
         return removal;
     }
 
-    std::string device_name = query_.get().DeviceName(raw.header.hDevice).value_or(std::string{kInjectedDeviceName});
+    // Injected input has no device and nothing to look up.
+    std::string device_name = raw.header.hDevice == nullptr
+        ? std::string{kInjectedDeviceName}
+        : query_.get().DeviceName(raw.header.hDevice).value_or(std::string{kInjectedDeviceName});
     const std::string& device_uuid = device_ids_.UuidDeterministic(std::format("evget:windows:device:{}", device_name));
 
     auto ctx = EventContext{
@@ -332,9 +335,9 @@ void evgetwindows::EventTransformer::BuildHid(
     if (report->contact_count.has_value()) {
         const auto count = *report->contact_count;
         if (count > 0) {
-            // A frame that never completed is a cancelled one.
+            // A frame that never completed is meant to be cancelled.
             if (state.frame_open) {
-                ReleaseTrackedContacts(data, ctx, state, event_time);
+                ReleaseContacts(data, ctx, state, event_time);
             }
 
             state.frame_open = true;
@@ -449,7 +452,7 @@ void evgetwindows::EventTransformer::BuildTouchContact(
     }
 
     if (state.tracked.size() >= kMaxTrackedContacts) {
-        ReleaseTrackedContacts(data, ctx, state, event_time);
+        ReleaseContacts(data, ctx, state, event_time);
     }
 
     state.tracked.insert(contact.contact_id);
@@ -517,7 +520,7 @@ void evgetwindows::EventTransformer::BuildTouchRelease(
     click_builder.Build(data);
 }
 
-void evgetwindows::EventTransformer::ReleaseTrackedContacts(
+void evgetwindows::EventTransformer::ReleaseContacts(
     evget::Data& data,
     EventContext& ctx,
     TouchDeviceState& state,
@@ -566,7 +569,7 @@ void evgetwindows::EventTransformer::ReleaseDeviceState(
     };
 
     BuildPadButton(data, ctx, state, false, ToMicros(timestamp));
-    ReleaseTrackedContacts(data, ctx, state, ToMicros(timestamp));
+    ReleaseContacts(data, ctx, state, ToMicros(timestamp));
 }
 
 void evgetwindows::EventTransformer::ReleaseAllDevices(evget::Data& data, const evget::TimestampType& timestamp) {

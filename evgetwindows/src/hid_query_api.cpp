@@ -1,7 +1,7 @@
 #include "evgetwindows/hid_query_api.h"
 
-#include <hidpi.h>
 #include <hidsdi.h>
+#include <spdlog/fmt/bin_to_hex.h>
 #include <spdlog/spdlog.h>
 #include <windows.h>
 
@@ -18,14 +18,7 @@
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_usages.h"
 
-#ifdef EVGET_HID_REPORT_DUMP
-#include <format>
-#include <string>
-#endif
-
 namespace {
-
-constexpr std::size_t kMaxCachedDevices = 32;
 
 /**
  * \brief The parser status.
@@ -92,7 +85,7 @@ bool Contains(std::span<const USAGE> usages, USAGE usage) {
 }
 
 /**
- * \brief Everything the parser entry points need for one report.
+ * \brief The context for the parser when reading the HID report.
  */
 struct ParseContext {
     PHIDP_PREPARSED_DATA parsed;
@@ -187,7 +180,7 @@ FieldOutcome DecodeContact(
         }
     }
 
-    // Tip switch and touch valid are one bit buttons, so they occur in the list rather than as values.
+    // Tip switch and touch valid are single bit buttons, so they occur in the list rather than as values.
     ULONG set_length = 0;
     const FieldOutcome set = ReadUsages(context, HID_USAGE_PAGE_DIGITIZER, collection, usages, set_length);
     if (set == FieldOutcome::kFailed) {
@@ -208,17 +201,6 @@ FieldOutcome DecodeContact(
     return FieldOutcome::kRead;
 }
 
-#ifdef EVGET_HID_REPORT_DUMP
-std::string ToHex(std::span<const std::byte> bytes) {
-    std::string out;
-    out.reserve(bytes.size() * 2);
-    for (const auto byte : bytes) {
-        out += std::format("{:02x}", std::to_integer<unsigned>(byte));
-    }
-    return out;
-}
-#endif
-
 } // namespace
 
 std::optional<evgetwindows::HidDeviceCaps> evgetwindows::HidQuery::CapsFrom(std::span<const std::byte> preparsed) {
@@ -227,7 +209,6 @@ std::optional<evgetwindows::HidDeviceCaps> evgetwindows::HidQuery::CapsFrom(std:
     }
 
     PHIDP_PREPARSED_DATA parsed = AsPreparsed(preparsed);
-
     HIDP_CAPS caps{};
     if (HidP_GetCaps(parsed, &caps) != HIDP_STATUS_SUCCESS) {
         return std::nullopt;
@@ -322,7 +303,7 @@ std::optional<evgetwindows::HidReport> evgetwindows::HidQuery::DecodeWith(
         if (outcome == FieldOutcome::kFailed) {
             return std::nullopt;
         }
-        // A contact with no readable identifier cannot be used in a slot, so it is removed.
+        // A contact with no readable identifier cannot be used, so it is removed.
         if (outcome == FieldOutcome::kRead) {
             decoded.contacts.push_back(contact);
         }
@@ -384,7 +365,7 @@ evgetwindows::HidQuery::DeviceCache* evgetwindows::HidQuery::Parsed(HANDLE devic
     }
 
     // The buffer is allocated by the caller.
-    std::vector<std::byte> preparsed(size);
+    auto preparsed = std::vector<std::byte>(size);
     if (std::cmp_equal(GetRawInputDeviceInfoW(device, RIDI_PREPARSEDDATA, preparsed.data(), &size), -1)) {
         entry.warned = true;
         spdlog::warn("preparsed data query failed");
@@ -402,9 +383,8 @@ evgetwindows::HidQuery::DeviceCache* evgetwindows::HidQuery::Parsed(HANDLE devic
     entry.caps = std::move(*caps);
     entry.parse_valid = true;
 
-#ifdef EVGET_HID_REPORT_DUMP
-    spdlog::debug(
-        "hid device report_byte_length={} collections={} axis_valid={} axis=[{},{}]x[{},{}] preparsed={}",
+    spdlog::trace(
+        "hid device report_byte_length={} collections={} axis_valid={} axis=[{},{}]x[{},{}] preparsed={:spn}",
         entry.caps.input_report_byte_length,
         entry.caps.contact_collections.size(),
         entry.caps.axis_valid,
@@ -412,12 +392,11 @@ evgetwindows::HidQuery::DeviceCache* evgetwindows::HidQuery::Parsed(HANDLE devic
         entry.caps.axis.max_x,
         entry.caps.axis.min_y,
         entry.caps.axis.max_y,
-        ToHex(entry.preparsed)
+        spdlog::to_hex(entry.preparsed)
     );
     for (const auto collection : entry.caps.contact_collections) {
-        spdlog::debug("hid device contact collection {}", collection);
+        spdlog::trace("hid device contact collection {}", collection);
     }
-#endif
 
     return &entry;
 }
@@ -432,7 +411,7 @@ evget::DeviceType evgetwindows::HidQuery::ClassifyDevice(HANDLE device) {
     if (entry.type_resolved) {
         return entry.device_type;
     }
-    // Set before the query so a failing device is not re-queried.
+    // Set before the query to avoid re-query on failure.
     entry.type_resolved = true;
 
     RID_DEVICE_INFO info{};
@@ -468,9 +447,7 @@ evgetwindows::HidQuery::DecodeReport(HANDLE device, std::span<const std::byte> r
         return std::nullopt;
     }
 
-#ifdef EVGET_HID_REPORT_DUMP
-    spdlog::debug("hid report {}", ToHex(report));
-#endif
+    spdlog::trace("hid report {:spn}", spdlog::to_hex(report));
 
     auto decoded = DecodeWith(entry->preparsed, entry->caps, report);
     if (!decoded.has_value() && !entry->warned) {

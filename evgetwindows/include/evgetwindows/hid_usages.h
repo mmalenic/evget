@@ -1,6 +1,6 @@
 /**
  * \file hid_usages.h
- * \brief The HID usage names the Windows SDK exports which mingw lacks.
+ * \brief The HID usage names the Windows SDK exports which are required for certain compilers like MinGW.
  */
 
 #ifndef EVGETWINDOWS_HID_USAGES_H
@@ -9,7 +9,7 @@
 #include <windows.h>
 
 // This depends on windows.h, so it must stay below.
-#include <hidusage.h>
+#include <hidusage.h> // IWYU pragma: export
 
 // See
 // https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchscreen-required-hid-top-level-collections

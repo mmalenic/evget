@@ -133,8 +133,7 @@ private:
         std::uint64_t event_time
     );
 
-    void
-    ReleaseTrackedContacts(evget::Data& data, EventContext& ctx, TouchDeviceState& state, std::uint64_t event_time);
+    void ReleaseContacts(evget::Data& data, EventContext& ctx, TouchDeviceState& state, std::uint64_t event_time);
 
     void BuildPadButton(
         evget::Data& data,
