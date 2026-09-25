@@ -12,13 +12,7 @@ include(./base)
 {% set version = version or detected[1].major %}
 {% endif %}
 
-{% set executable = "clang-cl" %}
 {% set cross = platform.system() != "Windows" %}
-
-# Boost.Build won't append .exe to a command, so give it an absolute path on Windows.
-{% if not cross %}
-{% set executable = os.popen('where ' ~ executable).read().splitlines()[0].strip() | replace("\\", "/") %}
-{% endif %}
 
 {% set runtime_version = os.getenv("EVGET_RUNTIME_VERSION") %}
 {% if not runtime_version and not cross %}
@@ -41,7 +35,7 @@ compiler.runtime_version={{ runtime_version }}
 {% endif %}
 
 [conf]
-tools.build:compiler_executables={'c': '{{ executable }}', 'cpp': '{{ executable }}'}
+tools.build:compiler_executables={'c': 'clang-cl', 'cpp': 'clang-cl'}
 {% if cross %}
 {% set winsysroot = os.getenv("EVGET_WINSYSROOT") %}
 tools.build:cflags=['/winsysroot', '{{ winsysroot }}']

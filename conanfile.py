@@ -112,53 +112,8 @@ class EvgetRecipe(ConanFile):
         sqlite_opts.enable_unlock_notify = False
         sqlite_opts.build_executable = False
 
-        # Every compiled boost library.
-        boost_components = frozenset(
-            {
-                "atomic",
-                "charconv",
-                "chrono",
-                "cobalt",
-                "container",
-                "context",
-                "contract",
-                "coroutine",
-                "date_time",
-                "exception",
-                "fiber",
-                "filesystem",
-                "graph",
-                "graph_parallel",
-                "iostreams",
-                "json",
-                "locale",
-                "log",
-                "math",
-                "mpi",
-                "nowide",
-                "process",
-                "program_options",
-                "python",
-                "random",
-                "regex",
-                "serialization",
-                "stacktrace",
-                "system",
-                "test",
-                "thread",
-                "timer",
-                "type_erasure",
-                "url",
-                "wave",
-            }
-        )
-        # Boost libraries that evget needs.
-        boost_evget_requires = frozenset(
-            {"atomic", "chrono", "date_time", "exception", "random", "system"}
-        )
-        boost_opts = self.options["boost"]
-        for component in boost_components - boost_evget_requires:
-            boost_opts.__setattr__(f"without_{component}", True)
+        # evget only links Boost::headers.
+        self.options["boost"].header_only = True
 
     def requirements(self):
         if self.options.build_evgetx11:
