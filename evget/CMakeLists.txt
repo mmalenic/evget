@@ -271,6 +271,7 @@ if(BUILD_TESTING)
                test/event/mouse_scroll.cpp
                test/event/data.cpp
                test/device_id.cpp
+               test/event_loop.cpp
                test/interval_tracker.cpp
                test/shutdown.cpp
                test/storage/json_storage.cpp
@@ -281,6 +282,8 @@ if(BUILD_TESTING)
                test/common/args.cpp
                test/common/database.h
                test/common/database.cpp
+               test/common/event_loop.h
+               test/common/event_loop.cpp
                test/common/store.h
                test/common/store.cpp
     )

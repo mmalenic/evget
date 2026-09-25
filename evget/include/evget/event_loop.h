@@ -6,6 +6,8 @@
 #ifndef EVGET_EVENT_LOOP_H
 #define EVGET_EVENT_LOOP_H
 
+#include <chrono>
+
 #include "evget/event_listener.h"
 #include "evget/next_event.h"
 
@@ -39,6 +41,10 @@ public:
      * \return awaitable boolean indicating if the loop is stopped
      */
     boost::asio::awaitable<bool> IsStopped();
+
+    void StopWhenDrained();
+
+    [[nodiscard]] bool WaitFinished(std::chrono::milliseconds timeout);
 
 private:
     std::reference_wrapper<NextEvent<T>> next_event_;
@@ -86,6 +92,14 @@ void evget::EventLoop<T>::Stop() {
 template <typename T>
 boost::asio::awaitable<bool> evget::EventLoop<T>::IsStopped() {
     co_return stopped_;
+}
+
+template <typename T>
+void evget::EventLoop<T>::StopWhenDrained() {}
+
+template <typename T>
+bool evget::EventLoop<T>::WaitFinished(std::chrono::milliseconds /*timeout*/) {
+    return false;
 }
 
 #endif
