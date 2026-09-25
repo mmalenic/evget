@@ -8,12 +8,10 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "common/windows_mock.h"
@@ -22,7 +20,6 @@
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
-#include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_query_api.h"
 #include "evgetwindows/message_window.h"
 #include "evgetwindows/modifier_tracker.h"
@@ -30,7 +27,7 @@
 #include "evgetwindows/windows_query_api.h"
 
 using test::AsRawInput;
-using test::ExpectTouchParitySequence;
+using test::ExpectTouchEqualitySequence;
 using test::HidDeviceHandle;
 using test::HidDeviceHandleAlternate;
 using test::HidDeviceHandleAt;
@@ -373,6 +370,7 @@ TEST(EvgetWindowsTransformer, FocusWindowPresentHasFields) {
         .height = 600.0,
     };
     EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::optional{info}));
+    EXPECT_CALL(query, Screen()).WillRepeatedly(Return(std::optional{std::string{kTestMappedDisplay}}));
 
     NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
@@ -385,7 +383,7 @@ TEST(EvgetWindowsTransformer, FocusWindowPresentHasFields) {
     EXPECT_EQ(entries.at(0).Data().at(7), evget::FromDouble(20.0));
     EXPECT_EQ(entries.at(0).Data().at(8), evget::FromDouble(800.0));
     EXPECT_EQ(entries.at(0).Data().at(9), evget::FromDouble(600.0));
-    EXPECT_EQ(entries.at(0).Data().at(10), "1");
+    EXPECT_EQ(entries.at(0).Data().at(10), kTestMappedDisplay);
 }
 
 TEST(EvgetWindowsTransformer, FocusWindowAbsentHasFieldsEmpty) {
@@ -1264,9 +1262,9 @@ TEST(EvgetWindowsTransformer, TouchDeviceStateHasBound) {
 }
 
 // Mirrors the touch down, motion and up assertions the evgetlibinput transformer tests make.
-TEST(EvgetWindowsTransformer, TouchParityWithLibInput) {
-    ExpectTouchParitySequence(evget::DeviceType::kTouchscreen, "3");
-    ExpectTouchParitySequence(evget::DeviceType::kTouchpad, "2");
+TEST(EvgetWindowsTransformer, TouchEqualityWithLibInput) {
+    ExpectTouchEqualitySequence(evget::DeviceType::kTouchscreen, "3");
+    ExpectTouchEqualitySequence(evget::DeviceType::kTouchpad, "2");
 }
 
 TEST(EvgetWindowsTransformer, TouchRowsAddNoColumns) {

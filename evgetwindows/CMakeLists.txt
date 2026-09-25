@@ -69,7 +69,8 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/hid_fixtures.cpp
+        PUBLIC test/common/hid_device.h
+               test/common/hid_fixtures.cpp
                test/common/hid_fixtures.h
                test/common/windows_mock.cpp
                test/common/windows_mock.h

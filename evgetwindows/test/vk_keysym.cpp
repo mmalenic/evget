@@ -6,7 +6,6 @@
 
 #include <set>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "common/windows_mock.h"

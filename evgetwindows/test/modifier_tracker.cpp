@@ -5,7 +5,6 @@
 #include <windows.h>
 
 #include <array>
-#include <variant>
 
 #include "common/windows_mock.h"
 #include "evget/event/modifier_value.h"

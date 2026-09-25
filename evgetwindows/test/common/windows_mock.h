@@ -135,10 +135,11 @@ evgetwindows::HidReport MakeHidFrame(std::vector<evgetwindows::HidContact> conta
 /// \brief Create a report carrying no contacts.
 evgetwindows::HidReport MakeContactlessReport(bool button_one_down);
 
+/// \brief Make a device change event.
 evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
 
 /// \brief The libinput touch row equivalent.
-struct TouchParityRow {
+struct TouchEqualityRow {
     evget::EntryType type;
     std::string_view position;
     std::string_view action;
@@ -150,10 +151,10 @@ struct TouchParityRow {
  * \param device_column the device type column
  * \param expected the row shape
  */
-void ExpectTouchParityRows(
+void ExpectTouchEqualityRows(
     const evget::Data& batch,
     std::string_view device_column,
-    std::span<const TouchParityRow> expected
+    std::span<const TouchEqualityRow> expected
 );
 
 /**
@@ -162,21 +163,21 @@ void ExpectTouchParityRows(
  * \param row the row shape
  * \param device_column the device type column
  */
-void ExpectTouchParityRow(const evget::Entry& entry, const TouchParityRow& row, std::string_view device_column);
+void ExpectTouchEqualityRow(const evget::Entry& entry, const TouchEqualityRow& row, std::string_view device_column);
 
 /**
  * \brief Assert a touch row has the columns of a libinput row.
  * \param entry the row
  * \param device_column the device type column value
  */
-void ExpectTouchParityColumns(const evget::Entry& entry, std::string_view device_column);
+void ExpectTouchEqualityColumns(const evget::Entry& entry, std::string_view device_column);
 
 /**
  * \brief Assert a down, motion and up sequence as a test.
  * \param device_type the class of the device
  * \param device_column the device type column
  */
-void ExpectTouchParitySequence(evget::DeviceType device_type, std::string_view device_column);
+void ExpectTouchEqualitySequence(evget::DeviceType device_type, std::string_view device_column);
 
 } // namespace test
 

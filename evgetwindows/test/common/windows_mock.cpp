@@ -137,27 +137,28 @@ namespace {
 
 constexpr std::size_t kHidPacketHeaderSize = offsetof(RAWINPUT, data) + offsetof(RAWHID, bRawData);
 
-int hid_device_backing = 0;
-
 std::vector<std::byte>
 BuildHidPacket(std::span<const std::byte> report, DWORD count, HANDLE device, bool understate_size, bool distinct) {
     const std::size_t packet_size = kHidPacketHeaderSize + (report.size() * count);
     std::vector<std::byte> packet(packet_size);
 
-    auto* raw = reinterpret_cast<RAWINPUT*>(packet.data());
-    raw->header.dwType = RIM_TYPEHID;
-    raw->header.hDevice = device;
-    raw->header.dwSize = static_cast<DWORD>(understate_size ? kHidPacketHeaderSize : packet_size);
-    raw->data.hid.dwSizeHid = static_cast<DWORD>(report.size());
-    raw->data.hid.dwCount = count;
+    RAWINPUT raw{};
+    raw.header.dwType = RIM_TYPEHID;
+    raw.header.hDevice = device;
+    raw.header.dwSize = static_cast<DWORD>(understate_size ? kHidPacketHeaderSize : packet_size);
+    raw.data.hid.dwSizeHid = static_cast<DWORD>(report.size());
+    raw.data.hid.dwCount = count;
+    // Only the bytes before bRawData should be copied.
+    const auto header = std::as_bytes(std::span{&raw, 1}).first(kHidPacketHeaderSize);
+    std::ranges::copy(header, packet.begin());
 
-    auto* reports = reinterpret_cast<std::byte*>(raw->data.hid.bRawData);
     std::vector<std::byte> slice{report.begin(), report.end()};
+    const std::span<std::byte> reports = std::span{packet}.subspan(kHidPacketHeaderSize);
     for (DWORD index = 0; index < count; ++index) {
         if (distinct && !slice.empty()) {
             slice.front() = static_cast<std::byte>(index);
         }
-        std::ranges::copy(slice, reports + (index * report.size()));
+        std::ranges::copy(slice, reports.subspan(index * report.size(), report.size()).begin());
     }
 
     return packet;
@@ -174,12 +175,12 @@ std::vector<std::byte> MakeHidReportBytes(std::size_t size) {
 }
 
 std::vector<std::byte> MakeHidPacket(std::span<const std::byte> report, DWORD count) {
-    return BuildHidPacket(report, count, &hid_device_backing, false, false);
+    return BuildHidPacket(report, count, HidDeviceHandle(), false, false);
 }
 
 std::vector<std::byte> MakeHidPacketDistinct(std::size_t report_size, DWORD count) {
     const auto report = MakeHidReportBytes(report_size);
-    return BuildHidPacket(report, count, &hid_device_backing, false, true);
+    return BuildHidPacket(report, count, HidDeviceHandle(), false, true);
 }
 
 std::vector<std::byte> MakeHidPacketNullDevice(std::span<const std::byte> report, DWORD count) {
@@ -187,15 +188,16 @@ std::vector<std::byte> MakeHidPacketNullDevice(std::span<const std::byte> report
 }
 
 std::vector<std::byte> MakeHidPacketUndersized(std::span<const std::byte> report, DWORD count) {
-    return BuildHidPacket(report, count, &hid_device_backing, true, false);
+    return BuildHidPacket(report, count, HidDeviceHandle(), true, false);
 }
 
 const RAWINPUT& AsRawInput(std::span<const std::byte> packet) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return *reinterpret_cast<const RAWINPUT*>(packet.data());
 }
 
 evgetwindows::RawEvent MakeHidRawEvent(std::span<const std::byte> report) {
-    return MakeHidRawEventFrom(&hid_device_backing, report);
+    return MakeHidRawEventFrom(HidDeviceHandle(), report);
 }
 
 evgetwindows::RawEvent MakeHidRawEventFrom(HANDLE device, std::span<const std::byte> report) {
@@ -252,7 +254,8 @@ evgetwindows::HidReport MakeHidReportFrom(std::vector<evgetwindows::HidContact> 
 }
 
 HANDLE HidDeviceHandle() {
-    return &hid_device_backing;
+    static int backing = 0;
+    return &backing;
 }
 
 HANDLE HidDeviceHandleAlternate() {
@@ -297,40 +300,40 @@ evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival) {
     return evgetwindows::MessageWindow::ToDeviceChangeEvent(arrival ? GIDC_ARRIVAL : GIDC_REMOVAL, device);
 }
 
-void ExpectTouchParityColumns(const evget::Entry& entry, std::string_view device_column) {
-    // The only two columns a libinput touch row differs from a windows one in.
+void ExpectTouchEqualityColumns(const evget::Entry& entry, std::string_view device_column) {
+    // This is what is different in a libinput touch row from windows.
     EXPECT_EQ(entry.Data().at(12), "RIM_TYPEHID");
     EXPECT_EQ(entry.Data().at(13), "windows");
     EXPECT_EQ(entry.Data().at(14), device_column);
     EXPECT_EQ(entry.Data().at(15), "7");
 }
 
-void ExpectTouchParityRows(
+void ExpectTouchEqualityRows(
     const evget::Data& batch,
     std::string_view device_column,
-    std::span<const TouchParityRow> expected
+    std::span<const TouchEqualityRow> expected
 ) {
     ASSERT_EQ(batch.Entries().size(), expected.size());
 
     for (std::size_t index = 0; index < expected.size(); ++index) {
-        ExpectTouchParityRow(batch.Entries().at(index), expected[index], device_column);
+        ExpectTouchEqualityRow(batch.Entries().at(index), expected[index], device_column);
     }
 }
 
-void ExpectTouchParityRow(const evget::Entry& entry, const TouchParityRow& row, std::string_view device_column) {
+void ExpectTouchEqualityRow(const evget::Entry& entry, const TouchEqualityRow& row, std::string_view device_column) {
     EXPECT_EQ(entry.Type(), row.type);
 
-    // A move row stops short of the action column, so each row is read at the index its type defines.
+    // A move row has no action.
     if (row.type == evget::EntryType::kMouseClick) {
         EXPECT_EQ(entry.Data().at(18), row.action);
     } else {
         EXPECT_EQ(entry.Data().at(2), row.position);
     }
 
-    ExpectTouchParityColumns(entry, device_column);
+    ExpectTouchEqualityColumns(entry, device_column);
 }
 
-void ExpectTouchParitySequence(evget::DeviceType device_type, std::string_view device_column) {
+void ExpectTouchEqualitySequence(evget::DeviceType device_type, std::string_view device_column) {
     testing::NiceMock<WindowsQueryApiMock> query{};
     testing::NiceMock<HidQueryApiMock> hid_query{};
     evgetwindows::ModifierTracker tracker{};
@@ -352,23 +355,22 @@ void ExpectTouchParitySequence(evget::DeviceType device_type, std::string_view d
     const auto motion = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     const auto lift = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
 
-    const std::array<TouchParityRow, 2> down_rows{
+    const std::array<TouchEqualityRow, 2> down_rows{
         {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
          {.type = evget::EntryType::kMouseClick, .position = "", .action = "0"}}
     };
-    // Held by name because the row only views it.
     const auto motion_position = evget::FromDouble(kTestMonitorWidth / 16);
-    const std::array<TouchParityRow, 1> motion_rows{
+    const std::array<TouchEqualityRow, 1> motion_rows{
         {{.type = evget::EntryType::kMouseMove, .position = motion_position, .action = ""}}
     };
-    const std::array<TouchParityRow, 2> lift_rows{
+    const std::array<TouchEqualityRow, 2> lift_rows{
         {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
          {.type = evget::EntryType::kMouseClick, .position = "", .action = "1"}}
     };
 
-    ExpectTouchParityRows(down, device_column, down_rows);
-    ExpectTouchParityRows(motion, device_column, motion_rows);
-    ExpectTouchParityRows(lift, device_column, lift_rows);
+    ExpectTouchEqualityRows(down, device_column, down_rows);
+    ExpectTouchEqualityRows(motion, device_column, motion_rows);
+    ExpectTouchEqualityRows(lift, device_column, lift_rows);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)
