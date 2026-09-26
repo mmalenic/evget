@@ -114,12 +114,12 @@ TEST(EvgetLibInputTransformer, TransformPointerMotion) {
 
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    ASSERT_EQ(entries.at(0).Data().at(0), "");
-    ASSERT_FALSE(entries.at(0).Data().at(1).empty());
+    ASSERT_FALSE(entries.at(0).Data().at(0).has_value());
+    ASSERT_TRUE(entries.at(0).Data().at(1).has_value());
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(2.5));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(-1.5));
     ASSERT_EQ(entries.at(0).Data().at(4), kDeviceName);
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_MOTION");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
@@ -138,7 +138,7 @@ TEST(EvgetLibInputTransformer, TransformPointerMotionSecondInterval) {
     auto first = transformer.TransformEvent(MakeInputEvent());
     auto second = transformer.TransformEvent(MakeInputEvent());
 
-    ASSERT_EQ(first.Entries().at(0).Data().at(0), "");
+    ASSERT_FALSE(first.Entries().at(0).Data().at(0).has_value());
     ASSERT_EQ(second.Entries().at(0).Data().at(0), "2000");
 }
 
@@ -159,8 +159,8 @@ TEST(EvgetLibInputTransformer, TransformPointerAbsoluteMotionFirstNoDelta) {
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
     // No previous absolute position, so no PositionX/Y is set.
-    ASSERT_EQ(entries.at(0).Data().at(2), "");
-    ASSERT_EQ(entries.at(0).Data().at(3), "");
+    ASSERT_FALSE(entries.at(0).Data().at(2).has_value());
+    ASSERT_FALSE(entries.at(0).Data().at(3).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE");
 }
 
@@ -252,7 +252,7 @@ TEST(EvgetLibInputTransformer, TransformPointerScrollWheel) {
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     ASSERT_EQ(entries.at(0).Data().at(12), "LIBINPUT_EVENT_POINTER_SCROLL_WHEEL");
     ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(15.0));
-    ASSERT_EQ(entries.at(0).Data().at(16), "");
+    ASSERT_FALSE(entries.at(0).Data().at(16).has_value());
 }
 
 TEST(EvgetLibInputTransformer, TransformKeyboardKeyNoModifiers) {
@@ -399,7 +399,7 @@ TEST(EvgetLibInputTransformer, TransformTouchUpProducesMoveAndRelease) {
 
     ASSERT_EQ(entries.size(), 2);
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    ASSERT_EQ(entries.at(0).Data().at(2), "");
+    ASSERT_FALSE(entries.at(0).Data().at(2).has_value());
     ASSERT_EQ(entries.at(0).Data().at(15), "2");
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(1).Data().at(12), "LIBINPUT_EVENT_TOUCH_UP");
