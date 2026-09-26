@@ -39,6 +39,7 @@
 
 #ifdef FEATURE_EVGETWINDOWS
 #include "evgetwindows/backend.h"
+#include "evgetwindows/console_stop.h"
 #endif
 
 namespace {
@@ -123,6 +124,10 @@ int Run(int argc, char** argv) {
             spdlog::error("stopping signal handling failed: {}", e.what());
         }
     }};
+#ifdef FEATURE_EVGETWINDOWS
+    // Registered after the signal so it can run before the console handler.
+    const evgetwindows::ConsoleStop console_stop{[shutdown] { shutdown->Request(); }};
+#endif
 
     auto exit_code = 0;
     auto event_source = cli.EventSource();

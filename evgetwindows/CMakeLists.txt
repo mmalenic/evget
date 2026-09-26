@@ -11,6 +11,7 @@ add_library(${LIBRARY_NAME})
 target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/backend.cpp
+            ${SRC}/console_stop.cpp
             ${SRC}/event_transformer.cpp
             ${SRC}/hid_query_api.cpp
             ${SRC}/message_window.cpp
@@ -25,6 +26,7 @@ target_sources(
            include
            FILES
            ${INCLUDE}/backend.h
+           ${INCLUDE}/console_stop.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/hid_frame.h
            ${INCLUDE}/hid_query_api.h
@@ -74,6 +76,7 @@ if(BUILD_TESTING)
                test/common/hid_fixtures.h
                test/common/windows_mock.cpp
                test/common/windows_mock.h
+               test/console_stop.cpp
                test/event_transformer.cpp
                test/hid_query_api.cpp
                test/message_window.cpp
