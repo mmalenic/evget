@@ -11,6 +11,10 @@
 #include <signal.h> // NOLINT(hicpp-deprecated-headers,modernize-deprecated-headers)
 #endif
 
+#ifdef FEATURE_EVGETWINDOWS
+#include <chrono>
+#endif
+
 #include <csignal>
 #include <exception>
 #include <memory>
@@ -38,6 +42,10 @@
 #endif
 
 namespace {
+#ifdef FEATURE_EVGETWINDOWS
+constexpr std::chrono::seconds kChannelTimeout{2};
+#endif
+
 int Run(int argc, char** argv) {
     evget::EventSource default_source{};
 #ifdef FEATURE_EVGETX11
@@ -160,15 +168,19 @@ int Run(int argc, char** argv) {
 #ifdef FEATURE_EVGETWINDOWS
     std::unique_ptr<evgetwindows::Backend> win_backend{};
     if (event_source == evget::EventSource::kWindows) {
-        auto result = evgetwindows::Backend::Create(merged, scheduler->Executor());
+        auto result = evgetwindows::Backend::Create(merged, scheduler->Executor(), [shutdown] { shutdown->Request(); });
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
         }
         win_backend = std::move(*result);
-        shutdown->SetSource([&win_backend] {
-            win_backend->Handler().Stop();
-            win_backend->Stop();
+        shutdown->SetSource([&win_backend, scheduler] {
+            // This must go before the close so the loop treats the channel gracefully when it ends.
+            win_backend->Handler().StopWhenDrained();
+            win_backend->RequestStop();
+            if (!scheduler->IsStopped() && !win_backend->Handler().WaitFinished(kChannelTimeout)) {
+                spdlog::error("input channel did not stop within {}, dropping events", kChannelTimeout);
+            }
         });
         scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
     }

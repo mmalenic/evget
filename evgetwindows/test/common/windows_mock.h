@@ -38,6 +38,7 @@ class WindowsApiMock : public evgetwindows::WindowsApi {
 public:
     MOCK_METHOD(evget::Result<void>, Start, (), (override));
     MOCK_METHOD(void, Stop, (), (override));
+    MOCK_METHOD(void, RequestStop, (), (override));
     MOCK_METHOD(
         (boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>),
         ReceiveNext,

@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include <expected>
+#include <functional>
 #include <memory>
 #include <utility>
 
@@ -26,9 +27,12 @@ evgetwindows::Backend::Backend(std::unique_ptr<WindowsApi> windows, evget::Store
     tracker_.Init(query_->ToggleState(VK_CAPITAL), query_->ToggleState(VK_NUMLOCK), query_->ToggleState(VK_SCROLL));
 }
 
-evget::Result<std::unique_ptr<evgetwindows::Backend>>
-evgetwindows::Backend::Create(evget::Store& storage, const boost::asio::any_io_executor& executor) {
-    auto windows = Windows::New(executor);
+evget::Result<std::unique_ptr<evgetwindows::Backend>> evgetwindows::Backend::Create(
+    evget::Store& storage,
+    const boost::asio::any_io_executor& executor,
+    std::function<void()> on_stop
+) {
+    auto windows = Windows::New(executor, std::move(on_stop));
     if (!windows.has_value()) {
         return std::unexpected(windows.error());
     }
@@ -40,6 +44,6 @@ evget::EventHandler<evget::InputEvent<evgetwindows::RawEvent>>& evgetwindows::Ba
     return handler_;
 }
 
-void evgetwindows::Backend::Stop() {
-    windows_->Stop();
+void evgetwindows::Backend::RequestStop() {
+    windows_->RequestStop();
 }

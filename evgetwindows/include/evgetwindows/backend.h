@@ -8,6 +8,7 @@
 
 #include <boost/asio/any_io_executor.hpp>
 
+#include <functional>
 #include <memory>
 
 #include "evget/error.h"
@@ -32,10 +33,11 @@ public:
      * \brief Create the Windows backend.
      * \param storage the event storage
      * \param executor the executor the channel completes on
+     * \param on_stop called on the thread when a stop is requested
      * \return the backend, or an error if the loop fails to start
      */
     static evget::Result<std::unique_ptr<Backend>>
-    Create(evget::Store& storage, const boost::asio::any_io_executor& executor);
+    Create(evget::Store& storage, const boost::asio::any_io_executor& executor, std::function<void()> on_stop);
 
     /**
      * \brief Get the event handler.
@@ -44,9 +46,9 @@ public:
     evget::EventHandler<evget::InputEvent<RawEvent>>& Handler();
 
     /**
-     * \brief Stop the Raw Input source, closing the channel so the event loop exits.
+     * \brief Stop the Raw Input source.
      */
-    void Stop();
+    void RequestStop();
 
     Backend(const Backend&) = delete;
     Backend(Backend&&) = delete;

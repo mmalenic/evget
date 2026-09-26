@@ -10,6 +10,7 @@
 #include <boost/asio/awaitable.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <functional>
 #include <memory>
 #include <tuple>
 
@@ -45,6 +46,11 @@ public:
     virtual void Stop() = 0;
 
     /**
+     * \brief Close the channel and ask the loop to exit.
+     */
+    virtual void RequestStop() = 0;
+
+    /**
      * \brief Receive the next raw event from the loop.
      * \return the next raw event, or an error if the channel is closed
      */
@@ -59,9 +65,11 @@ public:
     /**
      * \brief Create a `MessageWindow` and start the event loop.
      * \param executor the executor the channel completes on
+     * \param on_stop called on the thread to a close
      * \return the API implementation
      */
-    static evget::Result<std::unique_ptr<Windows>> New(const boost::asio::any_io_executor& executor);
+    static evget::Result<std::unique_ptr<Windows>>
+    New(const boost::asio::any_io_executor& executor, std::function<void()> on_stop);
 
     Windows(const Windows&) = delete;
     Windows(Windows&&) noexcept = delete;
@@ -71,10 +79,11 @@ public:
 
     evget::Result<void> Start() override;
     void Stop() override;
+    void RequestStop() override;
     boost::asio::awaitable<std::tuple<boost::system::error_code, RawEvent>> ReceiveNext() override;
 
 private:
-    explicit Windows(const boost::asio::any_io_executor& executor);
+    Windows(const boost::asio::any_io_executor& executor, std::function<void()> on_stop);
 
     MessageWindow message_window_;
 };
