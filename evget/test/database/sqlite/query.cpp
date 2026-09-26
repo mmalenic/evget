@@ -76,6 +76,21 @@ TEST_F(DatabaseTest, BindBool) {
     ASSERT_EQ(result.value(), "1");
 }
 
+TEST_F(DatabaseTest, BindNull) {
+    evget::SQLiteConnection connection{};
+
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadWriteCreate);
+
+    auto select_query = connection.BuildQuery("select $1 is null;");
+
+    select_query->BindNull(0);
+    ASSERT_TRUE(select_query->Next().value());
+
+    auto result = select_query->AsInt(0);
+
+    ASSERT_EQ(result.value(), 1);
+}
+
 TEST_F(DatabaseTest, BindInt) {
     evget::SQLiteConnection connection{};
 

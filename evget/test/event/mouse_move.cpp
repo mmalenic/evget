@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <optional>
 #include <vector>
 
 #include "evget/event/device_type.h"
@@ -35,7 +36,7 @@ TEST(MouseMoveTest, Event) {
 
     auto expected_fields =
         std::vector<std::string>{evget::detail::kMouseMoveFields.begin(), evget::detail::kMouseMoveFields.end()};
-    const std::vector<std::string> expected_data{
+    const std::vector<evget::EntryValue> expected_data{
         "1",
         "1970-01-01T00:00:00.000000000+0000",
         "1.000000",
@@ -47,11 +48,11 @@ TEST(MouseMoveTest, Event) {
         "1.000000",
         "1.000000",
         "1",
-        "",
+        std::nullopt,
         "test_event",
-        "",
+        std::nullopt,
         "Keyboard",
-        "",
+        std::nullopt,
     };
 
     ASSERT_EQ(named_entry.type, evget::EntryType::kMouseMove);

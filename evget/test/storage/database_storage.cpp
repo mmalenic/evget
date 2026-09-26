@@ -2,11 +2,13 @@
 
 #include <gtest/gtest.h>
 
+#include <format>
 #include <utility>
 
 #include "common/database.h"
 #include "evget/database/connection.h"
 #include "evget/database/sqlite/connection.h"
+#include "evget/error.h"
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
@@ -181,6 +183,102 @@ TEST_F(DatabaseStorageTest, EmptyEntrySkipped) {
     ASSERT_TRUE(next.has_value());
 
     ASSERT_EQ(query->AsInt(0).value(), 0);
+}
+
+TEST_F(DatabaseStorageTest, AbsentValueStoresNull) {
+    auto storage = MakeStorage();
+    auto init = storage.Init();
+    ASSERT_TRUE(init.has_value());
+
+    evget::Data data{};
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+    ASSERT_TRUE(result.has_value());
+
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadOnly);
+    ASSERT_TRUE(connect.has_value());
+
+    auto null_query = connection.BuildQuery("select count(*) from key where focus_window_name is null;");
+    ASSERT_TRUE(null_query->Next().has_value());
+    ASSERT_EQ(null_query->AsInt(0).value(), 1);
+
+    auto empty_query = connection.BuildQuery("select count(*) from key where focus_window_name = '';");
+    ASSERT_TRUE(empty_query->Next().has_value());
+    ASSERT_EQ(empty_query->AsInt(0).value(), 0);
+}
+
+TEST_F(DatabaseStorageTest, EmptyStringStoresNull) {
+    auto storage = MakeStorage();
+    auto init = storage.Init();
+    ASSERT_TRUE(init.has_value());
+
+    evget::Data data{};
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .FocusWindowName("")
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+    ASSERT_TRUE(result.has_value());
+
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadOnly);
+    ASSERT_TRUE(connect.has_value());
+
+    auto query = connection.BuildQuery("select count(*) from key where focus_window_name is null;");
+    ASSERT_TRUE(query->Next().has_value());
+    ASSERT_EQ(query->AsInt(0).value(), 1);
+}
+
+TEST_F(DatabaseStorageTest, MissingTimestampRejected) {
+    auto storage = MakeStorage();
+    auto init = storage.Init();
+    ASSERT_TRUE(init.has_value());
+
+    evget::Data data{};
+    evget::Key{}.Device(evget::DeviceType::kKeyboard).Action(evget::ButtonAction::kPress).Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+    ASSERT_FALSE(result.has_value());
+    ASSERT_EQ(result.error().error_type, evget::ErrorType::kDatabaseError);
+}
+
+TEST_F(DatabaseStorageTest, MouseMoveStoresNulls) {
+    auto storage = MakeStorage();
+    auto init = storage.Init();
+    ASSERT_TRUE(init.has_value());
+
+    evget::Data data{};
+    evget::MouseMove{}.Timestamp(evget::TimestampType{}).Device(evget::DeviceType::kMouse).Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+    ASSERT_TRUE(result.has_value());
+
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadOnly);
+    ASSERT_TRUE(connect.has_value());
+
+    auto columns_query = connection.BuildQuery(
+        "select group_concat(name, ', ') from pragma_table_info('mouse_move') where \"notnull\" = 0 and pk = 0;"
+    );
+    ASSERT_TRUE(columns_query->Next().has_value());
+    auto columns = columns_query->AsString(0);
+    ASSERT_TRUE(columns.has_value());
+
+    // SQLite lets a text primary key hold null, so uuid needs its own check.
+    auto query = connection.BuildQuery(
+        std::format("select count(*) from mouse_move where uuid is not null and coalesce({}) is null;", *columns)
+    );
+    ASSERT_TRUE(query->Next().has_value());
+    ASSERT_EQ(query->AsInt(0).value(), 1);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

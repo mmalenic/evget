@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,7 @@ TEST(MouseScrollTest, Event) {
 
     auto expected_fields =
         std::vector<std::string>{evget::detail::kMouseScrollFields.begin(), evget::detail::kMouseScrollFields.end()};
-    const std::vector<std::string> expected_data{
+    const std::vector<evget::EntryValue> expected_data{
         "1",
         "1970-01-01T00:00:00.000000000+0000",
         "1.000000",
@@ -50,9 +51,9 @@ TEST(MouseScrollTest, Event) {
         "1.000000",
         "1.000000",
         "1",
-        "",
+        std::nullopt,
         "test_event",
-        "",
+        std::nullopt,
         "Keyboard",
         "1.000000",
         "1.000000",

@@ -22,11 +22,11 @@ TEST(DataTest, Create) {
 
     auto first = data.Entries().at(0);
     ASSERT_EQ(first.Type(), evget::EntryType::kKey);
-    ASSERT_EQ(first.Data(), std::vector<std::string>{"data"});
+    ASSERT_EQ(first.Data(), std::vector<evget::EntryValue>{"data"});
     ASSERT_EQ(first.Modifiers(), std::vector<std::string>{"modifier"});
 
     auto second = data.Entries().at(1);
     ASSERT_EQ(second.Type(), evget::EntryType::kMouseMove);
-    ASSERT_EQ(second.Data(), std::vector<std::string>{"merge"});
+    ASSERT_EQ(second.Data(), std::vector<evget::EntryValue>{"merge"});
     ASSERT_EQ(second.Modifiers(), std::vector<std::string>{"merge_modifier"});
 }

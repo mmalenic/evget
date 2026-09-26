@@ -9,11 +9,17 @@
 #include <memory>
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <utility>
 
 #include "common/stream.h"
+#include "evget/event/button_action.h"
 #include "evget/event/data.h"
+#include "evget/event/device_type.h"
 #include "evget/event/entry.h"
+#include "evget/event/key.h"
+#include "evget/event/mouse_move.h"
+#include "evget/event/schema.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
@@ -110,6 +116,60 @@ TEST(JsonStorageTest, ModifiersIncluded) {
     ASSERT_EQ(modifiers.size(), 2);
     ASSERT_EQ(modifiers[0], "Shift");
     ASSERT_EQ(modifiers[1], "Alt");
+}
+
+TEST(JsonStorageTest, AbsentValueIsNull) {
+    std::ostringstream stream{};
+    evget::JsonStorage storage{
+        std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
+    };
+
+    evget::Data data{};
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+
+    ASSERT_TRUE(result.has_value());
+    auto json = nlohmann::json::parse(stream.str());
+    auto field_data = [&json](const std::string& name) {
+        for (const auto& field : json["entries"][0]["fields"]) {
+            if (field["name"] == name) {
+                return field["data"];
+            }
+        }
+        return nlohmann::json{};
+    };
+
+    ASSERT_TRUE(field_data("focus_window_name").is_null());
+    ASSERT_TRUE(field_data("timestamp").is_string());
+}
+
+TEST(JsonStorageTest, MouseMoveWritesNulls) {
+    std::ostringstream stream{};
+    evget::JsonStorage storage{
+        std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
+    };
+
+    evget::Data data{};
+    evget::MouseMove{}.Timestamp(evget::TimestampType{}).Device(evget::DeviceType::kMouse).Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+
+    ASSERT_TRUE(result.has_value());
+    auto json = nlohmann::json::parse(stream.str());
+    const auto& fields = json["entries"][0]["fields"];
+    ASSERT_EQ(fields.size(), evget::detail::kMouseMoveNFields);
+    for (const auto& field : fields) {
+        if (field["name"] == "timestamp" || field["name"] == "device_type") {
+            EXPECT_TRUE(field["data"].is_string()) << field["name"];
+        } else {
+            EXPECT_TRUE(field["data"].is_null()) << field["name"];
+        }
+    }
 }
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
