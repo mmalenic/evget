@@ -116,6 +116,15 @@ constexpr std::string OptionalToString(std::optional<T> optional, Invocable<std:
     return function(*optional);
 }
 
+/// \brief Map an optional to an entry value, using `std::nullopt` when absent.
+template <typename T>
+constexpr EntryValue OptionalToValue(std::optional<T> optional, Invocable<std::string, T> auto&& function) {
+    if (!optional.has_value()) {
+        return std::nullopt;
+    }
+    return function(*optional);
+}
+
 } // namespace detail
 
 /**
@@ -249,14 +258,14 @@ constexpr std::string_view GetType(FieldDefinition field) {
 }
 
 /**
- * \brief Convert an optional enum to its underlying value as a string.
+ * \brief Convert an optional enum to its underlying value as an entry value.
  * \tparam Enum enum type
  * \param value optional enum value
- * \return string representation of the underlying value, or empty string if `nullopt`
+ * \return string representation of the underlying value, or `std::nullopt` if absent
  */
 template <class Enum>
-constexpr std::string ToUnderlyingOptional(std::optional<Enum> value) {
-    return detail::OptionalToString(value, [](auto value) { return ToUnderlying(value); });
+constexpr EntryValue ToUnderlyingOptional(std::optional<Enum> value) {
+    return detail::OptionalToValue(value, [](auto value) { return ToUnderlying(value); });
 }
 
 /**
@@ -271,30 +280,33 @@ constexpr std::string ToUnderlying(Enum value) {
 }
 
 /**
- * \brief Create a string from an optional string value.
+ * \brief Create an entry value from an optional string value, where an empty string is treated as null.
  * \param value optional string value
- * \return string value or empty string if `nullopt`
+ * \return string value, or `std::nullopt` if absent or empty
  */
-constexpr std::string FromString(std::optional<std::string> value) {
-    return detail::OptionalToString(std::move(value), [](auto value) { return value; });
+constexpr EntryValue FromString(std::optional<std::string> value) {
+    if (value.has_value() && value->empty()) {
+        return std::nullopt;
+    }
+    return detail::OptionalToValue(std::move(value), [](auto value) { return value; });
 }
 
 /**
- * \brief Format a string from an optional int value.
+ * \brief Format an entry value from an optional int value.
  * \param value optional integer value
- * \return string representation of the integer, or empty string if `nullopt`
+ * \return string representation of the integer, or `std::nullopt` if absent
  */
-constexpr std::string FromInt(std::optional<int> value) {
-    return detail::OptionalToString(value, [](auto value) { return std::to_string(value); });
+constexpr EntryValue FromInt(std::optional<int> value) {
+    return detail::OptionalToValue(value, [](auto value) { return std::to_string(value); });
 }
 
 /**
- * \brief Format a string from an optional `Timestamp` value.
+ * \brief Format an entry value from an optional `Timestamp` value.
  * \param optional optional timestamp value
- * \return ISO 8601 formatted timestamp string, or empty string if `nullopt`
+ * \return ISO 8601 formatted timestamp string, or `std::nullopt` if absent
  */
-constexpr std::string FromTimestamp(const std::optional<TimestampType> optional) {
-    return detail::OptionalToString(optional, [](auto value) {
+constexpr EntryValue FromTimestamp(const std::optional<TimestampType> optional) {
+    return detail::OptionalToValue(optional, [](auto value) {
         auto nanoseconds = std::chrono::time_point_cast<std::chrono::nanoseconds>(value);
         std::stringstream stream{};
         stream << std::format("{:%Y-%m-%dT%H:%M:%S%z}", nanoseconds);
@@ -416,21 +428,36 @@ constexpr std::optional<Enum> FromUnderlying(const std::string& value) {
 }
 
 /**
- * \brief Format a string from an optional `Interval` value.
- * \param optional optional interval value
- * \return string representation of the interval in microseconds, or empty string if `nullopt`
+ * \brief Convert an entry value from an underlying integer to an enum.
+ * \tparam Enum enum type to convert to
+ * \param value entry integer value
+ * \return optional enum value, `nullopt` if the value is absent, empty or invalid
  */
-constexpr std::string FromInterval(const std::optional<IntervalType> optional) {
-    return detail::OptionalToString(optional, [](auto value) { return std::to_string(value.count()); });
+template <class Enum>
+constexpr std::optional<Enum> FromUnderlying(const EntryValue& value) {
+    if (!value.has_value()) {
+        return {};
+    }
+
+    return FromUnderlying<Enum>(*value);
 }
 
 /**
- * \brief Format a string from an optional double value.
- * \param optional optional double value
- * \return string representation of the double, or empty string if `nullopt`
+ * \brief Format an entry value from an optional `Interval` value.
+ * \param optional optional interval value
+ * \return string representation of the interval in microseconds, or `std::nullopt` if absent
  */
-constexpr std::string FromDouble(const std::optional<double> optional) {
-    return detail::OptionalToString(optional, [](auto value) { return std::to_string(value); });
+constexpr EntryValue FromInterval(const std::optional<IntervalType> optional) {
+    return detail::OptionalToValue(optional, [](auto value) { return std::to_string(value.count()); });
+}
+
+/**
+ * \brief Format an entry value from an optional double value.
+ * \param optional optional double value
+ * \return string representation of the double, or `std::nullopt` if absent
+ */
+constexpr EntryValue FromDouble(const std::optional<double> optional) {
+    return detail::OptionalToValue(optional, [](auto value) { return std::to_string(value); });
 }
 } // namespace evget
 

@@ -27,9 +27,9 @@ evget::Result<void> evget::JsonStorage::StoreEvent(Data events) {
 
         auto formatted_fields = std::vector<nlohmann::json>{};
         for (std::size_t i = 0; i < entry_with_fields.data.size(); i++) {
-            formatted_fields.push_back(
-                {{"name", entry_with_fields.fields.at(i)}, {"data", entry_with_fields.data.at(i)}}
-            );
+            const auto& value = entry_with_fields.data.at(i);
+            const nlohmann::json data = value.has_value() ? nlohmann::json(*value) : nlohmann::json(nullptr);
+            formatted_fields.push_back({{"name", entry_with_fields.fields.at(i)}, {"data", data}});
         }
         formatted_entries.push_back(
             {{"type", FromEntryType(entry_with_fields.type)},

@@ -28,11 +28,19 @@
 
 namespace {
 
-evget::Result<void>
-BindValues(std::unique_ptr<evget::Query>& query, const std::vector<std::string>& data, const std::string& entry_uuid) {
+evget::Result<void> BindValues(
+    std::unique_ptr<evget::Query>& query,
+    const std::vector<evget::EntryValue>& data,
+    const std::string& entry_uuid
+) {
     query->BindChars(0, entry_uuid.c_str());
     for (const auto& [index, value] : std::views::enumerate(data)) {
-        query->BindChars(static_cast<int>(index) + 1, value.c_str());
+        const auto position = static_cast<int>(index) + 1;
+        if (value.has_value()) {
+            query->BindChars(position, value->c_str());
+        } else {
+            query->BindNull(position);
+        }
     }
 
     return query->NextWhile().and_then(

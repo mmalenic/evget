@@ -10,6 +10,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -133,13 +134,16 @@ enum class EntryType : std::uint8_t {
     kMouseScroll ///< A mouse scroll entry
 };
 
+/// \brief A field value, `std::nullopt` when absent.
+using EntryValue = std::optional<std::string>;
+
 /**
  * \brief An entry with its associated field names for easier processing.
  */
 struct EntryWithFields {
     EntryType type; ///< Type of the entry
     std::vector<std::string> fields; ///< Field names for the data
-    std::vector<std::string> data; ///< Actual data values
+    std::vector<EntryValue> data; ///< Data values, `std::nullopt` when absent
     std::vector<std::string> modifiers; ///< Modifier values
 };
 
@@ -151,10 +155,10 @@ public:
     /**
      * \brief Construct an entry with type, data, and modifiers.
      * \param type Type of the entry
-     * \param data Data values for the entry
+     * \param data Data values for the entry, `std::nullopt` when absent
      * \param modifiers Modifier values for the entry
      */
-    Entry(EntryType type, const std::vector<std::string>& data, std::vector<std::string> modifiers);
+    Entry(EntryType type, const std::vector<EntryValue>& data, std::vector<std::string> modifiers);
 
     /**
      * \brief Get the type of this entry.
@@ -164,9 +168,9 @@ public:
 
     /**
      * \brief Get the data values of this entry.
-     * \return Reference to data vector
+     * \return Reference to data vector, `std::nullopt` when absent
      */
-    [[nodiscard]] const std::vector<std::string>& Data() const;
+    [[nodiscard]] const std::vector<EntryValue>& Data() const;
 
     /**
      * \brief Get the modifier values of this entry.
@@ -186,7 +190,7 @@ public:
 
 private:
     EntryType type_;
-    std::vector<std::string> data_;
+    std::vector<EntryValue> data_;
     std::vector<std::string> modifiers_;
 };
 

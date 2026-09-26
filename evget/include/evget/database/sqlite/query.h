@@ -61,6 +61,12 @@ public:
     void BindBool(int position, bool value) override;
 
     /**
+     * \brief Bind an SQL NULL to a parameter position.
+     * \param position parameter position (0-based)
+     */
+    void BindNull(int position) override;
+
+    /**
      * \brief Reset the query to its initial state.
      * \return result indicating success or failure
      */
@@ -114,7 +120,7 @@ public:
 
 private:
     std::reference_wrapper<SQLiteConnection> connection_;
-    std::map<int, std::variant<int, double, const char*, bool>> binds_;
+    std::map<int, std::variant<std::monostate, int, double, const char*, bool>> binds_;
     std::optional<::SQLite::Statement> statement_;
     std::string query_;
 };

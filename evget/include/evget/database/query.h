@@ -38,6 +38,11 @@ public:
     virtual void BindBool(int position, bool value) = 0;
 
     /**
+     * \brief Bind an SQL NULL to the position.
+     */
+    virtual void BindNull(int position) = 0;
+
+    /**
      * \brief Reset this query. This should not reset a transaction.
      */
     virtual Result<void> Reset() = 0;

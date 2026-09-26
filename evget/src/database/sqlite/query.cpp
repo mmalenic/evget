@@ -4,6 +4,7 @@
 
 #include <exception>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <variant>
 
@@ -45,6 +46,10 @@ void evget::SQLiteQuery::BindDouble(int position, double value) {
     binds_[position] = value;
 }
 
+void evget::SQLiteQuery::BindNull(int position) {
+    binds_[position] = std::monostate{};
+}
+
 evget::Result<void> evget::SQLiteQuery::Reset() {
     this->binds_.clear();
 
@@ -74,7 +79,16 @@ evget::Result<bool> evget::SQLiteQuery::Next() {
 
         auto& statement = statement_.value();
         for (auto& [position, bind_value] : this->binds_) {
-            std::visit([&statement, pos = position](auto&& inner) { statement.bind(pos + 1, inner); }, bind_value);
+            std::visit(
+                [&statement, pos = position](auto&& inner) {
+                    if constexpr (std::is_same_v<std::remove_cvref_t<decltype(inner)>, std::monostate>) {
+                        statement.bind(pos + 1);
+                    } else {
+                        statement.bind(pos + 1, inner);
+                    }
+                },
+                bind_value
+            );
         }
         this->binds_.clear();
 

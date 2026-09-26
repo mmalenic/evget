@@ -10,10 +10,10 @@
 #include "evget/event/modifier_value.h"
 #include "evget/event/schema.h"
 
-evget::Entry::Entry(EntryType type, const std::vector<std::string>& data, std::vector<std::string> modifiers)
+evget::Entry::Entry(EntryType type, const std::vector<EntryValue>& data, std::vector<std::string> modifiers)
     : type_{type}, data_{data}, modifiers_{std::move(modifiers)} {}
 
-const std::vector<std::string>& evget::Entry::Data() const {
+const std::vector<evget::EntryValue>& evget::Entry::Data() const {
     return data_;
 }
 
@@ -23,7 +23,10 @@ const std::vector<std::string>& evget::Entry::Modifiers() const {
 
 void evget::Entry::ToNamedRepresentation() {
     if (data_.size() > detail::kDeviceTypeIndex) {
-        data_.at(detail::kDeviceTypeIndex) = FromDevice(FromUnderlying<DeviceType>(data_.at(detail::kDeviceTypeIndex)));
+        auto& device_type = data_.at(detail::kDeviceTypeIndex);
+        if (device_type.has_value()) {
+            device_type = FromDevice(FromUnderlying<DeviceType>(*device_type));
+        }
     }
 
     // button_action position depends on the entry type.
@@ -31,13 +34,19 @@ void evget::Entry::ToNamedRepresentation() {
         case EntryType::kMouseClick:
             if (data_.size() >= detail::kMouseClickNFields) {
                 constexpr auto kIndex = detail::kMouseClickNFields - 1;
-                data_.at(kIndex) = FromButtonAction(FromUnderlying<ButtonAction>(data_.at(kIndex)));
+                auto& action = data_.at(kIndex);
+                if (action.has_value()) {
+                    action = FromButtonAction(FromUnderlying<ButtonAction>(*action));
+                }
             }
             break;
         case EntryType::kKey:
             if (data_.size() >= detail::kKeyNFields) {
                 constexpr auto kIndex = detail::kKeyNFields - 1;
-                data_.at(kIndex) = FromButtonAction(FromUnderlying<ButtonAction>(data_.at(kIndex)));
+                auto& action = data_.at(kIndex);
+                if (action.has_value()) {
+                    action = FromButtonAction(FromUnderlying<ButtonAction>(*action));
+                }
             }
             break;
         default:
