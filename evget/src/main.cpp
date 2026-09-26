@@ -40,6 +40,7 @@
 #ifdef FEATURE_EVGETWINDOWS
 #include "evgetwindows/backend.h"
 #include "evgetwindows/console_stop.h"
+#include "evgetwindows/elevation.h"
 #endif
 
 namespace {
@@ -68,6 +69,12 @@ int Run(int argc, char** argv) {
     if (*exit) {
         return 0;
     }
+
+#ifdef FEATURE_EVGETWINDOWS
+    if (cli.EventSource() == evget::EventSource::kWindows) {
+        evgetwindows::LogElevation();
+    }
+#endif
 
     std::shared_ptr<evget::Scheduler> scheduler;
     try {

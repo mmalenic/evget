@@ -12,6 +12,7 @@ target_sources(
     ${LIBRARY_NAME}
     PRIVATE ${SRC}/backend.cpp
             ${SRC}/console_stop.cpp
+            ${SRC}/elevation.cpp
             ${SRC}/event_transformer.cpp
             ${SRC}/hid_query_api.cpp
             ${SRC}/message_window.cpp
@@ -27,6 +28,7 @@ target_sources(
            FILES
            ${INCLUDE}/backend.h
            ${INCLUDE}/console_stop.h
+           ${INCLUDE}/elevation.h
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/hid_frame.h
            ${INCLUDE}/hid_query_api.h
@@ -65,7 +67,7 @@ toolbelt_add_dep(
 )
 
 if(WIN32)
-    target_link_libraries(${LIBRARY_NAME} PRIVATE user32 hid)
+    target_link_libraries(${LIBRARY_NAME} PRIVATE user32 hid advapi32)
 endif()
 
 if(BUILD_TESTING)
@@ -77,6 +79,7 @@ if(BUILD_TESTING)
                test/common/windows_mock.cpp
                test/common/windows_mock.h
                test/console_stop.cpp
+               test/elevation.cpp
                test/event_transformer.cpp
                test/hid_query_api.cpp
                test/message_window.cpp
