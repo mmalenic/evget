@@ -9,5 +9,9 @@ arch={{ architecture }}
 build_type=Debug
 
 [conf]
-# Give each compiler its own build tree so switching toolchains never collides.
+# Give each compiler its own build tree
+{% if platform.system() == "Windows" %}
 tools.cmake.cmake_layout:build_folder_vars=['settings.compiler', 'settings.build_type']
+{% else %}
+tools.cmake.cmake_layout:build_folder_vars=['settings.os', 'settings.compiler', 'settings.build_type']
+{% endif %}

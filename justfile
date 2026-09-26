@@ -12,7 +12,7 @@ mod windows 'recipes/windows.just'
 profile_args := if os_family() == 'windows' { '-pr:a default -pr:a profiles/base -c tools.cmake.cmaketoolchain:generator=Ninja' } else { '-pr:a default -pr:a profiles/base' }
 backend_args := ''
 check_args := if os_family() == 'windows' { '-o evget/*:run_msvc_analyze=True' } else { '-o evget/*:run_clang_tidy=True' }
-build_dir := 'build/' + shell('python scripts/detect_compiler.py') + '-' + lowercase(build_type)
+build_dir := 'build/' + (if os_family() == 'windows' { '' } else { os() + '-' }) + shell('python scripts/detect_compiler.py') + '-' + lowercase(build_type)
 
 # Remove the build directory.
 clean:

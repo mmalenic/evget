@@ -9,7 +9,7 @@ import 'check.just'
 profile_args := '-pr:a default -pr:a profiles/base'
 backend_args := '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True'
 check_args := '-o evget/*:run_clang_tidy=True'
-build_dir := 'build/' + shell('python scripts/detect_compiler.py') + '-' + lowercase(build_type)
+build_dir := 'build/linux-' + shell('python scripts/detect_compiler.py') + '-' + lowercase(build_type)
 
 mod gcc 'linux/gcc.just'
 mod clang 'linux/clang.just'

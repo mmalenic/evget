@@ -9,4 +9,4 @@ profile_args := '-pr ./profiles/clang'
 backend_args := '-o evget/*:build_evgetx11=True -o evget/*:build_evgetlibinput=True'
 check_args := '-o evget/*:run_clang_tidy=True'
 compiler := 'clang'
-build_dir := 'build/clang-' + lowercase(build_type)
+build_dir := 'build/linux-clang-' + lowercase(build_type)

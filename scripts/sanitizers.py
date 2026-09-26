@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+HOST_PREFIX = {"Linux": "linux-", "Darwin": "macos-"}.get(platform.system(), "")
 OS = "windows" if sys.platform == "win32" else "linux"
 EXE = "evgettest.exe" if OS == "windows" else "evgettest"
 
@@ -53,7 +55,7 @@ class Ctx:
     const: str | None = None
 
     def __post_init__(self) -> None:
-        name = f"{self.compiler}-{self.build_type.lower()}"
+        name = f"{HOST_PREFIX}{self.compiler}-{self.build_type.lower()}"
         self.directory = (
             REPO
             / "build"
@@ -69,6 +71,8 @@ class Ctx:
 
         if self.const is not None:
             folder = ["settings.compiler", "settings.build_type", f"const.{self.const}"]
+            if HOST_PREFIX:
+                folder.insert(0, "settings.os")
             layout = ["-c", f"tools.cmake.cmake_layout:build_folder_vars={folder!r}"]
 
         run(
