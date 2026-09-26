@@ -132,6 +132,12 @@ public:
      */
     [[nodiscard]] const std::optional<std::set<DeviceType>>& Filter() const;
 
+    /**
+     * \brief Whether to exclude the focus window name.
+     * \return true if excluded
+     */
+    [[nodiscard]] bool ExcludeWindowTitle() const;
+
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{100};
@@ -149,6 +155,7 @@ private:
     std::vector<std::string> event_source_descriptions_{EventSourceDescriptions()};
     std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
     std::vector<std::string> device_type_descriptions_{DeviceTypeDescriptions()};
+    bool exclude_window_title_{false};
 
     static std::vector<std::string> EventSourceDescriptions();
     static std::vector<std::string> LogLevelDescriptions();

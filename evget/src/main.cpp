@@ -21,7 +21,9 @@
 #include "evget/cli.h"
 #include "evget/shutdown.h"
 #include "evget/storage/database_manager.h"
+#include "evget/storage/exclude_window_title_store.h"
 #include "evget/storage/filter_store.h"
+#include "evget/storage/store.h"
 
 #ifdef FEATURE_EVGETLIBINPUT
 #include "evgetlibinput/backend.h"
@@ -77,6 +79,8 @@ int Run(int argc, char** argv) {
     }
 
     auto filter = evget::FilterStore{manager, cli.Filter()};
+    auto exclude_title = evget::ExcludeWindowTitleStore{filter};
+    evget::Store& merged = cli.ExcludeWindowTitle() ? static_cast<evget::Store&>(exclude_title) : filter;
     auto shutdown = std::make_shared<evget::Shutdown>(scheduler, [&manager] { manager.Flush(); });
 
     boost::asio::io_context signal_context;
@@ -118,7 +122,7 @@ int Run(int argc, char** argv) {
 #ifdef FEATURE_EVGETLIBINPUT
     std::unique_ptr<evgetlibinput::Backend> li_backend{};
     if (event_source == evget::EventSource::kLibInput) {
-        auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), filter, cli.Seat());
+        auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), merged, cli.Seat());
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
@@ -132,7 +136,7 @@ int Run(int argc, char** argv) {
 #ifdef FEATURE_EVGETX11
     std::unique_ptr<evgetx11::Backend> x11_backend{};
     if (event_source == evget::EventSource::kX11) {
-        auto result = evgetx11::Backend::Create(filter, cli.Display());
+        auto result = evgetx11::Backend::Create(merged, cli.Display());
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
@@ -156,7 +160,7 @@ int Run(int argc, char** argv) {
 #ifdef FEATURE_EVGETWINDOWS
     std::unique_ptr<evgetwindows::Backend> win_backend{};
     if (event_source == evget::EventSource::kWindows) {
-        auto result = evgetwindows::Backend::Create(filter, scheduler->Executor());
+        auto result = evgetwindows::Backend::Create(merged, scheduler->Executor());
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;

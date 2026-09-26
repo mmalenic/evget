@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <string>
+#include <vector>
 
 #include "common/args.h"
 #include "evget/event/device_type.h"
@@ -42,6 +44,26 @@ TEST(CliTest, ParseDefaults) {
     EXPECT_FALSE(cli.Display().has_value());
     EXPECT_FALSE(cli.Seat().has_value());
     EXPECT_FALSE(cli.ScreenDimensions().has_value());
+    EXPECT_FALSE(cli.ExcludeWindowTitle());
+}
+
+TEST(CliTest, ParseExcludeWindowTitle) {
+    evget::Cli cli{evget::EventSource::kX11, false};
+    test::Args argv{{"evget", "--exclude-window-title"}};
+
+    auto result = cli.Parse(argv.Argc(), argv.Argv());
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(*result);
+    EXPECT_TRUE(cli.ExcludeWindowTitle());
+}
+
+TEST(CliTest, ParseOutputDefault) {
+    evget::Cli cli{evget::EventSource::kX11, false};
+    test::Args argv{{"evget"}};
+
+    ASSERT_TRUE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
+    EXPECT_EQ(cli.Output(), std::vector<std::string>{"-"});
 }
 
 TEST(CliTest, ParseFilterDeviceSet) {

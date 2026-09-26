@@ -195,6 +195,13 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
             "$SPDLOG_LEVEL or info"
         ));
 
+    app.add_flag(
+        "--exclude-window-title",
+        exclude_window_title_,
+        "Store the focus window name as null instead of the window title. "
+        "The focus window position, size and screen are still stored."
+    );
+
     app.add_option(
            "-o,--output",
            output_,
@@ -345,4 +352,8 @@ const std::optional<std::string>& evget::Cli::Seat() const {
 
 const std::optional<std::set<evget::DeviceType>>& evget::Cli::Filter() const {
     return filter_;
+}
+
+bool evget::Cli::ExcludeWindowTitle() const {
+    return exclude_window_title_;
 }
