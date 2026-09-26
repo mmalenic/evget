@@ -81,6 +81,11 @@ constexpr std::array<std::string_view, kBaseNFields> kBaseFields{
     "device_type",
 };
 
+/// \brief Index of the focus window name field.
+constexpr auto kFocusWindowNameIndex = static_cast<std::size_t>(
+    std::ranges::find(kBaseFields, std::string_view{"focus_window_name"}) - kBaseFields.begin()
+);
+
 /// \brief Field names for mouse move events.
 constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields =
     AddToArray<kBaseNFields, kMouseMoveNFields>(

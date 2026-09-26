@@ -16,6 +16,8 @@
 #include "evget/event/key.h"
 #include "evget/event/modifier_value.h"
 #include "evget/event/mouse_click.h"
+#include "evget/event/mouse_move.h"
+#include "evget/event/mouse_scroll.h"
 #include "evget/event/schema.h"
 #include "evget/storage/store.h"
 
@@ -87,6 +89,51 @@ evget::Data test::StoreMock::MakeMouseClickData(evget::DeviceType device) {
         .Button(1)
         .ButtonName("name")
         .Action(evget::ButtonAction::kPress)
+        .Build(data);
+    return data;
+}
+
+evget::Data test::StoreMock::MakeMouseMoveData(evget::DeviceType device) {
+    evget::Data data{};
+    evget::MouseMove{}
+        .Interval(evget::IntervalType{1})
+        .Timestamp(evget::TimestampType{})
+        .PositionX(1)
+        .PositionY(1)
+        .DeviceName("name")
+        .FocusWindowName("name")
+        .FocusWindowPositionX(1)
+        .FocusWindowPositionY(1)
+        .FocusWindowWidth(1)
+        .FocusWindowHeight(1)
+        .Screen("1")
+        .Device(device)
+        .SystemEvent("test_event")
+        .TouchId(1)
+        .Modifier(evget::ModifierValue::kShift)
+        .Build(data);
+    return data;
+}
+
+evget::Data test::StoreMock::MakeMouseScrollData(evget::DeviceType device) {
+    evget::Data data{};
+    evget::MouseScroll{}
+        .Interval(evget::IntervalType{1})
+        .Timestamp(evget::TimestampType{})
+        .PositionX(1)
+        .PositionY(1)
+        .DeviceName("name")
+        .FocusWindowName("name")
+        .FocusWindowPositionX(1)
+        .FocusWindowPositionY(1)
+        .FocusWindowWidth(1)
+        .FocusWindowHeight(1)
+        .Screen("1")
+        .Device(device)
+        .SystemEvent("test_event")
+        .Vertical(1)
+        .Horizontal(1)
+        .Modifier(evget::ModifierValue::kControl)
         .Build(data);
     return data;
 }

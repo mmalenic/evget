@@ -27,6 +27,12 @@ public:
     static evget::Data MakeKeyData(evget::DeviceType device);
     static evget::Data MakeMouseClickData(evget::DeviceType device);
 
+    /// \brief Make a mouse move event.
+    static evget::Data MakeMouseMoveData(evget::DeviceType device);
+
+    /// \brief Make a mouse scroll event.
+    static evget::Data MakeMouseScrollData(evget::DeviceType device);
+
 private:
     std::vector<evget::Data> events_;
     std::mutex lock_;
