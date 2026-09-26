@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <exception>
 #include <format>
+#include <functional>
 #include <future>
 #include <memory>
 #include <optional>
@@ -55,8 +56,8 @@ std::array<RAWINPUTDEVICE, 4> MakeRawInputDevices(DWORD flags, HWND target) {
 
 } // namespace
 
-evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor)
-    : class_name_{MakeClassName()}, channel_{executor, kRawEventChannelCapacity} {}
+evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor, std::function<void()> on_stop)
+    : class_name_{MakeClassName()}, on_stop_{std::move(on_stop)}, channel_{executor, kRawEventChannelCapacity} {}
 
 evgetwindows::MessageWindow::~MessageWindow() {
     try {
@@ -92,15 +93,40 @@ evget::Result<void> evgetwindows::MessageWindow::Start() {
 }
 
 void evgetwindows::MessageWindow::Stop() {
+    RequestStop();
+
+    if (thread_.joinable() && thread_.get_id() != std::this_thread::get_id()) {
+        thread_.join();
+    }
+}
+
+void evgetwindows::MessageWindow::RequestStop() {
     channel_.close();
 
     const DWORD pump_tid = thread_id_.load();
     if (pump_tid != 0) {
         PostThreadMessageW(pump_tid, WM_QUIT, 0, 0);
     }
+}
 
-    if (thread_.joinable()) {
-        thread_.join();
+std::optional<LRESULT> evgetwindows::MessageWindow::HandleStopMessage(UINT message, WPARAM wparam) {
+    switch (message) {
+        case WM_CLOSE:
+            // Needed here because DefWindowProcW would later destroy the input while the process keeps running.
+            if (on_stop_) {
+                on_stop_();
+            }
+            return 0;
+        case WM_QUERYENDSESSION:
+            return TRUE;
+        case WM_ENDSESSION:
+            // The lParam is an ENDSESSION_* bitmask meaning that any of these should stop.
+            if (wparam != FALSE && on_stop_) {
+                on_stop_();
+            }
+            return 0;
+        default:
+            return std::nullopt;
     }
 }
 
@@ -122,6 +148,15 @@ LRESULT CALLBACK evgetwindows::MessageWindow::WndProc(HWND window, UINT message,
             self->EnqueueDeviceChange(GET_DEVICE_CHANGE_WPARAM(wparam), reinterpret_cast<HANDLE>(lparam));
         }
         return 0;
+    }
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+    auto* self = reinterpret_cast<MessageWindow*>(GetWindowLongPtrW(window, GWLP_USERDATA));
+    if (self != nullptr) {
+        const std::optional<LRESULT> handled = self->HandleStopMessage(message, wparam);
+        if (handled.has_value()) {
+            return *handled;
+        }
     }
     return DefWindowProcW(window, message, wparam, lparam);
 }
@@ -190,6 +225,10 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const Raw
             spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
         }
         return EnqueueOutcome::kSent;
+    }
+
+    if (!channel_.is_open()) {
+        return EnqueueOutcome::kClosed;
     }
 
     if (dropped_.fetch_add(1, std::memory_order_relaxed) % kChannelNearCapacity == 0) {
@@ -335,9 +374,10 @@ void evgetwindows::MessageWindow::RunPump(std::promise<evget::Result<void>> regi
     // Constructed before the window so it unregisters after DestroyWindow.
     const WindowClass class_guard{class_name_.c_str(), window_class.hInstance};
 
+    // This creates hidden top-level window in order to support task manager end process.
     // NOLINTNEXTLINE(misc-misplaced-const)
     const HWND raw_window = CreateWindowExW(
-        0,
+        WS_EX_TOOLWINDOW,
         class_name_.c_str(),
         L"evget",
         0,
@@ -345,7 +385,7 @@ void evgetwindows::MessageWindow::RunPump(std::promise<evget::Result<void>> regi
         0,
         0,
         0,
-        HWND_MESSAGE,
+        nullptr,
         nullptr,
         window_class.hInstance,
         nullptr

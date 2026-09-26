@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <future>
 #include <memory>
 #include <optional>
@@ -50,6 +51,7 @@ enum class EnqueueOutcome : std::uint8_t {
     kSent, ///< Sent and queued
     kDropped, ///< channel full, dropping event
     kIgnored, ///< no raw input event could be extracted from the packet
+    kClosed, ///< channel closed by a stop
 };
 
 /**
@@ -60,8 +62,9 @@ public:
     /**
      * \brief Construct a message window where the channel finishes the executor.
      * \param executor the executor for the channel
+     * \param on_stop called on the thread for a close or end request
      */
-    explicit MessageWindow(const boost::asio::any_io_executor& executor);
+    explicit MessageWindow(const boost::asio::any_io_executor& executor, std::function<void()> on_stop = {});
 
     MessageWindow(const MessageWindow&) = delete;
     MessageWindow(MessageWindow&&) noexcept = delete;
@@ -77,9 +80,22 @@ public:
     [[nodiscard]] evget::Result<void> Start();
 
     /**
-     * \brief Close the channel and join tasks.
+     * \brief Request a stop and join the pump thread.
      */
     void Stop();
+
+    /**
+     * \brief Close the channel and ask for it to exit without waiting.
+     */
+    void RequestStop();
+
+    /**
+     * \brief Handle a close or end message.
+     * \param message the window message
+     * \param wparam the message `WPARAM`
+     * \return the message result, or `nullopt` if the message is not a stop message
+     */
+    [[nodiscard]] std::optional<LRESULT> HandleStopMessage(UINT message, WPARAM wparam);
 
     /**
      * \brief Get the channel events are sent to.
@@ -175,6 +191,7 @@ private:
     EnqueueOutcome EnqueueEvent(const RawEvent& event);
 
     std::wstring class_name_;
+    std::function<void()> on_stop_;
     RawEventChannel channel_;
     std::vector<std::byte> raw_buffer_;
     std::deque<RawEvent> device_changes_;

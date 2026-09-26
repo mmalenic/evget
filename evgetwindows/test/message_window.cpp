@@ -3,11 +3,14 @@
 #include <gtest/gtest.h>
 
 #include <boost/asio/thread_pool.hpp>
+#include <boost/system/error_code.hpp>
 #include <windows.h>
 
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <variant>
+#include <vector>
 
 #include "common/windows_mock.h"
 #include "evgetwindows/raw_event.h"
@@ -197,6 +200,107 @@ TEST(MessageWindowTest, ToDeviceChangeEvent) {
     ASSERT_TRUE(std::holds_alternative<evgetwindows::DeviceChange>(removal.data));
     EXPECT_FALSE(std::get<evgetwindows::DeviceChange>(removal.data).arrival);
     EXPECT_EQ(removal.header.hDevice, device);
+}
+
+TEST(MessageWindowTest, CloseRunsStop) {
+    boost::asio::thread_pool pool{1};
+    int calls = 0;
+    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_CLOSE, 0), std::optional<LRESULT>{0});
+    EXPECT_EQ(calls, 1);
+}
+
+TEST(MessageWindowTest, QueryEndSession) {
+    boost::asio::thread_pool pool{1};
+    int calls = 0;
+    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_QUERYENDSESSION, 0), std::optional<LRESULT>{TRUE});
+    EXPECT_EQ(calls, 0);
+}
+
+TEST(MessageWindowTest, EndSessionRunsStop) {
+    boost::asio::thread_pool pool{1};
+    int calls = 0;
+    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_ENDSESSION, TRUE), std::optional<LRESULT>{0});
+    EXPECT_EQ(calls, 1);
+}
+
+TEST(MessageWindowTest, CancelledEndSession) {
+    boost::asio::thread_pool pool{1};
+    int calls = 0;
+    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_ENDSESSION, FALSE), std::optional<LRESULT>{0});
+    EXPECT_EQ(calls, 0);
+}
+
+TEST(MessageWindowTest, MessagesNotHandled) {
+    boost::asio::thread_pool pool{1};
+    int calls = 0;
+    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+
+    EXPECT_FALSE(window.HandleStopMessage(WM_PAINT, 0).has_value());
+    EXPECT_EQ(calls, 0);
+}
+
+TEST(MessageWindowTest, CloseWithoutCallback) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_CLOSE, 0), std::optional<LRESULT>{0});
+}
+
+TEST(MessageWindowTest, RequestStop) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    const std::vector<LONG> queued{1, 2, 3};
+    for (const LONG last_x : queued) {
+        ASSERT_EQ(window.Enqueue(MakeMouseRawInput(last_x, 0), sizeof(RAWINPUT)), EnqueueOutcome::kSent);
+    }
+
+    window.RequestStop();
+    EXPECT_FALSE(window.Channel().is_open());
+
+    // Stops at the first empty receive or error, so a 4th event without an error would show up.
+    std::vector<LONG> received{};
+    bool ended = false;
+    while (!ended &&
+           window.Channel().try_receive(
+               [&received, &ended](const boost::system::error_code& code, const evgetwindows::RawEvent& event) {
+                   const auto* mouse = std::get_if<RAWMOUSE>(&event.data);
+                   ended = code.failed() || mouse == nullptr;
+                   if (!ended) {
+                       received.push_back(mouse->lLastX);
+                   }
+               }
+           )) {
+    }
+
+    EXPECT_EQ(received, queued);
+}
+
+TEST(MessageWindowTest, QueueAfterStopRequest) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    window.RequestStop();
+
+    EXPECT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT)), EnqueueOutcome::kClosed);
+}
+
+TEST(MessageWindowTest, RequestStopTwice) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+
+    window.RequestStop();
+    window.RequestStop();
+
+    EXPECT_FALSE(window.Channel().is_open());
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)
