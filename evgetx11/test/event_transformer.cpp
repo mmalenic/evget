@@ -51,17 +51,17 @@ TEST(EventTransformer, TransformEvent) {
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
-    ASSERT_EQ(entries.at(0).Data().at(0), "");
+    ASSERT_FALSE(entries.at(0).Data().at(0).has_value());
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
     ASSERT_EQ(entries.at(0).Data().at(13), "x11");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
-    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_FALSE(entries.at(0).Data().at(15).has_value());
     ASSERT_EQ(entries.at(0).Data().at(16), "0");
-    ASSERT_EQ(entries.at(0).Data().at(17), "");
+    ASSERT_FALSE(entries.at(0).Data().at(17).has_value());
     ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 

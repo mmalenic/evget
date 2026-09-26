@@ -223,9 +223,14 @@ void EventSwitchPointerKey::KeyEvent(
         .Timestamp(event.GetTimestamp())
         .Action(action)
         .Button(raw_event.detail)
-        .Character(character)
-        .ButtonName(name)
         .EventSource(std::string{kEventSourceName});
+
+    if (!character.empty()) {
+        builder.Character(character);
+    }
+    if (!name.empty()) {
+        builder.ButtonName(name);
+    }
 
     EventSwitch::SetModifierValue(query_pointer.modifier_state.effective, builder);
     x_event_switch.SetWindowFields(builder);

@@ -128,13 +128,13 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
     ASSERT_EQ(entries.at(0).Data().at(13), "x11");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
-    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_FALSE(entries.at(0).Data().at(15).has_value());
     ASSERT_EQ(entries.at(0).Data().at(16), "0");
-    ASSERT_EQ(entries.at(0).Data().at(17), "");
+    ASSERT_FALSE(entries.at(0).Data().at(17).has_value());
     ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
@@ -170,7 +170,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawKeyPress");
     ASSERT_EQ(entries.at(0).Data().at(13), "x11");
     ASSERT_EQ(entries.at(0).Data().at(14), "1");
@@ -237,7 +237,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
     ASSERT_EQ(entries.at(0).Data().at(13), "x11");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
@@ -296,12 +296,12 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cog
     ASSERT_EQ(entries.at(0).Data().at(2), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(3), evget::FromDouble(1.0));
     ASSERT_EQ(entries.at(0).Data().at(4), "name");
-    ASSERT_FALSE(entries.at(0).Data().at(11).empty());
+    ASSERT_TRUE(entries.at(0).Data().at(11).has_value());
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawMotion");
     ASSERT_EQ(entries.at(0).Data().at(13), "x11");
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
     ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(2.0));
-    ASSERT_EQ(entries.at(0).Data().at(16), "");
+    ASSERT_FALSE(entries.at(0).Data().at(16).has_value());
 }
 
 TEST(XEventSwitchCoreTest, TestScrollEventVerticalIncrement) {
@@ -355,7 +355,7 @@ TEST(XEventSwitchCoreTest, TestScrollEventVerticalIncrement) {
 
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(-2.0));
-    ASSERT_EQ(entries.at(0).Data().at(16), "");
+    ASSERT_FALSE(entries.at(0).Data().at(16).has_value());
 }
 
 TEST(XEventSwitchCoreTest, TestScrollEventHorizontalIncrement) {
@@ -409,7 +409,7 @@ TEST(XEventSwitchCoreTest, TestScrollEventHorizontalIncrement) {
     auto entries = data.Entries();
 
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
-    ASSERT_EQ(entries.at(0).Data().at(15), "");
+    ASSERT_FALSE(entries.at(0).Data().at(15).has_value());
     ASSERT_EQ(entries.at(0).Data().at(16), evget::FromDouble(-2.0));
 }
 

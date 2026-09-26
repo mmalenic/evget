@@ -230,7 +230,7 @@ T& EventSwitch::SetWindowFields(T& builder) {
     auto window_position = x_wrapper_.get().GetWindowPosition(*window);
     auto window_size = x_wrapper_.get().GetWindowSize(*window);
 
-    if (window_name.has_value()) {
+    if (window_name.has_value() && !window_name->empty()) {
         builder.FocusWindowName(*window_name);
     }
 
@@ -308,8 +308,13 @@ void EventSwitch::AddButtonEvent(
         .PositionY(query_pointer.root_y)
         .Action(action)
         .Button(button)
-        .ButtonName(button_map_[event.sourceid][button])
         .EventSource(std::string{kEventSourceName});
+
+    const auto& button_name = button_map_[event.sourceid][button];
+    if (!button_name.empty()) {
+        builder.ButtonName(button_name);
+    }
+
     SetModifierValue(query_pointer.modifier_state.effective, builder);
     SetWindowFields(builder);
 
