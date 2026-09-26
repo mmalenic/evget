@@ -77,7 +77,7 @@ TEST(EvgetWindowsTransformer, MouseMoveRelativeHasChange) {
     EXPECT_EQ(entries.at(0).Data().at(2), evget::FromDouble(5.0));
     EXPECT_EQ(entries.at(0).Data().at(3), evget::FromDouble(-3.0));
     EXPECT_EQ(entries.at(0).Data().at(4), "windows-injected");
-    EXPECT_FALSE(entries.at(0).Data().at(11).empty());
+    EXPECT_TRUE(entries.at(0).Data().at(11).has_value());
     EXPECT_EQ(entries.at(0).Data().at(12), "MOUSE_MOVE_RELATIVE");
     EXPECT_EQ(entries.at(0).Data().at(13), "windows");
     EXPECT_EQ(entries.at(0).Data().at(14), "0");
@@ -94,8 +94,8 @@ TEST(EvgetWindowsTransformer, MouseMoveAbsoluteFirstHasNoPosition) {
 
     ASSERT_EQ(entries.size(), 1);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    EXPECT_EQ(entries.at(0).Data().at(2), "");
-    EXPECT_EQ(entries.at(0).Data().at(3), "");
+    EXPECT_FALSE(entries.at(0).Data().at(2).has_value());
+    EXPECT_FALSE(entries.at(0).Data().at(3).has_value());
     EXPECT_EQ(entries.at(0).Data().at(12), "MOUSE_MOVE_ABSOLUTE");
 }
 
@@ -131,7 +131,7 @@ TEST(EvgetWindowsTransformer, ScrollWheelUpNegatesSign) {
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     EXPECT_EQ(entries.at(0).Data().at(12), "RI_MOUSE_WHEEL");
     EXPECT_EQ(entries.at(0).Data().at(15), evget::FromDouble(-1.0));
-    EXPECT_EQ(entries.at(0).Data().at(16), "");
+    EXPECT_FALSE(entries.at(0).Data().at(16).has_value());
 }
 
 TEST(EvgetWindowsTransformer, ScrollWheelDownNegatesSign) {
@@ -147,7 +147,7 @@ TEST(EvgetWindowsTransformer, ScrollWheelDownNegatesSign) {
     ASSERT_EQ(entries.size(), 1);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     EXPECT_EQ(entries.at(0).Data().at(15), evget::FromDouble(1.0));
-    EXPECT_EQ(entries.at(0).Data().at(16), "");
+    EXPECT_FALSE(entries.at(0).Data().at(16).has_value());
 }
 
 TEST(EvgetWindowsTransformer, ScrollHorizontalHasSign) {
@@ -163,7 +163,7 @@ TEST(EvgetWindowsTransformer, ScrollHorizontalHasSign) {
     ASSERT_EQ(entries.size(), 1);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
     EXPECT_EQ(entries.at(0).Data().at(12), "RI_MOUSE_HWHEEL");
-    EXPECT_EQ(entries.at(0).Data().at(15), "");
+    EXPECT_FALSE(entries.at(0).Data().at(15).has_value());
     EXPECT_EQ(entries.at(0).Data().at(16), evget::FromDouble(1.0));
 }
 
@@ -249,7 +249,7 @@ TEST(EvgetWindowsTransformer, MouseClickCoversAllButtons) {
         const auto& fields = entries.at(0).Data();
         EXPECT_EQ(
             (std::vector{fields.at(16), fields.at(17), fields.at(18)}),
-            (std::vector{std::to_string(button.expected_id), button.expected_name, std::string{"0"}})
+            (std::vector<evget::EntryValue>{std::to_string(button.expected_id), button.expected_name, "0"})
         );
     }
 }
@@ -287,7 +287,7 @@ TEST(EvgetWindowsTransformer, DeadKeyHasCharacterUnset) {
     ASSERT_EQ(entries.size(), 1);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kKey);
     EXPECT_EQ(entries.at(0).Data().at(16), "a");
-    EXPECT_EQ(entries.at(0).Data().at(17), "");
+    EXPECT_FALSE(entries.at(0).Data().at(17).has_value());
 }
 
 TEST(EvgetWindowsTransformer, KeyReleaseHasNoCharacterLookup) {
@@ -397,9 +397,31 @@ TEST(EvgetWindowsTransformer, FocusWindowAbsentHasFieldsEmpty) {
     const auto& entries = data.Entries();
 
     ASSERT_EQ(entries.size(), 1);
-    EXPECT_EQ(entries.at(0).Data().at(5), "");
-    EXPECT_EQ(entries.at(0).Data().at(6), "");
-    EXPECT_EQ(entries.at(0).Data().at(10), "");
+    EXPECT_FALSE(entries.at(0).Data().at(5).has_value());
+    EXPECT_FALSE(entries.at(0).Data().at(6).has_value());
+    EXPECT_FALSE(entries.at(0).Data().at(10).has_value());
+}
+
+TEST(EvgetWindowsTransformer, FocusWindowUntitled) {
+    NiceMock<WindowsQueryApiMock> query{};
+    evgetwindows::ModifierTracker tracker{};
+    const evgetwindows::FocusWindowInfo info{
+        .name = "",
+        .position_x = 10.0,
+        .position_y = 20.0,
+        .width = 800.0,
+        .height = 600.0,
+    };
+    EXPECT_CALL(query, FocusWindow()).WillRepeatedly(Return(std::optional{info}));
+
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+    auto data = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeMouseMoveRelative(1, 1)});
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 1);
+    EXPECT_FALSE(entries.at(0).Data().at(5).has_value());
+    EXPECT_EQ(entries.at(0).Data().at(8), evget::FromDouble(800.0));
 }
 
 TEST(EvgetWindowsTransformer, HidEventNoEntries) {
@@ -466,8 +488,8 @@ TEST(EvgetWindowsTransformer, DownCreatesMoveAndPress) {
     ASSERT_EQ(entries.size(), 2);
 
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    EXPECT_EQ(entries.at(0).Data().at(2), "");
-    EXPECT_EQ(entries.at(0).Data().at(3), "");
+    EXPECT_FALSE(entries.at(0).Data().at(2).has_value());
+    EXPECT_FALSE(entries.at(0).Data().at(3).has_value());
     EXPECT_EQ(entries.at(0).Data().at(12), "RIM_TYPEHID");
     EXPECT_EQ(entries.at(0).Data().at(13), "windows");
     EXPECT_EQ(entries.at(0).Data().at(14), "3");
@@ -477,8 +499,8 @@ TEST(EvgetWindowsTransformer, DownCreatesMoveAndPress) {
     EXPECT_EQ(entries.at(1).Data().at(12), "RIM_TYPEHID");
     EXPECT_EQ(entries.at(1).Data().at(14), "3");
     EXPECT_EQ(entries.at(1).Data().at(15), "7");
-    EXPECT_EQ(entries.at(1).Data().at(16), "");
-    EXPECT_EQ(entries.at(1).Data().at(17), "");
+    EXPECT_FALSE(entries.at(1).Data().at(16).has_value());
+    EXPECT_FALSE(entries.at(1).Data().at(17).has_value());
     EXPECT_EQ(entries.at(1).Data().at(18), "0");
 }
 
@@ -709,13 +731,13 @@ TEST(EvgetWindowsTransformer, TouchMotionWithoutAxisRange) {
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
     auto second = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     ASSERT_EQ(second.Entries().size(), 1);
-    EXPECT_EQ(second.Entries().at(0).Data().at(2), "");
-    EXPECT_EQ(second.Entries().at(0).Data().at(3), "");
+    EXPECT_FALSE(second.Entries().at(0).Data().at(2).has_value());
+    EXPECT_FALSE(second.Entries().at(0).Data().at(3).has_value());
 
     auto third = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     ASSERT_EQ(third.Entries().size(), 1);
-    EXPECT_EQ(third.Entries().at(0).Data().at(2), "");
-    EXPECT_EQ(third.Entries().at(0).Data().at(3), "");
+    EXPECT_FALSE(third.Entries().at(0).Data().at(2).has_value());
+    EXPECT_FALSE(third.Entries().at(0).Data().at(3).has_value());
 }
 
 TEST(EvgetWindowsTransformer, TouchMotionWithoutMonitor) {
@@ -734,13 +756,13 @@ TEST(EvgetWindowsTransformer, TouchMotionWithoutMonitor) {
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)}));
     auto second = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     ASSERT_EQ(second.Entries().size(), 1);
-    EXPECT_EQ(second.Entries().at(0).Data().at(2), "");
-    EXPECT_EQ(second.Entries().at(0).Data().at(3), "");
+    EXPECT_FALSE(second.Entries().at(0).Data().at(2).has_value());
+    EXPECT_FALSE(second.Entries().at(0).Data().at(3).has_value());
 
     auto third = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
     ASSERT_EQ(third.Entries().size(), 1);
-    EXPECT_EQ(third.Entries().at(0).Data().at(2), "");
-    EXPECT_EQ(third.Entries().at(0).Data().at(3), "");
+    EXPECT_FALSE(third.Entries().at(0).Data().at(2).has_value());
+    EXPECT_FALSE(third.Entries().at(0).Data().at(3).has_value());
 }
 
 TEST(EvgetWindowsTransformer, TouchContactUpMoveAndRelease) {
@@ -761,13 +783,13 @@ TEST(EvgetWindowsTransformer, TouchContactUpMoveAndRelease) {
 
     ASSERT_EQ(entries.size(), 2);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    EXPECT_EQ(entries.at(0).Data().at(2), "");
-    EXPECT_EQ(entries.at(0).Data().at(3), "");
+    EXPECT_FALSE(entries.at(0).Data().at(2).has_value());
+    EXPECT_FALSE(entries.at(0).Data().at(3).has_value());
     EXPECT_EQ(entries.at(0).Data().at(15), "7");
     EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     EXPECT_EQ(entries.at(1).Data().at(15), "7");
-    EXPECT_EQ(entries.at(1).Data().at(16), "");
-    EXPECT_EQ(entries.at(1).Data().at(17), "");
+    EXPECT_FALSE(entries.at(1).Data().at(16).has_value());
+    EXPECT_FALSE(entries.at(1).Data().at(17).has_value());
     EXPECT_EQ(entries.at(1).Data().at(18), "1");
 }
 
@@ -815,7 +837,7 @@ TEST(EvgetWindowsTransformer, TouchContactNoConfidenceIsReleased) {
 
     ASSERT_EQ(entries.size(), 2);
     EXPECT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
-    EXPECT_EQ(entries.at(0).Data().at(2), "");
+    EXPECT_FALSE(entries.at(0).Data().at(2).has_value());
     EXPECT_EQ(entries.at(0).Data().at(15), "3");
     EXPECT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     EXPECT_EQ(entries.at(1).Data().at(15), "3");
@@ -969,13 +991,13 @@ TEST(EvgetWindowsTransformer, TouchpadButtonOneIsLeftClick) {
     ASSERT_EQ(press.Entries().size(), 1);
     EXPECT_EQ(press.Entries().at(0).Type(), evget::EntryType::kMouseClick);
     EXPECT_EQ(press.Entries().at(0).Data().at(14), "2");
-    EXPECT_EQ(press.Entries().at(0).Data().at(15), "");
+    EXPECT_FALSE(press.Entries().at(0).Data().at(15).has_value());
     EXPECT_EQ(press.Entries().at(0).Data().at(16), std::to_string(0x110));
     EXPECT_EQ(press.Entries().at(0).Data().at(17), "BTN_LEFT");
     EXPECT_EQ(press.Entries().at(0).Data().at(18), "0");
 
     ASSERT_EQ(release.Entries().size(), 1);
-    EXPECT_EQ(release.Entries().at(0).Data().at(15), "");
+    EXPECT_FALSE(release.Entries().at(0).Data().at(15).has_value());
     EXPECT_EQ(release.Entries().at(0).Data().at(16), std::to_string(0x110));
     EXPECT_EQ(release.Entries().at(0).Data().at(17), "BTN_LEFT");
     EXPECT_EQ(release.Entries().at(0).Data().at(18), "1");

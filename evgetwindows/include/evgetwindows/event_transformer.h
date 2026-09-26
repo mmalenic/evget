@@ -202,8 +202,11 @@ T& EventTransformer::SetWindowFields(T& builder) {
         return builder;
     }
 
-    builder.FocusWindowName(window->name)
-        .FocusWindowPositionX(window->position_x)
+    if (!window->name.empty()) {
+        builder.FocusWindowName(window->name);
+    }
+
+    builder.FocusWindowPositionX(window->position_x)
         .FocusWindowPositionY(window->position_y)
         .FocusWindowWidth(window->width)
         .FocusWindowHeight(window->height);

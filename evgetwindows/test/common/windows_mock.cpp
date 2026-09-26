@@ -356,16 +356,16 @@ void ExpectTouchEqualitySequence(evget::DeviceType device_type, std::string_view
     const auto lift = transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEvent(report)});
 
     const std::array<TouchEqualityRow, 2> down_rows{
-        {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
-         {.type = evget::EntryType::kMouseClick, .position = "", .action = "0"}}
+        {{.type = evget::EntryType::kMouseMove, .position = std::nullopt, .action = std::nullopt},
+         {.type = evget::EntryType::kMouseClick, .position = std::nullopt, .action = "0"}}
     };
     const auto motion_position = evget::FromDouble(kTestMonitorWidth / 16);
     const std::array<TouchEqualityRow, 1> motion_rows{
-        {{.type = evget::EntryType::kMouseMove, .position = motion_position, .action = ""}}
+        {{.type = evget::EntryType::kMouseMove, .position = motion_position, .action = std::nullopt}}
     };
     const std::array<TouchEqualityRow, 2> lift_rows{
-        {{.type = evget::EntryType::kMouseMove, .position = "", .action = ""},
-         {.type = evget::EntryType::kMouseClick, .position = "", .action = "1"}}
+        {{.type = evget::EntryType::kMouseMove, .position = std::nullopt, .action = std::nullopt},
+         {.type = evget::EntryType::kMouseClick, .position = std::nullopt, .action = "1"}}
     };
 
     ExpectTouchEqualityRows(down, device_column, down_rows);
