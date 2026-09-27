@@ -179,7 +179,7 @@ void EventSwitchPointerKey::ButtonEvent(
     }
     // NOLINTEND(hicpp-signed-bitwise)
 
-    const auto& button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
+    const auto button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
     if (button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
         return;

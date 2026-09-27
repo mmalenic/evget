@@ -101,9 +101,9 @@ public:
      * \brief Get the name of a button for a specific device.
      * \param device_id the ID of the device
      * \param button button identifier
-     * \return reference to the button name string
+     * \return the button name, or `nullopt` if unknown
      */
-    [[nodiscard]] const std::string& GetButtonName(int device_id, int button) const;
+    [[nodiscard]] std::optional<std::string> GetButtonName(int device_id, int button) const;
 
     /**
      * \brief Get the device type for the given device ID and event type.
@@ -310,9 +310,9 @@ void EventSwitch::AddButtonEvent(
         .Button(button)
         .EventSource(std::string{kEventSourceName});
 
-    const auto& button_name = button_map_[event.sourceid][button];
-    if (!button_name.empty()) {
-        builder.ButtonName(button_name);
+    auto button_name = GetButtonName(event.sourceid, button);
+    if (button_name.has_value()) {
+        builder.ButtonName(*std::move(button_name));
     }
 
     SetModifierValue(query_pointer.modifier_state.effective, builder);

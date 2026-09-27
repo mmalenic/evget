@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
+#include <string>
 
 #include "common/x11_mock.h"
 #include "evget/event/button_action.h"
@@ -48,7 +49,7 @@ TEST(XEventSwitchTest, GetButtonName) {
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
 
-    ASSERT_THROW(static_cast<void>(x_event_switch.GetButtonName(1, 0)), std::out_of_range);
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
 
     EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
         .WillOnce(
@@ -61,7 +62,31 @@ TEST(XEventSwitchTest, GetButtonName) {
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
     x_event_switch.SetButtonMap(button_class_info, 1);
-    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "");
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 1).has_value());
+}
+
+TEST(XEventSwitchTest, GetButtonNameReturnsLabel) {
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto button_class_info = test::CreateXiButtonClassInfo(labels, mask);
+    std::string label_name = "Button Left";
+
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
+        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
+    EXPECT_CALL(x_wrapper_mock, AtomName)
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({label_name.data(), [](void*) { return 0; }})
+            )
+        );
+
+    x_event_switch.SetButtonMap(button_class_info, 1);
+    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "Button Left");
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 1).has_value());
+    ASSERT_FALSE(x_event_switch.GetButtonName(2, 0).has_value());
 }
 
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-function-cognitive-complexity)
