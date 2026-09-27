@@ -56,6 +56,9 @@ std::array<RAWINPUTDEVICE, 4> MakeRawInputDevices(DWORD flags, HWND target) {
 
 } // namespace
 
+evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor)
+    : MessageWindow{executor, {}} {}
+
 evgetwindows::MessageWindow::MessageWindow(const boost::asio::any_io_executor& executor, std::function<void()> on_stop)
     : class_name_{MakeClassName()}, on_stop_{std::move(on_stop)}, channel_{executor, kRawEventChannelCapacity} {}
 

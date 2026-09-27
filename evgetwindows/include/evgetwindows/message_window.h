@@ -60,11 +60,17 @@ enum class EnqueueOutcome : std::uint8_t {
 class MessageWindow {
 public:
     /**
+     * \brief Construct a message window.
+     * \param executor the executor for the channel
+     */
+    explicit MessageWindow(const boost::asio::any_io_executor& executor);
+
+    /**
      * \brief Construct a message window where the channel finishes the executor.
      * \param executor the executor for the channel
      * \param on_stop called on the thread for a close or end request
      */
-    explicit MessageWindow(const boost::asio::any_io_executor& executor, std::function<void()> on_stop = {});
+    MessageWindow(const boost::asio::any_io_executor& executor, std::function<void()> on_stop);
 
     MessageWindow(const MessageWindow&) = delete;
     MessageWindow(MessageWindow&&) noexcept = delete;
