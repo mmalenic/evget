@@ -208,7 +208,7 @@ void EventSwitchPointerKey::KeyEvent(
     const std::string character = x_wrapper_.get().LookupCharacter(raw_event, query_pointer, key_sym);
 
     evget::ButtonAction action = evget::ButtonAction::kRelease;
-    if (raw_event.evtype != XI_KeyRelease) {
+    if (raw_event.evtype != XI_RawKeyRelease) {
         // NOLINTBEGIN(hicpp-signed-bitwise)
         action = (raw_event.flags & XIKeyRepeat) ? evget::ButtonAction::kRepeat : evget::ButtonAction::kPress;
         // NOLINTEND(hicpp-signed-bitwise)

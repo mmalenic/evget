@@ -235,6 +235,37 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
+TEST(XEventSwitchCoreTest, KeyReleaseStoredCorrectly) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+
+    std::array<XIAnyClassInfo*, 3> any_class_info = {};
+    std::string name = "name";
+    auto xi_device_info = test::CreateXiDeviceInfo(any_class_info, name);
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto device_event = test::CreateXiRawEvent(XI_RawKeyRelease, valuator_mask, values);
+
+    auto x_event = test::CreateXEvent(device_event);
+    test::SetXWrapperKeyMocks(x_wrapper_mock, device_event, x_event);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
+
+    x_event_switch_pointer_key
+        .RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info, x_event_switch);
+
+    auto data = evget::Data{};
+    x_event_switch_pointer_key.SwitchOnEvent(input_event, data, x_event_switch, [](Time) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    auto entries = data.Entries();
+    ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kKey);
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawKeyRelease");
+    ASSERT_EQ(entries.at(0).Data().at(18), "1");
+}
+
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(XEventSwitchCoreTest, TestMotionEvent) {
     test::X11ApiMock x_wrapper_mock{};
