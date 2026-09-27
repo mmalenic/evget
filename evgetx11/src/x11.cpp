@@ -1,5 +1,6 @@
 #include "evgetx11/x11.h"
 
+#include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
@@ -12,6 +13,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 
 namespace {
 constexpr int kUtf8MaxBytes = 4;
@@ -300,18 +302,12 @@ evgetx11::X11::GetPropertyResult evgetx11::X11::GetProperty(Atom atom, Window wi
 }
 
 std::optional<std::string> evgetx11::X11::GetWindowName(Window window) {
-    auto wm_name_atom = GetAtom("_NET_WM_NAME");
-    if (!wm_name_atom) {
-        return std::nullopt;
+    GetPropertyResult name{.property = {nullptr, XFree}};
+    if (auto net_wm_name = GetAtom("_NET_WM_NAME"); net_wm_name.has_value()) {
+        name = GetProperty(*net_wm_name, window);
     }
-
-    auto name = GetProperty(*wm_name_atom, window);
     if (name.n_items == 0) {
-        wm_name_atom = GetAtom("WM_NAME");
-        if (!wm_name_atom) {
-            return std::nullopt;
-        }
-        name = GetProperty(*wm_name_atom, window);
+        name = GetProperty(XA_WM_NAME, window);
     }
 
     if (name.property == nullptr) {
@@ -320,8 +316,12 @@ std::optional<std::string> evgetx11::X11::GetWindowName(Window window) {
 
     // Reinterpret cast should be safe converting unsigned char to char.
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    return std::string{reinterpret_cast<const char*>(name.property.get()), name.n_items};
+    const std::string_view text{reinterpret_cast<const char*>(name.property.get()), name.n_items};
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+    if (name.type == XA_STRING) {
+        return Latin1ToUtf8(text);
+    }
+    return std::string{text};
 }
 
 std::optional<Window> evgetx11::X11::GetActiveWindow() {
