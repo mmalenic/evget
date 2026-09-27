@@ -6,6 +6,7 @@
 #include <nlohmann/json_fwd.hpp>
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <ostream>
 #include <sstream>
@@ -163,13 +164,14 @@ TEST(JsonStorageTest, MouseMoveWritesNulls) {
     auto json = nlohmann::json::parse(stream.str());
     const auto& fields = json["entries"][0]["fields"];
     ASSERT_EQ(fields.size(), evget::detail::kMouseMoveNFields);
+    std::map<std::string, std::string> non_null{};
     for (const auto& field : fields) {
-        if (field["name"] == "timestamp" || field["name"] == "device_type") {
-            EXPECT_TRUE(field["data"].is_string()) << field["name"];
-        } else {
-            EXPECT_TRUE(field["data"].is_null()) << field["name"];
+        if (!field["data"].is_null()) {
+            non_null.emplace(field["name"].get<std::string>(), field["data"].type_name());
         }
     }
+    const std::map<std::string, std::string> expected{{"device_type", "string"}, {"timestamp", "string"}};
+    EXPECT_EQ(non_null, expected);
 }
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
