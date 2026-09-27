@@ -11,7 +11,7 @@
 #include <signal.h> // NOLINT(hicpp-deprecated-headers,modernize-deprecated-headers)
 #endif
 
-#ifdef FEATURE_EVGETWINDOWS
+#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETWINDOWS)
 #include <chrono>
 #endif
 
@@ -44,8 +44,24 @@
 #endif
 
 namespace {
-#ifdef FEATURE_EVGETWINDOWS
+#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETWINDOWS)
 constexpr std::chrono::seconds kChannelTimeout{2};
+#endif
+
+#ifdef FEATURE_EVGETX11
+void StopX11Source(evgetx11::Backend& backend, const evget::Scheduler& scheduler) {
+    auto handler = backend.Handler();
+    if (!handler.has_value()) {
+        return;
+    }
+
+    // This must go before the stop request so the loop exits gracefully.
+    handler->get().StopWhenDrained();
+    backend.RequestStop();
+    if (!scheduler.IsStopped() && !handler->get().WaitFinished(kDrainTimeout)) {
+        spdlog::error("X11 events did not exit within {}, dropping events", kChannelTimeout);
+    }
+}
 #endif
 
 int Run(int argc, char** argv) {
@@ -167,12 +183,7 @@ int Run(int argc, char** argv) {
             spdlog::error("{}", handler.error());
             return 1;
         }
-        shutdown->SetSource([&x11_backend] {
-            auto handler = x11_backend->Handler();
-            if (handler.has_value()) {
-                handler->get().Stop();
-            }
-        });
+        shutdown->SetSource([&x11_backend, scheduler] { StopX11Source(*x11_backend, *scheduler); });
         scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
     }
 #endif
