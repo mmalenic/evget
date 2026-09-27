@@ -172,6 +172,27 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
     ASSERT_EQ(entries.at(0).Data().at(18), "0");
 }
 
+TEST(XEventSwitchPointerKeyTest, ButtonEventUnregisteredDevice) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto device_event = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
+    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(device_event)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
+
+    auto data = evget::Data{};
+    ASSERT_NO_THROW(
+        static_cast<void>(x_event_switch_pointer_key.SwitchOnEvent(input_event, data, x_event_switch, [](Time) {
+            return std::optional{std::chrono::microseconds{1}};
+        }))
+    );
+    ASSERT_TRUE(data.Entries().empty());
+}
+
 TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

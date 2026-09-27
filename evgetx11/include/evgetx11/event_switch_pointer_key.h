@@ -173,14 +173,17 @@ void EventSwitchPointerKey::ButtonEvent(
     evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
 ) {
     auto raw_event = event.ViewData<XIRawEvent>();
-    auto button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
     // NOLINTBEGIN(hicpp-signed-bitwise)
-    if (!x_event_switch.HasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated) ||
-        button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
-        button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
+    if (!x_event_switch.HasDevice(raw_event.sourceid) || (raw_event.flags & XIPointerEmulated)) {
         return;
     }
     // NOLINTEND(hicpp-signed-bitwise)
+
+    const auto& button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
+    if (button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
+        button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
+        return;
+    }
 
     x_event_switch
         .AddButtonEvent(raw_event, event.GetTimestamp(), data, action, raw_event.detail, system_event, get_time);
