@@ -15,6 +15,7 @@
 #include <evget/event/device_type.h>
 #include <evget/event/modifier_value.h>
 #include <evget/event/schema.h>
+#include <evgetx11/log_once.h>
 #include <evgetx11/x11.h>
 #include <spdlog/spdlog.h>
 
@@ -185,6 +186,7 @@ private:
     std::unordered_map<int, std::string> id_to_name_;
     evget::DeviceId<int> device_ids_;
     int pointer_id_{};
+    LogOnce log_;
 };
 
 template <evget::BuilderHasModifier T>
@@ -223,12 +225,12 @@ T& EventSwitch::SetWindowFields(T& builder) {
     auto window = x_wrapper_.get().GetActiveWindow();
 
     if (!window.has_value()) {
-        spdlog::warn("failed to get active window, falling back on focus window");
+        log_.Warn("failed to get active window, falling back on focus window");
         window = x_wrapper_.get().GetFocusWindow();
     }
 
     if (!window.has_value()) {
-        spdlog::warn("failed to get any focus window");
+        log_.Warn("failed to get any focus window");
         return builder;
     }
 

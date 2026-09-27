@@ -21,6 +21,7 @@
 #include "evget/error.h"
 #include "evget/event/concepts.h"
 #include "evget/util.h"
+#include "evgetx11/log_once.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 namespace evgetx11 {
@@ -361,6 +362,7 @@ private:
     [[nodiscard]] std::optional<std::string> MonitorForPoint(Window root, double root_x, double root_y);
 
     std::reference_wrapper<Display> display_;
+    mutable LogOnce log_;
 
     std::unique_ptr<_XIM, decltype(&XCloseIM)> xim_ =
         std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display_.get(), nullptr, nullptr, nullptr), XCloseIM};

@@ -142,7 +142,7 @@ std::unique_ptr<char[], decltype(&XFree)> evgetx11::X11::AtomName(Atom atom) {
 std::optional<Atom> evgetx11::X11::GetAtom(const char* atom_name) const {
     Atom atom = XInternAtom(&display_.get(), atom_name, True);
     if (atom == None) {
-        spdlog::warn("failed to get {} atom", atom_name);
+        log_.Warn(std::format("failed to get {} atom", atom_name));
         return std::nullopt;
     }
     return atom;
@@ -227,7 +227,7 @@ std::optional<std::string> evgetx11::X11::MonitorForPoint(Window root, double ro
         XRRFreeMonitors
     };
     if (monitors == nullptr || count <= 0) {
-        spdlog::warn("failed to query monitors");
+        log_.Warn("failed to query monitors");
         return std::nullopt;
     }
 
@@ -288,11 +288,11 @@ evgetx11::X11::GetPropertyResult evgetx11::X11::GetProperty(Atom atom, Window wi
     auto prop = std::unique_ptr<unsigned char[], decltype(&XFree)>{data, XFree};
 
     if (status == BadWindow) {
-        spdlog::warn("window does not exist");
+        log_.Warn("window does not exist");
         return {.property = {nullptr, XFree}};
     }
     if (status != Success) {
-        spdlog::warn("failed to get window property");
+        log_.Warn("failed to get window property");
         return {.property = {nullptr, XFree}};
     }
 
@@ -338,7 +338,7 @@ std::optional<Window> evgetx11::X11::GetActiveWindow() {
         // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     }
 
-    spdlog::warn("failed to get active window");
+    log_.Warn("failed to get active window");
     return std::nullopt;
 }
 
@@ -348,7 +348,7 @@ std::optional<Window> evgetx11::X11::GetFocusWindow() {
 
     Status status = XGetInputFocus(&display_.get(), &window, &_revert);
     if (status != Success) {
-        spdlog::warn("failed to get focus window");
+        log_.Warn("failed to get focus window");
         return std::nullopt;
     }
 
@@ -364,7 +364,7 @@ std::optional<XWindowAttributes> evgetx11::X11::GetWindowAttributes(Window windo
 
     // XGetWindowAttributes returns non-zero on success.
     if (XGetWindowAttributes(&display_.get(), window, &attributes) == 0) {
-        spdlog::warn("failed to get window attributes");
+        log_.Warn("failed to get window attributes");
         return std::nullopt;
     }
 

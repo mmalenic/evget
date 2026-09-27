@@ -17,6 +17,7 @@ target_sources(
             ${SRC}/event_transformer.cpp
             ${SRC}/input_event.cpp
             ${SRC}/input_handler.cpp
+            ${SRC}/log_once.cpp
             ${SRC}/x11.cpp
     PUBLIC FILE_SET
            HEADERS
@@ -30,6 +31,7 @@ target_sources(
            ${INCLUDE}/event_transformer.h
            ${INCLUDE}/input_event.h
            ${INCLUDE}/input_handler.h
+           ${INCLUDE}/log_once.h
            ${INCLUDE}/x11.h
 )
 set_property(TARGET ${LIBRARY_NAME} PROPERTY OUTPUT_NAME evgetx11)
@@ -89,6 +91,7 @@ if(BUILD_TESTING)
                test/event_transformer.cpp
                test/input_event.cpp
                test/input_handler.cpp
+               test/log_once.cpp
                test/x11.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
