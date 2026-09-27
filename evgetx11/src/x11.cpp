@@ -8,8 +8,11 @@
 #include <spdlog/spdlog.h>
 
 #include <array>
+#include <cstddef>
+#include <cstdio>
 #include <format>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -28,7 +31,26 @@ constexpr int kUtf8ContinuationBits = 6;
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
 // cppcoreguidelines-pro-type-vararg, hicpp-vararg)
-evgetx11::X11::X11(Display& display) : display_{display} {}
+evgetx11::X11::X11(Display& display) : display_{display}, previous_error_handler_{XSetErrorHandler(OnError)} {}
+
+evgetx11::X11::~X11() {
+    XSetErrorHandler(previous_error_handler_);
+}
+
+int evgetx11::X11::OnError(Display* display, XErrorEvent* event) {
+    // Same buffer size as the Xlib default error handler.
+    std::array<char, BUFSIZ> text{};
+    if (display != nullptr) {
+        XGetErrorText(display, event->error_code, text.data(), static_cast<int>(text.size()));
+    }
+    const std::string description = text.front() == '\0' ? std::format("error {}", event->error_code) : text.data();
+
+    static std::mutex mutex;
+    static LogOnce log;
+    const std::scoped_lock lock{mutex};
+    log.Warn(std::format("X request {}.{} failed: {}", event->request_code, event->minor_code, description));
+    return 0;
+}
 
 std::string
 evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) {
@@ -180,9 +202,9 @@ evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
     double _win_y = 0;
     double root_x = 0;
     double root_y = 0;
-    XIButtonState button_state;
-    XIModifierState modifier_state;
-    XIGroupState group_state;
+    XIButtonState button_state{};
+    XIModifierState modifier_state{};
+    XIGroupState group_state{};
 
     bool found = false;
     for (auto i = 0; i < XScreenCount(&display_.get()); i++) {
