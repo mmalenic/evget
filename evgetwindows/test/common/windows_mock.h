@@ -141,7 +141,7 @@ evgetwindows::RawEvent MakeDeviceChangeRawEvent(HANDLE device, bool arrival);
 
 /// \brief The libinput touch row equivalent.
 struct TouchEqualityRow {
-    evget::EntryType type;
+    evget::EntryType type{};
     evget::EntryValue position;
     evget::EntryValue action;
 };
