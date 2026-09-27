@@ -158,7 +158,7 @@ public:
      *
      * This function calls `XGetInputFocus`.
      *
-     * \return optional window ID, `nullopt` if no focus window
+     * \return optional window ID, `nullopt` if no window has focus
      */
     virtual std::optional<Window> GetFocusWindow() = 0;
 

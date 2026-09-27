@@ -343,12 +343,12 @@ std::optional<Window> evgetx11::X11::GetActiveWindow() {
 }
 
 std::optional<Window> evgetx11::X11::GetFocusWindow() {
-    Window window = 0;
+    Window window = None;
     int _revert = 0;
 
-    Status status = XGetInputFocus(&display_.get(), &window, &_revert);
-    if (status != Success) {
-        log_.Warn("failed to get focus window");
+    // XGetInputFocus has no status, need to check window instead.
+    XGetInputFocus(&display_.get(), &window, &_revert);
+    if (window == None || window == PointerRoot) {
         return std::nullopt;
     }
 
