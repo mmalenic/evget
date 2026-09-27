@@ -12,16 +12,20 @@
 #include <evget/event/schema.h>
 #include <evgetx11/input_event.h>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "common/log.h"
 #include "common/x11_mock.h"
 #include "evgetx11/event_switch.h"
 #include "evgetx11/event_switch_pointer_key.h"
+#include "evgetx11/log_once.h"
 // clang-format off
 #include "evgetx11/event_transformer.h"
 // clang-format on
@@ -89,7 +93,7 @@ TEST(EventTransformer, TouchEvents) {
     }};
     std::array xi_devices{test::CreateXiDeviceInfo(any_class_info, device_name)};
 
-    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices.front(), xi_devices.front(), device_type);
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices, xi_devices, device_type);
 
     std::array<unsigned char, 1> valuator_mask = {1};
     std::array<double, 1> values = {1};
@@ -116,16 +120,9 @@ TEST(EventTransformer, RemovedDeviceNewUuid) {
     std::string device_name = "touchscreen";
     std::string device_type = XI_TOUCHSCREEN;
     std::array<XIAnyClassInfo*, 3> any_class_info = {};
-    XDeviceInfo device{
-        .id = 1,
-        .type = 1,
-        .name = device_name.data(),
-        .num_classes = 0,
-        .use = IsXExtensionPointer,
-        .inputclassinfo = nullptr
-    };
-    auto xi_device = test::CreateXiDeviceInfo(any_class_info, device_name);
-    test::SetXWrapperDeviceMocks(x_wrapper_mock, device, xi_device, device_type);
+    std::array devices{test::CreateXDeviceInfo(1, device_name)};
+    std::array xi_devices{test::CreateXiDeviceInfo(any_class_info, device_name)};
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices, xi_devices, device_type);
 
     std::array<unsigned char, 1> valuator_mask = {1};
     std::array<double, 1> values = {1};
@@ -163,6 +160,67 @@ TEST(EventTransformer, RemovedDeviceNewUuid) {
     ASSERT_EQ(device_uuid(), first);
     ASSERT_TRUE(transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock)).Entries().empty());
     ASSERT_NE(device_uuid(), first);
+}
+
+TEST(EventTransformer, WarnUnlistedDevicesCount) {
+    const test::CapturedLog log{};
+    evgetx11::LogOnce log_once{};
+    std::string pointer = "pointer";
+    std::string master = "master";
+    std::array devices{test::CreateXDeviceInfo(1, pointer)};
+    std::array xi_devices{test::CreateXiDeviceInfo(1, pointer), test::CreateXiDeviceInfo(2, master)};
+
+    evgetx11::WarnUnlistedDevices(devices, xi_devices, log_once);
+
+    ASSERT_TRUE(log.Lines().empty());
+}
+
+TEST(EventTransformer, WarnUnlistedDevicesLargeId) {
+    const test::CapturedLog log{};
+    evgetx11::LogOnce log_once{};
+    std::string pointer = "pointer";
+    std::string tablet = "tablet";
+    constexpr int kLargeId = 200;
+    std::array devices{test::CreateXDeviceInfo(1, pointer)};
+    std::array xi_devices{test::CreateXiDeviceInfo(1, pointer), test::CreateXiDeviceInfo(kLargeId, tablet)};
+
+    evgetx11::WarnUnlistedDevices(devices, xi_devices, log_once);
+    evgetx11::WarnUnlistedDevices(devices, xi_devices, log_once);
+
+    const std::string message =
+        "device 'tablet' has ID 200, above the 127 that XInput 1 can list, so its events are not captured";
+    ASSERT_EQ(log.Lines(), (std::vector<std::string>{"warning " + message, "debug " + message}));
+}
+
+TEST(EventTransformer, WarnUnlistedDevicesSmallId) {
+    const test::CapturedLog log{};
+    evgetx11::LogOnce log_once{};
+    std::string pointer = "pointer";
+    std::string tablet = "tablet";
+    constexpr int kLargeId = 200;
+    constexpr int kLargestXi1Id = 127;
+    std::array devices{test::CreateXDeviceInfo(kLargeId, tablet)};
+    std::array xi_devices{test::CreateXiDeviceInfo(kLargeId, tablet), test::CreateXiDeviceInfo(kLargestXi1Id, pointer)};
+
+    evgetx11::WarnUnlistedDevices(devices, xi_devices, log_once);
+
+    ASSERT_TRUE(log.Lines().empty());
+}
+
+TEST(EventTransformer, RefreshDevicesNoWarn) {
+    const test::CapturedLog log{};
+    test::X11ApiMock x_wrapper_mock{};
+    std::string pointer = "pointer";
+    std::string master = "master";
+    std::string device_type = XI_MOUSE;
+    std::array devices{test::CreateXDeviceInfo(1, pointer)};
+    std::array xi_devices{test::CreateXiDeviceInfo(1, pointer), test::CreateXiDeviceInfo(2, master)};
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices, xi_devices, device_type);
+
+    auto transformer = std::move(evgetx11::EventTransformerBuilder{}.Touch()).Build(x_wrapper_mock);
+
+    ASSERT_NE(transformer, nullptr);
+    ASSERT_FALSE(std::ranges::any_of(log.Lines(), [](const std::string& line) { return line.starts_with("warning"); }));
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

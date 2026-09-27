@@ -79,6 +79,29 @@ XDeviceInfo test::CreateXDeviceInfo() {
     };
 }
 
+XDeviceInfo test::CreateXDeviceInfo(XID device_id, std::string& name) {
+    return {
+        .id = device_id,
+        .type = 1,
+        .name = name.data(),
+        .num_classes = 0,
+        .use = IsXExtensionPointer,
+        .inputclassinfo = nullptr
+    };
+}
+
+XIDeviceInfo test::CreateXiDeviceInfo(int device_id, std::string& name) {
+    return {
+        .deviceid = device_id,
+        .name = name.data(),
+        .use = XISlavePointer,
+        .attachment = 2,
+        .enabled = True,
+        .num_classes = 0,
+        .classes = nullptr
+    };
+}
+
 XIRawEvent
 test::CreateXiRawEvent(int evtype, std::array<unsigned char, 1>& valuator_mask, std::array<double, 1>& values) {
     return {
@@ -145,17 +168,17 @@ XEvent test::CreateXEvent(XIHierarchyEvent& event) {
 
 void test::SetXWrapperDeviceMocks(
     X11ApiMock& x_wrapper_mock,
-    XDeviceInfo& device,
-    XIDeviceInfo& xi_device,
+    std::span<XDeviceInfo> devices,
+    std::span<XIDeviceInfo> xi_devices,
     std::string& type_name
 ) {
-    EXPECT_CALL(x_wrapper_mock, ListInputDevices).WillRepeatedly([&device](int& n_devices) {
-        n_devices = 1;
-        return std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>{&device, [](XDeviceInfo*) {}};
+    EXPECT_CALL(x_wrapper_mock, ListInputDevices).WillRepeatedly([devices](int& n_devices) {
+        n_devices = static_cast<int>(devices.size());
+        return std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>{devices.data(), [](XDeviceInfo*) {}};
     });
-    EXPECT_CALL(x_wrapper_mock, QueryDevice).WillRepeatedly([&xi_device](int& n_devices) {
-        n_devices = 1;
-        return std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>{&xi_device, [](XIDeviceInfo*) {}};
+    EXPECT_CALL(x_wrapper_mock, QueryDevice).WillRepeatedly([xi_devices](int& n_devices) {
+        n_devices = static_cast<int>(xi_devices.size());
+        return std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>{xi_devices.data(), [](XIDeviceInfo*) {}};
     });
     EXPECT_CALL(x_wrapper_mock, AtomName).WillRepeatedly([&type_name](Atom) {
         return std::unique_ptr<char[], decltype(&XFree)>{type_name.data(), [](void*) { return 0; }};

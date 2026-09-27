@@ -70,10 +70,12 @@ XIHierarchyEvent CreateXiHierarchyEvent(std::span<XIHierarchyInfo> info);
 XEvent CreateXEvent(XIHierarchyEvent& event);
 void SetXWrapperDeviceMocks(
     X11ApiMock& x_wrapper_mock,
-    XDeviceInfo& device,
-    XIDeviceInfo& xi_device,
+    std::span<XDeviceInfo> devices,
+    std::span<XIDeviceInfo> xi_devices,
     std::string& type_name
 );
+XDeviceInfo CreateXDeviceInfo(XID device_id, std::string& name);
+XIDeviceInfo CreateXiDeviceInfo(int device_id, std::string& name);
 XIValuatorState CreateXiValuatorState(std::array<unsigned char, 1>& valuator_mask, std::array<double, 1>& values);
 evgetx11::QueryPointerResult CreatePointerResult();
 

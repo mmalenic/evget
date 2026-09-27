@@ -35,9 +35,22 @@
 #include "evgetx11/event_switch_pointer_key.h"
 #include "evgetx11/event_switch_touch.h"
 #include "evgetx11/input_event.h"
+#include "evgetx11/log_once.h"
 #include "evgetx11/x11.h"
 
 namespace evgetx11 {
+/**
+ * \brief Warn about each device XInput 2 reports but XInput 1 could not list.
+ * \param xi1_devices the devices `ListInputDevices` returned
+ * \param xi2_devices the devices `QueryDevice` returned
+ * \param log suppresses repeated warnings
+ */
+void WarnUnlistedDevices(
+    std::span<const XDeviceInfo> xi1_devices,
+    std::span<const XIDeviceInfo> xi2_devices,
+    LogOnce& log
+);
+
 /**
  * \brief Transforms X11 InputEvent objects into the evget `Data` format.
  * \tparam Switches Variadic template parameter for event processing types
@@ -82,6 +95,7 @@ private:
 
     std::tuple<Switches...> switches_;
     std::optional<int> pointer_id_;
+    LogOnce log_;
 };
 
 /**
@@ -130,9 +144,11 @@ void EventTransformer<Switches...>::RefreshDevices() {
     auto info = x_wrapper_.get().ListInputDevices(n_devices);
     auto xi2_info = x_wrapper_.get().QueryDevice(xi2_n_devices);
 
-    if (n_devices != xi2_n_devices) {
-        spdlog::warn("Devices with ids greater than 127 are not supported.");
-    }
+    WarnUnlistedDevices(
+        {info.get(), static_cast<std::size_t>(n_devices)},
+        {xi2_info.get(), static_cast<std::size_t>(xi2_n_devices)},
+        log_
+    );
 
     std::map<int, std::reference_wrapper<const XIDeviceInfo>> xi2_devices{};
     for (int i = 0; i < xi2_n_devices; i++) {
