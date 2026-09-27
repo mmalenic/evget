@@ -8,6 +8,8 @@
 
 #include <X11/Xlib.h>
 
+#include <memory>
+
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
 #include "evgetx11/x11.h"
@@ -55,6 +57,12 @@ public:
      */
     static InputEvent NextEvent(X11Api& x_wrapper);
 
+    InputEvent(InputEvent&&) noexcept = default;
+    InputEvent& operator=(InputEvent&& other) noexcept;
+    InputEvent(const InputEvent&) = delete;
+    InputEvent& operator=(const InputEvent&) = delete;
+    ~InputEvent() = default;
+
 private:
     /**
      * \brief Private constructor for creating InputEvent instances.
@@ -62,7 +70,8 @@ private:
      */
     explicit InputEvent(X11Api& x_wrapper);
 
-    evget::InputEvent<XEvent> event_;
+    // The cookie_ points into *event_, this allows the address to go across moves.
+    std::unique_ptr<evget::InputEvent<XEvent>> event_;
     XEventPointer cookie_;
 };
 

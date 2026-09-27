@@ -198,4 +198,10 @@ void test::SetXWrapperMocks(X11ApiMock& x_wrapper_mock) {
         );
 }
 
+void test::SetXWrapperInPlaceEventDataMocks(X11ApiMock& x_wrapper_mock) {
+    EXPECT_CALL(x_wrapper_mock, EventData).WillRepeatedly([](XEvent& event) {
+        return evgetx11::XEventPointer{&event.xcookie, [](XGenericEventCookie*) {}};
+    });
+}
+
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

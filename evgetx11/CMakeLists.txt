@@ -81,8 +81,13 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/x11_mock.cpp test/common/x11_mock.h test/event_switch.cpp test/event_switch_pointer_key.cpp
-               test/event_switch_touch.cpp test/event_transformer.cpp
+        PUBLIC test/common/x11_mock.cpp
+               test/common/x11_mock.h
+               test/event_switch.cpp
+               test/event_switch_pointer_key.cpp
+               test/event_switch_touch.cpp
+               test/event_transformer.cpp
+               test/input_event.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

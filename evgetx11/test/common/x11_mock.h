@@ -70,6 +70,12 @@ evgetx11::QueryPointerResult CreatePointerResult();
 void SetXWrapperEventMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
 void SetXWrapperKeyMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_event, XEvent& x_event);
 void SetXWrapperMocks(X11ApiMock& x_wrapper_mock);
+
+/**
+ * \brief Make `EventData` and return the cookie inside the event.
+ * \param x_wrapper_mock the mock
+ */
+void SetXWrapperInPlaceEventDataMocks(X11ApiMock& x_wrapper_mock);
 } // namespace test
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
