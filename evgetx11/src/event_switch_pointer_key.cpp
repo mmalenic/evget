@@ -1,5 +1,6 @@
 #include "evgetx11/event_switch_pointer_key.h"
 
+#include <X11/X.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
 #include <evget/event/device_type.h>
@@ -55,6 +56,9 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
         scroll_map_[device_id][scroll_info->number] = *scroll_info;
     }
     for (const auto* valuator_info : valuator_infos) {
+        if (valuator_info->label == None) {
+            continue;
+        }
         auto valuator_name = x_wrapper_.get().AtomName(valuator_info->label);
         if (valuator_name) {
             if (strcmp(valuator_name.get(), AXIS_LABEL_PROP_ABS_X) == 0 ||

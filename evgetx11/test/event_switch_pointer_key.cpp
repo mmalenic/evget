@@ -35,7 +35,7 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
         .type = XIValuatorClass,
         .sourceid = 0,
         .number = 0,
-        .label = 0,
+        .label = 1,
         .min = 0,
         .max = 0,
         .value = 0,
@@ -86,6 +86,40 @@ TEST(XEventSwitchPointerKeyTest, TestRefreshDevices) {
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
                                                                                               }})));
+
+    x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi2_device_info, x_event_switch);
+}
+
+TEST(XEventSwitchPointerKeyTest, RefreshDeviceSkipsValuators) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+
+    XIValuatorClassInfo valuator_info{
+        .type = XIValuatorClass,
+        .sourceid = 0,
+        .number = 0,
+        .label = None,
+        .min = 0,
+        .max = 0,
+        .value = 0,
+        .resolution = 0,
+        .mode = 0
+    };
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::array classes = {reinterpret_cast<XIAnyClassInfo*>(&valuator_info)};
+    std::string name = "name";
+    const XIDeviceInfo xi2_device_info{
+        .deviceid = 0,
+        .name = name.data(),
+        .use = 0,
+        .attachment = 0,
+        .enabled = True,
+        .num_classes = 1,
+        .classes = classes.data()
+    };
+
+    EXPECT_CALL(x_wrapper_mock, AtomName).Times(0);
 
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi2_device_info, x_event_switch);
 }
