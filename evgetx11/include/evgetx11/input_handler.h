@@ -6,7 +6,14 @@
 #ifndef EVGETX11_INPUT_HANDLER_H
 #define EVGETX11_INPUT_HANDLER_H
 
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/posix/stream_descriptor.hpp>
+#include <boost/scope/unique_fd.hpp>
+
+#include <atomic>
 #include <functional>
+#include <memory>
+#include <optional>
 
 #include "evget/error.h"
 #include "evget/next_event.h"
@@ -28,13 +35,24 @@ public:
     explicit InputHandler(X11Api& x_wrapper);
 
     /**
-     * \brief Get the next input event from the X11 system.
+     * \brief Get the next input event from the X11 system waiting until it arrives.
      * \return the next input event
      */
     [[nodiscard]] boost::asio::awaitable<evget::Result<InputEvent>> Next() const override;
 
+    /**
+     * \brief Request a stop for the input handler.
+     */
+    void RequestStop();
+
 private:
+    [[nodiscard]] boost::asio::awaitable<evget::Result<void>> WaitForInput() const;
+
     std::reference_wrapper<X11Api> x_wrapper_;
+    std::atomic<bool> stop_requested_{false};
+    boost::scope::unique_fd stop_event_;
+    mutable std::optional<boost::asio::posix::stream_descriptor> connection_;
+    mutable std::optional<boost::asio::posix::stream_descriptor> stop_;
 };
 
 /**

@@ -220,6 +220,24 @@ public:
     virtual XEventPointer EventData(XEvent& event) = 0;
 
     /**
+     * \brief Get the file descriptor of the display.
+     *
+     * This function calls `XConnectionNumber`.
+     *
+     * \return the connection file descriptor
+     */
+    virtual int GetConnectionNumber() = 0;
+
+    /**
+     * \brief Get the number of events that can be read without blocking.
+     *
+     * This function calls `XPending`.
+     *
+     * \return the number of events
+     */
+    virtual int Pending() = 0;
+
+    /**
      * \brief Query the XI2 version supported by the server.
      *
      * This function calls `XIQueryVersion`.
@@ -281,6 +299,8 @@ public:
 
     XEvent NextEvent() override;
     XEventPointer EventData(XEvent& event) override;
+    int GetConnectionNumber() override;
+    int Pending() override;
 
     Status QueryVersion(int& major, int& minor) override;
     void SelectEvents(XIEventMask& mask) override;

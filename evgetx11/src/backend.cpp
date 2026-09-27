@@ -58,3 +58,9 @@ evget::Result<std::reference_wrapper<evget::EventHandler<evgetx11::InputEvent>>>
     }
     return std::ref(*handler_);
 }
+
+void evgetx11::Backend::RequestStop() {
+    if (next_event_ != nullptr) {
+        next_event_->RequestStop();
+    }
+}

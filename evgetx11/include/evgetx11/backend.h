@@ -45,6 +45,11 @@ public:
      */
     evget::Result<std::reference_wrapper<evget::EventHandler<InputEvent>>> Handler();
 
+    /**
+     * \brief Request a stop for the X11 input handler.
+     */
+    void RequestStop();
+
     Backend(const Backend&) = delete;
     Backend(Backend&&) = delete;
     Backend& operator=(const Backend&) = delete;
