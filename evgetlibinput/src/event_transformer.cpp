@@ -286,7 +286,6 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             const xkb_keycode_t xkb_key = key_code + kKeyCodeOffset;
 
             auto key_name = xkb_.get().GetKeyName(xkb_key);
-            auto character = xkb_.get().GetKeyCharacter(xkb_key);
 
             auto builder = evget::Key{};
             SetBaseFields(builder, ctx, event_time);
@@ -295,8 +294,11 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
             if (key_name.has_value()) {
                 builder.ButtonName(std::move(*key_name));
             }
-            if (character.has_value()) {
-                builder.Character(std::move(*character));
+            if (action != evget::ButtonAction::kRelease) {
+                auto character = xkb_.get().GetKeyCharacter(xkb_key);
+                if (character.has_value()) {
+                    builder.Character(std::move(*character));
+                }
             }
 
             builder.Build(data);

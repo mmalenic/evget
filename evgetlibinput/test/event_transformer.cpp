@@ -280,6 +280,31 @@ TEST(EvgetLibInputTransformer, TransformKeyboardKeyNoModifiers) {
     ASSERT_EQ(entries.at(0).Modifiers().size(), 0);
 }
 
+TEST(EvgetLibInputTransformer, TransformKeyboardKeyRelease) {
+    NiceMock<test::LibInputApiMock> libinput_mock{};
+    auto xkb = MakeUsXkb();
+
+    SetCommonMocks(libinput_mock, LIBINPUT_EVENT_KEYBOARD_KEY);
+    EXPECT_CALL(libinput_mock, GetKeyboardEvent(_)).WillRepeatedly(Return(&g_keyboard_event));
+    EXPECT_CALL(libinput_mock, GetKeyboardTimeMicroseconds(_)).WillRepeatedly(Return(5000));
+    EXPECT_CALL(libinput_mock, GetKeyboardKey(_)).WillRepeatedly(Return(KEY_A));
+    EXPECT_CALL(libinput_mock, GetKeyboardKeyState(_))
+        .WillOnce(Return(LIBINPUT_KEY_STATE_PRESSED))
+        .WillOnce(Return(LIBINPUT_KEY_STATE_RELEASED));
+
+    evgetlibinput::EventTransformer transformer{libinput_mock, xkb, kDimensions};
+    transformer.TransformEvent(MakeInputEvent());
+    auto data = transformer.TransformEvent(MakeInputEvent());
+    const auto& entries = data.Entries();
+
+    ASSERT_EQ(entries.size(), 1);
+    ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kKey);
+    ASSERT_EQ(entries.at(0).Data().at(15), std::to_string(KEY_A));
+    ASSERT_EQ(entries.at(0).Data().at(16), "a");
+    ASSERT_FALSE(entries.at(0).Data().at(17).has_value());
+    ASSERT_EQ(entries.at(0).Data().at(18), "1");
+}
+
 TEST(EvgetLibInputTransformer, TransformKeyboardKeyShiftHeld) {
     NiceMock<test::LibInputApiMock> libinput_mock{};
     auto xkb = MakeUsXkb();
