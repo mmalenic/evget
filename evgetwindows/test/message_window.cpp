@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 
 #include <boost/asio/thread_pool.hpp>
-#include <boost/system/error_code.hpp>
 #include <windows.h>
 
 #include <algorithm>
@@ -270,15 +269,13 @@ TEST(MessageWindowTest, RequestStop) {
     std::vector<LONG> received{};
     bool ended = false;
     while (!ended &&
-           window.Channel().try_receive(
-               [&received, &ended](const boost::system::error_code& code, const evgetwindows::RawEvent& event) {
-                   const auto* mouse = std::get_if<RAWMOUSE>(&event.data);
-                   ended = code.failed() || mouse == nullptr;
-                   if (!ended) {
-                       received.push_back(mouse->lLastX);
-                   }
+           window.Channel().try_receive([&received, &ended](const auto& code, const evgetwindows::RawEvent& event) {
+               const auto* mouse = std::get_if<RAWMOUSE>(&event.data);
+               ended = code.failed() || mouse == nullptr;
+               if (!ended) {
+                   received.push_back(mouse->lLastX);
                }
-           )) {
+           })) {
     }
 
     EXPECT_EQ(received, queued);
