@@ -120,6 +120,21 @@ TEST(XEventSwitchTest, RefreshDevicesReplacesAReusedDeviceId) {
     ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
 }
 
+TEST(XEventSwitchTest, RemovedDeviceNewUuid) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "mouse", {});
+    const std::string first = x_event_switch.GetDeviceUuid(1);
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "mouse", {});
+    ASSERT_EQ(x_event_switch.GetDeviceUuid(1), first);
+
+    x_event_switch.RemoveDevice(1);
+    ASSERT_FALSE(x_event_switch.HasDevice(1));
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "keyboard", {});
+    ASSERT_NE(x_event_switch.GetDeviceUuid(1), first);
+}
+
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

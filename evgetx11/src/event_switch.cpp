@@ -76,6 +76,13 @@ void evgetx11::EventSwitch::RefreshDevices(
     }
 }
 
+void evgetx11::EventSwitch::RemoveDevice(int device_id) {
+    devices_.erase(device_id);
+    id_to_name_.erase(device_id);
+    button_map_.erase(device_id);
+    device_ids_.Remove(device_id);
+}
+
 evgetx11::EventSwitch::EventSwitch(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
 const std::string& evgetx11::EventSwitch::GetDeviceUuid(int device_id) {

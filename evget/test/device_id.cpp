@@ -33,3 +33,14 @@ TEST(DeviceId, DeterministicDistinctNames) {
 
     ASSERT_EQ(uuids.size(), 4);
 }
+
+TEST(DeviceId, RemovedKeyNewUuid) {
+    evget::DeviceId<int> device_ids{};
+
+    const std::string first = device_ids.Uuid(1);
+    const std::string other = device_ids.Uuid(2);
+    device_ids.Remove(1);
+
+    ASSERT_NE(device_ids.Uuid(1), first);
+    ASSERT_EQ(device_ids.Uuid(2), other);
+}

@@ -38,6 +38,12 @@ public:
      */
     [[nodiscard]] const std::string& UuidDeterministic(const Key& key);
 
+    /**
+     * \brief Remove a device so that the next create a new UUID.
+     * \param key the device identifier
+     */
+    void Remove(const Key& key);
+
 private:
     std::unordered_map<Key, std::string> device_uuids_;
 };
@@ -59,6 +65,11 @@ const std::string& DeviceId<Key>::UuidDeterministic(const Key& key) {
         iterator->second = boost::uuids::to_string(generator(key));
     }
     return iterator->second;
+}
+
+template <typename Key>
+void DeviceId<Key>::Remove(const Key& key) {
+    device_uuids_.erase(key);
 }
 
 } // namespace evget

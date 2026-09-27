@@ -63,6 +63,12 @@ public:
     );
 
     /**
+     * \brief Remove a device, so a device that later reuses the ID is registered.
+     * \param device_id the ID of the removed device
+     */
+    void RemoveDevice(int device_id);
+
+    /**
      * \brief Add a button event to the data structure.
      * \param event the raw XI event
      * \param date_time timestamp of the event

@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <string>
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
 XIValuatorClassInfo test::CreateXiValuatorClassInfo() {
@@ -110,6 +111,55 @@ XEvent test::CreateXEvent(XIRawEvent& event) {
             .data = &event,
         }
     };
+}
+
+XIHierarchyEvent test::CreateXiHierarchyEvent(std::span<XIHierarchyInfo> info) {
+    return {
+        .type = GenericEvent,
+        .serial = 0,
+        .send_event = False,
+        .display = nullptr,
+        .extension = 0,
+        .evtype = XI_HierarchyChanged,
+        .time = 0,
+        .flags = 0,
+        .num_info = static_cast<int>(info.size()),
+        .info = info.data()
+    };
+}
+
+XEvent test::CreateXEvent(XIHierarchyEvent& event) {
+    return {
+        .xcookie = {
+            .type = GenericEvent,
+            .serial = 0,
+            .send_event = False,
+            .display = nullptr,
+            .extension = 0,
+            .evtype = event.evtype,
+            .cookie = 0,
+            .data = &event,
+        }
+    };
+}
+
+void test::SetXWrapperDeviceMocks(
+    X11ApiMock& x_wrapper_mock,
+    XDeviceInfo& device,
+    XIDeviceInfo& xi_device,
+    std::string& type_name
+) {
+    EXPECT_CALL(x_wrapper_mock, ListInputDevices).WillRepeatedly([&device](int& n_devices) {
+        n_devices = 1;
+        return std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>{&device, [](XDeviceInfo*) {}};
+    });
+    EXPECT_CALL(x_wrapper_mock, QueryDevice).WillRepeatedly([&xi_device](int& n_devices) {
+        n_devices = 1;
+        return std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>{&xi_device, [](XIDeviceInfo*) {}};
+    });
+    EXPECT_CALL(x_wrapper_mock, AtomName).WillRepeatedly([&type_name](Atom) {
+        return std::unique_ptr<char[], decltype(&XFree)>{type_name.data(), [](void*) { return 0; }};
+    });
 }
 
 XIValuatorState

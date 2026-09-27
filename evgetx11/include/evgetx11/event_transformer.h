@@ -16,10 +16,12 @@
 #include <spdlog/spdlog.h>
 
 #include <chrono>
+#include <cstddef>
 #include <cstring>
 #include <functional>
 #include <map>
 #include <optional>
+#include <span>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -63,6 +65,12 @@ private:
      * \brief Refresh the device information from the X11 system.
      */
     void RefreshDevices();
+
+    /**
+     * \brief Remove the devices from a hierarchy change event.
+     * \param event the hierarchy event
+     */
+    void RemoveDevices(const XIHierarchyEvent& event);
 
     std::reference_wrapper<X11Api> x_wrapper_;
     EventSwitch x_event_switch_;
@@ -189,11 +197,27 @@ void EventTransformer<Switches...>::RefreshDevices() {
 }
 
 template <typename... Switches>
+void EventTransformer<Switches...>::RemoveDevices(const XIHierarchyEvent& event) {
+    for (const auto& info : std::span{event.info, static_cast<std::size_t>(event.num_info)}) {
+        // NOLINTNEXTLINE(hicpp-signed-bitwise)
+        if ((info.flags & (XISlaveRemoved | XIMasterRemoved)) != 0) {
+            devices_.erase(info.deviceid);
+            id_to_name_.erase(info.deviceid);
+            device_intervals_.erase(info.deviceid);
+            x_event_switch_.RemoveDevice(info.deviceid);
+        }
+    }
+}
+
+template <typename... Switches>
 evget::Data EventTransformer<Switches...>::TransformEvent(InputEvent event) {
     evget::Data data{};
     if (event.HasData()) {
         auto type = event.GetEventType();
 
+        if (type == XI_HierarchyChanged) {
+            RemoveDevices(event.ViewData<XIHierarchyEvent>());
+        }
         if (type == XI_DeviceChanged || type == XI_HierarchyChanged) {
             RefreshDevices();
             return data;

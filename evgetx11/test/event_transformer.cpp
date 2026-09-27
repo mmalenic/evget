@@ -13,6 +13,7 @@
 #include <evgetx11/input_event.h>
 
 #include <array>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -88,17 +89,7 @@ TEST(EventTransformer, TouchEvents) {
     }};
     std::array xi_devices{test::CreateXiDeviceInfo(any_class_info, device_name)};
 
-    EXPECT_CALL(x_wrapper_mock, ListInputDevices).WillOnce([&devices](int& n_devices) {
-        n_devices = static_cast<int>(devices.size());
-        return std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>{devices.data(), [](XDeviceInfo*) {}};
-    });
-    EXPECT_CALL(x_wrapper_mock, QueryDevice).WillOnce([&xi_devices](int& n_devices) {
-        n_devices = static_cast<int>(xi_devices.size());
-        return std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>{xi_devices.data(), [](XIDeviceInfo*) {}};
-    });
-    EXPECT_CALL(x_wrapper_mock, AtomName).WillOnce([&device_type](Atom) {
-        return std::unique_ptr<char[], decltype(&XFree)>{device_type.data(), [](void*) { return 0; }};
-    });
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices.front(), xi_devices.front(), device_type);
 
     std::array<unsigned char, 1> valuator_mask = {1};
     std::array<double, 1> values = {1};
@@ -118,6 +109,60 @@ TEST(EventTransformer, TouchEvents) {
     ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
     ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
     ASSERT_EQ(entries.at(1).Data().at(4), "touchscreen");
+}
+
+TEST(EventTransformer, RemovedDeviceNewUuid) {
+    test::X11ApiMock x_wrapper_mock{};
+    std::string device_name = "touchscreen";
+    std::string device_type = XI_TOUCHSCREEN;
+    std::array<XIAnyClassInfo*, 3> any_class_info = {};
+    XDeviceInfo device{
+        .id = 1,
+        .type = 1,
+        .name = device_name.data(),
+        .num_classes = 0,
+        .use = IsXExtensionPointer,
+        .inputclassinfo = nullptr
+    };
+    auto xi_device = test::CreateXiDeviceInfo(any_class_info, device_name);
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, device, xi_device, device_type);
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto touch = test::CreateXiRawEvent(XI_RawTouchUpdate, valuator_mask, values);
+    std::array enabled_info{
+        XIHierarchyInfo{.deviceid = 1, .attachment = 0, .use = 0, .enabled = True, .flags = XIDeviceEnabled}
+    };
+    std::array removed_info{
+        XIHierarchyInfo{.deviceid = 1, .attachment = 0, .use = 0, .enabled = False, .flags = XISlaveRemoved}
+    };
+    auto enabled = test::CreateXiHierarchyEvent(enabled_info);
+    auto removed = test::CreateXiHierarchyEvent(removed_info);
+
+    EXPECT_CALL(x_wrapper_mock, NextEvent)
+        .WillOnce(testing::Return(test::CreateXEvent(touch)))
+        .WillOnce(testing::Return(test::CreateXEvent(enabled)))
+        .WillOnce(testing::Return(test::CreateXEvent(touch)))
+        .WillOnce(testing::Return(test::CreateXEvent(removed)))
+        .WillOnce(testing::Return(test::CreateXEvent(touch)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
+
+    auto transformer = std::move(evgetx11::EventTransformerBuilder{}.Touch()).Build(x_wrapper_mock);
+    ASSERT_NE(transformer, nullptr);
+    auto device_uuid = [&transformer, &x_wrapper_mock] {
+        constexpr std::size_t kDeviceIdColumn = 11;
+        auto data = transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock));
+        return data.Entries().at(0).Data().at(kDeviceIdColumn);
+    };
+
+    const auto first = device_uuid();
+    ASSERT_TRUE(transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock)).Entries().empty());
+    ASSERT_EQ(device_uuid(), first);
+    ASSERT_TRUE(transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock)).Entries().empty());
+    ASSERT_NE(device_uuid(), first);
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
