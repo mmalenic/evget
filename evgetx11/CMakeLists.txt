@@ -89,6 +89,7 @@ if(BUILD_TESTING)
                test/event_transformer.cpp
                test/input_event.cpp
                test/input_handler.cpp
+               test/x11.cpp
     )
     target_include_directories(${TEST_EXECUTABLE_NAME} PUBLIC test)
 endif()

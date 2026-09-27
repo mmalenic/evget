@@ -16,6 +16,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "evget/error.h"
 #include "evget/event/concepts.h"
@@ -319,6 +320,13 @@ public:
      * \return string representation of the KeySym
      */
     static std::string KeySymToString(KeySym key_sym);
+
+    /**
+     * \brief Convert the ISO Latin-1 text returned by `XLookupString` to UTF-8.
+     * \param latin1 the Latin-1 encoded text
+     * \return the UTF-8 encoded text
+     */
+    static std::string Latin1ToUtf8(std::string_view latin1);
 
     /**
      * \brief Set specific event bits in a mask.

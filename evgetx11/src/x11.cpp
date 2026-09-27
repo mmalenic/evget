@@ -16,6 +16,12 @@
 namespace {
 constexpr int kUtf8MaxBytes = 4;
 constexpr int kWindowPropertySize = 32;
+
+constexpr unsigned char kAsciiEnd = 0x80;
+constexpr unsigned char kUtf8TwoByteLead = 0xC0;
+constexpr unsigned char kUtf8Continuation = 0x80;
+constexpr unsigned char kUtf8ContinuationMask = 0x3F;
+constexpr int kUtf8ContinuationBits = 6;
 } // namespace
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
@@ -46,27 +52,24 @@ evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult
             .same_screen = 1
         };
 
-        int bytes = 0;
-        std::array<char, kUtf8MaxBytes + 1> array{};
+        std::array<char, kUtf8MaxBytes + 1> latin1{};
+        const int latin1_bytes = XLookupString(&key_event, latin1.data(), kUtf8MaxBytes, &key_sym, nullptr);
         if (event.evtype == XI_RawKeyRelease) {
             // Release has a key sym but no character, so we fetch it anyway before returning.
-            XLookupString(&key_event, array.data(), kUtf8MaxBytes, &key_sym, nullptr);
             return {};
         }
 
         if (xic_) {
+            std::array<char, kUtf8MaxBytes + 1> utf8{};
+            KeySym composed = NoSymbol;
             Status status = 0;
-            bytes = Xutf8LookupString(xic_.get(), &key_event, array.data(), kUtf8MaxBytes, &key_sym, &status);
-            if (status != Success || status == XBufferOverflow || bytes == 0) {
-                spdlog::info("Xutf8LookupString did not return a value, falling back on XLookupString");
-                bytes = XLookupString(&key_event, array.data(), kUtf8MaxBytes, &key_sym, nullptr);
+            const int bytes = Xutf8LookupString(xic_.get(), &key_event, utf8.data(), kUtf8MaxBytes, &composed, &status);
+            if ((status == XLookupChars || status == XLookupBoth) && bytes > 0) {
+                return std::string{utf8.data(), static_cast<std::size_t>(bytes)};
             }
-        } else {
-            bytes = XLookupString(&key_event, array.data(), kUtf8MaxBytes, &key_sym, nullptr);
+            spdlog::debug("Xutf8LookupString did not return a value, falling back to XLookupString");
         }
-
-        array.at(bytes) = '\0';
-        return std::string{array.data()};
+        return Latin1ToUtf8({latin1.data(), static_cast<std::size_t>(latin1_bytes)});
     }
     return {};
 }
@@ -418,6 +421,20 @@ void evgetx11::X11::SetMask(unsigned char* mask, std::initializer_list<int> even
     for (auto event : events) {
         XISetMask(mask, event);
     }
+}
+
+std::string evgetx11::X11::Latin1ToUtf8(std::string_view latin1) {
+    std::string utf8{};
+    for (const char byte : latin1) {
+        const auto code_point = static_cast<unsigned char>(byte);
+        if (code_point < kAsciiEnd) {
+            utf8.push_back(byte);
+            continue;
+        }
+        utf8.push_back(static_cast<char>(kUtf8TwoByteLead | (code_point >> kUtf8ContinuationBits)));
+        utf8.push_back(static_cast<char>(kUtf8Continuation | (code_point & kUtf8ContinuationMask)));
+    }
+    return utf8;
 }
 
 std::string evgetx11::X11::KeySymToString(KeySym key_sym) {
