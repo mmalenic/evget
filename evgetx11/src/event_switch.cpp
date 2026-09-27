@@ -53,8 +53,11 @@ void evgetx11::EventSwitch::RefreshDevices(
     if (pointer_id.has_value()) {
         this->pointer_id_ = *pointer_id;
     }
-    devices_.emplace(device_id, device);
-    id_to_name_.emplace(device_id, name);
+
+    // The server reuses the ids even if a device is removed, so a refresh needs to replace everything known.
+    devices_.insert_or_assign(device_id, device);
+    id_to_name_.insert_or_assign(device_id, name);
+    button_map_.erase(device_id);
 
     const XIButtonClassInfo* button_info = nullptr;
     auto classes = std::span(info.classes, info.num_classes);

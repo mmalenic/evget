@@ -31,6 +31,10 @@ void evgetx11::EventSwitchPointerKey::RefreshDevices(
         this->pointer_id_ = *pointer_id;
     }
 
+    scroll_map_.erase(device_id);
+    valuator_x_.erase(device_id);
+    valuator_y_.erase(device_id);
+
     std::vector<const XIScrollClassInfo*> scroll_infos{};
     std::vector<const XIValuatorClassInfo*> valuator_infos{};
     auto classes = std::span(info.classes, info.num_classes);

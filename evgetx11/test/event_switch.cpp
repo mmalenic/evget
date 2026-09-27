@@ -4,6 +4,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
 
 #include <array>
 #include <memory>
@@ -87,6 +88,36 @@ TEST(XEventSwitchTest, GetButtonNameReturnsLabel) {
     ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "Button Left");
     ASSERT_FALSE(x_event_switch.GetButtonName(1, 1).has_value());
     ASSERT_FALSE(x_event_switch.GetButtonName(2, 0).has_value());
+}
+
+TEST(XEventSwitchTest, RefreshDevicesReplacesAReusedDeviceId) {
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto button_class_info = test::CreateXiButtonClassInfo(labels, mask);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::array<XIAnyClassInfo*, 3> any_class_info = {reinterpret_cast<XIAnyClassInfo*>(&button_class_info)};
+    std::string name = "mouse";
+    auto mouse_info = test::CreateXiDeviceInfo(any_class_info, name);
+    std::string label_name = "Button Left";
+
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
+        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
+    EXPECT_CALL(x_wrapper_mock, AtomName)
+        .WillOnce(
+            testing::Return(
+                testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({label_name.data(), [](void*) { return 0; }})
+            )
+        );
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "mouse", mouse_info);
+    ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawMotion), evget::DeviceType::kMouse);
+    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "Button Left");
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kTouchscreen, "touchscreen", {});
+    ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawMotion), evget::DeviceType::kTouchscreen);
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
 }
 
 TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-function-cognitive-complexity)

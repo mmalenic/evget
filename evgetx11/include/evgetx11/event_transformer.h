@@ -165,8 +165,8 @@ void EventTransformer<Switches...>::RefreshDevices() {
                 device_type = evget::DeviceType::kTablet;
             }
 
-            devices_.emplace(device_id, device_type);
-            id_to_name_.emplace(device_id, device.name);
+            devices_.insert_or_assign(device_id, device_type);
+            id_to_name_.insert_or_assign(device_id, device.name);
             x_event_switch_.RefreshDevices(device_id, pointer_id_, device_type, device.name, xi2_device);
 
             // Iterate through switches and refresh devices.

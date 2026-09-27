@@ -103,6 +103,12 @@ void SetMask(evgetx11::X11Api& x_wrapper) {
     mask.mask = event_mask.data();
 
     x_wrapper.SelectEvents(mask);
+
+    // Hierarchy events must go on XIAllDevices.
+    std::array<unsigned char, XI_LASTEVENT> hierarchy_mask{};
+    evgetx11::X11::SetMask(hierarchy_mask.data(), {XI_HierarchyChanged});
+    XIEventMask hierarchy{.deviceid = XIAllDevices, .mask_len = sizeof(hierarchy_mask), .mask = hierarchy_mask.data()};
+    x_wrapper.SelectEvents(hierarchy);
 }
 } // namespace
 

@@ -1,12 +1,18 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <X11/X.h>
 #include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput2.h>
 #include <boost/asio/thread_pool.hpp>
 
 #include <array>
 #include <chrono>
+#include <cstddef>
 #include <future>
+#include <map>
+#include <span>
+#include <vector>
 
 // clang-format off
 #include "common/input_handler.h"
@@ -85,4 +91,23 @@ TEST(InputHandlerTest, RequestStopEvents) {
     ASSERT_EQ(second.wait_for(std::chrono::seconds{5}), std::future_status::ready);
     ASSERT_FALSE(second.get().has_value());
     pool.join();
+}
+
+TEST(InputHandlerBuilderTest, HierarchyChangeAllDevices) {
+    test::X11ApiMock x_wrapper_mock{};
+    std::map<int, std::vector<unsigned char>> selected{};
+
+    EXPECT_CALL(x_wrapper_mock, QueryVersion).WillOnce(testing::Return(Success));
+    EXPECT_CALL(x_wrapper_mock, SelectEvents).WillRepeatedly([&selected](XIEventMask& mask) {
+        const std::span bits{mask.mask, static_cast<std::size_t>(mask.mask_len)};
+        selected.insert_or_assign(mask.deviceid, std::vector<unsigned char>(bits.begin(), bits.end()));
+    });
+
+    ASSERT_TRUE(evgetx11::InputHandlerBuilder::Build(x_wrapper_mock).has_value());
+
+    ASSERT_TRUE(selected.contains(XIAllDevices));
+    ASSERT_TRUE(XIMaskIsSet(selected.at(XIAllDevices).data(), XI_HierarchyChanged));
+    ASSERT_TRUE(selected.contains(XIAllMasterDevices));
+    ASSERT_FALSE(XIMaskIsSet(selected.at(XIAllMasterDevices).data(), XI_HierarchyChanged));
+    ASSERT_TRUE(XIMaskIsSet(selected.at(XIAllMasterDevices).data(), XI_RawKeyPress));
 }
