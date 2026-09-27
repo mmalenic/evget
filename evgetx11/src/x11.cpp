@@ -24,12 +24,12 @@ evgetx11::X11::X11(Display& display) : display_{display} {}
 
 std::string
 evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) {
-    if (event.evtype == XI_RawKeyPress) {
+    if (event.evtype == XI_RawKeyPress || event.evtype == XI_RawKeyRelease) {
         // Converts XIDeviceEvent to a XKeyEvent in order to leverage existing functions for determining KeySyms. Seems
         // a little bit hacky to do this conversion, however it should be okay as all the elements have a direct
         // relationship.
         XKeyEvent key_event{
-            .type = KeyPress,
+            .type = event.evtype == XI_RawKeyPress ? KeyPress : KeyRelease,
             .serial = event.serial,
             .send_event = event.send_event,
             .display = event.display,
@@ -48,6 +48,12 @@ evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult
 
         int bytes = 0;
         std::array<char, kUtf8MaxBytes + 1> array{};
+        if (event.evtype == XI_RawKeyRelease) {
+            // Release has a key sym but no character, so we fetch it anyway before returning.
+            XLookupString(&key_event, array.data(), kUtf8MaxBytes, &key_sym, nullptr);
+            return {};
+        }
+
         if (xic_) {
             Status status = 0;
             bytes = Xutf8LookupString(xic_.get(), &key_event, array.data(), kUtf8MaxBytes, &key_sym, &status);
