@@ -56,6 +56,10 @@ if(BUILD_TESTING)
         list(APPEND LIBRARIES ${EVGETWINDOWS_LIBRARY_NAME})
     endif()
 
+    if(EVGET_BUILD_EVGETX11 OR EVGET_BUILD_EVGETLIBINPUT)
+        target_sources(${TEST_EXECUTABLE_NAME} PUBLIC evget/test/common/pipe.h evget/test/common/pipe.cpp)
+    endif()
+
     toolbelt_setup_gtest(${TEST_EXECUTABLE_NAME} ADD_LIBRARIES ${LIBRARIES})
 
     evget_copy_runtime_dlls(${TEST_EXECUTABLE_NAME})

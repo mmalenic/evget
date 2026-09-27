@@ -287,6 +287,7 @@ if(BUILD_TESTING)
                test/common/database.cpp
                test/common/event_loop.h
                test/common/event_loop.cpp
+               test/common/next_event.h
                test/common/store.h
                test/common/store.cpp
                test/common/stream.h

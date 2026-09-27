@@ -14,11 +14,12 @@
 #include <span>
 #include <vector>
 
-// clang-format off
-#include "common/input_handler.h"
-// clang-format on
+#include "common/next_event.h"
+#include "common/pipe.h"
 #include "common/x11_mock.h"
+// clang-format off
 #include "evgetx11/input_handler.h"
+// clang-format on
 
 TEST(InputHandlerTest, RequestStopWaitingNext) {
     boost::asio::thread_pool pool{1};

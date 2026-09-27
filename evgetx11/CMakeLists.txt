@@ -81,9 +81,7 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/input_handler.cpp
-               test/common/input_handler.h
-               test/common/x11_mock.cpp
+        PUBLIC test/common/x11_mock.cpp
                test/common/x11_mock.h
                test/event_switch.cpp
                test/event_switch_pointer_key.cpp
