@@ -148,6 +148,7 @@ TEST(XEventSwitchPointerKeyTest, TestButtonEvent) { // NOLINT(readability-functi
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
     auto data = evget::Data{};
@@ -219,6 +220,7 @@ TEST(XEventSwitchPointerKeyTest, ButtonEventUnlabelled) {
     EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
     EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
@@ -252,6 +254,7 @@ TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognit
     test::SetXWrapperKeyMocks(x_wrapper_mock, device_event, x_event);
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info);
     x_event_switch_pointer_key
         .RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info, x_event_switch);
 
@@ -294,6 +297,7 @@ TEST(XEventSwitchCoreTest, KeyReleaseStoredCorrectly) {
     test::SetXWrapperKeyMocks(x_wrapper_mock, device_event, x_event);
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info);
     x_event_switch_pointer_key
         .RefreshDevices(1, 1, evget::DeviceType::kKeyboard, "name", xi_device_info, x_event_switch);
 
@@ -351,6 +355,7 @@ TEST(XEventSwitchCoreTest, TestMotionEvent) {
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
     auto data = evget::Data{};
@@ -410,6 +415,7 @@ TEST(XEventSwitchCoreTest, TestScrollEvent) { // NOLINT(readability-function-cog
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
     auto data = evget::Data{};
@@ -472,6 +478,7 @@ TEST(XEventSwitchCoreTest, TestScrollEventVerticalIncrement) {
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
     auto data = evget::Data{};
@@ -527,6 +534,7 @@ TEST(XEventSwitchCoreTest, TestScrollEventHorizontalIncrement) {
 
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
 
     auto data = evget::Data{};

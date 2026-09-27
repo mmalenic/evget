@@ -35,7 +35,7 @@ std::unique_ptr<evget::EventTransformer<evgetx11::InputEvent>> evgetx11::EventTr
             std::move(*pointer_key_)
         );
     }
-    if (pointer_key_.has_value() && touch_.has_value()) {
+    if (touch_.has_value()) {
         return std::make_unique<EventTransformer<EventSwitchTouch>>(x_wrapper, EventSwitch{x_wrapper}, *touch_);
     }
 

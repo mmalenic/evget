@@ -22,13 +22,11 @@ evgetx11::EventSwitchPointerKey::EventSwitchPointerKey(X11Api& x_wrapper) : x_wr
 void evgetx11::EventSwitchPointerKey::RefreshDevices(
     int device_id,
     std::optional<int> pointer_id,
-    evget::DeviceType device,
-    const std::string& name,
+    evget::DeviceType /* device */,
+    const std::string& /* name */,
     const XIDeviceInfo& info,
-    EventSwitch& x_event_switch
+    EventSwitch& /* x_event_switch */
 ) {
-    x_event_switch.RefreshDevices(device_id, pointer_id, device, name, info);
-
     if (pointer_id.has_value()) {
         this->pointer_id_ = *pointer_id;
     }

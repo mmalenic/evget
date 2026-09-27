@@ -1,7 +1,11 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/XI.h>
 #include <X11/extensions/XI2.h>
+#include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 #include <evget/event/device_type.h>
 #include <evget/event/entry.h>
@@ -9,6 +13,9 @@
 #include <evgetx11/input_event.h>
 
 #include <array>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "common/x11_mock.h"
@@ -43,6 +50,7 @@ TEST(EventTransformer, TransformEvent) {
     auto x_event = test::CreateXEvent(device_event);
     SetXWrapperEventMocks(x_wrapper_mock, device_event, x_event);
 
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
     x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
     auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
 
@@ -63,6 +71,53 @@ TEST(EventTransformer, TransformEvent) {
     ASSERT_EQ(entries.at(0).Data().at(16), "0");
     ASSERT_FALSE(entries.at(0).Data().at(17).has_value());
     ASSERT_EQ(entries.at(0).Data().at(18), "0");
+}
+
+TEST(EventTransformer, TouchEvents) {
+    test::X11ApiMock x_wrapper_mock{};
+    std::string device_name = "touchscreen";
+    std::string device_type = XI_TOUCHSCREEN;
+    std::array<XIAnyClassInfo*, 3> any_class_info = {};
+    std::array devices{XDeviceInfo{
+        .id = 1,
+        .type = 1,
+        .name = device_name.data(),
+        .num_classes = 0,
+        .use = IsXExtensionPointer,
+        .inputclassinfo = nullptr
+    }};
+    std::array xi_devices{test::CreateXiDeviceInfo(any_class_info, device_name)};
+
+    EXPECT_CALL(x_wrapper_mock, ListInputDevices).WillOnce([&devices](int& n_devices) {
+        n_devices = static_cast<int>(devices.size());
+        return std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>{devices.data(), [](XDeviceInfo*) {}};
+    });
+    EXPECT_CALL(x_wrapper_mock, QueryDevice).WillOnce([&xi_devices](int& n_devices) {
+        n_devices = static_cast<int>(xi_devices.size());
+        return std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)>{xi_devices.data(), [](XIDeviceInfo*) {}};
+    });
+    EXPECT_CALL(x_wrapper_mock, AtomName).WillOnce([&device_type](Atom) {
+        return std::unique_ptr<char[], decltype(&XFree)>{device_type.data(), [](void*) { return 0; }};
+    });
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto device_event = test::CreateXiRawEvent(XI_RawTouchBegin, valuator_mask, values);
+    EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(device_event)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
+
+    auto transformer = std::move(evgetx11::EventTransformerBuilder{}.Touch()).Build(x_wrapper_mock);
+    ASSERT_NE(transformer, nullptr);
+
+    auto data = transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock));
+    const auto& entries = data.Entries();
+    ASSERT_EQ(entries.size(), 2);
+    ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseMove);
+    ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
+    ASSERT_EQ(entries.at(1).Data().at(4), "touchscreen");
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
