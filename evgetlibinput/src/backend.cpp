@@ -59,3 +59,7 @@ evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::C
 evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>& evgetlibinput::Backend::Handler() {
     return handler_;
 }
+
+void evgetlibinput::Backend::RequestStop() {
+    next_event_.RequestStop();
+}

@@ -28,7 +28,7 @@ TEST(EventLoopTest, StopQueuedEvents) {
     evget::EventLoop<int> loop{source, {listener}};
     std::optional<evget::Result<void>> result{};
 
-    loop.StopWhenDrained();
+    loop.Stop();
     scheduler->Spawn(RunLoop(loop, result), [] {});
     const auto finished = loop.WaitFinished(std::chrono::seconds{1});
     scheduler->Stop();
@@ -48,7 +48,7 @@ TEST(EventLoopTest, StopSourceExits) {
     evget::EventLoop<int> loop{source, {listener}};
     std::optional<evget::Result<void>> result{};
 
-    loop.StopWhenDrained();
+    loop.Stop();
     scheduler->Spawn(RunLoop(loop, result), [] {});
     const auto finished = loop.WaitFinished(std::chrono::seconds{1});
     scheduler->Stop();

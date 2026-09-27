@@ -46,7 +46,7 @@ public:
     /**
      * \brief Stop the event handler once there no more events.
      */
-    void StopWhenDrained();
+    void Stop();
 
     /**
      * \brief Wait until the event handler has finished processing, up to `timeout`.
@@ -72,8 +72,8 @@ void EventHandler<T>::Stop() {
 }
 
 template <typename T>
-void EventHandler<T>::StopWhenDrained() {
-    event_loop_.StopWhenDrained();
+void EventHandler<T>::Stop() {
+    event_loop_.Stop();
 }
 
 template <typename T>

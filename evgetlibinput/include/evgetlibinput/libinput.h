@@ -43,6 +43,24 @@ public:
     virtual evget::Result<LibInputEvent> GetEvent() = 0;
 
     /**
+     * \brief Get the file descriptor for libinput events.
+     *
+     * This function calls `libinput_get_fd`.
+     *
+     * \return the libinput file descriptor
+     */
+    virtual int GetFd() = 0;
+
+    /**
+     * \brief Read input and report whether an event is queued.
+     *
+     * This function calls `libinput_dispatch` and `libinput_next_event_type`.
+     *
+     * \return whether `GetEvent` returns without blocking, or an error if failed
+     */
+    virtual evget::Result<bool> HasPendingEvent() = 0;
+
+    /**
      * \brief Get the type of libinput event.
      * \param event libinput event
      * \return the event type
@@ -338,6 +356,10 @@ public:
 
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
+    int GetFd() override;
+
+    evget::Result<bool> HasPendingEvent() override;
+
     libinput_event_type GetEventType(libinput_event& event) override;
 
     libinput_event_pointer* GetPointerEvent(libinput_event& event) override;
@@ -421,7 +443,6 @@ private:
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
 
     pollfd pollfd_{};
-    bool wait_for_poll_{};
 };
 
 } // namespace evgetlibinput

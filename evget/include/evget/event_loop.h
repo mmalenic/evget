@@ -44,7 +44,7 @@ public:
     /**
      * \brief Stop the loop once the source reports that it has no more events.
      */
-    void StopWhenDrained();
+    void Stop();
 
     /**
      * \brief Wait until `Start` has returned, up to `timeout`.
@@ -114,7 +114,7 @@ void evget::EventLoop<T>::Stop() {
 }
 
 template <typename T>
-void evget::EventLoop<T>::StopWhenDrained() {
+void evget::EventLoop<T>::Stop() {
     draining_.store(true);
 }
 

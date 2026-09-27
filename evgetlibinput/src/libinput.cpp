@@ -55,7 +55,6 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput:
     lib_input->pollfd_.fd = libinput_get_fd(lib_input->libinput_context_.get());
     lib_input->pollfd_.events = POLLIN; // NOLINT(misc-include-cleaner)
     lib_input->pollfd_.revents = 0;
-    lib_input->wait_for_poll_ = true;
 
     const std::string& seat_name = seat.value_or("seat0");
     auto assign = libinput_udev_assign_seat(lib_input->libinput_context_.get(), seat_name.c_str());
@@ -70,36 +69,45 @@ evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput:
 }
 
 evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() {
-    libinput_event* event = nullptr;
-    // Loop until there is a non-null event, polling and dispatching the context if the current
-    // event is null.
+    // Queued events come first so an already reported`event never waits for the fd.
+    libinput_event* event = libinput_get_event(libinput_context_.get());
     while (event == nullptr) {
-        if (wait_for_poll_) {
-            int poll_result = 0;
-            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
-            do {
-                poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
-            } while (poll_result < 0 && errno == EINTR);
+        int poll_result = 0;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+        do {
+            poll_result = poll(&pollfd_, 1, -1); // NOLINT(misc-include-cleaner)
+        } while (poll_result < 0 && errno == EINTR);
 
-            if (poll_result <= 0) {
-                return evget::Err{
-                    {.error_type = evget::ErrorType::kEventHandlerError, .message = "polling for events failed"}
-                };
-            }
+        if (poll_result <= 0) {
+            return evget::Err{
+                {.error_type = evget::ErrorType::kEventHandlerError, .message = "polling for events failed"}
+            };
+        }
 
-            auto dispatch = libinput_dispatch(libinput_context_.get());
-            if (dispatch != 0) {
-                return evget::Err{
-                    {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to dispatch next event"}
-                };
-            }
+        auto dispatch = libinput_dispatch(libinput_context_.get());
+        if (dispatch != 0) {
+            return evget::Err{
+                {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to get next event"}
+            };
         }
 
         event = libinput_get_event(libinput_context_.get());
-        wait_for_poll_ = event == nullptr;
     }
 
     return evget::Result<LibInputEvent>{{event, libinput_event_destroy}};
+}
+
+int evgetlibinput::LibInput::GetFd() {
+    return libinput_get_fd(libinput_context_.get());
+}
+
+evget::Result<bool> evgetlibinput::LibInput::HasPendingEvent() {
+    if (libinput_dispatch(libinput_context_.get()) != 0) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to get next event"}
+        };
+    }
+    return libinput_next_event_type(libinput_context_.get()) != LIBINPUT_EVENT_NONE;
 }
 
 libinput_event_type evgetlibinput::LibInput::GetEventType(libinput_event& event) {

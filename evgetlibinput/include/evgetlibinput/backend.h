@@ -48,6 +48,11 @@ public:
      */
     evget::EventHandler<evget::InputEvent<LibInputEvent>>& Handler();
 
+    /**
+     * \brief Request a stop for the libinput handler.
+     */
+    void RequestStop();
+
     Backend(const Backend&) = delete;
     Backend(Backend&&) = delete;
     Backend& operator=(const Backend&) = delete;

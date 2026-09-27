@@ -11,10 +11,7 @@
 #include <signal.h> // NOLINT(hicpp-deprecated-headers,modernize-deprecated-headers)
 #endif
 
-#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETWINDOWS)
 #include <chrono>
-#endif
-
 #include <csignal>
 #include <exception>
 #include <memory>
@@ -44,22 +41,25 @@
 #endif
 
 namespace {
-#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETWINDOWS)
 constexpr std::chrono::seconds kChannelTimeout{2};
+
+#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETLIBINPUT)
+template <typename Handler, typename Backend>
+void StopSource(Handler& handler, Backend& backend, const evget::Scheduler& scheduler) {
+    // This must go before so the loop treats the stop gracefully.
+    handler.Stop();
+    backend.RequestStop();
+    if (!scheduler.IsStopped() && !handler.WaitFinished(kDrainTimeout)) {
+        spdlog::error("input events where not removed within {}, dropping events", kDrainTimeout);
+    }
+}
 #endif
 
 #ifdef FEATURE_EVGETX11
 void StopX11Source(evgetx11::Backend& backend, const evget::Scheduler& scheduler) {
     auto handler = backend.Handler();
-    if (!handler.has_value()) {
-        return;
-    }
-
-    // This must go before the stop request so the loop exits gracefully.
-    handler->get().StopWhenDrained();
-    backend.RequestStop();
-    if (!scheduler.IsStopped() && !handler->get().WaitFinished(kDrainTimeout)) {
-        spdlog::error("X11 events did not exit within {}, dropping events", kChannelTimeout);
+    if (handler.has_value()) {
+        StopSource(handler->get(), backend, scheduler);
     }
 }
 #endif
@@ -164,7 +164,7 @@ int Run(int argc, char** argv) {
             return 1;
         }
         li_backend = std::move(*result);
-        shutdown->SetSource([&li_backend] { li_backend->Handler().Stop(); });
+        shutdown->SetSource([&li_backend, scheduler] { StopSource(li_backend->Handler(), *li_backend, *scheduler); });
         scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
     }
 #endif
@@ -199,7 +199,7 @@ int Run(int argc, char** argv) {
         win_backend = std::move(*result);
         shutdown->SetSource([&win_backend, scheduler] {
             // This must go before the close so the loop treats the channel gracefully when it ends.
-            win_backend->Handler().StopWhenDrained();
+            win_backend->Handler().Stop();
             win_backend->RequestStop();
             if (!scheduler->IsStopped() && !win_backend->Handler().WaitFinished(kChannelTimeout)) {
                 spdlog::error("input channel did not stop within {}, dropping events", kChannelTimeout);
