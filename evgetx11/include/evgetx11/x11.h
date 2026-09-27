@@ -21,6 +21,7 @@
 #include "evget/error.h"
 #include "evget/event/concepts.h"
 #include "evget/util.h"
+#include "evgetx11/error_router.h"
 #include "evgetx11/log_once.h"
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
@@ -280,29 +281,11 @@ public:
     /**
      * \brief Construct an `X11` with a display connection.
      *
-     * Installs `OnError` for X error handler until destruction.
+     * Registers the display with `ErrorRouter::Process()` until destruction.
      *
      * \param display reference to the X11 Display connection
      */
     explicit X11(Display& display);
-
-    /**
-     * \brief Restore the default X error handler.
-     */
-    ~X11() override;
-
-    X11(X11&&) noexcept = delete;
-    X11& operator=(X11&&) noexcept = delete;
-    X11(const X11&) = delete;
-    X11& operator=(const X11&) = delete;
-
-    /**
-     * \brief Log a protocol error, once per request and error code, and let the failed call return.
-     * \param display the display the error occurred on, or null to log only the codes
-     * \param event the error
-     * \return zero, which Xlib ignores
-     */
-    static int OnError(Display* display, XErrorEvent* event);
 
     std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) override;
@@ -384,7 +367,7 @@ private:
 
     std::reference_wrapper<Display> display_;
     mutable LogOnce log_;
-    XErrorHandler previous_error_handler_;
+    ErrorRegistration errors_{ErrorRouter::Process(), &display_.get()};
 
     std::unique_ptr<_XIM, decltype(&XCloseIM)> xim_ =
         std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display_.get(), nullptr, nullptr, nullptr), XCloseIM};
