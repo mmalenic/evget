@@ -7,6 +7,7 @@
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
+#include <evget/device_id.h>
 #include <evget/event/device_type.h>
 #include <evget/event/entry.h>
 #include <evget/event/schema.h>
@@ -221,6 +222,97 @@ TEST(EventTransformer, RefreshDevicesNoWarn) {
 
     ASSERT_NE(transformer, nullptr);
     ASSERT_FALSE(std::ranges::any_of(log.Lines(), [](const std::string& line) { return line.starts_with("warning"); }));
+}
+
+TEST(EventTransformer, InjectedDeviceType) {
+    ASSERT_EQ(evgetx11::InjectedDeviceType(XISlaveKeyboard), evget::DeviceType::kKeyboard);
+    ASSERT_EQ(evgetx11::InjectedDeviceType(XISlavePointer), evget::DeviceType::kMouse);
+    ASSERT_EQ(evgetx11::InjectedDeviceType(XIMasterPointer), evget::DeviceType::kUnknown);
+    ASSERT_EQ(evgetx11::InjectedDeviceType(XIFloatingSlave), evget::DeviceType::kUnknown);
+}
+
+TEST(EventTransformer, Xi1DeviceTypeKnown) {
+    ASSERT_EQ(evgetx11::Xi1DeviceType(XI_MOUSE), evget::DeviceType::kMouse);
+    ASSERT_EQ(evgetx11::Xi1DeviceType(XI_KEYBOARD), evget::DeviceType::kKeyboard);
+    ASSERT_EQ(evgetx11::Xi1DeviceType("STYLUS"), evget::DeviceType::kTablet);
+    ASSERT_EQ(evgetx11::Xi1DeviceType("JOYSTICK"), evget::DeviceType::kUnknown);
+    ASSERT_EQ(evgetx11::Xi1DeviceType(nullptr), evget::DeviceType::kUnknown);
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(EventTransformer, XTestDevicesAreInjected) {
+    test::X11ApiMock x_wrapper_mock{};
+    std::string xtest_pointer = "Virtual core XTEST pointer";
+    std::string xtest_keyboard = "Virtual core XTEST keyboard";
+    std::string real_mouse = "real mouse";
+    std::string device_type = XI_MOUSE;
+    constexpr int kXTestPointer = 4;
+    constexpr int kXTestKeyboard = 5;
+    constexpr int kRealMouse = 6;
+    std::array devices{
+        test::CreateXDeviceInfo(kXTestPointer, xtest_pointer),
+        test::CreateXDeviceInfo(kXTestKeyboard, xtest_keyboard),
+        test::CreateXDeviceInfo(kRealMouse, real_mouse)
+    };
+    devices.at(0).type = None;
+    devices.at(1).type = None;
+    std::array xi_devices{
+        test::CreateXiDeviceInfo(kXTestPointer, xtest_pointer),
+        test::CreateXiDeviceInfo(kXTestKeyboard, xtest_keyboard),
+        test::CreateXiDeviceInfo(kRealMouse, real_mouse)
+    };
+    xi_devices.at(1).use = XISlaveKeyboard;
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices, xi_devices, device_type);
+    EXPECT_CALL(x_wrapper_mock, IsXTestDevice).WillRepeatedly([](int device_id) {
+        return device_id == kXTestPointer || device_id == kXTestKeyboard;
+    });
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto key = test::CreateXiRawEvent(XI_RawKeyPress, valuator_mask, values);
+    key.sourceid = kXTestKeyboard;
+    auto injected_click = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
+    injected_click.sourceid = kXTestPointer;
+    auto real_click = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
+    real_click.sourceid = kRealMouse;
+    EXPECT_CALL(x_wrapper_mock, NextEvent)
+        .WillOnce(testing::Return(test::CreateXEvent(key)))
+        .WillOnce(testing::Return(test::CreateXEvent(injected_click)))
+        .WillOnce(testing::Return(test::CreateXEvent(real_click)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
+    EXPECT_CALL(x_wrapper_mock, LookupCharacter).WillRepeatedly(testing::Return(std::string{}));
+
+    auto transformer =
+        std::move(evgetx11::EventTransformerBuilder{}.PointerKey(x_wrapper_mock).Touch()).Build(x_wrapper_mock);
+    ASSERT_NE(transformer, nullptr);
+    auto next = [&transformer, &x_wrapper_mock] {
+        auto data = transformer->TransformEvent(evgetx11::InputEvent::NextEvent(x_wrapper_mock));
+        return data.Entries().at(0);
+    };
+    evget::DeviceId<std::string> device_ids{};
+    const auto& injected_uuid = device_ids.UuidDeterministic(std::string{"evget:x11:device:x11-injected"});
+    constexpr std::size_t kDeviceName = 4;
+    constexpr std::size_t kDeviceId = 11;
+    constexpr std::size_t kDeviceType = 14;
+
+    const auto key_entry = next();
+    ASSERT_EQ(key_entry.Type(), evget::EntryType::kKey);
+    ASSERT_EQ(key_entry.Data().at(kDeviceName), "x11-injected");
+    ASSERT_EQ(key_entry.Data().at(kDeviceId), injected_uuid);
+    ASSERT_EQ(key_entry.Data().at(kDeviceType), "1");
+
+    const auto click_entry = next();
+    ASSERT_EQ(click_entry.Type(), evget::EntryType::kMouseClick);
+    ASSERT_EQ(click_entry.Data().at(kDeviceName), "x11-injected");
+    ASSERT_EQ(click_entry.Data().at(kDeviceId), injected_uuid);
+    ASSERT_EQ(click_entry.Data().at(kDeviceType), "0");
+
+    const auto real_entry = next();
+    ASSERT_EQ(real_entry.Data().at(kDeviceName), "real mouse");
+    ASSERT_NE(real_entry.Data().at(kDeviceId), injected_uuid);
 }
 
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)

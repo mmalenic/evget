@@ -223,6 +223,16 @@ public:
     virtual XEventPointer EventData(XEvent& event) = 0;
 
     /**
+     * \brief Check whether a device is a virtual XTEST device that create synthetic input.
+     *
+     * This function calls `XIGetProperty` for `XI_PROP_XTEST_DEVICE`.
+     *
+     * \param device_id the ID of the input device
+     * \return whether the device is an XTEST device
+     */
+    virtual bool IsXTestDevice(int device_id) = 0;
+
+    /**
      * \brief Get the file descriptor of the display.
      *
      * This function calls `XConnectionNumber`.
@@ -305,6 +315,7 @@ public:
 
     XEvent NextEvent() override;
     XEventPointer EventData(XEvent& event) override;
+    bool IsXTestDevice(int device_id) override;
     int GetConnectionNumber() override;
     int Pending() override;
 

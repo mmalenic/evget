@@ -40,6 +40,20 @@
 
 namespace evgetx11 {
 /**
+ * \brief Get the device type of injected input from the XI2.
+ * \param use the XI2 device use
+ * \return device type
+ */
+evget::DeviceType InjectedDeviceType(int use);
+
+/**
+ * \brief Get the device type from XI1.
+ * \param type_name the atom name
+ * \return the device type
+ */
+evget::DeviceType Xi1DeviceType(const char* type_name);
+
+/**
  * \brief Warn about each device XInput 2 reports but XInput 1 could not list.
  * \param xi1_devices the devices `ListInputDevices` returned
  * \param xi2_devices the devices `QueryDevice` returned
@@ -166,49 +180,33 @@ void EventTransformer<Switches...>::RefreshDevices() {
         }
 
         const auto& xi2_device = xi2_devices.at(device_id).get();
-
-        if ((xi2_device.enabled != False) && device.type != None) {
-            auto type = x_wrapper_.get().AtomName(device.type);
-            evget::DeviceType device_type{evget::DeviceType::kUnknown};
-
-            if (strcmp(type.get(), XI_MOUSE) == 0) {
-                device_type = evget::DeviceType::kMouse;
-            } else if (strcmp(type.get(), XI_KEYBOARD) == 0) {
-                device_type = evget::DeviceType::kKeyboard;
-            } else if (strcmp(type.get(), XI_TOUCHPAD) == 0) {
-                device_type = evget::DeviceType::kTouchpad;
-            } else if (strcmp(type.get(), XI_TOUCHSCREEN) == 0) {
-                device_type = evget::DeviceType::kTouchscreen;
-                // See
-                // https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput/-/blob/ac862672e4d04e78f2b647af9d3d14544454e4b9/src/xf86libinput.c#L3805-3846
-            } else if (
-                strcmp(type.get(), XI_TABLET) == 0 || strcmp(type.get(), "PAD") == 0 ||
-                strcmp(type.get(), "STYLUS") == 0 || strcmp(type.get(), "ERASER") == 0 ||
-                strcmp(type.get(), "CURSOR") == 0
-            ) {
-                device_type = evget::DeviceType::kTablet;
-            }
-
-            devices_.insert_or_assign(device_id, device_type);
-            id_to_name_.insert_or_assign(device_id, device.name);
-            x_event_switch_.RefreshDevices(device_id, pointer_id_, device_type, device.name, xi2_device);
-
-            // Iterate through switches and refresh devices.
-            std::apply(
-                [this, &device_id, &device_type, &device, &xi2_devices](auto&&... event_switches) {
-                    ((event_switches.RefreshDevices(
-                         device_id,
-                         pointer_id_,
-                         device_type,
-                         device.name,
-                         xi2_devices.at(device_id).get(),
-                         x_event_switch_
-                     )),
-                     ...);
-                },
-                switches_
-            );
+        if (xi2_device.enabled == False) {
+            continue;
         }
+
+        // The server marks XTEST devices with XI_PROP_XTEST_DEVICE; they have no XI1 type and replay injected input.
+        const bool injected = x_wrapper_.get().IsXTestDevice(device_id);
+        if (!injected && device.type == None) {
+            continue;
+        }
+
+        const evget::DeviceType device_type =
+            injected ? InjectedDeviceType(xi2_device.use) : Xi1DeviceType(x_wrapper_.get().AtomName(device.type).get());
+        const std::string name = injected ? std::string{kInjectedDeviceName} : std::string{device.name};
+
+        devices_.insert_or_assign(device_id, device_type);
+        id_to_name_.insert_or_assign(device_id, name);
+        x_event_switch_.RefreshDevices(device_id, pointer_id_, device_type, name, xi2_device);
+
+        // Iterate through switches and refresh devices.
+        std::apply(
+            [this, &device_id, &device_type, &name, &xi2_device](auto&&... event_switches) {
+                ((event_switches
+                      .RefreshDevices(device_id, pointer_id_, device_type, name, xi2_device, x_event_switch_)),
+                 ...);
+            },
+            switches_
+        );
     }
 }
 

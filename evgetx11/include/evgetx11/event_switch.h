@@ -35,6 +35,9 @@ namespace evgetx11 {
 /// \brief Event source for the X11 backend.
 constexpr std::string_view kEventSourceName{"x11"};
 
+/// \brief Device name for XTEST devices.
+constexpr std::string_view kInjectedDeviceName{"x11-injected"};
+
 /**
  * \brief Handles processing different types of X11 input events and converting them to the
  *        evget data format.
@@ -185,6 +188,7 @@ private:
     std::unordered_map<int, evget::DeviceType> devices_;
     std::unordered_map<int, std::string> id_to_name_;
     evget::DeviceId<int> device_ids_;
+    evget::DeviceId<std::string> named_device_ids_;
     int pointer_id_{};
     LogOnce log_;
 };

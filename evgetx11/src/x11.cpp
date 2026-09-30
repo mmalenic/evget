@@ -6,6 +6,7 @@
 #include <X11/extensions/XInput2.h>
 #include <X11/extensions/Xrandr.h>
 #include <spdlog/spdlog.h>
+#include <xorg/xserver-properties.h>
 
 #include <array>
 #include <cstddef>
@@ -164,6 +165,36 @@ evgetx11::XEventPointer evgetx11::X11::EventData(XEvent& event) {
         return {&event.xcookie, std::move(deleter)};
     }
     return {nullptr, [](XGenericEventCookie*) {}};
+}
+
+bool evgetx11::X11::IsXTestDevice(int device_id) {
+    const Atom xtest = XInternAtom(&display_.get(), XI_PROP_XTEST_DEVICE, True);
+    if (xtest == None) {
+        return false;
+    }
+
+    Atom type = None;
+    int format = 0;
+    unsigned long n_items = 0;
+    unsigned long bytes_after = 0;
+    unsigned char* data = nullptr;
+    const Status status = XIGetProperty(
+        &display_.get(),
+        device_id,
+        xtest,
+        0,
+        1,
+        False,
+        AnyPropertyType,
+        &type,
+        &format,
+        &n_items,
+        &bytes_after,
+        &data
+    );
+    const std::unique_ptr<unsigned char[], decltype(&XFree)> property{data, XFree};
+
+    return status == Success && type != None && n_items > 0;
 }
 
 int evgetx11::X11::GetConnectionNumber() {

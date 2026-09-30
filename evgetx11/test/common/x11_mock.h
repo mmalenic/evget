@@ -53,6 +53,7 @@ public:
 
     MOCK_METHOD(XEvent, NextEvent, (), (override));
     MOCK_METHOD(XEventPointer, EventData, (XEvent & event), (override));
+    MOCK_METHOD(bool, IsXTestDevice, (int device_id), (override));
     MOCK_METHOD(int, GetConnectionNumber, (), (override));
     MOCK_METHOD(int, Pending, (), (override));
     MOCK_METHOD(Status, QueryVersion, (int& major, int& minor), (override));

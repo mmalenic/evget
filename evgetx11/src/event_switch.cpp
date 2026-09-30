@@ -5,6 +5,7 @@
 #include <evget/event/device_type.h>
 
 #include <cstddef>
+#include <format>
 #include <optional>
 #include <ranges>
 #include <span>
@@ -86,6 +87,11 @@ void evgetx11::EventSwitch::RemoveDevice(int device_id) {
 evgetx11::EventSwitch::EventSwitch(X11Api& x_wrapper) : x_wrapper_{x_wrapper} {}
 
 const std::string& evgetx11::EventSwitch::GetDeviceUuid(int device_id) {
+    const auto name = id_to_name_.find(device_id);
+    if (name != id_to_name_.end() && name->second == kInjectedDeviceName) {
+        return named_device_ids_.UuidDeterministic(std::format("evget:x11:device:{}", name->second));
+    }
+
     return device_ids_.Uuid(device_id);
 }
 
