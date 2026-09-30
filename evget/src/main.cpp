@@ -217,6 +217,7 @@ int Run(int argc, char** argv) {
         spdlog::error("invalid event source");
         return 1;
     }
+    spdlog::info("capturing input events");
 
     scheduler->Join();
     shutdown->Request();
