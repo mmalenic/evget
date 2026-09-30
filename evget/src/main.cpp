@@ -154,6 +154,7 @@ int Run(int argc, char** argv) {
 
     auto exit_code = 0;
     auto event_source = cli.EventSource();
+    auto capturing = false;
 
 #ifdef FEATURE_EVGETLIBINPUT
     std::unique_ptr<evgetlibinput::Backend> li_backend{};
@@ -166,6 +167,7 @@ int Run(int argc, char** argv) {
         li_backend = std::move(*result);
         shutdown->SetSource([&li_backend, scheduler] { StopSource(li_backend->Handler(), *li_backend, *scheduler); });
         scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
+        capturing = true;
     }
 #endif
 
@@ -185,6 +187,7 @@ int Run(int argc, char** argv) {
         }
         shutdown->SetSource([&x11_backend, scheduler] { StopX11Source(*x11_backend, *scheduler); });
         scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
+        capturing = true;
     }
 #endif
 
@@ -206,8 +209,14 @@ int Run(int argc, char** argv) {
             }
         });
         scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
+        capturing = true;
     }
 #endif
+
+    if (!capturing) {
+        spdlog::error("invalid event source");
+        return 1;
+    }
 
     scheduler->Join();
     shutdown->Request();
