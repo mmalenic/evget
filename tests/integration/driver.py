@@ -5,6 +5,7 @@ also runs as the helper for `Console` starts.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import signal
 import subprocess
@@ -570,12 +571,12 @@ class Console(Evget):
             raise TimeoutError(f"evget still running after {timeout:g} s") from error
 
     def kill(self) -> None:
-        for process in [*self._descendants(), psutil.Process(self._helper.pid)]:
-            try:
+        processes = {self._evget, *self._descendants()}
+        for process in processes:
+            with contextlib.suppress(psutil.NoSuchProcess):
                 process.kill()
-            except psutil.NoSuchProcess:
-                pass
-
+        psutil.wait_procs(processes, timeout=STOP_TIMEOUT)
+        self._helper.kill()
         self._helper.wait()
 
     def _descendants(self) -> list[psutil.Process]:
@@ -586,12 +587,9 @@ class Console(Evget):
 
     def _find_evget(self) -> psutil.Process | None:
         for process in self._descendants():
-            try:
+            with contextlib.suppress(psutil.NoSuchProcess):
                 if process.name().lower() == self._image:
                     return process
-            except psutil.NoSuchProcess:
-                pass
-
         return None
 
     def _console_window(self) -> int | None:
