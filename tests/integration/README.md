@@ -9,6 +9,13 @@ input scenarios like mouse movement, keys, storing events, batching and others.
 ## Running
 
 The `integration` recipe builds evget and runs the suite with [uv](https://docs.astral.sh/uv/), which
+installs the locked test dependencies into `.venv`. Without uv, it runs `python -m pytest`, so install the
+dependencies first, e.g. in a virtual environment:
+
+```sh
+pip install --group integration
+```
+
 Arguments after the recipe go to pytest:
 
 ```sh
@@ -20,6 +27,7 @@ To test an existing binary, pass it with `--evget` or the `EVGET` environment va
 
 ```sh
 uv run --locked --group integration pytest tests/integration --evget build/linux-gcc-debug/bin/evget
+python -m pytest tests/integration --evget build/linux-gcc-debug/bin/evget   # without uv
 ```
 
 Tests run once per backend. A backend that the host or the binary doesn't support is skipped.

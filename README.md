@@ -45,6 +45,10 @@ just build
 
 This requires a C++23 compiler, at least [gcc-14] or [clang-19] on Linux, or MSVC 17.11 on Windows.
 
+Besides [just], the recipes need either [uv] or a global Conan 2.20+ and Python. With uv on the PATH, `conan` and
+`python` are based on dependencies from `uv.lock`, without it, `conan` and `python` from the PATH are used.
+To choose either way, set `EVGET_USE_UV=true|false` or run with `just use_uv=false <recipe>` where supported.
+
 For backend, OS, or compiler specific commands, see [`recipes/README.md`](recipes/README.md).
 
 ## Development
@@ -94,6 +98,7 @@ just doc
 [just]: https://github.com/casey/just
 [conan]: https://docs.conan.io/2/installation.html
 [cmake]: https://cmake.org/
+[uv]: https://docs.astral.sh/uv/
 [gcc-14]: https://gcc.gnu.org/gcc-14/
 [clang-19]: https://releases.llvm.org/19.1.0/tools/clang/docs/ReleaseNotes.html
 [clang-tidy]: https://clang.llvm.org/extra/clang-tidy/
