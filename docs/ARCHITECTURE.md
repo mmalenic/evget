@@ -25,8 +25,8 @@ In addition to fields on move events, a mouse scroll event also has the followin
 
 | Field               | Type  | Description                                                                                                                               |
 | ------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `scroll_vertical`   | Float | The platform-defined amount that was vertically scrolled. A positive value indicates a scroll up and a negative value a scroll down.      |
-| `scroll_horizontal` | Float | The platform-defined amount that was horizontally scrolled. A positive value indicates a scroll left and a negative value a scroll right. |
+| `scroll_vertical`   | Float | The platform-defined amount that was vertically scrolled. A positive value indicates a scroll down and a negative value a scroll up.      |
+| `scroll_horizontal` | Float | The platform-defined amount that was horizontally scrolled. A positive value indicates a scroll right and a negative value a scroll left. |
 
 A mouse click event has all the fields of a mouse move event, and the following:
 
