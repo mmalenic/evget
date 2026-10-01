@@ -1,0 +1,26 @@
+# Note that this isn't a real python package, as it's just used for integration testing
+# and conan dependencies.
+[project]
+name = "evget"
+version = "0"
+requires-python = ">=3.11"
+
+[dependency-groups]
+integration = [
+    "pytest>=8.3",
+    "pytest-timeout>=2.3",
+    "psutil>=6.0",
+    "pexpect>=4.9; sys_platform != 'win32'",
+    "python-xlib>=0.33; sys_platform == 'linux'",
+    "evdev-binary>=1.9; sys_platform == 'linux'",
+    "pywin32>=308; sys_platform == 'win32'",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/integration"]
+# Global input, so can't run tests in parallel.
+addopts = ["-rs", "-p", "no:xdist"]
+markers = [
+    "integration: runs the evget integration tests by creating real input on the desktop",
+]
+timeout = 60
