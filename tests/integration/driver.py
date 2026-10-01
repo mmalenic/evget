@@ -21,6 +21,7 @@ import psutil
 if sys.platform == "win32":
     import win32api
     import win32con
+    import win32console
     import win32gui
     import win32process
 else:
@@ -519,8 +520,16 @@ class Console(Evget):
         self._image = Path(command[0]).name.lower()
         self.stdout = directory / "stdout"
         self._helper_log = directory / "helper"
-        helper = [sys.executable, __file__, stop, str(self.stdout), *command]
-
+        self._console = directory / "console-window"
+        helper = [
+            sys.executable,
+            __file__,
+            stop,
+            str(self.stdout),
+            str(self._console),
+            *command,
+        ]
+        
         if stop == "console-close":
             # conhost gives the helper a classic console window to close.
             self._helper = subprocess.Popen(["conhost.exe", *helper])
@@ -552,9 +561,19 @@ class Console(Evget):
 
     def stop(self) -> None:
         if self._stop == "console-close":
-            window = wait_until(
-                self._console_window, READY_TIMEOUT, "the conhost console window"
+            # A console window names its client, not conhost, as its process.
+            reported = wait_until(
+                lambda: _read(self._console).strip(),
+                READY_TIMEOUT,
+                "the console helper to report its window",
             )
+            window = int(reported)
+            if not window:
+                raise RuntimeError("the console helper has no console window")
+            if (name := win32gui.GetClassName(window)) != "ConsoleWindowClass":
+                raise RuntimeError(
+                    f"the console window is a {name}, not a ConsoleWindowClass to close"
+                )
             win32gui.PostMessage(window, win32con.WM_CLOSE, 0, 0)
         else:
             assert self._helper.stdin is not None
@@ -591,13 +610,6 @@ class Console(Evget):
                 if process.name().lower() == self._image:
                     return process
         return None
-
-    def _console_window(self) -> int | None:
-        windows = windows_of(self._helper.pid)
-        return next(
-            (w for w in windows if win32gui.GetClassName(w) == "ConsoleWindowClass"),
-            None,
-        )
 
 
 def _read(path: Path) -> str:
@@ -645,11 +657,13 @@ def taskbar_windows(pid: int) -> list[int]:
     return [window for window in windows_of(pid) if listed(window)]
 
 
-def _console_helper(stop: str, stdout: str, *command: str) -> int:
+def _console_helper(stop: str, stdout: str, console: str, *command: str) -> int:
     """
-    Run  evget in this console
+    Run evget in this console
+    .
     """
-
+    
+    Path(console).write_text(str(win32console.GetConsoleWindow()))
     # Ctrl+Break reaches only the process group it is sent to.
     group = subprocess.CREATE_NEW_PROCESS_GROUP if stop == "ctrl-break" else 0
     with open(stdout, "wb") as output:
