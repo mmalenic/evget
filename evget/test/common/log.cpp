@@ -2,6 +2,7 @@
 
 #include <spdlog/common.h>
 #include <spdlog/logger.h>
+#include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/spdlog.h>
 
@@ -13,7 +14,10 @@
 test::CapturedLog::CapturedLog() : previous_{spdlog::default_logger()} {
     auto sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(output_);
     auto logger = std::make_shared<spdlog::logger>("captured", sink);
-    logger->set_pattern("%l %v");
+
+    // On Windows, spdlog's default formatter ends each line with "\r\n". Since Lines() splits
+    // the output on "\n" with std::getline, "\n" is needed here otherwise lines would have "\r".
+    logger->set_formatter(std::make_unique<spdlog::pattern_formatter>("%l %v", spdlog::pattern_time_type::local, "\n"));
     logger->set_level(spdlog::level::debug);
     spdlog::set_default_logger(logger);
 }
