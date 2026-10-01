@@ -13,7 +13,7 @@ import stored
 
 pytestmark = pytest.mark.integration
 
-STORE_TIMEOUT = 10.0
+STORE_TIMEOUT = driver.scaled(10.0)
 
 
 def test_store_n_events_every_n_events(

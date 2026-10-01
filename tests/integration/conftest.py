@@ -4,17 +4,34 @@ Options and config for the evget integration tests.
 
 from __future__ import annotations
 
+import argparse
 import os
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Generator, Iterator
 from pathlib import Path
+from typing import NoReturn
 
 import pytest
 
 import driver
 
-STDOUT_SETTLE = 2.0
+STDOUT_SETTLE = driver.scaled(2.0)
 MISSING_BACKEND = "does not include the requested event source"
+
+REPORTS = pytest.StashKey[dict[str, pytest.TestReport]]()
+
+
+def backend_list(value: str) -> frozenset[str]:
+    """
+    Parse a comma-separated list of backends.
+    """
+    backends = frozenset(name.strip() for name in value.split(",") if name.strip())
+    if unknown := backends - set(driver.BACKENDS):
+        raise argparse.ArgumentTypeError(
+            f"unknown backends: {','.join(sorted(unknown))}"
+        )
+    return backends
+
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
@@ -23,6 +40,35 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=os.environ.get("EVGET"),
         help="the evget binary to test, defaults to $EVGET",
     )
+    parser.addoption(
+        "--require-backends",
+        metavar="LIST",
+        type=backend_list,
+        default=os.environ.get("EVGET_REQUIRE_BACKENDS", ""),
+        help="comma-separated backends that fail instead of skip when unavailable, "
+        "defaults to $EVGET_REQUIRE_BACKENDS",
+    )
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    # A timeout marker overrides --timeout, so scale only the configured default.
+    if driver.TIMEOUT_SCALE == 1 or config.getoption("timeout", None) is not None:
+        return
+    if "PYTEST_TIMEOUT" not in os.environ:
+        timeout = driver.scaled(float(config.getini("timeout")))
+        for item in items:
+            item.add_marker(pytest.mark.timeout(timeout))
+
+
+@pytest.hookimpl(wrapper=True, tryfirst=True)
+def pytest_runtest_makereport(
+    item: pytest.Item,
+) -> Generator[None, pytest.TestReport, pytest.TestReport]:
+    report = yield
+    item.stash.setdefault(REPORTS, {})[report.when] = report
+    return report
 
 
 @pytest.fixture(scope="session")
@@ -70,19 +116,36 @@ def backend(
     The synthetic input for each backend.
     """
 
-    if reason := driver.unavailable(request.param):
-        pytest.skip(reason)
-    device = driver.open_input(request.param)
+    name = request.param
     try:
-        require_backend(evget, device, tmp_path_factory.mktemp(request.param))
+        device = driver.open_input(name)
+    except driver.Unavailable as error:
+        unavailable(request.config, name, str(error))
+    try:
+        if reason := missing_from_build(evget, device, tmp_path_factory.mktemp(name)):
+            unavailable(request.config, name, reason)
         yield device
     finally:
         device.close()
 
 
-def require_backend(evget: Path, backend: driver.Input, directory: Path) -> None:
+def unavailable(config: pytest.Config, backend: str, reason: str) -> NoReturn:
     """
-    Specifies the required `backend` for evget to be built with.
+    Skip `backend`, or fail if --require-backends sets it.
+    """
+
+    if backend in config.getoption("require_backends"):
+        message = f"required backend {backend} is unavailable: {reason}"
+        raise pytest.fail.Exception(message, pytrace=False) from None
+
+    pytest.skip(reason)
+
+
+def missing_from_build(
+    evget: Path, backend: driver.Input, directory: Path
+) -> str | None:
+    """
+    Determines the reason why evget cannot run `backend`.
     """
 
     probe = driver.start(command(evget, backend, directory / "probe.json"), directory)
@@ -90,20 +153,25 @@ def require_backend(evget: Path, backend: driver.Input, directory: Path) -> None
         probe.wait_ready()
     except driver.Exited as exited:
         if MISSING_BACKEND in exited.output:
-            pytest.skip(f"{evget.name} was built without the {backend.backend} backend")
+            return f"{evget.name} was built without the {backend.backend} backend"
         raise
+    except TimeoutError as error:
+        raise TimeoutError(f"{error}\n{probe.log_tail()}") from None
     finally:
         probe.kill()
+    return None
 
 
 Launch = Callable[..., driver.Evget]
 
 
 @pytest.fixture
-def launch(evget: Path, tmp_path: Path) -> Iterator[Launch]:
+def launch(
+    request: pytest.FixtureRequest, evget: Path, tmp_path: Path
+) -> Iterator[Launch]:
     """
     Start evget on a backend and wait until it captures input. Every evget started is killed when the
-    test ends, whether it passed or not.
+    test ends, and if the test failed, the end of its output is printed with the failure.
     """
 
     started: list[driver.Evget] = []
@@ -125,3 +193,9 @@ def launch(evget: Path, tmp_path: Path) -> Iterator[Launch]:
     yield start
     for process in started:
         process.kill()
+    call = request.node.stash.get(REPORTS, {}).get("call")
+
+    if call is not None and call.failed:
+        print(f"The last {driver.LOG_TAIL} lines of each evget log:")
+        for process in started:
+            print(process.log_tail())

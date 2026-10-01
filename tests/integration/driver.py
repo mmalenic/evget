@@ -37,14 +37,25 @@ BACKENDS = ("windows", "x11", "libinput")
 
 READY = "capturing input events"
 
-READY_TIMEOUT = 15.0
-STOP_TIMEOUT = 10.0
+TIMEOUT_SCALE = float(os.environ.get("EVGET_TIMEOUT_SCALE", "1"))
 
-STORE_ON_STOP = ("--store-n-events", "100000", "--store-after-seconds", "3600")
 
-DELIVERY_DELAY = 0.5
+def scaled(seconds: float) -> float:
+    """
+    `seconds` scaled by `EVGET_TIMEOUT_SCALE`.
+    """
+    return seconds * TIMEOUT_SCALE
+
+
+READY_TIMEOUT = scaled(15.0)
+STOP_TIMEOUT = scaled(10.0)
+DELIVERY_DELAY = scaled(0.5)
+
 PACE = 0.01
 MOVE_STEP = 5
+LOG_TAIL = 30
+
+STORE_ON_STOP = ("--store-n-events", "100000", "--store-after-seconds", "3600")
 
 if sys.platform == "win32":
     TERMINATE = "taskkill"
@@ -62,11 +73,10 @@ else:
 T = TypeVar("T")
 
 
-def wait_until(condition: Callable[[], T], timeout: float, what: str) -> T:
+def wait_until(condition: Callable[[], T | None], timeout: float, what: str) -> T:
     """
-    Poll `condition` until it returns a truthy.
+    Poll `condition` until it returns a truthy value.
     """
-
     deadline = time.monotonic() + timeout
     while not (result := condition()):
         if time.monotonic() > deadline:
@@ -74,6 +84,12 @@ def wait_until(condition: Callable[[], T], timeout: float, what: str) -> T:
         time.sleep(0.05)
 
     return result
+
+
+class Unavailable(Exception):
+    """
+    tHE host cannot run a backend.
+    """
 
 
 class Input(ABC):
@@ -164,7 +180,12 @@ class X11Input(Input):
     def __init__(self) -> None:
         # X servers number keys by kernel code plus 8.
         self._f24 = ecodes.KEY_F24 + 8
-        self._display = Display()
+        try:
+            self._display = Display()
+        except DisplayError as error:
+            raise Unavailable(
+                f"no X display ({error}), set DISPLAY or run under xvfb-run"
+            ) from error
         self._window = self._focus_window()
 
     def key(self, down: bool) -> None:
@@ -225,7 +246,12 @@ class LibinputInput(Input):
             ],
             ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y, ecodes.REL_WHEEL],
         }
-        self._device = evdev.UInput(capabilities, name=self.device_name)
+        try:
+            self._device = evdev.UInput(capabilities, name=self.device_name)
+        except (evdev.UInputError, PermissionError) as error:
+            raise Unavailable(
+                f"{error}"
+            ) from error
 
         # libinput skips a device until udev has written a database entry.
         rdev = os.stat(self._device.device.path).st_rdev
@@ -250,43 +276,24 @@ class LibinputInput(Input):
         self._device.close()
 
 
-def unavailable(backend: str) -> str | None:
-    """
-    The reason why `backend` cannot be tested on this host.\
-    """
-
-    if backend == "windows":
-        return None if sys.platform == "win32" else "the windows backend needs Windows"
-    if sys.platform != "linux":
-        return f"the {backend} backend needs Linux"
-    if backend == "x11":
-        try:
-            Display().close()
-        except DisplayError as error:
-            return f"no X display ({error}): set DISPLAY or run under xvfb-run"
-        return None
-    if not os.access("/dev/uinput", os.W_OK):
-        return "libinput needs write access to /dev/uinput"
-    if not any(os.access(node, os.R_OK) for node in Path("/dev/input").glob("event*")):
-        return "libinput needs read access to /dev/input"
-
-    return None
-
-
 def open_input(backend: str) -> Input:
     """
     Create the synthetic input for `backend`.
     """
+    if backend == "windows":
+        if sys.platform != "win32":
+            raise Unavailable("the windows backend needs Windows")
+        return WindowsInput()
+    if sys.platform != "linux":
+        raise Unavailable(f"the {backend} backend needs Linux")
 
-    inputs = {"windows": WindowsInput, "x11": X11Input, "libinput": LibinputInput}
-    return inputs[backend]()
+    return X11Input() if backend == "x11" else LibinputInput()
 
 
 def start(command: list[str], directory: Path, stop: str = TERMINATE) -> Evget:
     """
     Start evget so that `Evget.stop` stops it automatically.
     """
-
     if sys.platform == "win32" and stop in ("ctrl-c", "ctrl-break", "console-close"):
         return Console(command, directory, stop)
     if sys.platform != "win32" and stop in ("ctrl-c", "hangup", "nohup"):
@@ -310,7 +317,7 @@ class Evget(ABC):
     Run evget.
     """
 
-    stdout: Path | None = None
+    stdout: Path
 
     @property
     @abstractmethod
@@ -318,6 +325,13 @@ class Evget(ABC):
         """
         The evget process id.
         """
+
+    @property
+    def logs(self) -> list[Path]:
+        """
+        A list of files to the evget logs.
+        """
+        return [self.stdout]
 
     def wait_ready(self, timeout: float = READY_TIMEOUT) -> None:
         """
@@ -355,12 +369,18 @@ class Evget(ABC):
 
     def output(self) -> str:
         """
-        What evget has written to standard output.
+        The output of evget so far.
         """
+        return _read(self.stdout)
 
-        if self.stdout is None or not self.stdout.exists():
-            return ""
-        return self.stdout.read_text(encoding="utf-8", errors="replace")
+    def log_tail(self, lines: int = LOG_TAIL) -> str:
+        """
+        The last `lines` of the evget logs.
+        """
+        return "\n".join(
+            f"{log}:\n" + "\n".join(_read(log).splitlines()[-lines:])
+            for log in self.logs
+        )
 
 
 class Process(Evget):
@@ -382,6 +402,10 @@ class Process(Evget):
     @property
     def pid(self) -> int:
         return self._process.pid
+
+    @property
+    def logs(self) -> list[Path]:
+        return [self.stdout, self.stderr]
 
     def stop(self) -> None:
         if self._stop == "sigterm":
@@ -412,6 +436,9 @@ class Terminal(Evget):
 
     def __init__(self, command: list[str], directory: Path, stop: str) -> None:
         self._stop = stop
+        self._hung_up = False
+        self._transcript = directory / "terminal"
+        self.stdout = self._transcript
         if stop == "nohup":
             command = ["nohup", *command]
             # nohup redirects the output of a command run from a terminal here.
@@ -419,19 +446,24 @@ class Terminal(Evget):
         self._child = pexpect.spawn(
             command[0], command[1:], cwd=directory, encoding="utf-8"
         )
+        self._child.logfile_read = self._transcript.open("w", encoding="utf-8")
 
     @property
     def pid(self) -> int:
         return self._child.pid
 
+    @property
+    def logs(self) -> list[Path]:
+        return list(dict.fromkeys([self.stdout, self._transcript]))
+
     def wait_ready(self, timeout: float = READY_TIMEOUT) -> None:
-        if self.stdout is not None:
+        if self.stdout != self._transcript:
             super().wait_ready(timeout)
             return
         try:
             self._child.expect_exact(READY, timeout=timeout)
         except pexpect.EOF as error:
-            raise Exited(self._child.before) from error
+            raise Exited(self.output()) from error
         except pexpect.TIMEOUT as error:
             raise TimeoutError(
                 f"evget did not capture input in {timeout:g} s"
@@ -452,16 +484,28 @@ class Terminal(Evget):
 
         # pexpect close() follows hangup with SIGINT and SIGKILL.
         self._child.ptyproc.fileobj.close()
+        self._hung_up = True
 
     def terminate(self) -> None:
         os.kill(self.pid, signal.SIGTERM)
 
     def wait(self, timeout: float = STOP_TIMEOUT) -> int | None:
-        wait_until(lambda: not self._child.isalive(), timeout, "evget to exit")
+        deadline = time.monotonic() + timeout
+        if not self._hung_up:
+            # Reading the terminal to its end keeps the last lines.
+            try:
+                self._child.expect(pexpect.EOF, timeout=timeout)
+            except pexpect.TIMEOUT as error:
+                raise TimeoutError(
+                    f"evget still running after {timeout:g} s"
+                ) from error
+        remaining = max(0.0, deadline - time.monotonic())
+        wait_until(lambda: not self._child.isalive(), remaining, "evget to exit")
         return self._child.exitstatus
 
     def kill(self) -> None:
         self._child.close(force=True)
+        self._child.logfile_read.close()
 
 
 class Console(Evget):
@@ -473,20 +517,26 @@ class Console(Evget):
         self._stop = stop
         self._image = Path(command[0]).name.lower()
         self.stdout = directory / "stdout"
+        self._helper_log = directory / "helper"
         helper = [sys.executable, __file__, stop, str(self.stdout), *command]
+
         if stop == "console-close":
             # conhost gives the helper a classic console window to close.
             self._helper = subprocess.Popen(["conhost.exe", *helper])
         else:
-            self._helper = subprocess.Popen(
-                helper,
-                stdin=subprocess.PIPE,
-                creationflags=subprocess.CREATE_NEW_CONSOLE,
-                startupinfo=subprocess.STARTUPINFO(
-                    dwFlags=subprocess.STARTF_USESHOWWINDOW,
-                    wShowWindow=subprocess.SW_HIDE,
-                ),
-            )
+            with self._helper_log.open("wb") as log:
+                self._helper = subprocess.Popen(
+                    helper,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,
+                    stderr=log,
+                    creationflags=subprocess.CREATE_NEW_CONSOLE,
+                    startupinfo=subprocess.STARTUPINFO(
+                        dwFlags=subprocess.STARTF_USESHOWWINDOW,
+                        wShowWindow=subprocess.SW_HIDE,
+                    ),
+                )
+
         self._evget = wait_until(
             self._find_evget, READY_TIMEOUT, "the console helper to start evget"
         )
@@ -494,6 +544,10 @@ class Console(Evget):
     @property
     def pid(self) -> int:
         return self._evget.pid
+
+    @property
+    def logs(self) -> list[Path]:
+        return [self.stdout, self._helper_log]
 
     def stop(self) -> None:
         if self._stop == "console-close":
@@ -546,6 +600,12 @@ class Console(Evget):
             (w for w in windows if win32gui.GetClassName(w) == "ConsoleWindowClass"),
             None,
         )
+
+
+def _read(path: Path) -> str:
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8", errors="replace")
 
 
 def _taskkill(*args: str) -> None:

@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pytest
 
+import driver
+
 pytestmark = pytest.mark.integration
 
 # This should not be possible on the target platform.
@@ -22,7 +24,10 @@ def run(evget: Path, *args: str) -> subprocess.CompletedProcess[str]:
     """
 
     return subprocess.run(
-        [str(evget), *args], capture_output=True, text=True, timeout=30
+        [str(evget), *args],
+        capture_output=True,
+        text=True,
+        timeout=driver.scaled(30.0),
     )
 
 

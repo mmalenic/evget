@@ -67,7 +67,7 @@ def test_nohup_ignores_hangup(launch, backend: driver.Input, tmp_path: Path) -> 
 
     process.hang_up()
     with pytest.raises(TimeoutError):
-        process.wait(timeout=1.0)
+        process.wait(timeout=driver.scaled(1.0))
     backend.send(keys=KEYS)
     process.terminate()
 
