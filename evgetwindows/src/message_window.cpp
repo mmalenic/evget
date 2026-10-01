@@ -240,7 +240,11 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const Raw
     return EnqueueOutcome::kDropped;
 }
 
-evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT& raw, std::size_t packet_size) {
+evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(
+    const RAWINPUT& raw,
+    std::size_t packet_size,
+    std::optional<INPUT_MESSAGE_SOURCE> source
+) {
     DrainDeviceChanges();
 
     if (raw.header.dwType == RIM_TYPEHID) {
@@ -260,11 +264,12 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
 
         auto outcome = EnqueueOutcome::kIgnored;
         for (DWORD index = 0; index < count; ++index) {
-            const std::optional<RawEvent> report = ToRawEventAt(raw, index, packet_size);
+            std::optional<RawEvent> report = ToRawEventAt(raw, index, packet_size);
             if (!report.has_value()) {
                 continue;
             }
 
+            report->source = source;
             const EnqueueOutcome sent = EnqueueEvent(*report);
             if (sent == EnqueueOutcome::kDropped || outcome != EnqueueOutcome::kDropped) {
                 outcome = sent;
@@ -274,11 +279,12 @@ evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::Enqueue(const RAWINPUT
         return outcome;
     }
 
-    const std::optional<RawEvent> event = ToRawEvent(raw, packet_size);
+    std::optional<RawEvent> event = ToRawEvent(raw, packet_size);
     if (!event.has_value()) {
         return EnqueueOutcome::kIgnored;
     }
 
+    event->source = source;
     return EnqueueEvent(*event);
 }
 
@@ -307,6 +313,13 @@ void evgetwindows::MessageWindow::DrainDeviceChanges() {
 }
 
 void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
+    // This source describes the message, so it is only valid inside the WM_INPUT handler.
+    INPUT_MESSAGE_SOURCE message_source{};
+    std::optional<INPUT_MESSAGE_SOURCE> source{};
+    if (GetCurrentInputMessageSource(&message_source) != FALSE) {
+        source = message_source;
+    }
+
     UINT size = 0;
     // The call is a success when it returns 0.
     if (GetRawInputData(input, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) != 0) {
@@ -322,7 +335,7 @@ void evgetwindows::MessageWindow::HandleRawInput(HRAWINPUT input) {
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    Enqueue(*reinterpret_cast<const RAWINPUT*>(raw_buffer_.data()), size);
+    Enqueue(*reinterpret_cast<const RAWINPUT*>(raw_buffer_.data()), size, source);
 }
 
 evgetwindows::MessageWindow::WindowClass::WindowClass(const wchar_t* class_name, HINSTANCE instance)

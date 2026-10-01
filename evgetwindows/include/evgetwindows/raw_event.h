@@ -11,6 +11,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <variant>
 
 namespace evgetwindows {
@@ -42,6 +43,7 @@ struct DeviceChange {
 struct RawEvent {
     RAWINPUTHEADER header{};
     std::variant<RAWMOUSE, RAWKEYBOARD, HidPayload, DeviceChange> data;
+    std::optional<INPUT_MESSAGE_SOURCE> source;
 };
 
 } // namespace evgetwindows

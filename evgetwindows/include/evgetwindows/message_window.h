@@ -141,9 +141,10 @@ public:
      * \brief Convert a `RAWINPUT` record and try to queue it.
      * \param raw the raw input record
      * \param packet_size the number of bytes within `raw` that is the target
+     * \param source the input message source of the `WM_INPUT` event
      * \return the outcome
      */
-    EnqueueOutcome Enqueue(const RAWINPUT& raw, std::size_t packet_size);
+    EnqueueOutcome Enqueue(const RAWINPUT& raw, std::size_t packet_size, std::optional<INPUT_MESSAGE_SOURCE> source);
 
     /**
      * \brief Queue a device for arrival or removal.
