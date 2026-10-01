@@ -228,4 +228,52 @@ TEST(XEventSwitchPointerTest, TestAddMotionEvent) {
     ASSERT_EQ(entries.at(0).Data().at(14), "0");
 }
 
+TEST(XEventSwitchPointerTest, ScreenMonitorPointerOn) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto device_event = test::CreateXiRawEvent(XI_RawMotion, valuator_mask, values);
+
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillOnce(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillOnce(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillOnce([]() {
+        auto result = test::CreatePointerResult();
+        result.screen_name = "DP-1";
+        return result;
+    });
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
+
+    evget::Data data{}; // NOLINT(misc-const-correctness)
+    x_event_switch.AddMotionEvent(device_event, evget::TimestampType{}, data, "XI_RawMotion", [](Time) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    ASSERT_EQ(data.Entries().at(0).Data().at(10), "DP-1");
+}
+
+TEST(XEventSwitchPointerTest, ScreenAbsentWhenNoPointer) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto device_event = test::CreateXiRawEvent(XI_RawMotion, valuator_mask, values);
+
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillOnce(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillOnce(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillOnce([]() { return test::CreatePointerResult(); });
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", {});
+
+    evget::Data data{}; // NOLINT(misc-const-correctness)
+    x_event_switch.AddMotionEvent(device_event, evget::TimestampType{}, data, "XI_RawMotion", [](Time) {
+        return std::optional{std::chrono::microseconds{1}};
+    });
+
+    ASSERT_FALSE(data.Entries().at(0).Data().at(10).has_value());
+}
+
 // NOLINTEND(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays)
