@@ -26,10 +26,11 @@ Tests run once per backend. A backend that the host or the binary doesn't suppor
 
 ## Requirements
 
-- **Windows:** an interactive desktop session, with pytest on the console.
-- **X11:** normally a valid display is required, but headless works under Xvfb, for example `xvfb-run -a just linux::integration`.
-- **libinput:** read access to `/dev/input` and write access to `/dev/uinput`, which usually means root. The tests add 
-                a virtual uinput keyboard and mouse for the run.
+- **Windows:** an interactive desktop session.
+- **X11:** normally a valid display is required, but headless works under Xvfb, for example
+  `xvfb-run -a just linux::integration`.
+- **libinput:** read access to `/dev/input` and write access to `/dev/uinput`, which usually means root. The tests add
+  a virtual uinput keyboard and mouse for the run.
 
 Only the test's own input is counted. The evget process attributes this with `windows-injected`, `x11-injected` or the
 virtual uinput device, meaning that other input on the desktop shouldn't change the results.

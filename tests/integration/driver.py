@@ -287,7 +287,7 @@ def start(command: list[str], directory: Path, stop: str = TERMINATE) -> Evget:
     Start evget so that `Evget.stop` stops it automatically.
     """
 
-    if sys.platform == "win32" and stop in ("ctrl-c", "console-close"):
+    if sys.platform == "win32" and stop in ("ctrl-c", "ctrl-break", "console-close"):
         return Console(command, directory, stop)
     if sys.platform != "win32" and stop in ("ctrl-c", "hangup", "nohup"):
         return Terminal(command, directory, stop)
@@ -376,14 +376,7 @@ class Process(Evget):
 
         with self.stdout.open("wb") as stdout, self.stderr.open("wb") as stderr:
             self._process = subprocess.Popen(
-                command,
-                stdin=subprocess.DEVNULL,
-                stdout=stdout,
-                stderr=stderr,
-                # Ctrl+Break only goes to the process group it is sent to.
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                if sys.platform == "win32"
-                else 0,
+                command, stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr
             )
 
     @property
@@ -398,8 +391,6 @@ class Process(Evget):
         elif self._stop == "taskkill-image":
             # The PID should leave any other evget the user is running.
             _taskkill("/IM", self._image, "/FI", f"PID eq {self.pid}")
-        elif self._stop == "ctrl-break":
-            self._process.send_signal(signal.CTRL_BREAK_EVENT)
         else:
             raise ValueError(f"a plain process cannot be stopped by {self._stop!r}")
 
@@ -482,7 +473,7 @@ class Console(Evget):
         self._stop = stop
         self._image = Path(command[0]).name.lower()
         self.stdout = directory / "stdout"
-        helper = [sys.executable, __file__, str(self.stdout), *command]
+        helper = [sys.executable, __file__, stop, str(self.stdout), *command]
         if stop == "console-close":
             # conhost gives the helper a classic console window to close.
             self._helper = subprocess.Popen(["conhost.exe", *helper])
@@ -505,21 +496,22 @@ class Console(Evget):
         return self._evget.pid
 
     def stop(self) -> None:
-        if self._stop == "ctrl-c":
-            self._helper.stdin.write(b"\n")
-            self._helper.stdin.close()
-        else:
+        if self._stop == "console-close":
             window = wait_until(
                 self._console_window, READY_TIMEOUT, "the conhost console window"
             )
             win32gui.PostMessage(window, win32con.WM_CLOSE, 0, 0)
+        else:
+            assert self._helper.stdin is not None
+            self._helper.stdin.write(b"\n")
+            self._helper.stdin.close()
 
     def wait(self, timeout: float = STOP_TIMEOUT) -> int | None:
         try:
+            if self._stop == "console-close":
+                return self._evget.wait(timeout)
             # The helper exits with the evget exit code.
-            if self._stop == "ctrl-c":
-                return self._helper.wait(timeout)
-            return self._evget.wait(timeout)
+            return self._helper.wait(timeout)
         except (subprocess.TimeoutExpired, psutil.TimeoutExpired) as error:
             raise TimeoutError(f"evget still running after {timeout:g} s") from error
 
@@ -595,24 +587,29 @@ def taskbar_windows(pid: int) -> list[int]:
     return [window for window in windows_of(pid) if listed(window)]
 
 
-def _console_helper(stdout: str, *command: str) -> int:
+def _console_helper(stop: str, stdout: str, *command: str) -> int:
     """
     Run  evget in this console
     """
 
+    # Ctrl+Break reaches only the process group it is sent to.
+    group = subprocess.CREATE_NEW_PROCESS_GROUP if stop == "ctrl-break" else 0
     with open(stdout, "wb") as output:
         process = subprocess.Popen(
             command,
             stdin=subprocess.DEVNULL,
             stdout=output,
             stderr=subprocess.STDOUT,
+            creationflags=group,
         )
 
     if sys.stdin.readline():
-        # Ignoring Ctrl+C only after starting evget keeps evget from inheriting it.
-        win32api.SetConsoleCtrlHandler(None, True)
-        win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, 0)
-
+        if stop == "ctrl-break":
+            process.send_signal(signal.CTRL_BREAK_EVENT)
+        else:
+            # Ignoring Ctrl+C only after starting evget keeps evget from inheriting it.
+            win32api.SetConsoleCtrlHandler(None, True)
+            win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, 0)
     return process.wait()
 
 
