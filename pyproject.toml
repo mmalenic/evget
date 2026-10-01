@@ -24,3 +24,4 @@ markers = [
     "integration: runs the evget integration tests by creating real input on the desktop",
 ]
 timeout = 60
+tmp_path_retention_policy = "failed"

@@ -31,4 +31,4 @@ test filter='*' *opts='': (build_test opts)
 
 # Build evget and run the integration tests.
 integration *args='': build
-    uv run --group integration pytest tests/integration --evget {{ build_dir }}/bin/evget{{ if os_family() == "windows" { ".exe" } else { "" } }} {{ args }}
+    uv run --locked --group integration pytest tests/integration --evget {{ build_dir }}/bin/evget{{ if os_family() == "windows" { ".exe" } else { "" } }} {{ args }}
