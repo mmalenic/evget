@@ -72,6 +72,11 @@ def test_injected_input_is_stored(
     assert len(scrolls) == SCROLLS
     assert sum(float(row["scroll_vertical"]) for row in scrolls) == 0
 
+    # Positive is down, and the driver scrolls up first.
+    in_order = sorted(scrolls, key=lambda row: row["timestamp"])
+    ups = [float(row["scroll_vertical"]) < 0 for row in in_order]
+    assert ups == [i % 2 == 0 for i in range(SCROLLS)]
+
     for rows in tables.values():
         for row in rows:
             assert "" not in row.values()
