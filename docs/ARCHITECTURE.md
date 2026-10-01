@@ -18,8 +18,12 @@ The following table describes the data associated with a mouse move event:
 | `focus_window_position_y` | Float                                                               | The y position of the window in focus.                                                                                              |
 | `focus_window_width`      | Float                                                               | The width of the window in focus.                                                                                                   |
 | `focus_window_height`     | Float                                                               | The height of the window in focus.                                                                                                  |
-| `screen`                  | Integer                                                             | The display the event occurred on, numbered from 0. This will always be 0 if there is only one display.                             |
+| `screen`                  | String                                                              | The platform's name for the monitor the pointer is on, or null if it is on no monitor or the monitor is unknown.                    |
 | `device_type`             | Enum of `Mouse`, `Keyboard`, `Touchpad`, `Touchscreen` or `Unknown` | The type of the device that generated the event.                                                                                    |
+
+The `screen` is named the way the platform names monitors, so it tells monitors apart within a recording rather than
+across machines. X11 stores the XRandR monitor name, such as `DP-1`, and Windows stores the display device name, such
+as `\\.\DISPLAY1`. The libinput backend has no view of monitors, so it always stores null.
 
 In addition to fields on move events, a mouse scroll event also has the following fields:
 
@@ -46,7 +50,8 @@ A key event has the same fields as a mouse click event, including fields present
 
 The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension
 from `XIRawEvent` and functions like `XIQueryPointer`. The x and y position of the pointer is absolute, and button
-names, ids, screens, and scroll amounts are sourced from the raw event.
+names, ids and scroll amounts are sourced from the raw event. The `screen` is the XRandR monitor that contains the
+pointer.
 
 ## Windows touch behaviour
 

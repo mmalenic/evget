@@ -162,7 +162,7 @@ public:
      * \tparam T builder type that supports device name functions
      * \param builder reference to the builder to modify
      * \param event the raw XI event
-     * \param screen screen number
+     * \param screen the name of the monitor the pointer is on
      * \return reference to the modified builder
      */
     template <typename T>

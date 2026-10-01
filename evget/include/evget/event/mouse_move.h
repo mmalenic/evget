@@ -106,8 +106,8 @@ public:
     MouseMove& FocusWindowHeight(double height);
 
     /**
-     * \brief Add the screen identifier.
-     * \param screen screen identifier
+     * \brief Add the name of the monitor the pointer is on.
+     * \param screen the platform monitor name
      * \return reference to this `MouseMove` object
      */
     MouseMove& Screen(std::string screen);
