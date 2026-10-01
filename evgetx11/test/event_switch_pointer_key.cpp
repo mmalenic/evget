@@ -238,6 +238,58 @@ TEST(XEventSwitchPointerKeyTest, ButtonEventUnlabelled) {
     ASSERT_FALSE(entries.at(0).Data().at(17).has_value());
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(XEventSwitchPointerKeyTest, WheelButtonWithoutlValuators) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+
+    std::array<Atom, 1> labels = {1};
+    std::array<unsigned char, 1> mask = {1};
+    auto button_class_info = test::CreateXiButtonClassInfo(labels, mask);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::array<XIAnyClassInfo*, 3> any_class_info = {reinterpret_cast<XIAnyClassInfo*>(&button_class_info)};
+    std::string name = "name";
+    auto xi_device_info = test::CreateXiDeviceInfo(any_class_info, name);
+
+    std::array<unsigned char, 1> valuator_mask = {0};
+    std::array<double, 1> values = {0};
+    auto press = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
+    auto release = test::CreateXiRawEvent(XI_RawButtonRelease, valuator_mask, values);
+    EXPECT_CALL(x_wrapper_mock, NextEvent)
+        .WillOnce(testing::Return(test::CreateXEvent(press)))
+        .WillOnce(testing::Return(test::CreateXEvent(release)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
+        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
+    std::string label = BTN_LABEL_PROP_BTN_WHEEL_UP;
+    EXPECT_CALL(x_wrapper_mock, AtomName).WillOnce([&label](Atom) {
+        return std::unique_ptr<char[], decltype(&XFree)>{label.data(), [](void*) { return 0; }};
+    });
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
+    x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
+
+    auto data = evget::Data{};
+    for (auto i = 0; i < 2; i++) {
+        auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
+        static_cast<void>(x_event_switch_pointer_key.SwitchOnEvent(input_event, data, x_event_switch, [](Time) {
+            return std::optional{std::chrono::microseconds{1}};
+        }));
+    }
+
+    const auto& entries = data.Entries();
+    ASSERT_EQ(entries.size(), 1);
+    ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseScroll);
+    ASSERT_EQ(entries.at(0).Data().at(4), "name");
+    ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
+    ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(-1.0));
+    ASSERT_FALSE(entries.at(0).Data().at(16).has_value());
+}
+
 TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};

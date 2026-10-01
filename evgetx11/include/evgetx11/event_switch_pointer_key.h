@@ -81,7 +81,7 @@ public:
 private:
     static std::map<int, int> GetValuators(const XIValuatorState& valuator_state);
 
-    static void ButtonEvent(
+    void ButtonEvent(
         const InputEvent& event,
         evget::Data& data,
         evget::ButtonAction action,
@@ -104,6 +104,22 @@ private:
         evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
     );
     void ScrollEvent(
+        const InputEvent& event,
+        evget::Data& data,
+        EventSwitch& x_event_switch,
+        const char* system_event,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
+    );
+    void WheelButtonEvent(
+        const InputEvent& event,
+        evget::Data& data,
+        const std::string& button,
+        EventSwitch& x_event_switch,
+        const char* system_event,
+        evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
+    );
+    void BuildScrollEvent(
+        evget::MouseScroll& builder,
         const InputEvent& event,
         evget::Data& data,
         EventSwitch& x_event_switch,
@@ -182,6 +198,10 @@ void EventSwitchPointerKey::ButtonEvent(
     const auto button = x_event_switch.GetButtonName(raw_event.sourceid, raw_event.detail);
     if (button == BTN_LABEL_PROP_BTN_WHEEL_UP || button == BTN_LABEL_PROP_BTN_WHEEL_DOWN ||
         button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT || button == BTN_LABEL_PROP_BTN_HWHEEL_RIGHT) {
+        // The server emulates wheel buttons from scroll valuators, so an unemulated one is the only record of a notch.
+        if (action == evget::ButtonAction::kPress) {
+            WheelButtonEvent(event, data, *button, x_event_switch, system_event, get_time);
+        }
         return;
     }
 
@@ -281,6 +301,41 @@ void EventSwitchPointerKey::ScrollEvent(
         }
     }
 
+    BuildScrollEvent(builder, event, data, x_event_switch, system_event, get_time);
+}
+
+void EventSwitchPointerKey::WheelButtonEvent(
+    const InputEvent& event,
+    evget::Data& data,
+    const std::string& button,
+    EventSwitch& x_event_switch,
+    const char* system_event,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
+) {
+    // Positive is down and right for a single increment.
+    evget::MouseScroll builder{};
+    if (button == BTN_LABEL_PROP_BTN_WHEEL_UP) {
+        builder.Vertical(-1.0);
+    } else if (button == BTN_LABEL_PROP_BTN_WHEEL_DOWN) {
+        builder.Vertical(1.0);
+    } else if (button == BTN_LABEL_PROP_BTN_HWHEEL_LEFT) {
+        builder.Horizontal(-1.0);
+    } else {
+        builder.Horizontal(1.0);
+    }
+
+    BuildScrollEvent(builder, event, data, x_event_switch, system_event, get_time);
+}
+
+void EventSwitchPointerKey::BuildScrollEvent(
+    evget::MouseScroll& builder,
+    const InputEvent& event,
+    evget::Data& data,
+    EventSwitch& x_event_switch,
+    const char* system_event,
+    evget::Invocable<std::optional<std::chrono::microseconds>, Time> auto&& get_time
+) {
+    auto raw_event = event.ViewData<XIRawEvent>();
     auto query_pointer = this->x_wrapper_.get().QueryPointer(pointer_id_);
     builder.Interval(get_time(raw_event.time))
         .Timestamp(event.GetTimestamp())
