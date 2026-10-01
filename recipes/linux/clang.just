@@ -1,4 +1,5 @@
 # clang recipes for evget, including the sanitizer suite (asan, msan).
+set windows-shell := ['cmd.exe', '/d', '/s', '/c']
 set working-directory := '../..'
 
 import '../common.just'

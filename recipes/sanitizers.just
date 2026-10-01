@@ -3,7 +3,7 @@
 
 [private]
 _sanitizer action name filter='*' *opts='':
-    python scripts/sanitizers.py {{ action }} {{ name }} \
+    {{ uv_run }}python scripts/sanitizers.py {{ action }} {{ name }} \
         --compiler {{ compiler }} --build-type {{ capitalize(build_type) }} \
         {{ prepend('--profile-arg=', profile_args) }} \
         {{ prepend('--backend-arg=', backend_args) }} \
@@ -24,11 +24,11 @@ build_sanitizer name filter='*' *opts='': (_sanitizer 'build' name filter opts)
 # Remove one sanitizer build tree.
 [group('sanitizer')]
 clean_sanitizer name:
-    python scripts/sanitizers.py clean {{ name }} \
+    {{ uv_run }}python scripts/sanitizers.py clean {{ name }} \
         --compiler {{ compiler }} --build-type {{ capitalize(build_type) }}
 
 # Remove every sanitizer build this compiler supports.
 [group('sanitizer')]
 clean_sanitizers:
-    python scripts/sanitizers.py clean \
+    {{ uv_run }}python scripts/sanitizers.py clean \
         --compiler {{ compiler }} --build-type {{ capitalize(build_type) }}

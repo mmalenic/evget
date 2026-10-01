@@ -1,15 +1,22 @@
-# Shared recipes. Importing modules must define `profile_args`, `backend_args`, and `build_dir`.
+# Shared recipes. Importing modules must define `profile_args`, `backend_args`, and `build_dir`, and set
+# `windows-shell`, because just evaluates every module's variables on each run.
 
 # Build type, override with `just build_type=Release <recipe>`.
 build_type := 'Debug'
 
+# Run Conan and the Python scripts from uv when it's on PATH, otherwise run Conan from the PATH directly.
+# Override with EVGET_USE_UV=true|false, or `just use_uv=false <recipe>`.
+use_uv := env('EVGET_USE_UV', trim(shell(if os_family() == 'windows' { 'where /q uv && echo true|| echo false' } else { 'command -v uv > /dev/null && echo true || echo false' })))
+uv_run := if use_uv == 'true' { 'uv run --locked ' } else { '' }
+pytest := if use_uv == 'true' { 'uv run --locked --group integration pytest' } else { 'python -m pytest' }
+
 # Detect the conan profile for building.
 profile:
-    conan profile detect -e
+    {{ uv_run }}conan profile detect -e
 
 # Build evget.
 build *opts='': profile
-    conan build . --build=missing -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ profile_args }} {{ backend_args }} {{ opts }}
+    {{ uv_run }}conan build . --build=missing -s build_type={{ capitalize(build_type) }} -s compiler.cppstd=23 {{ profile_args }} {{ backend_args }} {{ opts }}
 
 # Build only the evget library.
 build_lib *opts='': (build '-o evget/*:build_bin=False ' + opts)
@@ -31,4 +38,4 @@ test filter='*' *opts='': (build_test opts)
 
 # Build evget and run the integration tests.
 integration *args='': build
-    uv run --locked --group integration pytest tests/integration --evget {{ build_dir }}/bin/evget{{ if os_family() == "windows" { ".exe" } else { "" } }} {{ args }}
+    {{ pytest }} tests/integration --evget {{ build_dir }}/bin/evget{{ if os_family() == "windows" { ".exe" } else { "" } }} {{ args }}

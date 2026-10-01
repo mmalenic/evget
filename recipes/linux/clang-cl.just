@@ -1,4 +1,5 @@
 # clang-cl recipes for evget from a Linux host, cross-compiling to Windows.
+set windows-shell := ['cmd.exe', '/d', '/s', '/c']
 set working-directory := '../..'
 set allow-duplicate-recipes
 
