@@ -5,6 +5,8 @@ from conan.tools.cmake import cmake_layout, CMakeToolchain, CMake
 from conan.tools.system import package_manager
 from conan import ConanFile
 
+required_conan_version = ">=2.20"
+
 
 class EvgetRecipe(ConanFile):
     name = "evget"
