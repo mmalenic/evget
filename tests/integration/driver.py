@@ -278,6 +278,22 @@ class X11Input(Input):
         return window
 
 
+if sys.platform == "linux":
+
+    class _UInput(evdev.UInput):
+        """
+        A uinput device that removes itself if it cannot open the event node.
+        """
+
+        def _find_device(self, fd: int) -> evdev.InputDevice:
+            try:
+                return super()._find_device(fd)
+            except OSError:
+                # Closing the uinput descriptor removes the device UInput created.
+                os.close(fd)
+                raise
+
+
 class LibinputInput(Input):
     """
     The libinput virtual uinput keyboard and mouse for synthetic events.
@@ -299,7 +315,7 @@ class LibinputInput(Input):
             ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y, ecodes.REL_WHEEL],
         }
         try:
-            self._device = evdev.UInput(capabilities, name=self.device_name)
+            self._device = _UInput(capabilities, name=self.device_name)
         except (evdev.UInputError, PermissionError) as error:
             raise Unavailable(
                 f"{error}"
@@ -309,7 +325,11 @@ class LibinputInput(Input):
         rdev = os.stat(self._device.device.path).st_rdev
 
         entry = Path(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}")
-        wait_until(entry.exists, READY_TIMEOUT, f"udev to add {self.device_name!r}")
+        try:
+            wait_until(entry.exists, READY_TIMEOUT, f"udev to add {self.device_name!r}")
+        except TimeoutError as error:
+            self._device.close()
+            raise Unavailable(f"{error}; is udevd running?") from error
 
     def key(self, down: bool) -> None:
         self._device.write(ecodes.EV_KEY, ecodes.KEY_F24, int(down))
