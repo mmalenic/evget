@@ -55,7 +55,7 @@ variables such as `EVGET_TIMEOUT_SCALE`:
 
 ```sh
 sudo modprobe uinput
-just linux::build
+just linux::gcc::build
 python=$(uv run --locked --group integration python -c 'import sys; print(sys.executable)')
 sudo -E "$python" -m pytest tests/integration --evget build/linux-gcc-debug/bin/evget --require-backends libinput
 ```
