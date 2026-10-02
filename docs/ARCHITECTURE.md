@@ -46,6 +46,12 @@ A key event has the same fields as a mouse click event, including fields present
 | ----------- | --------------- | ---------------------------------------------------------- |
 | `character` | UTF-8 character | The UTF-8 character that is associated with the key event. |
 
+## Absent values
+
+A value that a backend cannot determine is stored as SQL `NULL` and written as JSON `null`. For example,
+`screen` is null when the pointer is on no monitor, and always null on libinput. The `--exclude-window-title`
+option stores `focus_window_name` as null for every event while keeping the focus window position, size and `screen`.
+
 ## Synthetic input
 
 Input that the OS synthesizes instead is stored with a `device_name` of `<backend>-injected`, and a
@@ -81,6 +87,75 @@ The values can be used to determine pointer behaviour across devices, or to capt
 pointer, such as two-finger scrolling, press and hold right click, acceleration, etc. The `device_type` or `device_id`
 can be used to distinguish these events. If windows thinks the device touch is unintentional, it will mark the event
 as such, and these events will not be recorded by evget.
+
+## Windows runtime behaviour
+
+### Elevation
+
+evget runs with the rights it was started with and never asks for more. At startup it logs whether it is elevated, and
+when it is not, the log line says that input sent to elevated windows is not captured.
+
+Windows withholds input to a window with a higher integrity level from an unelevated process. While an elevated window
+has focus, such as an administrator terminal, Task Manager or an installer, an unelevated evget stores no rows at all:
+no keys, pointer moves, clicks or scrolls, and no rows from a touchpad's or touchscreen's own reports. Rows stored at
+the moment focus changes may have a null focus window. Capture resumes once a window that is not elevated has focus. To
+capture input sent to elevated windows, start evget with "Run as administrator" or from an administrator terminal.
+
+The secure desktop, which shows the UAC prompt, the lock screen and the logon screen, is never captured, whether evget
+is elevated or not. Elevating with the credentials of a different administrator account runs evget as that account, so a
+per-user path in an explicit `-o`, such as one under `%LOCALAPPDATA%`, points into that account's profile.
+
+### Running hidden
+
+evget has no option to run in the background, so the shell or a scheduler starts it hidden, the same as on Linux. `-o`
+defaults to `-`, which writes JSON to standard output, on every OS, so a hidden run needs an explicit `-o`. The window
+evget captures input with is never shown, and does not appear in the taskbar or in Alt+Tab.
+
+In PowerShell, `Start-Process` with `-WindowStyle Hidden` starts evget without a window and returns the prompt at once:
+
+```powershell
+Start-Process evget -ArgumentList '-o', 'events.sqlite' -WindowStyle Hidden
+```
+
+This has been checked with the classic console host as the default terminal, but not with Windows Terminal set as the
+default terminal.
+
+Task Scheduler can start evget each time the user logs on: create a task with an "At log on" trigger and "Run only when
+user is logged on" selected, whose action runs evget with an explicit `-o`. evget then runs in a visible console window,
+and closing that window stops it. Do not select "Run whether user is logged on or not", because that runs evget in
+session 0, which receives no user input. Running evget as a Windows service is not supported for the same reason.
+
+On Linux, closing the terminal that evget runs in sends it SIGHUP, which stops it. `nohup evget -o events.sqlite &`
+keeps evget running after the terminal closes. A systemd user unit is another option, but it has not been tested.
+
+### Stopping
+
+A stop request that evget can catch writes every pending event before evget exits, including events still queued
+between the input thread and storage:
+
+- Linux: SIGINT (Ctrl+C), SIGTERM and SIGHUP. A `nohup` run ignores SIGHUP, as usual.
+- Windows: Ctrl+C, Ctrl+Break, closing the console window, `taskkill /PID` or `taskkill /IM` without `/F`, and logging
+  off or shutting down.
+
+Windows never raises SIGTERM. A plain `taskkill` sends a close message to evget's hidden capture window instead. When
+the console window is closed, Windows ends evget as soon as it has written its events, so evget exits with `0xC000013A`
+(`STATUS_CONTROL_C_EXIT`) rather than 0. The queue is drained for at most 2 seconds, which keeps the write inside the
+time Windows allows at console close and logoff; events still queued after that are dropped, and evget logs an error.
+
+`taskkill` stops an elevated evget only when it is run from an elevated shell. From an unelevated shell, it fails with
+`ERROR: The process with PID <pid> could not be terminated.` and evget keeps running.
+
+A request that cannot be caught, such as `taskkill /F`, `Stop-Process`, ending the process in Task Manager, a crash or
+SIGKILL, ends evget at once. The events that were not yet written are lost, which is at most the current `-n` / `-s`
+batch and any events still queued. SQLite's write-ahead log keeps the file consistent, so it still passes
+`pragma integrity_check` after a forced termination.
+
+### Logs
+
+Logs are written to standard output. To keep the logs of a hidden run, redirect standard output in the shell, for
+example with `Start-Process -RedirectStandardOutput evget.log`, with `> evget.log`, or through journald for a systemd
+unit. Combining `-RedirectStandardOutput` with `-WindowStyle Hidden` has not been tested. With `-o -`, events are
+written to standard output and logging is turned off.
 
 [x11-api]: https://www.x.org/releases/X11R7.6/doc/
 [raw-input-header]: https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-rawinputheader
