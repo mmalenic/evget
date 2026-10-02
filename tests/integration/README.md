@@ -9,8 +9,8 @@ input scenarios like mouse movement, keys, storing events, batching and others.
 ## Running
 
 The `integration` recipe builds evget and runs the suite with [uv](https://docs.astral.sh/uv/), which
-installs the locked test dependencies into `.venv`. Without uv, it runs `python -m pytest`, so install the
-dependencies first, e.g. in a virtual environment:
+installs the locked test dependencies into `.venv`, or wherever `UV_PROJECT_ENVIRONMENT` points. Without uv, the
+recipe runs `python -m pytest`, so install the dependencies first, e.g. in a virtual environment:
 
 ```sh
 pip install --group integration
@@ -56,8 +56,8 @@ variables such as `EVGET_TIMEOUT_SCALE`:
 ```sh
 sudo modprobe uinput
 just linux::build
-uv sync --locked --group integration
-sudo -E .venv/bin/pytest tests/integration --evget build/linux-gcc-debug/bin/evget --require-backends libinput
+python=$(uv run --locked --group integration python -c 'import sys; print(sys.executable)')
+sudo -E "$python" -m pytest tests/integration --evget build/linux-gcc-debug/bin/evget --require-backends libinput
 ```
 
 On Windows, an interactive desktop session is required, which GitHub-hosted runners have:

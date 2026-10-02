@@ -99,6 +99,7 @@ just doc
 [conan]: https://docs.conan.io/2/installation.html
 [cmake]: https://cmake.org/
 [uv]: https://docs.astral.sh/uv/
+[uv-project-environment]: https://docs.astral.sh/uv/reference/environment/#uv_project_environment
 [gcc-14]: https://gcc.gnu.org/gcc-14/
 [clang-19]: https://releases.llvm.org/19.1.0/tools/clang/docs/ReleaseNotes.html
 [clang-tidy]: https://clang.llvm.org/extra/clang-tidy/
