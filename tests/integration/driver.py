@@ -594,11 +594,15 @@ class Console(Evget):
                         wShowWindow=subprocess.SW_HIDE,
                     ),
                 )
-        _contain(self._helper.pid)
-        
-        self._evget = wait_until(
-            self._find_evget, READY_TIMEOUT, "the console helper to start evget"
-        )
+                
+        try:
+            _contain(self._helper.pid)
+            self._evget = wait_until(
+                self._find_evget, READY_TIMEOUT, "the console helper to start evget"
+            )
+        except BaseException:
+            self._kill_all()
+            raise
 
     @property
     def pid(self) -> int:
@@ -639,7 +643,11 @@ class Console(Evget):
             raise TimeoutError(f"evget still running after {timeout:g} s") from error
 
     def kill(self) -> None:
-        processes = {self._evget, *self._descendants()}
+        self._kill_all(self._evget)
+
+    def _kill_all(self, *known: psutil.Process) -> None:
+        """Kill the helper and everything it started, including `known` processes."""
+        processes = {*known, *self._descendants()}
         for process in processes:
             with contextlib.suppress(psutil.NoSuchProcess):
                 process.kill()
