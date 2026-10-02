@@ -4,6 +4,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
 #include <windows.h>
 
 #include <array>
@@ -14,6 +16,7 @@
 #include <string_view>
 #include <vector>
 
+#include "common/log.h"
 #include "common/windows_mock.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
@@ -27,6 +30,7 @@
 #include "evgetwindows/windows_query_api.h"
 
 using test::AsRawInput;
+using test::CapturedLog;
 using test::ExpectTouchEqualitySequence;
 using test::HidDeviceHandle;
 using test::HidDeviceHandleAlternate;
@@ -357,6 +361,97 @@ TEST(EvgetWindowsTransformer, InjectedDeviceSkipsLookup) {
 
     ASSERT_EQ(entries.size(), 1);
     EXPECT_EQ(entries.at(0).Data().at(4), "windows-injected");
+}
+
+TEST(EvgetWindowsTransformer, TraceLogMouseSource) {
+    const CapturedLog log{};
+    spdlog::default_logger()->set_level(spdlog::level::trace);
+
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    auto raw = MakeMouseMoveRelative(1, 1);
+    raw.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_TOUCHPAD, .originId = IMO_HARDWARE};
+    std::get<RAWMOUSE>(raw.data).ulExtraInformation = 0xFF515780;
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{raw}));
+
+    EXPECT_THAT(
+        log.Lines(),
+        testing::ElementsAre(
+            "trace raw input RIM_TYPEMOUSE from hDevice 0x0 as windows-injected: source IMO_HARDWARE IMDT_TOUCHPAD, "
+            "usFlags 0x0, ulExtraInformation 0xff515780"
+        )
+    );
+}
+
+TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
+    const CapturedLog log{};
+    spdlog::default_logger()->set_level(spdlog::level::trace);
+
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    auto injected = MakeKeyboard(VK_F24, 0x76, RI_KEY_BREAK);
+    injected.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_KEYBOARD, .originId = IMO_INJECTED};
+    std::get<RAWKEYBOARD>(injected.data).ExtraInformation = 0x1234;
+    auto unknown = MakeKeyboard(VK_F24, 0x76, RI_KEY_BREAK);
+    // NOLINTBEGIN(clang-analyzer-optin.core.EnumCastOutOfRange)
+    unknown.source = INPUT_MESSAGE_SOURCE{
+        .deviceType = static_cast<INPUT_MESSAGE_DEVICE_TYPE>(0x20),
+        .originId = static_cast<INPUT_MESSAGE_ORIGIN_ID>(0x8)
+    };
+    // NOLINTEND(clang-analyzer-optin.core.EnumCastOutOfRange)
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{injected}));
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{unknown}));
+
+    EXPECT_THAT(
+        log.Lines(),
+        testing::ElementsAre(
+            "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected: source IMO_INJECTED IMDT_KEYBOARD, "
+            "Flags 0x1, ExtraInformation 0x1234",
+            "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected: source 0x8 0x20, Flags 0x1, "
+            "ExtraInformation 0x0"
+        )
+    );
+}
+
+TEST(EvgetWindowsTransformer, TraceLogFailedSource) {
+    const CapturedLog log{};
+    spdlog::default_logger()->set_level(spdlog::level::trace);
+
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    const auto report = MakeHidReportBytes(8);
+    static_cast<void>(
+        transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEventFrom(nullptr, report)})
+    );
+
+    EXPECT_THAT(
+        log.Lines(),
+        testing::ElementsAre("trace raw input RIM_TYPEHID from hDevice 0x0 as windows-injected: source failed")
+    );
+}
+
+TEST(EvgetWindowsTransformer, TraceSkippedAboveTraceLevel) {
+    const CapturedLog log{};
+
+    NiceMock<WindowsQueryApiMock> query{};
+    NiceMock<HidQueryApiMock> hid_query{};
+    evgetwindows::ModifierTracker tracker{};
+    evgetwindows::EventTransformer transformer{query, hid_query, tracker};
+
+    auto raw = MakeMouseMoveRelative(1, 1);
+    raw.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_MOUSE, .originId = IMO_INJECTED};
+    static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{raw}));
+
+    EXPECT_TRUE(log.Lines().empty());
 }
 
 TEST(EvgetWindowsTransformer, FocusWindowPresentHasFields) {
