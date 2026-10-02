@@ -2,10 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include <format>
+#include <algorithm>
 #include <utility>
 
 #include "common/database.h"
+#include "common/log.h"
 #include "evget/database/connection.h"
 #include "evget/database/sqlite/connection.h"
 #include "evget/error.h"
@@ -15,6 +16,7 @@
 #include "evget/event/entry.h"
 #include "evget/event/key.h"
 #include "evget/event/modifier_value.h"
+#include "evget/event/mouse_click.h"
 #include "evget/event/mouse_move.h"
 #include "evget/event/schema.h"
 
@@ -22,6 +24,7 @@
 
 namespace {
 using DatabaseStorageTest = test::DatabaseTest;
+using test::CapturedLog;
 } // namespace
 
 TEST_F(DatabaseStorageTest, InitRunsMigrations) {
@@ -238,17 +241,67 @@ TEST_F(DatabaseStorageTest, EmptyStringStoresNull) {
     ASSERT_EQ(query->AsInt(0).value(), 1);
 }
 
-TEST_F(DatabaseStorageTest, MissingTimestampRejected) {
+TEST_F(DatabaseStorageTest, MissingRequiredValue) {
+    auto storage = MakeStorage();
+    auto init = storage.Init();
+    ASSERT_TRUE(init.has_value());
+    const CapturedLog log{};
+
+    evget::Data data{};
+    evget::Key{}.Device(evget::DeviceType::kKeyboard).Action(evget::ButtonAction::kPress).Build(data);
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(data);
+    evget::MouseClick{}.Timestamp(evget::TimestampType{}).Device(evget::DeviceType::kMouse).Build(data);
+    evget::MouseMove{}.Timestamp(evget::TimestampType{}).Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+    ASSERT_TRUE(result.has_value());
+
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadOnly);
+    ASSERT_TRUE(connect.has_value());
+    auto key_query = connection.BuildQuery("select count(*) from key;");
+    ASSERT_TRUE(key_query->Next().has_value());
+    ASSERT_EQ(key_query->AsInt(0).value(), 1);
+    auto click_query = connection.BuildQuery("select count(*) from mouse_click;");
+    ASSERT_TRUE(click_query->Next().has_value());
+    ASSERT_EQ(click_query->AsInt(0).value(), 0);
+    auto move_query = connection.BuildQuery("select count(*) from mouse_move;");
+    ASSERT_TRUE(move_query->Next().has_value());
+    ASSERT_EQ(move_query->AsInt(0).value(), 0);
+
+    ASSERT_EQ(
+        std::ranges::count(log.Lines(), "error dropped 3 events missing a required value, the first missing timestamp"),
+        1
+    );
+}
+
+TEST_F(DatabaseStorageTest, StoresAfterDroppedEntry) {
     auto storage = MakeStorage();
     auto init = storage.Init();
     ASSERT_TRUE(init.has_value());
 
-    evget::Data data{};
-    evget::Key{}.Device(evget::DeviceType::kKeyboard).Action(evget::ButtonAction::kPress).Build(data);
+    evget::Data dropped{};
+    evget::Key{}.Device(evget::DeviceType::kKeyboard).Action(evget::ButtonAction::kPress).Build(dropped);
+    ASSERT_TRUE(storage.StoreEvent(std::move(dropped)).has_value());
 
-    auto result = storage.StoreEvent(std::move(data));
-    ASSERT_FALSE(result.has_value());
-    ASSERT_EQ(result.error().error_type, evget::ErrorType::kDatabaseError);
+    evget::Data stored{};
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(stored);
+    ASSERT_TRUE(storage.StoreEvent(std::move(stored)).has_value());
+
+    evget::SQLiteConnection connection{};
+    auto connect = connection.Connect(DatabaseFile(), evget::ConnectOptions::kReadOnly);
+    ASSERT_TRUE(connect.has_value());
+    auto query = connection.BuildQuery("select count(*) from key;");
+    ASSERT_TRUE(query->Next().has_value());
+    ASSERT_EQ(query->AsInt(0).value(), 1);
 }
 
 TEST_F(DatabaseStorageTest, MouseMoveStoresNulls) {

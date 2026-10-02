@@ -1,12 +1,18 @@
 #include "evget/storage/database_storage.h"
 
 #include <boost/uuid/uuid_io.hpp>
+#include <spdlog/spdlog.h>
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
 #include <filesystem>
 #include <memory>
 #include <optional>
 #include <ranges>
+#include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -27,6 +33,33 @@
 #include "schema/initialize.h"
 
 namespace {
+
+constexpr std::array<std::string_view, 3> kNotNullFields{"timestamp", "device_type", "button_action"};
+
+std::span<const std::string_view> FieldNames(evget::EntryType type) {
+    switch (type) {
+        case evget::EntryType::kKey:
+            return evget::detail::kKeyFields;
+        case evget::EntryType::kMouseClick:
+            return evget::detail::kMouseClickFields;
+        case evget::EntryType::kMouseMove:
+            return evget::detail::kMouseMoveFields;
+        case evget::EntryType::kMouseScroll:
+            return evget::detail::kMouseScrollFields;
+    }
+    return {};
+}
+
+std::optional<std::string_view> AbsentNotNullField(const evget::Entry& entry) {
+    const auto& data = entry.Data();
+    for (const auto& [index, name] : std::views::enumerate(FieldNames(entry.Type()))) {
+        const auto absent = std::cmp_greater_equal(index, data.size()) || !data.at(index).has_value();
+        if (absent && std::ranges::contains(kNotNullFields, name)) {
+            return name;
+        }
+    }
+    return std::nullopt;
+}
 
 evget::Result<void> BindValues(
     std::unique_ptr<evget::Query>& query,
@@ -89,69 +122,92 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
             return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
         })
         .and_then([this, &events] {
-            std::optional<std::unique_ptr<Query>> insert_key{};
-            std::optional<std::unique_ptr<Query>> insert_key_modifier{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_move{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_move_modifier{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_click{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_click_modifier{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_scroll{};
-            std::optional<std::unique_ptr<Query>> insert_mouse_scroll_modifier{};
-
-            for (const auto& entry : events.Entries()) {
-                if (entry.Data().empty()) {
-                    continue;
-                }
-
-                Result<void> result;
-                switch (entry.Type()) {
-                    case EntryType::kKey:
-                        result = InsertEvents(
-                            entry,
-                            insert_key,
-                            insert_key_modifier,
-                            detail::insert_key,
-                            detail::insert_key_modifier
-                        );
-                        break;
-                    case EntryType::kMouseClick:
-                        result = InsertEvents(
-                            entry,
-                            insert_mouse_click,
-                            insert_mouse_click_modifier,
-                            detail::insert_mouse_click,
-                            detail::insert_mouse_click_modifier
-                        );
-                        break;
-                    case EntryType::kMouseMove:
-                        result = InsertEvents(
-                            entry,
-                            insert_mouse_move,
-                            insert_mouse_move_modifier,
-                            detail::insert_mouse_move,
-                            detail::insert_mouse_move_modifier
-                        );
-                        break;
-                    case EntryType::kMouseScroll:
-                        result = InsertEvents(
-                            entry,
-                            insert_mouse_scroll,
-                            insert_mouse_scroll_modifier,
-                            detail::insert_mouse_scroll,
-                            detail::insert_mouse_scroll_modifier
-                        );
-                        break;
-                }
-
-                if (!result.has_value()) {
-                    return result;
-                }
+            auto inserted = InsertEntries(events);
+            if (!inserted.has_value()) {
+                static_cast<void>(connection_->Rollback());
+                return inserted;
             }
 
-            return this->connection_->Commit().transform_error([](const Error<ErrorType>& error) {
+            return connection_->Commit().transform_error([](const Error<ErrorType>& error) {
                 return Error{.error_type = ErrorType::kDatabaseError, .message = error.message};
             });
         });
+}
+
+evget::Result<void> evget::DatabaseStorage::InsertEntries(const Data& events) {
+    std::optional<std::unique_ptr<Query>> insert_key{};
+    std::optional<std::unique_ptr<Query>> insert_key_modifier{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_move{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_move_modifier{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_click{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_click_modifier{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_scroll{};
+    std::optional<std::unique_ptr<Query>> insert_mouse_scroll_modifier{};
+
+    std::size_t dropped = 0;
+    std::optional<std::string_view> dropped_field{};
+    for (const auto& entry : events.Entries()) {
+        if (entry.Data().empty()) {
+            continue;
+        }
+
+        if (auto absent = AbsentNotNullField(entry)) {
+            ++dropped;
+            if (!dropped_field.has_value()) {
+                dropped_field = absent;
+            }
+            continue;
+        }
+
+        Result<void> result;
+        switch (entry.Type()) {
+            case EntryType::kKey:
+                result = InsertEvents(
+                    entry,
+                    insert_key,
+                    insert_key_modifier,
+                    detail::insert_key,
+                    detail::insert_key_modifier
+                );
+                break;
+            case EntryType::kMouseClick:
+                result = InsertEvents(
+                    entry,
+                    insert_mouse_click,
+                    insert_mouse_click_modifier,
+                    detail::insert_mouse_click,
+                    detail::insert_mouse_click_modifier
+                );
+                break;
+            case EntryType::kMouseMove:
+                result = InsertEvents(
+                    entry,
+                    insert_mouse_move,
+                    insert_mouse_move_modifier,
+                    detail::insert_mouse_move,
+                    detail::insert_mouse_move_modifier
+                );
+                break;
+            case EntryType::kMouseScroll:
+                result = InsertEvents(
+                    entry,
+                    insert_mouse_scroll,
+                    insert_mouse_scroll_modifier,
+                    detail::insert_mouse_scroll,
+                    detail::insert_mouse_scroll_modifier
+                );
+                break;
+        }
+
+        if (!result.has_value()) {
+            return result;
+        }
+    }
+
+    if (dropped_field.has_value()) {
+        spdlog::error("dropped {} events missing a required value, the first missing {}", dropped, *dropped_field);
+    }
+    return {};
 }
 
 evget::Result<void> evget::DatabaseStorage::Init() {

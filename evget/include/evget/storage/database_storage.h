@@ -52,6 +52,7 @@ private:
 
     Result<void> EnsureConnected();
     [[nodiscard]] Result<void> ApplyPragmas() const;
+    Result<void> InsertEntries(const Data& events);
     Result<void> InsertEvents(
         const Entry& entry,
         std::optional<std::unique_ptr<Query>>& insert_statement,
