@@ -6,6 +6,8 @@ also runs as the helper for `Console` starts.
 from __future__ import annotations
 
 import contextlib
+import ctypes
+import functools
 import os
 import signal
 import subprocess
@@ -14,7 +16,7 @@ import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
-from typing import TypeVar
+from typing import TypeVar, cast
 
 import psutil
 
@@ -23,6 +25,7 @@ if sys.platform == "win32":
     import win32con
     import win32console
     import win32gui
+    import win32job
     import win32process
 else:
     import pexpect
@@ -73,6 +76,41 @@ else:
     STOP_METHODS = ("sigterm", "ctrl-c", "hangup")
 
 T = TypeVar("T")
+
+# <linux/prctl.h>; Python exports no name for it.
+PR_SET_PDEATHSIG = 1
+
+# A timeout may end pytest by os._exit, skipping teardown, so the OS reaps children.
+DIE_WITH_PARENT: Callable[[], None] | None = None
+"""A `preexec_fn` that kills the child once the test run dies, however it dies."""
+if sys.platform == "linux":
+    DIE_WITH_PARENT = functools.partial(
+        ctypes.CDLL(None).prctl, PR_SET_PDEATHSIG, signal.SIGKILL
+    )
+
+
+@functools.cache
+def _job() -> int:
+    """A job that kills every process in it once this process exits."""
+    # The stubs type the returned PyHANDLE as None.
+    job = cast(int, win32job.CreateJobObject(None, ""))
+    info_class = win32job.JobObjectExtendedLimitInformation
+    limits = win32job.QueryInformationJobObject(job, info_class)
+    limits["BasicLimitInformation"]["LimitFlags"] |= (
+        win32job.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+    )
+    win32job.SetInformationJobObject(job, info_class, limits)
+    return job
+
+
+def _contain(pid: int) -> None:
+    """Make process `pid`, and every process it starts, die with this process."""
+    access = win32con.PROCESS_SET_QUOTA | win32con.PROCESS_TERMINATE
+    handle = win32api.OpenProcess(access, False, pid)
+    try:
+        win32job.AssignProcessToJobObject(_job(), handle)
+    finally:
+        win32api.CloseHandle(handle)
 
 
 def wait_until(condition: Callable[[], T | None], timeout: float, what: str) -> T:
@@ -398,8 +436,14 @@ class Process(Evget):
 
         with self.stdout.open("wb") as stdout, self.stderr.open("wb") as stderr:
             self._process = subprocess.Popen(
-                command, stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr
+                command,
+                stdin=subprocess.DEVNULL,
+                stdout=stdout,
+                stderr=stderr,
+                preexec_fn=DIE_WITH_PARENT,  # noqa: PLW1509 - the suite starts no threads
             )
+        if sys.platform == "win32":
+            _contain(self._process.pid)
 
     @property
     def pid(self) -> int:
@@ -446,7 +490,11 @@ class Terminal(Evget):
             # nohup redirects the output of a command run from a terminal here.
             self.stdout = directory / "nohup.out"
         self._child = pexpect.spawn(
-            command[0], command[1:], cwd=directory, encoding="utf-8"
+            command[0],
+            command[1:],
+            cwd=directory,
+            encoding="utf-8",
+            preexec_fn=DIE_WITH_PARENT,
         )
         self._child.logfile_read = self._transcript.open("w", encoding="utf-8")
 
@@ -546,7 +594,8 @@ class Console(Evget):
                         wShowWindow=subprocess.SW_HIDE,
                     ),
                 )
-
+        _contain(self._helper.pid)
+        
         self._evget = wait_until(
             self._find_evget, READY_TIMEOUT, "the console helper to start evget"
         )
@@ -659,8 +708,7 @@ def taskbar_windows(pid: int) -> list[int]:
 
 def _console_helper(stop: str, stdout: str, console: str, *command: str) -> int:
     """
-    Run evget in this console
-    .
+    Run evget in this console.
     """
     
     Path(console).write_text(str(win32console.GetConsoleWindow()))
@@ -675,13 +723,19 @@ def _console_helper(stop: str, stdout: str, console: str, *command: str) -> int:
             creationflags=group,
         )
 
-    if sys.stdin.readline():
-        if stop == "ctrl-break":
-            process.send_signal(signal.CTRL_BREAK_EVENT)
-        else:
-            # Ignoring Ctrl+C only after starting evget keeps evget from inheriting it.
-            win32api.SetConsoleCtrlHandler(None, True)
-            win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, 0)
+    if stop == "console-close":
+        # Closing the window stops evget.
+        return process.wait()
+    if not sys.stdin.readline():
+        # The test failed, so we stop evget.
+        process.kill()
+    elif stop == "ctrl-break":
+        process.send_signal(signal.CTRL_BREAK_EVENT)
+    else:
+        # Ignoring Ctrl+C only after starting evget keeps evget from inheriting it.
+        win32api.SetConsoleCtrlHandler(None, True)
+        win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, 0)
+        
     return process.wait()
 
 
