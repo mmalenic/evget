@@ -11,6 +11,7 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 
 #include "evget/event_listener.h"
@@ -60,15 +61,19 @@ public:
     boost::asio::awaitable<bool> IsStopped();
 
 private:
+    struct FinishedState {
+        std::mutex mutex;
+        std::condition_variable finished;
+        bool is_finished{false};
+    };
+
     std::reference_wrapper<NextEvent<T>> next_event_;
     std::vector<std::reference_wrapper<EventListener<T>>> listeners_;
 
     std::atomic<bool> stopped_{false};
     std::atomic<bool> draining_{false};
 
-    std::mutex finished_mutex_;
-    std::condition_variable finished_;
-    bool is_finished_{false};
+    std::shared_ptr<FinishedState> finished_state_{std::make_shared<FinishedState>()};
 };
 } // namespace evget
 
@@ -81,10 +86,10 @@ evget::EventLoop<T>::EventLoop(
 
 template <typename T>
 boost::asio::awaitable<evget::Result<void>> evget::EventLoop<T>::Start() {
-    const boost::scope::scope_exit mark_finished{[this] {
-        const std::scoped_lock lock{finished_mutex_};
-        is_finished_ = true;
-        finished_.notify_all();
+    const boost::scope::scope_exit mark_finished{[state = finished_state_] {
+        const std::scoped_lock lock{state->mutex};
+        state->is_finished = true;
+        state->finished.notify_all();
     }};
 
     while (!co_await IsStopped()) {
@@ -120,8 +125,8 @@ void evget::EventLoop<T>::Stop() {
 
 template <typename T>
 bool evget::EventLoop<T>::WaitFinished(std::chrono::milliseconds timeout) {
-    std::unique_lock lock{finished_mutex_};
-    return finished_.wait_for(lock, timeout, [this] { return is_finished_; });
+    std::unique_lock lock{finished_state_->mutex};
+    return finished_state_->finished.wait_for(lock, timeout, [this] { return finished_state_->is_finished; });
 }
 
 template <typename T>

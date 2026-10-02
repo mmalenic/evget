@@ -1,6 +1,9 @@
 #include "common/event_loop.h"
 
+#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/use_awaitable.hpp>
 
 #include <mutex>
 #include <optional>
@@ -25,6 +28,20 @@ boost::asio::awaitable<evget::Result<int>> test::QueuedNextEvent::Next() const {
         co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "source closed"}};
     }
     co_return *event;
+}
+
+test::PendingNextEvent::PendingNextEvent(const boost::asio::any_io_executor& executor)
+    : timer_{executor, boost::asio::steady_timer::time_point::max()} {}
+
+boost::asio::awaitable<evget::Result<int>> test::PendingNextEvent::Next() const {
+    called_.store(true);
+    called_.notify_all();
+    co_await timer_.async_wait(boost::asio::use_awaitable);
+    co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "source destroyed"}};
+}
+
+void test::PendingNextEvent::WaitForNext() const {
+    called_.wait(false);
 }
 
 boost::asio::awaitable<evget::Result<void>> test::RecordingListener::Notify(int event) {

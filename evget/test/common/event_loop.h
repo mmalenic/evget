@@ -1,8 +1,11 @@
 #ifndef EVGET_TEST_COMMON_EVENT_LOOP_H
 #define EVGET_TEST_COMMON_EVENT_LOOP_H
 
+#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/steady_timer.hpp>
 
+#include <atomic>
 #include <deque>
 #include <mutex>
 #include <optional>
@@ -36,6 +39,33 @@ public:
 private:
     mutable std::mutex mutex_;
     mutable std::deque<int> events_;
+};
+
+/**
+ * \brief A source whose `Next` stays suspended until the source is destroyed.
+ */
+class PendingNextEvent : public evget::NextEvent<int> {
+public:
+    /**
+     * \brief Create a source that waits on the executor.
+     * \param executor the executor
+     */
+    explicit PendingNextEvent(const boost::asio::any_io_executor& executor);
+
+    /**
+     * \brief Wait until the source is destroyed.
+     * \return never returns while active
+     */
+    [[nodiscard]] boost::asio::awaitable<evget::Result<int>> Next() const override;
+
+    /**
+     * \brief Block until `Next` has been called.
+     */
+    void WaitForNext() const;
+
+private:
+    mutable boost::asio::steady_timer timer_;
+    mutable std::atomic<bool> called_{false};
 };
 
 /**

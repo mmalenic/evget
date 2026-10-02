@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -10,11 +11,13 @@
 #include "common/event_loop.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/error.h"
+#include "evget/event_listener.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 namespace {
 
+using test::PendingNextEvent;
 using test::QueuedNextEvent;
 using test::RecordingListener;
 using test::RunLoop;
@@ -106,6 +109,27 @@ TEST(EventLoopTest, WaitTimesOut) {
     evget::EventLoop<int> loop{source, {listener}};
 
     ASSERT_FALSE(loop.WaitFinished(std::chrono::milliseconds{10}));
+}
+
+TEST(EventLoopTest, DestroyedBeforeSuspended) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto source = std::make_unique<PendingNextEvent>(scheduler->Executor());
+    RecordingListener listener;
+    auto loop = std::make_unique<evget::EventLoop<int>>(
+        *source,
+        std::vector<std::reference_wrapper<evget::EventListener<int>>>{listener}
+    );
+
+    scheduler->Spawn(loop->Start());
+    source->WaitForNext();
+    scheduler->Stop();
+    scheduler->Join();
+
+    loop.reset();
+    source.reset();
+    scheduler.reset();
+
+    ASSERT_TRUE(listener.Received().empty());
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
