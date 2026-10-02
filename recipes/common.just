@@ -37,5 +37,15 @@ test filter='*' *opts='': (build_test opts)
     cd {{ build_dir }} && {{ if os_family() == "windows" { ".\\evgettest.exe --gtest_filter=" + filter } else { "./evgettest --gtest_filter=" + quote(filter) } }}
 
 # Build evget and run the integration tests.
-integration *args='': build
-    {{ pytest }} tests/integration --evget {{ build_dir }}/bin/evget{{ if os_family() == "windows" { ".exe" } else { "" } }} {{ args }}
+[positional-arguments]
+[unix]
+integration *args: build
+    {{ pytest }} tests/integration --evget {{ build_dir }}/bin/evget "$@"
+
+# `call` stops cmd.exe from removing quotes.
+[positional-arguments]
+[windows]
+[script('cmd.exe', '/d', '/c', 'call')]
+[extension('.cmd')]
+integration *args: build
+    @{{ pytest }} tests/integration --evget {{ build_dir }}/bin/evget.exe %*
