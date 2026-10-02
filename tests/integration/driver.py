@@ -55,7 +55,7 @@ def scaled(seconds: float) -> float:
 READY_TIMEOUT = scaled(15.0)
 STOP_TIMEOUT = scaled(10.0)
 DELIVERY_DELAY = scaled(0.5)
-
+OPEN_SETTLE = scaled(0.5)
 PACE = 0.01
 MOVE_STEP = 5
 LOG_TAIL = 30
@@ -160,6 +160,10 @@ class Input(ABC):
         Turn the wheel one increment.
         """
 
+    @abstractmethod
+    def opened_by(self, pid: int) -> bool:
+        """Whether process `pid` has opened this input to capture it."""
+
     def close(self) -> None:
         """
         Release the input device.
@@ -208,6 +212,10 @@ class WindowsInput(Input):
         delta = win32con.WHEEL_DELTA if up else -win32con.WHEEL_DELTA
         win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, delta)
 
+    def opened_by(self, pid: int) -> bool:
+        # evget registers for Raw Input as soon as it has created its capture window.
+        return bool(windows_of(pid))
+
 
 class X11Input(Input):
     """
@@ -242,6 +250,10 @@ class X11Input(Input):
         xtest.fake_input(self._display, X.ButtonPress, button)
         xtest.fake_input(self._display, X.ButtonRelease, button)
         self._display.sync()
+
+    def opened_by(self, pid: int) -> bool:
+        # The display connection is the only socket evget opens.
+        return any(target.startswith("socket:") for target in _open_files(pid))
 
     def close(self) -> None:
         if self._window is not None:
@@ -312,6 +324,9 @@ class LibinputInput(Input):
         self._device.write(ecodes.EV_REL, ecodes.REL_WHEEL, 1 if up else -1)
         self._device.syn()
 
+    def opened_by(self, pid: int) -> bool:
+        return self._device.device.path in _open_files(pid)
+
     def close(self) -> None:
         self._device.close()
 
@@ -377,9 +392,29 @@ class Evget(ABC):
         """
         Wait until evget logs that it captures input.
         """
+        self._wait_running_until(
+            lambda: READY in self.output(), timeout, "evget to capture input"
+        )
 
-        def ready() -> bool:
-            if READY in self.output():
+    def wait_opened(self, backend: Input, timeout: float = READY_TIMEOUT) -> None:
+        """Wait until evget captures `backend`'s input, for a run that logs nothing.
+
+        Raises `Exited` if evget exits first.
+        """
+        self._wait_running_until(
+            lambda: backend.opened_by(self.pid),
+            timeout,
+            f"evget to open the {backend.backend} input",
+        )
+        time.sleep(OPEN_SETTLE)
+
+    def _wait_running_until(
+        self, condition: Callable[[], bool], timeout: float, what: str
+    ) -> None:
+        """Poll `condition` like `wait_until`, raising `Exited` if evget exits."""
+
+        def done() -> bool:
+            if condition():
                 return True
             try:
                 self.wait(timeout=0)
@@ -387,7 +422,7 @@ class Evget(ABC):
                 return False
             raise Exited(self.output())
 
-        wait_until(ready, timeout, "evget to capture input")
+        wait_until(done, timeout, what)
 
     @abstractmethod
     def stop(self) -> None:
@@ -673,6 +708,17 @@ def _read(path: Path) -> str:
     if not path.exists():
         return ""
     return path.read_text(encoding="utf-8", errors="replace")
+
+
+def _open_files(pid: int) -> list[str]:
+    """What the file descriptors of process `pid` point at, such as a device or socket."""
+    targets: list[str] = []
+    # An exited process has no descriptors to list, not even for its parent.
+    with contextlib.suppress(OSError):
+        for descriptor in Path(f"/proc/{pid}/fd").iterdir():
+            with contextlib.suppress(OSError):
+                targets.append(os.readlink(descriptor))
+    return targets
 
 
 def _taskkill(*args: str) -> None:

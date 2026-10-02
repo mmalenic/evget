@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import time
 from collections.abc import Callable, Generator, Iterator
 from pathlib import Path
 from typing import NoReturn
@@ -15,7 +14,6 @@ import pytest
 
 import driver
 
-STDOUT_SETTLE = driver.scaled(2.0)
 MISSING_BACKEND = "does not include the requested event source"
 
 REPORTS = pytest.StashKey[dict[str, pytest.TestReport]]()
@@ -185,7 +183,8 @@ def launch(
         process = driver.start(command(evget, backend, output, *args), tmp_path, stop)
         started.append(process)
         if output == "-":
-            time.sleep(STDOUT_SETTLE)
+            # -o - turns logging off, so there is no ready line to wait for.
+            process.wait_opened(backend)
         else:
             process.wait_ready()
         return process
