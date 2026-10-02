@@ -14,7 +14,6 @@ import pytest
 
 import driver
 
-MISSING_BACKEND = "does not include the requested event source"
 
 REPORTS = pytest.StashKey[dict[str, pytest.TestReport]]()
 
@@ -150,7 +149,7 @@ def missing_from_build(
     try:
         probe.wait_ready()
     except driver.Exited as exited:
-        if MISSING_BACKEND in exited.output:
+        if driver.MISSING_BACKEND in exited.output:
             return f"{evget.name} was built without the {backend.backend} backend"
         raise
     except TimeoutError as error:

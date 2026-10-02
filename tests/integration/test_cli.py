@@ -44,19 +44,26 @@ def test_help_exits_zero(evget: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "args",
+    ("args", "exit_code"),
     [
-        ["--no-such-option"],
-        ["--store-n-events", "0"],
-        ["--store-after-seconds", "-1"],
-        ["--event-source", "keyboard"],
-        ["--filter", "joystick"],
-        ["--event-source", FOREIGN_SOURCE],
+        (["--no-such-option"], 109),
+        (["--store-n-events", "0"], 105),
+        (["--store-after-seconds", "-1"], 105),
+        (["--event-source", "keyboard"], 104),
+        (["--filter", "joystick"], 105),
     ],
-    ids=" ".join,
+    ids=lambda value: " ".join(value) if isinstance(value, list) else str(value),
 )
-def test_invalid_arguments_exit_non_zero(
-    evget: Path, tmp_path: Path, args: list[str]
+def test_invalid_arguments_fail(
+    evget: Path, tmp_path: Path, args: list[str], exit_code: int
 ) -> None:
     result = run(evget, *args, "--output", str(tmp_path / "events.sqlite"))
-    assert result.returncode != 0
+    assert result.returncode == exit_code, result.stderr
+    assert args[0] in result.stderr
+
+
+def test_foreign_event_source_fails(evget: Path, tmp_path: Path) -> None:
+    output = str(tmp_path / "events.sqlite")
+    result = run(evget, "--event-source", FOREIGN_SOURCE, "--output", output)
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert driver.MISSING_BACKEND in result.stdout
