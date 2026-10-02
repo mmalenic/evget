@@ -64,6 +64,9 @@ without a device handle. This means that `windows-injected` rows might be real e
 and evget cannot tell these apart. The touchpad and touchscreen rows that come directly from the device do have
 the device's real name.
 
+libinput has no injected name. Software synthesizes input for it through a uinput device, which the kernel presents like
+any other, so libinput stores that device's own name and cannot tell it apart from hardware.
+
 ## X11 behaviour
 
 The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension
