@@ -50,17 +50,14 @@ BOOL WINAPI evgetwindows::ConsoleStop::Handle(DWORD ctrl_type) {
     }
 
     try {
-        std::function<void()> on_stop;
-        {
-            auto& state = State();
-            const std::scoped_lock lock{state.mutex};
-            on_stop = state.on_stop;
-        }
-        if (!on_stop) {
+        auto& state = State();
+        // Held across the call so the destructor waits for a stop.
+        const std::scoped_lock lock{state.mutex};
+        if (!state.on_stop) {
             return FALSE;
         }
 
-        on_stop();
+        state.on_stop();
     } catch (const std::exception& e) {
         spdlog::error("console stop failed: {}", e.what());
     } catch (...) {
