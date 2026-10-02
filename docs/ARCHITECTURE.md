@@ -46,6 +46,18 @@ A key event has the same fields as a mouse click event, including fields present
 | ----------- | --------------- | ---------------------------------------------------------- |
 | `character` | UTF-8 character | The UTF-8 character that is associated with the key event. |
 
+## Synthetic input
+
+Input that the OS synthesizes instead is stored with a `device_name` of `<backend>-injected`, and a
+`device_type` from the kind of input. X11 stores `x11-injected` for input that the X server sends through its
+XTEST devices.
+
+Windows stores `windows-injected` for any Raw Input that arrives without a device handle. This includes input sent with
+`SendInput`. Windows also send [pointer][raw-input-header] input it generates from a precision touchpad or a touchscreen
+without a device handle. This means that `windows-injected` rows might be real events from a touchpad or touchscreen,
+and evget cannot tell these apart. The touchpad and touchscreen rows that come directly from the device do have
+the device's real name.
+
 ## X11 behaviour
 
 The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension
@@ -71,3 +83,4 @@ can be used to distinguish these events. If windows thinks the device touch is u
 as such, and these events will not be recorded by evget.
 
 [x11-api]: https://www.x.org/releases/X11R7.6/doc/
+[raw-input-header]: https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-rawinputheader
