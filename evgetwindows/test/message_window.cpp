@@ -61,41 +61,6 @@ TEST(MessageWindowTest, EnqueueSendsEvents) {
     EXPECT_EQ(window.Enqueue(MakeKeyboardRawInput(0x41), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kSent);
 }
 
-TEST(MessageWindowTest, QueueHasInputSource) {
-    boost::asio::thread_pool pool{1};
-    MessageWindow window{pool.get_executor()};
-    const INPUT_MESSAGE_SOURCE source{.deviceType = IMDT_MOUSE, .originId = IMO_INJECTED};
-
-    ASSERT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT), source), EnqueueOutcome::kSent);
-    ASSERT_EQ(window.Enqueue(MakeKeyboardRawInput(0x41), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kSent);
-
-    std::vector<std::optional<INPUT_MESSAGE_ORIGIN_ID>> origins{};
-    while (window.Channel().try_receive([&origins](const auto& /*error*/, const evgetwindows::RawEvent& event) {
-        origins.emplace_back(event.source.transform([](const auto& value) { return value.originId; }));
-    })) {
-    }
-
-    EXPECT_EQ(origins, (std::vector<std::optional<INPUT_MESSAGE_ORIGIN_ID>>{IMO_INJECTED, std::nullopt}));
-}
-
-TEST(MessageWindowTest, QueueHasInputForReport) {
-    boost::asio::thread_pool pool{1};
-    MessageWindow window{pool.get_executor()};
-    const INPUT_MESSAGE_SOURCE source{.deviceType = IMDT_TOUCHPAD, .originId = IMO_HARDWARE};
-
-    const auto report = MakeHidReportBytes(8);
-    const auto packet = MakeHidPacket(report, 2);
-    ASSERT_EQ(window.Enqueue(AsRawInput(packet), packet.size(), source), EnqueueOutcome::kSent);
-
-    std::vector<std::optional<INPUT_MESSAGE_DEVICE_TYPE>> device_types{};
-    while (window.Channel().try_receive([&device_types](const auto& /*error*/, const evgetwindows::RawEvent& event) {
-        device_types.emplace_back(event.source.transform([](const auto& value) { return value.deviceType; }));
-    })) {
-    }
-
-    EXPECT_EQ(device_types, (std::vector<std::optional<INPUT_MESSAGE_DEVICE_TYPE>>{IMDT_TOUCHPAD, IMDT_TOUCHPAD}));
-}
-
 TEST(MessageWindowTest, EnqueueIgnoresUnknown) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};

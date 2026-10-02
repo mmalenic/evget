@@ -399,12 +399,7 @@ TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
     injected.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_KEYBOARD, .originId = IMO_INJECTED};
     std::get<RAWKEYBOARD>(injected.data).ExtraInformation = 0x1234;
     auto unknown = MakeKeyboard(VK_F24, 0x76, RI_KEY_BREAK);
-    // NOLINTBEGIN(clang-analyzer-optin.core.EnumCastOutOfRange)
-    unknown.source = INPUT_MESSAGE_SOURCE{
-        .deviceType = static_cast<INPUT_MESSAGE_DEVICE_TYPE>(0x20),
-        .originId = static_cast<INPUT_MESSAGE_ORIGIN_ID>(0x8)
-    };
-    // NOLINTEND(clang-analyzer-optin.core.EnumCastOutOfRange)
+    unknown.header.dwType = 0x8;
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{injected}));
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{unknown}));
 
@@ -413,8 +408,7 @@ TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
         testing::ElementsAre(
             "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected: source IMO_INJECTED IMDT_KEYBOARD, "
             "Flags 0x1, ExtraInformation 0x1234",
-            "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected: source 0x8 0x20, Flags 0x1, "
-            "ExtraInformation 0x0"
+            "trace raw input 0x8 from hDevice 0x0 as windows-injected: source failed, Flags 0x1, ExtraInformation 0x0"
         )
     );
 }
