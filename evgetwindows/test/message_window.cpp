@@ -57,15 +57,15 @@ TEST(MessageWindowTest, EnqueueSendsEvents) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};
 
-    EXPECT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kSent);
-    EXPECT_EQ(window.Enqueue(MakeKeyboardRawInput(0x41), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kSent);
+    EXPECT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT)), EnqueueOutcome::kSent);
+    EXPECT_EQ(window.Enqueue(MakeKeyboardRawInput(0x41), sizeof(RAWINPUT)), EnqueueOutcome::kSent);
 }
 
 TEST(MessageWindowTest, EnqueueIgnoresUnknown) {
     boost::asio::thread_pool pool{1};
     MessageWindow window{pool.get_executor()};
 
-    EXPECT_EQ(window.Enqueue(MakeHidRawInput(), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kIgnored);
+    EXPECT_EQ(window.Enqueue(MakeHidRawInput(), sizeof(RAWINPUT)), EnqueueOutcome::kIgnored);
 }
 
 TEST(MessageWindowTest, EnqueueDropsWhenFull) {
@@ -75,13 +75,13 @@ TEST(MessageWindowTest, EnqueueDropsWhenFull) {
     const RAWINPUT mouse = MakeMouseRawInput(1, 2);
     std::size_t sent = 0;
     for (std::size_t i = 0; i < evgetwindows::kRawEventChannelCapacity; ++i) {
-        if (window.Enqueue(mouse, sizeof(RAWINPUT), std::nullopt) == EnqueueOutcome::kSent) {
+        if (window.Enqueue(mouse, sizeof(RAWINPUT)) == EnqueueOutcome::kSent) {
             ++sent;
         }
     }
 
     EXPECT_EQ(sent, evgetwindows::kRawEventChannelCapacity);
-    EXPECT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kDropped);
+    EXPECT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT)), EnqueueOutcome::kDropped);
 }
 
 TEST(MessageWindowTest, ToRawEventClassifiesHid) {
@@ -126,7 +126,7 @@ TEST(MessageWindowTest, EnqueueSendsEventPerReport) {
 
     std::size_t accepted = 0;
     for (std::size_t attempt = 0; attempt < evgetwindows::kRawEventChannelCapacity; ++attempt) {
-        if (window.Enqueue(raw, packet.size(), std::nullopt) == EnqueueOutcome::kDropped) {
+        if (window.Enqueue(raw, packet.size()) == EnqueueOutcome::kDropped) {
             break;
         }
         ++accepted;
@@ -143,7 +143,7 @@ TEST(MessageWindowTest, EnqueueIgnoresLargeReport) {
     const auto report = MakeHidReportBytes(evgetwindows::kHidReportCapacity + 1);
     const auto packet = MakeHidPacket(report, 1);
 
-    EXPECT_EQ(window.Enqueue(AsRawInput(packet), packet.size(), std::nullopt), EnqueueOutcome::kIgnored);
+    EXPECT_EQ(window.Enqueue(AsRawInput(packet), packet.size()), EnqueueOutcome::kIgnored);
 }
 
 TEST(MessageWindowTest, ToRawEventReportBound) {
@@ -162,7 +162,7 @@ TEST(MessageWindowTest, EnqueueIgnoresInvalidPacket) {
     const auto report = MakeHidReportBytes(8);
     const auto packet = MakeHidPacketUndersized(report, 1);
 
-    EXPECT_EQ(window.Enqueue(AsRawInput(packet), packet.size(), std::nullopt), EnqueueOutcome::kIgnored);
+    EXPECT_EQ(window.Enqueue(AsRawInput(packet), packet.size()), EnqueueOutcome::kIgnored);
 }
 
 TEST(MessageWindowTest, DeviceChangeRetryWhenFull) {
@@ -172,7 +172,7 @@ TEST(MessageWindowTest, DeviceChangeRetryWhenFull) {
     HANDLE device = &backing;
 
     const RAWINPUT mouse = MakeMouseRawInput(1, 2);
-    while (window.Enqueue(mouse, sizeof(RAWINPUT), std::nullopt) == EnqueueOutcome::kSent) {
+    while (window.Enqueue(mouse, sizeof(RAWINPUT)) == EnqueueOutcome::kSent) {
     }
 
     window.EnqueueDeviceChange(GIDC_REMOVAL, device);
@@ -181,7 +181,7 @@ TEST(MessageWindowTest, DeviceChangeRetryWhenFull) {
     ASSERT_TRUE(window.Channel().try_receive([](const auto& /*error*/, const evgetwindows::RawEvent& /*event*/) {}));
 
     // The next enqueue is what gives the held change its retry, so it reaches the channel ahead of the input.
-    static_cast<void>(window.Enqueue(mouse, sizeof(RAWINPUT), std::nullopt));
+    static_cast<void>(window.Enqueue(mouse, sizeof(RAWINPUT)));
     EXPECT_EQ(window.PendingDeviceChanges(), 0);
 }
 
@@ -259,7 +259,7 @@ TEST(MessageWindowTest, RequestStop) {
 
     const std::vector<LONG> queued{1, 2, 3};
     for (const LONG last_x : queued) {
-        ASSERT_EQ(window.Enqueue(MakeMouseRawInput(last_x, 0), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kSent);
+        ASSERT_EQ(window.Enqueue(MakeMouseRawInput(last_x, 0), sizeof(RAWINPUT)), EnqueueOutcome::kSent);
     }
 
     window.RequestStop();
@@ -287,7 +287,7 @@ TEST(MessageWindowTest, QueueAfterStopRequest) {
 
     window.RequestStop();
 
-    EXPECT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT), std::nullopt), EnqueueOutcome::kClosed);
+    EXPECT_EQ(window.Enqueue(MakeMouseRawInput(1, 2), sizeof(RAWINPUT)), EnqueueOutcome::kClosed);
 }
 
 TEST(MessageWindowTest, RequestStopTwice) {

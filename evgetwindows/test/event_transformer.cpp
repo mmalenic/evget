@@ -363,7 +363,7 @@ TEST(EvgetWindowsTransformer, InjectedDeviceSkipsLookup) {
     EXPECT_EQ(entries.at(0).Data().at(4), "windows-injected");
 }
 
-TEST(EvgetWindowsTransformer, TraceLogMouseSource) {
+TEST(EvgetWindowsTransformer, TraceLogsMouse) {
     const CapturedLog log{};
     spdlog::default_logger()->set_level(spdlog::level::trace);
 
@@ -373,20 +373,19 @@ TEST(EvgetWindowsTransformer, TraceLogMouseSource) {
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto raw = MakeMouseMoveRelative(1, 1);
-    raw.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_TOUCHPAD, .originId = IMO_HARDWARE};
     std::get<RAWMOUSE>(raw.data).ulExtraInformation = 0xFF515780;
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{raw}));
 
     EXPECT_THAT(
         log.Lines(),
         testing::ElementsAre(
-            "trace raw input RIM_TYPEMOUSE from hDevice 0x0 as windows-injected: source IMO_HARDWARE IMDT_TOUCHPAD, "
-            "usFlags 0x0, ulExtraInformation 0xff515780"
+            "trace raw input RIM_TYPEMOUSE from hDevice 0x0 as windows-injected, usFlags 0x0, "
+            "ulExtraInformation 0xff515780"
         )
     );
 }
 
-TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
+TEST(EvgetWindowsTransformer, TraceLogsKeyboard) {
     const CapturedLog log{};
     spdlog::default_logger()->set_level(spdlog::level::trace);
 
@@ -396,7 +395,6 @@ TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
     auto injected = MakeKeyboard(VK_F24, 0x76, RI_KEY_BREAK);
-    injected.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_KEYBOARD, .originId = IMO_INJECTED};
     std::get<RAWKEYBOARD>(injected.data).ExtraInformation = 0x1234;
     auto unknown = MakeKeyboard(VK_F24, 0x76, RI_KEY_BREAK);
     unknown.header.dwType = 0x8;
@@ -406,14 +404,13 @@ TEST(EvgetWindowsTransformer, TraceLogsKeyboardSource) {
     EXPECT_THAT(
         log.Lines(),
         testing::ElementsAre(
-            "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected: source IMO_INJECTED IMDT_KEYBOARD, "
-            "Flags 0x1, ExtraInformation 0x1234",
-            "trace raw input 0x8 from hDevice 0x0 as windows-injected: source failed, Flags 0x1, ExtraInformation 0x0"
+            "trace raw input RIM_TYPEKEYBOARD from hDevice 0x0 as windows-injected, Flags 0x1, ExtraInformation 0x1234",
+            "trace raw input 0x8 from hDevice 0x0 as windows-injected, Flags 0x1, ExtraInformation 0x0"
         )
     );
 }
 
-TEST(EvgetWindowsTransformer, TraceLogFailedSource) {
+TEST(EvgetWindowsTransformer, TraceLogsHid) {
     const CapturedLog log{};
     spdlog::default_logger()->set_level(spdlog::level::trace);
 
@@ -427,10 +424,7 @@ TEST(EvgetWindowsTransformer, TraceLogFailedSource) {
         transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{MakeHidRawEventFrom(nullptr, report)})
     );
 
-    EXPECT_THAT(
-        log.Lines(),
-        testing::ElementsAre("trace raw input RIM_TYPEHID from hDevice 0x0 as windows-injected: source failed")
-    );
+    EXPECT_THAT(log.Lines(), testing::ElementsAre("trace raw input RIM_TYPEHID from hDevice 0x0 as windows-injected"));
 }
 
 TEST(EvgetWindowsTransformer, TraceSkippedAboveTraceLevel) {
@@ -441,8 +435,7 @@ TEST(EvgetWindowsTransformer, TraceSkippedAboveTraceLevel) {
     evgetwindows::ModifierTracker tracker{};
     evgetwindows::EventTransformer transformer{query, hid_query, tracker};
 
-    auto raw = MakeMouseMoveRelative(1, 1);
-    raw.source = INPUT_MESSAGE_SOURCE{.deviceType = IMDT_MOUSE, .originId = IMO_INJECTED};
+    const auto raw = MakeMouseMoveRelative(1, 1);
     static_cast<void>(transformer.TransformEvent(evget::InputEvent<evgetwindows::RawEvent>{raw}));
 
     EXPECT_TRUE(log.Lines().empty());

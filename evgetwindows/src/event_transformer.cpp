@@ -96,32 +96,15 @@ constexpr std::array<MouseButton, 5> kMouseButtons{{
      .up_event = EVGET_STRINGIFY(RI_MOUSE_BUTTON_5_UP)},
 }};
 
-template <typename T>
-struct NamedValue {
-    T value;
+struct RawInputType {
+    DWORD type;
     std::string_view name;
 };
 
-constexpr std::array<NamedValue<DWORD>, 3> kRawInputTypeNames{{
-    {.value = RIM_TYPEMOUSE, .name = EVGET_STRINGIFY(RIM_TYPEMOUSE)},
-    {.value = RIM_TYPEKEYBOARD, .name = EVGET_STRINGIFY(RIM_TYPEKEYBOARD)},
-    {.value = RIM_TYPEHID, .name = EVGET_STRINGIFY(RIM_TYPEHID)},
-}};
-
-constexpr std::array<NamedValue<INPUT_MESSAGE_ORIGIN_ID>, 4> kOriginNames{{
-    {.value = IMO_UNAVAILABLE, .name = EVGET_STRINGIFY(IMO_UNAVAILABLE)},
-    {.value = IMO_HARDWARE, .name = EVGET_STRINGIFY(IMO_HARDWARE)},
-    {.value = IMO_INJECTED, .name = EVGET_STRINGIFY(IMO_INJECTED)},
-    {.value = IMO_SYSTEM, .name = EVGET_STRINGIFY(IMO_SYSTEM)},
-}};
-
-constexpr std::array<NamedValue<INPUT_MESSAGE_DEVICE_TYPE>, 6> kSourceDeviceNames{{
-    {.value = IMDT_UNAVAILABLE, .name = EVGET_STRINGIFY(IMDT_UNAVAILABLE)},
-    {.value = IMDT_KEYBOARD, .name = EVGET_STRINGIFY(IMDT_KEYBOARD)},
-    {.value = IMDT_MOUSE, .name = EVGET_STRINGIFY(IMDT_MOUSE)},
-    {.value = IMDT_TOUCH, .name = EVGET_STRINGIFY(IMDT_TOUCH)},
-    {.value = IMDT_PEN, .name = EVGET_STRINGIFY(IMDT_PEN)},
-    {.value = IMDT_TOUCHPAD, .name = EVGET_STRINGIFY(IMDT_TOUCHPAD)},
+constexpr std::array<RawInputType, 3> kRawInputTypes{{
+    {.type = RIM_TYPEMOUSE, .name = EVGET_STRINGIFY(RIM_TYPEMOUSE)},
+    {.type = RIM_TYPEKEYBOARD, .name = EVGET_STRINGIFY(RIM_TYPEKEYBOARD)},
+    {.type = RIM_TYPEHID, .name = EVGET_STRINGIFY(RIM_TYPEHID)},
 }};
 
 constexpr std::uint32_t kMaxContactsPerFrame = 64;
@@ -140,11 +123,10 @@ void AccumulateContacts(
     }
 }
 
-template <typename T, std::size_t N>
-std::string NameOf(const std::array<NamedValue<T>, N>& names, T value) {
-    const auto found = std::ranges::find(names, value, &NamedValue<T>::value);
-    if (found == names.end()) {
-        return std::format("{:#x}", static_cast<std::uint32_t>(value));
+std::string RawInputTypeName(DWORD type) {
+    const auto found = std::ranges::find(kRawInputTypes, type, &RawInputType::type);
+    if (found == kRawInputTypes.end()) {
+        return std::format("{:#x}", type);
     }
 
     return std::string{found->name};
@@ -155,15 +137,6 @@ void TraceRawEvent(const evgetwindows::RawEvent& raw, std::string_view device_na
         return;
     }
 
-    std::string source{"failed"};
-    if (raw.source.has_value()) {
-        source = std::format(
-            "{} {}",
-            NameOf(kOriginNames, raw.source->originId),
-            NameOf(kSourceDeviceNames, raw.source->deviceType)
-        );
-    }
-
     std::string fields{};
     if (const auto* mouse = std::get_if<RAWMOUSE>(&raw.data)) {
         fields = std::format(", usFlags {:#x}, ulExtraInformation {:#x}", mouse->usFlags, mouse->ulExtraInformation);
@@ -172,11 +145,10 @@ void TraceRawEvent(const evgetwindows::RawEvent& raw, std::string_view device_na
     }
 
     spdlog::trace(
-        "raw input {} from hDevice {} as {}: source {}{}",
-        NameOf(kRawInputTypeNames, raw.header.dwType),
+        "raw input {} from hDevice {} as {}{}",
+        RawInputTypeName(raw.header.dwType),
         static_cast<const void*>(raw.header.hDevice),
         device_name,
-        source,
         fields
     );
 }
