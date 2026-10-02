@@ -15,3 +15,7 @@ build_dir := 'build/windows-clang-' + lowercase(build_type)
 
 test filter='*' *opts='': (build_test opts)
     cd {{ build_dir }} && xvfb-run --auto-servernum wine ./evgettest.exe --gtest_filter={{ quote(filter) }}
+
+[private]
+integration *args:
+    {{ error('run the integration tests on Windows, e.g. with `just windows::clangcl::integration`') }}
