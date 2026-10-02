@@ -16,7 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-HOST_PREFIX = {"Linux": "linux-", "Darwin": "macos-"}.get(platform.system(), "")
+CONAN_OS = os.environ.get("EVGET_OS") or {"Darwin": "Macos"}.get(
+    platform.system(), platform.system()
+)
+HOST_PREFIX = "" if platform.system() == "Windows" else f"{CONAN_OS.lower()}-"
 OS = "windows" if sys.platform == "win32" else "linux"
 EXE = "evgettest.exe" if OS == "windows" else "evgettest"
 
