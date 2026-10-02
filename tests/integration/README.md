@@ -57,7 +57,8 @@ variables such as `EVGET_TIMEOUT_SCALE`:
 sudo modprobe uinput
 just linux::gcc::build
 python=$(uv run --locked --group integration python -c 'import sys; print(sys.executable)')
-sudo -E "$python" -m pytest tests/integration --evget build/linux-gcc-debug/bin/evget --require-backends libinput
+sudo -E "$python" -B -m pytest -p no:cacheprovider tests/integration \
+    --evget build/linux-gcc-debug/bin/evget --require-backends libinput
 ```
 
 On Windows, an interactive desktop session is required, which GitHub-hosted runners have:
