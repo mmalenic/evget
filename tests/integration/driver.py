@@ -630,6 +630,7 @@ class Console(Evget):
             stop,
             str(self.stdout),
             str(self._console),
+            str(self._helper_log),
             *command,
         ]
         
@@ -742,7 +743,16 @@ def _open_files(pid: int) -> list[str]:
 
 
 def _taskkill(*args: str) -> None:
-    subprocess.run(["taskkill", *args], check=True, capture_output=True)
+    try:
+        subprocess.run(
+            ["taskkill", *args],
+            check=True,
+            capture_output=True,
+            encoding="oem",
+            errors="replace",
+        )
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(f"{error} {error.stderr.strip()}") from error
 
 
 def windows_of(pid: int) -> list[int]:
@@ -780,11 +790,14 @@ def taskbar_windows(pid: int) -> list[int]:
     return [window for window in windows_of(pid) if listed(window)]
 
 
-def _console_helper(stop: str, stdout: str, console: str, *command: str) -> int:
+def _console_helper(
+    stop: str, stdout: str, console: str, log: str, *command: str
+) -> int:
     """
     Run evget in this console.
     """
     
+    sys.stderr = open(log, "a", encoding="utf-8", buffering=1)  # noqa: SIM115
     Path(console).write_text(str(win32console.GetConsoleWindow()))
     # Ctrl+Break reaches only the process group it is sent to.
     group = subprocess.CREATE_NEW_PROCESS_GROUP if stop == "ctrl-break" else 0
