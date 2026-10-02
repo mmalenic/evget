@@ -5,6 +5,7 @@ Options and config for the evget integration tests.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
 from collections.abc import Callable, Generator, Iterator
 from pathlib import Path
@@ -188,12 +189,15 @@ def launch(
             process.wait_ready()
         return process
 
-    yield start
-    for process in started:
-        process.kill()
-    call = request.node.stash.get(REPORTS, {}).get("call")
+    def print_log_tails() -> None:
+        call = request.node.stash.get(REPORTS, {}).get("call")
+        if call is not None and call.failed:
+            print(f"The last {driver.LOG_TAIL} lines of each evget log:")
+            for process in started:
+                print(process.log_tail())
 
-    if call is not None and call.failed:
-        print(f"The last {driver.LOG_TAIL} lines of each evget log:")
+    yield start
+    with contextlib.ExitStack() as teardown:
+        teardown.callback(print_log_tails)
         for process in started:
-            print(process.log_tail())
+            teardown.callback(process.kill)
