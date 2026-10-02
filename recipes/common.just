@@ -7,7 +7,7 @@ build_type := 'Debug'
 # Run Conan and the Python scripts from uv when it's on PATH, otherwise run Conan from the PATH directly.
 # Override with EVGET_USE_UV=true|false, or `just use_uv=false <recipe>`.
 use_uv := env('EVGET_USE_UV', trim(shell(if os_family() == 'windows' { 'where /q uv && echo true|| echo false' } else { 'command -v uv > /dev/null && echo true || echo false' })))
-uv_run := if use_uv == 'true' { 'uv run --locked ' } else { '' }
+uv_run := if use_uv == 'true' { 'uv run --locked ' } else if use_uv == 'false' { '' } else { error('EVGET_USE_UV must be true or false, not ' + use_uv) }
 pytest := if use_uv == 'true' { 'uv run --locked --group integration pytest' } else { 'python -m pytest' }
 
 # Detect the conan profile for building.
