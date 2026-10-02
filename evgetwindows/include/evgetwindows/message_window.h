@@ -7,6 +7,7 @@
 #define EVGETWINDOWS_MESSAGE_WINDOW_H
 
 #include <boost/asio/any_io_executor.hpp>
+#include <boost/asio/awaitable.hpp>
 #include <boost/asio/experimental/concurrent_channel.hpp>
 #include <boost/system/error_code.hpp>
 #include <windows.h>
@@ -21,6 +22,7 @@
 #include <optional>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
@@ -110,6 +112,18 @@ public:
     [[nodiscard]] RawEventChannel& Channel();
 
     /**
+     * \brief Receive the next event from the channel and count it as no longer buffered.
+     * \return the error code and the event
+     */
+    [[nodiscard]] boost::asio::awaitable<std::tuple<boost::system::error_code, RawEvent>> Receive();
+
+    /**
+     * \brief The number of events sent to the channel and not yet received through `Receive`.
+     * \return the buffered event count
+     */
+    [[nodiscard]] std::size_t Buffered() const;
+
+    /**
      * \brief Convert a `RAWINPUT` record into an owned `RawEvent`.
      * \param raw the raw input
      * \param packet_size the number of bytes within `raw` that is the target
@@ -195,6 +209,7 @@ private:
     void HandleRawInput(HRAWINPUT input);
     void DrainDeviceChanges();
     EnqueueOutcome EnqueueEvent(const RawEvent& event);
+    bool TrySend(const RawEvent& event);
 
     std::wstring class_name_;
     std::function<void()> on_stop_;
@@ -204,6 +219,7 @@ private:
     std::jthread thread_;
     std::atomic<DWORD> thread_id_{0};
     std::atomic<std::size_t> in_flight_{0};
+    std::atomic<bool> near_capacity_warned_{false};
     std::atomic<std::size_t> dropped_{0};
     std::unordered_set<HANDLE> oversized_logged_;
 };

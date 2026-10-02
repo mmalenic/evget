@@ -2,15 +2,19 @@
 
 #include <gtest/gtest.h>
 
+#include <boost/asio/co_spawn.hpp> // NOLINT(misc-include-cleaner)
 #include <boost/asio/thread_pool.hpp>
+#include <boost/asio/use_future.hpp>
 #include <windows.h>
 
 #include <algorithm>
 #include <cstddef>
 #include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
+#include "common/log.h"
 #include "common/windows_mock.h"
 #include "evgetwindows/raw_event.h"
 
@@ -18,6 +22,7 @@ namespace {
 using evgetwindows::EnqueueOutcome;
 using evgetwindows::MessageWindow;
 using test::AsRawInput;
+using test::CapturedLog;
 using test::MakeDeviceChangeRawEvent;
 using test::MakeHidPacket;
 using test::MakeHidPacketDistinct;
@@ -298,6 +303,37 @@ TEST(MessageWindowTest, RequestStopTwice) {
     window.RequestStop();
 
     EXPECT_FALSE(window.Channel().is_open());
+}
+
+TEST(MessageWindowTest, CapacityWarningBacklog) {
+    boost::asio::thread_pool pool{1};
+    MessageWindow window{pool.get_executor()};
+    const CapturedLog log{};
+    const RAWINPUT mouse = MakeMouseRawInput(1, 2);
+    const auto warnings = [&log] {
+        return std::ranges::count_if(log.Lines(), [](const std::string& line) {
+            return line.contains("buffered events");
+        });
+    };
+
+    for (std::size_t i = 1; i < evgetwindows::kChannelNearCapacity; ++i) {
+        ASSERT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT)), EnqueueOutcome::kSent);
+    }
+    EXPECT_EQ(warnings(), 0);
+    ASSERT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT)), EnqueueOutcome::kSent);
+    EXPECT_EQ(window.Buffered(), evgetwindows::kChannelNearCapacity);
+    EXPECT_EQ(warnings(), 1);
+
+    while (window.Buffered() >= evgetwindows::kChannelNearCapacity / 2) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
+        const auto [error, event] = boost::asio::co_spawn(pool, window.Receive(), boost::asio::use_future).get();
+        ASSERT_FALSE(error);
+    }
+
+    while (window.Buffered() < evgetwindows::kChannelNearCapacity) {
+        ASSERT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT)), EnqueueOutcome::kSent);
+    }
+    EXPECT_EQ(warnings(), 2);
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)

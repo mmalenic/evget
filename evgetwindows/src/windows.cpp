@@ -1,9 +1,7 @@
 #include "evgetwindows/windows.h"
 
 #include <boost/asio/any_io_executor.hpp>
-#include <boost/asio/as_tuple.hpp>
 #include <boost/asio/awaitable.hpp>
-#include <boost/asio/use_awaitable.hpp>
 
 #include <expected>
 #include <functional>
@@ -45,6 +43,5 @@ void evgetwindows::Windows::RequestStop() {
 // NOLINTNEXTLINE(misc-include-cleaner)
 boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>
 evgetwindows::Windows::ReceiveNext() {
-    // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
-    return message_window_.Channel().async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
+    return message_window_.Receive();
 }

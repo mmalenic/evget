@@ -1,6 +1,10 @@
 #include "evgetwindows/message_window.h"
 
 #include <boost/asio/any_io_executor.hpp>
+#include <boost/asio/as_tuple.hpp>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/system/error_code.hpp>
 #include <hidusage.h>
 #include <spdlog/spdlog.h>
 
@@ -17,6 +21,7 @@
 #include <optional>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <utility>
 
 #include "evget/error.h"
@@ -222,11 +227,36 @@ evgetwindows::RawEvent evgetwindows::MessageWindow::ToDeviceChangeEvent(WPARAM c
     return event;
 }
 
+bool evgetwindows::MessageWindow::TrySend(const RawEvent& event) {
+    // Count before sending so the receive can't decrement ahead.
+    const std::size_t buffered = in_flight_.fetch_add(1, std::memory_order_relaxed) + 1;
+    if (!channel_.try_send(boost::system::error_code{}, event)) {
+        in_flight_.fetch_sub(1, std::memory_order_relaxed);
+        return false;
+    }
+
+    if (buffered >= kChannelNearCapacity && !near_capacity_warned_.exchange(true, std::memory_order_relaxed)) {
+        spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
+    }
+    return true;
+}
+
+boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>
+evgetwindows::MessageWindow::Receive() {
+    auto received = co_await channel_.async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
+    if (!std::get<0>(received) && in_flight_.fetch_sub(1, std::memory_order_relaxed) - 1 < kChannelNearCapacity / 2) {
+        near_capacity_warned_.store(false, std::memory_order_relaxed);
+    }
+
+    co_return received;
+}
+
+std::size_t evgetwindows::MessageWindow::Buffered() const {
+    return in_flight_.load(std::memory_order_relaxed);
+}
+
 evgetwindows::EnqueueOutcome evgetwindows::MessageWindow::EnqueueEvent(const RawEvent& event) {
-    if (channel_.try_send(boost::system::error_code{}, event)) {
-        if (in_flight_.fetch_add(1, std::memory_order_relaxed) + 1 == kChannelNearCapacity) {
-            spdlog::warn("input channel reached {} buffered events", kChannelNearCapacity);
-        }
+    if (TrySend(event)) {
         return EnqueueOutcome::kSent;
     }
 
@@ -301,7 +331,7 @@ std::size_t evgetwindows::MessageWindow::PendingDeviceChanges() const {
 }
 
 void evgetwindows::MessageWindow::DrainDeviceChanges() {
-    while (!device_changes_.empty() && channel_.try_send(boost::system::error_code{}, device_changes_.front())) {
+    while (!device_changes_.empty() && TrySend(device_changes_.front())) {
         device_changes_.pop_front();
     }
 }
