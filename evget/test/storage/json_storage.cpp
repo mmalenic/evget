@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 
+#include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
@@ -172,6 +173,32 @@ TEST(JsonStorageTest, MouseMoveWritesNulls) {
     }
     const std::map<std::string, std::string> expected{{"device_type", "string"}, {"timestamp", "string"}};
     EXPECT_EQ(non_null, expected);
+}
+
+TEST(JsonStorageTest, InvalidUtf8Replaced) {
+    std::ostringstream stream{};
+    evget::JsonStorage storage{
+        std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
+    };
+
+    evget::Data data{};
+    evget::Key{}
+        .Timestamp(evget::TimestampType{})
+        .FocusWindowName("caf\xE9")
+        .Device(evget::DeviceType::kKeyboard)
+        .Action(evget::ButtonAction::kPress)
+        .Build(data);
+
+    auto result = storage.StoreEvent(std::move(data));
+
+    ASSERT_TRUE(result.has_value());
+    auto json = nlohmann::json::parse(stream.str());
+    const auto& fields = json["entries"][0]["fields"];
+    const auto title = std::find_if(fields.begin(), fields.end(), [](const nlohmann::json& field) {
+        return field["name"] == "focus_window_name";
+    });
+    ASSERT_NE(title, fields.end());
+    EXPECT_EQ((*title)["data"], "caf\xEF\xBF\xBD");
 }
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)

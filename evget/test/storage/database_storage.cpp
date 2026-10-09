@@ -279,7 +279,7 @@ TEST_F(DatabaseStorageTest, MissingRequiredValue) {
     );
 }
 
-TEST_F(DatabaseStorageTest, StoresAfterDroppedEntry) {
+TEST_F(DatabaseStorageTest, StoreAfterDroppedEntry) {
     auto storage = MakeStorage();
     auto init = storage.Init();
     ASSERT_TRUE(init.has_value());

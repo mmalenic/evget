@@ -39,7 +39,9 @@ evget::Result<void> evget::JsonStorage::StoreEvent(Data events) {
     }
 
     const nlohmann::json output{{"entries", formatted_entries}};
-    std::visit([output](auto&& ostream) { *ostream << output.dump(4) << "\n" << std::flush; }, ostream_);
+    // Titles can carry legacy bytes, which the default strict handler throws on.
+    const auto serialized = output.dump(4, ' ', false, nlohmann::json::error_handler_t::replace);
+    std::visit([&serialized](auto&& ostream) { *ostream << serialized << "\n" << std::flush; }, ostream_);
 
     return Result<void>{};
 }
