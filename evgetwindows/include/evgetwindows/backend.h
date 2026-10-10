@@ -54,7 +54,11 @@ public:
     Backend(Backend&&) = delete;
     Backend& operator=(const Backend&) = delete;
     Backend& operator=(Backend&&) = delete;
-    ~Backend() = default;
+
+    /**
+     * \brief Join the threads before the handler is destroyed.
+     */
+    ~Backend();
 
 private:
     Backend(std::unique_ptr<WindowsApi> windows, evget::Store& storage);

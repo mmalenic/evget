@@ -1,8 +1,10 @@
 #include "evgetwindows/backend.h"
 
 #include <boost/asio/any_io_executor.hpp>
+#include <spdlog/spdlog.h>
 #include <windows.h>
 
+#include <exception>
 #include <expected>
 #include <functional>
 #include <memory>
@@ -25,6 +27,14 @@ evgetwindows::Backend::Backend(std::unique_ptr<WindowsApi> windows, evget::Store
       next_event_(*this->windows_),
       handler_(storage, transformer_, next_event_) {
     tracker_.Init(query_->ToggleState(VK_CAPITAL), query_->ToggleState(VK_NUMLOCK), query_->ToggleState(VK_SCROLL));
+}
+
+evgetwindows::Backend::~Backend() {
+    try {
+        windows_->Stop();
+    } catch (const std::exception& e) {
+        spdlog::error("failed to stop the messages: {}", e.what());
+    }
 }
 
 evget::Result<std::unique_ptr<evgetwindows::Backend>> evgetwindows::Backend::Create(
