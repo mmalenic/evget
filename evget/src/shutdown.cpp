@@ -38,7 +38,9 @@ void evget::Shutdown::Request() noexcept {
             }
 
             try {
-                if (!scheduler_->IsStopped()) {
+                if (scheduler_->IsStopped()) {
+                    spdlog::error("scheduler already stopped, any buffered events were not flushed");
+                } else {
                     flush_();
                 }
             } catch (const std::exception& e) {

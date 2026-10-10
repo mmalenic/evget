@@ -208,7 +208,7 @@ TEST(DatabaseManagerTest, FlushDrainsBelowThresholdBuffer) {
     scheduler->Join();
 }
 
-TEST(DatabaseManagerTest, FlushReturnsWhenSchedulerStopped) {
+TEST(DatabaseManagerTest, FlushReturnsWhenStopped) {
     auto scheduler = std::make_shared<evget::Scheduler>();
     auto store = std::make_shared<StoreMock>();
 

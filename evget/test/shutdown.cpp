@@ -11,6 +11,7 @@
 #include <thread>
 #include <vector>
 
+#include "common/log.h"
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
 #include "evget/storage/database_manager.h"
@@ -19,6 +20,7 @@
 
 namespace {
 
+using test::CapturedLog;
 using test::StoreMock;
 
 } // namespace
@@ -102,12 +104,17 @@ TEST(ShutdownTest, SkipFlushWhenSchedulerStops) {
     evget::Shutdown shutdown{scheduler, [&flushes] { flushes.fetch_add(1); }};
     shutdown.SetSource([&sources] { sources.fetch_add(1); });
 
+    const CapturedLog log{};
     scheduler->Stop();
     shutdown.Request();
     scheduler->Join();
 
     ASSERT_EQ(sources.load(), 1);
     ASSERT_EQ(flushes.load(), 0);
+    ASSERT_EQ(
+        log.Lines(),
+        (std::vector<std::string>{"error scheduler already stopped, any buffered events were not flushed"})
+    );
 }
 
 TEST(ShutdownTest, NoSourceFlushAndStops) {
