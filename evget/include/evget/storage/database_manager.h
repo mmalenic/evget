@@ -49,10 +49,16 @@ public:
      */
     void AddStore(std::unique_ptr<Store> store) const;
 
+    /// \brief This is the default value for how long `Flush` waits.
+    static constexpr std::chrono::seconds kFlushTimeout{2};
+
     /**
-     * \brief Write any buffered events to storage, blocking until the write completes.
+     * \brief Write buffered events to storage, blocking until the write completes.
+     * \param timeout maximum time to wait
+     *
+     * \note This must not be called from a scheduler pool thread, because the write runs on the pool.
      */
-    void Flush();
+    void Flush(std::chrono::milliseconds timeout = kFlushTimeout);
 
 private:
     struct StoresHolder {

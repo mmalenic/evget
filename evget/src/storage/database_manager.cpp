@@ -81,7 +81,7 @@ void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) const {
     store_in_->stores.emplace_back(std::move(store));
 }
 
-void evget::DatabaseManager::Flush() {
+void evget::DatabaseManager::Flush(std::chrono::milliseconds timeout) {
     auto inner = data_->IntoInner();
     if (!inner.has_value() || inner->empty()) {
         return;
@@ -94,9 +94,13 @@ void evget::DatabaseManager::Flush() {
         out.MergeWith(std::move(data));
     }
 
-    // This never uses pool threads, so blocking on the future cannot deadlock.
     // NOLINTNEXTLINE(misc-include-cleaner)
     auto future = boost::asio::co_spawn(strand_, StoreCoroutine(out, Snapshot(*store_in_)), boost::asio::use_future);
+    // This must timeout because the pool can stop before the store runs.
+    if (future.wait_for(timeout) != std::future_status::ready) {
+        spdlog::error("flushing buffered events did not finish within {}", timeout);
+        return;
+    }
     auto result = future.get();
     if (!result.has_value()) {
         spdlog::error("Error flushing events: {}", result.error().message);

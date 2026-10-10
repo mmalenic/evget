@@ -208,4 +208,19 @@ TEST(DatabaseManagerTest, FlushDrainsBelowThresholdBuffer) {
     scheduler->Join();
 }
 
+TEST(DatabaseManagerTest, FlushReturnsWhenSchedulerStopped) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto store = std::make_shared<StoreMock>();
+
+    evget::DatabaseManager manager{scheduler, {store}, 100, std::chrono::seconds{600}};
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    scheduler->Stop();
+    scheduler->Join();
+    manager.Flush(std::chrono::milliseconds{10});
+
+    ASSERT_TRUE(store->Events().empty());
+}
+
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

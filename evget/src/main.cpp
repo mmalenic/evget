@@ -49,8 +49,8 @@ void StopSource(Handler& handler, Backend& backend, const evget::Scheduler& sche
     // This must go before so the loop treats the stop gracefully.
     handler.Stop();
     backend.RequestStop();
-    if (!scheduler.IsStopped() && !handler.WaitFinished(kDrainTimeout)) {
-        spdlog::error("input events where not removed within {}, dropping events", kDrainTimeout);
+    if (!scheduler.IsStopped() && !handler.WaitFinished(kChannelTimeout)) {
+        spdlog::error("input events where not removed within {}, dropping events", kChannelTimeout);
     }
 }
 #endif
