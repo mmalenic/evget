@@ -156,4 +156,26 @@ TEST(ShutdownTest, EmptyBufferStops) {
     ASSERT_TRUE(scheduler->IsStopped());
 }
 
+TEST(ShutdownTest, NonStandardExceptionsStop) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    std::atomic<int> sources{0};
+
+    evget::Shutdown shutdown{scheduler, [] {
+                                 // NOLINTNEXTLINE(hicpp-exception-baseclass)
+                                 throw 1;
+                             }};
+    shutdown.SetSource([&sources] {
+        sources.fetch_add(1);
+        // NOLINTNEXTLINE(hicpp-exception-baseclass)
+        throw 1;
+    });
+
+    shutdown.Request();
+    shutdown.Request();
+    scheduler->Join();
+
+    ASSERT_EQ(sources.load(), 1);
+    ASSERT_TRUE(scheduler->IsStopped());
+}
+
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

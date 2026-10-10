@@ -33,6 +33,8 @@ void evget::Shutdown::Request() noexcept {
                 }
             } catch (const std::exception& e) {
                 spdlog::error("stopping event source failed: {}", e.what());
+            } catch (...) {
+                spdlog::error("stopping event source failed with an unknown error");
             }
 
             try {
@@ -41,6 +43,8 @@ void evget::Shutdown::Request() noexcept {
                 }
             } catch (const std::exception& e) {
                 spdlog::error("flushing events failed: {}", e.what());
+            } catch (...) {
+                spdlog::error("flushing buffered events failed with an unknown error");
             }
 
             scheduler_->Stop();
