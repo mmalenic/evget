@@ -53,12 +53,19 @@ public:
     static constexpr std::chrono::seconds kFlushTimeout{2};
 
     /**
+     * \brief Write any buffered events to storage, blocking until the write completes or until `kFlushTimeout`.
+     *
+     * \note This must not be called from a scheduler pool thread, because the write runs on the pool.
+     */
+    void Flush();
+
+    /**
      * \brief Write buffered events to storage, blocking until the write completes.
      * \param timeout maximum time to wait
      *
      * \note This must not be called from a scheduler pool thread, because the write runs on the pool.
      */
-    void Flush(std::chrono::milliseconds timeout = kFlushTimeout);
+    void Flush(std::chrono::milliseconds timeout);
 
 private:
     struct StoresHolder {

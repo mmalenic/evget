@@ -81,6 +81,10 @@ void evget::DatabaseManager::AddStore(std::unique_ptr<Store> store) const {
     store_in_->stores.emplace_back(std::move(store));
 }
 
+void evget::DatabaseManager::Flush() {
+    Flush(kFlushTimeout);
+}
+
 void evget::DatabaseManager::Flush(std::chrono::milliseconds timeout) {
     auto inner = data_->IntoInner();
     if (!inner.has_value() || inner->empty()) {
