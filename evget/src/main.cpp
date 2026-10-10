@@ -156,6 +156,17 @@ int Run(int argc, char** argv) {
 
 #ifdef FEATURE_EVGETLIBINPUT
     std::unique_ptr<evgetlibinput::Backend> li_backend{};
+#endif
+#ifdef FEATURE_EVGETX11
+    std::unique_ptr<evgetx11::Backend> x11_backend{};
+#endif
+#ifdef FEATURE_EVGETWINDOWS
+    std::unique_ptr<evgetwindows::Backend> win_backend{};
+#endif
+    // Completes stop on every return path before the backends are destroyed.
+    const boost::scope::scope_exit stop_before_teardown{[&shutdown] { shutdown->Request(); }};
+
+#ifdef FEATURE_EVGETLIBINPUT
     if (event_source == evget::EventSource::kLibInput) {
         auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), merged, cli.Seat());
         if (!result.has_value()) {
@@ -170,7 +181,6 @@ int Run(int argc, char** argv) {
 #endif
 
 #ifdef FEATURE_EVGETX11
-    std::unique_ptr<evgetx11::Backend> x11_backend{};
     if (event_source == evget::EventSource::kX11) {
         auto result = evgetx11::Backend::Create(merged, cli.Display());
         if (!result.has_value()) {
@@ -190,7 +200,6 @@ int Run(int argc, char** argv) {
 #endif
 
 #ifdef FEATURE_EVGETWINDOWS
-    std::unique_ptr<evgetwindows::Backend> win_backend{};
     if (event_source == evget::EventSource::kWindows) {
         auto result = evgetwindows::Backend::Create(merged, scheduler->Executor(), [shutdown] { shutdown->Request(); });
         if (!result.has_value()) {
