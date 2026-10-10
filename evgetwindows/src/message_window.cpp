@@ -103,7 +103,7 @@ evget::Result<void> evgetwindows::MessageWindow::Start() {
 void evgetwindows::MessageWindow::Stop() {
     RequestStop();
 
-    if (thread_.joinable() && thread_.get_id() != std::this_thread::get_id()) {
+    if (thread_.joinable()) {
         thread_.join();
     }
 }

@@ -89,6 +89,8 @@ public:
 
     /**
      * \brief Request a stop and join the pump thread.
+     *
+     * \note This and the destructor must not run on the message thread, which should call `RequestStop` instead.
      */
     void Stop();
 
