@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "common/stream.h"
+#include "evget/error.h"
 #include "evget/event/button_action.h"
 #include "evget/event/data.h"
 #include "evget/event/device_type.h"
@@ -199,6 +200,21 @@ TEST(JsonStorageTest, InvalidUtf8Replaced) {
     });
     ASSERT_NE(title, fields.end());
     EXPECT_EQ((*title)["data"], "caf\xEF\xBF\xBD");
+}
+
+TEST(JsonStorageTest, WriteFailureReported) {
+    std::ostream stream{nullptr};
+    evget::JsonStorage storage{
+        std::unique_ptr<std::ostream, std::function<void(std::ostream*)>>{&stream, [](auto*) {}}
+    };
+
+    evget::Data data{};
+    data.AddEntry({evget::EntryType::kKey, {"value"}, {}});
+
+    auto result = storage.StoreEvent(std::move(data));
+
+    ASSERT_FALSE(result.has_value());
+    ASSERT_EQ(result.error().error_type, evget::ErrorType::kDatabaseError);
 }
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
