@@ -85,6 +85,7 @@ constexpr std::array<std::string_view, kBaseNFields> kBaseFields{
 constexpr auto kFocusWindowNameIndex = static_cast<std::size_t>(
     std::ranges::find(kBaseFields, std::string_view{"focus_window_name"}) - kBaseFields.begin()
 );
+static_assert(kFocusWindowNameIndex < kBaseNFields);
 
 /// \brief Field names for mouse move events.
 constexpr std::array<std::string_view, kMouseMoveNFields> kMouseMoveFields =
