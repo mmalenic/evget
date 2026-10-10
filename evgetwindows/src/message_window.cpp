@@ -107,6 +107,9 @@ void evgetwindows::MessageWindow::Stop() {
     if (thread_.joinable()) {
         thread_.join();
     }
+    if (close_thread_.joinable()) {
+        close_thread_.join();
+    }
 }
 
 void evgetwindows::MessageWindow::RequestStop() {
@@ -121,10 +124,16 @@ void evgetwindows::MessageWindow::RequestStop() {
 std::optional<LRESULT> evgetwindows::MessageWindow::HandleStopMessage(UINT message, WPARAM wparam) {
     switch (message) {
         case WM_CLOSE:
-            // Needed here because DefWindowProcW would later destroy the input while the process keeps running.
-            if (on_stop_) {
-                on_stop_();
+            if (on_stop_ && !close_thread_.joinable()) {
+                close_thread_ = std::jthread{[this] {
+                    try {
+                        on_stop_();
+                    } catch (const std::exception& e) {
+                        spdlog::error("stop on close failed: {}", e.what());
+                    }
+                }};
             }
+            // DefWindowProcW would destroy the raw input target while the process keeps running.
             return 0;
         case WM_QUERYENDSESSION:
             return TRUE;

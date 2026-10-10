@@ -8,7 +8,9 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cstddef>
+#include <future>
 #include <optional>
 #include <string>
 #include <variant>
@@ -208,11 +210,30 @@ TEST(MessageWindowTest, ToDeviceChangeEvent) {
 
 TEST(MessageWindowTest, CloseRunsStop) {
     boost::asio::thread_pool pool{1};
-    int calls = 0;
-    MessageWindow window{pool.get_executor(), [&calls] { ++calls; }};
+    std::atomic<int> calls{0};
+    MessageWindow window{pool.get_executor(), [&calls] { calls.fetch_add(1); }};
 
     EXPECT_EQ(window.HandleStopMessage(WM_CLOSE, 0), std::optional<LRESULT>{0});
-    EXPECT_EQ(calls, 1);
+    EXPECT_EQ(window.HandleStopMessage(WM_CLOSE, 0), std::optional<LRESULT>{0});
+    window.Stop();
+    EXPECT_EQ(calls.load(), 1);
+}
+
+TEST(MessageWindowTest, CloseStopsOffThread) {
+    boost::asio::thread_pool pool{1};
+    std::promise<void> release;
+    auto released = release.get_future().share();
+    std::promise<void> entered;
+    MessageWindow window{pool.get_executor(), [&entered, released] {
+                             entered.set_value();
+                             released.wait();
+                         }};
+
+    EXPECT_EQ(window.HandleStopMessage(WM_CLOSE, 0), std::optional<LRESULT>{0});
+    entered.get_future().wait();
+
+    release.set_value();
+    window.Stop();
 }
 
 TEST(MessageWindowTest, QueryEndSession) {

@@ -219,6 +219,7 @@ private:
     std::vector<std::byte> raw_buffer_;
     std::deque<RawEvent> device_changes_;
     std::jthread thread_;
+    std::jthread close_thread_;
     std::atomic<DWORD> thread_id_{0};
     std::atomic<std::size_t> in_flight_{0};
     std::atomic<bool> near_capacity_warned_{false};
