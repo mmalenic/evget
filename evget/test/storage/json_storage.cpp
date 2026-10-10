@@ -195,9 +195,8 @@ TEST(JsonStorageTest, InvalidUtf8Replaced) {
     ASSERT_TRUE(result.has_value());
     auto json = nlohmann::json::parse(stream.str());
     const auto& fields = json["entries"][0]["fields"];
-    const auto title = std::find_if(fields.begin(), fields.end(), [](const nlohmann::json& field) {
-        return field["name"] == "focus_window_name";
-    });
+    const auto title =
+        std::ranges::find_if(fields, [](const nlohmann::json& field) { return field["name"] == "focus_window_name"; });
     ASSERT_NE(title, fields.end());
     EXPECT_EQ((*title)["data"], "caf\xEF\xBF\xBD");
 }

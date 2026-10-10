@@ -30,12 +30,15 @@ boost::asio::awaitable<evget::Result<int>> test::QueuedNextEvent::Next() const {
     co_return *event;
 }
 
+// Boost.Asio's has a false position with use-after-free here.
 test::PendingNextEvent::PendingNextEvent(const boost::asio::any_io_executor& executor)
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDelete)
     : timer_{executor, boost::asio::steady_timer::time_point::max()} {}
 
 boost::asio::awaitable<evget::Result<int>> test::PendingNextEvent::Next() const {
     called_.store(true);
     called_.notify_all();
+    // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
     co_await timer_.async_wait(boost::asio::use_awaitable);
     co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "source destroyed"}};
 }
