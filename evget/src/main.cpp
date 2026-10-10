@@ -43,7 +43,6 @@
 namespace {
 constexpr std::chrono::seconds kChannelTimeout{2};
 
-#if defined(FEATURE_EVGETX11) || defined(FEATURE_EVGETLIBINPUT)
 template <typename Handler, typename Backend>
 void StopSource(Handler& handler, Backend& backend, const evget::Scheduler& scheduler) {
     // This must go before so the loop treats the stop gracefully.
@@ -53,7 +52,6 @@ void StopSource(Handler& handler, Backend& backend, const evget::Scheduler& sche
         spdlog::error("input events where not removed within {}, dropping events", kChannelTimeout);
     }
 }
-#endif
 
 #ifdef FEATURE_EVGETX11
 void StopX11Source(evgetx11::Backend& backend, const evget::Scheduler& scheduler) {
@@ -201,12 +199,7 @@ int Run(int argc, char** argv) {
         }
         win_backend = std::move(*result);
         shutdown->SetSource([&win_backend, scheduler] {
-            // This must go before the close so the loop treats the channel gracefully when it ends.
-            win_backend->Handler().Stop();
-            win_backend->RequestStop();
-            if (!scheduler->IsStopped() && !win_backend->Handler().WaitFinished(kChannelTimeout)) {
-                spdlog::error("input channel did not stop within {}, dropping events", kChannelTimeout);
-            }
+            StopSource(win_backend->Handler(), *win_backend, *scheduler);
         });
         scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
         capturing = true;
