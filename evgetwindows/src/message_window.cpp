@@ -5,7 +5,6 @@
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/scope/scope_exit.hpp>
-#include <boost/system/error_code.hpp>
 #include <hidusage.h>
 #include <spdlog/spdlog.h>
 
@@ -253,6 +252,7 @@ bool evgetwindows::MessageWindow::TrySend(const RawEvent& event) {
 
 boost::asio::awaitable<std::tuple<boost::system::error_code, evgetwindows::RawEvent>>
 evgetwindows::MessageWindow::Receive() {
+    // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
     auto received = co_await channel_.async_receive(boost::asio::as_tuple(boost::asio::use_awaitable));
     if (!std::get<0>(received) && in_flight_.fetch_sub(1, std::memory_order_relaxed) - 1 < kChannelNearCapacity / 2) {
         near_capacity_warned_.store(false, std::memory_order_relaxed);
