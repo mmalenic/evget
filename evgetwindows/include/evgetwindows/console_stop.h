@@ -41,6 +41,9 @@ public:
      * \return `TRUE` if the event was handled, `FALSE` to pass it to the next handler
      */
     static BOOL WINAPI Handle(DWORD ctrl_type);
+
+private:
+    bool registered_{false};
 };
 
 } // namespace evgetwindows

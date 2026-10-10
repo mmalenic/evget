@@ -22,18 +22,30 @@ StopState& State() {
 } // namespace
 
 evgetwindows::ConsoleStop::ConsoleStop(std::function<void()> on_stop) {
+    auto& state = State();
     {
-        auto& state = State();
         const std::scoped_lock lock{state.mutex};
+        if (state.on_stop) {
+            spdlog::error("console stop is already registered");
+            return;
+        }
         state.on_stop = std::move(on_stop);
     }
 
     if (SetConsoleCtrlHandler(&ConsoleStop::Handle, TRUE) == FALSE) {
         spdlog::error("SetConsoleCtrlHandler failed: {}", GetLastError());
+        const std::scoped_lock lock{state.mutex};
+        state.on_stop = nullptr;
+        return;
     }
+    registered_ = true;
 }
 
 evgetwindows::ConsoleStop::~ConsoleStop() {
+    if (!registered_) {
+        return;
+    }
+
     if (SetConsoleCtrlHandler(&ConsoleStop::Handle, FALSE) == FALSE) {
         spdlog::error("SetConsoleCtrlHandler failed: {}", GetLastError());
     }

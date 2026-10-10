@@ -100,3 +100,17 @@ TEST(ConsoleStopTest, DestructionWaitsForStop) {
 
     EXPECT_TRUE(finished_before_destroyed);
 }
+
+TEST(ConsoleStopTest, SecondInstanceKeepsFirst) {
+    int first = 0;
+    int second = 0;
+    const ConsoleStop console_stop{[&first] { ++first; }};
+    {
+        const ConsoleStop ignored{[&second] { ++second; }};
+        EXPECT_EQ(ConsoleStop::Handle(CTRL_BREAK_EVENT), TRUE);
+    }
+
+    EXPECT_EQ(ConsoleStop::Handle(CTRL_BREAK_EVENT), TRUE);
+    EXPECT_EQ(first, 2);
+    EXPECT_EQ(second, 0);
+}
