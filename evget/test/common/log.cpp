@@ -23,6 +23,8 @@ test::CapturedLog::CapturedLog() : previous_{spdlog::default_logger()} {
 }
 
 test::CapturedLog::~CapturedLog() {
+    // The registry keeps the logger by name_.
+    spdlog::drop(spdlog::default_logger()->name());
     spdlog::set_default_logger(previous_);
 }
 

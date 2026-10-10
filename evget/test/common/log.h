@@ -21,7 +21,7 @@ public:
     CapturedLog();
 
     /**
-     * \brief Restore the previous default logger.
+     * \brief Drop the logger and restore the previous default logger.
      */
     ~CapturedLog();
 
