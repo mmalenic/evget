@@ -119,7 +119,7 @@ int Run(int argc, char** argv) {
     boost::asio::signal_set signals{signal_context, SIGINT, SIGTERM};
 
 #ifndef _WIN32
-    // Asio's handler replaces the SIG_IGN so SIGHUP must be added back in.
+    // Adding SIGHUP would replace an inherited SIG_IGN, so only add it when not ignored.
     struct sigaction hangup{};
     if (sigaction(SIGHUP, nullptr, &hangup) == 0 && hangup.sa_handler != SIG_IGN) {
         signals.add(SIGHUP);
