@@ -124,8 +124,7 @@ evget::Result<void> evget::DatabaseStorage::StoreEvent(Data events) {
         .and_then([this, &events] {
             auto inserted = InsertEntries(events);
             if (!inserted.has_value()) {
-                static_cast<void>(connection_->Rollback());
-                return inserted;
+                return connection_->Rollback().and_then([&inserted] { return inserted; });
             }
 
             return connection_->Commit().transform_error([](const Error<ErrorType>& error) {
