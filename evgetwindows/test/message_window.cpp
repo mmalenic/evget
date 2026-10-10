@@ -9,10 +9,13 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <future>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -355,6 +358,45 @@ TEST(MessageWindowTest, CapacityWarningBacklog) {
         ASSERT_EQ(window.Enqueue(mouse, sizeof(RAWINPUT)), EnqueueOutcome::kSent);
     }
     EXPECT_EQ(warnings(), 2);
+}
+
+TEST(MessageWindowTest, PostedStopMessagesStop) {
+    constexpr std::chrono::seconds kStopTimeout{5};
+    for (const auto& [message, wparam] : {std::pair<UINT, WPARAM>{WM_CLOSE, 0}, {WM_ENDSESSION, TRUE}}) {
+        boost::asio::thread_pool pool{1};
+        std::promise<void> stopped;
+        MessageWindow* target = nullptr;
+        auto window = std::make_unique<MessageWindow>(pool.get_executor(), [&target, &stopped] {
+            target->RequestStop();
+            stopped.set_value();
+        });
+        target = window.get();
+        ASSERT_TRUE(window->Start().has_value());
+
+        std::pair<const MessageWindow*, HWND> found{window.get(), nullptr};
+        EnumWindows(
+            [](HWND candidate, LPARAM context) -> BOOL {
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+                auto* search = reinterpret_cast<std::pair<const MessageWindow*, HWND>*>(context);
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+                if (reinterpret_cast<const MessageWindow*>(GetWindowLongPtrW(candidate, GWLP_USERDATA)) ==
+                    search->first) {
+                    search->second = candidate;
+                    return FALSE;
+                }
+                return TRUE;
+            },
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+            reinterpret_cast<LPARAM>(&found)
+        );
+        ASSERT_NE(found.second, nullptr);
+
+        ASSERT_NE(PostMessageW(found.second, message, wparam, 0), FALSE);
+        ASSERT_EQ(stopped.get_future().wait_for(kStopTimeout), std::future_status::ready);
+        EXPECT_FALSE(window->Channel().is_open());
+
+        window.reset();
+    }
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,bugprone-unchecked-optional-access,clang-analyzer-cplusplus.NewDelete)
