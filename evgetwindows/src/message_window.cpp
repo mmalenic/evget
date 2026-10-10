@@ -4,6 +4,7 @@
 #include <boost/asio/as_tuple.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/use_awaitable.hpp>
+#include <boost/scope/scope_exit.hpp>
 #include <boost/system/error_code.hpp>
 #include <hidusage.h>
 #include <spdlog/spdlog.h>
@@ -389,6 +390,8 @@ evgetwindows::MessageWindow::RawInput::~RawInput() {
 
 void evgetwindows::MessageWindow::RunPump(std::promise<evget::Result<void>> registration) {
     thread_id_.store(GetCurrentThreadId(), std::memory_order_release);
+    // A thread id is reused after exit, so a later stop must not go to it.
+    const boost::scope::scope_exit clear_thread_id{[this] { thread_id_.store(0, std::memory_order_release); }};
 
     WNDCLASSEXW window_class{};
     window_class.cbSize = sizeof(window_class);
