@@ -17,18 +17,23 @@
 namespace evgetx11 {
 /**
  * \brief Represents an X11 input event with timestamp and event data.
+ *
+ * A moved-from event may only be assigned to or destroyed.
  */
 class InputEvent {
 public:
     /**
      * \brief Get the timestamp of when the event occurred.
+     *
+     * Must not be called on a moved-from event.
+     *
      * \return reference to the event timestamp
      */
     [[nodiscard]] const evget::TimestampType& GetTimestamp() const;
 
     /**
      * \brief Check if `ViewData` and `GetEventType` are safe to call.
-     * \return true if event data is available, false otherwise
+     * \return true if event data is available, false otherwise, including for a moved-from event
      */
     [[nodiscard]] bool HasData() const;
 
