@@ -14,6 +14,8 @@
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "evget/device_id.h"
@@ -37,6 +39,9 @@ namespace evgetlibinput {
 /// \brief Event source for the libinput backend.
 constexpr std::string_view kEventSourceName{"libinput"};
 
+/// \brief Device name for input from virtual devices, such as uinput devices.
+constexpr std::string_view kInjectedDeviceName{"libinput-injected"};
+
 class EventTransformer : public evget::EventTransformer<evget::InputEvent<LibInputEvent>> {
 public:
     /**
@@ -53,7 +58,7 @@ private:
     struct EventContext {
         evget::TimestampType timestamp;
         evget::DeviceType device_type;
-        const char* device_name;
+        std::string_view device_name;
         std::reference_wrapper<const std::string> device_uuid;
         std::string system_event;
     };
@@ -63,6 +68,7 @@ private:
     ScreenDimensions dimensions_;
 
     evget::DeviceId<libinput_device*> device_ids_;
+    evget::DeviceId<std::string> named_device_ids_;
 
     std::unordered_map<std::string, double> previous_absolute_x_;
     std::unordered_map<std::string, double> previous_absolute_y_;
@@ -107,7 +113,7 @@ T& EventTransformer::SetBaseFields(T& builder, const EventContext& ctx, std::uin
     builder.Timestamp(ctx.timestamp)
         .Interval(device_intervals_[ctx.device_uuid].Interval(event_time))
         .Device(ctx.device_type)
-        .DeviceName(ctx.device_name)
+        .DeviceName(std::string{ctx.device_name})
         .DeviceId(ctx.device_uuid)
         .SystemEvent(ctx.system_event)
         .EventSource(std::string{kEventSourceName});

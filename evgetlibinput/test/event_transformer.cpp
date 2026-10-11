@@ -7,10 +7,13 @@
 #include <libinput.h>
 #include <linux/input-event-codes.h>
 
+#include <array>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "common/test_helpers.h"
+#include "evget/device_id.h"
 #include "evget/event/entry.h"
 #include "evget/event/schema.h"
 #include "evget/input_event.h"
@@ -40,6 +43,7 @@ using test::kDimensions;
 using test::MakeUsXkb;
 using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Ref;
 using ::testing::Return;
 
 void NoopDestroyLibInputEvent(libinput_event* /*event*/) noexcept {} // NOLINT(readability/casting)
@@ -617,6 +621,79 @@ TEST(EvgetLibInputTransformer, DeviceTypeUnknownWhenNoCapabilities) {
 
     ASSERT_EQ(entries.size(), 1);
     ASSERT_EQ(entries.at(0).Data().at(14), "5");
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(EvgetLibInputTransformer, VirtualDevicesAreRecordedAsInjected) {
+    NiceMock<test::LibInputApiMock> libinput_mock{};
+    auto xkb = MakeUsXkb();
+    libinput_device keyboard{};
+    libinput_device mouse{};
+
+    SetCommonMocks(libinput_mock, LIBINPUT_EVENT_KEYBOARD_KEY);
+    EXPECT_CALL(libinput_mock, GetDevice(_)).WillOnce(Return(&keyboard)).WillRepeatedly(Return(&mouse));
+    EXPECT_CALL(libinput_mock, GetEventType(_))
+        .WillOnce(Return(LIBINPUT_EVENT_KEYBOARD_KEY))
+        .WillRepeatedly(Return(LIBINPUT_EVENT_POINTER_MOTION));
+    EXPECT_CALL(libinput_mock, GetDeviceSyspath(Ref(keyboard)))
+        .WillRepeatedly(Return("/sys/devices/virtual/input/input23/event17"));
+    EXPECT_CALL(libinput_mock, GetDeviceSyspath(Ref(mouse)))
+        .WillRepeatedly(Return("/sys/devices/virtual/input/input24/event18"));
+    EXPECT_CALL(libinput_mock, GetKeyboardEvent(_)).WillRepeatedly(Return(&g_keyboard_event));
+    EXPECT_CALL(libinput_mock, GetKeyboardTimeMicroseconds(_)).WillRepeatedly(Return(1000));
+    EXPECT_CALL(libinput_mock, GetKeyboardKey(_)).WillRepeatedly(Return(KEY_A));
+    EXPECT_CALL(libinput_mock, GetKeyboardKeyState(_)).WillRepeatedly(Return(LIBINPUT_KEY_STATE_PRESSED));
+    EXPECT_CALL(libinput_mock, GetPointerEvent(_)).WillRepeatedly(Return(&g_pointer_event));
+    EXPECT_CALL(libinput_mock, GetPointerTimeMicroseconds(_)).WillRepeatedly(Return(2000));
+
+    evgetlibinput::EventTransformer transformer{libinput_mock, xkb, kDimensions};
+    auto key = transformer.TransformEvent(MakeInputEvent());
+    auto move = transformer.TransformEvent(MakeInputEvent());
+
+    evget::DeviceId<std::string> device_ids{};
+    const auto& injected_uuid = device_ids.UuidDeterministic(std::string{"evget:libinput:device:libinput-injected"});
+
+    const auto& key_entry = key.Entries().at(0);
+    ASSERT_EQ(key_entry.Type(), evget::EntryType::kKey);
+    ASSERT_EQ(key_entry.Data().at(4), "libinput-injected");
+    ASSERT_EQ(key_entry.Data().at(11), injected_uuid);
+    ASSERT_EQ(key_entry.Data().at(14), "1");
+
+    const auto& move_entry = move.Entries().at(0);
+    ASSERT_EQ(move_entry.Type(), evget::EntryType::kMouseMove);
+    ASSERT_EQ(move_entry.Data().at(4), "libinput-injected");
+    ASSERT_EQ(move_entry.Data().at(11), injected_uuid);
+    ASSERT_EQ(move_entry.Data().at(14), "0");
+}
+
+TEST(EvgetLibInputTransformer, HardwareDevicesKeepName) {
+    const std::array<std::optional<std::string>, 3> syspaths{
+        "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/0003:046D:C52B.0001/input/input5/event5",
+        // BlueZ relays Bluetooth keyboards and mice through uhid.
+        "/sys/devices/virtual/misc/uhid/0005:046D:B023.0001/input/input24/event18",
+        std::nullopt,
+    };
+    evget::DeviceId<std::string> device_ids{};
+    const auto& injected_uuid = device_ids.UuidDeterministic(std::string{"evget:libinput:device:libinput-injected"});
+
+    for (const auto& syspath : syspaths) {
+        SCOPED_TRACE(syspath.value_or("no udev device"));
+        NiceMock<test::LibInputApiMock> libinput_mock{};
+        auto xkb = MakeUsXkb();
+
+        SetCommonMocks(libinput_mock, LIBINPUT_EVENT_POINTER_MOTION);
+        EXPECT_CALL(libinput_mock, GetDeviceSyspath(_)).WillRepeatedly(Return(syspath));
+        EXPECT_CALL(libinput_mock, GetPointerEvent(_)).WillRepeatedly(Return(&g_pointer_event));
+        EXPECT_CALL(libinput_mock, GetPointerTimeMicroseconds(_)).WillRepeatedly(Return(1000));
+
+        evgetlibinput::EventTransformer transformer{libinput_mock, xkb, kDimensions};
+        auto data = transformer.TransformEvent(MakeInputEvent());
+        const auto& entry = data.Entries().at(0);
+
+        ASSERT_EQ(entry.Data().at(4), kDeviceName);
+        ASSERT_TRUE(entry.Data().at(11).has_value());
+        ASSERT_NE(entry.Data().at(11), injected_uuid);
+    }
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

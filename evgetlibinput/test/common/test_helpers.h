@@ -7,6 +7,8 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <cstdint>
+#include <optional>
+#include <string>
 
 #include "evget/error.h"
 #include "evgetlibinput/drm.h"
@@ -63,6 +65,7 @@ public:
         (override)
     );
     MOCK_METHOD(const char*, GetDeviceName, (libinput_device & device), (override));
+    MOCK_METHOD(std::optional<std::string>, GetDeviceSyspath, (libinput_device & device), (override));
     MOCK_METHOD(libinput_event_tablet_tool*, GetTabletToolEvent, (libinput_event & event), (override));
     MOCK_METHOD(std::uint64_t, GetTabletToolTimeMicroseconds, (libinput_event_tablet_tool & event), (override));
     MOCK_METHOD(double, GetTabletToolDx, (libinput_event_tablet_tool & event), (override));

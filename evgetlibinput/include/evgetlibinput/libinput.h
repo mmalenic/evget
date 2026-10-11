@@ -183,6 +183,16 @@ public:
     virtual const char* GetDeviceName(libinput_device& device) = 0;
 
     /**
+     * \brief Get the sysfs path of the device's event node.
+     *
+     * This function calls `libinput_device_get_udev_device` and `udev_device_get_syspath`.
+     *
+     * \param device device to get the path of
+     * \return the sysfs path, or `nullopt` if the device has no udev device
+     */
+    virtual std::optional<std::string> GetDeviceSyspath(libinput_device& device) = 0;
+
+    /**
      * \brief Get a tablet tool event from the libinput event.
      * \param event libinput event
      * \return tablet tool event
@@ -388,6 +398,8 @@ public:
     double GetPointerDy(libinput_event_pointer& event) override;
 
     const char* GetDeviceName(libinput_device& device) override;
+
+    std::optional<std::string> GetDeviceSyspath(libinput_device& device) override;
 
     double GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) override;
 

@@ -150,6 +150,22 @@ const char* evgetlibinput::LibInput::GetDeviceName(libinput_device& device) {
     return libinput_device_get_name(&device);
 }
 
+std::optional<std::string> evgetlibinput::LibInput::GetDeviceSyspath(libinput_device& device) {
+    const std::unique_ptr<udev_device, decltype(&udev_device_unref)> event_node{
+        libinput_device_get_udev_device(&device),
+        udev_device_unref
+    };
+    if (event_node == nullptr) {
+        return std::nullopt;
+    }
+
+    const char* syspath = udev_device_get_syspath(event_node.get());
+    if (syspath == nullptr) {
+        return std::nullopt;
+    }
+    return std::string{syspath};
+}
+
 double evgetlibinput::LibInput::GetPointerAbsoluteX(libinput_event_pointer& event, std::uint32_t width) {
     return libinput_event_pointer_get_absolute_x_transformed(&event, width);
 }

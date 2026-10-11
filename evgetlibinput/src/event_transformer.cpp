@@ -4,6 +4,9 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <cstdint>
+#include <format>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "evget/event/button_action.h"
@@ -20,6 +23,8 @@
 #include "evgetlibinput/xkbcommon.h"
 
 namespace {
+
+constexpr std::string_view kVirtualInputSyspath{"/sys/devices/virtual/input/"};
 
 evget::ButtonAction GetButtonAction(libinput_button_state state) {
     if (state == LIBINPUT_BUTTON_STATE_PRESSED) {
@@ -69,12 +74,17 @@ evget::Data evgetlibinput::EventTransformer::TransformEvent(evget::InputEvent<Li
         return {};
     }
 
-    const auto& device_uuid = device_ids_.Uuid(device);
+    const auto syspath = libinput_api_.get().GetDeviceSyspath(*device);
+    const bool injected = syspath.has_value() && syspath->starts_with(kVirtualInputSyspath);
+    const auto& device_uuid = injected
+        ? named_device_ids_.UuidDeterministic(std::format("evget:libinput:device:{}", kInjectedDeviceName))
+        : device_ids_.Uuid(device);
+
     auto event_type = this->libinput_api_.get().GetEventType(*inner_event);
     auto ctx = EventContext{
         .timestamp = event.GetTimestamp(),
         .device_type = this->GetDeviceType(inner_event, event_type),
-        .device_name = libinput_api_.get().GetDeviceName(*device),
+        .device_name = injected ? kInjectedDeviceName : std::string_view{libinput_api_.get().GetDeviceName(*device)},
         .device_uuid = device_uuid,
         .system_event = {},
     };
