@@ -11,6 +11,7 @@
 #include <evget/event/device_type.h>
 #include <evget/event/entry.h>
 #include <evget/event/schema.h>
+#include <evget/event_transformer.h>
 #include <evgetx11/input_event.h>
 
 #include <algorithm>
@@ -222,6 +223,20 @@ TEST(EventTransformer, RefreshDevicesNoWarn) {
 
     ASSERT_NE(transformer, nullptr);
     ASSERT_FALSE(std::ranges::any_of(log.Lines(), [](const std::string& line) { return line.starts_with("warning"); }));
+}
+
+TEST(EventTransformer, RefreshDevicesSkipsRemoved) {
+    test::X11ApiMock x_wrapper_mock{};
+    std::string pointer = "pointer";
+    std::string removed = "removed";
+    std::string device_type = XI_MOUSE;
+    std::array devices{test::CreateXDeviceInfo(1, pointer), test::CreateXDeviceInfo(2, removed)};
+    std::array xi_devices{test::CreateXiDeviceInfo(1, pointer)};
+    test::SetXWrapperDeviceMocks(x_wrapper_mock, devices, xi_devices, device_type);
+
+    std::unique_ptr<evget::EventTransformer<evgetx11::InputEvent>> transformer{};
+    ASSERT_NO_THROW(transformer = std::move(evgetx11::EventTransformerBuilder{}.Touch()).Build(x_wrapper_mock));
+    ASSERT_NE(transformer, nullptr);
 }
 
 TEST(EventTransformer, InjectedDeviceType) {

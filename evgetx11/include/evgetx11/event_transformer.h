@@ -179,7 +179,12 @@ void EventTransformer<Switches...>::RefreshDevices() {
             this->pointer_id_ = device_id;
         }
 
-        const auto& xi2_device = xi2_devices.at(device_id).get();
+        // The hierarchy event refreshes missing devices again.
+        const auto xi2 = xi2_devices.find(device_id);
+        if (xi2 == xi2_devices.end()) {
+            continue;
+        }
+        const auto& xi2_device = xi2->second.get();
         if (xi2_device.enabled == False) {
             continue;
         }
