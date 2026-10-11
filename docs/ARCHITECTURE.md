@@ -74,6 +74,11 @@ from `XIRawEvent` and functions like `XIQueryPointer`. The x and y position of t
 names, ids and scroll amounts are sourced from the raw event. The `screen` is the XRandR monitor that contains the
 pointer.
 
+Button ids and names follow the physical button, like Windows Raw Input, and not the user's button map, so a
+left-handed mouse still stores its physical left button as `Button Left`.
+
+If the connection to the X server is lost, evget writes the events it has buffered and then exits with status 1.
+
 ## Windows touch behaviour
 
 For windows, touch events are source from the Raw Input HID report. Like the rest of evget, pen inputs are not captured.
@@ -133,17 +138,24 @@ keeps evget running after the terminal closes. A systemd user unit is another op
 
 ### Stopping
 
-A stop request that evget can catch writes every pending event before evget exits, including events still queued
-between the input thread and storage:
+A stop request that evget can catch writes the pending events before evget exits, including events still queued
+between the input source and storage:
 
 - Linux: SIGINT (Ctrl+C), SIGTERM and SIGHUP. A `nohup` run ignores SIGHUP, as usual.
 - Windows: Ctrl+C, Ctrl+Break, closing the console window, `taskkill /PID` or `taskkill /IM` without `/F`, and logging
   off or shutting down.
 
+A stop first drains the queued input for at most 2 seconds, and then writes the pending events. On Linux, the backends
+return only the input that was already queued when the stop arrived, so input that keeps arriving cannot hold the stop
+open. Events still queued after 2 seconds are dropped, and evget logs an error.
+
 Windows never raises SIGTERM. A plain `taskkill` sends a close message to evget's hidden capture window instead. When
 the console window is closed, Windows ends evget as soon as it has written its events, so evget exits with `0xC000013A`
-(`STATUS_CONTROL_C_EXIT`) rather than 0. The queue is drained for at most 2 seconds, which keeps the write inside the
-time Windows allows at console close and logoff; events still queued after that are dropped, and evget logs an error.
+(`STATUS_CONTROL_C_EXIT`) rather than 0. After the drain, evget waits at most 2 seconds for the write, so the whole stop
+fits inside the roughly 5 seconds Windows allows at console close and logoff. A write still running after that can be
+cut short when Windows ends evget, and evget logs an error.
+
+If the input source fails, evget writes the pending events the same way and then exits with status 1.
 
 `taskkill` stops an elevated evget only when it is run from an elevated shell. From an unelevated shell, it fails with
 `ERROR: The process with PID <pid> could not be terminated.` and evget keeps running.
