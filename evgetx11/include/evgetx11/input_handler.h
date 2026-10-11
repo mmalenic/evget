@@ -31,8 +31,9 @@ public:
     /**
      * \brief Construct an `InputHandler` with an X11 API wrapper.
      * \param x_wrapper reference to the X11 API wrapper
+     * \param stop_event the eventfd `RequestStop` signals
      */
-    explicit InputHandler(X11Api& x_wrapper);
+    InputHandler(X11Api& x_wrapper, boost::scope::unique_fd stop_event);
 
     /**
      * \brief Get the next input event from the X11 system waiting until it arrives.

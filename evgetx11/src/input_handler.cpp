@@ -29,7 +29,8 @@
 #include "evgetx11/input_event.h"
 #include "evgetx11/x11.h"
 
-evgetx11::InputHandler::InputHandler(X11Api& x_wrapper) : x_wrapper_{x_wrapper}, stop_event_{eventfd(0, EFD_CLOEXEC)} {}
+evgetx11::InputHandler::InputHandler(X11Api& x_wrapper, boost::scope::unique_fd stop_event)
+    : x_wrapper_{x_wrapper}, stop_event_{std::move(stop_event)} {}
 
 namespace {
 
@@ -191,8 +192,13 @@ boost::asio::awaitable<evget::Result<void>> evgetx11::InputHandler::WaitForInput
 }
 
 evget::Result<std::unique_ptr<evgetx11::InputHandler>> evgetx11::InputHandlerBuilder::Build(X11Api& x_wrapper) {
-    return AnnounceVersion(x_wrapper).transform([&x_wrapper] {
+    boost::scope::unique_fd stop_event{eventfd(0, EFD_CLOEXEC)};
+    if (!stop_event) {
+        return evget::Err{HandlerError("unable to create the X11 stop event", std::generic_category().message(errno))};
+    }
+
+    return AnnounceVersion(x_wrapper).transform([&x_wrapper, &stop_event] {
         SetMask(x_wrapper);
-        return std::make_unique<InputHandler>(x_wrapper);
+        return std::make_unique<InputHandler>(x_wrapper, std::move(stop_event));
     });
 }

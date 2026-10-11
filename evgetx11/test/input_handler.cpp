@@ -5,6 +5,8 @@
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
 #include <boost/asio/thread_pool.hpp>
+#include <boost/scope/unique_fd.hpp>
+#include <sys/eventfd.h>
 
 #include <array>
 #include <chrono>
@@ -31,7 +33,7 @@ TEST(InputHandlerTest, RequestStopWaitingNext) {
     EXPECT_CALL(x_wrapper_mock, Queued).WillOnce(testing::Return(0));
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).WillOnce(testing::Return(connection.ReadEnd()));
     EXPECT_CALL(x_wrapper_mock, NextEvent).Times(0);
-    evgetx11::InputHandler handler{x_wrapper_mock};
+    evgetx11::InputHandler handler{x_wrapper_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto next = test::SpawnNext(handler, pool);
     ASSERT_EQ(next.wait_for(std::chrono::milliseconds{100}), std::future_status::timeout);
@@ -55,7 +57,7 @@ TEST(InputHandlerTest, NextWaitsForConnection) {
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).WillOnce(testing::Return(connection.ReadEnd()));
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(raw)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
-    const evgetx11::InputHandler handler{x_wrapper_mock};
+    const evgetx11::InputHandler handler{x_wrapper_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto next = test::SpawnNext(handler, pool);
     ASSERT_EQ(next.wait_for(std::chrono::milliseconds{100}), std::future_status::timeout);
@@ -80,7 +82,7 @@ TEST(InputHandlerTest, RequestStopEvents) {
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).Times(0);
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(raw)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
-    evgetx11::InputHandler handler{x_wrapper_mock};
+    evgetx11::InputHandler handler{x_wrapper_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     handler.RequestStop();
 
@@ -109,7 +111,7 @@ TEST(InputHandlerTest, RequestStopReturns) {
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).Times(0);
     EXPECT_CALL(x_wrapper_mock, NextEvent).Times(3).WillRepeatedly(testing::Return(test::CreateXEvent(raw)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
-    evgetx11::InputHandler handler{x_wrapper_mock};
+    evgetx11::InputHandler handler{x_wrapper_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto before_stop = test::SpawnNext(handler, pool);
     ASSERT_EQ(before_stop.wait_for(std::chrono::seconds{5}), std::future_status::ready);
