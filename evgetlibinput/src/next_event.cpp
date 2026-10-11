@@ -53,8 +53,8 @@ Watch(const boost::asio::any_io_executor& executor, int descriptor) {
 }
 } // namespace
 
-evgetlibinput::NextEvent::NextEvent(LibInputApi& libinput_api)
-    : libinput_api_{libinput_api}, stop_event_{eventfd(0, EFD_CLOEXEC)} {}
+evgetlibinput::NextEvent::NextEvent(LibInputApi& libinput_api, boost::scope::unique_fd stop_event)
+    : libinput_api_{libinput_api}, stop_event_{std::move(stop_event)} {}
 
 boost::asio::awaitable<evget::Result<evget::InputEvent<evgetlibinput::LibInputEvent>>>
 evgetlibinput::NextEvent::Next() const {

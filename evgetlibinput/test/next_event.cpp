@@ -4,7 +4,9 @@
 #include <gtest/gtest.h>
 
 #include <boost/asio/thread_pool.hpp>
+#include <boost/scope/unique_fd.hpp>
 #include <libinput.h>
+#include <sys/eventfd.h>
 
 #include <chrono>
 #include <future>
@@ -25,7 +27,7 @@ TEST(LibInputNextEventTest, RequestStopNext) {
     EXPECT_CALL(libinput_mock, HasQueuedEvent).WillRepeatedly(testing::Return(false));
     EXPECT_CALL(libinput_mock, GetFd).WillOnce(testing::Return(input.ReadEnd()));
     EXPECT_CALL(libinput_mock, GetEvent).Times(0);
-    evgetlibinput::NextEvent next_event{libinput_mock};
+    evgetlibinput::NextEvent next_event{libinput_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto next = test::SpawnNext(next_event, pool);
     ASSERT_EQ(next.wait_for(std::chrono::milliseconds{100}), std::future_status::timeout);
@@ -49,7 +51,7 @@ TEST(LibInputNextEventTest, NextWaitForInput) {
     EXPECT_CALL(libinput_mock, GetEvent).WillOnce([] {
         return evget::Result<evgetlibinput::LibInputEvent>{{nullptr, libinput_event_destroy}};
     });
-    const evgetlibinput::NextEvent next_event{libinput_mock};
+    const evgetlibinput::NextEvent next_event{libinput_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto next = test::SpawnNext(next_event, pool);
     ASSERT_EQ(next.wait_for(std::chrono::milliseconds{100}), std::future_status::timeout);
@@ -70,7 +72,7 @@ TEST(LibInputNextEventTest, RequestStopReturnsEvents) {
     EXPECT_CALL(libinput_mock, GetEvent).WillOnce([] {
         return evget::Result<evgetlibinput::LibInputEvent>{{nullptr, libinput_event_destroy}};
     });
-    evgetlibinput::NextEvent next_event{libinput_mock};
+    evgetlibinput::NextEvent next_event{libinput_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     next_event.RequestStop();
 
@@ -98,7 +100,7 @@ TEST(LibInputNextEventTest, RequestStopNoNewInput) {
     EXPECT_CALL(libinput_mock, GetEvent).Times(3).WillRepeatedly([] {
         return evget::Result<evgetlibinput::LibInputEvent>{{nullptr, libinput_event_destroy}};
     });
-    evgetlibinput::NextEvent next_event{libinput_mock};
+    evgetlibinput::NextEvent next_event{libinput_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto before_stop = test::SpawnNext(next_event, pool);
     ASSERT_EQ(before_stop.wait_for(std::chrono::seconds{5}), std::future_status::ready);
@@ -131,7 +133,7 @@ TEST(LibInputNextEventTest, DispatchFailure) {
         );
     EXPECT_CALL(libinput_mock, GetFd).Times(0);
     EXPECT_CALL(libinput_mock, GetEvent).Times(0);
-    const evgetlibinput::NextEvent next_event{libinput_mock};
+    const evgetlibinput::NextEvent next_event{libinput_mock, boost::scope::unique_fd{eventfd(0, EFD_CLOEXEC)}};
 
     auto next = test::SpawnNext(next_event, pool);
     ASSERT_EQ(next.wait_for(std::chrono::seconds{5}), std::future_status::ready);

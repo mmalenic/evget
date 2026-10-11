@@ -6,6 +6,8 @@
 #ifndef EVGETLIBINPUT_BACKEND_H
 #define EVGETLIBINPUT_BACKEND_H
 
+#include <boost/scope/unique_fd.hpp>
+
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -60,7 +62,13 @@ public:
     ~Backend() = default;
 
 private:
-    Backend(std::unique_ptr<LibInputApi> libinput, XkbCommon xkb, ScreenDimensions dimensions, evget::Store& storage);
+    Backend(
+        std::unique_ptr<LibInputApi> libinput,
+        XkbCommon xkb,
+        ScreenDimensions dimensions,
+        boost::scope::unique_fd stop_event,
+        evget::Store& storage
+    );
 
     std::unique_ptr<LibInputApi> libinput_;
     XkbCommon xkb_;

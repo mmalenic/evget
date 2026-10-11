@@ -1,10 +1,16 @@
 #include "evgetlibinput/backend.h"
 
+#include <boost/scope/unique_fd.hpp>
+#include <sys/eventfd.h>
+
+#include <cerrno>
 #include <cstdint>
 #include <expected>
+#include <format>
 #include <memory>
 #include <optional>
 #include <string>
+#include <system_error>
 #include <utility>
 
 #include "evget/error.h"
@@ -19,12 +25,13 @@ evgetlibinput::Backend::Backend(
     std::unique_ptr<LibInputApi> libinput,
     XkbCommon xkb,
     ScreenDimensions dimensions,
+    boost::scope::unique_fd stop_event,
     evget::Store& storage
 )
     : libinput_(std::move(libinput)),
       xkb_(std::move(xkb)),
       transformer_(*this->libinput_, this->xkb_, dimensions),
-      next_event_(*this->libinput_),
+      next_event_(*this->libinput_, std::move(stop_event)),
       handler_(storage, transformer_, next_event_) {}
 
 evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::Create(
@@ -53,7 +60,18 @@ evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::C
         return std::unexpected(xkb.error());
     }
 
-    return std::unique_ptr<Backend>(new Backend(std::move(*libinput), std::move(*xkb), resolved_dimensions, storage));
+    boost::scope::unique_fd stop_event{eventfd(0, EFD_CLOEXEC)};
+    if (!stop_event) {
+        return evget::Err{
+            {.error_type = evget::ErrorType::kEventHandlerError,
+             .message =
+                 std::format("unable to create the libinput stop event: {}", std::generic_category().message(errno))}
+        };
+    }
+
+    return std::unique_ptr<Backend>(
+        new Backend(std::move(*libinput), std::move(*xkb), resolved_dimensions, std::move(stop_event), storage)
+    );
 }
 
 evget::EventHandler<evget::InputEvent<evgetlibinput::LibInputEvent>>& evgetlibinput::Backend::Handler() {

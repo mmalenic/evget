@@ -29,8 +29,9 @@ public:
     /**
      * \brief Construct a new `NextEvent`.
      * \param libinput_api the libinput API wrapper
+     * \param stop_event the eventfd `RequestStop` signals
      */
-    explicit NextEvent(LibInputApi& libinput_api);
+    NextEvent(LibInputApi& libinput_api, boost::scope::unique_fd stop_event);
 
     /**
      * \brief Get the next libinput event blocking until arrival.
