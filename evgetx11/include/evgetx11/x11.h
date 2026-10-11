@@ -164,9 +164,10 @@ public:
     virtual std::optional<Window> GetFocusWindow() = 0;
 
     /**
-     * \brief Get the name or title of a window.
+     * \brief Get the name or title of a window as UTF-8.
      *
-     * This function uses the `_NET_WM_NAME` property, or the `WM_NAME` property as a fallback.
+     * This function uses the `_NET_WM_NAME` property, or the `WM_NAME` property as a fallback, and decodes it with
+     * `Xutf8TextPropertyToTextList`.
      *
      * \param window the window to get the name for
      * \return optional window name, `nullopt` if unavailable
@@ -343,6 +344,13 @@ public:
      * \return the UTF-8 encoded text
      */
     static std::string Latin1ToUtf8(std::string_view latin1);
+
+    /**
+     * \brief Replace each byte that does not start a valid UTF-8 sequence.
+     * \param text the text to validate
+     * \return the valid UTF-8 text
+     */
+    static std::string ReplaceInvalidUtf8(std::string_view text);
 
     /**
      * \brief Set specific event bits in a mask.

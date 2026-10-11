@@ -5,12 +5,14 @@
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/extensions/Xrandr.h>
+#include <boost/locale/utf.hpp>
 #include <spdlog/spdlog.h>
 #include <xorg/xserver-properties.h>
 
 #include <array>
 #include <cstddef>
 #include <format>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
@@ -26,6 +28,8 @@ constexpr unsigned char kUtf8TwoByteLead = 0xC0;
 constexpr unsigned char kUtf8Continuation = 0x80;
 constexpr unsigned char kUtf8ContinuationMask = 0x3F;
 constexpr int kUtf8ContinuationBits = 6;
+
+constexpr boost::locale::utf::code_point kReplacementCharacter = 0xFFFD;
 } // namespace
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
@@ -342,18 +346,31 @@ std::optional<std::string> evgetx11::X11::GetWindowName(Window window) {
         name = GetProperty(XA_WM_NAME, window);
     }
 
-    if (name.property == nullptr) {
+    if (name.property == nullptr || name.n_items == 0) {
         return std::string{};
     }
 
+    XTextProperty text{
+        .value = name.property.get(),
+        .encoding = name.type,
+        .format = name.size,
+        .nitems = name.n_items,
+    };
+    char** list = nullptr;
+    int count = 0;
+    // A positive status counts characters that were replaced, so the text is still usable.
+    const int status = Xutf8TextPropertyToTextList(&display_.get(), &text, &list, &count);
+    const std::unique_ptr<char*, decltype(&XFreeStringList)> strings{list, XFreeStringList};
+    if (status >= Success && strings != nullptr && count > 0) {
+        // Xlib copies UTF8_STRING values without validating them.
+        return ReplaceInvalidUtf8(*strings.get());
+    }
+
+    log_.Warn("failed to decode a window name, keeping as UTF-8");
     // Reinterpret cast should be safe converting unsigned char to char.
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    const std::string_view text{reinterpret_cast<const char*>(name.property.get()), name.n_items};
+    return ReplaceInvalidUtf8({reinterpret_cast<const char*>(name.property.get()), name.n_items});
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-    if (name.type == XA_STRING) {
-        return Latin1ToUtf8(text);
-    }
-    return std::string{text};
 }
 
 std::optional<Window> evgetx11::X11::GetActiveWindow() {
@@ -465,6 +482,23 @@ std::string evgetx11::X11::Latin1ToUtf8(std::string_view latin1) {
         }
         utf8.push_back(static_cast<char>(kUtf8TwoByteLead | (code_point >> kUtf8ContinuationBits)));
         utf8.push_back(static_cast<char>(kUtf8Continuation | (code_point & kUtf8ContinuationMask)));
+    }
+    return utf8;
+}
+
+std::string evgetx11::X11::ReplaceInvalidUtf8(std::string_view text) {
+    std::string utf8{};
+    utf8.reserve(text.size());
+    auto position = text.begin();
+    while (position != text.end()) {
+        const auto start = position;
+        const auto code_point = boost::locale::utf::utf_traits<char>::decode(position, text.end());
+        if (code_point == boost::locale::utf::illegal || code_point == boost::locale::utf::incomplete) {
+            boost::locale::utf::utf_traits<char>::encode(kReplacementCharacter, std::back_inserter(utf8));
+            position = std::next(start);
+            continue;
+        }
+        utf8.append(start, position);
     }
     return utf8;
 }
