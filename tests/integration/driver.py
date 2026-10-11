@@ -138,9 +138,13 @@ class Input(ABC):
     """
 
     backend: str
-    device_name: str
     args: tuple[str, ...] = ()
     records_focus_window = True
+
+    @property
+    def device_name(self) -> str:
+        """The name evget stores for all injected input on this backend."""
+        return f"{self.backend}-injected"
 
     @abstractmethod
     def key(self, down: bool) -> None:
@@ -199,7 +203,6 @@ class WindowsInput(Input):
     """
 
     backend = "windows"
-    device_name = "windows-injected"
 
     def key(self, down: bool) -> None:
         flags = 0 if down else win32con.KEYEVENTF_KEYUP
@@ -223,7 +226,6 @@ class X11Input(Input):
     """
 
     backend = "x11"
-    device_name = "x11-injected"
 
     def __init__(self) -> None:
         # X servers number keys by kernel code plus 8.
@@ -300,7 +302,7 @@ class LibinputInput(Input):
     """
 
     backend = "libinput"
-    device_name = "evget integration tests"
+    uinput_name = "evget integration tests"
     args = ("--screen-dimensions", "1920x1080")
     records_focus_window = False
 
@@ -315,7 +317,7 @@ class LibinputInput(Input):
             ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y, ecodes.REL_WHEEL],
         }
         try:
-            self._device = _UInput(capabilities, name=self.device_name)
+            self._device = _UInput(capabilities, name=self.uinput_name)
         except (evdev.UInputError, PermissionError) as error:
             raise Unavailable(
                 f"{error}"
@@ -326,7 +328,7 @@ class LibinputInput(Input):
 
         entry = Path(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}")
         try:
-            wait_until(entry.exists, READY_TIMEOUT, f"udev to add {self.device_name!r}")
+            wait_until(entry.exists, READY_TIMEOUT, f"udev to add {self.uinput_name!r}")
         except TimeoutError as error:
             self._device.close()
             raise Unavailable(f"{error}; is udevd running?") from error
