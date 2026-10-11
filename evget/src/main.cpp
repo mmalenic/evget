@@ -50,6 +50,8 @@ void StopSource(Handler& handler, Backend& backend, const evget::Scheduler& sche
     backend.RequestStop();
     if (!scheduler.IsStopped() && !handler.WaitFinished(kChannelTimeout)) {
         spdlog::error("input events where not removed within {}, dropping events", kChannelTimeout);
+        // A loop that never suspends would otherwise keep the pool from stopping.
+        handler.Stop();
     }
 }
 
