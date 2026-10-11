@@ -1,5 +1,6 @@
 #include "evgetx11/x11.h"
 
+#include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/XInput.h>
@@ -61,7 +62,11 @@ evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult
         };
 
         std::array<char, kUtf8MaxBytes + 1> latin1{};
+        // XLookupString encodes in the locale's charset unless forced to Latin-1.
+        const unsigned int controls = XkbGetXlibControls(&display_.get());
+        XkbSetXlibControls(&display_.get(), XkbLC_ForceLatin1Lookup, XkbLC_ForceLatin1Lookup);
         const int latin1_bytes = XLookupString(&key_event, latin1.data(), kUtf8MaxBytes, &key_sym, nullptr);
+        XkbSetXlibControls(&display_.get(), XkbLC_ForceLatin1Lookup, controls);
         if (event.evtype == XI_RawKeyRelease) {
             // Release has a key sym but no character, so we fetch it anyway before returning.
             return {};
