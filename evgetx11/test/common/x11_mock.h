@@ -56,6 +56,7 @@ public:
     MOCK_METHOD(bool, IsXTestDevice, (int device_id), (override));
     MOCK_METHOD(int, GetConnectionNumber, (), (override));
     MOCK_METHOD(int, Pending, (), (override));
+    MOCK_METHOD(int, Queued, (), (override));
     MOCK_METHOD(Status, QueryVersion, (int& major, int& minor), (override));
     MOCK_METHOD(void, SelectEvents, (XIEventMask & mask), (override));
 };

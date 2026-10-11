@@ -209,6 +209,10 @@ int evgetx11::X11::Pending() {
     return XPending(&display_.get());
 }
 
+int evgetx11::X11::Queued() {
+    return XEventsQueued(&display_.get(), QueuedAlready);
+}
+
 evgetx11::QueryPointerResult evgetx11::X11::QueryPointer(int device_id) {
     Window root_return = 0;
     Window _window_return = 0;

@@ -113,11 +113,24 @@ void SetMask(evgetx11::X11Api& x_wrapper) {
 } // namespace
 
 boost::asio::awaitable<evget::Result<evgetx11::InputEvent>> evgetx11::InputHandler::Next() const {
-    while (x_wrapper_.get().Pending() == 0) {
+    while (true) {
         if (stop_requested_.load()) {
+            // Replies read later also queue events, so the queue length at the stop is the bound.
+            if (!remaining_after_stop_.has_value()) {
+                remaining_after_stop_ = x_wrapper_.get().Queued();
+                spdlog::debug("removing {} queued X11 events", *remaining_after_stop_);
+            }
+            if (*remaining_after_stop_ > 0) {
+                --*remaining_after_stop_;
+                break;
+            }
             co_return evget::Err{
                 {.error_type = evget::ErrorType::kEventHandlerError, .message = "the X11 input handler was stopped"}
             };
+        }
+
+        if (x_wrapper_.get().Pending() > 0) {
+            break;
         }
 
         auto waited = co_await WaitForInput();

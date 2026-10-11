@@ -28,6 +28,7 @@ TEST(InputHandlerTest, RequestStopWaitingNext) {
     ASSERT_GE(connection.ReadEnd(), 0);
 
     EXPECT_CALL(x_wrapper_mock, Pending).WillRepeatedly(testing::Return(0));
+    EXPECT_CALL(x_wrapper_mock, Queued).WillOnce(testing::Return(0));
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).WillOnce(testing::Return(connection.ReadEnd()));
     EXPECT_CALL(x_wrapper_mock, NextEvent).Times(0);
     evgetx11::InputHandler handler{x_wrapper_mock};
@@ -74,7 +75,8 @@ TEST(InputHandlerTest, RequestStopEvents) {
     std::array<double, 1> values = {1};
     auto raw = test::CreateXiRawEvent(XI_RawKeyRelease, valuator_mask, values);
 
-    EXPECT_CALL(x_wrapper_mock, Pending).WillOnce(testing::Return(1)).WillRepeatedly(testing::Return(0));
+    EXPECT_CALL(x_wrapper_mock, Pending).Times(0);
+    EXPECT_CALL(x_wrapper_mock, Queued).WillOnce(testing::Return(1));
     EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).Times(0);
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(raw)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
@@ -91,6 +93,38 @@ TEST(InputHandlerTest, RequestStopEvents) {
     auto second = test::SpawnNext(handler, pool);
     ASSERT_EQ(second.wait_for(std::chrono::seconds{5}), std::future_status::ready);
     ASSERT_FALSE(second.get().has_value());
+    pool.join();
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(InputHandlerTest, RequestStopReturns) {
+    boost::asio::thread_pool pool{1};
+    test::X11ApiMock x_wrapper_mock{};
+    std::array<unsigned char, 1> valuator_mask = {1};
+    std::array<double, 1> values = {1};
+    auto raw = test::CreateXiRawEvent(XI_RawMotion, valuator_mask, values);
+
+    EXPECT_CALL(x_wrapper_mock, Pending).WillOnce(testing::Return(1));
+    EXPECT_CALL(x_wrapper_mock, Queued).WillOnce(testing::Return(2));
+    EXPECT_CALL(x_wrapper_mock, GetConnectionNumber).Times(0);
+    EXPECT_CALL(x_wrapper_mock, NextEvent).Times(3).WillRepeatedly(testing::Return(test::CreateXEvent(raw)));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    evgetx11::InputHandler handler{x_wrapper_mock};
+
+    auto before_stop = test::SpawnNext(handler, pool);
+    ASSERT_EQ(before_stop.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+    ASSERT_TRUE(before_stop.get().has_value());
+
+    handler.RequestStop();
+
+    for (int i = 0; i < 2; i++) {
+        auto queued = test::SpawnNext(handler, pool);
+        ASSERT_EQ(queued.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+        ASSERT_TRUE(queued.get().has_value());
+    }
+    auto drained = test::SpawnNext(handler, pool);
+    ASSERT_EQ(drained.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+    ASSERT_FALSE(drained.get().has_value());
     pool.join();
 }
 

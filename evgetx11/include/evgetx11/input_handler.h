@@ -53,6 +53,7 @@ private:
     boost::scope::unique_fd stop_event_;
     mutable std::optional<boost::asio::posix::stream_descriptor> connection_;
     mutable std::optional<boost::asio::posix::stream_descriptor> stop_;
+    mutable std::optional<int> remaining_after_stop_;
 };
 
 /**

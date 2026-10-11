@@ -252,6 +252,15 @@ public:
     virtual int Pending() = 0;
 
     /**
+     * \brief Get the number of events that were already read from the connection.
+     *
+     * This function calls `XEventsQueued` with `QueuedAlready`, which neither flushes requests nor reads events.
+     *
+     * \return the number of queued events
+     */
+    virtual int Queued() = 0;
+
+    /**
      * \brief Query the XI2 version supported by the server.
      *
      * This function calls `XIQueryVersion`.
@@ -319,6 +328,7 @@ public:
     bool IsXTestDevice(int device_id) override;
     int GetConnectionNumber() override;
     int Pending() override;
+    int Queued() override;
 
     Status QueryVersion(int& major, int& minor) override;
     void SelectEvents(XIEventMask& mask) override;
