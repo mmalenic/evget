@@ -54,9 +54,12 @@ option stores `focus_window_name` as null for every event while keeping the focu
 
 ## Synthetic input
 
-Input that the OS synthesizes instead is stored with a `device_name` of `<backend>-injected`, and a
-`device_type` from the kind of input. X11 stores `x11-injected` for input that the X server sends through its
-XTEST devices.
+## Injected input
+
+Input that software synthesizes instead of a device is stored with a `device_type` from the kind of input, such as
+`Mouse` or `Keyboard`. X11 stores it with a `device_name` of `x11-injected` for input that the X server replays through
+its XTEST devices, Windows with `windows-injected`, libinput with `libinput-injected. All programs that inject input share
+these names, such as xdotool, VNC servers and other remote-control tools, input-sharing tools, and AutoHotkey.
 
 Windows stores `windows-injected` for any Raw Input that arrives without a device handle. This includes input sent with
 `SendInput`. Windows also send [pointer][raw-input-header] input it generates from a precision touchpad or a touchscreen
@@ -64,8 +67,14 @@ without a device handle. This means that `windows-injected` rows might be real e
 and evget cannot tell these apart. The touchpad and touchscreen rows that come directly from the device do have
 the device's real name.
 
-libinput has no injected name. Software synthesizes input for it through a uinput device, which the kernel presents like
-any other, so libinput stores that device's own name and cannot tell it apart from hardware.
+libinput stores `libinput-injected` for input from the devices that the kernel lists under `/sys/devices/virtual/input`,
+which is where uinput creates them. This includes ydotool, remote-desktop servers that inject through uinput, and other
+uinput tools. Keyboard and mouse remappers, such as keyd, kmonad, input-remapper and interception-tools, take over a real
+keyboard or mouse and forward its input through a uinput device, so on a system that runs one, real typing and mouse
+input are also stored as `libinput-injected`, and evget cannot tell them apart from injected input. Bluetooth keyboards
+and mice keep their own name, even when BlueZ relays them through uhid, which the kernel lists under
+`/sys/devices/virtual/misc` instead. Input that a compositor synthesizes without a kernel device, such as through a
+Wayland virtual keyboard or pointer, never reaches libinput, so the libinput backend does not store it.
 
 ## X11 behaviour
 
