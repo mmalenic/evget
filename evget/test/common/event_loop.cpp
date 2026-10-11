@@ -35,7 +35,7 @@ boost::asio::awaitable<evget::Result<int>> test::QueuedNextEvent::Next() const {
 boost::asio::awaitable<evget::Result<int>> test::ThrowingNextEvent::Next() const {
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     co_await boost::asio::this_coro::executor;
-    throw std::runtime_error{"source failed"};
+    co_return []() -> evget::Result<int> { throw std::runtime_error{"source failed"}; }();
 }
 
 // Boost.Asio's has a false position with use-after-free here.
