@@ -39,6 +39,16 @@ public:
     Create(evget::Store& storage, const std::optional<std::string>& display);
 
     /**
+     * \brief Create the X11 backend that reports when the connection to the X server is lost.
+     * \param storage the event storage
+     * \param display X11 display name to connect to, default display is usedif unset
+     * \param on_connection_lost runs on connection lost
+     * \return the backend
+     */
+    static evget::Result<std::unique_ptr<Backend>>
+    Create(evget::Store& storage, const std::optional<std::string>& display, std::function<void()> on_connection_lost);
+
+    /**
      * \brief Get the event handler.
      * \return reference to the event handler, or an error if the backend was not created
      *         through \ref Create.
@@ -57,7 +67,7 @@ public:
     ~Backend() = default;
 
 private:
-    explicit Backend(std::unique_ptr<Display, decltype(&XCloseDisplay)> display);
+    Backend(std::unique_ptr<Display, decltype(&XCloseDisplay)> display, std::function<void()> on_connection_lost);
 
     std::unique_ptr<Display, decltype(&XCloseDisplay)> display_;
     X11 api_;

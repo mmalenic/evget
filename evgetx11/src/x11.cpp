@@ -13,12 +13,14 @@
 #include <array>
 #include <cstddef>
 #include <format>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace {
 constexpr int kUtf8MaxBytes = 4;
@@ -35,7 +37,10 @@ constexpr boost::locale::utf::code_point kReplacementCharacter = 0xFFFD;
 
 // NOLINTBEGIN(modernize-avoid-c-arrays, cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
 // cppcoreguidelines-pro-type-vararg, hicpp-vararg)
-evgetx11::X11::X11(Display& display) : display_{display} {}
+evgetx11::X11::X11(Display& display) : X11{display, {}} {}
+
+evgetx11::X11::X11(Display& display, std::function<void()> on_connection_lost)
+    : display_{display}, errors_{ErrorRouter::Process(), &display, std::move(on_connection_lost)} {}
 
 std::string
 evgetx11::X11::LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) {

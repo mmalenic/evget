@@ -27,6 +27,31 @@ XErrorHandler& InstalledErrorHandler();
 XErrorHandler SetErrorHandler(XErrorHandler handler);
 
 /**
+ * \brief The IO handler slot `SetIoErrorHandler` writesr.
+ * \return reference to the handler
+ */
+XIOErrorHandler& InstalledIoErrorHandler();
+
+/**
+ * \brief Install an IO handler in `InstalledIoErrorHandler`.
+ * \param handler the IO handler
+ * \return the previously installed IO handler
+ */
+XIOErrorHandler SetIoErrorHandler(XIOErrorHandler handler);
+
+/**
+ * \brief An IO handler an embedding program installed before evget.
+ * \return `kHostHandled`
+ */
+int HostIoErrorHandler(Display* display);
+
+/**
+ * \brief The IO handler evget installs.
+ * \return zero
+ */
+int RoutedIoErrorHandler(Display* display);
+
+/**
  * \brief A handler installed before evget.
  * \return `kHostHandled`
  */

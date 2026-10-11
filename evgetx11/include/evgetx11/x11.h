@@ -296,6 +296,13 @@ public:
      */
     explicit X11(Display& display);
 
+    /**
+     * \brief Construct an `X11` with a display connection that reports when the connection is lost.
+     * \param display reference to the X11 Display connection
+     * \param on_connection_lost runs on the thread that lost the connection
+     */
+    X11(Display& display, std::function<void()> on_connection_lost);
+
     std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) override;
 
@@ -384,7 +391,7 @@ private:
 
     std::reference_wrapper<Display> display_;
     mutable LogOnce log_;
-    ErrorRegistration errors_{ErrorRouter::Process(), &display_.get()};
+    ErrorRegistration errors_;
 
     std::unique_ptr<_XIM, decltype(&XCloseIM)> xim_ =
         std::unique_ptr<_XIM, decltype(&XCloseIM)>{XOpenIM(&display_.get(), nullptr, nullptr, nullptr), XCloseIM};

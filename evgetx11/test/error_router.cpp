@@ -16,11 +16,19 @@
 
 TEST(ErrorRouterTest, InstallAndRestoreHandler) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
+    test::InstalledIoErrorHandler() = test::HostIoErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
 
     router.Register(displays.At(0));
     ASSERT_EQ(test::InstalledErrorHandler(), test::RoutedErrorHandler);
+    ASSERT_EQ(test::InstalledIoErrorHandler(), test::RoutedIoErrorHandler);
     router.Register(displays.At(1));
     router.Register(displays.At(1));
 
@@ -29,13 +37,20 @@ TEST(ErrorRouterTest, InstallAndRestoreHandler) {
     ASSERT_EQ(test::InstalledErrorHandler(), test::RoutedErrorHandler);
     router.Unregister(displays.At(1));
     ASSERT_EQ(test::InstalledErrorHandler(), test::HostErrorHandler);
+    ASSERT_EQ(test::InstalledIoErrorHandler(), test::HostIoErrorHandler);
 }
 
 TEST(ErrorRouterTest, LogErrorOnDisplay) {
     const test::CapturedLog log{};
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
     auto window_error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
     auto atom_error = test::CreateXErrorEvent(BadAtom, X_GetAtomName);
 
@@ -61,7 +76,13 @@ TEST(ErrorRouterTest, LogErrorOnDisplay) {
 TEST(ErrorRouterTest, UnknownErrorsWithoutHandler) {
     test::InstalledErrorHandler() = nullptr;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
     auto error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
 
     router.Register(displays.At(0));
@@ -72,7 +93,13 @@ TEST(ErrorRouterTest, UnknownErrorsWithoutHandler) {
 TEST(ErrorRouterTest, ErrrorFromHostAfterEvget) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
 
     router.Register(displays.At(0));
     test::InstalledErrorHandler() = test::LaterHostErrorHandler;
@@ -84,7 +111,13 @@ TEST(ErrorRouterTest, ErrrorFromHostAfterEvget) {
 TEST(ErrorRouterTest, RegisterHostHandler) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
     test::ChainedRouter() = &router;
     auto error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
 
@@ -103,7 +136,13 @@ TEST(ErrorRouterTest, RegisterHostHandler) {
 TEST(ErrorRouterTest, HandlerChains) {
     test::InstalledErrorHandler() = test::ChainingErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
     test::ChainedRouter() = &router;
     test::ChainingCalls() = 0;
     auto error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
@@ -114,10 +153,43 @@ TEST(ErrorRouterTest, HandlerChains) {
     router.Unregister(displays.At(0));
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(ErrorRouterTest, ConnectionRunsCallback) {
+    test::InstalledErrorHandler() = test::HostErrorHandler;
+    test::InstalledIoErrorHandler() = test::HostIoErrorHandler;
+    test::FakeDisplays displays{};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
+    int lost = 0;
+
+    {
+        const evgetx11::ErrorRegistration registration{router, displays.At(0), [&lost] { lost++; }};
+        ASSERT_EQ(router.DispatchIo(displays.At(0)), test::kHostHandled);
+        ASSERT_EQ(lost, 1);
+        ASSERT_EQ(router.DispatchIo(displays.At(1)), test::kHostHandled);
+        ASSERT_EQ(lost, 1);
+    }
+
+    ASSERT_EQ(router.DispatchIo(displays.At(0)), test::kHostHandled);
+    ASSERT_EQ(lost, 1);
+    ASSERT_EQ(test::InstalledIoErrorHandler(), test::HostIoErrorHandler);
+}
+
 TEST(ErrorRouterTest, RegistrationDestructor) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
 
     {
         const evgetx11::ErrorRegistration registration{router, displays.At(0)};
@@ -129,7 +201,13 @@ TEST(ErrorRouterTest, RegistrationDestructor) {
 TEST(ErrorRouterTest, DispatchFromManyThreads) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
-    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    evgetx11::ErrorRouter router{
+        test::SetErrorHandler,
+        test::FakeErrorText,
+        test::RoutedErrorHandler,
+        test::SetIoErrorHandler,
+        test::RoutedIoErrorHandler
+    };
     constexpr int kIterations = 2000;
 
     std::vector<int> failures(test::FakeDisplays::kCount, 0);

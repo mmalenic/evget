@@ -17,11 +17,22 @@
 #include "evgetx11/input_event.h"
 #include "evgetx11/input_handler.h"
 
-evgetx11::Backend::Backend(std::unique_ptr<Display, decltype(&XCloseDisplay)> display)
-    : display_(std::move(display)), api_(*this->display_) {}
+evgetx11::Backend::Backend(
+    std::unique_ptr<Display, decltype(&XCloseDisplay)> display,
+    std::function<void()> on_connection_lost
+)
+    : display_(std::move(display)), api_(*this->display_, std::move(on_connection_lost)) {}
 
 evget::Result<std::unique_ptr<evgetx11::Backend>>
 evgetx11::Backend::Create(evget::Store& storage, const std::optional<std::string>& display) {
+    return Create(storage, display, {});
+}
+
+evget::Result<std::unique_ptr<evgetx11::Backend>> evgetx11::Backend::Create(
+    evget::Store& storage,
+    const std::optional<std::string>& display,
+    std::function<void()> on_connection_lost
+) {
     const char* display_name = nullptr;
     if (display.has_value()) {
         display_name = display->c_str();
@@ -35,7 +46,7 @@ evgetx11::Backend::Create(evget::Store& storage, const std::optional<std::string
         };
     }
 
-    auto backend = std::unique_ptr<Backend>(new Backend(std::move(display_ptr)));
+    auto backend = std::unique_ptr<Backend>(new Backend(std::move(display_ptr), std::move(on_connection_lost)));
 
     backend->transformer_ = std::move(EventTransformerBuilder{}.PointerKey(backend->api_).Touch()).Build(backend->api_);
 

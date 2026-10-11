@@ -19,6 +19,25 @@ XErrorHandler test::SetErrorHandler(XErrorHandler handler) {
     return previous;
 }
 
+XIOErrorHandler& test::InstalledIoErrorHandler() {
+    static XIOErrorHandler installed = nullptr;
+    return installed;
+}
+
+XIOErrorHandler test::SetIoErrorHandler(XIOErrorHandler handler) {
+    auto previous = InstalledIoErrorHandler();
+    InstalledIoErrorHandler() = handler;
+    return previous;
+}
+
+int test::HostIoErrorHandler(Display* /* display */) {
+    return kHostHandled;
+}
+
+int test::RoutedIoErrorHandler(Display* /* display */) {
+    return 0;
+}
+
 int test::HostErrorHandler(Display* /* display */, XErrorEvent* /* event */) {
     return kHostHandled;
 }
