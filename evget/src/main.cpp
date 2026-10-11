@@ -184,7 +184,9 @@ int Run(int argc, char** argv) {
 
 #ifdef FEATURE_EVGETX11
     if (event_source == evget::EventSource::kX11) {
-        auto result = evgetx11::Backend::Create(merged, cli.Display());
+        auto result = evgetx11::Backend::Create(merged, cli.Display(), [shutdown] {
+            const std::jthread stop{[shutdown] { shutdown->Request(); }};
+        });
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
