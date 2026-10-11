@@ -31,7 +31,7 @@ evgetx11::Backend::Create(evget::Store& storage, const std::optional<std::string
     if (display_ptr == nullptr) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError,
-             .message = std::format("unable to open X11 display '{}'", display_name)}
+             .message = std::format("unable to open X11 display '{}'", display.value_or(XDisplayName(nullptr)))}
         };
     }
 

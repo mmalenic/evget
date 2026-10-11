@@ -85,10 +85,13 @@ endif()
 if(BUILD_TESTING)
     target_sources(
         ${TEST_EXECUTABLE_NAME}
-        PUBLIC test/common/error_handler.cpp
+        PUBLIC test/common/environment.cpp
+               test/common/environment.h
+               test/common/error_handler.cpp
                test/common/error_handler.h
                test/common/x11_mock.cpp
                test/common/x11_mock.h
+               test/backend.cpp
                test/error_router.cpp
                test/event_switch.cpp
                test/event_switch_pointer_key.cpp
