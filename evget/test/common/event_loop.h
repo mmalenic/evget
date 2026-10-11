@@ -42,6 +42,18 @@ private:
 };
 
 /**
+ * \brief A source whose `Next` throws.
+ */
+class ThrowingNextEvent : public evget::NextEvent<int> {
+public:
+    /**
+     * \brief Throw a `std::runtime_error`.
+     * \return never returns an event
+     */
+    [[nodiscard]] boost::asio::awaitable<evget::Result<int>> Next() const override;
+};
+
+/**
  * \brief A source whose `Next` stays suspended until the source is destroyed.
  */
 class PendingNextEvent : public evget::NextEvent<int> {

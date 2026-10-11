@@ -3,10 +3,12 @@
 #include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/asio/this_coro.hpp>
 #include <boost/asio/use_awaitable.hpp>
 
 #include <mutex>
 #include <optional>
+#include <stdexcept>
 #include <vector>
 
 #include "evget/error.h"
@@ -28,6 +30,12 @@ boost::asio::awaitable<evget::Result<int>> test::QueuedNextEvent::Next() const {
         co_return evget::Err{{.error_type = evget::ErrorType::kAsyncError, .message = "source closed"}};
     }
     co_return *event;
+}
+
+boost::asio::awaitable<evget::Result<int>> test::ThrowingNextEvent::Next() const {
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+    co_await boost::asio::this_coro::executor;
+    throw std::runtime_error{"source failed"};
 }
 
 // Boost.Asio's has a false position with use-after-free here.

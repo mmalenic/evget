@@ -177,16 +177,14 @@ int Run(int argc, char** argv) {
         }
         li_backend = std::move(*result);
         shutdown->SetSource([&li_backend, scheduler] { StopSource(li_backend->Handler(), *li_backend, *scheduler); });
-        scheduler->SpawnResult(li_backend->Handler().Start(), li_backend->Handler(), exit_code);
+        shutdown->SpawnCapture(li_backend->Handler().Start(), exit_code);
         capturing = true;
     }
 #endif
 
 #ifdef FEATURE_EVGETX11
     if (event_source == evget::EventSource::kX11) {
-        auto result = evgetx11::Backend::Create(merged, cli.Display(), [shutdown] {
-            const std::jthread stop{[shutdown] { shutdown->Request(); }};
-        });
+        auto result = evgetx11::Backend::Create(merged, cli.Display(), [shutdown] { shutdown->RequestFromPool(); });
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
@@ -198,7 +196,7 @@ int Run(int argc, char** argv) {
             return 1;
         }
         shutdown->SetSource([&x11_backend, scheduler] { StopX11Source(*x11_backend, *scheduler); });
-        scheduler->SpawnResult(handler->get().Start(), handler->get(), exit_code);
+        shutdown->SpawnCapture(handler->get().Start(), exit_code);
         capturing = true;
     }
 #endif
@@ -214,7 +212,7 @@ int Run(int argc, char** argv) {
         shutdown->SetSource([&win_backend, scheduler] {
             StopSource(win_backend->Handler(), *win_backend, *scheduler);
         });
-        scheduler->SpawnResult(win_backend->Handler().Start(), win_backend->Handler(), exit_code);
+        shutdown->SpawnCapture(win_backend->Handler().Start(), exit_code);
         capturing = true;
     }
 #endif

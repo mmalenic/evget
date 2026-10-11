@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <future>
@@ -11,9 +12,11 @@
 #include <thread>
 #include <vector>
 
+#include "common/event_loop.h"
 #include "common/log.h"
 #include "common/store.h"
 #include "evget/async/scheduler/scheduler.h"
+#include "evget/event_loop.h"
 #include "evget/storage/database_manager.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -21,7 +24,10 @@
 namespace {
 
 using test::CapturedLog;
+using test::QueuedNextEvent;
+using test::RecordingListener;
 using test::StoreMock;
+using test::ThrowingNextEvent;
 
 } // namespace
 
@@ -160,6 +166,90 @@ TEST(ShutdownTest, EmptyBufferStops) {
     scheduler->Join();
 
     ASSERT_TRUE(store->Events().empty());
+    ASSERT_TRUE(scheduler->IsStopped());
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(ShutdownTest, FailedCaptureFlushesAndStops) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto store = std::make_shared<StoreMock>();
+    // The store-after timer keeps the pool busy until something stops the scheduler.
+    evget::DatabaseManager manager{scheduler, {store}, 100, std::chrono::seconds{600}};
+    std::atomic<int> sources{0};
+
+    evget::Shutdown shutdown{scheduler, [&manager] { manager.Flush(); }};
+    shutdown.SetSource([&sources] { sources.fetch_add(1); });
+
+    QueuedNextEvent source{std::vector<int>{}};
+    RecordingListener listener;
+    evget::EventLoop<int> loop{source, {listener}};
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    const CapturedLog log{};
+    auto exit_code = 0;
+    shutdown.SpawnCapture(loop.Start(), exit_code);
+    scheduler->Join();
+
+    ASSERT_EQ(exit_code, 1);
+    ASSERT_EQ(sources.load(), 1);
+    ASSERT_TRUE(std::ranges::contains(log.Lines(), "error AsyncError: source closed"));
+    auto events = store->Events();
+    ASSERT_EQ(events.size(), 1);
+    ASSERT_EQ(events.at(0).Entries().size(), 2);
+    ASSERT_TRUE(scheduler->IsStopped());
+}
+
+TEST(ShutdownTest, DrainedCaptureFlushesAndStops) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto store = std::make_shared<StoreMock>();
+    evget::DatabaseManager manager{scheduler, {store}, 100, std::chrono::seconds{600}};
+
+    evget::Shutdown shutdown{scheduler, [&manager] { manager.Flush(); }};
+
+    QueuedNextEvent source{std::vector<int>{1, 2}};
+    RecordingListener listener;
+    evget::EventLoop<int> loop{source, {listener}};
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    auto exit_code = 0;
+    loop.StopWhenDrained();
+    shutdown.SpawnCapture(loop.Start(), exit_code);
+    scheduler->Join();
+
+    ASSERT_EQ(exit_code, 0);
+    ASSERT_EQ(listener.Received(), (std::vector<int>{1, 2}));
+    auto events = store->Events();
+    ASSERT_EQ(events.size(), 1);
+    ASSERT_EQ(events.at(0).Entries().size(), 1);
+    ASSERT_TRUE(scheduler->IsStopped());
+}
+
+TEST(ShutdownTest, ThrowingCaptureFlushesAndStops) {
+    auto scheduler = std::make_shared<evget::Scheduler>();
+    auto store = std::make_shared<StoreMock>();
+    evget::DatabaseManager manager{scheduler, {store}, 100, std::chrono::seconds{600}};
+
+    evget::Shutdown shutdown{scheduler, [&manager] { manager.Flush(); }};
+
+    ThrowingNextEvent source{};
+    RecordingListener listener;
+    evget::EventLoop<int> loop{source, {listener}};
+
+    ASSERT_TRUE(manager.StoreEvent(StoreMock::MakeData()).has_value());
+
+    const CapturedLog log{};
+    auto exit_code = 0;
+    shutdown.SpawnCapture(loop.Start(), exit_code);
+    scheduler->Join();
+
+    ASSERT_EQ(exit_code, 1);
+    ASSERT_TRUE(std::ranges::contains(log.Lines(), "error capturing input events failed: source failed"));
+    auto events = store->Events();
+    ASSERT_EQ(events.size(), 1);
+    ASSERT_EQ(events.at(0).Entries().size(), 1);
     ASSERT_TRUE(scheduler->IsStopped());
 }
 

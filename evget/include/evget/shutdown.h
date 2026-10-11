@@ -6,11 +6,14 @@
 #ifndef EVGET_SHUTDOWN_H
 #define EVGET_SHUTDOWN_H
 
+#include <boost/asio/awaitable.hpp>
+
 #include <functional>
 #include <memory>
 #include <mutex>
 
 #include "evget/async/scheduler/scheduler.h"
+#include "evget/error.h"
 
 namespace evget {
 
@@ -40,12 +43,26 @@ public:
     void SetSource(std::function<void()> stop_source);
 
     /**
+     * \brief Run the capture loop on the scheduler and request the stop once the loop ends.
+     * \param capture the capture loop
+     * \param exit_code set to 1 if the capture loop fails or throws
+     *
+     * \note The shutdown and `exit_code` must outlive the scheduler's threads.
+     */
+    void SpawnCapture(boost::asio::awaitable<Result<void>> capture, int& exit_code);
+
+    /**
      * \brief Run the stop once and returns after it has finished on any asking thread.
      *
      * \note This must not be called from a scheduler pool thread, because the flush blocks
-     *       the pool, which could deadlock.
+     *       the pool, which could deadlock. Use `RequestFromPool` there.
      */
     void Request() noexcept;
+
+    /**
+     * \brief Run the stop on a new thread and return once it has finished, so a pool thread can request it.
+     */
+    void RequestFromPool() noexcept;
 
 private:
     std::shared_ptr<Scheduler> scheduler_;
