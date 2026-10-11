@@ -27,6 +27,12 @@ SANITIZER_ENV = {
     "UBSAN_OPTIONS": "print_stacktrace=1",
     "ASAN_OPTIONS": "check_initialization_order=1:strict_init_order=1",
 }
+PACKAGE_ID_CONFS = [
+    "tools.build:cxxflags",
+    "tools.build:cflags",
+    "tools.build:sharedlinkflags",
+    "tools.build:exelinkflags",
+]
 
 
 def run(cmd, *, check=True, cwd=REPO, env=None, capture=False):
@@ -90,6 +96,8 @@ class Ctx:
                 "compiler.cppstd=23",
                 "-o",
                 "evget/*:build_testing=True",
+                "-c",
+                f"tools.info.package_id:confs={PACKAGE_ID_CONFS!r}",
                 *self.profile_args,
                 *self.backend_args,
                 *layout,
@@ -142,6 +150,18 @@ class Variant:
         """
         return self.check(self.build() / EXE)
 
+    @staticmethod
+    def write_ignorelist(
+        path: Path, *patterns: str, section: str | None = None
+    ) -> Path:
+        """
+        Write an ignorelist of source patterns, for only the sanitizers in `section` if given.
+        """
+        header = f"[{section}]\n" if section is not None else ""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(header + "".join(f"src:{p}\n" for p in patterns))
+        return path
+
 
 class ClangAsan(Variant):
     """
@@ -159,11 +179,22 @@ class ClangAsan(Variant):
         "-fno-sanitize-recover=all",
         "-fno-omit-frame-pointer",
     ]
+    # The `integer` checks for defined behaviour, such as unsigned wrap-around, which library headers rely on.
+    DEFINED_BEHAVIOUR = (
+        "{unsigned-integer-overflow,unsigned-shift-base,implicit-conversion}"
+    )
 
     def build(self) -> Path:
-        return self.ctx.conan_build(
-            extra=["-c", f"tools.build:cxxflags={self.FLAGS!r}"]
+        conan_home = run(["conan", "config", "home"], capture=True).stdout.strip()
+        # Exempts library root rather than `src:*` plus a `=sanitize` allowlist.
+        ignore = self.write_ignorelist(
+            self.ctx.directory / "ignorelist.txt",
+            "/usr/*",
+            f"{conan_home}/*",
+            section=self.DEFINED_BEHAVIOUR,
         )
+        flags = [*self.FLAGS, f"-fsanitize-ignorelist={ignore}"]
+        return self.ctx.conan_build(extra=["-c", f"tools.build:cxxflags={flags!r}"])
 
 
 class ClangMsan(Variant):
@@ -287,14 +318,6 @@ class ClangMsan(Variant):
             env={**os.environ, "CC": "clang", "CXX": "clang++"},
         )
         run(["ninja", "-C", build, "cxx", "cxxabi"])
-
-    @staticmethod
-    def write_ignorelist(path: Path, *patterns: str) -> Path:
-        """
-        Write an ignorelist.
-        """
-        path.write_text("".join(f"src:{p}\n" for p in patterns))
-        return path
 
 
 class GccAsan(Variant):
