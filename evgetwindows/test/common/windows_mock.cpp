@@ -3,10 +3,16 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <boost/asio/thread_pool.hpp>
+#include <windows.h>
+
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <future>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -371,6 +377,50 @@ void ExpectTouchEqualitySequence(evget::DeviceType device_type, std::string_view
     ExpectTouchEqualityRows(down, device_column, down_rows);
     ExpectTouchEqualityRows(motion, device_column, motion_rows);
     ExpectTouchEqualityRows(lift, device_column, lift_rows);
+}
+
+HWND FindMessageWindow(const evgetwindows::MessageWindow& window) {
+    std::pair<const evgetwindows::MessageWindow*, HWND> search{&window, nullptr};
+    EnumWindows(
+        [](HWND candidate, LPARAM context) -> BOOL {
+            // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+            auto* found = reinterpret_cast<std::pair<const evgetwindows::MessageWindow*, HWND>*>(context);
+            const auto* owner =
+                reinterpret_cast<const evgetwindows::MessageWindow*>(GetWindowLongPtrW(candidate, GWLP_USERDATA));
+            // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+            if (owner != found->first) {
+                return TRUE;
+            }
+            found->second = candidate;
+            return FALSE;
+        },
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        reinterpret_cast<LPARAM>(&search)
+    );
+    return search.second;
+}
+
+void ExpectPostedStopMessageStops(UINT message, WPARAM wparam) {
+    constexpr std::chrono::seconds kStopTimeout{5};
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDelete)
+    boost::asio::thread_pool pool{1};
+    std::promise<void> stopped;
+    evgetwindows::MessageWindow* target = nullptr;
+    auto window = std::make_unique<evgetwindows::MessageWindow>(pool.get_executor(), [&target, &stopped] {
+        target->RequestStop();
+        stopped.set_value();
+    });
+    target = window.get();
+    ASSERT_TRUE(window->Start().has_value());
+
+    // NOLINTNEXTLINE(misc-misplaced-const)
+    const HWND handle = FindMessageWindow(*window);
+    ASSERT_NE(handle, nullptr);
+    ASSERT_NE(PostMessageW(handle, message, wparam, 0), FALSE);
+    ASSERT_EQ(stopped.get_future().wait_for(kStopTimeout), std::future_status::ready);
+    EXPECT_FALSE(window->Channel().is_open());
+
+    window.reset();
 }
 
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,cppcoreguidelines-pro-type-union-access)

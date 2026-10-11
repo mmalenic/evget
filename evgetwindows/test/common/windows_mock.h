@@ -21,6 +21,7 @@
 #include "evget/event/entry.h"
 #include "evgetwindows/hid_frame.h"
 #include "evgetwindows/hid_query_api.h"
+#include "evgetwindows/message_window.h"
 #include "evgetwindows/modifier_tracker.h"
 #include "evgetwindows/raw_event.h"
 #include "evgetwindows/windows.h"
@@ -179,6 +180,20 @@ void ExpectTouchEqualityColumns(const evget::Entry& entry, std::string_view devi
  * \param device_column the device type column
  */
 void ExpectTouchEqualitySequence(evget::DeviceType device_type, std::string_view device_column);
+
+/**
+ * \brief Find the top-level window a started message.
+ * \param window the started message window
+ * \return the window handle
+ */
+HWND FindMessageWindow(const evgetwindows::MessageWindow& window);
+
+/**
+ * \brief Assert that a stop message posted.
+ * \param message the stop message
+ * \param wparam the message `WPARAM`
+ */
+void ExpectPostedStopMessageStops(UINT message, WPARAM wparam);
 
 } // namespace test
 
