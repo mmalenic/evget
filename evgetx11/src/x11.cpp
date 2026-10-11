@@ -326,10 +326,6 @@ evgetx11::X11::GetPropertyResult evgetx11::X11::GetProperty(Atom atom, Window wi
 
     auto prop = std::unique_ptr<unsigned char[], decltype(&XFree)>{data, XFree};
 
-    if (status == BadWindow) {
-        log_.Warn("window does not exist");
-        return {.property = {nullptr, XFree}};
-    }
     if (status != Success) {
         log_.Warn("failed to get window property");
         return {.property = {nullptr, XFree}};
