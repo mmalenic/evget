@@ -107,6 +107,10 @@ evget::Result<bool> evgetlibinput::LibInput::HasPendingEvent() {
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to get next event"}
         };
     }
+    return HasQueuedEvent();
+}
+
+bool evgetlibinput::LibInput::HasQueuedEvent() {
     return libinput_next_event_type(libinput_context_.get()) != LIBINPUT_EVENT_NONE;
 }
 

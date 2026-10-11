@@ -59,17 +59,21 @@ evgetlibinput::NextEvent::NextEvent(LibInputApi& libinput_api)
 boost::asio::awaitable<evget::Result<evget::InputEvent<evgetlibinput::LibInputEvent>>>
 evgetlibinput::NextEvent::Next() const {
     while (true) {
+        if (stop_requested_.load()) {
+            if (libinput_api_.get().HasQueuedEvent()) {
+                break;
+            }
+            co_return evget::Err{
+                {.error_type = evget::ErrorType::kEventHandlerError, .message = "the libinput handler was stopped"}
+            };
+        }
+
         auto pending = libinput_api_.get().HasPendingEvent();
         if (!pending.has_value()) {
             co_return evget::Err{pending.error()};
         }
         if (*pending) {
             break;
-        }
-        if (stop_requested_.load()) {
-            co_return evget::Err{
-                {.error_type = evget::ErrorType::kEventHandlerError, .message = "the libinput handler was stopped"}
-            };
         }
 
         auto waited = co_await WaitForInput();

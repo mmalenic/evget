@@ -37,6 +37,7 @@ public:
     MOCK_METHOD(evget::Result<evgetlibinput::LibInputEvent>, GetEvent, (), (override));
     MOCK_METHOD(int, GetFd, (), (override));
     MOCK_METHOD(evget::Result<bool>, HasPendingEvent, (), (override));
+    MOCK_METHOD(bool, HasQueuedEvent, (), (override));
     MOCK_METHOD(libinput_event_type, GetEventType, (libinput_event & event), (override));
     MOCK_METHOD(libinput_event_pointer*, GetPointerEvent, (libinput_event & event), (override));
     MOCK_METHOD(std::uint64_t, GetPointerTimeMicroseconds, (libinput_event_pointer & event), (override));

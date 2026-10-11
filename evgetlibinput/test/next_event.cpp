@@ -22,6 +22,7 @@ TEST(LibInputNextEventTest, RequestStopNext) {
     ASSERT_GE(input.ReadEnd(), 0);
 
     EXPECT_CALL(libinput_mock, HasPendingEvent).WillRepeatedly(testing::Return(evget::Result<bool>{false}));
+    EXPECT_CALL(libinput_mock, HasQueuedEvent).WillRepeatedly(testing::Return(false));
     EXPECT_CALL(libinput_mock, GetFd).WillOnce(testing::Return(input.ReadEnd()));
     EXPECT_CALL(libinput_mock, GetEvent).Times(0);
     evgetlibinput::NextEvent next_event{libinput_mock};
@@ -63,9 +64,8 @@ TEST(LibInputNextEventTest, RequestStopReturnsEvents) {
     boost::asio::thread_pool pool{1};
     test::LibInputApiMock libinput_mock{};
 
-    EXPECT_CALL(libinput_mock, HasPendingEvent)
-        .WillOnce(testing::Return(evget::Result<bool>{true}))
-        .WillRepeatedly(testing::Return(evget::Result<bool>{false}));
+    EXPECT_CALL(libinput_mock, HasPendingEvent).Times(0);
+    EXPECT_CALL(libinput_mock, HasQueuedEvent).WillOnce(testing::Return(true)).WillRepeatedly(testing::Return(false));
     EXPECT_CALL(libinput_mock, GetFd).Times(0);
     EXPECT_CALL(libinput_mock, GetEvent).WillOnce([] {
         return evget::Result<evgetlibinput::LibInputEvent>{{nullptr, libinput_event_destroy}};
@@ -81,6 +81,39 @@ TEST(LibInputNextEventTest, RequestStopReturnsEvents) {
     auto second = test::SpawnNext(next_event, pool);
     ASSERT_EQ(second.wait_for(std::chrono::seconds{5}), std::future_status::ready);
     ASSERT_FALSE(second.get().has_value());
+    pool.join();
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(LibInputNextEventTest, RequestStopNoNewInput) {
+    boost::asio::thread_pool pool{1};
+    test::LibInputApiMock libinput_mock{};
+
+    EXPECT_CALL(libinput_mock, HasPendingEvent).WillOnce(testing::Return(evget::Result<bool>{true}));
+    EXPECT_CALL(libinput_mock, HasQueuedEvent)
+        .WillOnce(testing::Return(true))
+        .WillOnce(testing::Return(true))
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(libinput_mock, GetFd).Times(0);
+    EXPECT_CALL(libinput_mock, GetEvent).Times(3).WillRepeatedly([] {
+        return evget::Result<evgetlibinput::LibInputEvent>{{nullptr, libinput_event_destroy}};
+    });
+    evgetlibinput::NextEvent next_event{libinput_mock};
+
+    auto before_stop = test::SpawnNext(next_event, pool);
+    ASSERT_EQ(before_stop.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+    ASSERT_TRUE(before_stop.get().has_value());
+
+    next_event.RequestStop();
+
+    for (int i = 0; i < 2; i++) {
+        auto queued = test::SpawnNext(next_event, pool);
+        ASSERT_EQ(queued.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+        ASSERT_TRUE(queued.get().has_value());
+    }
+    auto drained = test::SpawnNext(next_event, pool);
+    ASSERT_EQ(drained.wait_for(std::chrono::seconds{5}), std::future_status::ready);
+    ASSERT_FALSE(drained.get().has_value());
     pool.join();
 }
 

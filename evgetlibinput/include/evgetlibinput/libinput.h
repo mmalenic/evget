@@ -61,6 +61,15 @@ public:
     virtual evget::Result<bool> HasPendingEvent() = 0;
 
     /**
+     * \brief Report whether an event is queued without reading any new input.
+     *
+     * This function calls `libinput_next_event_type`.
+     *
+     * \return whether `GetEvent` returns without reading new input
+     */
+    virtual bool HasQueuedEvent() = 0;
+
+    /**
      * \brief Get the type of libinput event.
      * \param event libinput event
      * \return the event type
@@ -359,6 +368,8 @@ public:
     int GetFd() override;
 
     evget::Result<bool> HasPendingEvent() override;
+
+    bool HasQueuedEvent() override;
 
     libinput_event_type GetEventType(libinput_event& event) override;
 
