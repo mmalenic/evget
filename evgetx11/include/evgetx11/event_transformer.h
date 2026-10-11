@@ -103,8 +103,6 @@ private:
     EventSwitch x_event_switch_;
     std::optional<Time> previous_{std::nullopt};
 
-    std::unordered_map<int, evget::DeviceType> devices_;
-    std::unordered_map<int, std::string> id_to_name_;
     std::unordered_map<int, evget::IntervalTracker> device_intervals_;
 
     std::tuple<Switches...> switches_;
@@ -199,8 +197,6 @@ void EventTransformer<Switches...>::RefreshDevices() {
             injected ? InjectedDeviceType(xi2_device.use) : Xi1DeviceType(x_wrapper_.get().AtomName(device.type).get());
         const std::string name = injected ? std::string{kInjectedDeviceName} : std::string{device.name};
 
-        devices_.insert_or_assign(device_id, device_type);
-        id_to_name_.insert_or_assign(device_id, name);
         x_event_switch_.RefreshDevices(device_id, pointer_id_, device_type, name, xi2_device);
 
         // Iterate through switches and refresh devices.
@@ -220,8 +216,6 @@ void EventTransformer<Switches...>::RemoveDevices(const XIHierarchyEvent& event)
     for (const auto& info : std::span{event.info, static_cast<std::size_t>(event.num_info)}) {
         // NOLINTNEXTLINE(hicpp-signed-bitwise)
         if ((info.flags & (XISlaveRemoved | XIMasterRemoved)) != 0) {
-            devices_.erase(info.deviceid);
-            id_to_name_.erase(info.deviceid);
             device_intervals_.erase(info.deviceid);
             x_event_switch_.RemoveDevice(info.deviceid);
         }
