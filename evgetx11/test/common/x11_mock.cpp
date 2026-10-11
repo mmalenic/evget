@@ -219,11 +219,6 @@ void test::SetXWrapperEventMocks(X11ApiMock& x_wrapper_mock, XIRawEvent& device_
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
         );
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(CreateXEvent(device_event))));
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(
-            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
-        );
-
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, &XFree})));
     EXPECT_CALL(x_wrapper_mock, GetActiveWindow)

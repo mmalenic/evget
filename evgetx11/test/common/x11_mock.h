@@ -31,7 +31,6 @@ public:
         (override)
     );
     MOCK_METHOD(QueryPointerResult, QueryPointer, (int device_id), (override));
-    MOCK_METHOD(std::unique_ptr<unsigned char[]>, GetDeviceButtonMapping, (int device_id, int map_size), (override));
     MOCK_METHOD(
         (std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)>),
         ListInputDevices,

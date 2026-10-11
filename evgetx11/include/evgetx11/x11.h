@@ -105,17 +105,6 @@ public:
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) = 0;
 
     /**
-     * \brief Get the button mapping for a specific device.
-     *
-     * This function calls `XGetDeviceButtonMapping`.
-     *
-     * \param device_id the ID of the input device
-     * \param map_size size of the button mapping
-     * \return unique pointer to the button mapping array
-     */
-    virtual std::unique_ptr<unsigned char[]> GetDeviceButtonMapping(int device_id, int map_size) = 0;
-
-    /**
      * \brief List all available input devices.
      *
      * This function calls `XListInputDevices`.
@@ -309,7 +298,6 @@ public:
 
     std::string
     LookupCharacter(const XIRawEvent& event, const QueryPointerResult& query_pointer, KeySym& key_sym) override;
-    std::unique_ptr<unsigned char[]> GetDeviceButtonMapping(int device_id, int map_size) override;
 
     std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> ListInputDevices(int& n_devices) override;
     std::unique_ptr<XIDeviceInfo[], decltype(&XIFreeDeviceInfo)> QueryDevice(int& n_devices) override;

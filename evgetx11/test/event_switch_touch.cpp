@@ -49,10 +49,6 @@ TEST(XEventSwitchTouchTest, TestTouchBegin) { // NOLINT(readability-function-cog
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
         );
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(test::CreateXEvent(device_event))));
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(
-            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
-        );
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
@@ -173,10 +169,6 @@ TEST(XEventSwitchTouchTest, TestTouchEnd) { // NOLINT(readability-function-cogni
             testing::Return(testing::ByMove<evgetx11::XEventPointer>({&x_event.xcookie, [](XGenericEventCookie*) {}}))
         );
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(testing::ByMove(test::CreateXEvent(device_event))));
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(
-            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
-        );
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;

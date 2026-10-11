@@ -10,8 +10,11 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cstddef>
 #include <memory>
+#include <numeric>
 #include <optional>
+#include <ranges>
 #include <string>
 
 #include "common/x11_mock.h"
@@ -214,8 +217,6 @@ TEST(XEventSwitchPointerKeyTest, ButtonEventUnlabelled) {
     auto device_event = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
     EXPECT_CALL(x_wrapper_mock, NextEvent).WillOnce(testing::Return(test::CreateXEvent(device_event)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
     EXPECT_CALL(x_wrapper_mock, AtomName).Times(0);
     EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
     EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
@@ -256,12 +257,12 @@ TEST(XEventSwitchPointerKeyTest, WheelButtonWithoutlValuators) {
     std::array<double, 1> values = {0};
     auto press = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
     auto release = test::CreateXiRawEvent(XI_RawButtonRelease, valuator_mask, values);
+    press.detail = 1;
+    release.detail = 1;
     EXPECT_CALL(x_wrapper_mock, NextEvent)
         .WillOnce(testing::Return(test::CreateXEvent(press)))
         .WillOnce(testing::Return(test::CreateXEvent(release)));
     test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
     std::string label = BTN_LABEL_PROP_BTN_WHEEL_UP;
     EXPECT_CALL(x_wrapper_mock, AtomName).WillOnce([&label](Atom) {
         return std::unique_ptr<char[], decltype(&XFree)>{label.data(), [](void*) { return 0; }};
@@ -288,6 +289,84 @@ TEST(XEventSwitchPointerKeyTest, WheelButtonWithoutlValuators) {
     ASSERT_EQ(entries.at(0).Data().at(12), "XI_RawButtonPress");
     ASSERT_EQ(entries.at(0).Data().at(15), evget::FromDouble(-1.0));
     ASSERT_FALSE(entries.at(0).Data().at(16).has_value());
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST(XEventSwitchPointerKeyTest, RawButtonsAreNamedByPhysicalButton) {
+    test::X11ApiMock x_wrapper_mock{};
+    evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
+    evgetx11::EventSwitchPointerKey x_event_switch_pointer_key{x_wrapper_mock};
+
+    constexpr int kLeft = 1;
+    constexpr int kRight = 3;
+    constexpr int kWheelUp = 4;
+    constexpr int kWheelDown = 5;
+    // Labels come in physical order whatever the button mapping, e.g. a left-handed map with natural scrolling.
+    std::array names = {
+        std::string{BTN_LABEL_PROP_BTN_LEFT},
+        std::string{BTN_LABEL_PROP_BTN_MIDDLE},
+        std::string{BTN_LABEL_PROP_BTN_RIGHT},
+        std::string{BTN_LABEL_PROP_BTN_WHEEL_UP},
+        std::string{BTN_LABEL_PROP_BTN_WHEEL_DOWN},
+    };
+    std::array<Atom, names.size()> labels{};
+    std::ranges::iota(labels, Atom{1});
+    std::array<unsigned char, 1> mask = {0};
+    XIButtonClassInfo button_class_info{
+        .type = XIButtonClass,
+        .sourceid = 1,
+        .num_buttons = static_cast<int>(labels.size()),
+        .labels = labels.data(),
+        .state = {.mask_len = static_cast<int>(mask.size()), .mask = mask.data()},
+    };
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::array<XIAnyClassInfo*, 3> any_class_info = {reinterpret_cast<XIAnyClassInfo*>(&button_class_info)};
+    std::string name = "name";
+    auto xi_device_info = test::CreateXiDeviceInfo(any_class_info, name);
+
+    std::array<unsigned char, 1> valuator_mask = {0};
+    std::array<double, 1> values = {0};
+    std::array<XIRawEvent, 4> presses{};
+    for (auto [press, detail] : std::views::zip(presses, std::array{kLeft, kRight, kWheelUp, kWheelDown})) {
+        press = test::CreateXiRawEvent(XI_RawButtonPress, valuator_mask, values);
+        press.detail = detail;
+    }
+    EXPECT_CALL(x_wrapper_mock, NextEvent)
+        .WillOnce(testing::Return(test::CreateXEvent(presses.at(0))))
+        .WillOnce(testing::Return(test::CreateXEvent(presses.at(1))))
+        .WillOnce(testing::Return(test::CreateXEvent(presses.at(2))))
+        .WillOnce(testing::Return(test::CreateXEvent(presses.at(3))));
+    test::SetXWrapperInPlaceEventDataMocks(x_wrapper_mock);
+    EXPECT_CALL(x_wrapper_mock, AtomName).WillRepeatedly([&names](Atom atom) {
+        return std::unique_ptr<char[], decltype(&XFree)>{names.at(atom - 1).data(), [](void*) { return 0; }};
+    });
+    EXPECT_CALL(x_wrapper_mock, GetActiveWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, GetFocusWindow).WillRepeatedly(testing::Return(std::nullopt));
+    EXPECT_CALL(x_wrapper_mock, QueryPointer).WillRepeatedly([] { return test::CreatePointerResult(); });
+
+    x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info);
+    x_event_switch_pointer_key.RefreshDevices(1, 1, evget::DeviceType::kMouse, "name", xi_device_info, x_event_switch);
+
+    auto data = evget::Data{};
+    for (std::size_t i = 0; i < presses.size(); i++) {
+        auto input_event = evgetx11::InputEvent::NextEvent(x_wrapper_mock);
+        static_cast<void>(x_event_switch_pointer_key.SwitchOnEvent(input_event, data, x_event_switch, [](Time) {
+            return std::optional{std::chrono::microseconds{1}};
+        }));
+    }
+
+    const auto& entries = data.Entries();
+    ASSERT_EQ(entries.size(), 4);
+    ASSERT_EQ(entries.at(0).Type(), evget::EntryType::kMouseClick);
+    ASSERT_EQ(entries.at(0).Data().at(16), std::to_string(kLeft));
+    ASSERT_EQ(entries.at(0).Data().at(17), BTN_LABEL_PROP_BTN_LEFT);
+    ASSERT_EQ(entries.at(1).Type(), evget::EntryType::kMouseClick);
+    ASSERT_EQ(entries.at(1).Data().at(16), std::to_string(kRight));
+    ASSERT_EQ(entries.at(1).Data().at(17), BTN_LABEL_PROP_BTN_RIGHT);
+    ASSERT_EQ(entries.at(2).Type(), evget::EntryType::kMouseScroll);
+    ASSERT_EQ(entries.at(2).Data().at(15), evget::FromDouble(-1.0));
+    ASSERT_EQ(entries.at(3).Type(), evget::EntryType::kMouseScroll);
+    ASSERT_EQ(entries.at(3).Data().at(15), evget::FromDouble(1.0));
 }
 
 TEST(XEventSwitchCoreTest, TestKeyEvent) { // NOLINT(readability-function-cognitive-complexity)

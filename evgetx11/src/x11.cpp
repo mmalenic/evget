@@ -127,19 +127,6 @@ std::unique_ptr<_XIC, decltype(&XDestroyIC)> evgetx11::X11::CreateIc(Display& di
     return {nullptr, XDestroyIC};
 }
 
-std::unique_ptr<unsigned char[]> evgetx11::X11::GetDeviceButtonMapping(int device_id, int map_size) {
-    auto device = std::unique_ptr<XDevice, DisplayDeleter<XCloseDevice>>(
-        XOpenDevice(&display_.get(), device_id),
-        DisplayDeleter<XCloseDevice>{display_.get()}
-    );
-    if (device) {
-        auto map = std::make_unique<unsigned char[]>(map_size);
-        XGetDeviceButtonMapping(&display_.get(), device.get(), map.get(), map_size);
-        return map;
-    }
-    return nullptr;
-}
-
 std::unique_ptr<XDeviceInfo[], decltype(&XFreeDeviceList)> evgetx11::X11::ListInputDevices(int& n_devices) {
     return {XListInputDevices(&display_.get(), &n_devices), XFreeDeviceList};
 }

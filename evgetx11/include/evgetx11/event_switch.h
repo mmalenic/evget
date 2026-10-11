@@ -176,7 +176,7 @@ public:
     QueryPointerResult QueryPointerForDevice();
 
     /**
-     * \brief Set the button map for a device.
+     * \brief Name the buttons of a device by physical button number.
      * \param button_info the XI button class information
      * \param device_id the ID of the device
      */

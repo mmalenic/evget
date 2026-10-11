@@ -1,5 +1,6 @@
 #include "evgetx11/event_switch.h"
 
+#include <X11/X.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
 #include <evget/event/device_type.h>
@@ -28,19 +29,14 @@ bool evgetx11::EventSwitch::HasDevice(int device_id) const {
 }
 
 void evgetx11::EventSwitch::SetButtonMap(const XIButtonClassInfo& button_info, int device_id) {
-    auto map_buf = x_wrapper_.get().GetDeviceButtonMapping(device_id, button_info.num_buttons);
-    if (map_buf == nullptr) {
-        return;
-    }
-    const auto count = static_cast<std::size_t>(button_info.num_buttons);
-    auto labels = std::span{button_info.labels, count};
-    auto map = std::span{map_buf.get(), count};
-    for (auto [label, button_index] : std::views::zip(labels, map)) {
-        if (label == 0U) {
+    const auto labels = std::span{button_info.labels, static_cast<std::size_t>(button_info.num_buttons)};
+    for (const auto [index, label] : std::views::enumerate(labels)) {
+        if (label == None) {
             continue;
         }
+        // Labels are in device order and raw events have the unmapped button, so both ignore the button mapping.
         auto name = x_wrapper_.get().AtomName(label);
-        button_map_[device_id][button_index] = name ? name.get() : "";
+        button_map_[device_id][static_cast<int>(index) + 1] = name ? name.get() : "";
     }
 }
 

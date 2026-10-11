@@ -52,10 +52,6 @@ TEST(XEventSwitchTest, GetButtonName) {
 
     ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
 
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(
-            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
-        );
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
@@ -75,8 +71,6 @@ TEST(XEventSwitchTest, GetButtonNameReturnsLabel) {
 
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(
             testing::Return(
@@ -85,9 +79,10 @@ TEST(XEventSwitchTest, GetButtonNameReturnsLabel) {
         );
 
     x_event_switch.SetButtonMap(button_class_info, 1);
-    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "Button Left");
-    ASSERT_FALSE(x_event_switch.GetButtonName(1, 1).has_value());
-    ASSERT_FALSE(x_event_switch.GetButtonName(2, 0).has_value());
+    ASSERT_EQ(x_event_switch.GetButtonName(1, 1), "Button Left");
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 2).has_value());
+    ASSERT_FALSE(x_event_switch.GetButtonName(2, 1).has_value());
 }
 
 TEST(XEventSwitchTest, RefreshDevicesReplacesAReusedDeviceId) {
@@ -102,8 +97,6 @@ TEST(XEventSwitchTest, RefreshDevicesReplacesAReusedDeviceId) {
 
     test::X11ApiMock x_wrapper_mock{};
     evgetx11::EventSwitch x_event_switch{x_wrapper_mock};
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(testing::Return(testing::ByMove(std::make_unique<unsigned char[]>(1))));
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(
             testing::Return(
@@ -113,11 +106,11 @@ TEST(XEventSwitchTest, RefreshDevicesReplacesAReusedDeviceId) {
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kMouse, "mouse", mouse_info);
     ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawMotion), evget::DeviceType::kMouse);
-    ASSERT_EQ(x_event_switch.GetButtonName(1, 0), "Button Left");
+    ASSERT_EQ(x_event_switch.GetButtonName(1, 1), "Button Left");
 
     x_event_switch.RefreshDevices(1, 1, evget::DeviceType::kTouchscreen, "touchscreen", {});
     ASSERT_EQ(x_event_switch.GetDevice(1, XI_RawMotion), evget::DeviceType::kTouchscreen);
-    ASSERT_FALSE(x_event_switch.GetButtonName(1, 0).has_value());
+    ASSERT_FALSE(x_event_switch.GetButtonName(1, 1).has_value());
 }
 
 TEST(XEventSwitchTest, RemovedDeviceNewUuid) {
@@ -148,10 +141,6 @@ TEST(XEventSwitchPointerTest, TestAddButtonEvent) { // NOLINT(readability-functi
     std::array<unsigned char, 1> mask = {1};
     auto button_class_info = test::CreateXiButtonClassInfo(labels, mask);
 
-    EXPECT_CALL(x_wrapper_mock, GetDeviceButtonMapping)
-        .WillOnce(
-            testing::Return(testing::ByMove<std::unique_ptr<unsigned char[]>>(std::make_unique<unsigned char[]>(1)))
-        );
     EXPECT_CALL(x_wrapper_mock, AtomName)
         .WillOnce(testing::Return(testing::ByMove<std::unique_ptr<char[], decltype(&XFree)>>({nullptr, [](void*) {
                                                                                                   return 0;
