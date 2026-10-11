@@ -72,6 +72,7 @@ private:
     std::mutex mutex_;
     std::unordered_map<Display*, std::size_t> displays_;
     XErrorHandler previous_{nullptr};
+    XErrorHandler left_in_place_{nullptr};
     LogOnce log_;
 };
 

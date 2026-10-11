@@ -1,6 +1,7 @@
 #include "evgetx11/error_router.h"
 
 #include <X11/Xlib.h>
+#include <boost/scope/scope_exit.hpp>
 
 #include <array>
 #include <cstdio>
@@ -14,7 +15,16 @@ evgetx11::ErrorRouter::ErrorRouter(SetHandler set_handler, ErrorText error_text,
 void evgetx11::ErrorRouter::Register(Display* display) {
     const std::scoped_lock lock{mutex_};
     if (displays_.empty()) {
-        previous_ = set_handler_(handler_);
+        const auto current = set_handler_(handler_);
+        if (current != nullptr && current == left_in_place_) {
+            // The handler kept by `Unregister` must be set using set_handler_ to avoid a loop.
+            set_handler_(current);
+        } else {
+            left_in_place_ = nullptr;
+            if (current != handler_) {
+                previous_ = current;
+            }
+        }
     }
     ++displays_[display];
 }
@@ -36,6 +46,7 @@ void evgetx11::ErrorRouter::Unregister(Display* display) {
     const auto current = set_handler_(previous_);
     if (current != handler_) {
         set_handler_(current);
+        left_in_place_ = current;
     }
 }
 
@@ -55,9 +66,15 @@ int evgetx11::ErrorRouter::Dispatch(Display* display, XErrorEvent* event) {
         previous = previous_;
     }
 
-    if (previous == nullptr || previous == handler_) {
+    // A previous handler that attached to our handler already sees the error.
+    thread_local bool forwarding = false;
+    if (previous == nullptr || previous == handler_ || forwarding) {
         return 0;
     }
+
+    // The previous handler runs unlocked.
+    forwarding = true;
+    const boost::scope::scope_exit reset{[] { forwarding = false; }};
     return previous(display, event);
 }
 

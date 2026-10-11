@@ -6,6 +6,8 @@
 #include <array>
 #include <cstddef>
 
+#include "evgetx11/error_router.h"
+
 namespace test {
 
 /// \brief The result `HostErrorHandler` returns.
@@ -41,6 +43,24 @@ int RoutedErrorHandler(Display* display, XErrorEvent* event);
  * \return 0
  */
 int LaterHostErrorHandler(Display* display, XErrorEvent* event);
+
+/**
+ * \brief The router `ChainingErrorHandler` chains to.
+ * \return reference to the router slot
+ */
+evgetx11::ErrorRouter*& ChainedRouter();
+
+/**
+ * \brief The number of times `ChainingErrorHandler` ran.
+ * \return reference to the count
+ */
+int& ChainingCalls();
+
+/**
+ * \brief A handler an embedding program installed after evget.
+ * \return the result of dispatching to `ChainedRouter`
+ */
+int ChainingErrorHandler(Display* display, XErrorEvent* event);
 
 /**
  * \brief Describe any error as `"fake error"`.

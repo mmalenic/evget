@@ -6,6 +6,8 @@
 #include <span>
 #include <string_view>
 
+#include "evgetx11/error_router.h"
+
 XErrorHandler& test::InstalledErrorHandler() {
     static XErrorHandler installed = nullptr;
     return installed;
@@ -27,6 +29,22 @@ int test::RoutedErrorHandler(Display* /* display */, XErrorEvent* /* event */) {
 
 int test::LaterHostErrorHandler(Display* /* display */, XErrorEvent* /* event */) {
     return 0;
+}
+
+evgetx11::ErrorRouter*& test::ChainedRouter() {
+    // NOLINTNEXTLINE(misc-const-correctness)
+    static evgetx11::ErrorRouter* router = nullptr;
+    return router;
+}
+
+int& test::ChainingCalls() {
+    static int calls = 0;
+    return calls;
+}
+
+int test::ChainingErrorHandler(Display* display, XErrorEvent* event) {
+    ChainingCalls()++;
+    return ChainedRouter()->Dispatch(display, event);
 }
 
 int test::FakeErrorText(Display* /* display */, int /* code */, char* buffer, int length) {

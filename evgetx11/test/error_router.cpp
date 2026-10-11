@@ -81,6 +81,39 @@ TEST(ErrorRouterTest, ErrrorFromHostAfterEvget) {
     ASSERT_EQ(test::InstalledErrorHandler(), test::LaterHostErrorHandler);
 }
 
+TEST(ErrorRouterTest, RegisterHostHandler) {
+    test::InstalledErrorHandler() = test::HostErrorHandler;
+    test::FakeDisplays displays{};
+    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    test::ChainedRouter() = &router;
+    auto error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
+
+    router.Register(displays.At(0));
+    test::InstalledErrorHandler() = test::ChainingErrorHandler;
+    router.Unregister(displays.At(0));
+    router.Register(displays.At(0));
+
+    ASSERT_EQ(test::InstalledErrorHandler(), test::ChainingErrorHandler);
+    ASSERT_EQ(test::InstalledErrorHandler()(displays.At(1), &error), test::kHostHandled);
+    ASSERT_EQ(test::InstalledErrorHandler()(displays.At(0), &error), 0);
+    router.Unregister(displays.At(0));
+    ASSERT_EQ(test::InstalledErrorHandler(), test::ChainingErrorHandler);
+}
+
+TEST(ErrorRouterTest, HandlerChains) {
+    test::InstalledErrorHandler() = test::ChainingErrorHandler;
+    test::FakeDisplays displays{};
+    evgetx11::ErrorRouter router{test::SetErrorHandler, test::FakeErrorText, test::RoutedErrorHandler};
+    test::ChainedRouter() = &router;
+    test::ChainingCalls() = 0;
+    auto error = test::CreateXErrorEvent(BadWindow, X_GetWindowAttributes);
+
+    router.Register(displays.At(0));
+    ASSERT_EQ(router.Dispatch(displays.At(1), &error), 0);
+    ASSERT_EQ(test::ChainingCalls(), 1);
+    router.Unregister(displays.At(0));
+}
+
 TEST(ErrorRouterTest, RegistrationDestructor) {
     test::InstalledErrorHandler() = test::HostErrorHandler;
     test::FakeDisplays displays{};
