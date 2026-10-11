@@ -15,7 +15,8 @@ struct StopState {
 };
 
 StopState& State() {
-    static StopState state;
+    // Never destroyed, because a console handler thread can still run during CRT exit.
+    static auto& state = *new StopState{};
     return state;
 }
 
