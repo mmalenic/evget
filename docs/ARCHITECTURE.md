@@ -142,16 +142,17 @@ In PowerShell, `Start-Process` with `-WindowStyle Hidden` starts evget without a
 Start-Process evget -ArgumentList '-o', 'events.sqlite' -WindowStyle Hidden
 ```
 
-This has been checked with the classic console host as the default terminal, but not with Windows Terminal set as the
-default terminal.
+This has been checked with both the classic console host and Windows Terminal as the default terminal.
 
 Task Scheduler can start evget each time the user logs on: create a task with an "At log on" trigger and "Run only when
 user is logged on" selected, whose action runs evget with an explicit `-o`. evget then runs in a visible console window,
-and closing that window stops it. Do not select "Run whether user is logged on or not", because that runs evget in
-session 0, which receives no user input. Running evget as a Windows service is not supported for the same reason.
+which is a Windows Terminal window when that is the default terminal, and closing it stops it. Do not select "Run
+whether user is logged on or not", because that runs evget in session 0, which receives no user input. Running evget as
+a Windows service is not supported for the same reason.
 
 On Linux, closing the terminal that evget runs in sends it SIGHUP, which stops it. `nohup evget -o events.sqlite &`
-keeps evget running after the terminal closes. A systemd user unit is another option, but it has not been tested.
+keeps evget running after the terminal closes. A systemd user unit is another option: `systemctl --user stop` sends
+SIGTERM, which writes the pending events before evget exits.
 
 ### Stopping
 
@@ -159,8 +160,8 @@ A stop request that evget can catch writes the pending events before evget exits
 between the input source and storage:
 
 - Linux: SIGINT (Ctrl+C), SIGTERM and SIGHUP. A `nohup` run ignores SIGHUP, as usual.
-- Windows: Ctrl+C, Ctrl+Break, closing the console window, `taskkill /PID` or `taskkill /IM` without `/F`, and logging
-  off or shutting down.
+- Windows: Ctrl+C, Ctrl+Break, closing the console window or its Windows Terminal tab, `taskkill /PID` or `taskkill /IM`
+  without `/F`, and logging off or shutting down.
 
 A stop first drains the queued input for at most 2 seconds, and then writes the pending events. On Linux, the backends
 return only the input that was already queued when the stop arrived, so input that keeps arriving cannot hold the stop
