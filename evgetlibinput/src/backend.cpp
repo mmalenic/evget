@@ -39,6 +39,15 @@ evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::C
     evget::Store& storage,
     const std::optional<std::string>& seat
 ) {
+    return Create(dimensions, storage, seat, true);
+}
+
+evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::Create(
+    std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions,
+    evget::Store& storage,
+    const std::optional<std::string>& seat,
+    bool tap_to_click
+) {
     ScreenDimensions resolved_dimensions{};
     if (dimensions) {
         resolved_dimensions = {.width = dimensions->first, .height = dimensions->second};
@@ -50,7 +59,7 @@ evget::Result<std::unique_ptr<evgetlibinput::Backend>> evgetlibinput::Backend::C
         resolved_dimensions = drm->GetDimensions();
     }
 
-    auto libinput = LibInput::New(seat);
+    auto libinput = LibInput::New(seat, tap_to_click);
     if (!libinput.has_value()) {
         return std::unexpected(libinput.error());
     }

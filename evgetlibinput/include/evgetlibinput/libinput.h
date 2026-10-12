@@ -54,7 +54,7 @@ public:
     /**
      * \brief Read input and report whether an event is queued.
      *
-     * This function calls `libinput_dispatch` and `libinput_next_event_type`.
+     * This function calls `libinput_next_event_type`, and `libinput_dispatch` when no event is queued.
      *
      * \return whether `GetEvent` returns without blocking, or an error if failed
      */
@@ -367,11 +367,19 @@ public:
 class LibInput : public LibInputApi {
 public:
     /**
-     * \brief Create a new LibInputApi context as a pointer to the interface.
+     * \brief Create a new LibInputApi context as a pointer to the interface, with tap-to-click turned on.
      * \param seat optional udev seat name to assign. If unset, `seat0` is used.
      * \return a unique pointer to a LibInputApi context
      */
     static evget::Result<std::unique_ptr<LibInput>> New(const std::optional<std::string>& seat);
+
+    /**
+     * \brief Create a new LibInputApi context as a pointer to the interface.
+     * \param seat optional udev seat name to assign. If unset, `seat0` is used.
+     * \param tap_to_click whether to turn tap-to-click on for every touchpad, or keep libinput's default
+     * \return a unique pointer to a LibInputApi context
+     */
+    static evget::Result<std::unique_ptr<LibInput>> New(const std::optional<std::string>& seat, bool tap_to_click);
 
     evget::Result<std::unique_ptr<libinput_event, decltype(&libinput_event_destroy)>> GetEvent() override;
 
@@ -466,6 +474,7 @@ private:
     std::unique_ptr<libinput, decltype(&libinput_unref)> libinput_context_{nullptr, libinput_unref};
 
     pollfd pollfd_{};
+    bool tap_to_click_{true};
 };
 
 } // namespace evgetlibinput

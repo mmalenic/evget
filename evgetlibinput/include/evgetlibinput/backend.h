@@ -32,7 +32,7 @@ namespace evgetlibinput {
 class Backend {
 public:
     /**
-     * \brief Create the libinput backend.
+     * \brief Create the libinput backend, with tap-to-click turned on.
      * \param dimensions screen dimensions (width, height)
      * \param storage the event storage
      * \param seat optional udev seat name to assign. If unset, `seat0` is used.
@@ -42,6 +42,21 @@ public:
         std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions,
         evget::Store& storage,
         const std::optional<std::string>& seat
+    );
+
+    /**
+     * \brief Create the libinput backend.
+     * \param dimensions screen dimensions (width, height)
+     * \param storage the event storage
+     * \param seat optional udev seat name to assign. If unset, `seat0` is used.
+     * \param tap_to_click whether to turn tap-to-click on for every touchpad, or keep libinput's default
+     * \return the backend
+     */
+    static evget::Result<std::unique_ptr<Backend>> Create(
+        std::optional<std::pair<std::uint32_t, std::uint32_t>> dimensions,
+        evget::Store& storage,
+        const std::optional<std::string>& seat,
+        bool tap_to_click
     );
 
     /**

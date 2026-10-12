@@ -5,6 +5,7 @@
 #include <libinput.h>
 #include <libudev.h>
 #include <poll.h>
+#include <spdlog/spdlog.h>
 #include <unistd.h>
 
 #include <cerrno>
@@ -25,6 +26,16 @@ constexpr void CloseRestricted(int file, void* /* unused */) {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     close(file);
 }
+
+void EnableTapToClick(libinput_device& device) {
+    if (libinput_device_config_tap_get_finger_count(&device) == 0) {
+        return;
+    }
+    if (libinput_device_config_tap_set_enabled(&device, LIBINPUT_CONFIG_TAP_ENABLED) !=
+        LIBINPUT_CONFIG_STATUS_SUCCESS) {
+        spdlog::error("unable to turn on tap-to-click for '{}'", libinput_device_get_name(&device));
+    }
+}
 } // namespace
 
 constexpr libinput_interface kLibInputInterface = {
@@ -35,7 +46,13 @@ constexpr libinput_interface kLibInputInterface = {
 evget::Result<std::unique_ptr<evgetlibinput::LibInput>> evgetlibinput::LibInput::New(
     const std::optional<std::string>& seat
 ) {
+    return New(seat, true);
+}
+
+evget::Result<std::unique_ptr<evgetlibinput::LibInput>>
+evgetlibinput::LibInput::New(const std::optional<std::string>& seat, bool tap_to_click) {
     auto lib_input = std::unique_ptr<LibInput>(new LibInput{});
+    lib_input->tap_to_click_ = tap_to_click;
 
     lib_input->udev_context_ = {udev_new(), udev_unref};
     if (lib_input->udev_context_ == nullptr) {
@@ -94,6 +111,10 @@ evget::Result<evgetlibinput::LibInputEvent> evgetlibinput::LibInput::GetEvent() 
         event = libinput_get_event(libinput_context_.get());
     }
 
+    // Each context configures devices on its own which doesn't change the default desktop tap settings.
+    if (tap_to_click_ && libinput_event_get_type(event) == LIBINPUT_EVENT_DEVICE_ADDED) {
+        EnableTapToClick(*libinput_event_get_device(event));
+    }
     return evget::Result<LibInputEvent>{{event, libinput_event_destroy}};
 }
 
@@ -102,6 +123,10 @@ int evgetlibinput::LibInput::GetFd() {
 }
 
 evget::Result<bool> evgetlibinput::LibInput::HasPendingEvent() {
+    // New input waits until the queued device added events have been configured.
+    if (HasQueuedEvent()) {
+        return true;
+    }
     if (libinput_dispatch(libinput_context_.get()) != 0) {
         return evget::Err{
             {.error_type = evget::ErrorType::kEventHandlerError, .message = "unable to get next event"}
