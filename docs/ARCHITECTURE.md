@@ -76,6 +76,14 @@ and mice keep their own name, even when BlueZ relays them through uhid, which th
 `/sys/devices/virtual/misc` instead. Input that a compositor synthesizes without a kernel device, such as through a
 Wayland virtual keyboard or pointer, never reaches libinput, so the libinput backend does not store it.
 
+## libinput behaviour
+
+Every program that reads input through libinput configures its own copy of each device, and libinput leaves
+tap-to-click off on a touchpad that has a button. evget turns tap-to-click on for every touchpad in its own libinput
+context, as GNOME, KDE Plasma and Cinnamon do by default, so taps are stored the same as a physical press. This leaves
+the desktop's own tapping setting alone, and evget cannot read it, so on a desktop with tapping off evget still stores
+taps as clicks. `--no-tap-to-click` disables this and keeps libinput's default instead.
+
 ## X11 behaviour
 
 The data source when using X11 is the X11 [api][x11-api] functions. Namely, data is sourced using the XI2 extension
