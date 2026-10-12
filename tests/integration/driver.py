@@ -236,6 +236,12 @@ class X11Input(Input):
             raise Unavailable(
                 f"no X display ({error}), set DISPLAY or run under xvfb-run"
             ) from error
+        if "XWAYLAND" in self._display.list_extensions():
+            self._display.close()
+            raise Unavailable(
+                "XWayland may hand XTEST input to the Wayland compositor instead of X11 "
+                "clients; run under xvfb-run or in an X11 session"
+            )
         self._window = self._focus_window()
 
     def key(self, down: bool) -> None:
@@ -598,7 +604,8 @@ class Terminal(Evget):
 
     def wait(self, timeout: float = STOP_TIMEOUT) -> int | None:
         deadline = time.monotonic() + timeout
-        if not self._hung_up:
+        # nohup detaches evget from the terminal.
+        if not self._hung_up and self.stdout == self._transcript:
             # Reading the terminal to its end keeps the last lines.
             try:
                 self._child.expect(pexpect.EOF, timeout=timeout)
