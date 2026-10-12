@@ -45,6 +45,7 @@ TEST(CliTest, ParseDefaults) {
     EXPECT_FALSE(cli.Seat().has_value());
     EXPECT_FALSE(cli.ScreenDimensions().has_value());
     EXPECT_FALSE(cli.ExcludeWindowTitle());
+    EXPECT_TRUE(cli.TapToClick());
 }
 
 TEST(CliTest, ParseExcludeWindowTitle) {
@@ -56,6 +57,24 @@ TEST(CliTest, ParseExcludeWindowTitle) {
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(*result);
     EXPECT_TRUE(cli.ExcludeWindowTitle());
+}
+
+TEST(CliTest, ParseNoTapToClick) {
+    evget::Cli cli{evget::EventSource::kLibInput, {evget::EventSource::kLibInput, evget::EventSource::kX11}, false};
+    test::Args argv{{"evget", "--no-tap-to-click"}};
+
+    auto result = cli.Parse(argv.Argc(), argv.Argv());
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(*result);
+    EXPECT_FALSE(cli.TapToClick());
+}
+
+TEST(CliTest, ParseNoTapToClickWithoutLibInput) {
+    evget::Cli cli{evget::EventSource::kX11, {evget::EventSource::kX11}, false};
+    test::Args argv{{"evget", "--no-tap-to-click"}};
+
+    ASSERT_FALSE(cli.Parse(argv.Argc(), argv.Argv()).has_value());
 }
 
 TEST(CliTest, ParseOutputDefault) {

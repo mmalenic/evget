@@ -109,6 +109,15 @@ evget::Cli::Cli(evget::EventSource default_event_source) : event_source_{default
 evget::Cli::Cli(evget::EventSource default_event_source, bool ensure_utf8_argv)
     : ensure_utf8_argv_{ensure_utf8_argv}, event_source_{default_event_source} {}
 
+evget::Cli::Cli(
+    evget::EventSource default_event_source,
+    std::set<evget::EventSource> event_sources,
+    bool ensure_utf8_argv
+)
+    : ensure_utf8_argv_{ensure_utf8_argv},
+      event_source_{default_event_source},
+      event_sources_{std::move(event_sources)} {}
+
 const std::vector<std::string>& evget::Cli::Output() const {
     return this->output_;
 }
@@ -201,6 +210,17 @@ std::expected<bool, int> evget::Cli::Parse(int argc, char** argv) {
         "Store the focus window name as null instead of the window title. "
         "The focus window position, size and screen are still stored."
     );
+
+    if (event_sources_.contains(EventSource::kLibInput)) {
+        app.add_flag(
+            "--no-tap-to-click",
+            no_tap_to_click_,
+            "For evget, tap-to-click is turned on by default, "
+            "however the default for libinput is to leave it off. "
+            "This option disables tap-to-click for a libinput backend, matching the libinput librarie's default"
+            "Only used by the libinput event source."
+        );
+    }
 
     app.add_option(
            "-o,--output",
@@ -356,4 +376,8 @@ const std::optional<std::set<evget::DeviceType>>& evget::Cli::Filter() const {
 
 bool evget::Cli::ExcludeWindowTitle() const {
     return exclude_window_title_;
+}
+
+bool evget::Cli::TapToClick() const {
+    return !no_tap_to_click_;
 }

@@ -62,6 +62,14 @@ public:
     Cli(evget::EventSource default_event_source, bool ensure_utf8_argv);
 
     /**
+     * \brief Create a cli object that has options for the event sources a build includes only.
+     * \param default_event_source the default event source if left unspecified by the user
+     * \param event_sources the event sources this build includes
+     * \param ensure_utf8_argv whether `Parse` should call `App::ensure_utf8(argv)`
+     */
+    Cli(evget::EventSource default_event_source, std::set<evget::EventSource> event_sources, bool ensure_utf8_argv);
+
+    /**
      * \brief Get the output location.
      * \return output location
      */
@@ -138,6 +146,12 @@ public:
      */
     [[nodiscard]] bool ExcludeWindowTitle() const;
 
+    /**
+     * \brief Whether the libinput event source turns tap-to-click on.
+     * \return false if `--no-tap-to-click`
+     */
+    [[nodiscard]] bool TapToClick() const;
+
 private:
     static constexpr std::size_t kDefaultNEvents{100};
     static constexpr std::size_t kDefaultStoreAfter{100};
@@ -147,6 +161,7 @@ private:
     std::size_t store_n_events_{kDefaultNEvents};
     std::size_t store_after_{kDefaultStoreAfter};
     evget::EventSource event_source_{EventSource::kX11};
+    std::set<evget::EventSource> event_sources_{EventSource::kLibInput, EventSource::kX11, EventSource::kWindows};
     std::optional<spdlog::level::level_enum> log_level_;
     std::optional<std::pair<std::uint32_t, std::uint32_t>> screen_dimensions_;
     std::optional<std::string> display_;
@@ -156,6 +171,7 @@ private:
     std::vector<std::string> log_level_descriptions_{LogLevelDescriptions()};
     std::vector<std::string> device_type_descriptions_{DeviceTypeDescriptions()};
     bool exclude_window_title_{false};
+    bool no_tap_to_click_{false};
 
     static std::vector<std::string> EventSourceDescriptions();
     static std::vector<std::string> LogLevelDescriptions();

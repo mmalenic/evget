@@ -15,6 +15,7 @@
 #include <csignal>
 #include <exception>
 #include <memory>
+#include <set>
 #include <thread>
 #include <utility>
 
@@ -66,18 +67,22 @@ void StopX11Source(evgetx11::Backend& backend, const evget::Scheduler& scheduler
 
 int Run(int argc, char** argv) {
     evget::EventSource default_source{};
+    std::set<evget::EventSource> event_sources{};
 #ifdef FEATURE_EVGETX11
     // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
     default_source = evget::EventSource::kX11;
+    event_sources.insert(evget::EventSource::kX11);
 #endif
 #ifdef FEATURE_EVGETLIBINPUT
     default_source = evget::EventSource::kLibInput;
+    event_sources.insert(evget::EventSource::kLibInput);
 #endif
 #ifdef FEATURE_EVGETWINDOWS
     default_source = evget::EventSource::kWindows;
+    event_sources.insert(evget::EventSource::kWindows);
 #endif
 
-    auto cli = evget::Cli{default_source};
+    auto cli = evget::Cli{default_source, std::move(event_sources), true};
     auto exit = cli.Parse(argc, argv);
     if (!exit.has_value()) {
         return exit.error();
@@ -170,7 +175,7 @@ int Run(int argc, char** argv) {
 
 #ifdef FEATURE_EVGETLIBINPUT
     if (event_source == evget::EventSource::kLibInput) {
-        auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), merged, cli.Seat());
+        auto result = evgetlibinput::Backend::Create(cli.ScreenDimensions(), merged, cli.Seat(), cli.TapToClick());
         if (!result.has_value()) {
             spdlog::error("{}", result.error());
             return 1;
