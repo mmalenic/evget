@@ -201,3 +201,17 @@ def launch(
         teardown.callback(print_log_tails)
         for process in started:
             teardown.callback(process.kill)
+
+
+@pytest.fixture
+def touchpad(backend: driver.Input) -> Iterator[driver.LibinputTouchpad]:
+    """
+    A virtual touchpad, which only the libinput backend reads.
+    """
+    if backend.backend != "libinput":
+        pytest.skip(f"the {backend.backend} backend has no virtual touchpad")
+    device = driver.LibinputTouchpad()
+    try:
+        yield device
+    finally:
+        device.close()

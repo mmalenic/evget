@@ -103,6 +103,34 @@ def test_filter_stores_correct_device_types(
         assert stored.from_device(tables[table], backend.device_name) == []
 
 
+@pytest.mark.parametrize("tap_to_click", [True, False], ids=["tap", "no-tap"])
+def test_tap_to_click(
+    launch,
+    backend: driver.Input,
+    touchpad: driver.LibinputTouchpad,
+    tmp_path: Path,
+    tap_to_click: bool,
+) -> None:
+    args = [] if tap_to_click else ["--no-tap-to-click"]
+    database = tmp_path / "events.sqlite"
+    process = launch(backend, database, *driver.STORE_ON_STOP, *args)
+    touchpad.tap()
+    process.stop()
+    assert process.wait() == 0
+
+    clicks = [
+        row
+        for row in stored.from_device(
+            stored.read(database)["mouse_click"], backend.device_name
+        )
+        if row["device_type"] == "Touchpad"
+    ]
+    actions = Counter(row["button_action"] for row in clicks)
+    assert actions == ({"Press": 1, "Release": 1} if tap_to_click else {})
+    # A one-finger tap is the left button, stored with its evdev code as on every backend.
+    assert {row["button_id"] for row in clicks} <= {driver.ecodes.BTN_LEFT}
+
+
 @pytest.mark.parametrize("exclude", [False, True], ids=["title", "no-title"])
 def test_exclude_window_title(
     launch, backend: driver.Input, tmp_path: Path, exclude: bool

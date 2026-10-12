@@ -57,6 +57,8 @@ STOP_TIMEOUT = scaled(10.0)
 DELIVERY_DELAY = scaled(0.5)
 OPEN_SETTLE = scaled(0.5)
 PACE = 0.01
+# A touch this short is a tap: libinput's tap timeout is 180 ms.
+TAP_HOLD = 0.05
 MOVE_STEP = 5
 LOG_TAIL = 30
 
@@ -302,6 +304,30 @@ if sys.platform == "linux":
                 raise
 
 
+def _open_uinput(
+    capabilities: dict[int, list], name: str, input_props: list[int] | None = None
+) -> evdev.UInput:
+    """Create a uinput device and wait until libinput can open it.
+
+    Raises `Unavailable` if this host cannot create it.
+    """
+    try:
+        device = _UInput(capabilities, name=name, input_props=input_props)
+    except (evdev.UInputError, PermissionError) as error:
+        raise Unavailable(
+            f"{error} (libinput needs root or the input group)"
+        ) from error
+    # libinput skips a device until udev has written its database entry.
+    rdev = os.stat(device.device.path).st_rdev
+    entry = Path(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}")
+    try:
+        wait_until(entry.exists, READY_TIMEOUT, f"udev to add {name!r}")
+    except TimeoutError as error:
+        device.close()
+        raise Unavailable(f"{error}; is udevd running?") from error
+    return device
+
+
 class LibinputInput(Input):
     """
     The libinput virtual uinput keyboard and mouse for synthetic events.
@@ -322,22 +348,7 @@ class LibinputInput(Input):
             ],
             ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y, ecodes.REL_WHEEL],
         }
-        try:
-            self._device = _UInput(capabilities, name=self.uinput_name)
-        except (evdev.UInputError, PermissionError) as error:
-            raise Unavailable(
-                f"{error}"
-            ) from error
-
-        # libinput skips a device until udev has written a database entry.
-        rdev = os.stat(self._device.device.path).st_rdev
-
-        entry = Path(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}")
-        try:
-            wait_until(entry.exists, READY_TIMEOUT, f"udev to add {self.uinput_name!r}")
-        except TimeoutError as error:
-            self._device.close()
-            raise Unavailable(f"{error}; is udevd running?") from error
+        self._device = _open_uinput(capabilities, self.uinput_name)
 
     def key(self, down: bool) -> None:
         self._device.write(ecodes.EV_KEY, ecodes.KEY_F24, int(down))
@@ -354,6 +365,66 @@ class LibinputInput(Input):
 
     def opened_by(self, pid: int) -> bool:
         return self._device.device.path in _open_files(pid)
+
+    def close(self) -> None:
+        self._device.close()
+
+
+class LibinputTouchpad:
+    """A uinput clickpad, which the kernel lists as a virtual device."""
+
+    uinput_name = "evget integration tests touchpad"
+
+    def __init__(self) -> None:
+        # 100 by 62.5 mm at 40 units per mm.
+        x = evdev.AbsInfo(value=0, min=0, max=4000, fuzz=0, flat=0, resolution=40)
+        y = evdev.AbsInfo(value=0, min=0, max=2500, fuzz=0, flat=0, resolution=40)
+        slots = evdev.AbsInfo(value=0, min=0, max=4, fuzz=0, flat=0, resolution=0)
+        ids = evdev.AbsInfo(value=0, min=0, max=65535, fuzz=0, flat=0, resolution=0)
+        capabilities = {
+            # The button makes libinput leave tapping off unless evget turns it on.
+            ecodes.EV_KEY: [
+                ecodes.BTN_LEFT,
+                ecodes.BTN_TOUCH,
+                ecodes.BTN_TOOL_FINGER,
+                ecodes.BTN_TOOL_DOUBLETAP,
+                ecodes.BTN_TOOL_TRIPLETAP,
+            ],
+            ecodes.EV_ABS: [
+                (ecodes.ABS_X, x),
+                (ecodes.ABS_Y, y),
+                (ecodes.ABS_MT_SLOT, slots),
+                (ecodes.ABS_MT_POSITION_X, x),
+                (ecodes.ABS_MT_POSITION_Y, y),
+                (ecodes.ABS_MT_TRACKING_ID, ids),
+            ],
+        }
+        properties = [ecodes.INPUT_PROP_POINTER, ecodes.INPUT_PROP_BUTTONPAD]
+        self._device = _open_uinput(capabilities, self.uinput_name, properties)
+
+    def tap(self) -> None:
+        """Touch the middle of the pad with one finger and lift it."""
+        self._finger(tracking_id=1, x=2000, y=1250)
+        time.sleep(TAP_HOLD)
+        self._finger(tracking_id=-1)
+        # libinput holds a tap back until its timeout, in case a drag follows.
+        time.sleep(DELIVERY_DELAY)
+
+    def _finger(self, tracking_id: int, x: int = 0, y: int = 0) -> None:
+        """Put a finger down at x, y in slot 0, or lift it with tracking id -1."""
+        down = tracking_id >= 0
+        self._device.write(ecodes.EV_ABS, ecodes.ABS_MT_SLOT, 0)
+        self._device.write(ecodes.EV_ABS, ecodes.ABS_MT_TRACKING_ID, tracking_id)
+        if down:
+            for mt_axis, axis, value in (
+                (ecodes.ABS_MT_POSITION_X, ecodes.ABS_X, x),
+                (ecodes.ABS_MT_POSITION_Y, ecodes.ABS_Y, y),
+            ):
+                self._device.write(ecodes.EV_ABS, mt_axis, value)
+                self._device.write(ecodes.EV_ABS, axis, value)
+        self._device.write(ecodes.EV_KEY, ecodes.BTN_TOUCH, int(down))
+        self._device.write(ecodes.EV_KEY, ecodes.BTN_TOOL_FINGER, int(down))
+        self._device.syn()
 
     def close(self) -> None:
         self._device.close()
